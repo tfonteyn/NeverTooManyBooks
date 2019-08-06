@@ -1,30 +1,35 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * TaskQueue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * TaskQueue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -32,8 +37,6 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
 
 /**
  * Standard Android class to handle database open/creation.upgrade.
- *
- * @author Philip Warner
  */
 class TaskQueueDBHelper
         extends SQLiteOpenHelper {
@@ -68,26 +71,26 @@ class TaskQueueDBHelper
     // Collection of all table definitions
     private static final String[] TABLES = new String[]{
             "CREATE TABLE " + TBL_QUEUE + " ("
-                    + DOM_ID + " integer primary key autoincrement,"
-                    + DOM_NAME + " text)",
+            + DOM_ID + " integer primary key autoincrement,"
+            + DOM_NAME + " text)",
 
             "CREATE TABLE " + TBL_TASK + " ("
-                    + DOM_ID + " integer primary key autoincrement,"
-                    + DOM_QUEUE_ID + " integer not null references " + TBL_QUEUE + ','
-                    + DOM_QUEUED_DATE + " datetime default current_timestamp,"
-                    + DOM_PRIORITY + " integer default 0,"
-                    + DOM_STATUS_CODE + " text default '" + Task.STATUS_QUEUED + "',"
-                    + DOM_CATEGORY + " integer default 0 not null,"
-                    + DOM_RETRY_DATE + " datetime default current_timestamp,"
-                    + DOM_RETRY_COUNT + " integer default 0,"
-                    + DOM_FAILURE_REASON + " text,"
-                    + DOM_EXCEPTION + " blob,"
-                    + DOM_TASK + " blob not null)",
+            + DOM_ID + " integer primary key autoincrement,"
+            + DOM_QUEUE_ID + " integer not null references " + TBL_QUEUE + ','
+            + DOM_QUEUED_DATE + " datetime default current_timestamp,"
+            + DOM_PRIORITY + " integer default 0,"
+            + DOM_STATUS_CODE + " text default '" + Task.STATUS_QUEUED + "',"
+            + DOM_CATEGORY + " integer default 0 not null,"
+            + DOM_RETRY_DATE + " datetime default current_timestamp,"
+            + DOM_RETRY_COUNT + " integer default 0,"
+            + DOM_FAILURE_REASON + " text,"
+            + DOM_EXCEPTION + " blob,"
+            + DOM_TASK + " blob not null)",
 
             "CREATE TABLE " + TBL_EVENT + " (" + DOM_ID + " integer primary key autoincrement,\n"
-                    + DOM_TASK_ID + " integer references " + TBL_TASK + ','
-                    + DOM_EVENT + " blob not null,"
-                    + DOM_EVENT_DATE + " datetime default current_timestamp)"
+            + DOM_TASK_ID + " integer references " + TBL_TASK + ','
+            + DOM_EVENT + " blob not null,"
+            + DOM_EVENT_DATE + " datetime default current_timestamp)"
     };
 
     private static final String[] INDEXES = new String[]{
@@ -96,22 +99,22 @@ class TaskQueueDBHelper
 
             "CREATE UNIQUE INDEX " + TBL_TASK + "_IX1 ON " + TBL_TASK + " (" + DOM_ID + ')',
             "CREATE INDEX " + TBL_TASK + "_IX2 ON " + TBL_TASK + " ("
-                    + DOM_STATUS_CODE
-                    + ',' + DOM_QUEUE_ID
-                    + ',' + DOM_RETRY_DATE + ')',
+            + DOM_STATUS_CODE
+            + ',' + DOM_QUEUE_ID
+            + ',' + DOM_RETRY_DATE + ')',
             "CREATE INDEX " + TBL_TASK + "_IX3 ON " + TBL_TASK + " ("
-                    + DOM_STATUS_CODE
-                    + ',' + DOM_QUEUE_ID
-                    + ',' + DOM_RETRY_DATE
-                    + ',' + DOM_PRIORITY + ')',
+            + DOM_STATUS_CODE
+            + ',' + DOM_QUEUE_ID
+            + ',' + DOM_RETRY_DATE
+            + ',' + DOM_PRIORITY + ')',
 
             "CREATE UNIQUE INDEX " + TBL_EVENT + "_IX1 ON " + TBL_EVENT + " (" + DOM_ID + ')',
             "CREATE UNIQUE INDEX " + TBL_EVENT + "_IX2 ON " + TBL_EVENT + " ("
-                    + DOM_EVENT_DATE
-                    + ',' + DOM_ID + ')',
+            + DOM_EVENT_DATE
+            + ',' + DOM_ID + ')',
             "CREATE INDEX " + TBL_EVENT + "_IX3 ON " + TBL_EVENT + " ("
-                    + DOM_TASK_ID
-                    + ',' + DOM_ID + ')'
+            + DOM_TASK_ID
+            + ',' + DOM_ID + ')'
     };
 
     /**
@@ -123,11 +126,7 @@ class TaskQueueDBHelper
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    /**
-     * Create tables and indexes.
-     */
     @Override
-    @CallSuper
     public void onCreate(@NonNull final SQLiteDatabase db) {
         if (BuildConfig.DEBUG /* always */) {
             Logger.debugEnter(this, "onCreate", "database: " + db.getPath());

@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * TaskQueue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * TaskQueue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.goodreads.taskqueue;
 
 import android.database.sqlite.SQLiteCursor;
@@ -49,28 +55,31 @@ import static com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.TaskQueueD
 
 /**
  * Cursor subclass used to make accessing Tasks a little easier.
- *
- * @author Philip Warner
  */
 public final class TasksCursor
         extends SQLiteCursor
         implements BindableItemCursor {
 
     /** Static Factory object to create the custom cursor. */
-    private static final CursorFactory CURSOR_FACTORY = (db, masterQuery, editTable, query) ->
-            new TasksCursor(masterQuery, editTable, query);
+    private static final CursorFactory CURSOR_FACTORY =
+            (db, masterQuery, editTable, query) -> new TasksCursor(masterQuery, editTable, query);
 
-    private static final String ALL_TASKS_QUERY = "SELECT *, "
+    private static final String ALL_TASKS_QUERY =
+            "SELECT *, "
             + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e"
-            + " WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+            + " WHERE e." + DOM_TASK_ID + "=t." + DOM_ID
+            + ") AS " + DOM_EVENT_COUNT
             + " FROM " + TBL_TASK + " t WHERE 1=1 %1$s"
             + " ORDER BY " + DOM_ID + " DESC";
 
-    private static final String ACTIVE_TASKS_QUERY = "SELECT *, "
+    private static final String ACTIVE_TASKS_QUERY =
+            "SELECT *, "
             + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e"
-            + " WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+            + " WHERE e." + DOM_TASK_ID + "=t." + DOM_ID
+            + ") AS " + DOM_EVENT_COUNT
             + " FROM " + TBL_TASK + " t "
-            + " WHERE NOT " + DOM_STATUS_CODE + " IN ('S','F') %1$s"
+            + " WHERE NOT " + DOM_STATUS_CODE
+            + " IN ('S','F') %1$s"
             + " ORDER BY " + DOM_ID + " DESC";
 
     /** Column number of ID column. */
@@ -119,14 +128,6 @@ public final class TasksCursor
         return (TasksCursor) db.rawQueryWithFactory(CURSOR_FACTORY,
                                                     String.format(ALL_TASKS_QUERY, ""),
                                                     null, "");
-    }
-
-    @Override
-    public long getId() {
-        if (sIdCol < 0) {
-            sIdCol = getColumnIndex(DOM_ID);
-        }
-        return getLong(sIdCol);
     }
 
     @NonNull
@@ -211,5 +212,13 @@ public final class TasksCursor
         }
         task.setId(getId());
         return task;
+    }
+
+    @Override
+    public long getId() {
+        if (sIdCol < 0) {
+            sIdCol = getColumnIndex(DOM_ID);
+        }
+        return getLong(sIdCol);
     }
 }

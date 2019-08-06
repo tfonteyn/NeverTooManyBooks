@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * TaskQueue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * TaskQueue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.goodreads.taskqueue;
 
 import android.content.ContentValues;
@@ -58,8 +64,6 @@ import static com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.TaskQueueD
 
 /**
  * Database layer. Provides all direct database access.
- *
- * @author Philip Warner
  */
 class TaskQueueDAO {
 
@@ -76,7 +80,9 @@ class TaskQueueDAO {
     private final List<SQLiteStatement> mStatements = new ArrayList<>();
     /** Static Factory object to create the custom cursor. */
     private final CursorFactory mEventsCursorFactory = (db, masterQuery, editTable, query) ->
-            new EventsCursor(masterQuery, editTable, query);
+                                                               new EventsCursor(masterQuery,
+                                                                                editTable,
+                                                                                query);
     private SQLiteStatement mCheckTaskExistsStmt;
 
     /**
@@ -146,15 +152,15 @@ class TaskQueueDAO {
         SQLiteDatabase db = getDb();
 
         String baseSql = "SELECT j.* FROM " + TBL_QUEUE + " q"
-                + " JOIN " + TBL_TASK + " j ON j." + DOM_QUEUE_ID + " = q." + DOM_ID
-                + " WHERE j." + DOM_STATUS_CODE + "= 'Q'  AND q." + DOM_NAME + "=?";
+                         + " JOIN " + TBL_TASK + " j ON j." + DOM_QUEUE_ID + " = q." + DOM_ID
+                         + " WHERE j." + DOM_STATUS_CODE + "= 'Q'  AND q." + DOM_NAME + "=?";
 
         // Query to check for any task that CAN run now, sorted by priority then date/id
         String canRunSql = baseSql
-                + "  AND j." + DOM_RETRY_DATE + " <= ?"
-                + "  ORDER BY "
-                + DOM_PRIORITY + " ASC, " + DOM_RETRY_DATE + " ASC," + DOM_ID + " ASC"
-                + " LIMIT 1";
+                           + "  AND j." + DOM_RETRY_DATE + " <= ?"
+                           + "  ORDER BY "
+                           + DOM_PRIORITY + " ASC, " + DOM_RETRY_DATE + " ASC," + DOM_ID + " ASC"
+                           + " LIMIT 1";
 
         // Get next task that CAN RUN NOW
         Cursor cursor = db.rawQuery(canRunSql, new String[]{queueName, currTimeStr});
@@ -163,10 +169,10 @@ class TaskQueueDAO {
             cursor.close();
             // There is no task available now. Look for one that is waiting.
             String sql = baseSql
-                    + "  AND j." + DOM_RETRY_DATE + " > ?"
-                    + "  ORDER BY "
-                    + DOM_RETRY_DATE + " ASC, " + DOM_PRIORITY + " ASC, " + DOM_ID + " ASC"
-                    + " LIMIT 1";
+                         + "  AND j." + DOM_RETRY_DATE + " > ?"
+                         + "  ORDER BY "
+                         + DOM_RETRY_DATE + " ASC, " + DOM_PRIORITY + " ASC, " + DOM_ID + " ASC"
+                         + " LIMIT 1";
             cursor = db.rawQuery(sql, new String[]{queueName, currTimeStr});
         }
 
@@ -274,7 +280,7 @@ class TaskQueueDAO {
             } else {
                 // Just set is as successful
                 db.execSQL("UPDATE " + TBL_TASK + " SET " + DOM_STATUS_CODE + "= 'S'"
-                                   + " WHERE " + DOM_ID + '=' + task.getId());
+                           + " WHERE " + DOM_ID + '=' + task.getId());
             }
         }
     }
@@ -290,8 +296,8 @@ class TaskQueueDAO {
         try {
             // Remove Events attached to old tasks
             String whereClause = DOM_TASK_ID + " IN ("
-                    + "SELECT t." + DOM_ID + " FROM " + TBL_TASK + " t "
-                    + " WHERE t." + DOM_RETRY_DATE + " < ?)";
+                                 + "SELECT t." + DOM_ID + " FROM " + TBL_TASK + " t "
+                                 + " WHERE t." + DOM_RETRY_DATE + " < ?)";
             db.delete(TBL_EVENT, whereClause, new String[]{oneWeekAgo});
 
             // Remove old Tasks
@@ -326,14 +332,14 @@ class TaskQueueDAO {
         try {
             // Remove orphaned events -- should never be needed
             String whereClause = "NOT " + DOM_TASK_ID + " IS NULL"
-                    + " AND NOT EXISTS(SELECT * FROM " + TBL_TASK + " t"
-                    + " WHERE " + TBL_EVENT + '.' + DOM_TASK_ID + "=t." + DOM_ID + ')';
+                                 + " AND NOT EXISTS(SELECT * FROM " + TBL_TASK + " t"
+                                 + " WHERE " + TBL_EVENT + '.' + DOM_TASK_ID + "=t." + DOM_ID + ')';
             db.delete(TBL_EVENT, whereClause, null);
 
             // Remove orphaned tasks THAT WERE SUCCESSFUL
             whereClause = "NOT EXISTS(SELECT * FROM " + TBL_EVENT + " e"
-                    + " WHERE e." + DOM_TASK_ID + '=' + TBL_TASK + '.' + DOM_ID + ')'
-                    + " AND " + DOM_STATUS_CODE + " = 'S'";
+                          + " WHERE e." + DOM_TASK_ID + '=' + TBL_TASK + '.' + DOM_ID + ')'
+                          + " AND " + DOM_STATUS_CODE + " = 'S'";
             db.delete(TBL_TASK, whereClause, null);
             db.setTransactionSuccessful();
         } finally {
@@ -439,8 +445,8 @@ class TaskQueueDAO {
     @NonNull
     EventsCursor getTaskEvents(final long taskId) {
         String sql = "SELECT e.* FROM " + TBL_EVENT + " e "
-                + " WHERE e." + DOM_TASK_ID + "=?"
-                + " ORDER BY e." + DOM_ID + " ASC";
+                     + " WHERE e." + DOM_TASK_ID + "=?"
+                     + " ORDER BY e." + DOM_ID + " ASC";
         return (EventsCursor) getDb().rawQueryWithFactory(mEventsCursorFactory, sql,
                                                           new String[]{String.valueOf(taskId)}, "");
     }
@@ -521,8 +527,6 @@ class TaskQueueDAO {
 
     /**
      * Class containing information about the next task to be executed in a given queue.
-     *
-     * @author Philip Warner
      */
     static class ScheduledTask {
 

@@ -2,10 +2,10 @@ package com.hardbacknutter.nevertomanybooks;
 
 import android.os.Parcel;
 
-import org.mockito.Mockito;
-
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.mockito.Mockito;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;

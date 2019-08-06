@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.hardbacknutter.nevertomanybooks.cropper;
 
 import android.app.ProgressDialog;
@@ -116,7 +115,8 @@ final class CropUtil {
     }
 
     static void startBackgroundJob(@NonNull final CropMonitoredActivity activity,
-                                   @SuppressWarnings("SameParameterValue") @Nullable final String title,
+                                   @SuppressWarnings("SameParameterValue") @Nullable
+                                   final String title,
                                    @NonNull final String message,
                                    @NonNull final Runnable job,
                                    @NonNull final Handler handler) {
@@ -230,13 +230,13 @@ final class CropUtil {
         }
 
         @Override
-        public void onActivityStopped(@NonNull final CropMonitoredActivity activity) {
-            mDialog.hide();
+        public void onActivityStarted(@NonNull final CropMonitoredActivity activity) {
+            mDialog.show();
         }
 
         @Override
-        public void onActivityStarted(@NonNull final CropMonitoredActivity activity) {
-            mDialog.show();
+        public void onActivityStopped(@NonNull final CropMonitoredActivity activity) {
+            mDialog.hide();
         }
     }
 }

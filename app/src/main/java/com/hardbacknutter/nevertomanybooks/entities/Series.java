@@ -1,23 +1,29 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.entities;
 
 import android.content.Context;
@@ -26,13 +32,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.hardbacknutter.nevertomanybooks.App;
-import com.hardbacknutter.nevertomanybooks.database.DAO;
-import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertomanybooks.database.cursors.ColumnMapper;
-import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertomanybooks.utils.StringList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +42,12 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertomanybooks.database.DAO;
+import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertomanybooks.database.cursors.ColumnMapper;
+import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertomanybooks.utils.StringList;
+
 /**
  * Class to hold book-related series data.
  * <p>
@@ -51,8 +56,6 @@ import java.util.regex.Pattern;
  * <p>
  * The number is of course related to the book itself.
  * So this class does not represent a Series, but a "BookInSeries"
- *
- * @author Philip Warner
  */
 public class Series
         implements Parcelable, ItemWithFixableId, Entity, ItemWithTitle {
@@ -93,12 +96,12 @@ public class Series
     /** Parse series title/numbers embedded in a book title. */
     private static final Pattern SERIES_FROM_BOOK_TITLE_PATTERN =
             Pattern.compile("(.*?)(,|\\s)\\s*" + SERIES_REGEX_SUFFIX,
-                    Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /** Remove extraneous text from series position. */
     private static final Pattern POS_CLEANUP_PATTERN =
             Pattern.compile("^\\s*" + SERIES_REGEX_SUFFIX,
-                    Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /** Remove any leading zeros from series position. */
     private static final Pattern POS_REMOVE_LEADING_ZEROS_PATTERN = Pattern.compile("^[0-9]+$");
@@ -208,7 +211,7 @@ public class Series
             int closeBracket = title.lastIndexOf(')');
             if (closeBracket > -1 && openBracket < closeBracket) {
                 details = new SeriesDetails(title.substring(openBracket + 1, closeBracket),
-                        openBracket);
+                                            openBracket);
 
                 Matcher matcher = SERIES_FROM_BOOK_TITLE_PATTERN.matcher(details.getTitle());
                 if (matcher.find()) {
@@ -290,7 +293,7 @@ public class Series
                     } else {
                         // Both have numbers. See if they are the same.
                         if (series.getNumber().trim().toLowerCase(locale)
-                                .equals(previous.getNumber().trim().toLowerCase(locale))) {
+                                  .equals(previous.getNumber().trim().toLowerCase(locale))) {
                             // Same exact Series, delete this one
                             toDelete.add(series);
                         }
@@ -326,6 +329,12 @@ public class Series
         mIsComplete = isComplete;
     }
 
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -333,12 +342,6 @@ public class Series
         dest.writeString(mTitle);
         dest.writeInt(mIsComplete ? 1 : 0);
         dest.writeString(mNumber);
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     @Override
@@ -400,40 +403,6 @@ public class Series
         mNumber = number;
     }
 
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "Series{"
-                + "mId=" + mId
-                + ", mTitle=`" + mTitle + '`'
-                + ", mIsComplete=" + mIsComplete
-                + ", mNumber=`" + mNumber + '`'
-                + '}';
-    }
-
-    /**
-     * Support for encoding to a text file.
-     *
-     * @return the object encoded as a String.
-     * <p>
-     * "title (number)"
-     * or
-     * "title"
-     */
-    @NonNull
-    public String stringEncoded() {
-        String numberStr;
-        if (!mNumber.isEmpty()) {
-            // for display reasons, start the number part with a space !
-            // the surrounding () are NOT escaped as they are part of the format.
-            numberStr = " (" + StringList.escapeListItem(mNumber, '(') + ')';
-        } else {
-            numberStr = "";
-        }
-        return StringList.escapeListItem(mTitle, '(') + numberStr;
-    }
-
     /**
      * Replace local details from another series.
      *
@@ -470,6 +439,28 @@ public class Series
     }
 
     /**
+     * Support for encoding to a text file.
+     *
+     * @return the object encoded as a String.
+     * <p>
+     * "title (number)"
+     * or
+     * "title"
+     */
+    @NonNull
+    public String stringEncoded() {
+        String numberStr;
+        if (!mNumber.isEmpty()) {
+            // for display reasons, start the number part with a space !
+            // the surrounding () are NOT escaped as they are part of the format.
+            numberStr = " (" + StringList.escapeListItem(mNumber, '(') + ')';
+        } else {
+            numberStr = "";
+        }
+        return StringList.escapeListItem(mTitle, '(') + numberStr;
+    }
+
+    /**
      * Each position in a series ('Elric(1)', 'Elric(2)' etc) will have the same
      * ID, so they are not unique by ID.
      */
@@ -477,6 +468,11 @@ public class Series
     @Override
     public boolean isUniqueById() {
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mId, mTitle);
     }
 
     /**
@@ -503,14 +499,20 @@ public class Series
         }
         // one or both are 'new' or their ID's are the same.
         return Objects.equals(mTitle, that.mTitle)
-                && (mIsComplete == that.mIsComplete)
-                && Objects.equals(mNumber, that.mNumber);
+               && (mIsComplete == that.mIsComplete)
+               && Objects.equals(mNumber, that.mNumber);
 
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(mId, mTitle);
+    @NonNull
+    public String toString() {
+        return "Series{"
+               + "mId=" + mId
+               + ", mTitle=`" + mTitle + '`'
+               + ", mIsComplete=" + mIsComplete
+               + ", mNumber=`" + mNumber + '`'
+               + '}';
     }
 
     /**

@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks;
 
 import android.app.Activity;
@@ -17,6 +43,10 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertomanybooks.backup.ExportOptions;
 import com.hardbacknutter.nevertomanybooks.backup.FormattedMessageException;
@@ -46,10 +76,6 @@ import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.viewmodels.IntegerTaskModel;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 public class AdminFragment
         extends Fragment {
 
@@ -71,137 +97,8 @@ public class AdminFragment
     /** ViewModel for task control. */
     private IntegerTaskModel mModel;
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_admin, container, false);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mModel = ViewModelProviders.of(this).get(IntegerTaskModel.class);
-        mModel.getTaskFinishedMessage().observe(this, this::onTaskFinishedMessage);
-        mModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
-        mModel.getTaskCancelledMessage().observe(this, this::onTaskCancelledMessage);
-
-        FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
-        if (mProgressDialog != null) {
-            mProgressDialog.setTask(mModel.getTask());
-        }
-
-        View root = getView();
-
-        // Export (backup) to Archive
-        //noinspection ConstantConditions
-        root.findViewById(R.id.lbl_backup)
-                .setOnClickListener(v -> {
-                    Intent intent = new Intent(getContext(), BackupActivity.class);
-                    startActivityForResult(intent, REQ_ARCHIVE_BACKUP);
-                });
-
-        // Import from Archive - Start the restore activity
-        root.findViewById(R.id.lbl_import_from_archive)
-                .setOnClickListener(v -> {
-                    Intent intent = new Intent(getContext(), RestoreActivity.class);
-                    startActivityForResult(intent, REQ_ARCHIVE_RESTORE);
-                });
-
-        // Export to CSV
-        root.findViewById(R.id.lbl_export)
-                .setOnClickListener(v -> exportToCSV());
-
-        // Import From CSV
-        root.findViewById(R.id.lbl_import)
-                .setOnClickListener(v -> {
-                    // Verify - this can be a dangerous operation
-                    //noinspection ConstantConditions
-                    new AlertDialog.Builder(getContext())
-                            .setTitle(R.string.title_import_book_data)
-                            .setIconAttribute(android.R.attr.alertDialogIcon)
-                            .setMessage(R.string.warning_import_be_cautious)
-                            .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                            .setPositiveButton(android.R.string.ok, (d, which) -> importFromCSV())
-                            .create()
-                            .show();
-                });
-
-
-        // Goodreads Import Synchronize
-        root.findViewById(R.id.lbl_sync_with_goodreads)
-                .setOnClickListener(v -> {
-                    UserMessage.show(v, R.string.progress_msg_connecting);
-                    new ImportTask(true, mModel.getTaskListener()).execute();
-                });
-
-        // Goodreads Import All
-        root.findViewById(R.id.lbl_import_all_from_goodreads)
-                .setOnClickListener(v -> {
-                    UserMessage.show(v, R.string.progress_msg_connecting);
-                    new ImportTask(false, mModel.getTaskListener()).execute();
-                });
-
-        // Goodreads Export Updated
-        root.findViewById(R.id.lbl_send_updated_books_to_goodreads)
-                .setOnClickListener(v -> {
-                    UserMessage.show(v, R.string.progress_msg_connecting);
-                    //noinspection ConstantConditions
-                    new SendBooksTask(getContext(), true, mModel.getTaskListener()).execute();
-                });
-
-        // Goodreads Export All
-        root.findViewById(R.id.lbl_send_all_books_to_goodreads)
-                .setOnClickListener(v -> {
-                    UserMessage.show(v, R.string.progress_msg_connecting);
-                    //noinspection ConstantConditions
-                    new SendBooksTask(getContext(), false, mModel.getTaskListener()).execute();
-                });
-
-        /* Start the activity that shows the active GoodReads tasks. */
-        root.findViewById(R.id.lbl_background_tasks)
-                .setOnClickListener(v -> {
-                    Intent intent = new Intent(getContext(), TaskQueueListActivity.class);
-                    startActivity(intent);
-                });
-
-
-        /* Reset Hints */
-        root.findViewById(R.id.lbl_reset_tips)
-                .setOnClickListener(v -> {
-                    //noinspection ConstantConditions
-                    TipManager.reset(getContext());
-                    UserMessage.show(v, R.string.tip_reset_done);
-                });
-
-        /* Erase cover cache */
-        root.findViewById(R.id.lbl_erase_cover_cache)
-                .setOnClickListener(v -> {
-                    try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
-                        coversDBAdapter.deleteAll();
-                    }
-                });
-
-        /* Cleanup files */
-        root.findViewById(R.id.lbl_cleanup_files)
-                .setOnClickListener(v -> cleanupFiles());
-
-        /* Send debug info */
-        root.findViewById(R.id.lbl_send_info)
-                .setOnClickListener(v -> sendDebugInfo());
-
-        /* Copy database for tech support */
-        root.findViewById(R.id.lbl_copy_database)
-                .setOnClickListener(v -> {
-                    StorageUtils.exportDatabaseFiles();
-                    UserMessage.show(v, R.string.progress_end_backup_success);
-                });
-    }
-
-    private void onTaskCancelledMessage(@SuppressWarnings("unused") @Nullable final Integer taskId) {
+    private void onTaskCancelledMessage(@SuppressWarnings("unused")
+                                        @Nullable final Integer taskId) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
@@ -239,7 +136,7 @@ public class AdminFragment
                     if (message.exception instanceof FormattedMessageException) {
                         //noinspection ConstantConditions
                         msg = ((FormattedMessageException) message.exception)
-                                .getFormattedMessage(getContext());
+                                      .getFormattedMessage(getContext());
                     } else if (message.exception != null) {
                         msg = message.exception.getLocalizedMessage();
                     } else {
@@ -283,7 +180,7 @@ public class AdminFragment
             mProgressDialog.show(fm, TAG);
             //noinspection ConstantConditions
             ExportCSVTask task = new ExportCSVTask(getContext(), settings,
-                    mModel.getTaskListener());
+                                                   mModel.getTaskListener());
             mModel.setTask(task);
             task.execute();
         }
@@ -305,13 +202,12 @@ public class AdminFragment
                 importFromCSV(files.get(0));
             } else {
                 // If more than one, ask user which file
-                @SuppressWarnings("ConstantConditions")
                 ValuePicker picker =
-                        new FilePicker(getContext(),
-                                getString(R.string.lbl_import_from_csv),
-                                getString(R.string.import_warning_select_csv_file),
-                                files,
-                                this::importFromCSV);
+                        new FilePicker(getLayoutInflater(),
+                                       getString(R.string.lbl_import_from_csv),
+                                       getString(R.string.import_warning_select_csv_file),
+                                       files,
+                                       this::importFromCSV);
                 picker.show();
             }
         }
@@ -351,7 +247,7 @@ public class AdminFragment
                         mProgressDialog.show(fm, TAG);
 
                         ImportCSVTask task = new ImportCSVTask(getContext(), settings,
-                                mModel.getTaskListener());
+                                                               mModel.getTaskListener());
                         mModel.setTask(task);
                         task.execute();
                     }
@@ -389,6 +285,136 @@ public class AdminFragment
         Tracker.exitOnActivityResult(this);
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_admin, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mModel = ViewModelProviders.of(this).get(IntegerTaskModel.class);
+        mModel.getTaskFinishedMessage().observe(this, this::onTaskFinishedMessage);
+        mModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
+        mModel.getTaskCancelledMessage().observe(this, this::onTaskCancelledMessage);
+
+        FragmentManager fm = getChildFragmentManager();
+        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
+        if (mProgressDialog != null) {
+            mProgressDialog.setTask(mModel.getTask());
+        }
+
+        View root = getView();
+
+        // Export (backup) to Archive
+        //noinspection ConstantConditions
+        root.findViewById(R.id.lbl_backup)
+            .setOnClickListener(v -> {
+                Intent intent = new Intent(getContext(), BackupActivity.class);
+                startActivityForResult(intent, REQ_ARCHIVE_BACKUP);
+            });
+
+        // Import from Archive - Start the restore activity
+        root.findViewById(R.id.lbl_import_from_archive)
+            .setOnClickListener(v -> {
+                Intent intent = new Intent(getContext(), RestoreActivity.class);
+                startActivityForResult(intent, REQ_ARCHIVE_RESTORE);
+            });
+
+        // Export to CSV
+        root.findViewById(R.id.lbl_export)
+            .setOnClickListener(v -> exportToCSV());
+
+        // Import From CSV
+        root.findViewById(R.id.lbl_import)
+            .setOnClickListener(v -> {
+                // Verify - this can be a dangerous operation
+                //noinspection ConstantConditions
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.title_import_book_data)
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setMessage(R.string.warning_import_be_cautious)
+                        .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, which) -> importFromCSV())
+                        .create()
+                        .show();
+            });
+
+
+        // Goodreads Import Synchronize
+        root.findViewById(R.id.lbl_sync_with_goodreads)
+            .setOnClickListener(v -> {
+                UserMessage.show(v, R.string.progress_msg_connecting);
+                new ImportTask(true, mModel.getTaskListener()).execute();
+            });
+
+        // Goodreads Import All
+        root.findViewById(R.id.lbl_import_all_from_goodreads)
+            .setOnClickListener(v -> {
+                UserMessage.show(v, R.string.progress_msg_connecting);
+                new ImportTask(false, mModel.getTaskListener()).execute();
+            });
+
+        // Goodreads Export Updated
+        root.findViewById(R.id.lbl_send_updated_books_to_goodreads)
+            .setOnClickListener(v -> {
+                UserMessage.show(v, R.string.progress_msg_connecting);
+                //noinspection ConstantConditions
+                new SendBooksTask(getContext(), true, mModel.getTaskListener()).execute();
+            });
+
+        // Goodreads Export All
+        root.findViewById(R.id.lbl_send_all_books_to_goodreads)
+            .setOnClickListener(v -> {
+                UserMessage.show(v, R.string.progress_msg_connecting);
+                //noinspection ConstantConditions
+                new SendBooksTask(getContext(), false, mModel.getTaskListener()).execute();
+            });
+
+        /* Start the activity that shows the active GoodReads tasks. */
+        root.findViewById(R.id.lbl_background_tasks)
+            .setOnClickListener(v -> {
+                Intent intent = new Intent(getContext(), TaskQueueListActivity.class);
+                startActivity(intent);
+            });
+
+
+        /* Reset Hints */
+        root.findViewById(R.id.lbl_reset_tips)
+            .setOnClickListener(v -> {
+                //noinspection ConstantConditions
+                TipManager.reset(getContext());
+                UserMessage.show(v, R.string.tip_reset_done);
+            });
+
+        /* Erase cover cache */
+        root.findViewById(R.id.lbl_erase_cover_cache)
+            .setOnClickListener(v -> {
+                try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
+                    coversDBAdapter.deleteAll();
+                }
+            });
+
+        /* Cleanup files */
+        root.findViewById(R.id.lbl_cleanup_files)
+            .setOnClickListener(v -> cleanupFiles());
+
+        /* Send debug info */
+        root.findViewById(R.id.lbl_send_info)
+            .setOnClickListener(v -> sendDebugInfo());
+
+        /* Copy database for tech support */
+        root.findViewById(R.id.lbl_copy_database)
+            .setOnClickListener(v -> {
+                StorageUtils.exportDatabaseFiles();
+                UserMessage.show(v, R.string.progress_end_backup_success);
+            });
+    }
+
     /**
      * Callback for the CSV export task.
      */
@@ -410,19 +436,19 @@ public class AdminFragment
      */
     private void emailCSVFile() {
         String subject = '[' + getString(R.string.app_name) + "] "
-                + getString(R.string.lbl_export_to_csv);
+                         + getString(R.string.lbl_export_to_csv);
 
         final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
-                .setType("plain/text")
-                .putExtra(Intent.EXTRA_SUBJECT, subject);
+                                      .setType("plain/text")
+                                      .putExtra(Intent.EXTRA_SUBJECT, subject);
 
         ArrayList<Uri> uris = new ArrayList<>();
         try {
             File csvExportFile = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
             @SuppressWarnings("ConstantConditions")
             Uri coverURI = FileProvider.getUriForFile(getContext(),
-                    GenericFileProvider.AUTHORITY,
-                    csvExportFile);
+                                                      GenericFileProvider.AUTHORITY,
+                                                      csvExportFile);
 
             uris.add(coverURI);
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
@@ -437,8 +463,8 @@ public class AdminFragment
     private void cleanupFiles() {
         //noinspection ConstantConditions
         String msg = getString(R.string.info_cleanup_files_text,
-                StorageUtils.formatFileSize(getContext(),
-                        StorageUtils.purgeFiles(false)));
+                               StorageUtils.formatFileSize(getContext(),
+                                                           StorageUtils.purgeFiles(false)));
 
         new AlertDialog.Builder(getContext())
                 .setIcon(R.drawable.ic_warning)
@@ -446,7 +472,7 @@ public class AdminFragment
                 .setMessage(msg)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok,
-                        (dialog, which) -> StorageUtils.purgeFiles(true))
+                                   (dialog, which) -> StorageUtils.purgeFiles(true))
                 .create()
                 .show();
     }

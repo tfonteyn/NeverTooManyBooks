@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.settings;
 
 import android.content.Context;
@@ -7,6 +33,14 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -22,14 +56,6 @@ import com.hardbacknutter.nevertomanybooks.searches.librarything.LibraryThingMan
 import com.hardbacknutter.nevertomanybooks.utils.Csv;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.viewmodels.BooksOnBookshelfModel;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * The preference key names here are the ones that define USER settings.
@@ -49,37 +75,56 @@ public final class Prefs {
 
     public static final String pk_ui_network_mobile_data = "network.mobile_data";
 
-    public static final String pk_thumbnails_zoom_upscale = "Image.Zoom.Upscale";
-    public static final String pk_thumbnails_rotate_auto = "Image.Camera.Autorotate";
-    public static final String pk_thumbnail_cropper_layer_type = "Image.ViewLayerType";
-    public static final String pk_thumbnails_external_cropper = "Image.Cropper.UseExternalApp";
-    public static final String pk_thumbnails_crop_whole_image = "Image.Cropper.FrameIsWholeImage";
-
-    public static final String pk_scanning_beep_if_isbn_valid = "SoundManager.BeepIfScannedIsbnValid";
-    public static final String pk_scanning_beep_if_isbn_invalid = "SoundManager.BeepIfScannedIsbnInvalid";
-
-    public static final String pk_bob_open_book_read_only = "BooksOnBookshelf.OpenBookReadOnly";
-
     public static final String pk_scanning_preferred_scanner = "ScannerManager.PreferredScanner";
 
-    public static final String pk_bob_list_state = "BookList.ListRebuildState";
-    public static final String pk_bob_list_generation = "BookList.CompatibilityMode";
-    public static final String pk_bob_thumbnails_generating_mode = "BookList.ThumbnailsInBackground";
-    public static final String pk_bob_thumbnails_cache_resized = "BookList.ThumbnailsCached";
 
-    public static final String pk_bob_style_name = "BookList.Style.Name";
-    public static final String pk_bob_groups = "BookList.Style.Groups";
-    public static final String pk_bob_preferred_style = "BookList.Style.Preferred";
+    public static final String pk_thumbnails_zoom_upscale =
+            "Image.Zoom.Upscale";
+    public static final String pk_thumbnails_rotate_auto =
+            "Image.Camera.Autorotate";
+    public static final String pk_thumbnail_cropper_layer_type =
+            "Image.ViewLayerType";
+    public static final String pk_thumbnails_external_cropper =
+            "Image.Cropper.UseExternalApp";
+    public static final String pk_thumbnails_crop_whole_image =
+            "Image.Cropper.FrameIsWholeImage";
+
+    public static final String pk_scanning_beep_if_isbn_valid
+            = "SoundManager.BeepIfScannedIsbnValid";
+    public static final String pk_scanning_beep_if_isbn_invalid =
+            "SoundManager.BeepIfScannedIsbnInvalid";
+
+    public static final String pk_bob_open_book_read_only =
+            "BooksOnBookshelf.OpenBookReadOnly";
+    public static final String pk_bob_list_state =
+            "BookList.ListRebuildState";
+    public static final String pk_bob_list_generation =
+            "BookList.CompatibilityMode";
+    public static final String pk_bob_thumbnails_generating_mode =
+            "BookList.ThumbnailsInBackground";
+    public static final String pk_bob_thumbnails_cache_resized =
+            "BookList.ThumbnailsCached";
+    public static final String pk_bob_style_name =
+            "BookList.Style.Name";
+    public static final String pk_bob_groups =
+            "BookList.Style.Groups";
+    public static final String pk_bob_preferred_style =
+            "BookList.Style.Preferred";
     /** MultiSelectListPreference. */
-    public static final String pk_bob_header = "BookList.Style.Show.HeaderInfo";
-
-    public static final String pk_bob_text_size = "BookList.Style.Scaling";
-    public static final String pk_bob_cover_size = "BookList.Style.Scaling.Thumbnails";
-
-    public static final String pk_bob_books_under_multiple_authors = "BookList.Style.Group.Authors.ShowAll";
-    public static final String pk_bob_books_under_multiple_series = "BookList.Style.Group.Series.ShowAll";
-    public static final String pk_bob_format_author_name = "BookList.Style.Group.Authors.DisplayFirstThenLast";
-    public static final String pk_bob_sort_author_name = "BookList.Style.Sort.Author.GivenFirst";
+    public static final String pk_bob_header =
+            "BookList.Style.Show.HeaderInfo";
+    public static final String pk_bob_text_size =
+            "BookList.Style.Scaling";
+    public static final String pk_bob_cover_size =
+            "BookList.Style.Scaling.Thumbnails";
+    public static final String pk_bob_books_under_multiple_authors =
+            "BookList.Style.Group.Authors.ShowAll";
+    public static final String pk_bob_books_under_multiple_series =
+            "BookList.Style.Group.Series.ShowAll";
+    public static final String pk_bob_format_author_name =
+            "BookList.Style.Group.Authors.DisplayFirstThenLast";
+    public static final String pk_bob_sort_author_name =
+            "BookList.Style.Sort.Author.GivenFirst";
 
     public static final String pk_reformat_titles_on_insert = "title.reformat.insert";
     public static final String pk_reformat_titles_on_update = "title.reformat.update";
@@ -177,7 +222,7 @@ public final class Prefs {
             Arrays.sort(keys);
 
             StringBuilder sb = new StringBuilder("\n\nSharedPreferences: "
-                    + (uuid != null ? uuid : "global"));
+                                                 + (uuid != null ? uuid : "global"));
             for (String key : keys) {
                 Object value = map.get(key);
                 sb.append('\n').append(key).append('=').append(value);
@@ -207,18 +252,18 @@ public final class Prefs {
 
         // write to default prefs
         SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context)
-                .edit();
+                                                       .edit();
 
         String styleName;
 
         // note that strings could be empty. Check if needed
-        for (String key : oldMap.keySet()) {
-            Object oldValue = oldMap.get(key);
+        for (final Map.Entry<String, ?> entry : oldMap.entrySet()) {
+            Object oldValue = entry.getValue();
             if (oldValue == null) {
                 continue;
             }
             try {
-                switch (key) {
+                switch (entry.getKey()) {
                     /*
                      * User defined preferences.
                      */
@@ -254,30 +299,35 @@ public final class Prefs {
                         int compatMode = (Integer) oldValue;
                         switch (compatMode) {
                             case 4:
-                                compatMode = BooklistBuilder.CompatibilityMode.PREF_MODE_DEFAULT;
+                                compatMode = BooklistBuilder.CompatibilityMode
+                                                     .PREF_MODE_DEFAULT;
                                 break;
                             case 3:
-                                compatMode = BooklistBuilder.CompatibilityMode.PREF_MODE_NESTED_TRIGGERS;
+                                compatMode = BooklistBuilder.CompatibilityMode
+                                                     .PREF_MODE_NESTED_TRIGGERS;
                                 break;
                             case 2:
-                                compatMode = BooklistBuilder.CompatibilityMode.PREF_MODE_FLAT_TRIGGERS;
+                                compatMode = BooklistBuilder.CompatibilityMode
+                                                     .PREF_MODE_FLAT_TRIGGERS;
                                 break;
                             case 1:
-                                compatMode = BooklistBuilder.CompatibilityMode.PREF_MODE_OLD_STYLE;
+                                compatMode = BooklistBuilder.CompatibilityMode
+                                                     .PREF_MODE_OLD_STYLE;
                                 break;
                             default:
-                                compatMode = BooklistBuilder.CompatibilityMode.PREF_MODE_DEFAULT;
+                                compatMode = BooklistBuilder.CompatibilityMode
+                                                     .PREF_MODE_DEFAULT;
                                 break;
                         }
                         ed.putString(pk_bob_list_generation, String.valueOf(compatMode));
                         break;
 
                     case "SoundManager.BeepIfScannedIsbnInvalid":
-                        ed.putBoolean(key, (Boolean) oldValue);
+                        ed.putBoolean(entry.getKey(), (Boolean) oldValue);
                         break;
 
                     case "SoundManager.BeepIfScannedIsbnValid":
-                        ed.putBoolean(key, (Boolean) oldValue);
+                        ed.putBoolean(entry.getKey(), (Boolean) oldValue);
                         break;
 
                     case "ScannerManager.PreferredScanner":
@@ -293,7 +343,7 @@ public final class Prefs {
                                 scanner = ScannerManager.SCANNER_ZXING;
                                 break;
                         }
-                        ed.putString(key, String.valueOf(scanner));
+                        ed.putString(entry.getKey(), String.valueOf(scanner));
                         break;
 
                     case "App.CropFrameWholeImage":
@@ -337,7 +387,7 @@ public final class Prefs {
 
                     case "BookList.LargeThumbnails":
                         int tSize = (Boolean) oldValue ? ImageUtils.SCALE_MEDIUM
-                                : ImageUtils.SCALE_SMALL;
+                                                       : ImageUtils.SCALE_SMALL;
                         // this is now a PInteger (a ListPreference), stored as a string
                         ed.putString(pk_bob_cover_size, String.valueOf(tSize));
                         break;
@@ -360,7 +410,7 @@ public final class Prefs {
 
                     case "BookList.Condensed":
                         int con = (Boolean) oldValue ? BooklistStyle.TEXT_SCALE_SMALL
-                                : BooklistStyle.TEXT_SCALE_MEDIUM;
+                                                     : BooklistStyle.TEXT_SCALE_MEDIUM;
                         // this is now a PInteger (a ListPreference), stored as a string
                         ed.putString(pk_bob_text_size, String.valueOf(con));
                         break;
@@ -405,14 +455,14 @@ public final class Prefs {
 
                     case "BooksOnBookshelf.TOP_ROW_TOP":
                         ed.putInt(BooksOnBookshelfModel.PREF_BOB_TOP_ROW_OFFSET,
-                                (Integer) oldValue);
+                                  (Integer) oldValue);
                         break;
 
                     case "BooksOnBookshelf.LIST_STYLE":
                         String e = (String) oldValue;
                         styleName = e.substring(0, e.length() - 2);
                         ed.putString(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
-                                BooklistStyles.getStyle(context, styleName).getUuid());
+                                     BooklistStyles.getStyle(context, styleName).getUuid());
                         break;
 
                     case "BooklistStyles.Menu.Items":
@@ -424,11 +474,10 @@ public final class Prefs {
                             uuidSet.add(BooklistStyles.getStyle(context, styleName).getUuid());
                         }
                         ed.putString(BooklistStyles.PREF_BL_PREFERRED_STYLES,
-                                Csv.join(",", uuidSet));
+                                     Csv.join(",", uuidSet));
                         break;
 
                     // skip obsolete keys
-                    //noinspection SpellCheckingInspection
                     case "StartupActivity.FAuthorSeriesFixupRequired":
                     case "start_in_my_books":
                     case "App.includeClassicView":
@@ -445,57 +494,60 @@ public final class Prefs {
                         break;
 
                     default:
-                        if (key.startsWith("GoodReads")) {
+                        if (entry.getKey().startsWith("GoodReads")) {
                             String tmp1 = (String) oldValue;
                             if (!tmp1.isEmpty()) {
-                                ed.putString(key, tmp1);
+                                ed.putString(entry.getKey(), tmp1);
                             }
 
-                        } else if (key.startsWith("Backup")) {
+                        } else if (entry.getKey().startsWith("Backup")) {
                             String tmp1 = (String) oldValue;
                             if (!tmp1.isEmpty()) {
-                                ed.putString(key, tmp1);
+                                ed.putString(entry.getKey(), tmp1);
                             }
 
-                        } else if (key.startsWith("HintManager.Hint.hint_")) {
-                            ed.putBoolean(key.replace("HintManager.Hint.hint_", TipManager.PREF_TIP),
+                        } else if (entry.getKey().startsWith("HintManager.Hint.hint_")) {
+                            ed.putBoolean(
+                                    entry.getKey().replace("HintManager.Hint.hint_",
+                                                           TipManager.PREF_TIP),
                                     (Boolean) oldValue);
 
-                        } else if (key.startsWith("HintManager.Hint.")) {
-                            ed.putBoolean(key.replace("HintManager.Hint.", TipManager.PREF_TIP),
-                                    (Boolean) oldValue);
+                        } else if (entry.getKey().startsWith("HintManager.Hint.")) {
+                            ed.putBoolean(entry.getKey().replace("HintManager.Hint.",
+                                                                 TipManager.PREF_TIP),
+                                          (Boolean) oldValue);
 
-                        } else if (key.startsWith("lt_hide_alert_")) {
-                            ed.putString(key.replace("lt_hide_alert_",
-                                    LibraryThingManager.PREFS_HIDE_ALERT),
-                                    (String) oldValue);
+                        } else if (entry.getKey().startsWith("lt_hide_alert_")) {
+                            ed.putString(entry.getKey().replace("lt_hide_alert_",
+                                                                LibraryThingManager.PREFS_HIDE_ALERT),
+                                         (String) oldValue);
 
-                        } else if (key.startsWith("field_visibility_")) {
+                        } else if (entry.getKey().startsWith("field_visibility_")) {
                             //noinspection SwitchStatementWithTooFewBranches
-                            switch (key) {
+                            switch (entry.getKey()) {
                                 // remove these as obsolete
                                 case "field_visibility_series_num":
                                     break;
 
                                 default:
                                     // move everything else
-                                    ed.putBoolean(key.replace("field_visibility_",
-                                            App.PREFS_FIELD_VISIBILITY),
-                                            (Boolean) oldValue);
+                                    ed.putBoolean(entry.getKey().replace("field_visibility_",
+                                                                         App.PREFS_FIELD_VISIBILITY),
+                                                  (Boolean) oldValue);
                                     break;
                             }
 
-                        } else if (!key.startsWith("state_current_group")) {
+                        } else if (!entry.getKey().startsWith("state_current_group")) {
                             Logger.warn(Prefs.class, "migratePreV200preferences",
-                                    "unknown key=" + key,
-                                    "value=" + oldValue);
+                                        "unknown key=" + entry.getKey(),
+                                        "value=" + oldValue);
                         }
                         break;
                 }
 
             } catch (@NonNull final RuntimeException e) {
                 // to bad... skip that key, not fatal, use default.
-                Logger.warnWithStackTrace(Prefs.class, e, "key=" + key);
+                Logger.warnWithStackTrace(Prefs.class, e, "key=" + entry.getKey());
             }
         }
         ed.apply();

@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.database;
 
 import java.util.HashSet;
@@ -37,26 +43,23 @@ import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
 
 /**
  * IMPORTANT: do NOT auto-format! It will cause chaos in the order of definitions.
- *
+ * <p>
  * Domain definitions for {@link DAO} and {@link BooklistBuilder}.
- *
- * NOTE!!! Fields 'name' attribute must be in LOWER CASE.
- *
+ * <b>Note:</b> Fields 'name' attribute must be in LOWER CASE.
+ * <p>
  * Static definitions of database objects.
  * This is a *mostly* complete representation of the application database.
  * <p>
  * TODO: Collated indexes need to be done manually. See {@link DBHelper} #createIndices
- *
- * @author Philip Warner
  */
+@SuppressWarnings("WeakerAccess")
 public final class DBDefinitions {
 
     /**
      * A collection of all tables used to be able to rebuild indexes etc...,
      * added in order so interdependency's work out
      */
-    @SuppressWarnings("WeakerAccess")
-    public static final Map<String, TableDefinition> ALL_TABLES = new LinkedHashMap<>();
+    static final Map<String, TableDefinition> ALL_TABLES = new LinkedHashMap<>();
 
     /*
      * Basic table definitions with type & alias set.
@@ -73,7 +76,6 @@ public final class DBDefinitions {
     /** Basic table definition. */
     public static final TableDefinition TBL_SERIES;
     /** Basic table definition. */
-    @SuppressWarnings("WeakerAccess")
     public static final TableDefinition TBL_TOC_ENTRIES;
 
     /** link table. */
@@ -85,7 +87,6 @@ public final class DBDefinitions {
     /** link table. */
     public static final TableDefinition TBL_BOOK_LOANEE;
     /** link table. */
-    @SuppressWarnings("WeakerAccess")
     public static final TableDefinition TBL_BOOK_TOC_ENTRIES;
 
     static {
@@ -135,23 +136,21 @@ public final class DBDefinitions {
     /** foreign key. */
     public static final DomainDefinition DOM_FK_SERIES;
     /** foreign key. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_FK_TOC_ENTRY;
     /**
      * foreign key.
      * When a style is deleted, this key will be (re)set to
      * {@link BooklistStyles#DEFAULT_STYLE_ID}
      */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_FK_STYLE_ID;
 
     public static final String KEY_PK_ID = "_id";
     public static final String KEY_FK_BOOK = "book";
     public static final String KEY_FK_AUTHOR = "author";
     public static final String KEY_FK_SERIES = "series_id";
-    private static final String KEY_FK_BOOKSHELF = "bookshelf";
-    private static final String KEY_FK_TOC_ENTRY = "anthology";
-    private static final String KEY_FK_STYLE = "style";
+    public static final String KEY_FK_BOOKSHELF = "bookshelf";
+    public static final String KEY_FK_TOC_ENTRY = "anthology";
+    public static final String KEY_FK_STYLE = "style";
 
     static {
         DOM_PK_ID = new DomainDefinition(KEY_PK_ID);
@@ -222,7 +221,6 @@ public final class DBDefinitions {
     /** "FamilyName, GivenName". */
     public static final DomainDefinition DOM_AUTHOR_FORMATTED;
     /** "GivenName FamilyName". */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
 
     public static final String KEY_AUTHOR_FAMILY_NAME = "family_name";
@@ -236,7 +234,8 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_AUTHOR_FAMILY_NAME, ColumnInfo.TYPE_TEXT, true);
 
         DOM_AUTHOR_FAMILY_NAME_OB =
-                new DomainDefinition(KEY_AUTHOR_FAMILY_NAME + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
+                new DomainDefinition(KEY_AUTHOR_FAMILY_NAME + COLUMN_SUFFIX_ORDER_BY,
+                                     ColumnInfo.TYPE_TEXT, true)
                         .setPrePreparedOrderBy(true)
                         .setDefaultEmptyString();
 
@@ -245,7 +244,8 @@ public final class DBDefinitions {
                         .setDefaultEmptyString();
 
         DOM_AUTHOR_GIVEN_NAMES_OB =
-                new DomainDefinition(KEY_AUTHOR_GIVEN_NAMES + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
+                new DomainDefinition(KEY_AUTHOR_GIVEN_NAMES + COLUMN_SUFFIX_ORDER_BY,
+                                     ColumnInfo.TYPE_TEXT, true)
                         .setPrePreparedOrderBy(true)
                         .setDefaultEmptyString();
 
@@ -265,7 +265,6 @@ public final class DBDefinitions {
     /** {@link #TBL_SERIES}. */
     public static final DomainDefinition DOM_SERIES_IS_COMPLETE;
     /** {@link #TBL_SERIES). */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_SERIES_FORMATTED;
 
     public static final String KEY_SERIES_TITLE = "series_name";
@@ -276,7 +275,8 @@ public final class DBDefinitions {
         DOM_SERIES_TITLE =
                 new DomainDefinition(KEY_SERIES_TITLE, ColumnInfo.TYPE_TEXT, true);
         DOM_SERIES_TITLE_OB =
-                new DomainDefinition(KEY_SERIES_TITLE + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
+                new DomainDefinition(KEY_SERIES_TITLE + COLUMN_SUFFIX_ORDER_BY,
+                                     ColumnInfo.TYPE_TEXT, true)
                         .setPrePreparedOrderBy(true)
                         .setDefaultEmptyString();
         DOM_SERIES_IS_COMPLETE =
@@ -293,20 +293,16 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_DATE_PUBLISHED;
     /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PRICE_LISTED;
     /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PRICE_LISTED_CURRENCY;
     /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PAGES;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_FORMAT;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_LANGUAGE;
     /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_DESCRIPTION;
 
     public static final String KEY_ISBN = "isbn";
@@ -356,10 +352,8 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. See {@link TocEntry.Authors}. */
     public static final DomainDefinition DOM_BOOK_TOC_BITMASK;
     /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PRICE_PAID;
     /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PRICE_PAID_CURRENCY;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_DATE_ACQUIRED;
@@ -373,7 +367,6 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_READ;
     /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_READ_START;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_READ_END;
@@ -382,7 +375,6 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. A rating goes from 0 to 5 stars, in 0.5 increments. */
     public static final DomainDefinition DOM_BOOK_RATING;
     /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_NOTES;
 
     public static final String KEY_BOOK_UUID = "book_uuid";
@@ -457,7 +449,6 @@ public final class DBDefinitions {
     /**
      *  We don't store the ASIN (yet) but plumbing has started. ENHANCE: use/store the ASIN
      */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_ASIN;
 
     /** {@link #TBL_BOOKS}. */
@@ -469,7 +460,6 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_GOODREADS_ID;
     /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
 
     public static final String KEY_ASIN = "asin";
@@ -534,7 +524,6 @@ public final class DBDefinitions {
     public static final String KEY_LOANEE = "loaned_to";
     public static final String KEY_LOANEE_AS_BOOLEAN = "loaned_flag";
 
-    @SuppressWarnings("WeakerAccess")
     public static final String KEY_TOC_TYPE = "type";
 
     static {
@@ -573,7 +562,6 @@ public final class DBDefinitions {
     }
 
     /** {@link #TBL_BOOKLIST_STYLES} java.util.UUID value stored as a string. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_UUID;
     static final DomainDefinition DOM_STYLE_IS_BUILTIN;
 
@@ -990,23 +978,23 @@ public final class DBDefinitions {
          *
          * This is an EXAMPLE only. The structure will depend on {@link BooklistBuilder}.
          *
-         * _id	level	kind	book_count	primary_series_count	root_key	                book	format	                book_uuid	                        selected	read	title
-         * 1	1	    13			                                fmt/Hardcover                       Hardcover	            1d872e0edbda2c86758d8fc889351716	0	        0
-         * 2	2	    0	    1		                            fmt/Hardcover	            1617	Hardcover	            fc78e8ee6918e54547c2561986ccbec2	0	        0	Accelerando
-         * 3	2	    0	    1		                            fmt/Hardcover	            1564	Hardcover	            47f6f13fd98594afcdca1ce71df9f23c	0	        0	Bad Ronald
+         * _id	level	kind book_count	root_key	                book	format	                book_uuid	                        selected	read	title
+         * 1	1	    13	            fmt/Hardcover                       Hardcover	            1d872e0edbda2c86758d8fc889351716	0	        0
+         * 2	2	    0	 1		    fmt/Hardcover	            1617	Hardcover	            fc78e8ee6918e54547c2561986ccbec2	0	        0	Accelerando
+         * 3	2	    0	 1		    fmt/Hardcover	            1564	Hardcover	            47f6f13fd98594afcdca1ce71df9f23c	0	        0	Bad Ronald
          * ... snip...
-         * 21	2	    0	    1		                            fmt/Hardcover	            1531	Hardcover	            3ac5caf178d9c61cbf8810d6233d0a2c	0	        0	Shadow Captain
-         * 22	2	    0	    1		                            fmt/Hardcover	            1334	Hardcover	            9a37fe8a709e2d9ba8c8d0301c4c0903	0	        0	Tales from the Perilous Realm
-         * 23	2	    0	    1		                            fmt/Hardcover	            1616	Hardcover	            61891a4d06bf821a7f270769671c13d9	0	        0	Toast
-         * 24	2	    0	    1		                            fmt/Hardcover	            1332	Hardcover	            ab291216c5d0d6612b8e5e6d4484ffd5	0	        0	Unfinished Tales of Numenor and Middle-Earth
-         * 25	1	    13			                                fmt/Hardcover - Traycase		    Hardcover - Traycase	ae199f646b992c321f3b8ff04d0387ce	0	        0
-         * 26	2	    0	    1	    	                        fmt/Hardcover - Traycase	1505	Hardcover - Traycase	228bff45e6d9cb025c2f73911ef6e4c4	0	        0	Night Lamp
-         * 27	2	    0	    1	    	                        fmt/Hardcover - Traycase	1561	Hardcover - Traycase	e6db432cb841ea0cb82901e6b3e7c0b3	0	        0	Ports Of Call
-         * 28	1	    13			                                fmt/Paperback		                Paperback	            a5df7be3d84070e0152494bbbfe99eb6	0	        0
+         * 21	2	    0	 1		    fmt/Hardcover	            1531	Hardcover	            3ac5caf178d9c61cbf8810d6233d0a2c	0	        0	Shadow Captain
+         * 22	2	    0	 1		    fmt/Hardcover	            1334	Hardcover	            9a37fe8a709e2d9ba8c8d0301c4c0903	0	        0	Tales from the Perilous Realm
+         * 23	2	    0	 1		    fmt/Hardcover	            1616	Hardcover	            61891a4d06bf821a7f270769671c13d9	0	        0	Toast
+         * 24	2	    0	 1		    fmt/Hardcover	            1332	Hardcover	            ab291216c5d0d6612b8e5e6d4484ffd5	0	        0	Unfinished Tales of Numenor and Middle-Earth
+         * 25	1	    13	            fmt/Hardcover - Traycase		    Hardcover - Traycase	ae199f646b992c321f3b8ff04d0387ce	0	        0
+         * 26	2	    0	 1	    	fmt/Hardcover - Traycase	1505	Hardcover - Traycase	228bff45e6d9cb025c2f73911ef6e4c4	0	        0	Night Lamp
+         * 27	2	    0	 1	    	fmt/Hardcover - Traycase	1561	Hardcover - Traycase	e6db432cb841ea0cb82901e6b3e7c0b3	0	        0	Ports Of Call
+         * 28	1	    13	            fmt/Paperback		                Paperback	            a5df7be3d84070e0152494bbbfe99eb6	0	        0
          * ...snip...
-         * 32	2	    0	    1	    	                        fmt/Paperback	            1589	Paperback	            649dfb4b92a05e15e66821e2933f1930	0	        0	Wild Thyme and Violets and Other Unpublished Stories
-         * 33	1	    13			                                fmt/Paperback - Trade		        Paperback - Trade	    07b91229ccb1de81de8f0fe7cdbefb83	0       	0
-         * 34	2	    0	    1	    	                        fmt/Paperback - Trade	    1251	Paperback - Trade	    74034e297d73785aee87c26d3050a8cb	0	        0	Annals of Klepsis
+         * 32	2	    0	 1	    	fmt/Paperback	            1589	Paperback	            649dfb4b92a05e15e66821e2933f1930	0	        0	Wild Thyme and Violets and Other Unpublished Stories
+         * 33	1	    13		        fmt/Paperback - Trade		        Paperback - Trade	    07b91229ccb1de81de8f0fe7cdbefb83	0       	0
+         * 34	2	    0	 1	    	fmt/Paperback - Trade	    1251	Paperback - Trade	    74034e297d73785aee87c26d3050a8cb	0	        0	Annals of Klepsis
          *
          * This table should always be created without column constraints applied,
          * with the exception of the "_id" primary key autoincrement

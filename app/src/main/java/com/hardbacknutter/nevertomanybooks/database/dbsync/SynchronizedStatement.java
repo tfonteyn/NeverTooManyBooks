@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.database.dbsync;
 
 import android.database.SQLException;
@@ -9,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Closeable;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
@@ -20,8 +47,6 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
  * Represents a statement that can be executed against a database.  The statement
  * cannot return multiple rows or columns, but single value (1 x 1) result sets
  * are supported.
- *
- * @author Philip Warner
  */
 public class SynchronizedStatement
         implements Closeable {
@@ -44,7 +69,7 @@ public class SynchronizedStatement
      * Always use {@link SynchronizedDb#compileStatement(String)} to get a new instance.
      * (why? -> compileStatement uses locks)
      *
-     * @param db  the database
+     * @param db  Database Access
      * @param sql the sql for this statement
      */
     public SynchronizedStatement(@NonNull final SynchronizedDb db,
@@ -52,10 +77,10 @@ public class SynchronizedStatement
         mSync = db.getSynchronizer();
         mStatement = db.getUnderlyingDatabase().compileStatement(sql);
         // this is not a debug flag, but used to get a shared versus exclusive lock
-        mIsReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
+        mIsReadOnly = sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT");
 
         if (BuildConfig.DEBUG /* always */) {
-            mIsCount = sql.trim().toUpperCase().startsWith("SELECT COUNT(");
+            mIsCount = sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT COUNT(");
         }
     }
 
@@ -145,7 +170,7 @@ public class SynchronizedStatement
      * <p>
      * Clears all existing bindings. Unset bindings are treated as NULL.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public void clearBindings() {
         mStatement.clearBindings();
     }
@@ -363,6 +388,14 @@ public class SynchronizedStatement
     }
 
     @Override
+    @NonNull
+    public String toString() {
+        return "SynchronizedStatement{"
+               + mStatement.toString()
+               + '}';
+    }
+
+    @Override
     @CallSuper
     protected void finalize()
             throws Throwable {
@@ -372,13 +405,5 @@ public class SynchronizedStatement
             mStatement.close();
         }
         super.finalize();
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "SynchronizedStatement{"
-                + mStatement.toString()
-                + '}';
     }
 }

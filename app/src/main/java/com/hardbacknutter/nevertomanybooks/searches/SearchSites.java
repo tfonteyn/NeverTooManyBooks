@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.searches;
 
 import android.content.Context;
@@ -6,6 +32,9 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.hardbacknutter.nevertomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertomanybooks.searches.googlebooks.GoogleBooksManager;
@@ -13,9 +42,6 @@ import com.hardbacknutter.nevertomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertomanybooks.searches.openlibrary.OpenLibraryManager;
 import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Manages the setup of search engines/sites.
@@ -67,7 +93,7 @@ public final class SearchSites {
 
     /** Mask including all search sources. */
     public static final int SEARCH_ALL = GOOGLE_BOOKS | AMAZON
-            | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY;
+                                         | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY;
 
     /** the default search site order for standard data/covers. */
     private static final ArrayList<Site> SEARCH_ORDER_DEFAULTS = new ArrayList<>();
@@ -226,7 +252,7 @@ public final class SearchSites {
 
     public static boolean usePublisher(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(IsfdbManager.PREFS_USE_PUBLISHER, false);
+                                .getBoolean(IsfdbManager.PREFS_USE_PUBLISHER, false);
     }
 
     /**

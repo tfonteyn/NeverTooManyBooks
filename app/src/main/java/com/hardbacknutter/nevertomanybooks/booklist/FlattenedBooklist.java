@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.booklist;
 
 import android.database.sqlite.SQLiteDoneException;
@@ -22,15 +48,12 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
  * <ol>
  * <li>Create the table, fill it with data<br>
  * String tableName = {@link #createTable(DAO, TableDefinition, TableDefinition, int)}</li>
- * <li>Use the normal constructor with the table name from 1. to start using the table</li>
+ * <li>Use the normal constructor with the table name from step 1 to start using the table</li>
  * </ol>
- *
  * Reminder: moveNext/Prev SQL concatenates/splits two columns.
  * This is to get around the limitation of {@link SQLiteStatement}
  * only able to return a single column.
  * Alternative is to use a raw query, but those cannot be re-used (pre-compiled).
- *
- * @author pjw
  */
 public class FlattenedBooklist
         implements AutoCloseable {
@@ -43,27 +66,26 @@ public class FlattenedBooklist
     private static final String STMT_MOVE = "move";
     /** Name for the 'absolute-position' statement. */
     private static final String STMT_POSITION = "position";
-
-    /** Underlying temporary table definition. */
-    @NonNull
-    private TableDefinition mTable;
     /** The underlying database. We need this to keep the table alive. */
     @NonNull
     private final SynchronizedDb mSyncedDb;
+    /** Collection of statements compiled for this object. */
+    @NonNull
+    private final SqlStatementManager mStatements;
+    /** Underlying temporary table definition. */
+    @NonNull
+    private TableDefinition mTable;
     /** Default position (before first element). */
     private long mPosition = -1;
     /** Book ID from the currently selected row. */
     private long mBookId;
-    /** Collection of statements compiled for this object. */
-    @NonNull
-    private final SqlStatementManager mStatements;
     /** DEBUG: Indicates close() has been called. */
     private boolean mCloseWasCalled;
 
     /**
      * Constructor.
      *
-     * @param db        Database connection
+     * @param db        Database Access
      * @param tableName Name of underlying and <strong>existing</strong> table
      */
     public FlattenedBooklist(@NonNull final DAO db,
@@ -79,7 +101,7 @@ public class FlattenedBooklist
     /**
      * Create a flattened table of ordered book ID's based on the underlying list.
      *
-     * @param db Database connection
+     * @param db Database Access
      * @param id counter which will be used to create the table name
      *
      * @return the name of the created table.
@@ -98,11 +120,11 @@ public class FlattenedBooklist
         table.create(syncedDb, false);
 
         String sql = table.getInsertInto(DBDefinitions.DOM_PK_ID, DBDefinitions.DOM_FK_BOOK)
-                + " SELECT " + navTable.dot(DBDefinitions.DOM_PK_ID)
-                + ',' + listTable.dot(DBDefinitions.DOM_FK_BOOK)
-                + " FROM " + listTable.ref() + listTable.join(navTable)
-                + " WHERE " + listTable.dot(DBDefinitions.DOM_FK_BOOK) + " NOT NULL"
-                + " ORDER BY " + navTable.dot(DBDefinitions.DOM_PK_ID);
+                     + " SELECT " + navTable.dot(DBDefinitions.DOM_PK_ID)
+                     + ',' + listTable.dot(DBDefinitions.DOM_FK_BOOK)
+                     + " FROM " + listTable.ref() + listTable.join(navTable)
+                     + " WHERE " + listTable.dot(DBDefinitions.DOM_FK_BOOK) + " NOT NULL"
+                     + " ORDER BY " + navTable.dot(DBDefinitions.DOM_PK_ID);
 
         try (SynchronizedStatement stmt = syncedDb.compileStatement(sql)) {
             stmt.executeInsert();
@@ -152,12 +174,12 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_NEXT);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DBDefinitions.DOM_PK_ID)
-                    + " || '/' || " + mTable.dot(DBDefinitions.DOM_FK_BOOK)
-                    + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + ">?"
-                    + " AND " + mTable.dot(DBDefinitions.DOM_FK_BOOK) + "<>COALESCE(?,-1)"
-                    + " ORDER BY " + mTable.dot(DBDefinitions.DOM_PK_ID) + " ASC LIMIT 1";
+                         + mTable.dot(DBDefinitions.DOM_PK_ID)
+                         + " || '/' || " + mTable.dot(DBDefinitions.DOM_FK_BOOK)
+                         + " FROM " + mTable.ref()
+                         + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + ">?"
+                         + " AND " + mTable.dot(DBDefinitions.DOM_FK_BOOK) + "<>COALESCE(?,-1)"
+                         + " ORDER BY " + mTable.dot(DBDefinitions.DOM_PK_ID) + " ASC LIMIT 1";
             stmt = mStatements.add(STMT_NEXT, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -179,12 +201,12 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_PREV);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DBDefinitions.DOM_PK_ID)
-                    + " || '/' || " + mTable.dot(DBDefinitions.DOM_FK_BOOK)
-                    + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "<?"
-                    + " AND " + mTable.dot(DBDefinitions.DOM_FK_BOOK) + "<>COALESCE(?,-1)"
-                    + " ORDER BY " + mTable.dot(DBDefinitions.DOM_PK_ID) + " DESC LIMIT 1";
+                         + mTable.dot(DBDefinitions.DOM_PK_ID)
+                         + " || '/' || " + mTable.dot(DBDefinitions.DOM_FK_BOOK)
+                         + " FROM " + mTable.ref()
+                         + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "<?"
+                         + " AND " + mTable.dot(DBDefinitions.DOM_FK_BOOK) + "<>COALESCE(?,-1)"
+                         + " ORDER BY " + mTable.dot(DBDefinitions.DOM_PK_ID) + " DESC LIMIT 1";
             stmt = mStatements.add(STMT_PREV, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -208,10 +230,10 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_MOVE);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DBDefinitions.DOM_PK_ID)
-                    + " || '/' || " + mTable.dot(DBDefinitions.DOM_FK_BOOK)
-                    + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "=?";
+                         + mTable.dot(DBDefinitions.DOM_PK_ID)
+                         + " || '/' || " + mTable.dot(DBDefinitions.DOM_FK_BOOK)
+                         + " FROM " + mTable.ref()
+                         + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "=?";
             stmt = mStatements.add(STMT_MOVE, sql);
         }
         stmt.bindLong(1, position);
@@ -270,7 +292,7 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_POSITION);
         if (stmt == null) {
             String sql = "SELECT COUNT(*) FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "<=?";
+                         + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "<=?";
             stmt = mStatements.add(STMT_POSITION, sql);
         }
         stmt.bindLong(1, mPosition);

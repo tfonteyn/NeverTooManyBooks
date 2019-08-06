@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.goodreads.tasks;
 
 import android.content.Context;
@@ -28,6 +34,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -57,26 +75,12 @@ import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 /**
  * Import all a users 'reviews' from Goodreads; a users 'reviews' consists of all the books that
  * they have placed on bookshelves, irrespective of whether they have rated or reviewed the book.
  * <p>
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
- *
- * @author Philip Warner
  */
 class ImportLegacyTask
         extends TQTask {
@@ -341,7 +345,7 @@ class ImportLegacyTask
      * Passed a Goodreads shelf name, return the best matching local bookshelf name,
      * or the original if no match found.
      *
-     * @param db          Database adapter
+     * @param db          Database Access
      * @param grShelfName Goodreads shelf name
      *
      * @return Local name, or Goodreads name if no match
@@ -619,7 +623,8 @@ class ImportLegacyTask
             if (thumbnail != null) {
                 long grBookId = bookData.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
                 String fileSpec = ImageUtils.saveImage(thumbnail, String.valueOf(grBookId),
-                                                       GoodreadsManager.FILENAME_SUFFIX + '_' + size);
+                                                       GoodreadsManager.FILENAME_SUFFIX + '_'
+                                                       + size);
                 if (fileSpec != null) {
                     ArrayList<String> imageList = new ArrayList<>();
                     imageList.add(fileSpec);
@@ -764,10 +769,16 @@ class ImportLegacyTask
         }
     }
 
+    @Override
+    public int getCategory() {
+
+        return Task.CAT_GOODREADS_IMPORT_ALL;
+    }
+
     /**
      * Make a more informative description.
      *
-     * @param context Current context for accessing resources.
+     * @param context Current context
      */
     @Override
     @NonNull
@@ -780,12 +791,6 @@ class ImportLegacyTask
         } else {
             return base + " (" + mPosition + ')';
         }
-    }
-
-    @Override
-    public int getCategory() {
-
-        return Task.CAT_GOODREADS_IMPORT_ALL;
     }
 
     /**

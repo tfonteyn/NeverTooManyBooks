@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.utils;
 
 import android.content.Context;
@@ -16,6 +42,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
@@ -25,13 +58,6 @@ import com.hardbacknutter.nevertomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ImageUtils {
 
@@ -70,7 +96,7 @@ public final class ImageUtils {
      */
     public static int getMaxImageSize(final int scale) {
         return scale * (int) App.getAppContext().getResources()
-                .getDimension(R.dimen.cover_base_size);
+                                .getDimension(R.dimen.cover_base_size);
     }
 
     /**
@@ -97,8 +123,8 @@ public final class ImageUtils {
 
         // 1. If we want to check the cache, AND we don't have cache building happening, check it.
         if (BooklistBuilder.imagesAreCached(context)
-                && !GetImageTask.hasActiveTasks()
-                && !ImageCacheWriterTask.hasActiveTasks()) {
+            && !GetImageTask.hasActiveTasks()
+            && !ImageCacheWriterTask.hasActiveTasks()) {
             try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
                 final Bitmap bm = coversDBAdapter.getImage(uuid, maxWidth, maxHeight);
                 if (bm != null) {
@@ -191,11 +217,11 @@ public final class ImageUtils {
                                      final boolean upscale) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.debug(ImageUtils.class, "setImageView",
-                    "maxWidth=" + maxWidth,
-                    "maxHeight=" + maxHeight,
-                    "upscale=" + upscale,
-                    bm != null ? "bm.width=" + bm.getWidth() : "no bm",
-                    bm != null ? "bm.height=" + bm.getHeight() : "no bm");
+                         "maxWidth=" + maxWidth,
+                         "maxHeight=" + maxHeight,
+                         "upscale=" + upscale,
+                         bm != null ? "bm.width=" + bm.getWidth() : "no bm",
+                         bm != null ? "bm.height=" + bm.getHeight() : "no bm");
         }
 
         destView.setMaxWidth(maxWidth);
@@ -331,17 +357,17 @@ public final class ImageUtils {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.debug(ImageUtils.class, "createScaledBitmap",
-                    "filename = " + fileSpec,
-                    "exact=" + exact,
-                    "maxWidth=" + maxWidth,
-                    "opt.outWidth=" + opt.outWidth,
-                    "widthRatio=" + widthRatio,
-                    "maxHeight=" + maxHeight,
-                    "opt.outHeight=" + opt.outHeight,
-                    "heightRatio=" + heightRatio,
-                    "ratio=" + ratio,
-                    "idealSampleSize =" + idealSampleSize,
-                    "samplePow2=" + samplePow2);
+                         "filename = " + fileSpec,
+                         "exact=" + exact,
+                         "maxWidth=" + maxWidth,
+                         "opt.outWidth=" + opt.outWidth,
+                         "widthRatio=" + widthRatio,
+                         "maxHeight=" + maxHeight,
+                         "opt.outHeight=" + opt.outHeight,
+                         "heightRatio=" + heightRatio,
+                         "ratio=" + ratio,
+                         "idealSampleSize =" + idealSampleSize,
+                         "samplePow2=" + samplePow2);
         }
 
         final Bitmap bm;
@@ -360,7 +386,7 @@ public final class ImageUtils {
                     // TODO: Need a way to try loading images after GC().
                     // Otherwise, covers in cover browser will stay blank.
                     Logger.warn(ImageUtils.class, "createScaledBitmap",
-                            "Unexpectedly failed to decode bitmap; memory exhausted?");
+                                "Unexpectedly failed to decode bitmap; memory exhausted?");
                     return null;
                 }
 
@@ -388,8 +414,8 @@ public final class ImageUtils {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.debug(ImageUtils.class, "createScaledBitmap",
-                    "bm.width=" + bm.getWidth(),
-                    "bm.height=" + bm.getHeight());
+                         "bm.width=" + bm.getWidth(),
+                         "bm.height=" + bm.getHeight());
         }
 
         return bm;
@@ -397,7 +423,7 @@ public final class ImageUtils {
 
     /**
      * Given a URL, get an image and save to a file.
-     *
+     * <p>
      * ENHANCE: unify the naming elements of the file.
      *
      * @param url    Image file URL
@@ -468,12 +494,12 @@ public final class ImageUtils {
         }
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length,
-                new BitmapFactory.Options());
+                                                      new BitmapFactory.Options());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.debug(ImageUtils.class, "getBitmap",
-                    "Array " + bytes.length + " bytes",
-                    "bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
+                         "Array " + bytes.length + " bytes",
+                         "bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
         }
         return bitmap;
     }
@@ -554,8 +580,6 @@ public final class ImageUtils {
      * It will resize it as required and apply the resulting Bitmap to the related view.
      * <p>
      * We now use standard AsyncTask but run it on the parallel executor.
-     *
-     * @author Philip Warner
      */
     private static class GetImageTask
             extends AsyncTask<Void, Void, Void> {
@@ -631,12 +655,6 @@ public final class ImageUtils {
         }
 
         @Override
-        @UiThread
-        protected void onCancelled(final Void result) {
-            cleanup();
-        }
-
-        @Override
         @Nullable
         @WorkerThread
         protected Void doInBackground(final Void... params) {
@@ -684,11 +702,6 @@ public final class ImageUtils {
             return null;
         }
 
-        @AnyThread
-        private void cleanup() {
-            RUNNING_TASKS.decrementAndGet();
-        }
-
         @Override
         @UiThread
         protected void onPostExecute(@Nullable final Void result) {
@@ -702,7 +715,7 @@ public final class ImageUtils {
 
             // Make sure the view is still ... bla bla as above
             boolean viewIsValid = imageView != null
-                    && this.equals(imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK));
+                                  && this.equals(imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK));
 
             // we're done; clear the view tag
             if (viewIsValid) {
@@ -734,6 +747,17 @@ public final class ImageUtils {
                 }
             }
         }
+
+        @Override
+        @UiThread
+        protected void onCancelled(final Void result) {
+            cleanup();
+        }
+
+        @AnyThread
+        private void cleanup() {
+            RUNNING_TASKS.decrementAndGet();
+        }
     }
 
     /**
@@ -743,8 +767,6 @@ public final class ImageUtils {
      * <p>
      * Standard AsyncTask for writing data. There is no point in more than one thread since
      * the database will force serialization of the updates.
-     *
-     * @author Philip Warner
      */
     private static final class ImageCacheWriterTask
             extends AsyncTask<Void, Void, Void> {

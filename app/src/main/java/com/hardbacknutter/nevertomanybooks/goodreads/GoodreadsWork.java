@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.goodreads;
 
 import android.os.AsyncTask;
@@ -36,8 +42,6 @@ import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 /**
  * Class to store the 'work' data returned via a Goodreads search.
  * It also creates a background task to find images and waits for completion.
- *
- * @author Philip Warner
  */
 public class GoodreadsWork {
 
@@ -75,7 +79,7 @@ public class GoodreadsWork {
      * @param imageView ImageView to display cover image
      */
     @UiThread
-    void fillImageView(@NonNull final ImageView imageView) {
+    public void fillImageView(@NonNull final ImageView imageView) {
         synchronized (this) {
             if (imageBytes == null) {
                 // Image not retrieved yet, so clear any existing image
@@ -117,7 +121,7 @@ public class GoodreadsWork {
 
         final ImageView imageView = mImageView.get();
         if (imageView != null) {
-            synchronized (imageView) {
+            synchronized (mImageView) {
                 // Make sure our view is still associated with us
                 if (this.equals(imageView.getTag(R.id.TAG_GR_WORK))) {
                     imageView.setImageBitmap(ImageUtils.getBitmap(imageBytes));
@@ -129,8 +133,6 @@ public class GoodreadsWork {
     /**
      * Background task to load an image for a GoodreadsWork from a URL. Does not store it locally;
      * it will call the related Work when done.
-     *
-     * @author Philip Warner
      */
     static class GetImageTask
             extends AsyncTask<Void, Void, byte[]> {

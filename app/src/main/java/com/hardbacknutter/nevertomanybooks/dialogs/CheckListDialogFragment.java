@@ -1,21 +1,28 @@
 /*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.dialogs;
 
@@ -107,9 +114,6 @@ public class CheckListDialogFragment<T>
         mList = Objects.requireNonNull(args.getParcelableArrayList(BKEY_CHECK_LIST));
     }
 
-    /**
-     * Create the underlying dialog.
-     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
@@ -129,21 +133,23 @@ public class CheckListDialogFragment<T>
         }
 
         @SuppressWarnings("ConstantConditions")
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
-                .setView(root)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                .setPositiveButton(android.R.string.ok, (d, which) -> {
-                    if (mListener.get() != null) {
-                        mListener.get().onCheckListEditorSave(mDestinationFieldId,
-                                                              extractList(mList));
-                    } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Logger.debug(this, "onCheckListEditorSave",
-                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
-                        }
-                    }
-                })
-                .create();
+        AlertDialog dialog =
+                new AlertDialog.Builder(getContext())
+                        .setView(root)
+                        .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, which) -> {
+                            if (mListener.get() != null) {
+                                mListener.get().onCheckListEditorSave(mDestinationFieldId,
+                                                                      extractList(mList));
+                            } else {
+                                if (BuildConfig.DEBUG
+                                    && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                                    Logger.debug(this, "onCheckListEditorSave",
+                                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                                }
+                            }
+                        })
+                        .create();
 
         //noinspection ConstantConditions
         @StringRes
@@ -153,6 +159,13 @@ public class CheckListDialogFragment<T>
         }
 
         return dialog;
+    }
+
+    @Override
+    @CallSuper
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(BKEY_CHECK_LIST, mList);
     }
 
     /**
@@ -171,13 +184,6 @@ public class CheckListDialogFragment<T>
             }
         }
         return result;
-    }
-
-    @Override
-    @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(BKEY_CHECK_LIST, mList);
     }
 
     /**

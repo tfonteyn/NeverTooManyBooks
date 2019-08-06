@@ -1,28 +1,35 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -31,12 +38,14 @@ import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
@@ -49,16 +58,11 @@ import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.StartDragListener;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
 /**
  * Activity to edit a list of mSeries provided in an {@code ArrayList<Series>}
  * and return an updated list.
  * <p>
  * Calling point is a Book; see {@link EditSeriesDialogFragment} for list
- *
- * @author Philip Warner
  */
 public class EditSeriesListActivity
         extends EditObjectListActivity<Series> {
@@ -79,20 +83,26 @@ public class EditSeriesListActivity
     }
 
     @Override
-    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setTitle(R.string.title_edit_book_series);
 
         mAutoCompleteAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line,
-                mDb.getAllSeriesNames());
+                                                  android.R.layout.simple_dropdown_item_1line,
+                                                  mDb.getAllSeriesNames());
 
         mAutoCompleteTextView = findViewById(R.id.series);
         mAutoCompleteTextView.setAdapter(mAutoCompleteAdapter);
 
         mSeriesNumberView = findViewById(R.id.series_num);
+    }
+
+    @Override
+    protected RecyclerViewAdapterBase
+    createListAdapter(@NonNull final ArrayList<Series> list,
+                      @NonNull final StartDragListener dragStartListener) {
+        return new SeriesListAdapter(getLayoutInflater(), list, dragStartListener);
     }
 
     @Override
@@ -122,13 +132,6 @@ public class EditSeriesListActivity
         // and clear the form for next entry.
         mAutoCompleteTextView.setText("");
         mSeriesNumberView.setText("");
-    }
-
-    @Override
-    protected RecyclerViewAdapterBase
-    createListAdapter(@NonNull final ArrayList<Series> list,
-                      @NonNull final StartDragListener dragStartListener) {
-        return new SeriesListAdapter(this, list, dragStartListener);
     }
 
     /**
@@ -178,14 +181,15 @@ public class EditSeriesListActivity
 
         new AlertDialog.Builder(this)
                 .setMessage(getString(R.string.confirm_apply_series_changed,
-                        series.getSortingTitle(), newSeries.getSortingTitle(),
-                        allBooks))
+                                      series.getSortingTitle(), newSeries.getSortingTitle(),
+                                      allBooks))
                 .setTitle(R.string.title_scope_of_change)
                 .setIcon(R.drawable.ic_info_outline)
                 .setNegativeButton(allBooks, (d, which) -> {
                     Locale userLocale = LocaleUtils.getPreferredLocale();
                     mGlobalReplacementsMade = mDb.globalReplaceSeries(this,
-                            series, newSeries, userLocale);
+                                                                      series, newSeries,
+                                                                      userLocale);
                     series.copyFrom(newSeries);
                     Series.pruneSeriesList(mList);
                     ItemWithFixableId.pruneList(this, mDb, mList);
@@ -256,8 +260,8 @@ public class EditSeriesListActivity
                 mSeriesNumber = mSeries.getNumber();
             } else {
                 mSeriesName = savedInstanceState.getString(DBDefinitions.KEY_SERIES_TITLE);
-                mSeriesIsComplete = savedInstanceState.getBoolean(
-                        DBDefinitions.KEY_SERIES_IS_COMPLETE);
+                mSeriesIsComplete = savedInstanceState
+                                            .getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
                 mSeriesNumber = savedInstanceState.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
             }
         }
@@ -267,7 +271,7 @@ public class EditSeriesListActivity
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
             @SuppressWarnings("ConstantConditions")
             View root = getActivity().getLayoutInflater()
-                    .inflate(R.layout.dialog_edit_book_series, null);
+                                     .inflate(R.layout.dialog_edit_book_series, null);
 
             // the dialog fields != screen fields.
             mNameView = root.findViewById(R.id.series);
@@ -284,24 +288,32 @@ public class EditSeriesListActivity
 
             //noinspection ConstantConditions
             return new AlertDialog.Builder(getContext())
-                    .setView(root)
-                    .setTitle(R.string.title_edit_book_series)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                    .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
-                        mSeriesName = mNameView.getText().toString().trim();
-                        if (mSeriesName.isEmpty()) {
-                            UserMessage.show(mNameView, R.string.warning_missing_name);
-                            return;
-                        }
-                        if (mIsCompleteView != null) {
-                            mSeriesIsComplete = mIsCompleteView.isChecked();
-                        }
-                        mSeriesNumber = mNumberView.getText().toString().trim();
-                        dismiss();
-                        mActivity.processChanges(mSeries, mSeriesName, mSeriesIsComplete,
-                                mSeriesNumber);
-                    })
-                    .create();
+                           .setView(root)
+                           .setTitle(R.string.title_edit_book_series)
+                           .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                           .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
+                               mSeriesName = mNameView.getText().toString().trim();
+                               if (mSeriesName.isEmpty()) {
+                                   UserMessage.show(mNameView, R.string.warning_missing_name);
+                                   return;
+                               }
+                               if (mIsCompleteView != null) {
+                                   mSeriesIsComplete = mIsCompleteView.isChecked();
+                               }
+                               mSeriesNumber = mNumberView.getText().toString().trim();
+                               dismiss();
+                               mActivity.processChanges(mSeries, mSeriesName, mSeriesIsComplete,
+                                                        mSeriesNumber);
+                           })
+                           .create();
+        }
+
+        @Override
+        public void onSaveInstanceState(@NonNull final Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putString(DBDefinitions.KEY_SERIES_TITLE, mSeriesName);
+            outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mSeriesIsComplete);
+            outState.putString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES, mSeriesNumber);
         }
 
         @Override
@@ -313,14 +325,6 @@ public class EditSeriesListActivity
             mSeriesNumber = mNumberView.getText().toString().trim();
 
             super.onPause();
-        }
-
-        @Override
-        public void onSaveInstanceState(@NonNull final Bundle outState) {
-            super.onSaveInstanceState(outState);
-            outState.putString(DBDefinitions.KEY_SERIES_TITLE, mSeriesName);
-            outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mSeriesIsComplete);
-            outState.putString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES, mSeriesNumber);
         }
     }
 
@@ -346,19 +350,17 @@ public class EditSeriesListActivity
     protected class SeriesListAdapter
             extends RecyclerViewAdapterBase<Series, Holder> {
 
-        SeriesListAdapter(@NonNull final Context context,
+        SeriesListAdapter(@NonNull final LayoutInflater layoutInflater,
                           @NonNull final ArrayList<Series> items,
                           @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(layoutInflater, items, dragStartListener);
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-
-            View view = getLayoutInflater()
-                    .inflate(R.layout.row_edit_series_list, parent, false);
+            View view = getLayoutInflater().inflate(R.layout.row_edit_series_list, parent, false);
             return new Holder(view);
         }
 
@@ -383,7 +385,7 @@ public class EditSeriesListActivity
                 FragmentManager fm = getSupportFragmentManager();
                 if (fm.findFragmentByTag(EditBookSeriesDialogFragment.TAG) == null) {
                     EditBookSeriesDialogFragment.newInstance(series)
-                            .show(fm, EditBookSeriesDialogFragment.TAG);
+                                                .show(fm, EditBookSeriesDialogFragment.TAG);
                 }
             });
         }

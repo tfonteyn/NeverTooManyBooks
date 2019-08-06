@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.hardbacknutter.nevertomanybooks.widgets.ddsupport;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -39,7 +38,8 @@ public interface ItemTouchHelperAdapter {
      * @return {@code true} if the item was moved to the new adapter position.
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean onItemMove(int fromPosition, int toPosition);
+    boolean onItemMove(int fromPosition,
+                       int toPosition);
 
 
     /**

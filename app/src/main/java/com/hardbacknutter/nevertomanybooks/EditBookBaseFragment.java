@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks;
 
 import android.os.Bundle;
@@ -12,6 +38,9 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.datamanager.DataEditor;
@@ -28,9 +57,6 @@ import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.utils.Csv;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Base class for all fragments that appear in {@link EditBookFragment}.
@@ -49,7 +75,7 @@ public abstract class EditBookBaseFragment<T>
 
     private final CheckListDialogFragment.CheckListResultsListener<T>
             mCheckListResultsListener = (fieldId, list) -> {
-        Book book = mBookBaseFragmentModel.getBook();
+        Book book = mBookModel.getBook();
 
         if (fieldId == R.id.bookshelves) {
             ArrayList<Bookshelf> bsList = (ArrayList<Bookshelf>) list;
@@ -64,9 +90,10 @@ public abstract class EditBookBaseFragment<T>
     };
 
     private final PartialDatePickerDialogFragment.PartialDatePickerResultsListener
-            mPartialDatePickerResultsListener = (destinationFieldId, year, month, day) ->
-            getField(destinationFieldId)
-                    .setValue(DateUtils.buildPartialDate(year, month, day));
+            mPartialDatePickerResultsListener =
+            (destinationFieldId, year, month, day) ->
+                    getField(destinationFieldId)
+                            .setValue(DateUtils.buildPartialDate(year, month, day));
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
@@ -82,12 +109,30 @@ public abstract class EditBookBaseFragment<T>
         }
     }
 
+    /**
+     * Trigger the Fragment to save its Fields to the Book.
+     * <p>
+     * This is always done, even when the user 'cancel's the edit.
+     * The latter will then result in a "are you sure" where they can 'cancel the cancel'
+     * and continue with all data present.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onPause() {
+        Tracker.enterOnPause(this);
+        saveFields();
+        super.onPause();
+        Tracker.exitOnPause(this);
+    }
+
     @Override
     protected void onLoadFieldsFromBook() {
         super.onLoadFieldsFromBook();
 
         // new book ?
-        if (!mBookBaseFragmentModel.isExistingBook()) {
+        if (!mBookModel.isExistingBook()) {
             populateNewBookFieldsFromBundle(getArguments());
         }
     }
@@ -108,24 +153,6 @@ public abstract class EditBookBaseFragment<T>
                 getFields().setAllFrom(rawData, false);
             }
         }
-    }
-
-    /**
-     * Trigger the Fragment to save its Fields to the Book.
-     * <p>
-     * This is always done, even when the user 'cancel's the edit.
-     * The latter will then result in a "are you sure" where they can 'cancel the cancel'
-     * and continue with all data present.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onPause() {
-        Tracker.enterOnPause(this);
-        saveFields();
-        super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     /**
@@ -150,7 +177,7 @@ public abstract class EditBookBaseFragment<T>
         // validate the fields
         if (fields.validate(new Bundle())) {
             // we're ignoring the passed/returned Bundle for now...
-            fields.putAllInto(mBookBaseFragmentModel.getBook());
+            fields.putAllInto(mBookModel.getBook());
 
         } else {
             //noinspection ConstantConditions
@@ -202,7 +229,7 @@ public abstract class EditBookBaseFragment<T>
 
         // Get the drop-down button for the list and setup dialog
         fieldButton.setOnClickListener(v -> {
-            FieldPicker<String> picker = new FieldPicker<>(getContext(),
+            FieldPicker<String> picker = new FieldPicker<>(getLayoutInflater(),
                                                            getString(dialogTitleId),
                                                            field, list);
             picker.show();
@@ -218,19 +245,17 @@ public abstract class EditBookBaseFragment<T>
                                @StringRes final int dialogTitleId,
                                final boolean todayIfNone) {
         // only bother when it's in use
-        if (!field.isUsed()) {
-            return;
+        if (field.isUsed()) {
+            field.getView().setOnClickListener(v -> {
+                FragmentManager fm = getChildFragmentManager();
+                if (fm.findFragmentByTag(PartialDatePickerDialogFragment.TAG) == null) {
+                    PartialDatePickerDialogFragment
+                            .newInstance(field.id, field.getValue().toString(),
+                                         dialogTitleId, todayIfNone)
+                            .show(fm, PartialDatePickerDialogFragment.TAG);
+                }
+            });
         }
-
-        field.getView().setOnClickListener(v -> {
-            FragmentManager fm = getChildFragmentManager();
-            if (fm.findFragmentByTag(PartialDatePickerDialogFragment.TAG) == null) {
-                PartialDatePickerDialogFragment
-                        .newInstance(field.id, field.getValue().toString(),
-                                     dialogTitleId, todayIfNone)
-                        .show(fm, PartialDatePickerDialogFragment.TAG);
-            }
-        });
     }
 
     /**
@@ -242,19 +267,16 @@ public abstract class EditBookBaseFragment<T>
     void initCheckListEditor(@NonNull final Field field,
                              @StringRes final int dialogTitleId,
                              @NonNull final CheckListDialogFragment
-                                     .CheckListEditorListGetter<T> listGetter) {
+                                                    .CheckListEditorListGetter<T> listGetter) {
         // only bother when it's in use
-        if (!field.isUsed()) {
-            return;
+        if (field.isUsed()) {
+            field.getView().setOnClickListener(v -> {
+                FragmentManager fm = getChildFragmentManager();
+                if (fm.findFragmentByTag(CheckListDialogFragment.TAG) == null) {
+                    CheckListDialogFragment.newInstance(field.id, dialogTitleId, listGetter)
+                                           .show(fm, CheckListDialogFragment.TAG);
+                }
+            });
         }
-
-        field.getView().setOnClickListener(v -> {
-            FragmentManager fm = getChildFragmentManager();
-            if (fm.findFragmentByTag(CheckListDialogFragment.TAG) == null) {
-                CheckListDialogFragment
-                        .newInstance(field.id, dialogTitleId, listGetter)
-                        .show(fm, CheckListDialogFragment.TAG);
-            }
-        });
     }
 }

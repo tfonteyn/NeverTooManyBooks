@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.database.dbsync;
 
 import androidx.annotation.NonNull;
@@ -30,8 +56,6 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
  * Deadlocks are not possible because the implementation involves a single lock object.
  * <p>
  * <b>Note:</b> This lock can cause writer starvation since it does not introduce pending locks.
- *
- * @author Philip Warner
  */
 public class Synchronizer {
 
@@ -69,9 +93,11 @@ public class Synchronizer {
     @NonNull
     SyncLock getSharedLock() {
         final Thread thread = Thread.currentThread();
-//        Logger.debug(this, "getSharedLock", thread.getName() + " requesting SHARED lock");
+//        Logger.debug(this, "getSharedLock",
+//                     thread.getName() + " requesting SHARED lock");
         mLock.lock();
-//        Logger.debug(this, "getSharedLock", thread.getName() + " locked lock held by " + mLock.getHoldCount());
+//        Logger.debug(this, "getSharedLock",
+//                     thread.getName() + " locked lock held by " + mLock.getHoldCount());
         purgeOldLocks();
         try {
             Integer count = mSharedOwners.get(thread);
@@ -81,11 +107,13 @@ public class Synchronizer {
                 count = 1;
             }
             mSharedOwners.put(thread, count);
-//            Logger.debug(this, "getSharedLock", thread.getName() + " " + count + " SHARED threads");
+//            Logger.debug(this, "getSharedLock",
+//                         thread.getName() + " " + count + " SHARED threads");
             return mSharedLock;
         } finally {
             mLock.unlock();
-//            Logger.debug(this, "getSharedLock", thread.getName() + " unlocked lock held by " + mLock.getHoldCount());
+//            Logger.debug(this, "getSharedLock",
+//                         thread.getName() + " unlocked lock held by " + mLock.getHoldCount());
         }
     }
 
@@ -143,7 +171,7 @@ public class Synchronizer {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
                     Logger.debug(this, "getExclusiveLock",
                                  thread.getName() + " requesting EXCLUSIVE lock with "
-                                         + mSharedOwners.size() + " shared locks.",
+                                 + mSharedOwners.size() + " shared locks.",
                                  "Lock held by " + mLock.getHoldCount());
                 }
                 try {
@@ -178,13 +206,13 @@ public class Synchronizer {
                 if (mLock.isHeldByCurrentThread()) {
                     Logger.debug(this, "getExclusiveLock",
                                  thread.getName() + " waited "
-                                         + (System.nanoTime() - t0)
-                                         + "nano for EXCLUSIVE access");
+                                 + (System.nanoTime() - t0)
+                                 + "nano for EXCLUSIVE access");
                 } else {
                     Logger.debug(this, "getExclusiveLock",
                                  thread.getName() + " waited "
-                                         + (System.nanoTime() - t0)
-                                         + "nano AND FAILED TO GET EXCLUSIVE access");
+                                 + (System.nanoTime() - t0)
+                                 + "nano AND FAILED TO GET EXCLUSIVE access");
                 }
             }
         }

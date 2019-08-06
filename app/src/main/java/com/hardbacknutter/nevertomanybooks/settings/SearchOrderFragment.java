@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.settings;
 
 import android.content.Context;
@@ -73,7 +99,7 @@ public class SearchOrderFragment
         mListView.setHasFixedSize(true);
 
         mListAdapter = new SearchSiteListAdapter(
-                getContext(), mList, viewHolder -> mItemTouchHelper.startDrag(viewHolder));
+                getLayoutInflater(), mList, viewHolder -> mItemTouchHelper.startDrag(viewHolder));
         // any change done in the adapter will set the data 'dirty'
         // if changing the list externally, make sure to always notify the adapter.
         mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
@@ -123,13 +149,12 @@ public class SearchOrderFragment
         /**
          * Constructor.
          *
-         * @param context Current context
-         * @param items   list of sites
+         * @param items list of sites
          */
-        SearchSiteListAdapter(@NonNull final Context context,
+        SearchSiteListAdapter(@NonNull final LayoutInflater layoutInflater,
                               @NonNull final List<Site> items,
                               @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(layoutInflater, items, dragStartListener);
         }
 
         @NonNull
@@ -138,7 +163,7 @@ public class SearchOrderFragment
                                          final int viewType) {
 
             View view = getLayoutInflater()
-                    .inflate(R.layout.row_edit_searchsite, parent, false);
+                                .inflate(R.layout.row_edit_searchsite, parent, false);
             return new Holder(view);
         }
 

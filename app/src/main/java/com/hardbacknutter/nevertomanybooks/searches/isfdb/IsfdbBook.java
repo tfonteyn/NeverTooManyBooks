@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.searches.isfdb;
 
 import android.content.Context;
@@ -9,7 +35,20 @@ import androidx.annotation.Size;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertomanybooks.App;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
@@ -22,20 +61,6 @@ import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
-
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class IsfdbBook
         extends AbstractBase {
@@ -150,7 +175,7 @@ public class IsfdbBook
     /**
      * @param isfdbId        ISFDB native book id
      * @param fetchThumbnail whether to get thumbnails as well
-     * @param context        Current context for accessing resources.
+     * @param context        Current context
      *
      * @return Bundle with book data
      *
@@ -169,7 +194,7 @@ public class IsfdbBook
     /**
      * @param path           A fully qualified ISFDB search url
      * @param fetchThumbnail whether to get thumbnails as well
-     * @param context        Current context for accessing resources.
+     * @param context        Current context
      *
      * @return Bundle with book data
      *
@@ -183,7 +208,7 @@ public class IsfdbBook
 
         mPath = path;
 
-        if (loadPage(mPath, true) == null) {
+        if (loadPage(mPath) == null) {
             return new Bundle();
         }
 
@@ -194,7 +219,7 @@ public class IsfdbBook
     /**
      * @param editions       List of ISFDB Editions with native book id
      * @param fetchThumbnail whether to get thumbnails as well
-     * @param context        Current context for accessing resources.
+     * @param context        Current context
      *
      * @return Bundle with book data
      *
@@ -216,7 +241,7 @@ public class IsfdbBook
             mDoc = edition.doc;
         } else {
             // nop, go get it.
-            if (loadPage(mPath, true) == null) {
+            if (loadPage(mPath) == null) {
                 return new Bundle();
             }
         }
@@ -238,7 +263,8 @@ public class IsfdbBook
      *
      *        <td>
      *          <a href="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg">
-     *            <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg" alt="picture" class="scan"></a>
+     *            <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg"
+     *                 alt="picture" class="scan"></a>
      *        </td>
      *
      *        <td class="pubheader">
@@ -265,7 +291,8 @@ public class IsfdbBook
      *            </ul>
      *          </td>
      *    </table>
-     *  Cover art supplied by <a href="http://www.isfdb.org/wiki/index.php/Image:THDSFPRKPT1991.jpg" target="_blank">ISFDB</a>
+     *  Cover art supplied by <a href="http://www.isfdb.org/wiki/index.php/Image:THDSFPRKPT1991.jpg"
+     *                           target="_blank">ISFDB</a>
      * </div>
      * }
      * </pre>
@@ -348,7 +375,7 @@ public class IsfdbBook
      *
      * @param bookData       a new Bundle()  (must be passed in so we mock it in test)
      * @param fetchThumbnail whether to get thumbnails as well
-     * @param context        Current context for accessing resources.
+     * @param context        Current context
      *
      * @return Bundle with book data, can be empty, but never {@code null}
      */
@@ -468,7 +495,8 @@ public class IsfdbBook
                     bookData.putString(DBDefinitions.KEY_PAGES, tmpString);
 
                 } else if ("Format:".equalsIgnoreCase(fieldName)) {
-                    // <li><b>Format:</b> <div class="tooltip">tp<sup class="mouseover">?</sup><span class="tooltiptext tooltipnarrow">Trade paperback. bla bla.</span></div>
+                    // <li><b>Format:</b> <div class="tooltip">tp<sup class="mouseover">?</sup>
+                    // <span class="tooltiptext tooltipnarrow">Trade paperback. bla bla...
                     // need to lift "tp".
                     tmpString = li.childNode(3).childNode(0).toString().trim();
                     bookData.putString(DBDefinitions.KEY_FORMAT, Format.map(context, tmpString));
@@ -554,7 +582,8 @@ public class IsfdbBook
         bookData.putString(DBDefinitions.KEY_LANGUAGE, Locale.ENGLISH.getISO3Language());
 
         boolean addSeriesFromToc = PreferenceManager.getDefaultSharedPreferences(context)
-                                                    .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC, false);
+                                                    .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC,
+                                                                false);
 
         // the table of content
         ArrayList<TocEntry> toc = getTocList(bookData, addSeriesFromToc);
@@ -699,7 +728,7 @@ public class IsfdbBook
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            //FIXME: this actually allows an X anywhere instead of just at the end.
+            // allows an X anywhere instead of just at the end; doesn't really matter.
             if (Character.isDigit(c) || (isIsbn && Character.toUpperCase(c) == 'X')) {
                 sb.append(c);
             }
@@ -779,7 +808,7 @@ public class IsfdbBook
 
         final ArrayList<TocEntry> results = new ArrayList<>();
 
-        if (loadPage(mPath, true) == null) {
+        if (loadPage(mPath) == null) {
             return results;
         }
 

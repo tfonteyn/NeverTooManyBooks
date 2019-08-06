@@ -1,23 +1,29 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks;
 
 import android.app.Activity;
@@ -43,6 +49,11 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.concurrent.RejectedExecutionException;
+
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.searches.SearchEngine;
@@ -51,11 +62,6 @@ import com.hardbacknutter.nevertomanybooks.searches.librarything.LibraryThingMan
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.viewmodels.CoverBrowserViewModel;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.concurrent.RejectedExecutionException;
 
 /**
  * Displays and manages a cover image browser in a dialog, allowing the user to select
@@ -110,7 +116,7 @@ public class CoverBrowserFragment
     public static CoverBrowserFragment newInstance(@NonNull final String isbn,
                                                    final int searchSites) {
 
-        if (LibraryThingManager.noKey()) {
+        if (!LibraryThingManager.hasKey()) {
             throw new IllegalStateException("LibraryThing Key must be tested before calling this");
         }
 
@@ -173,7 +179,7 @@ public class CoverBrowserFragment
             imageView.setAdjustViewBounds(true);
             imageView.setLayoutParams(
                     new ImageSwitcher.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT));
+                                                   ViewGroup.LayoutParams.WRAP_CONTENT));
 
             // placeholder image
             imageView.setImageResource(R.drawable.ic_image);
@@ -185,13 +191,13 @@ public class CoverBrowserFragment
             String fileSpec = (String) mImageSwitcherView.getTag(R.id.TAG_FILE_SPEC);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(CoverBrowserFragment.this, "mImageSwitcherView.onClick",
-                        "fileSpec=" + fileSpec);
+                             "fileSpec=" + fileSpec);
             }
             if (fileSpec != null) {
                 Intent data = new Intent().putExtra(UniqueId.BKEY_FILE_SPEC, fileSpec);
                 //noinspection ConstantConditions
                 getTargetFragment().onActivityResult(getTargetRequestCode(),
-                        Activity.RESULT_OK, data);
+                                                     Activity.RESULT_OK, data);
             }
             // close the CoverBrowserFragment
             dismiss();
@@ -199,8 +205,36 @@ public class CoverBrowserFragment
 
         //noinspection ConstantConditions
         return new AlertDialog.Builder(getContext())
-                .setView(root)
-                .create();
+                       .setView(root)
+                       .create();
+    }
+
+    @Override
+    public void onCancel(@NonNull final DialogInterface dialog) {
+        // prevent new tasks being started.
+        mDismissing = true;
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+            Logger.debugExit(this, "onCancel");
+        }
+        super.onCancel(dialog);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //TODO: editions are stored in the model. Get rid of this duplication.
+        if (!mAlternativeEditions.isEmpty()) {
+            outState.putStringArrayList(BKEY_EDITION_LIST, mAlternativeEditions);
+        }
+        if (mSwitcherImage != null) {
+            outState.putParcelable(BKEY_SWITCHER_FILE, mSwitcherImage);
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+            Logger.debugExit(this, "onSaveInstanceState", outState);
+        }
     }
 
     @Override
@@ -221,17 +255,6 @@ public class CoverBrowserFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
             Logger.debugExit(this, "onResume");
         }
-    }
-
-    @Override
-    public void onCancel(@NonNull final DialogInterface dialog) {
-        // prevent new tasks being started.
-        mDismissing = true;
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debugExit(this, "onCancel");
-        }
-        super.onCancel(dialog);
     }
 
     /**
@@ -339,23 +362,6 @@ public class CoverBrowserFragment
         mStatusTextView.setText(R.string.info_tap_on_thumb);
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        //TODO: editions are stored in the model. Get rid of this duplication.
-        if (!mAlternativeEditions.isEmpty()) {
-            outState.putStringArrayList(BKEY_EDITION_LIST, mAlternativeEditions);
-        }
-        if (mSwitcherImage != null) {
-            outState.putParcelable(BKEY_SWITCHER_FILE, mSwitcherImage);
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debugExit(this, "onSaveInstanceState", outState);
-        }
-    }
-
     /** Stores and recycles views as they are scrolled off screen. */
     private static class Holder
             extends RecyclerView.ViewHolder {
@@ -408,13 +414,13 @@ public class CoverBrowserFragment
 
             // Get the image file; try the sizes in order as specified here.
             holder.fileInfo = mModel.getFileManager().getFile(isbn,
-                    SearchEngine.ImageSize.SMALL,
-                    SearchEngine.ImageSize.MEDIUM,
-                    SearchEngine.ImageSize.LARGE);
+                                                              SearchEngine.ImageSize.SMALL,
+                                                              SearchEngine.ImageSize.MEDIUM,
+                                                              SearchEngine.ImageSize.LARGE);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(this, "onBindViewHolder",
-                        "fileInfo=" + holder.fileInfo);
+                             "fileInfo=" + holder.fileInfo);
             }
 
             File imageFile = null;
@@ -438,8 +444,8 @@ public class CoverBrowserFragment
                         // some books have a LOT of editions... Dr. Asimov
                         if (BuildConfig.DEBUG /* always */) {
                             Logger.debug(this, "onBindViewHolder",
-                                    "isbn=" + isbn,
-                                    "Exception msg=" + e.getLocalizedMessage());
+                                         "isbn=" + isbn,
+                                         "Exception msg=" + e.getLocalizedMessage());
                         }
                     }
                 }
@@ -453,8 +459,8 @@ public class CoverBrowserFragment
                     if (holder.fileInfo.size.equals(SearchEngine.ImageSize.LARGE)) {
                         // no need to search, just load it.
                         ImageUtils.setImageView(holder.imageView,
-                                new File(holder.fileInfo.fileSpec),
-                                mWidth, mHeight, true);
+                                                new File(holder.fileInfo.fileSpec),
+                                                mWidth, mHeight, true);
                     } else {
                         // see if we can get a larger image.
 

@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.database.definitions;
 
 import androidx.annotation.NonNull;
@@ -24,16 +50,14 @@ import com.hardbacknutter.nevertomanybooks.utils.Csv;
 
 /**
  * Class to store table name and a list of domain definitions.
- *
- * @author Philip Warner
  */
 public class TableDefinition
         implements Cloneable {
 
     private static final String EXISTS_SQL =
             "SELECT "
-                    + "(SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?) + "
-                    + "(SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
+            + "(SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?) + "
+            + "(SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
 
     /** List of index definitions for this table. */
     private final Map<String, IndexDefinition> mIndexes =
@@ -68,6 +92,8 @@ public class TableDefinition
     /** Table type. */
     @NonNull
     private TableTypes mType = TableTypes.Standard;
+    @Nullable
+    private TableInfo mTableInfo;
 
     /**
      * Constructor (empty table). Used for cloning.
@@ -110,7 +136,7 @@ public class TableDefinition
     /**
      * Drop the passed table, if it exists.
      *
-     * @param db   the database
+     * @param db   Database Access
      * @param name name of the table to drop
      */
     private static void drop(@NonNull final SynchronizedDb db,
@@ -205,11 +231,11 @@ public class TableDefinition
     @NonNull
     public TableDefinition clone() {
         TableDefinition newTbl = new TableDefinition()
-                .setName(mName)
-                .setAlias(mAlias)
-                .addDomains(mDomains)
-                .setPrimaryKey(mPrimaryKey)
-                .setType(mType);
+                                         .setName(mName)
+                                         .setAlias(mAlias)
+                                         .addDomains(mDomains)
+                                         .setPrimaryKey(mPrimaryKey)
+                                         .setType(mType);
 
         for (FkReference fk : mParents.values()) {
             newTbl.addReference(fk.mParent, fk.mDomains);
@@ -222,6 +248,19 @@ public class TableDefinition
             newTbl.addIndex(entry.getKey(), index.getUnique(), index.getDomains());
         }
         return newTbl;
+    }
+
+    /**
+     * toString() <strong>NOT DEBUG, must only ever return the table name</strong>
+     * <p>
+     * useful for using the TableDefinition in place of a table name.
+     *
+     * @return the name of the table.
+     */
+    @Override
+    @NonNull
+    public String toString() {
+        return mName;
     }
 
     /**
@@ -286,17 +325,6 @@ public class TableDefinition
     public TableDefinition setName(@NonNull final String newName) {
         mName = newName;
         return this;
-    }
-
-    /**
-     * toString() NOT DEBUG
-     * <p>
-     * useful for using the TableDefinition in place of a table name.
-     */
-    @Override
-    @NonNull
-    public String toString() {
-        return mName;
     }
 
     /**
@@ -606,7 +634,6 @@ public class TableDefinition
         return mIndexes.values();
     }
 
-
     /**
      * Return an SQL fragment.
      * <p>
@@ -700,10 +727,11 @@ public class TableDefinition
     private String getSqlCreateStatement(@NonNull final String name,
                                          final boolean withConstraints,
                                          final boolean withTableReferences,
-                                         @SuppressWarnings("SameParameterValue") final boolean ifNotExists) {
+                                         @SuppressWarnings("SameParameterValue")
+                                         final boolean ifNotExists) {
         StringBuilder sql = new StringBuilder("CREATE")
-                .append(mType.getCreateModifier())
-                .append(" TABLE");
+                                    .append(mType.getCreateModifier())
+                                    .append(" TABLE");
         if (ifNotExists) {
             if (mType.isVirtual()) {
                 throw new IllegalStateException(
@@ -785,7 +813,7 @@ public class TableDefinition
             fk = mParents.get(to);
         }
         Objects.requireNonNull(fk, "No foreign key between `" + mName
-                + "` and `" + to.getName() + '`');
+                                   + "` and `" + to.getName() + '`');
 
         return fk.getPredicate();
     }
@@ -814,9 +842,6 @@ public class TableDefinition
             return stmt.count() > 0;
         }
     }
-
-    @Nullable
-    private TableInfo mTableInfo;
 
     @NonNull
     public TableInfo getTableInfo(@NonNull final SynchronizedDb syncedDb) {
@@ -950,7 +975,7 @@ public class TableDefinition
         String getPredicate() {
             if (mParentKey != null) {
                 return mParent.getAlias() + '.' + mParentKey.name
-                        + '=' + mChild.getAlias() + '.' + mDomains.get(0).name;
+                       + '=' + mChild.getAlias() + '.' + mDomains.get(0).name;
 
             } else {
                 List<DomainDefinition> pk = mParent.getPrimaryKey();
@@ -986,11 +1011,11 @@ public class TableDefinition
         String def() {
             if (mParentKey != null) {
                 return "FOREIGN KEY (" + mDomains.get(0)
-                        + ") REFERENCES " + mParent + '(' + mParentKey + ')';
+                       + ") REFERENCES " + mParent + '(' + mParentKey + ')';
             } else {
                 return "FOREIGN KEY (" + Csv.join(",", mDomains)
-                        + ") REFERENCES " + mParent
-                        + '(' + Csv.join(",", mParent.getPrimaryKey()) + ')';
+                       + ") REFERENCES " + mParent
+                       + '(' + Csv.join(",", mParent.getPrimaryKey()) + ')';
             }
         }
 
@@ -998,11 +1023,11 @@ public class TableDefinition
         @NonNull
         public String toString() {
             return "FkReference{"
-                    + "mParent=" + mParent
-                    + ", mParentKey=" + mParentKey
-                    + ", mChild=" + mChild
-                    + ", mDomains=" + mDomains
-                    + '}';
+                   + "mParent=" + mParent
+                   + ", mParentKey=" + mParentKey
+                   + ", mChild=" + mChild
+                   + ", mDomains=" + mDomains
+                   + '}';
         }
     }
 }

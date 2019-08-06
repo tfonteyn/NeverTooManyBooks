@@ -1,29 +1,40 @@
 /*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.backup.archivebase;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -35,29 +46,20 @@ import com.hardbacknutter.nevertomanybooks.backup.Importer;
 import com.hardbacknutter.nevertomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertomanybooks.backup.csv.CsvImporter;
 import com.hardbacknutter.nevertomanybooks.backup.xml.XmlImporter;
-import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertomanybooks.utils.SerializationUtils.DeserializationException;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Basic implementation of format-agnostic BackupReader methods using
  * only a limited set of methods from the base interface.
- *
- * @author pjw
  */
 public abstract class BackupReaderAbstract
         implements BackupReader {
 
-    /** Database access. */
+    /** Database Access. */
     @NonNull
     private final DAO mDb;
 
@@ -75,6 +77,8 @@ public abstract class BackupReaderAbstract
 
     /**
      * Constructor.
+     *
+     * @param context Current context
      */
     protected BackupReaderAbstract(@NonNull final Context context) {
         mDb = new DAO();
@@ -150,7 +154,9 @@ public abstract class BackupReaderAbstract
                         if ((mSettings.what & ImportOptions.PREFERENCES) != 0) {
                             mProgressListener.onProgressStep(1, mProcessPreferences);
                             try (XmlImporter importer = new XmlImporter()) {
-                                importer.doPreferences(entity, mProgressListener, mSettings.getPrefs());
+                                importer
+                                        .doPreferences(entity, mProgressListener,
+                                                       mSettings.getPrefs());
                             }
                             entitiesRead |= ImportOptions.PREFERENCES;
                         }
@@ -178,7 +184,9 @@ public abstract class BackupReaderAbstract
                             // read them into the 'old' prefs. Migration is done at a later stage.
                             try (XmlImporter importer = new XmlImporter()) {
                                 importer.doPreferences(entity, mProgressListener,
-                                        context.getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE));
+                                                       context.getSharedPreferences(
+                                                               Prefs.PREF_LEGACY_BOOK_CATALOGUE,
+                                                               Context.MODE_PRIVATE));
                             }
                             entitiesRead |= ImportOptions.PREFERENCES;
                         }
@@ -226,6 +234,18 @@ public abstract class BackupReaderAbstract
     }
 
     /**
+     * Actual reader should override and close their input.
+     *
+     * @throws IOException on failure
+     */
+    @Override
+    @CallSuper
+    public void close()
+            throws IOException {
+        mDb.close();
+    }
+
+    /**
      * Restore the books from the export file.
      *
      * @param entity to restore
@@ -238,7 +258,9 @@ public abstract class BackupReaderAbstract
             throws IOException, ImportException {
 
         try (Importer importer = new CsvImporter(context, mSettings)) {
-            return importer.doBooks(context, userLocale, entity.getStream(), null, mProgressListener);
+            return importer
+                           .doBooks(context, userLocale, entity.getStream(), null,
+                                    mProgressListener);
         }
     }
 
@@ -281,29 +303,18 @@ public abstract class BackupReaderAbstract
     private void restorePreV200Style(@NonNull final ReaderEntity entity)
             throws IOException {
 
+        Logger.warn(this, "restorePreV200Style", "Skipping");
         mProgressListener.onProgressStep(1, mProcessBooklistStyles);
-        try {
-            // deserialization will take care of writing the v200+ SharedPreference file
-            BooklistStyle style = entity.getSerializable();
-            style.save(mDb);
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-                Logger.debug(this, "restorePreV200Style", style);
-            }
-        } catch (@NonNull final DeserializationException e) {
-            Logger.error(this, e, "Unable to restore style");
-        }
-    }
-
-    /**
-     * Actual reader should override and close their input.
-     *
-     * @throws IOException on failure
-     */
-    @Override
-    @CallSuper
-    public void close()
-            throws IOException {
-        mDb.close();
+//        try {
+//            // deserialization will take care of writing the v200+ SharedPreference file
+//            BooklistStyle style = entity.getSerializable();
+//            style.save(mDb);
+//
+//            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
+//                Logger.debug(this, "restorePreV200Style", style);
+//            }
+//        } catch (@NonNull final DeserializationException e) {
+//            Logger.error(this, e, "Unable to restore style");
+//        }
     }
 }

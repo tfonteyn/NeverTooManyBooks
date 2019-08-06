@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.searches;
 
 import android.content.SharedPreferences;
@@ -65,7 +91,7 @@ public class Site
 
     /**
      * {@link Parcelable} Constructor.
-     *
+     * <p>
      * Reminder: this is IPC.. so don't load prefs!
      *
      * @param in Parcel to construct the object from
@@ -116,18 +142,6 @@ public class Site
         return mSearchEngine;
     }
 
-    /**
-     * Reminder: this is IPC.. so don't save prefs.
-     */
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeInt(id);
-        dest.writeInt(mEnabled ? 1 : 0);
-        dest.writeInt(mPriority);
-        dest.writeInt(mReliability);
-    }
-
     private void loadFromPrefs(@NonNull final SharedPreferences prefs) {
         mEnabled = prefs.getBoolean(PREF_PREFIX + mName + ".enabled", mEnabled);
         mPriority = prefs.getInt(PREF_PREFIX + mName + ".order", mPriority);
@@ -144,6 +158,18 @@ public class Site
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    /**
+     * Reminder: this is IPC.. so don't save prefs.
+     */
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeInt(id);
+        dest.writeInt(mEnabled ? 1 : 0);
+        dest.writeInt(mPriority);
+        dest.writeInt(mReliability);
     }
 
     @NonNull
@@ -179,12 +205,12 @@ public class Site
     @NonNull
     public String toString() {
         return "Site{"
-                + "id=" + id
-                + ", mName=`" + mName + '`'
-                + ", mEnabled=" + mEnabled
-                + ", mPriority=" + mPriority
-                + ", mReliability=" + mReliability
-                + ", mSearchEngine=" + mSearchEngine
-                + '}';
+               + "id=" + id
+               + ", mName=`" + mName + '`'
+               + ", mEnabled=" + mEnabled
+               + ", mPriority=" + mPriority
+               + ", mReliability=" + mReliability
+               + ", mSearchEngine=" + mSearchEngine
+               + '}';
     }
 }

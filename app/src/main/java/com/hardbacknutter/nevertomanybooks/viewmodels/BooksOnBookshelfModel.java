@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.viewmodels;
 
 import android.content.Context;
@@ -16,6 +42,10 @@ import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -36,23 +66,21 @@ import com.hardbacknutter.nevertomanybooks.entities.Author;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.goodreads.tasks.GoodreadsTasks;
+import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.utils.Csv;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 /**
  * First attempt to split of into a model for BoB.
- *
+ * <p>
  * URGENT: experimental... {@link #initBookList}. TMP_USE_BOB_EXTRAS_TASK=false;
  * When set to false, "extra" field bookshelves (if selected) will not be populated.
  */
 public class BooksOnBookshelfModel
         extends ViewModel {
 
+    /** see class doc. */
     public static final boolean TMP_USE_BOB_EXTRAS_TASK = false;
 
     /** Preference name - Saved position of last top row. */
@@ -62,8 +90,11 @@ public class BooksOnBookshelfModel
 
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
+    /** Allows progress message from a task to update the user. */
     private final MutableLiveData<Object> mUserMessage = new MutableLiveData<>();
+    /** Inform user that Goodreads needs authentication/authorization. */
     private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
+
     /**
      * Holder for all search criteria.
      * See {@link SearchCriteria} for more info.
@@ -71,7 +102,7 @@ public class BooksOnBookshelfModel
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
     /** Cache for all bookshelf names / spinner list. */
     private final List<String> mBookshelfNameList = new ArrayList<>();
-    /** Database access. */
+    /** Database Access. */
     private DAO mDb;
     /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
     private TaskListener<Integer> mOnGoodreadsTaskListener;
@@ -84,10 +115,21 @@ public class BooksOnBookshelfModel
     private Boolean mDoFullRebuildAfterOnActivityResult;
     /** Flag to indicate that a list has been successfully loaded. */
     private boolean mListHasBeenLoaded;
+    /** Currently selected bookshelf. */
+    @Nullable
+    private Bookshelf mCurrentBookshelf;
     /** Stores the book id for the current list position, e.g. while a book is viewed/edited. */
     private long mCurrentPositionedBookId;
     /** Used by onScroll to detect when the top row has actually changed. */
     private int mLastTopRow = -1;
+    /** Saved position of top row. */
+    private int mTopRow;
+    /**
+     * Saved position of last top row offset from view top.
+     * <p>
+     * See {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
+     */
+    private int mTopRowOffset;
     /** Preferred booklist state in next rebuild. */
     private int mRebuildState;
     /** Current displayed list cursor. */
@@ -104,7 +146,8 @@ public class BooksOnBookshelfModel
     private final TaskListener<BuilderHolder> mOnGetBookListTaskListener =
             new TaskListener<BuilderHolder>() {
                 @Override
-                public void onTaskFinished(@NonNull final TaskFinishedMessage<BuilderHolder> message) {
+                public void onTaskFinished(
+                        @NonNull final TaskFinishedMessage<BuilderHolder> message) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
                         Logger.debugEnter(this, "onTaskFinished", message);
                     }
@@ -130,20 +173,6 @@ public class BooksOnBookshelfModel
                 }
             };
 
-    /** Saved position of top row. */
-    private int mTopRow;
-
-    /**
-     * Saved position of last top row offset from view top.
-     * <p>
-     * See {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
-     */
-    private int mTopRowOffset;
-
-    /** Currently selected bookshelf. */
-    @Nullable
-    private Bookshelf mCurrentBookshelf;
-
     @Override
     protected void onCleared() {
 
@@ -166,6 +195,7 @@ public class BooksOnBookshelfModel
     /**
      * Pseudo constructor.
      *
+     * @param context            Current context
      * @param extras             Bundle with arguments from activity startup
      * @param savedInstanceState Bundle with arguments from activity waking up
      */
@@ -211,42 +241,8 @@ public class BooksOnBookshelfModel
         return mDb;
     }
 
-    public String debugBuilderTables() {
-        if (mListCursor != null) {
-            return mListCursor.getBuilder().debugInfoForTables();
-        } else {
-            return "no cursor";
-        }
-    }
 
     @NonNull
-    public Bookshelf getCurrentBookshelf() {
-        Objects.requireNonNull(mCurrentBookshelf);
-        return mCurrentBookshelf;
-    }
-
-    /**
-     * Load and set the desired Bookshelf; do NOT set it as the preferred.
-     *
-     * @param id of Bookshelf
-     */
-    public void setCurrentBookshelf(final long id) {
-        mCurrentBookshelf = mDb.getBookshelf(id);
-    }
-
-    /**
-     * Load and set the desired Bookshelf as the preferred.
-     *
-     * @param context Current context
-     * @param name    of desired Bookshelf
-     */
-    public void setCurrentBookshelf(@NonNull final Context context,
-                                    @NonNull final String name) {
-
-        mCurrentBookshelf = Bookshelf.getBookshelf(context, mDb, name, true);
-        mCurrentBookshelf.setAsPreferred(context);
-    }
-
     public List<String> getBookshelfNameList() {
         return mBookshelfNameList;
     }
@@ -273,6 +269,34 @@ public class BooksOnBookshelfModel
         }
 
         return currentPos;
+    }
+
+    /**
+     * Load and set the desired Bookshelf as the preferred.
+     *
+     * @param context Current context
+     * @param name    of desired Bookshelf
+     */
+    public void setCurrentBookshelf(@NonNull final Context context,
+                                    @NonNull final String name) {
+
+        mCurrentBookshelf = Bookshelf.getBookshelf(context, mDb, name, true);
+        mCurrentBookshelf.setAsPreferred(context);
+    }
+
+    @NonNull
+    public Bookshelf getCurrentBookshelf() {
+        Objects.requireNonNull(mCurrentBookshelf);
+        return mCurrentBookshelf;
+    }
+
+    /**
+     * Load and set the desired Bookshelf; do NOT set it as the preferred.
+     *
+     * @param id of Bookshelf
+     */
+    public void setCurrentBookshelf(final long id) {
+        mCurrentBookshelf = mDb.getBookshelf(id);
     }
 
     @NonNull
@@ -417,11 +441,12 @@ public class BooksOnBookshelfModel
             if (!TMP_USE_BOB_EXTRAS_TASK) {
                 //ENHANCE:  see DAO#fetchBookExtrasById ... this needs work.
 //                if (style.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
-//                    bookListBuilder.requireDomain(
-//                            DBDefinitions.DOM_BOOKSHELF_CSV,
-//                            "GROUP_CONCAT(" + DBDefinitions.TBL_BOOKSHELF.dot(DBDefinitions.DOM_BOOKSHELF) + ",', ')",
-//                            false);
-//                    bookListBuilder.requireJoin(DBDefinitions.TBL_BOOKSHELF);
+//                    blb.requireDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
+//                                      "GROUP_CONCAT("
+//                                      + DBDefinitions.TBL_BOOKSHELF.dot(DBDefinitions.DOM_BOOKSHELF)
+//                                      + ",', ')",
+//                                      false);
+//                    blb.requireJoin(DBDefinitions.TBL_BOOKSHELF);
 //                }
 
                 if (style.isUsed(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
@@ -505,8 +530,15 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * @return {@code null} if no rebuild is requested;
-     * {@code true} or {@code false} if we're requesting a full or partial rebuild.
+     * Check if, and which type of, rebuild is needed.
+     * Returns:
+     * <ul>
+     * <li>{@code null} if no rebuild is requested</li>
+     * <li>{@code true} if we need a full rebuild.</li>
+     * <li>{@code false} if we need a partial rebuild.</li>
+     * </ul>
+     *
+     * @return rebuild type needed
      */
     @Nullable
     public Boolean isForceFullRebuild() {
@@ -531,14 +563,27 @@ public class BooksOnBookshelfModel
         mCurrentPositionedBookId = currentPositionedBookId;
     }
 
-
-    public boolean isAvailable(final long bookId) {
-        String loanee = mDb.getLoaneeByBookId(bookId);
+    /**
+     * Check if this book is lend out, or not.
+     *
+     * @param row cursor row with book data
+     *
+     * @return {@code true} if this book is available for lending.
+     */
+    public boolean isAvailable(@NonNull final BooklistMappedCursorRow row) {
+        String loanee;
+        if (row.contains(DBDefinitions.KEY_LOANEE)) {
+            loanee = row.getString(DBDefinitions.KEY_LOANEE);
+        } else {
+            loanee = mDb.getLoaneeByBookId(row.getLong(DBDefinitions.KEY_FK_BOOK));
+        }
         return (loanee == null) || loanee.isEmpty();
     }
 
     /**
      * Return the 'human readable' version of the name (e.g. 'Isaac Asimov').
+     *
+     * @param row cursor row with book data
      *
      * @return formatted Author name
      */
@@ -560,6 +605,10 @@ public class BooksOnBookshelfModel
     }
 
     /**
+     * Get the Series name.
+     *
+     * @param row cursor row with book data
+     *
      * @return the unformatted Series name (i.e. without the number)
      */
     @Nullable
@@ -618,6 +667,17 @@ public class BooksOnBookshelfModel
             mOnGoodreadsTaskListener = new TaskListener<Integer>() {
 
                 @Override
+                public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
+                    String msg = GoodreadsTasks.handleResult(message);
+                    if (msg != null) {
+                        mUserMessage.setValue(msg);
+                    } else {
+                        // Need authorization
+                        mNeedsGoodreads.setValue(true);
+                    }
+                }
+
+                @Override
                 public void onTaskCancelled(@Nullable final Integer taskId,
                                             @Nullable final Integer result) {
                     mUserMessage.setValue(R.string.progress_end_cancelled);
@@ -629,20 +689,22 @@ public class BooksOnBookshelfModel
                         mUserMessage.setValue(message.values[0]);
                     }
                 }
-
-                @Override
-                public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
-                    String msg = GoodreadsTasks.handleResult(message);
-                    if (msg != null) {
-                        mUserMessage.setValue(msg);
-                    } else {
-                        // Need authorization
-                        mNeedsGoodreads.setValue(true);
-                    }
-                }
             };
         }
         return mOnGoodreadsTaskListener;
+    }
+
+    public String debugBuilderTables() {
+        if (mListCursor != null) {
+            return mListCursor.getBuilder().debugInfoForTables();
+        } else {
+            return "no cursor";
+        }
+    }
+
+    public boolean isReadOnly(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_bob_open_book_read_only, true);
     }
 
     /**
@@ -770,6 +832,8 @@ public class BooksOnBookshelfModel
         }
 
         /**
+         * Put the search criteria as extras in the Intent.
+         *
          * @param intent which will be used for a #startActivityForResult call
          */
         public void to(@NonNull final Intent intent) {
@@ -799,8 +863,6 @@ public class BooksOnBookshelfModel
 
     /**
      * Background task to build and retrieve the list of books based on current settings.
-     *
-     * @author Philip Warner
      */
     private static class GetBookListTask
             extends TaskBase<BuilderHolder> {
@@ -861,8 +923,8 @@ public class BooksOnBookshelfModel
             }
 
             // get all positions of the book
-            ArrayList<BooklistBuilder.BookRowInfo> rows = mBooklistBuilder
-                    .getBookAbsolutePositions(mHolder.currentPositionedBookId);
+            ArrayList<BooklistBuilder.BookRowInfo> rows =
+                    mBooklistBuilder.getBookAbsolutePositions(mHolder.currentPositionedBookId);
 
             if (rows != null && !rows.isEmpty()) {
                 // First, get the ones that are currently visible...

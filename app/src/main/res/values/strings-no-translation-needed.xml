@@ -14,11 +14,6 @@
         ]]>
     </string>
 
-    <!-- Creators etc -->
-    <!--<string name="email_contact1" translatable="false">eleybourn@gmail.com</string>-->
-    <!--<string name="email_contact2" translatable="false">philip.warner@rhyme.com.au</string>-->
-    <!--<string name="email_debug" translatable="false">eleybourn@gmail.com;grunthos@rhyme.com.au</string>-->
-
     <string name="email_contact1" translatable="false">name1@email</string>
     <string name="email_contact2" translatable="false">name2@email</string>
     <string name="email_debug" translatable="false">name3@email</string>
@@ -41,30 +36,22 @@
         ]]>
     </string>
 
+    <!--  acronyms -->
+    <string name="lbl_isbn" translatable="false">ISBN</string>
     <!-- External sites / trademarks  -->
-    <string name="amazon" translatable="false">Amazon</string>
     <string name="goodreads" translatable="false">Goodreads</string>
     <string name="google_books" translatable="false">Google Books</string>
     <string name="library_thing" translatable="false">LibraryThing</string>
     <string name="open_library" translatable="false">OpenLibrary</string>
     <string name="isfdb" translatable="false">ISFDB</string>
-
+    <string name="amazon" translatable="false">Amazon</string>
     <!-- specific for a submenu title -->
     <string name="amazon_ellipsis" translatable="false">Amazon…</string>
 
-    <!--  acronyms -->
-    <string name="lbl_isbn" translatable="false">ISBN</string>
-
     <string name="brackets" translatable="false">(%1$s)</string>
 
-    <!-- debug user visible strings, not normally seen; here to please lint. -->
-    <string name="debug" translatable="false">Debug</string>
-    <string name="debug_history" translatable="false">History</string>
-    <string name="debug_test" translatable="false">Test something</string>
-    <string name="debug_bob_tables" translatable="false">BoB tables</string>
-
     <!-- ListPreference - Preferred interface Language -->
-    <!-- each language listed here must be written in its own language/spelling ! -->
+    <!-- each language listed here must be written in its own language and spelling. -->
     <string-array name="pe_ui_language">
         <item translatable="false">@string/pt_ui_system_locale</item>
         <item translatable="false">English</item>
@@ -90,4 +77,9 @@
         <item translatable="false">tr</item>
     </string-array>
 
+    <!-- debug user visible strings, not normally seen; here to please lint. -->
+    <string name="debug" translatable="false">Debug</string>
+    <string name="debug_history" translatable="false">History</string>
+    <string name="debug_test" translatable="false">Test something</string>
+    <string name="debug_bob_tables" translatable="false">BoB tables</string>
 </resources>

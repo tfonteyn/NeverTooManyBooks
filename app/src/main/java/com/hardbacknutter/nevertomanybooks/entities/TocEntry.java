@@ -1,21 +1,28 @@
 /*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.entities;
 
@@ -26,19 +33,18 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertomanybooks.App;
-import com.hardbacknutter.nevertomanybooks.database.DAO;
-import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
-import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertomanybooks.utils.StringList;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.hardbacknutter.nevertomanybooks.database.DAO;
+import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
+import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertomanybooks.utils.StringList;
 
 /**
  * Class to represent a single title within an TOC(Anthology).
@@ -48,8 +54,6 @@ import java.util.regex.Pattern;
  * Hence writes are always a List<TocEntry> in one go. This circumvents the 'position' column
  * as the update will simply insert in-order and auto increment position.
  * Retrieving by bookId is always done ordered by position.
- *
- * @author pjw
  */
 public class TocEntry
         implements Parcelable, ItemWithFixableId, ItemWithTitle {
@@ -81,9 +85,11 @@ public class TocEntry
      * <p>
      * TODO: simplify pattern
      */
-    private static final Pattern DATE_PATTERN =
-            Pattern.compile(
-                    "\\(([1|2]\\d\\d\\d|[1|2]\\d\\d\\d-\\d\\d|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)\\)");
+    private static final Pattern DATE_PATTERN = Pattern.compile("\\("
+                                                                + "([1|2]\\d\\d\\d"
+                                                                + "|[1|2]\\d\\d\\d-\\d\\d"
+                                                                + "|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)"
+                                                                + "\\)");
     private long mId;
     @NonNull
     private Author mAuthor;
@@ -197,7 +203,7 @@ public class TocEntry
     public static TocEntry fromString(@NonNull final String encodedString) {
 
         List<String> list = new StringList<String>()
-                .decode(encodedString, false, FIELD_SEPARATOR);
+                                    .decode(encodedString, false, FIELD_SEPARATOR);
 
         Author author = Author.fromString(list.get(1));
         String title = list.get(0);
@@ -237,6 +243,12 @@ public class TocEntry
         mBookCount = source.mBookCount;
     }
 
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -246,48 +258,6 @@ public class TocEntry
         dest.writeString(mFirstPublicationDate);
         dest.writeInt(mType.getInt());
         dest.writeInt(mBookCount);
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "TocEntry{"
-                + "mId=" + mId
-                + ", mAuthor=" + mAuthor
-                + ", mTitle=`" + mTitle + '`'
-                + ", mFirstPublicationDate=`" + mFirstPublicationDate + '`'
-                + ", mType=`" + mType + '`'
-                + ", mBookCount=`" + mBookCount + '`'
-                + '}';
-    }
-
-    /**
-     * Support for encoding to a text file.
-     *
-     * @return the object encoded as a String.
-     * <p>
-     * If the year is known:
-     * "Giants In The Sky (1952) * Blish, James"
-     * else:
-     * "Giants In The Sky * Blish, James"
-     */
-    public String stringEncoded() {
-        String yearStr;
-        if (!mFirstPublicationDate.isEmpty()) {
-            // start with a space !
-            yearStr = " (" + mFirstPublicationDate + ')';
-        } else {
-            yearStr = "";
-        }
-        return StringList.escapeListItem(mTitle, FIELD_SEPARATOR, '(') + yearStr
-                + ' ' + FIELD_SEPARATOR + ' '
-                + mAuthor.stringEncoded();
     }
 
     public long getId() {
@@ -365,12 +335,40 @@ public class TocEntry
     }
 
     /**
+     * Support for encoding to a text file.
+     *
+     * @return the object encoded as a String.
+     * <p>
+     * If the year is known:
+     * "Giants In The Sky (1952) * Blish, James"
+     * else:
+     * "Giants In The Sky * Blish, James"
+     */
+    public String stringEncoded() {
+        String yearStr;
+        if (!mFirstPublicationDate.isEmpty()) {
+            // start with a space !
+            yearStr = " (" + mFirstPublicationDate + ')';
+        } else {
+            yearStr = "";
+        }
+        return StringList.escapeListItem(mTitle, FIELD_SEPARATOR, '(') + yearStr
+               + ' ' + FIELD_SEPARATOR + ' '
+               + mAuthor.stringEncoded();
+    }
+
+    /**
      * Each TocEntry is defined exactly by a unique ID.
      */
     @Override
     @SuppressWarnings("SameReturnValue")
     public boolean isUniqueById() {
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mId, mAuthor, mTitle);
     }
 
     /**
@@ -397,14 +395,22 @@ public class TocEntry
         }
         // one or both are 'new' or their ID's are the same.
         return Objects.equals(mAuthor, that.mAuthor)
-                && Objects.equals(mTitle, that.mTitle)
-                && Objects.equals(mFirstPublicationDate, that.mFirstPublicationDate);
+               && Objects.equals(mTitle, that.mTitle)
+               && Objects.equals(mFirstPublicationDate, that.mFirstPublicationDate);
 
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(mId, mAuthor, mTitle);
+    @NonNull
+    public String toString() {
+        return "TocEntry{"
+               + "mId=" + mId
+               + ", mAuthor=" + mAuthor
+               + ", mTitle=`" + mTitle + '`'
+               + ", mFirstPublicationDate=`" + mFirstPublicationDate + '`'
+               + ", mType=`" + mType + '`'
+               + ", mBookCount=`" + mBookCount + '`'
+               + '}';
     }
 
     /**

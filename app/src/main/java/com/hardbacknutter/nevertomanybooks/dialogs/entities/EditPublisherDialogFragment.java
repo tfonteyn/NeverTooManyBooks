@@ -1,23 +1,29 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.dialogs.entities;
 
 import android.app.Dialog;
@@ -55,7 +61,7 @@ public class EditPublisherDialogFragment
     /** Fragment manager tag. */
     public static final String TAG = "EditPublisherDialogFragment";
 
-    /** Database access. */
+    /** Database Access. */
     private DAO mDb;
 
     private Publisher mPublisher;
@@ -111,36 +117,43 @@ public class EditPublisherDialogFragment
         mNameView.setAdapter(mAdapter);
 
         return new AlertDialog.Builder(getContext())
-                .setIcon(R.drawable.ic_edit)
-                .setView(root)
-                .setTitle(R.string.lbl_publisher)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
-                    mName = mNameView.getText().toString().trim();
-                    if (mName.isEmpty()) {
-                        UserMessage.show(mNameView, R.string.warning_missing_name);
-                        return;
-                    }
-                    dismiss();
+                       .setIcon(R.drawable.ic_edit)
+                       .setView(root)
+                       .setTitle(R.string.lbl_publisher)
+                       .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                       .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
+                           mName = mNameView.getText().toString().trim();
+                           if (mName.isEmpty()) {
+                               UserMessage.show(mNameView, R.string.warning_missing_name);
+                               return;
+                           }
+                           dismiss();
 
-                    if (mPublisher.getName().equals(mName)) {
-                        return;
-                    }
-                    mDb.updatePublisher(mPublisher.getName(), mName);
+                           if (mPublisher.getName().equals(mName)) {
+                               return;
+                           }
+                           mDb.updatePublisher(mPublisher.getName(), mName);
 
-                    Bundle data = new Bundle();
-                    data.putString(DBDefinitions.KEY_PUBLISHER, mPublisher.getName());
-                    if (mBookChangedListener.get() != null) {
-                        mBookChangedListener.get().onBookChanged(0, BookChangedListener.PUBLISHER,
-                                                                 data);
-                    } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Logger.debug(this, "onBookChanged",
-                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
-                        }
-                    }
-                })
-                .create();
+                           Bundle data = new Bundle();
+                           data.putString(DBDefinitions.KEY_PUBLISHER, mPublisher.getName());
+                           if (mBookChangedListener.get() != null) {
+                               mBookChangedListener.get()
+                                                   .onBookChanged(0, BookChangedListener.PUBLISHER,
+                                                                  data);
+                           } else {
+                               if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                                   Logger.debug(this, "onBookChanged",
+                                                Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                               }
+                           }
+                       })
+                       .create();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(DBDefinitions.KEY_PUBLISHER, mName);
     }
 
     /**
@@ -156,12 +169,6 @@ public class EditPublisherDialogFragment
     public void onPause() {
         mName = mNameView.getText().toString().trim();
         super.onPause();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_PUBLISHER, mName);
     }
 
     @Override

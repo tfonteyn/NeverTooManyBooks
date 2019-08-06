@@ -1,24 +1,29 @@
-#
-# BOOK CATALOGUE
-#
-# @copyright 2010 Evan Leybourn
-# @license GNU General Public License
-#
-# This file is part of Book Catalogue.
-#
-# Book Catalogue is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Book Catalogue is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
-#
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverToManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its current form.
+  ~ It was however largely rewritten/refactored and any comments on this fork
+  ~ should be directed at HardBackNutter and not at the original creator.
+  ~
+  ~ NeverToManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverToManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
 
 This is an open source Android application. Please feel free to fork, bug fix
 and commit back.
@@ -40,6 +45,10 @@ Features include;
 * When downloading book information, authors and titles are converted to proper
   case. e.g. "The murder on the links" becomes "Murder on the Links, The"
 * Using ISBN or Barcode scanning will also download a thumbnail (if available)
+
+new in 6.0.0
+Largely rewritten and dragged into Android 6.0 era.
+(more details here later)
 
 new in 5.2.0
 * Greek translation (Dimitris Klisiaris)
@@ -84,7 +93,8 @@ new in 5.0.1/2
 new in 5.0.0
 * A non-editable view of book details, with 'fling' support! (See "Other Preferences") (Nick Silin)
 * Archiving (Backup & Import) of entire catalogue, including books, covers, preferences and styles
-* Updated interface with Action Bar support for usability and to work better on devices without menu buttons
+* Updated interface with Action Bar support for usability and to work better on devices
+  without menu buttons
 * Support for pic2shop scanner (better for fixed focus, low light and in front-facing cameras)
 * Goodreads now appears in main menu if you authorize it
 * Check internet connection earlier when trying to scan books
@@ -222,7 +232,7 @@ new in 4.0
   - allows user-defined list styles
 * a 'hints' system (not available everywhere yet)
 * Better text searching using FTS
-  - allows for searches like 'food -apples' to search for any book mentioning 'food' but not 'apples'
+  Allows for searches like 'food -apples' to search for any book mentioning 'food' but not 'apples'
 * Thumbnail cache
 * Smoother scrolling of lists with thumbnails
 * More bug fixes
@@ -255,7 +265,8 @@ New in v3.6.2
 New in v3.6 / v3.6.1
 * The LibraryThing Key will be verified when added
 * When entering ISBN's manually, each button with vibrate the phone slightly
-* When automatically updating fields click on each checkbox twice will give you the option to override existing fields (rather than populate only blank fields)
+* When automatically updating fields click on each checkbox twice will give you the option to
+   override existing fields (rather than populate only blank fields)
 * Fixed a crash when exporting over 2000 books
 * Orphan loan records will now be correctly managed
 * The Amazon search will now look for English, French, German, Italian and Japanese versions
@@ -286,11 +297,18 @@ New in v3.5
 * Minor fixes to the import process
 
 New in v3.4 - Most updates courtesy of Grunthos
-* Multiple Authors per book (Editing a book now displays an author button which takes the user to a new activity for managing the authors of this book.)
-* Multiple Series per book (Editing a book now displays an series button which takes the user to a new activity for managing the series of this book.)
+* Multiple Authors per book (Editing a book now displays an author button which takes the user to
+   a new activity for managing the authors of this book.)
+* Multiple Series per book (Editing a book now displays an series button which takes the user to
+   a new activity for managing the series of this book.)
 * Fetches series (and other stuff) from LibraryThing
-* Can now make global changes to Author and Series (Access this feature via the catalogue screen; long-click on an author or series name Editing can also be accessed while editing series or authors in an individual books.)
-* Can replace a cover thumbnail from a different edition via LibraryThing. (Access this via long-clicking the cover while editing the book. It will display a gallery of thumbnails; clicking on the small thumbnail will display a larger version. Clicking on the larger version will select it.)
+* Can now make global changes to Author and Series (Access this feature via the catalogue screen;
+   long-click on an author or series name Editing can also be accessed while editing series or
+   authors in an individual books.)
+* Can replace a cover thumbnail from a different edition via LibraryThing. (Access this via
+   ong-clicking the cover while editing the book. It will display a gallery of thumbnails; clicking
+   on the small thumbnail will display a larger version. Clicking on the larger version
+   will select it.)
 * Does concurrent ISBN searches at Amazon, Google and LibraryThing (it's faster)
 * Displays a progress dialog while searching for a book on the internet.
 * Adding by Amazon's ASIN is supported on the "Add by ISBN" page
@@ -300,13 +318,16 @@ New in v3.4 - Most updates courtesy of Grunthos
 * Changed the ISBN data entry screen when the device is in landscape mode.
 * Displays square brackets around the series name when displaying a list of books.
 * Suggestions available when searching
-* Removed the need for contacts permission. Though it does mean you will need to manually enter everyone you want to loan to.
+* Removed the need for contacts permission. Though it does mean you will need to manually enter
+   everyone you want to loan to.
 * Preserves *all* open groups when closing application.
-* The scanner and book search screens remain active after a book has been added or a search fails. It was viewed that this more closely represents the work-flow of people adding or scanning books.
+* The scanner and book search screens remain active after a book has been added or a search fails.
+   It was viewed that this more closely represents the work-flow of people adding or scanning books.
 * Import & Export improvements
 * Bug fixes for the 'collapse/expand' button, series selection/de-selection
 * Bug fixes for sorting of book titles, series and authors.
-* Ensure that search results can now be sorted correctly. Expanding, eg, an author name in search results will just show matching books.
+* Ensure that search results can now be sorted correctly. Expanding, eg, an author name in search
+   results will just show matching books.
 
 New in v3.3 - Updates courtesy of Grunthos
 * The application should be significantly faster now - Fixed a bug with database index creation
@@ -317,18 +338,24 @@ New in v3.3 - Updates courtesy of Grunthos
 
 New in v3.2
 * Books can now be automatically added by searching for the author name and book title
-* Updating thumbnails, genre and description fields will also search by author name and title is the isbn does not exist
+* Updating thumbnails, genre and description fields will also search by author name and title
+   is the isbn does not exist
 * Expand/Collapse all bug fixed
 * The search query will be shown at the top of all search screens
 
 New in v3.1
-* The audiobook checkbox has been replaced with a format selector (inc. paperback, hardcover, companion etc)
+* The audiobook checkbox has been replaced with a format selector
+   (inc. paperback, hardcover, companion etc)
 * When adding books the current bookshelf will be selected as the default bookshelf
-* Genre/Subject and Description fields have been added (Requested by Tosh) and will automatically populate based on Google Books and Amazon information
+* Genre/Subject and Description fields have been added (Requested by Tosh) and will
+   automatically populate based on Google Books and Amazon information
 * The save button will always be visible on the edit book screen
 * Searching for a single space will clear the search results page
-* The Date Picker will now appear in a popup in order to save space on the screen (Requested by several people)
-* To improve speed when sorting by title, the titles will be broken up by the first character. Remember prefixes such as "the" and "a" are listed after the title, e.g. "The Trigger" becomes "Trigger, The"
+* The Date Picker will now appear in a popup in order to save space on the screen
+   (Requested by several people)
+* To improve speed when sorting by title, the titles will be broken up by the first character.
+   Remember prefixes such as "the" and "a" are listed after the title, e.g. "The Trigger"
+   becomes "Trigger, The"
 
 New in v3.0.1
 * Export bug fixed
@@ -340,7 +367,8 @@ New in v3.0.1
 New in v3.0
 * Added app2sd support (2.2 users only)
 * You can now assign books to multiple bookshelves (requested by many people)
-* A .nomedia file will be automatically created which will stop the thumbnails showing up in the gallery (thanks Brandon)
+* A .nomedia file will be automatically created which will stop the thumbnails showing up
+   in the gallery (thanks Brandon)
 * The "Add Book by ISBN" page has been redesigned to be simpler and more stable (thanks Vinikia)
 * The export file is now formatted correctly (.csv) (thanks glohr)
 * You will be prompted to backup your books on a regular basis
@@ -349,8 +377,10 @@ New in v2.9
 Tip: If you long click on a book title on the main list you can delete it
 Tip: If you want to see all books, change the bookshelf to "All Books"
 Tip: You can find the correct barcode for many modern paperbacks on the inside cover
-* There is now a "Sort by Unread" option, as well as a "read" icon on the main list (requested by Angel)
-* If you long click on the (?) thumbnail you can now select a new thumbnail from the gallery (requested by Giovanni)
+* There is now a "Sort by Unread" option, as well as a "read" icon on the main list
+   (requested by Angel)
+* If you long click on the (?) thumbnail you can now select a new thumbnail from the gallery
+   (requested by Giovanni)
 * Bookshelves, loaned books and anthology titles will now import correctly
 
 New in v2.8

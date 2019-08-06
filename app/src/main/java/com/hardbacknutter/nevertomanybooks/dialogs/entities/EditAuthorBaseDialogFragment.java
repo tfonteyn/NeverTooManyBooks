@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.dialogs.entities;
 
 import android.app.Dialog;
@@ -30,18 +56,16 @@ import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 public abstract class EditAuthorBaseDialogFragment
         extends DialogFragment {
 
-    /** Database access. */
+    /** Database Access. */
     protected DAO mDb;
-
+    WeakReference<BookChangedListener> mBookChangedListener;
     private AutoCompleteTextView mFamilyNameView;
     private AutoCompleteTextView mGivenNamesView;
     private Checkable mIsCompleteView;
-
     private Author mAuthor;
     private String mFamilyName;
     private String mGivenNames;
     private boolean mIsComplete;
-    WeakReference<BookChangedListener> mBookChangedListener;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -92,32 +116,40 @@ public abstract class EditAuthorBaseDialogFragment
         mIsCompleteView.setChecked(mIsComplete);
 
         return new AlertDialog.Builder(context)
-                .setIcon(R.drawable.ic_edit)
-                .setView(root)
-                .setTitle(R.string.title_edit_book_authors)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
-                    mFamilyName = mFamilyNameView.getText().toString().trim();
-                    if (mFamilyName.isEmpty()) {
-                        UserMessage.show(mFamilyNameView, R.string.warning_missing_name);
-                        return;
-                    }
+                       .setIcon(R.drawable.ic_edit)
+                       .setView(root)
+                       .setTitle(R.string.title_edit_book_authors)
+                       .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                       .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
+                           mFamilyName = mFamilyNameView.getText().toString().trim();
+                           if (mFamilyName.isEmpty()) {
+                               UserMessage.show(mFamilyNameView, R.string.warning_missing_name);
+                               return;
+                           }
 
-                    mGivenNames = mGivenNamesView.getText().toString().trim();
-                    mIsComplete = mIsCompleteView.isChecked();
-                    dismiss();
+                           mGivenNames = mGivenNamesView.getText().toString().trim();
+                           mIsComplete = mIsCompleteView.isChecked();
+                           dismiss();
 
-                    if (mAuthor.getFamilyName().equals(mFamilyName)
-                            && mAuthor.getGivenNames().equals(mGivenNames)
-                            && mAuthor.isComplete() == mIsComplete) {
-                        return;
-                    }
-                    // Create a new Author as a holder for the changes.
-                    Author newAuthorData = new Author(mFamilyName, mGivenNames, mIsComplete);
+                           if (mAuthor.getFamilyName().equals(mFamilyName)
+                               && mAuthor.getGivenNames().equals(mGivenNames)
+                               && mAuthor.isComplete() == mIsComplete) {
+                               return;
+                           }
+                           // Create a new Author as a holder for the changes.
+                           Author newAuthorData = new Author(mFamilyName, mGivenNames, mIsComplete);
 
-                    confirmChanges(mAuthor, newAuthorData);
-                })
-                .create();
+                           confirmChanges(mAuthor, newAuthorData);
+                       })
+                       .create();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
+        outState.putString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
+        outState.putBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
     }
 
     /**
@@ -144,14 +176,6 @@ public abstract class EditAuthorBaseDialogFragment
         mGivenNames = mGivenNamesView.getText().toString().trim();
         mIsComplete = mIsCompleteView.isChecked();
         super.onPause();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
-        outState.putString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
-        outState.putBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
     }
 
     @Override

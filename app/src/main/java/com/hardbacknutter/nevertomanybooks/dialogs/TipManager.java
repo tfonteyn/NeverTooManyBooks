@@ -1,27 +1,34 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.dialogs;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,15 +41,16 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.utils.LinkifyUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Original 'hint' renamed to 'tip' to avoid confusion with "android:hint".
+ * Original 'hints' renamed to 'tips' to avoid confusion with "android:hint".
  * This is only in code. The texts shown to the user have not changed.
  * <p>
  * Class to manage the display of 'tips' within the application. Each tip dialog has
@@ -54,8 +62,6 @@ import java.util.Map;
  * <p>
  * Note that tips are displayed as HTML spans. So any special formatting
  * should be done inside a CDATA and use HTML tags.
- *
- * @author Philip Warner
  */
 public final class TipManager {
 
@@ -91,9 +97,9 @@ public final class TipManager {
         ALL.put(R.string.tip_background_task_events,
                 new Tip("BACKGROUND_TASK_EVENTS"));
 
-        ALL.put(R.string.gr_explain_goodreads_no_isbn,
+        ALL.put(R.string.gr_explain_no_isbn,
                 new Tip("explain_goodreads_no_isbn"));
-        ALL.put(R.string.gr_explain_goodreads_no_match,
+        ALL.put(R.string.gr_explain_no_match,
                 new Tip("explain_goodreads_no_match"));
 
         ALL.put(R.string.tip_autorotate_camera_images,
@@ -123,6 +129,25 @@ public final class TipManager {
         for (Tip h : ALL.values()) {
             h.reset(context);
         }
+    }
+
+    /**
+     * Reset a sub set of tips, all starting (in preferences) with the given prefix.
+     *
+     * @param prefix to match
+     */
+    public static void reset(@NonNull final String prefix) {
+        SharedPreferences prefs = PreferenceManager
+                                          .getDefaultSharedPreferences(App.getAppContext());
+        SharedPreferences.Editor ed = prefs.edit();
+        for (String key : prefs.getAll().keySet()) {
+            if (key.toLowerCase(App.getSystemLocale())
+                   .startsWith(prefix.toLowerCase(
+                           App.getSystemLocale()))) {
+                ed.remove(key);
+            }
+        }
+        ed.apply();
     }
 
     /**
@@ -201,8 +226,9 @@ public final class TipManager {
          * Check if this tip should be shown.
          */
         private boolean shouldBeShown(@NonNull final Context context) {
-            return !mHasBeenDisplayed
-                    && PreferenceManager.getDefaultSharedPreferences(context).getBoolean(mKey, true);
+            return !mHasBeenDisplayed && PreferenceManager
+                                                 .getDefaultSharedPreferences(context)
+                                                 .getBoolean(mKey, true);
         }
 
         /**
@@ -235,22 +261,24 @@ public final class TipManager {
 
 
             final AlertDialog dialog = new AlertDialog.Builder(context)
-                    .setView(root)
-                    .setTitle(R.string.tip_dialog_title)
-                    .setNegativeButton(R.string.btn_disable_message, (d, which) -> {
-                        d.dismiss();
-                        setShowAgain(context,false);
-                        if (postRun != null) {
-                            postRun.run();
-                        }
-                    })
-                    .setPositiveButton(android.R.string.ok, (d, which) -> {
-                        d.dismiss();
-                        if (postRun != null) {
-                            postRun.run();
-                        }
-                    })
-                    .create();
+                                               .setView(root)
+                                               .setTitle(R.string.tip_dialog_title)
+                                               .setNegativeButton(R.string.btn_disable_message,
+                                                                  (d, which) -> {
+                                                                      d.dismiss();
+                                                                      setShowAgain(context, false);
+                                                                      if (postRun != null) {
+                                                                          postRun.run();
+                                                                      }
+                                                                  })
+                                               .setPositiveButton(android.R.string.ok,
+                                                                  (d, which) -> {
+                                                                      d.dismiss();
+                                                                      if (postRun != null) {
+                                                                          postRun.run();
+                                                                      }
+                                                                  })
+                                               .create();
 
             dialog.show();
             mHasBeenDisplayed = true;
@@ -264,11 +292,11 @@ public final class TipManager {
         private void setShowAgain(@NonNull final Context context,
                                   final boolean show) {
             PreferenceManager.getDefaultSharedPreferences(context)
-                    .edit().putBoolean(mKey, show).apply();
+                             .edit().putBoolean(mKey, show).apply();
         }
 
         void reset(@NonNull final Context context) {
-            setShowAgain(context,true);
+            setShowAgain(context, true);
             mHasBeenDisplayed = false;
         }
     }

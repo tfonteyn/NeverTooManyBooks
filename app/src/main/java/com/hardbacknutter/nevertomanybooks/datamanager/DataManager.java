@@ -1,32 +1,45 @@
 /*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.datamanager;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.datamanager.accessors.DataAccessor;
@@ -42,13 +55,6 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
 import com.hardbacknutter.nevertomanybooks.utils.UniqueMap;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Class to manage a version of a set of related data.
  * <p>
@@ -59,8 +65,6 @@ import java.util.Set;
  * This would be fine if the majority of info fields HAD a DataAccessor and/or DataValidator.
  * But (2019-06-11) right now there are only 4 accessors and 6 validators. The majority of
  * the fields have neither.
- *
- * @author pjw
  */
 public class DataManager {
 
@@ -151,8 +155,8 @@ public class DataManager {
                 putBoolean(key, (Boolean) value);
 
             } else if ((value instanceof ArrayList)
-                    && (!((ArrayList) value).isEmpty())
-                    && ((ArrayList) value).get(0) instanceof Parcelable) {
+                       && (!((ArrayList) value).isEmpty())
+                       && ((ArrayList) value).get(0) instanceof Parcelable) {
                 //noinspection unchecked
                 putParcelableArrayList(key, (ArrayList<Parcelable>) value);
 
@@ -162,8 +166,8 @@ public class DataManager {
             } else {
                 // THIS IS NOT IDEAL! Keep checking the log if we ever get here.
                 Logger.warnWithStackTrace(this, "putAll",
-                        "key=`" + key + '`',
-                        "value=" + value);
+                                          "key=`" + key + '`',
+                                          "value=" + value);
                 if (value != null) {
                     putString(key, value.toString());
                 }
@@ -457,8 +461,8 @@ public class DataManager {
                                 @NonNull final Serializable value) {
         if (BuildConfig.DEBUG /* always */) {
             Logger.debugWithStackTrace(this, "putSerializable",
-                    "key=" + key,
-                    "type=" + value.getClass().getCanonicalName());
+                                       "key=" + key,
+                                       "type=" + value.getClass().getCanonicalName());
         }
         mRawData.putSerializable(key, value);
     }
@@ -549,12 +553,11 @@ public class DataManager {
     private boolean validate(final boolean crossValidating) {
         boolean isOk = true;
 
-        for (String key : mValidatorsMap.keySet()) {
-            Datum datum = mDatumMap.get(key);
+        for (final Map.Entry<String, DataValidator> entry : mValidatorsMap.entrySet()) {
+            Datum datum = mDatumMap.get(entry.getKey());
             if (datum != null) {
                 try {
-                    //noinspection ConstantConditions
-                    mValidatorsMap.get(key).validate(this, datum, crossValidating);
+                    entry.getValue().validate(this, datum, crossValidating);
                 } catch (@NonNull final ValidatorException e) {
                     mValidationExceptions.add(e);
                     isOk = false;
@@ -580,7 +583,7 @@ public class DataManager {
     /**
      * Retrieve the text message associated with the validation exceptions (if any).
      *
-     * @param context Current context for accessing resources.
+     * @param context Current context
      *
      * @return a user displayable list of error messages, or {@code null} if none present
      */
@@ -593,8 +596,8 @@ public class DataManager {
             int cnt = 0;
             for (ValidatorException e : mValidationExceptions) {
                 message.append(" (").append(++cnt).append(") ")
-                        .append(e.getFormattedMessage(context))
-                        .append('\n');
+                       .append(e.getFormattedMessage(context))
+                       .append('\n');
             }
             return message.toString();
         }
@@ -604,17 +607,16 @@ public class DataManager {
     @NonNull
     public String toString() {
         return "DataManager{"
-                + "mRawData=" + mRawData
-                + ", mDatumMap=" + mDatumMap
-                + ", mValidationExceptions=" + mValidationExceptions
-                + ", mCrossValidators=" + mCrossValidators
-                + '}';
+               + "mRawData=" + mRawData
+               + ", mDatumMap=" + mDatumMap
+               + ", mValidationExceptions=" + mValidationExceptions
+               + ", mValidatorsMap=" + mValidatorsMap
+               + ", mCrossValidators=" + mCrossValidators
+               + '}';
     }
 
     /**
      * Class to manage the collection of {@link Datum} objects for this DataManager.
-     *
-     * @author pjw
      */
     private static class DatumMap
             extends HashMap<String, Datum> {

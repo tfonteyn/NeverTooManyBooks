@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.hardbacknutter.nevertomanybooks.widgets.cfs;
 
 import android.animation.Animator;
@@ -39,112 +38,106 @@ import com.hardbacknutter.nevertomanybooks.R;
 
 /**
  * Class responsible to animate and provide a fast scroller.
-
  */
 @SuppressWarnings("ALL")
 class CFSFastScroller
-        extends RecyclerView.ItemDecoration implements RecyclerView.OnItemTouchListener {
-    @IntDef({STATE_HIDDEN, STATE_VISIBLE, STATE_DRAGGING})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface State { }
+        extends RecyclerView.ItemDecoration
+        implements RecyclerView.OnItemTouchListener {
+
     // Scroll thumb not showing
     private static final int STATE_HIDDEN = 0;
     // Scroll thumb visible and moving along with the scrollbar
     private static final int STATE_VISIBLE = 1;
     // Scroll thumb being dragged by user
     private static final int STATE_DRAGGING = 2;
-
-    @IntDef({DRAG_X, DRAG_Y, DRAG_NONE})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface DragState{ }
     private static final int DRAG_NONE = 0;
     private static final int DRAG_X = 1;
     private static final int DRAG_Y = 2;
-
-    @IntDef({ANIMATION_STATE_OUT, ANIMATION_STATE_FADING_IN, ANIMATION_STATE_IN,
-             ANIMATION_STATE_FADING_OUT})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface AnimationState { }
     private static final int ANIMATION_STATE_OUT = 0;
     private static final int ANIMATION_STATE_FADING_IN = 1;
     private static final int ANIMATION_STATE_IN = 2;
     private static final int ANIMATION_STATE_FADING_OUT = 3;
-
     private static final int SHOW_DURATION_MS = 500;
     private static final int HIDE_DELAY_AFTER_VISIBLE_MS = 1500;
     private static final int HIDE_DELAY_AFTER_DRAGGING_MS = 1200;
     private static final int HIDE_DURATION_MS = 500;
     private static final int SCROLLBAR_FULL_OPAQUE = 255;
-
     private static final int[] PRESSED_STATE_SET = new int[]{android.R.attr.state_pressed};
     private static final int[] EMPTY_STATE_SET = new int[]{};
-
-    private final int mScrollbarMinimumRange;
-    private final int mMargin;
-
     // Final values for the vertical scroll bar
     @SuppressWarnings("WeakerAccess") /* synthetic access */
     final StateListDrawable mVerticalThumbDrawable;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
     final Drawable mVerticalTrackDrawable;
+    @SuppressWarnings("WeakerAccess") /* synthetic access */
+    final ValueAnimator mShowHideAnimator = ValueAnimator.ofFloat(0, 1);
+    private final int mScrollbarMinimumRange;
+    private final int mMargin;
     private final int mVerticalThumbWidth;
     private final int mVerticalTrackWidth;
-
     // Final values for the horizontal scroll bar
     private final StateListDrawable mHorizontalThumbDrawable;
     private final Drawable mHorizontalTrackDrawable;
     private final int mHorizontalThumbHeight;
     private final int mHorizontalTrackHeight;
-
-    // Dynamic values for the vertical scroll bar
-    @VisibleForTesting int mVerticalThumbHeight;
-    @VisibleForTesting int mVerticalThumbCenterY;
-    @VisibleForTesting float mVerticalDragY;
-
-    // Dynamic values for the horizontal scroll bar
-    @VisibleForTesting int mHorizontalThumbWidth;
-    @VisibleForTesting int mHorizontalThumbCenterX;
-    @VisibleForTesting float mHorizontalDragX;
-
-    private int mRecyclerViewWidth = 0;
-    private int mRecyclerViewHeight = 0;
-
-    private RecyclerView mRecyclerView;
-    private int mMinVerticalThumbHeight;
-
-    /**
-     * Whether the document is long/wide enough to require scrolling. If not, we don't show the
-     * relevant scroller.
-     */
-    private boolean mNeedVerticalScrollbar = false;
-    private boolean mNeedHorizontalScrollbar = false;
-    @State private int mState = STATE_HIDDEN;
-    @DragState private int mDragState = DRAG_NONE;
-
     private final int[] mVerticalRange = new int[2];
     private final int[] mHorizontalRange = new int[2];
+    // Dynamic values for the vertical scroll bar
+    @VisibleForTesting
+    int mVerticalThumbHeight;
+    @VisibleForTesting
+    int mVerticalThumbCenterY;
+    @VisibleForTesting
+    float mVerticalDragY;
+
+    // Dynamic values for the horizontal scroll bar
+    @VisibleForTesting
+    int mHorizontalThumbWidth;
+    @VisibleForTesting
+    int mHorizontalThumbCenterX;
+    @VisibleForTesting
+    float mHorizontalDragX;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    final ValueAnimator mShowHideAnimator = ValueAnimator.ofFloat(0, 1);
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
-    @AnimationState int mAnimationState = ANIMATION_STATE_OUT;
+    @AnimationState
+    int mAnimationState = ANIMATION_STATE_OUT;
     private final Runnable mHideRunnable = new Runnable() {
         @Override
         public void run() {
             hide(HIDE_DURATION_MS);
         }
     };
+    private int mRecyclerViewWidth = 0;
+    private int mRecyclerViewHeight = 0;
+    private RecyclerView mRecyclerView;
+    private int mMinVerticalThumbHeight;
+    /**
+     * Whether the document is long/wide enough to require scrolling. If not, we don't show the
+     * relevant scroller.
+     */
+    private boolean mNeedVerticalScrollbar = false;
+    private boolean mNeedHorizontalScrollbar = false;
+    @State
+    private int mState = STATE_HIDDEN;
     private final RecyclerView.OnScrollListener
             mOnScrollListener = new RecyclerView.OnScrollListener() {
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        public void onScrolled(RecyclerView recyclerView,
+                               int dx,
+                               int dy) {
             updateScrollPosition(recyclerView.computeHorizontalScrollOffset(),
                                  recyclerView.computeVerticalScrollOffset());
         }
     };
+    @DragState
+    private int mDragState = DRAG_NONE;
 
-    CFSFastScroller(RecyclerView recyclerView, StateListDrawable verticalThumbDrawable,
-                    Drawable verticalTrackDrawable, StateListDrawable horizontalThumbDrawable,
-                    Drawable horizontalTrackDrawable, int defaultWidth, int scrollbarMinimumRange,
+    CFSFastScroller(RecyclerView recyclerView,
+                    StateListDrawable verticalThumbDrawable,
+                    Drawable verticalTrackDrawable,
+                    StateListDrawable horizontalThumbDrawable,
+                    Drawable horizontalTrackDrawable,
+                    int defaultWidth,
+                    int scrollbarMinimumRange,
                     int margin) {
         mVerticalThumbDrawable = verticalThumbDrawable;
         mVerticalTrackDrawable = verticalTrackDrawable;
@@ -153,9 +146,11 @@ class CFSFastScroller
         mVerticalThumbWidth = Math.max(defaultWidth, verticalThumbDrawable.getIntrinsicWidth());
         mVerticalTrackWidth = Math.max(defaultWidth, verticalTrackDrawable.getIntrinsicWidth());
         mHorizontalThumbHeight = Math
-                .max(defaultWidth, horizontalThumbDrawable.getIntrinsicWidth());
+                                         .max(defaultWidth,
+                                              horizontalThumbDrawable.getIntrinsicWidth());
         mHorizontalTrackHeight = Math
-                .max(defaultWidth, horizontalTrackDrawable.getIntrinsicWidth());
+                                         .max(defaultWidth,
+                                              horizontalTrackDrawable.getIntrinsicWidth());
         mScrollbarMinimumRange = scrollbarMinimumRange;
         mMargin = margin;
         mVerticalThumbDrawable.setAlpha(SCROLLBAR_FULL_OPAQUE);
@@ -165,7 +160,8 @@ class CFSFastScroller
         mShowHideAnimator.addUpdateListener(new AnimatorUpdater());
 
         // BEGIN - CFSRecyclerView
-        mMinVerticalThumbHeight = recyclerView.getContext().getResources().getDimensionPixelSize(R.dimen.cfs_fast_scroll_min_thumb_height);
+        mMinVerticalThumbHeight = recyclerView.getContext().getResources().getDimensionPixelSize(
+                R.dimen.cfs_fast_scroll_min_thumb_height);
         // END - CFSRecyclerView
 
         attachToRecyclerView(recyclerView);
@@ -231,7 +227,8 @@ class CFSFastScroller
         return mState == STATE_DRAGGING;
     }
 
-    @VisibleForTesting boolean isVisible() {
+    @VisibleForTesting
+    boolean isVisible() {
         return mState == STATE_VISIBLE;
     }
 
@@ -275,9 +272,11 @@ class CFSFastScroller
     }
 
     @Override
-    public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+    public void onDrawOver(Canvas canvas,
+                           RecyclerView parent,
+                           RecyclerView.State state) {
         if (mRecyclerViewWidth != mRecyclerView.getWidth()
-                || mRecyclerViewHeight != mRecyclerView.getHeight()) {
+            || mRecyclerViewHeight != mRecyclerView.getHeight()) {
             mRecyclerViewWidth = mRecyclerView.getWidth();
             mRecyclerViewHeight = mRecyclerView.getHeight();
             // This is due to the different events ordering when keyboard is opened or
@@ -354,16 +353,17 @@ class CFSFastScroller
      * @param offsetX The new scroll X offset.
      * @param offsetY The new scroll Y offset.
      */
-    void updateScrollPosition(int offsetX, int offsetY) {
+    void updateScrollPosition(int offsetX,
+                              int offsetY) {
         int verticalContentLength = mRecyclerView.computeVerticalScrollRange();
         int verticalVisibleLength = mRecyclerViewHeight;
         mNeedVerticalScrollbar = verticalContentLength - verticalVisibleLength > 0
-                && mRecyclerViewHeight >= mScrollbarMinimumRange;
+                                 && mRecyclerViewHeight >= mScrollbarMinimumRange;
 
         int horizontalContentLength = mRecyclerView.computeHorizontalScrollRange();
         int horizontalVisibleLength = mRecyclerViewWidth;
         mNeedHorizontalScrollbar = horizontalContentLength - horizontalVisibleLength > 0
-                && mRecyclerViewWidth >= mScrollbarMinimumRange;
+                                   && mRecyclerViewWidth >= mScrollbarMinimumRange;
 
         if (!mNeedVerticalScrollbar && !mNeedHorizontalScrollbar) {
             if (mState != STATE_HIDDEN) {
@@ -377,7 +377,8 @@ class CFSFastScroller
             mVerticalThumbCenterY =
                     (int) ((verticalVisibleLength * middleScreenPos) / verticalContentLength);
             mVerticalThumbHeight = Math.min(verticalVisibleLength,
-                                            (verticalVisibleLength * verticalVisibleLength) / verticalContentLength);
+                                            (verticalVisibleLength * verticalVisibleLength)
+                                            / verticalContentLength);
         }
 
         if (mNeedHorizontalScrollbar) {
@@ -385,7 +386,8 @@ class CFSFastScroller
             mHorizontalThumbCenterX =
                     (int) ((horizontalVisibleLength * middleScreenPos) / horizontalContentLength);
             mHorizontalThumbWidth = Math.min(horizontalVisibleLength,
-                                             (horizontalVisibleLength * horizontalVisibleLength) / horizontalContentLength);
+                                             (horizontalVisibleLength * horizontalVisibleLength)
+                                             / horizontalContentLength);
         }
 
         if (mState == STATE_HIDDEN || mState == STATE_VISIBLE) {
@@ -407,7 +409,7 @@ class CFSFastScroller
             boolean insideVerticalThumb = isPointInsideVerticalThumb(ev.getX(), ev.getY());
             boolean insideHorizontalThumb = isPointInsideHorizontalThumb(ev.getX(), ev.getY());
             if (ev.getAction() == MotionEvent.ACTION_DOWN
-                    && (insideVerticalThumb || insideHorizontalThumb)) {
+                && (insideVerticalThumb || insideHorizontalThumb)) {
                 if (insideHorizontalThumb) {
                     mDragState = DRAG_X;
                     mHorizontalDragX = (int) ev.getX();
@@ -430,7 +432,8 @@ class CFSFastScroller
     }
 
     @Override
-    public void onTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent me) {
+    public void onTouchEvent(@NonNull RecyclerView recyclerView,
+                             @NonNull MotionEvent me) {
         if (mState == STATE_HIDDEN) {
             return;
         }
@@ -465,7 +468,8 @@ class CFSFastScroller
     }
 
     @Override
-    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) { }
+    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+    }
 
     private void verticalScrollTo(float y) {
         final int[] scrollbarRange = getVerticalRange();
@@ -475,7 +479,8 @@ class CFSFastScroller
         }
         int scrollingBy = scrollTo(mVerticalDragY, y, scrollbarRange,
                                    mRecyclerView.computeVerticalScrollRange(),
-                                   mRecyclerView.computeVerticalScrollOffset(), mRecyclerViewHeight);
+                                   mRecyclerView.computeVerticalScrollOffset(),
+                                   mRecyclerViewHeight);
         if (scrollingBy != 0) {
             mRecyclerView.scrollBy(0, scrollingBy);
         }
@@ -491,7 +496,8 @@ class CFSFastScroller
 
         int scrollingBy = scrollTo(mHorizontalDragX, x, scrollbarRange,
                                    mRecyclerView.computeHorizontalScrollRange(),
-                                   mRecyclerView.computeHorizontalScrollOffset(), mRecyclerViewWidth);
+                                   mRecyclerView.computeHorizontalScrollOffset(),
+                                   mRecyclerViewWidth);
         if (scrollingBy != 0) {
             mRecyclerView.scrollBy(scrollingBy, 0);
         }
@@ -499,8 +505,12 @@ class CFSFastScroller
         mHorizontalDragX = x;
     }
 
-    private int scrollTo(float oldDragPos, float newDragPos, int[] scrollbarRange, int scrollRange,
-                         int scrollOffset, int viewLength) {
+    private int scrollTo(float oldDragPos,
+                         float newDragPos,
+                         int[] scrollbarRange,
+                         int scrollRange,
+                         int scrollOffset,
+                         int viewLength) {
         int scrollbarLength = scrollbarRange[1] - scrollbarRange[0];
         if (scrollbarLength == 0) {
             return 0;
@@ -517,18 +527,20 @@ class CFSFastScroller
     }
 
     @VisibleForTesting
-    boolean isPointInsideVerticalThumb(float x, float y) {
+    boolean isPointInsideVerticalThumb(float x,
+                                       float y) {
         return (isLayoutRTL() ? x <= mVerticalThumbWidth / 2
                               : x >= mRecyclerViewWidth - mVerticalThumbWidth)
-                && y >= mVerticalThumbCenterY - mVerticalThumbHeight / 2
-                && y <= mVerticalThumbCenterY + mVerticalThumbHeight / 2;
+               && y >= mVerticalThumbCenterY - mVerticalThumbHeight / 2
+               && y <= mVerticalThumbCenterY + mVerticalThumbHeight / 2;
     }
 
     @VisibleForTesting
-    boolean isPointInsideHorizontalThumb(float x, float y) {
+    boolean isPointInsideHorizontalThumb(float x,
+                                         float y) {
         return (y >= mRecyclerViewHeight - mHorizontalThumbHeight)
-                && x >= mHorizontalThumbCenterX - mHorizontalThumbWidth / 2
-                && x <= mHorizontalThumbCenterX + mHorizontalThumbWidth / 2;
+               && x >= mHorizontalThumbCenterX - mHorizontalThumbWidth / 2
+               && x <= mHorizontalThumbCenterX + mHorizontalThumbWidth / 2;
     }
 
     @VisibleForTesting
@@ -569,11 +581,36 @@ class CFSFastScroller
         return mHorizontalRange;
     }
 
-    private class AnimatorListener extends AnimatorListenerAdapter {
+    @IntDef({STATE_HIDDEN, STATE_VISIBLE, STATE_DRAGGING})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface State {
+
+    }
+
+    @IntDef({DRAG_X, DRAG_Y, DRAG_NONE})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface DragState {
+
+    }
+
+    @IntDef({ANIMATION_STATE_OUT, ANIMATION_STATE_FADING_IN, ANIMATION_STATE_IN,
+             ANIMATION_STATE_FADING_OUT})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface AnimationState {
+
+    }
+
+    private class AnimatorListener
+            extends AnimatorListenerAdapter {
 
         private boolean mCanceled = false;
 
         AnimatorListener() {
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+            mCanceled = true;
         }
 
         @Override
@@ -591,14 +628,11 @@ class CFSFastScroller
                 requestRedraw();
             }
         }
-
-        @Override
-        public void onAnimationCancel(Animator animation) {
-            mCanceled = true;
-        }
     }
 
-    private class AnimatorUpdater implements AnimatorUpdateListener {
+    private class AnimatorUpdater
+            implements AnimatorUpdateListener {
+
         AnimatorUpdater() {
         }
 

@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.booklist;
 
 import android.database.AbstractCursor;
@@ -36,7 +42,8 @@ import com.hardbacknutter.nevertomanybooks.database.cursors.BooklistMappedCursor
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 
 /**
- * Yet Another Rabbit Burrow ("YARB" -- did I invent a new acronym?). What led to this?
+ * Philip Warner: Yet Another Rabbit Burrow ("YARB" -- did I invent a new acronym?).
+ * What led to this?
  * <p>
  * 1. The call to getCount() that ListView does when it is passed a cursor added approximately 25%
  * to the total time building a book list. Given the way book lists are constructed (a flat table
@@ -68,8 +75,6 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
  * Cursors are kept in a hash based on their position; cursors more than 3 'windows' away from the
  * current position are eligible for purging if they are not in the Most Recently Used (MRU) list.
  * The MRU list holds 8 cursors.
- *
- * @author Philip Warner
  */
 public class BooklistPseudoCursor
         extends AbstractCursor
@@ -121,17 +126,6 @@ public class BooklistPseudoCursor
     }
 
     /**
-     * Get the builder used to make this cursor.
-     *
-     * @return BooklistBuilder
-     */
-    @Override
-    @NonNull
-    public BooklistBuilder getBuilder() {
-        return mBuilder;
-    }
-
-    /**
      * Get a MappedCursorRow for this cursor. Constructs one if necessary.
      *
      * @return BooklistMappedCursorRow
@@ -143,6 +137,158 @@ public class BooklistPseudoCursor
             mCursorRow = new BooklistMappedCursorRow(this, mBuilder.getStyle());
         }
         return mCursorRow;
+    }
+
+    /**
+     * Get the builder used to make this cursor.
+     *
+     * @return BooklistBuilder
+     */
+    @Override
+    @NonNull
+    public BooklistBuilder getBuilder() {
+        return mBuilder;
+    }
+
+    /**
+     * Remove any old cursors that can be purged.
+     */
+    private void purgeOldCursors() {
+        // List of cursors to purge
+        ArrayList<Integer> toPurge = new ArrayList<>();
+        // Loop the hash
+        for (Integer key : mCursors.keySet()) {
+            // If it is more than 3 'pages' from the current position, it's a candidate
+            if (Math.abs(key) > PAGES_AWAY_FOR_PURGE) {
+                // Must not be in the MRU list
+                if (!checkMru(key)) {
+                    toPurge.add(key);
+                }
+            }
+        }
+        // Purge them
+        for (Integer i : toPurge) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+                Logger.debug(this, "purgeOldCursors", "Removing cursor at " + i);
+            }
+            BooklistCursor c = mCursors.remove(i);
+            if (c != null) {
+                c.close();
+            }
+        }
+    }
+
+    private void clearCursors() {
+
+        for (BooklistCursor cursor : mCursors.values()) {
+            cursor.close();
+        }
+
+        mCursors.clear();
+        mActiveCursor = null;
+
+        for (int i = 0; i < mMruList.length; i++) {
+            mMruList[i] = -1;
+        }
+    }
+
+    /**
+     * Check if the passed cursor ID is in the MRU list.
+     *
+     * @param id of cursor to check
+     *
+     * @return {@code true} if cursor is in list
+     */
+    private boolean checkMru(@NonNull final Integer id) {
+        for (int i : mMruList) {
+            if (id == i) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * {@link AbstractCursor} method.
+     */
+    @Override
+    public int getCount() {
+        if (mPseudoCount == null) {
+            mPseudoCount = mBuilder.getPseudoCount();
+        }
+        return mPseudoCount;
+    }
+
+    /**
+     * {@link AbstractCursor} method.
+     */
+    @Override
+    @NonNull
+    public String[] getColumnNames() {
+        return mBuilder.getListColumnNames();
+    }
+
+    @Override
+    public String getString(final int column) {
+        return mActiveCursor.getString(column);
+    }
+
+    @Override
+    public short getShort(final int column) {
+        return mActiveCursor.getShort(column);
+    }
+
+    @Override
+    public int getInt(final int column) {
+        return mActiveCursor.getInt(column);
+    }
+
+    @Override
+    public long getLong(final int column) {
+        return mActiveCursor.getLong(column);
+    }
+
+    @Override
+    public float getFloat(final int column) {
+        return mActiveCursor.getFloat(column);
+    }
+
+    @Override
+    public double getDouble(final int column) {
+        return mActiveCursor.getDouble(column);
+    }
+
+    @Override
+    public boolean isNull(final int column) {
+        return mActiveCursor.isNull(column);
+    }
+
+    /**
+     * Implement re-query; this needs to invalidate our existing cursors and call the superclass.
+     */
+    @Override
+    @CallSuper
+    public boolean requery() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+            Logger.debugEnter(this, "requery ", this);
+        }
+
+        clearCursors();
+        mPseudoCount = null;
+        onMove(getPosition(), getPosition());
+
+        return super.requery();
+    }
+
+    /**
+     * Close this cursor and all related cursors.
+     */
+    @Override
+    @CallSuper
+    public void close() {
+        //Logger.debugWithStackTrace(this,"close" , "closing cursor: " + this);
+        super.close();
+        clearCursors();
     }
 
     /**
@@ -234,157 +380,14 @@ public class BooklistPseudoCursor
         return true;
     }
 
-    /**
-     * Remove any old cursors that can be purged.
-     */
-    private void purgeOldCursors() {
-        // List of cursors to purge
-        ArrayList<Integer> toPurge = new ArrayList<>();
-        // Loop the hash
-        for (Integer key : mCursors.keySet()) {
-            // If it is more than 3 'pages' from the current position, it's a candidate
-            if (Math.abs(key) > PAGES_AWAY_FOR_PURGE) {
-                // Must not be in the MRU list
-                if (!checkMru(key)) {
-                    toPurge.add(key);
-                }
-            }
-        }
-        // Purge them
-        for (Integer i : toPurge) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.debug(this, "purgeOldCursors", "Removing cursor at " + i);
-            }
-            BooklistCursor c = mCursors.remove(i);
-            if (c != null) {
-                c.close();
-            }
-        }
-    }
-
-
-    private void clearCursors() {
-
-        for (BooklistCursor cursor : mCursors.values()) {
-            cursor.close();
-        }
-
-        mCursors.clear();
-        mActiveCursor = null;
-
-        for (int i = 0; i < mMruList.length; i++) {
-            mMruList[i] = -1;
-        }
-    }
-
-    /**
-     * Check if the passed cursor ID is in the MRU list.
-     *
-     * @param id of cursor to check
-     *
-     * @return {@code true} if cursor is in list
-     */
-    private boolean checkMru(@NonNull final Integer id) {
-        for (int i : mMruList) {
-            if (id == i) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    /**
-     * {@link AbstractCursor} method.
-     */
-    @Override
-    @NonNull
-    public String[] getColumnNames() {
-        return mBuilder.getListColumnNames();
-    }
-
-    /**
-     * {@link AbstractCursor} method.
-     */
-    @Override
-    public int getCount() {
-        if (mPseudoCount == null) {
-            mPseudoCount = mBuilder.getPseudoCount();
-        }
-        return mPseudoCount;
-    }
-
-    @Override
-    public double getDouble(final int column) {
-        return mActiveCursor.getDouble(column);
-    }
-
-    @Override
-    public float getFloat(final int column) {
-        return mActiveCursor.getFloat(column);
-    }
-
-    @Override
-    public int getInt(final int column) {
-        return mActiveCursor.getInt(column);
-    }
-
-    @Override
-    public long getLong(final int column) {
-        return mActiveCursor.getLong(column);
-    }
-
-    @Override
-    public short getShort(final int column) {
-        return mActiveCursor.getShort(column);
-    }
-
-    @Override
-    public String getString(final int column) {
-        return mActiveCursor.getString(column);
-    }
-
-    @Override
-    public boolean isNull(final int column) {
-        return mActiveCursor.isNull(column);
-    }
-
-    /**
-     * Implement re-query; this needs to invalidate our existing cursors and call the superclass.
-     */
-    @Override
-    @CallSuper
-    public boolean requery() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            Logger.debugEnter(this, "requery ", this);
-        }
-
-        clearCursors();
-        mPseudoCount = null;
-        onMove(getPosition(), getPosition());
-
-        return super.requery();
-    }
-
-    /**
-     * Close this cursor and all related cursors.
-     */
-    @Override
-    @CallSuper
-    public void close() {
-        //Logger.debugWithStackTrace(this,"close" , "closing cursor: " + this);
-        super.close();
-        clearCursors();
-    }
-
     @Override
     @NonNull
     public String toString() {
         return "BooklistPseudoCursor{"
-                + "mBuilder=" + mBuilder
-                + "mActiveCursor=" + mActiveCursor
-                + "mCursors=" + mCursors
-                + super.toString()
-                + '}';
+               + ", mBuilder=" + mBuilder
+               + ", mActiveCursor=" + mActiveCursor
+               + ", mCursors=" + mCursors
+               + ", " + super.toString()
+               + '}';
     }
 }

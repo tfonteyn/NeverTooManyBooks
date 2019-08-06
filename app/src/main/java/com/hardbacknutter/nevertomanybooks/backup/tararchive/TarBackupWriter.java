@@ -1,21 +1,28 @@
 /*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.backup.tararchive;
 
@@ -23,12 +30,6 @@ import android.content.Context;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-
-import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupContainer;
-import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupWriterAbstract;
-
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -38,10 +39,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+
+import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupContainer;
+import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupWriterAbstract;
+
 /**
  * Implementation of TAR-specific writer functions.
- *
- * @author pjw
  */
 public class TarBackupWriter
         extends BackupWriterAbstract {
@@ -54,6 +59,7 @@ public class TarBackupWriter
     /**
      * Constructor.
      *
+     * @param context   Current context
      * @param container Parent
      *
      * @throws IOException on failure
@@ -78,18 +84,6 @@ public class TarBackupWriter
     public void putInfo(@NonNull final byte[] bytes)
             throws IOException {
         putByteArray(TarBackupContainer.INFO_FILE, bytes);
-    }
-
-    @Override
-    public void putBooklistStyles(@NonNull final byte[] bytes)
-            throws IOException {
-        putByteArray(TarBackupContainer.STYLES, bytes);
-    }
-
-    @Override
-    public void putPreferences(@NonNull final byte[] bytes)
-            throws IOException {
-        putByteArray(TarBackupContainer.PREFERENCES, bytes);
     }
 
     @Override
@@ -122,6 +116,18 @@ public class TarBackupWriter
         mOutput.putArchiveEntry(entry);
         final InputStream is = new FileInputStream(file);
         streamToArchive(is);
+    }
+
+    @Override
+    public void putBooklistStyles(@NonNull final byte[] bytes)
+            throws IOException {
+        putByteArray(TarBackupContainer.STYLES, bytes);
+    }
+
+    @Override
+    public void putPreferences(@NonNull final byte[] bytes)
+            throws IOException {
+        putByteArray(TarBackupContainer.PREFERENCES, bytes);
     }
 
     /**

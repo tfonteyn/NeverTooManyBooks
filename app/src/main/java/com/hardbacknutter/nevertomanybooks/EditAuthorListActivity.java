@@ -1,38 +1,47 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
@@ -45,16 +54,11 @@ import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.StartDragListener;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
 /**
  * Activity to edit a list of authors provided in an {@code ArrayList<Author>}
  * and return an updated list.
  * <p>
  * Calling point is a Book; see {@link EditBookAuthorDialogFragment} for list
- *
- * @author Philip Warner
  */
 public class EditAuthorListActivity
         extends EditObjectListActivity<Author> {
@@ -72,19 +76,25 @@ public class EditAuthorListActivity
     }
 
     @Override
-    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setTitle(R.string.title_edit_book_authors);
 
-        mAutoCompleteAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line,
-                mDb.getAuthorNames(
-                        DBDefinitions.KEY_AUTHOR_FORMATTED));
+        mAutoCompleteAdapter =
+                new ArrayAdapter<>(this,
+                                   android.R.layout.simple_dropdown_item_1line,
+                                   mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
 
         mAutoCompleteTextView = findViewById(R.id.author);
         mAutoCompleteTextView.setAdapter(mAutoCompleteAdapter);
+    }
+
+    @Override
+    protected RecyclerViewAdapterBase
+    createListAdapter(@NonNull final ArrayList<Author> list,
+                      @NonNull final StartDragListener dragStartListener) {
+        return new AuthorListAdapter(getLayoutInflater(), list, dragStartListener);
     }
 
     @Override
@@ -113,13 +123,6 @@ public class EditAuthorListActivity
         mAutoCompleteTextView.setText("");
     }
 
-    @Override
-    protected RecyclerViewAdapterBase
-    createListAdapter(@NonNull final ArrayList<Author> list,
-                      @NonNull final StartDragListener dragStartListener) {
-        return new AuthorListAdapter(this, list, dragStartListener);
-    }
-
     /**
      * Handle the edits.
      *
@@ -131,7 +134,7 @@ public class EditAuthorListActivity
 
         // See if the old one is used by any other books.
         long nrOfReferences = mDb.countBooksByAuthor(author)
-                + mDb.countTocEntryByAuthor(author);
+                              + mDb.countTocEntryByAuthor(author);
         boolean usedByOthers = nrOfReferences > (mRowId == 0 ? 0 : 1);
 
         // if it's not, then we can simply re-use the old object.
@@ -153,12 +156,13 @@ public class EditAuthorListActivity
         // is used in more than one place. Ask the user if they want to make the changes globally.
         String allBooks = getString(R.string.bookshelf_all_books);
 
-        final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.title_scope_of_change)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setMessage(getString(R.string.confirm_apply_author_changed,
-                        author.getSortName(), newAuthorData.getSortName(), allBooks))
-                .create();
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                                     .setTitle(R.string.title_scope_of_change)
+                                     .setIconAttribute(android.R.attr.alertDialogIcon)
+                                     .setMessage(getString(R.string.confirm_apply_author_changed,
+                                                           author.getSortName(),
+                                                           newAuthorData.getSortName(), allBooks))
+                                     .create();
 
         /*
          * choosing 'this book':
@@ -178,11 +182,11 @@ public class EditAuthorListActivity
          * - add new author to book
          */
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
-                (d, which) -> {
-                    author.copyFrom(newAuthorData);
-                    ItemWithFixableId.pruneList(this, mDb, mList);
-                    mListAdapter.notifyDataSetChanged();
-                });
+                         (d, which) -> {
+                             author.copyFrom(newAuthorData);
+                             ItemWithFixableId.pruneList(this, mDb, mList);
+                             mListAdapter.notifyDataSetChanged();
+                         });
 
         /*
          * Choosing 'all books':
@@ -285,10 +289,10 @@ public class EditAuthorListActivity
     protected class AuthorListAdapter
             extends RecyclerViewAdapterBase<Author, Holder> {
 
-        AuthorListAdapter(@NonNull final Context context,
+        AuthorListAdapter(@NonNull final LayoutInflater layoutInflater,
                           @NonNull final ArrayList<Author> items,
                           @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(layoutInflater, items, dragStartListener);
         }
 
         @NonNull
@@ -297,7 +301,7 @@ public class EditAuthorListActivity
                                          final int viewType) {
 
             View view = getLayoutInflater()
-                    .inflate(R.layout.row_edit_author_list, parent, false);
+                                .inflate(R.layout.row_edit_author_list, parent, false);
             return new Holder(view);
         }
 
@@ -322,7 +326,7 @@ public class EditAuthorListActivity
                 FragmentManager fm = getSupportFragmentManager();
                 if (fm.findFragmentByTag(EditBookAuthorDialogFragment.TAG) == null) {
                     EditBookAuthorDialogFragment.newInstance(author)
-                            .show(fm, EditBookAuthorDialogFragment.TAG);
+                                                .show(fm, EditBookAuthorDialogFragment.TAG);
                 }
             });
         }

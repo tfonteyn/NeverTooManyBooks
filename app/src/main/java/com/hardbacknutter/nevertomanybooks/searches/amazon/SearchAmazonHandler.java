@@ -1,23 +1,29 @@
 /*
- * @copyright 2010 Evan Leybourn
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.searches.amazon;
 
 import android.os.Bundle;
@@ -50,7 +56,8 @@ import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
  * <ItemSearchResponse xmlns="http://webservices.amazon.com/AWSECommerceService/2005-10-05">
  *   <OperationRequest>
  *     <HTTPHeaders>
- *       <Header Name="UserAgent" Value="Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.29 Safari/533.4">
+ *       <Header Name="UserAgent" Value="Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/533.4
+ *          (KHTML, like Gecko) Chrome/5.0.375.29 Safari/533.4">
  *       </Header>
  *     </HTTPHeaders>
  *     <RequestId>df6342c0-c939-4b28-877a-5096da83a959</RequestId>
@@ -345,7 +352,8 @@ class SearchAmazonHandler
      */
     private void handleListPrice() {
         try {
-            int decDigits = java.util.Currency.getInstance(mCurrencyCode).getDefaultFractionDigits();
+            int decDigits = java.util.Currency.getInstance(mCurrencyCode)
+                                              .getDefaultFractionDigits();
             // move the decimal point 'digits' up
             double price = ((double) Integer.parseInt(mCurrencyAmount)) / Math.pow(10, decDigits);
             // and format with 'digits' decimal places
@@ -361,14 +369,26 @@ class SearchAmazonHandler
         }
     }
 
+    /**
+     * Store the accumulated data in the results.
+     */
     @Override
     @CallSuper
-    public void characters(final char[] ch,
-                           final int start,
-                           final int length)
-            throws SAXException {
-        super.characters(ch, start, length);
-        mBuilder.append(ch, start, length);
+    public void endDocument() {
+        if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
+            String name = mBookData.getString(DBDefinitions.KEY_ASIN, "");
+            String fileSpec = ImageUtils.saveImage(mThumbnailUrl, name, FILENAME_SUFFIX);
+            if (fileSpec != null) {
+                ArrayList<String> imageList =
+                        mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+                if (imageList == null) {
+                    imageList = new ArrayList<>();
+                }
+                imageList.add(fileSpec);
+                mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
+            }
+        }
+        mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
     }
 
     /**
@@ -496,8 +516,8 @@ class SearchAmazonHandler
                 mCurrencyCode = mBuilder.toString();
 
             } else if (localName.equalsIgnoreCase(XML_EAN)
-                    || localName.equalsIgnoreCase(XML_E_ISBN)
-                    || localName.equalsIgnoreCase(XML_ISBN_OLD)) {
+                       || localName.equalsIgnoreCase(XML_E_ISBN)
+                       || localName.equalsIgnoreCase(XML_ISBN_OLD)) {
                 // we prefer the "longest" isbn, which theoretically should be an ISBN-13
                 String tmp = mBuilder.toString();
                 String test = mBookData.getString(DBDefinitions.KEY_ISBN);
@@ -512,7 +532,7 @@ class SearchAmazonHandler
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                     // see what we are missing.
                     Logger.warn(this, "endElement", "Skipping: "
-                            + localName + "->`" + mBuilder + '`');
+                                                    + localName + "->`" + mBuilder + '`');
                 }
             }
         } //else if (localName.equalsIgnoreCase(XML_TOTAL_RESULTS)){
@@ -526,26 +546,14 @@ class SearchAmazonHandler
         mBuilder.setLength(0);
     }
 
-    /**
-     * Store the accumulated data in the results.
-     */
     @Override
     @CallSuper
-    public void endDocument() {
-        if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
-            String name = mBookData.getString(DBDefinitions.KEY_ASIN, "");
-            String fileSpec = ImageUtils.saveImage(mThumbnailUrl, name, FILENAME_SUFFIX);
-            if (fileSpec != null) {
-                ArrayList<String> imageList =
-                        mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
-                if (imageList == null) {
-                    imageList = new ArrayList<>();
-                }
-                imageList.add(fileSpec);
-                mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
-            }
-        }
-        mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+    public void characters(final char[] ch,
+                           final int start,
+                           final int length)
+            throws SAXException {
+        super.characters(ch, start, length);
+        mBuilder.append(ch, start, length);
     }
 }
 

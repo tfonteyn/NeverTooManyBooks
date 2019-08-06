@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.hardbacknutter.nevertomanybooks.cropper;
 
 import android.app.Activity;
@@ -256,7 +255,6 @@ public class CropImageActivity
      * is now done in the manifest using a theme on this activity.
      */
     @Override
-    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         // Do this first to avoid 'must be first errors'
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -309,6 +307,15 @@ public class CropImageActivity
             setResult(Activity.RESULT_CANCELED);
             finish();
         }
+    }
+
+    @Override
+    @CallSuper
+    protected void onDestroy() {
+        if (mBitmap != null && !mBitmap.isRecycled()) {
+            mBitmap.recycle();
+        }
+        super.onDestroy();
     }
 
     @Nullable
@@ -451,7 +458,7 @@ public class CropImageActivity
         // Return the cropped image directly or save it to the specified URI.
         Bundle extras = getIntent().getExtras();
         if (extras != null && (extras.getParcelable(BKEY_DATA) != null
-                || extras.getBoolean(BKEY_RETURN_DATA))) {
+                               || extras.getBoolean(BKEY_RETURN_DATA))) {
 
             Bundle resultExtras = new Bundle();
             resultExtras.putParcelable(BKEY_DATA, croppedImage);
@@ -489,15 +496,6 @@ public class CropImageActivity
         // clean up and quit.
         croppedImage.recycle();
         finish();
-    }
-
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        if (mBitmap != null && !mBitmap.isRecycled()) {
-            mBitmap.recycle();
-        }
-        super.onDestroy();
     }
 
     @StringRes

@@ -1,28 +1,35 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +44,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
@@ -55,9 +65,6 @@ import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertomanybooks.widgets.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.StartDragListener;
-
-import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Activity to edit the list of styles.
@@ -86,7 +93,6 @@ public class PreferredStylesActivity
     }
 
     @Override
-    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -101,8 +107,8 @@ public class PreferredStylesActivity
         mListView.setHasFixedSize(true);
 
         // setup the adapter
-        mListAdapter = new BooklistStylesAdapter(this, mModel.getList(),
-                viewHolder -> mItemTouchHelper.startDrag(viewHolder));
+        mListAdapter = new BooklistStylesAdapter(getLayoutInflater(), mModel.getList(),
+                                                 vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -122,9 +128,40 @@ public class PreferredStylesActivity
         setTitle(R.string.lbl_preferred_styles);
 
         if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(),
-                    R.string.tip_booklist_styles_editor, null);
+            TipManager.display(getLayoutInflater(), R.string.tip_booklist_styles_editor, null);
         }
+    }
+
+    @Override
+    @CallSuper
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (requestCode) {
+            case UniqueId.REQ_EDIT_STYLE: {
+
+                if (resultCode == UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE) {
+                    Objects.requireNonNull(data);
+                    BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
+                    if (style != null) {
+                        mModel.handleStyleChange(style);
+                    }
+                    mListAdapter.notifyDataSetChanged();
+
+                    // need to send up the chain
+                    setResult(resultCode, data);
+                }
+                break;
+            }
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+        }
+
+        Tracker.exitOnActivityResult(this);
     }
 
     private void onCreateContextMenu(final int position) {
@@ -134,18 +171,17 @@ public class PreferredStylesActivity
 
         if (style.isUserDefined()) {
             menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-                    .setIcon(R.drawable.ic_edit);
+                .setIcon(R.drawable.ic_edit);
             menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-                    .setIcon(R.drawable.ic_delete);
+                .setIcon(R.drawable.ic_delete);
         }
 
         menu.add(Menu.NONE, R.id.MENU_CLONE, 0, R.string.menu_duplicate)
-                .setIcon(R.drawable.ic_content_copy);
+            .setIcon(R.drawable.ic_content_copy);
 
-        String menuTitle = style.getLabel(this);
-        final MenuPicker<BooklistStyle> picker = new MenuPicker<>(this, menuTitle, menu, style,
-                this::onContextItemSelected);
-        picker.show();
+        String title = style.getLabel(this);
+        new MenuPicker<>(getLayoutInflater(), title, menu, style, this::onContextItemSelected)
+                .show();
     }
 
     /**
@@ -194,41 +230,9 @@ public class PreferredStylesActivity
         }
 
         Intent intent = new Intent(this, SettingsActivity.class)
-                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StyleSettingsFragment.TAG)
-                .putExtra(UniqueId.BKEY_STYLE, (Parcelable) style);
+                                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StyleSettingsFragment.TAG)
+                                .putExtra(UniqueId.BKEY_STYLE, (Parcelable) style);
         startActivityForResult(intent, UniqueId.REQ_EDIT_STYLE);
-    }
-
-    @Override
-    @CallSuper
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case UniqueId.REQ_EDIT_STYLE: {
-
-                if (resultCode == UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE) {
-                    Objects.requireNonNull(data);
-                    BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
-                    if (style != null) {
-                        mModel.handleStyleChange(style);
-                    }
-                    mListAdapter.notifyDataSetChanged();
-
-                    // need to send up the chain
-                    setResult(resultCode, data);
-                }
-                break;
-            }
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-        }
-
-        Tracker.exitOnActivityResult(this);
     }
 
     /**
@@ -253,17 +257,13 @@ public class PreferredStylesActivity
         }
     }
 
-    private static class BooklistStylesAdapter
+    private class BooklistStylesAdapter
             extends RecyclerViewAdapterBase<BooklistStyle, Holder> {
 
-        @NonNull
-        private final PreferredStylesActivity mActivity;
-
-        BooklistStylesAdapter(@NonNull final PreferredStylesActivity activity,
+        BooklistStylesAdapter(@NonNull final LayoutInflater layoutInflater,
                               @NonNull final ArrayList<BooklistStyle> items,
                               @NonNull final StartDragListener dragStartListener) {
-            super(activity, items, dragStartListener);
-            mActivity = activity;
+            super(layoutInflater, items, dragStartListener);
         }
 
         @NonNull
@@ -272,7 +272,7 @@ public class PreferredStylesActivity
                                          final int viewType) {
 
             View view = getLayoutInflater()
-                    .inflate(R.layout.row_edit_booklist_style_groups, parent, false);
+                                .inflate(R.layout.row_edit_booklist_style_groups, parent, false);
             return new Holder(view);
         }
 
@@ -304,7 +304,7 @@ public class PreferredStylesActivity
 
             // long-click -> menu
             holder.rowDetailsView.setOnLongClickListener(v -> {
-                mActivity.onCreateContextMenu(holder.getAdapterPosition());
+                onCreateContextMenu(holder.getAdapterPosition());
                 return true;
             });
         }

@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
@@ -31,22 +37,20 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Locale;
+
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Base class for tasks. This builds and populates simple View objects to display the task.
  * <p>
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
- *
- * @author Philip Warner
  */
 public abstract class TQTask
         extends Task
@@ -102,7 +106,7 @@ public abstract class TQTask
 
         // Update task info binding
         holder.description.setText(getDescription(context));
-        String statusCode = tasksCursor.getStatusCode().toUpperCase();
+        String statusCode = tasksCursor.getStatusCode().toUpperCase(Locale.ENGLISH);
         String statusText;
         switch (statusCode) {
             case STATUS_COMPLETE:
@@ -161,15 +165,14 @@ public abstract class TQTask
                                     @NonNull final List<ContextDialogItem> items,
                                     @NonNull final DAO db) {
 
-        items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task),
-                                        () -> QueueManager.getQueueManager().deleteTask(id))
-        );
+        ContextDialogItem item =
+                new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task),
+                                      () -> QueueManager.getQueueManager().deleteTask(id));
+        items.add(item);
     }
 
     /**
      * Holder class record to maintain task views.
-     *
-     * @author Philip Warner
      */
     static class TaskHolder {
 

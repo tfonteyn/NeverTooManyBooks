@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.settings;
 
 import android.app.Activity;
@@ -15,14 +41,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.android.material.tabs.TabLayout;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertomanybooks.searches.Site;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * USE scenario is (2019-07-05) on a per-page basis only. Hence we 'use' the current displayed list.
@@ -66,7 +92,7 @@ public class SearchAdminActivity
 
         Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
         int requestedTab = args == null ? SHOW_ALL_TABS
-                : args.getInt(REQUEST_BKEY_TAB, SHOW_ALL_TABS);
+                                        : args.getInt(REQUEST_BKEY_TAB, SHOW_ALL_TABS);
 
         mViewPager = findViewById(R.id.tab_fragment);
         TabLayout tabLayout = findViewById(R.id.tab_panel);
@@ -76,13 +102,13 @@ public class SearchAdminActivity
             case TAB_ORDER:
                 tabLayout.setVisibility(View.GONE);
                 initSingleTab(SearchOrderFragment.TAG + TAB_ORDER,
-                        R.string.lbl_books);
+                              R.string.lbl_books);
                 break;
 
             case TAB_COVER_ORDER:
                 tabLayout.setVisibility(View.GONE);
                 initSingleTab(SearchOrderFragment.TAG + TAB_COVER_ORDER,
-                        R.string.lbl_cover);
+                              R.string.lbl_cover);
                 break;
 
             default:
@@ -91,24 +117,16 @@ public class SearchAdminActivity
                 FragmentManager fm = getSupportFragmentManager();
                 // add them in order! i.e. in the order the TAB_* constants are defined.
                 mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_ORDER,
-                        getString(R.string.lbl_books)));
+                                                getString(R.string.lbl_books)));
 
                 mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_COVER_ORDER,
-                        getString(R.string.lbl_covers)));
+                                                getString(R.string.lbl_covers)));
                 break;
         }
 
         // fire up the adapter.
         mViewPager.setAdapter(mAdapter);
         tabLayout.setupWithViewPager(mViewPager);
-    }
-
-    private void initSingleTab(@NonNull final String tag,
-                               @StringRes final int titleId) {
-        mUseScenario = true;
-
-        setTitle(titleId);
-        mAdapter.add(new FragmentHolder(getSupportFragmentManager(), tag, getString(titleId)));
     }
 
     @Override
@@ -120,17 +138,6 @@ public class SearchAdminActivity
         }
         finish();
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-
-        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.btn_reset)
-                .setIcon(R.drawable.ic_undo)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -157,6 +164,24 @@ public class SearchAdminActivity
         }
     }
 
+    private void initSingleTab(@NonNull final String tag,
+                               @StringRes final int titleId) {
+        mUseScenario = true;
+
+        setTitle(titleId);
+        mAdapter.add(new FragmentHolder(getSupportFragmentManager(), tag, getString(titleId)));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+
+        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.btn_reset)
+            .setIcon(R.drawable.ic_undo)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
     /**
      * Prepares and sets the activity result.
      */
@@ -164,11 +189,11 @@ public class SearchAdminActivity
 
         int sites = SearchSites.SEARCH_ALL;
         ArrayList<Site> list = ((SearchOrderFragment)
-                mAdapter.getItem(mViewPager.getCurrentItem())).getList();
+                                        mAdapter.getItem(mViewPager.getCurrentItem())).getList();
         //noinspection ConstantConditions
         for (Site site : list) {
             sites = site.isEnabled() ? sites | site.id
-                    : sites & ~site.id;
+                                     : sites & ~site.id;
         }
         Intent data = new Intent().putExtra(RESULT_SEARCH_SITES, sites);
         // don't commit any changes, we got data to use temporarily
@@ -224,14 +249,14 @@ public class SearchAdminActivity
             return mFragmentList.size();
         }
 
-        void add(@NonNull final FragmentHolder fragmentHolder) {
-            mFragmentList.add(fragmentHolder);
-        }
-
         @Override
         @NonNull
         public CharSequence getPageTitle(final int position) {
             return mFragmentList.get(position).title;
+        }
+
+        void add(@NonNull final FragmentHolder fragmentHolder) {
+            mFragmentList.add(fragmentHolder);
         }
     }
 

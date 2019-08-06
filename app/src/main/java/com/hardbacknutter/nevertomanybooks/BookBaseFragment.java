@@ -1,21 +1,28 @@
 /*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks;
 
@@ -39,6 +46,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.datamanager.DataViewer;
 import com.hardbacknutter.nevertomanybooks.datamanager.Fields;
@@ -49,11 +61,6 @@ import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.viewmodels.BookBaseFragmentModel;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Base class for {@link BookFragment} and {@link EditBookBaseFragment}.
@@ -66,24 +73,25 @@ import java.util.Objects;
  * BookBaseFragment -> EditBookBaseFragment -> EditBookNotesFragment
  * BookBaseFragment -> EditBookBaseFragment -> EditBookPublicationFragment
  * BookBaseFragment -> EditBookBaseFragment -> EditBookTocFragment
- *
- * @author pjw
  */
 public abstract class BookBaseFragment
         extends Fragment
         implements DataViewer {
 
     /** The book. Must be in the Activity scope for {@link EditBookActivity#onBackPressed()}. */
-    BookBaseFragmentModel mBookBaseFragmentModel;
+    BookBaseFragmentModel mBookModel;
 
     /**
      * The fields collection.
-     * Does not store any context or Views, but does uses some WeakReferences.
+     * Does not store any context or Views, but does use WeakReferences.
      */
     private Fields mFields;
 
+    /**
+     * Set the activity title depending on View or Edit mode.
+     */
     private void setActivityTitle() {
-        Book book = mBookBaseFragmentModel.getBook();
+        Book book = mBookModel.getBook();
 
         @SuppressWarnings("ConstantConditions")
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -101,38 +109,6 @@ public abstract class BookBaseFragment
         }
     }
 
-    @Override
-    @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // make sure {@link #onCreateOptionsMenu} is called
-        setHasOptionsMenu(true);
-    }
-
-    /**
-     * Registers the {@link Book} as a ViewModel, and load/create the its data as needed.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        // Activity scope!
-        //noinspection ConstantConditions
-        mBookBaseFragmentModel = ViewModelProviders.of(getActivity())
-                .get(BookBaseFragmentModel.class);
-        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
-        mBookBaseFragmentModel.init(args);
-        mBookBaseFragmentModel.getUserMessage().observe(this, this::showUserMessage);
-        mBookBaseFragmentModel.getNeedsGoodreads().observe(this, this::needsGoodreads);
-
-        mFields = new Fields(this);
-        initFields();
-    }
-
     /**
      * Called if an interaction with Goodreads failed due to authorization issues.
      * Prompts the user to register.
@@ -142,8 +118,7 @@ public abstract class BookBaseFragment
     private void needsGoodreads(@Nullable final Boolean needs) {
         if (needs != null && needs) {
             //noinspection ConstantConditions
-            RequestAuthTask.needsRegistration(getContext(),
-                    mBookBaseFragmentModel.getGoodreadsTaskListener());
+            RequestAuthTask.needsRegistration(getContext(), mBookModel.getGoodreadsTaskListener());
         }
     }
 
@@ -186,7 +161,116 @@ public abstract class BookBaseFragment
      * <p>
      * Note this is NOT where we set values.
      */
+    @CallSuper
     void initFields() {
+    }
+
+    /**
+     * Populate all Fields with the data from the Book.
+     * Loads the data while preserving the isDirty() status.
+     * Normally called from the base onResume, but can also be called after {@link Book#reload}.
+     * <p>
+     * This is 'final' because we want inheritors to implement {@link #onLoadFieldsFromBook}.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    public final void loadFields() {
+        // load the book, while disabling the AfterFieldChangeListener
+        getFields().setAfterFieldChangeListener(null);
+        // preserve the 'dirty' status.
+        final boolean wasDirty = mBookModel.isDirty();
+        // make it so!
+        onLoadFieldsFromBook();
+        // get dirty...
+        mBookModel.setDirty(wasDirty);
+        getFields().setAfterFieldChangeListener(
+                (field, newValue) -> mBookModel.setDirty(true));
+
+        // this is a good place to do this, as we use data from the book for the title.
+        setActivityTitle();
+    }
+
+    /**
+     * This is where you should populate all the fields with the values coming from the book.
+     * The base class (this one) manages all the actual fields, but 'special' fields can/should
+     * be handled in overrides, calling super as the first step.
+     */
+    @CallSuper
+    void onLoadFieldsFromBook() {
+        getFields().setAllFrom(mBookModel.getBook());
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (requestCode) {
+            case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
+                    //noinspection unchecked
+                    ArrayList<Long> bookIds =
+                            (ArrayList<Long>) data.getSerializableExtra(UniqueId.BKEY_ID_LIST);
+
+                    if (bookIds != null && bookIds.size() == 1) {
+                        // replace current book with the updated one,
+                        // ENHANCE: merge if in edit mode.
+                        mBookModel.setBook(bookIds.get(0));
+                    } else {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                            Logger.debug(this, "BookBaseFragment.onActivityResult",
+                                         "wasCancelled= " + data.getBooleanExtra(
+                                                 UniqueId.BKEY_CANCELED, false));
+                        }
+                    }
+                }
+                break;
+
+            default:
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                    Logger.warnWithStackTrace("BookBaseFragment.onActivityResult",
+                                              "NOT HANDLED:",
+                                              "requestCode=" + requestCode,
+                                              "resultCode=" + resultCode);
+                }
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+        }
+
+        Tracker.exitOnActivityResult(this);
+    }
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Mandatory
+        setHasOptionsMenu(true);
+    }
+
+    /**
+     * Registers the {@link Book} as a ViewModel, and load/create the its data as needed.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // Activity scope!
+        //noinspection ConstantConditions
+        mBookModel = ViewModelProviders.of(getActivity()).get(BookBaseFragmentModel.class);
+        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
+        mBookModel.init(args);
+        mBookModel.getUserMessage().observe(this, this::showUserMessage);
+        mBookModel.getNeedsGoodreads().observe(this, this::needsGoodreads);
+
+        mFields = new Fields(this);
+        initFields();
     }
 
     /**
@@ -205,46 +289,10 @@ public abstract class BookBaseFragment
         Tracker.exitOnResume(this);
     }
 
-    /**
-     * Populate all Fields with the data from the Book.
-     * Loads the data while preserving the isDirty() status.
-     * Normally called from the base onResume, but can also be called after {@link Book#reload}.
-     * <p>
-     * This is 'final' because we want inheritors to implement {@link #onLoadFieldsFromBook}.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    public final void loadFields() {
-        // load the book, while disabling the AfterFieldChangeListener
-        getFields().setAfterFieldChangeListener(null);
-        // preserve the 'dirty' status.
-        final boolean wasDirty = mBookBaseFragmentModel.isDirty();
-        // make it so!
-        onLoadFieldsFromBook();
-        // get dirty...
-        mBookBaseFragmentModel.setDirty(wasDirty);
-        getFields().setAfterFieldChangeListener(
-                (field, newValue) -> mBookBaseFragmentModel.setDirty(true));
-
-        // this is a good place to do this, as we use data from the book for the title.
-        setActivityTitle();
-    }
-
-    /**
-     * This is where you should populate all the fields with the values coming from the book.
-     * The base class (this one) manages all the actual fields, but 'special' fields can/should
-     * be handled in overrides, calling super as the first step.
-     */
-    @CallSuper
-    void onLoadFieldsFromBook() {
-        getFields().setAllFrom(mBookBaseFragmentModel.getBook());
-    }
-
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        Book book = mBookBaseFragmentModel.getBook();
+        Book book = mBookModel.getBook();
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
@@ -255,59 +303,16 @@ public abstract class BookBaseFragment
                         new Intent(getContext(), UpdateFieldsFromInternetActivity.class)
                                 .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
                                 .putExtra(DBDefinitions.KEY_TITLE,
-                                        book.getString(DBDefinitions.KEY_TITLE))
+                                          book.getString(DBDefinitions.KEY_TITLE))
                                 .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                        book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                                          book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
                 startActivityForResult(intentUpdateFields,
-                        UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
+                                       UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
-                    //noinspection unchecked
-                    ArrayList<Long> bookIds = (ArrayList<Long>)
-                            data.getSerializableExtra(UniqueId.BKEY_ID_LIST);
-
-                    if (bookIds != null && bookIds.size() == 1) {
-                        // replace current book with the updated one,
-                        // ENHANCE: merge if in edit mode.
-                        mBookBaseFragmentModel.setBook(bookIds.get(0));
-                    } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                            Logger.debug(this, "BookBaseFragment.onActivityResult",
-                                    "wasCancelled= " + data.getBooleanExtra(
-                                            UniqueId.BKEY_CANCELED, false));
-                        }
-                    }
-                }
-                break;
-
-            default:
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.warnWithStackTrace("BookBaseFragment.onActivityResult",
-                            "NOT HANDLED:",
-                            "requestCode=" + requestCode,
-                            "resultCode=" + resultCode);
-                }
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-        }
-
-        Tracker.exitOnActivityResult(this);
     }
 
     /**
@@ -331,80 +336,80 @@ public abstract class BookBaseFragment
 
         // actual book
         setVisibility(R.id.coverImage, hideIfEmpty);
-        //  setVisibility(hideIfEmpty, R.id.toc, R.id.row_toc);
-
         setVisibility(R.id.series, hideIfEmpty,
-                R.id.lbl_series);
+                      R.id.lbl_series);
         setVisibility(R.id.isbn, hideIfEmpty,
-                R.id.lbl_isbn);
+                      R.id.lbl_isbn);
         setVisibility(R.id.description, hideIfEmpty,
-                R.id.lbl_description);
+                      R.id.lbl_description);
         setVisibility(R.id.pages, hideIfEmpty,
-                R.id.lbl_pages);
+                      R.id.lbl_pages);
         setVisibility(R.id.format, hideIfEmpty,
-                R.id.lbl_format);
+                      R.id.lbl_format);
         setVisibility(R.id.genre, hideIfEmpty,
-                R.id.lbl_genre);
+                      R.id.lbl_genre);
         setVisibility(R.id.language, hideIfEmpty,
-                R.id.lbl_language);
+                      R.id.lbl_language);
 
         setVisibility(R.id.publisher, hideIfEmpty);
         setVisibility(R.id.date_published, hideIfEmpty);
         setVisibility(R.id.first_publication, hideIfEmpty,
-                R.id.lbl_first_publication);
+                      R.id.lbl_first_publication);
         setVisibility(R.id.price_listed, hideIfEmpty,
-                R.id.price_listed_currency,
-                R.id.lbl_price_listed);
+                      R.id.price_listed_currency,
+                      R.id.lbl_price_listed);
 
         // Hide the Publication section label if none of the publishing fields are shown.
         setSectionLabelVisibility(R.id.lbl_publication_section,
-                R.id.publisher,
-                R.id.date_published,
-                R.id.price_listed,
-                R.id.first_publication);
+                                  R.id.publisher,
+                                  R.id.date_published,
+                                  R.id.price_listed,
+                                  R.id.first_publication);
+
+        //  setVisibility(hideIfEmpty, R.id.toc, R.id.row_toc);
 
         // personal fields
         setVisibility(R.id.loaned_to, hideIfEmpty);
         setVisibility(R.id.read, hideIfEmpty);
         setVisibility(R.id.notes, hideIfEmpty);
         setVisibility(R.id.bookshelves, hideIfEmpty,
-                R.id.lbl_bookshelves);
+                      R.id.lbl_bookshelves);
         setVisibility(R.id.edition, hideIfEmpty,
-                R.id.lbl_edition);
+                      R.id.lbl_edition);
         setVisibility(R.id.location, hideIfEmpty,
-                R.id.lbl_location,
-                R.id.lbl_location_long);
+                      R.id.lbl_location,
+                      R.id.lbl_location_long);
         setVisibility(R.id.date_acquired, hideIfEmpty,
-                R.id.lbl_date_acquired);
+                      R.id.lbl_date_acquired);
         setVisibility(R.id.price_paid, hideIfEmpty,
-                R.id.price_paid_currency,
-                R.id.lbl_price_paid);
+                      R.id.price_paid_currency,
+                      R.id.lbl_price_paid);
         setVisibility(R.id.signed, hideIfEmpty,
-                R.id.lbl_signed);
+                      R.id.lbl_signed);
         setVisibility(R.id.rating, hideIfEmpty,
-                R.id.lbl_rating);
+                      R.id.lbl_rating);
 
         setVisibility(R.id.read_start, hideIfEmpty,
-                R.id.lbl_read_start);
+                      R.id.lbl_read_start);
         setVisibility(R.id.read_end, hideIfEmpty,
-                R.id.lbl_read_end);
+                      R.id.lbl_read_end);
         // Hide the baseline for the read labels if both labels are gone.
         setBaselineVisibility(R.id.lbl_read_start_end_baseline,
-                R.id.lbl_read_start, R.id.lbl_read_end);
+                              R.id.lbl_read_start, R.id.lbl_read_end);
         // Hide the baseline for the value field if the labels are gone.
         setBaselineVisibility(R.id.read_start_end_baseline,
-                R.id.lbl_read_start_end_baseline);
+                              R.id.lbl_read_start_end_baseline);
 
         // Hide the Notes label if none of the notes fields are shown.
         setSectionLabelVisibility(R.id.lbl_notes,
-                R.id.notes,
-                R.id.lbl_edition,
-                R.id.lbl_signed,
-                R.id.lbl_date_acquired,
-                R.id.lbl_price_paid,
-                R.id.lbl_read_start,
-                R.id.lbl_read_end,
-                R.id.lbl_location);
+                                  R.id.notes,
+                                  R.id.lbl_edition,
+                                  R.id.lbl_signed,
+                                  R.id.lbl_date_acquired,
+                                  R.id.lbl_price_paid,
+                                  R.id.lbl_read_start,
+                                  R.id.lbl_read_end,
+                                  R.id.lbl_location);
 
         //NEWKIND: new fields
     }
@@ -439,7 +444,6 @@ public abstract class BookBaseFragment
                     }
                 }
             }
-
             setVisibility(visibility, relatedFields);
         }
     }
@@ -691,13 +695,12 @@ public abstract class BookBaseFragment
                 sb.append(' ');
             }
             sb.append(view.getClass().getCanonicalName())
-                    .append(" (").append(view.getId()).append(')')
-                    .append(" ->");
+              .append(" (").append(view.getId()).append("') ->");
 
             if (view instanceof TextView) {
-                String s = ((TextView) view).getText().toString().trim();
-                s = s.substring(0, Math.min(s.length(), 20));
-                sb.append(s);
+                String value = ((TextView) view).getText().toString().trim();
+                value = value.substring(0, Math.min(value.length(), 20));
+                sb.append(value);
             } else {
                 Logger.debug(BookBaseFragment.class, "debugDumpViewTree", sb);
             }

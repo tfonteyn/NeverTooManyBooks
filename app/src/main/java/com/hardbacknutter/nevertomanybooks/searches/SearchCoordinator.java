@@ -1,23 +1,29 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.searches;
 
 import android.annotation.SuppressLint;
@@ -57,8 +63,6 @@ import com.hardbacknutter.nevertomanybooks.utils.StringList;
  * It maintains its own internal list of tasks {@link #mManagedTasks} and as tasks it knows about
  * finish, it processes the data. Once all tasks are complete, it sends a message to its
  * creator via the {@link MessageSwitch}
- *
- * @author Philip Warner
  */
 public class SearchCoordinator {
 
@@ -211,7 +215,8 @@ public class SearchCoordinator {
 
     /**
      * Start a search.
-     *  @param searchFlags    bitmask with sites to search,
+     *
+     * @param searchFlags    bitmask with sites to search,
      *                       see {@link SearchSites#SEARCH_ALL} and individual flags
      *                       <p>
      *                       ONE of these three parameters must be !.isEmpty
@@ -256,10 +261,10 @@ public class SearchCoordinator {
         // Note we don't care about publisher.
         if (author.isEmpty() && title.isEmpty() && isbn.isEmpty()) {
             throw new IllegalArgumentException("Must specify at least one criteria non-empty:"
-                                                       + " isbn=" + isbn
-                                                       + ", author=" + author
-                                                       + ", publisher=" + publisher
-                                                       + ", title=" + title);
+                                               + " isbn=" + isbn
+                                               + ", author=" + author
+                                               + ", publisher=" + publisher
+                                               + ", title=" + title);
         }
 
         // Save the flags
@@ -457,7 +462,7 @@ public class SearchCoordinator {
                     mAuthor = bookData.getString(UniqueId.BKEY_SEARCH_AUTHOR);
                     mTitle = bookData.getString(DBDefinitions.KEY_TITLE);
                     if (mAuthor != null && !mAuthor.isEmpty()
-                            && mTitle != null && !mTitle.isEmpty()) {
+                        && mTitle != null && !mTitle.isEmpty()) {
                         // We got them, so pretend we are searching by author/title now,
                         // and waiting for an ISBN...
                         mWaitingForIsbn = true;
@@ -493,7 +498,7 @@ public class SearchCoordinator {
 
     /**
      * Combine all the data and create a book or display an error.
-     *
+     * <p>
      * 2019-07-12: removed the sending of user messages.
      * If a single book as searched, ok... but for multiple searches they only confuse the user.
      * => moving the check (if applicable) to the receiver of the results.
@@ -569,7 +574,7 @@ public class SearchCoordinator {
                           listener.onSearchFinished(mCancelledFlg, mBookData);
                           return true;
                       }
-                );
+                     );
     }
 
     /**
@@ -600,13 +605,13 @@ public class SearchCoordinator {
         }
         for (String key : bookData.keySet()) {
             if (DBDefinitions.KEY_DATE_PUBLISHED.equals(key)
-                    || DBDefinitions.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
+                || DBDefinitions.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
                 accumulateDates(key, bookData);
 
             } else if (UniqueId.BKEY_AUTHOR_ARRAY.equals(key)
-                    || UniqueId.BKEY_SERIES_ARRAY.equals(key)
-                    || UniqueId.BKEY_TOC_ENTRY_ARRAY.equals(key)
-                    || UniqueId.BKEY_FILE_SPEC_ARRAY.equals(key)) {
+                       || UniqueId.BKEY_SERIES_ARRAY.equals(key)
+                       || UniqueId.BKEY_TOC_ENTRY_ARRAY.equals(key)
+                       || UniqueId.BKEY_FILE_SPEC_ARRAY.equals(key)) {
                 accumulateList(key, bookData);
 
             } else {

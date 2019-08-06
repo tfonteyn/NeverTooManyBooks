@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.searches.librarything;
 
 import android.os.Bundle;
@@ -72,7 +98,7 @@ import com.hardbacknutter.nevertomanybooks.entities.Series;
  *              </person>
  *              <factList>
  *                <fact>
- *                  ![CDATA[ <b>Trullion: Alastor 2262</b></br>Glinnes moved after her,...blah blah ]]>
+ *                  ![CDATA[ <b>Trullion: Alastor 2262</b></br>Glinnes moved after ...blah blah ]]>
  *                </fact>
  *                <fact>
  *                  ![CDATA[ <b>Marune: Alastor 933</b></br>"I don't know either." ]]>
@@ -169,11 +195,14 @@ import com.hardbacknutter.nevertomanybooks.entities.Series;
  *            <versionList>
  *              <version id="3324305" archived="0" lang="eng">
  *                <date timestamp="1296476301">Mon, 31 Jan 2011 07:18:21 -0500</date>
- *                <person id="325052"><name>Cecrow</name><url>http://www.librarything.com/profile/Cecrow</url></person>
+ *                <person id="325052">
+ *                    <name>Cecrow</name>
+ *                    <url>http://www.librarything.com/profile/Cecrow</url>
+ *                </person>
  *                <factList>
  *                  <fact>1001 Books You Must Read Before You Die (2006/2008/2010 Edition)</fact>
- *                  <fact>Astounding/Analog Science Fiction and Fact All-Time Poll (placed 23, 1952)</fact>
- *                  <fact>Astounding/Analog Science Fiction and Fact All-Time Poll (placed 21, 1956)</fact>
+ *                  <fact>Astounding/Analog Science Fiction and Fact All-Time Poll ...</fact>
+ *                  <fact>Astounding/Analog Science Fiction and Fact All-Time Poll ...</fact>
  *                  <fact>Harenberg Buch der 1000 B�cher (1. Ausgabe)</fact>
  *                  <fact>501 Must-Read Books (Science Fiction)</fact>
  *                </factList>
@@ -436,8 +465,6 @@ import com.hardbacknutter.nevertomanybooks.entities.Series;
  *   }
  * </pre>
  * but in both cases, it should be noted that the covers are still available.
- *
- * @author Philip Warner
  */
 class SearchLibraryThingHandler
         extends DefaultHandler {
@@ -531,14 +558,17 @@ class SearchLibraryThingHandler
         }
     }
 
+    /**
+     * Store the accumulated data in the results.
+     */
     @Override
-    @CallSuper
-    public void characters(final char[] ch,
-                           final int start,
-                           final int length)
+    public void endDocument()
             throws SAXException {
-        super.characters(ch, start, length);
-        mBuilder.append(ch, start, length);
+        super.endDocument();
+
+        mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+        mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+
     }
 
     /**
@@ -658,17 +688,14 @@ class SearchLibraryThingHandler
         mBuilder.setLength(0);
     }
 
-    /**
-     * Store the accumulated data in the results.
-     */
     @Override
-    public void endDocument()
+    @CallSuper
+    public void characters(final char[] ch,
+                           final int start,
+                           final int length)
             throws SAXException {
-        super.endDocument();
-
-        mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
-        mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
-
+        super.characters(ch, start, length);
+        mBuilder.append(ch, start, length);
     }
 
     /**

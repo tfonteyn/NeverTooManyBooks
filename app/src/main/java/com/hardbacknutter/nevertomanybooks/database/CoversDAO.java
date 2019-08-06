@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.database;
 
 import android.content.ContentValues;
@@ -65,8 +71,6 @@ import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
  * <p>
  * note that {@link #DOM_WIDTH} and {@link #DOM_HEIGHT} are redundant/information only.
  * Lookup is done via the {@link #DOM_CACHE_ID} instead.
- *
- * @author Philip Warner
  */
 public final class CoversDAO
         implements AutoCloseable {
@@ -121,13 +125,14 @@ public final class CoversDAO
             new TableDefinition("image", DOM_PK_ID, DOM_IMAGE, DOM_DATE,
                                 DOM_WIDTH, DOM_HEIGHT, DOM_CACHE_ID);
     private static final String SQL_GET_IMAGE = "SELECT " + DOM_IMAGE + " FROM " + TBL_IMAGE
-            + " WHERE " + DOM_CACHE_ID + "=? AND " + DOM_DATE + ">?";
+                                                + " WHERE " + DOM_CACHE_ID + "=? AND " + DOM_DATE
+                                                + ">?";
     /**
      * run a count for the desired file. 1 == exists, 0 == not there
      */
     private static final String SQL_COUNT_ID =
             "SELECT COUNT(" + DOM_PK_ID + ") FROM " + TBL_IMAGE
-                    + " WHERE " + DOM_CACHE_ID + "=?";
+            + " WHERE " + DOM_CACHE_ID + "=?";
 
     /**
      * NOT DEBUG: close() will only really close all statements if INSTANCE_COUNTER == 0 is reached.
@@ -419,7 +424,6 @@ public final class CoversDAO
          * As with SQLiteOpenHelper, routine called to create DB.
          */
         @Override
-        @CallSuper
         public void onCreate(@NonNull final SQLiteDatabase db) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugEnter(this, "onCreate", "database=" + db.getPath());

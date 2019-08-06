@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * TaskQueue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * TaskQueue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
@@ -75,27 +81,6 @@ public class BindableItemCursorAdapter
         mBinder = binder;
     }
 
-    /**
-     * NOT USED. Should never be called.
-     */
-    @NonNull
-    @Override
-    public View newView(@NonNull final Context context,
-                        @NonNull final Cursor cursor,
-                        @NonNull final ViewGroup parent) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * NOT USED. Should never be called.
-     */
-    @Override
-    public void bindView(@NonNull final View view,
-                         @NonNull final Context context,
-                         @NonNull final Cursor cursor) {
-        throw new UnsupportedOperationException();
-    }
-
     @NonNull
     @Override
     public View getView(final int position,
@@ -120,6 +105,27 @@ public class BindableItemCursorAdapter
         mBinder.bindView(mContext, cursor, convertView, item);
 
         return convertView;
+    }
+
+    /**
+     * NOT USED. Should never be called.
+     */
+    @NonNull
+    @Override
+    public View newView(@NonNull final Context context,
+                        @NonNull final Cursor cursor,
+                        @NonNull final ViewGroup parent) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * NOT USED. Should never be called.
+     */
+    @Override
+    public void bindView(@NonNull final View view,
+                         @NonNull final Context context,
+                         @NonNull final Cursor cursor) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -220,8 +226,8 @@ public class BindableItemCursorAdapter
         /**
          * Get a new View object suitable for displaying this type of event.
          * <p>
-         * <b>Note:</b> A single event subclass should NOT RETURN MORE THAN ONE TYPE OF VIEW. If it needs
-         * to do this, create a new Event subclass or use a more complex view.
+         * <b>Note:</b> A single event subclass should NOT RETURN MORE THAN ONE TYPE OF VIEW.
+         * If it needs to do this, create a new Event subclass or use a more complex view.
          *
          * @param inflater that can be used to create the view.
          * @param cursor   EventsCursor for this event, positioned at its row.
@@ -241,7 +247,7 @@ public class BindableItemCursorAdapter
          * @param view    View to populate
          * @param context Context using view
          * @param cursor  EventsCursor for this event, positioned at its row.
-         * @param db      database adapter.
+         * @param db      Database Access
          */
         void bindView(@NonNull View view,
                       @NonNull Context context,
@@ -259,7 +265,7 @@ public class BindableItemCursorAdapter
          * @param position position in cursor of item
          * @param id       row id of item
          * @param items    items collection to fill
-         * @param db       database adapter.
+         * @param db       Database Access
          */
         void addContextMenuItems(@NonNull Context context,
                                  @NonNull AdapterView<?> parent,

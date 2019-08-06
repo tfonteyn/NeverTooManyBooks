@@ -1,27 +1,32 @@
 /*
- * @copyright 2010 Evan Leybourn
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -40,6 +45,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
@@ -50,16 +57,13 @@ import com.hardbacknutter.nevertomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
  */
 public class EditBookshelfListActivity
         extends BaseActivity {
 
-    /** Database access. */
+    /** Database Access. */
     private DAO mDb;
 
     /** The list we're editing. */
@@ -86,13 +90,12 @@ public class EditBookshelfListActivity
     }
 
     @Override
-    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_edit_bookshelves);
         mDb = new DAO();
         mList = mDb.getBookshelves();
-        mAdapter = new BookshelfAdapter(this, mList);
+        mAdapter = new BookshelfAdapter(getLayoutInflater());
 
         findViewById(R.id.fab).setOnClickListener(
                 v -> editItem(new Bookshelf("", BooklistStyles.getDefaultStyle(mDb))));
@@ -119,14 +122,13 @@ public class EditBookshelfListActivity
 
         Menu menu = MenuPicker.createMenu(this);
         menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-                .setIcon(R.drawable.ic_edit);
+            .setIcon(R.drawable.ic_edit);
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-                .setIcon(R.drawable.ic_delete);
+            .setIcon(R.drawable.ic_delete);
 
-        String menuTitle = bookshelf.getName();
-        final MenuPicker<Bookshelf> picker = new MenuPicker<>(this, menuTitle, menu, bookshelf,
-                this::onContextItemSelected);
-        picker.show();
+        String title = bookshelf.getName();
+        new MenuPicker<>(getLayoutInflater(), title, menu, bookshelf, this::onContextItemSelected)
+                .show();
     }
 
 
@@ -170,7 +172,7 @@ public class EditBookshelfListActivity
         FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(EditBookshelfDialogFragment.TAG) == null) {
             EditBookshelfDialogFragment.newInstance(bookshelf)
-                    .show(fm, EditBookshelfDialogFragment.TAG);
+                                       .show(fm, EditBookshelfDialogFragment.TAG);
         }
     }
 
@@ -194,7 +196,6 @@ public class EditBookshelfListActivity
 
         Holder(@NonNull final View itemView) {
             super(itemView);
-
             nameView = itemView.findViewById(R.id.name);
         }
     }
@@ -210,27 +211,19 @@ public class EditBookshelfListActivity
         @NonNull
         private final LayoutInflater mInflater;
 
-        @NonNull
-        private final List<Bookshelf> mList;
-
         /**
          * Constructor.
          *
-         * @param context Current context
-         * @param list    the list
+         * @param inflater layout inflater
          */
-        BookshelfAdapter(@NonNull final Context context,
-                         @NonNull final List<Bookshelf> list) {
-
-            mInflater = LayoutInflater.from(context);
-            mList = list;
+        BookshelfAdapter(@NonNull final LayoutInflater inflater) {
+            mInflater = inflater;
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-
             View view = mInflater.inflate(R.layout.row_bookshelf, parent, false);
             return new Holder(view);
         }

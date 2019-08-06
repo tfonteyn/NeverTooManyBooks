@@ -67,12 +67,12 @@
                 />
 
             <Button
-                android:id="@+id/btn_forget_credentials"
+                android:id="@+id/btn_delete_credentials"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="@dimen/border2"
-                android:text="@string/gr_btn_delete_credentials"
+                android:text="@string/btn_delete_credentials"
                 />
 
         </LinearLayout>

@@ -1,31 +1,37 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.settings;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -87,7 +93,6 @@ public class StyleGroupsActivity
     }
 
     @Override
-    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -114,7 +119,8 @@ public class StyleGroupsActivity
         // setup the adapter
         // The adapter for the list.
         RecyclerViewAdapterBase listAdapter =
-                new GroupWrapperListAdapter(this, mList, vh -> mItemTouchHelper.startDrag(vh));
+                new GroupWrapperListAdapter(getLayoutInflater(), mList,
+                                            vh -> mItemTouchHelper.startDrag(vh));
 
         listView.setAdapter(listAdapter);
 
@@ -132,9 +138,28 @@ public class StyleGroupsActivity
         }
 
         if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(),
-                               R.string.tip_booklist_style_groups, null);
+            TipManager.display(getLayoutInflater(), R.string.tip_booklist_style_groups, null);
         }
+    }
+
+    /**
+     * Saves the new order/settings of the groups to the style.
+     * <p>
+     * This is unconditional in line with how Android preferences/settings screens work.
+     */
+    @Override
+    public void onBackPressed() {
+        saveStyleSettings();
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
+            Logger.debug(this, "onBackPressed", mStyle);
+        }
+
+        // send the modified style back.
+        Intent data = new Intent().putExtra(UniqueId.BKEY_STYLE, (Parcelable) mStyle);
+        setResult(Activity.RESULT_OK, data);
+
+        super.onBackPressed();
     }
 
     /**
@@ -158,26 +183,6 @@ public class StyleGroupsActivity
         }
 
         return groupWrappers;
-    }
-
-    /**
-     * Saves the new order/settings of the groups to the style.
-     * <p>
-     * This is unconditional in line with how Android preferences/settings screens work.
-     */
-    @Override
-    public void onBackPressed() {
-        saveStyleSettings();
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            Logger.debug(this, "onBackPressed", mStyle);
-        }
-
-        // send the modified style back.
-        Intent data = new Intent().putExtra(UniqueId.BKEY_STYLE, (Parcelable) mStyle);
-        setResult(Activity.RESULT_OK, data);
-
-        super.onBackPressed();
     }
 
     private void saveStyleSettings() {
@@ -266,6 +271,12 @@ public class StyleGroupsActivity
             group = BooklistGroup.newInstance(in.readInt(), uuid, isUserDefinedStyle);
         }
 
+        @SuppressWarnings("SameReturnValue")
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {
@@ -273,12 +284,6 @@ public class StyleGroupsActivity
             dest.writeString(uuid);
             dest.writeInt(isUserDefinedStyle ? 1 : 0);
             dest.writeInt(group.getKind());
-        }
-
-        @SuppressWarnings("SameReturnValue")
-        @Override
-        public int describeContents() {
-            return 0;
         }
     }
 
@@ -301,10 +306,10 @@ public class StyleGroupsActivity
     protected static class GroupWrapperListAdapter
             extends RecyclerViewAdapterBase<GroupWrapper, Holder> {
 
-        GroupWrapperListAdapter(@NonNull final Context context,
+        GroupWrapperListAdapter(@NonNull final LayoutInflater layoutInflater,
                                 @NonNull final ArrayList<GroupWrapper> items,
                                 @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(layoutInflater, items, dragStartListener);
         }
 
         @NonNull
@@ -313,7 +318,7 @@ public class StyleGroupsActivity
                                          final int viewType) {
 
             View view = getLayoutInflater()
-                    .inflate(R.layout.row_edit_booklist_style, parent, false);
+                                .inflate(R.layout.row_edit_booklist_style, parent, false);
             return new Holder(view);
         }
 

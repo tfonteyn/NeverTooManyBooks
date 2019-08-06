@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="displaying_n_books">
+        <item quantity="one">Zobrazuji %1$d knihu</item>
+        <item quantity="few">Zobrazuji %1$d knihy</item>
+        <item quantity="other">Zobrazeno %1$d knih</item>
+    </plurals>
+
+    <plurals name="n_books_found">
+        <item quantity="one">Nalezena %1$d kniha</item>
+        <item quantity="few">Nalezeno %1$d knih</item>
+        <item quantity="other">Nalezeno %1$d knih</item>
+    </plurals>
+
+    <plurals name="n_books">
+        <item quantity="one">%1$d kniha</item>
+        <item quantity="few">%1$d knihy</item>
+        <item quantity="other">%1$d knih</item>
+    </plurals>
+
+    <plurals name="n_covers">
+        <item quantity="one">%1$d knižní bunda</item>
+        <item quantity="few">%1$d knižní bundy</item>
+        <item quantity="other">%1$d knižních bund</item>
+    </plurals>
+
+    <plurals name="n_stars">
+        <item quantity="one">%1$s hvězda</item>
+        <item quantity="few">%1$s hvězdičky</item>
+        <item quantity="other">%1$s hvězd</item>
+    </plurals>
+</resources>

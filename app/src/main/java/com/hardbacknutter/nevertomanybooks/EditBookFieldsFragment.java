@@ -1,23 +1,29 @@
 /*
- * @copyright 2010 Evan Leybourn
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks;
 
 import android.app.Activity;
@@ -31,6 +37,8 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertomanybooks.datamanager.Fields.Field;
@@ -42,8 +50,6 @@ import com.hardbacknutter.nevertomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.utils.Csv;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
-
-import java.util.ArrayList;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
@@ -69,6 +75,147 @@ public class EditBookFieldsFragment
     }
 
     /**
+     * Some fields are only present (or need specific handling) on {@link BookFragment}.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    protected void initFields() {
+        super.initFields();
+        Fields fields = getFields();
+
+        Book book = mBookModel.getBook();
+
+        // book fields
+
+        fields.add(R.id.title, DBDefinitions.KEY_TITLE);
+        fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
+        fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION);
+
+        Field coverImageField =
+                fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
+                      .setScale(ImageUtils.SCALE_MEDIUM);
+
+        mCoverHandler = new CoverHandler(this, mBookModel.getDb(), book,
+                                         fields.getField(R.id.isbn).getView(),
+                                         coverImageField.getView(),
+                                         ImageUtils.SCALE_MEDIUM);
+
+        // defined, but handled manually
+        fields.add(R.id.author, "", DBDefinitions.KEY_FK_AUTHOR)
+              .getView().setOnClickListener(v -> {
+            String title = fields.getField(R.id.title).getValue().toString();
+            ArrayList<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+
+            Intent intent = new Intent(getContext(), EditAuthorListActivity.class)
+                                    .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
+                                    .putExtra(DBDefinitions.KEY_TITLE, title)
+                                    .putExtra(UniqueId.BKEY_AUTHOR_ARRAY, authors);
+            startActivityForResult(intent, REQ_EDIT_AUTHORS);
+        });
+
+        // defined, but handled manually
+        fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE)
+              .getView().setOnClickListener(v -> {
+            // use the current title.
+            String title = fields.getField(R.id.title).getValue().toString();
+            ArrayList<Series> series = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+
+            Intent intent = new Intent(getContext(), EditSeriesListActivity.class)
+                                    .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
+                                    .putExtra(DBDefinitions.KEY_TITLE, title)
+                                    .putExtra(UniqueId.BKEY_SERIES_ARRAY, series);
+            startActivityForResult(intent, REQ_EDIT_SERIES);
+        });
+
+        Field field;
+
+        field = fields.add(R.id.genre, DBDefinitions.KEY_GENRE);
+        initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, mBookModel.getGenres());
+
+        // Personal fields
+
+        // defined, but handled manually (reminder: storing the list back into the book
+        // is handled by onCheckListEditorSave)
+        field = fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
+        initCheckListEditor(field, R.string.lbl_bookshelves_long,
+                            () -> mBookModel.getEditableBookshelvesList());
+    }
+
+    @Override
+    @CallSuper
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+
+        Book book = mBookModel.getBook();
+
+        switch (requestCode) {
+            case REQ_EDIT_AUTHORS:
+                if (data != null) {
+                    if (resultCode == Activity.RESULT_OK
+                        && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
+                        ArrayList<Author> list =
+                                data.getParcelableArrayListExtra(UniqueId.BKEY_AUTHOR_ARRAY);
+                        if (list == null) {
+                            list = new ArrayList<>(0);
+                        }
+                        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
+                        mBookModel.setDirty(true);
+
+                    } else {
+                        // Even though the dialog was terminated,
+                        // some authors MAY have been modified.
+                        mBookModel.refreshAuthorList();
+                    }
+
+                    boolean wasDirty = mBookModel.isDirty();
+                    populateAuthorListField(book);
+                    mBookModel.setDirty(wasDirty);
+
+                }
+                break;
+
+            case REQ_EDIT_SERIES:
+                if (data != null) {
+                    if (resultCode == Activity.RESULT_OK
+                        && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
+                        ArrayList<Series> list =
+                                data.getParcelableArrayListExtra(UniqueId.BKEY_SERIES_ARRAY);
+                        if (list == null) {
+                            list = new ArrayList<>(0);
+                        }
+                        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
+//                        populateSeriesListField();
+                        mBookModel.setDirty(true);
+
+                    } else {
+                        // Even though the dialog was terminated,
+                        // some series MAY have been modified.
+                        //noinspection ConstantConditions
+                        mBookModel.refreshSeriesList(getContext());
+                    }
+
+                    boolean wasDirty = mBookModel.isDirty();
+                    populateSeriesListField(book);
+                    mBookModel.setDirty(wasDirty);
+
+                }
+                break;
+
+            default:
+                // handle any cover image request codes
+                if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
+                    super.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
+        }
+
+        Tracker.exitOnActivityResult(this);
+    }
+
+    /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
      * <ul>
@@ -89,82 +236,11 @@ public class EditBookFieldsFragment
         FocusSettings.fix(getView());
     }
 
-    /**
-     * Some fields are only present (or need specific handling) on {@link BookFragment}.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    protected void initFields() {
-        super.initFields();
-        Fields fields = getFields();
-
-        Book book = mBookBaseFragmentModel.getBook();
-
-        // book fields
-
-        fields.add(R.id.title, DBDefinitions.KEY_TITLE);
-        fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
-        fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION);
-
-        Field coverImageField = fields.add(R.id.coverImage,
-                DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
-                .setScale(ImageUtils.SCALE_MEDIUM);
-
-        mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),
-                book,
-                fields.getField(R.id.isbn).getView(),
-                coverImageField.getView(),
-                ImageUtils.SCALE_MEDIUM);
-
-        // defined, but handled manually
-        fields.add(R.id.author, "", DBDefinitions.KEY_FK_AUTHOR)
-                .getView().setOnClickListener(v -> {
-            String title = fields.getField(R.id.title).getValue().toString();
-            ArrayList<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-
-            Intent intent = new Intent(getContext(), EditAuthorListActivity.class)
-                    .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
-                    .putExtra(DBDefinitions.KEY_TITLE, title)
-                    .putExtra(UniqueId.BKEY_AUTHOR_ARRAY, authors);
-            startActivityForResult(intent, REQ_EDIT_AUTHORS);
-        });
-
-        // defined, but handled manually
-        fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE)
-                .getView().setOnClickListener(v -> {
-            // use the current title.
-            String title = fields.getField(R.id.title).getValue().toString();
-            ArrayList<Series> series = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-
-            Intent intent = new Intent(getContext(), EditSeriesListActivity.class)
-                    .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
-                    .putExtra(DBDefinitions.KEY_TITLE, title)
-                    .putExtra(UniqueId.BKEY_SERIES_ARRAY, series);
-            startActivityForResult(intent, REQ_EDIT_SERIES);
-        });
-
-        Field field;
-
-        field = fields.add(R.id.genre, DBDefinitions.KEY_GENRE);
-        initValuePicker(field, R.string.lbl_genre, R.id.btn_genre,
-                mBookBaseFragmentModel.getGenres());
-
-        // Personal fields
-
-        // defined, but handled manually (reminder: storing the list back into the book
-        // is handled by onCheckListEditorSave)
-        field = fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
-        initCheckListEditor(field, R.string.lbl_bookshelves_long, () ->
-                mBookBaseFragmentModel.getEditableBookshelvesList());
-    }
-
     @Override
     protected void onLoadFieldsFromBook() {
         super.onLoadFieldsFromBook();
 
-        Book book = mBookBaseFragmentModel.getBook();
+        Book book = mBookModel.getBook();
 
         populateAuthorListField(book);
         populateSeriesListField(book);
@@ -183,7 +259,7 @@ public class EditBookFieldsFragment
     protected void populateNewBookFieldsFromBundle(@Nullable final Bundle bundle) {
         super.populateNewBookFieldsFromBundle(bundle);
 
-        Book book = mBookBaseFragmentModel.getBook();
+        Book book = mBookModel.getBook();
 
         // If the new book is not on any Bookshelf, use the current bookshelf as default
         final ArrayList<Bookshelf> list =
@@ -191,7 +267,7 @@ public class EditBookFieldsFragment
 
         if (list.isEmpty()) {
             //noinspection ConstantConditions
-            Bookshelf bookshelf = mBookBaseFragmentModel.getBookshelf(getContext());
+            Bookshelf bookshelf = mBookModel.getBookshelf(getContext());
 
             getField(R.id.bookshelves).setValue(bookshelf.getName());
             // add to set, and store in book.
@@ -204,8 +280,8 @@ public class EditBookFieldsFragment
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         //noinspection ConstantConditions
         if (!list.isEmpty()
-                && ItemWithFixableId.pruneList(getContext(), mBookBaseFragmentModel.getDb(), list)) {
-            mBookBaseFragmentModel.setDirty(true);
+            && ItemWithFixableId.pruneList(getContext(), mBookModel.getDb(), list)) {
+            mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
         //noinspection ConstantConditions
@@ -222,8 +298,8 @@ public class EditBookFieldsFragment
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         //noinspection ConstantConditions
         if (!list.isEmpty()
-                && ItemWithFixableId.pruneList(getContext(), mBookBaseFragmentModel.getDb(), list)) {
-            mBookBaseFragmentModel.setDirty(true);
+            && ItemWithFixableId.pruneList(getContext(), mBookModel.getDb(), list)) {
+            mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         }
 
@@ -237,78 +313,5 @@ public class EditBookFieldsFragment
     private void populateBookshelvesField(@NonNull final Book book) {
         ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         getField(R.id.bookshelves).setValue(Csv.join(", ", list, Bookshelf::getName));
-    }
-
-    @Override
-    @CallSuper
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
-
-        Book book = mBookBaseFragmentModel.getBook();
-
-        switch (requestCode) {
-            case REQ_EDIT_AUTHORS:
-                if (data != null) {
-                    if (resultCode == Activity.RESULT_OK
-                            && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
-                        ArrayList<Author> list =
-                                data.getParcelableArrayListExtra(UniqueId.BKEY_AUTHOR_ARRAY);
-                        if (list == null) {
-                            list = new ArrayList<>(0);
-                        }
-                        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
-                        mBookBaseFragmentModel.setDirty(true);
-
-                    } else {
-                        // Even though the dialog was terminated,
-                        // some authors MAY have been modified.
-                        mBookBaseFragmentModel.refreshAuthorList();
-                    }
-
-                    boolean wasDirty = mBookBaseFragmentModel.isDirty();
-                    populateAuthorListField(book);
-                    mBookBaseFragmentModel.setDirty(wasDirty);
-
-                }
-                break;
-
-            case REQ_EDIT_SERIES:
-                if (data != null) {
-                    if (resultCode == Activity.RESULT_OK
-                            && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
-                        ArrayList<Series> list =
-                                data.getParcelableArrayListExtra(UniqueId.BKEY_SERIES_ARRAY);
-                        if (list == null) {
-                            list = new ArrayList<>(0);
-                        }
-                        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
-//                        populateSeriesListField();
-                        mBookBaseFragmentModel.setDirty(true);
-
-                    } else {
-                        // Even though the dialog was terminated,
-                        // some series MAY have been modified.
-                        //noinspection ConstantConditions
-                        mBookBaseFragmentModel.refreshSeriesList(getContext());
-                    }
-
-                    boolean wasDirty = mBookBaseFragmentModel.isDirty();
-                    populateSeriesListField(book);
-                    mBookBaseFragmentModel.setDirty(wasDirty);
-
-                }
-                break;
-
-            default:
-                // handle any cover image request codes
-                if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
-                    super.onActivityResult(requestCode, resultCode, data);
-                }
-                break;
-        }
-
-        Tracker.exitOnActivityResult(this);
     }
 }

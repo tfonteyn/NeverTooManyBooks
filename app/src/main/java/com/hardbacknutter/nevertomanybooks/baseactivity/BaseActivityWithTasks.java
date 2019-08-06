@@ -1,23 +1,29 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.baseactivity;
 
 import android.os.Bundle;
@@ -41,7 +47,7 @@ import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.TaskManagerListene
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 
 /**
- * TODO: Remove this! Fragments makes BaseActivityWithTasks mostly redundant.
+ * TODO: Remove this! Fragment/ViewModel makes BaseActivityWithTasks mostly redundant.
  * <p>
  * Class used to manager a collection of background threads for a
  * {@link BaseActivityWithTasks} subclass.
@@ -59,8 +65,6 @@ import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
  * {@link BaseActivityWithTasks}
  * Uses a TaskManager (and communicates with it) to handle messages for ManagedTask.
  * Deals with orientation changes in cooperation with TaskManager.
- *
- * @author Philip Warner
  */
 public abstract class BaseActivityWithTasks
         extends BaseActivity {
@@ -146,7 +150,6 @@ public abstract class BaseActivityWithTasks
     }
 
     @Override
-    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -160,6 +163,18 @@ public abstract class BaseActivityWithTasks
         if (savedInstanceState != null) {
             mTaskManagerId = savedInstanceState.getLong(BKEY_TASK_MANAGER_ID);
         }
+    }
+
+    /**
+     * When the user clicks 'back/up', clean up any running tasks.
+     */
+    @Override
+    public void onBackPressed() {
+        if (mTaskManager != null) {
+            mTaskManager.cancelAllTasks();
+        }
+        updateProgressDialog();
+        super.onBackPressed();
     }
 
     @Override
@@ -203,15 +218,6 @@ public abstract class BaseActivityWithTasks
     }
 
     /**
-     * When the user clicks 'back/up', clean up any running tasks.
-     */
-    @Override
-    public void onBackPressed() {
-        cancelTasksAndUpdateProgress(true);
-        super.onBackPressed();
-    }
-
-    /**
      * Get the task manager for this activity.
      * If we had a TaskManager before we took a nap, try to get it back using the mTaskManagerId
      * we saved in onSaveInstanceState.
@@ -229,7 +235,7 @@ public abstract class BaseActivityWithTasks
                     mTaskManager = controller.getTaskManager();
                 } else {
                     Logger.warnWithStackTrace(this, "Have ID(" + mTaskManagerId + "),"
-                            + " but can not find controller getting TaskManager");
+                                                    + " but controller not found");
                 }
             }
 
@@ -280,22 +286,6 @@ public abstract class BaseActivityWithTasks
     private void closeProgressDialog() {
         if (mProgressOverlayView != null) {
             mProgressOverlayView.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * Cancel all tasks, and if the progress is showing,
-     * update it (it will check task manager status).
-     *
-     * @param forceShowProgress if {@code true} we'll force the progress dialog to show.
-     */
-    private void cancelTasksAndUpdateProgress(final boolean forceShowProgress) {
-        if (mTaskManager != null) {
-            mTaskManager.cancelAllTasks();
-        }
-
-        if ((mProgressOverlayView.getVisibility() == View.VISIBLE) || forceShowProgress) {
-            updateProgressDialog();
         }
     }
 }

@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.tasks;
 
 import android.app.Dialog;
@@ -79,7 +105,6 @@ public class ProgressDialogFragment
     }
 
     @Override
-    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -118,8 +143,8 @@ public class ProgressDialogFragment
 
         @SuppressWarnings("ConstantConditions")
         AlertDialog dialog = new AlertDialog.Builder(getContext())
-                .setView(root)
-                .create();
+                                     .setView(root)
+                                     .create();
         // this is really needed, as it would be to easy to cancel without.
         // Cancel by 'back' press only.
         dialog.setCanceledOnTouchOutside(false);
@@ -133,20 +158,6 @@ public class ProgressDialogFragment
         }
 
         return dialog;
-    }
-
-    /**
-     * Can optionally (but usually is) be linked with a task.
-     * This class needs to be able to send a 'cancel' to the task when our dialog is cancelled.
-     *
-     * @param task that will use us for progress updates.
-     */
-    public void setTask(@Nullable final TaskBase task) {
-        // cancel any previous task.
-        if (mTask != null) {
-            mTask.cancel(true);
-        }
-        mTask = task;
     }
 
     @Override
@@ -166,6 +177,40 @@ public class ProgressDialogFragment
         if (mProgressBar != null) {
             outState.putInt(BKEY_CURRENT_VALUE, mProgressBar.getProgress());
         }
+    }
+
+    /**
+     * Work-around for bug in androidx library.
+     * Currently (2019-08-01) no longer needed as we're no longer retaining this fragment.
+     * Leaving as a reminder for now.
+     * <p>
+     * https://issuetracker.google.com/issues/36929400
+     * <p>
+     * Still not fixed in July 2019
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onDestroyView() {
+        if (getDialog() != null && getRetainInstance()) {
+            getDialog().setDismissMessage(null);
+        }
+        super.onDestroyView();
+    }
+
+    /**
+     * Can optionally (but usually is) be linked with a task.
+     * This class needs to be able to send a 'cancel' to the task when our dialog is cancelled.
+     *
+     * @param task that will use us for progress updates.
+     */
+    public void setTask(@Nullable final TaskBase task) {
+        // cancel any previous task.
+        if (mTask != null) {
+            mTask.cancel(true);
+        }
+        mTask = task;
     }
 
     /**
@@ -244,25 +289,5 @@ public class ProgressDialogFragment
             }
 
         }
-    }
-
-    /**
-     * Work-around for bug in androidx library.
-     * Currently (2019-08-01) no longer needed as we're no longer retaining this fragment.
-     * Leaving as a reminder for now.
-     * <p>
-     * https://issuetracker.google.com/issues/36929400
-     * <p>
-     * Still not fixed in July 2019
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onDestroyView() {
-        if (getDialog() != null && getRetainInstance()) {
-            getDialog().setDismissMessage(null);
-        }
-        super.onDestroyView();
     }
 }

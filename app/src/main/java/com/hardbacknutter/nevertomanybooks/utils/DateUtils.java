@@ -1,33 +1,34 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.utils;
-
-import android.annotation.SuppressLint;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.hardbacknutter.nevertomanybooks.App;
-import com.hardbacknutter.nevertomanybooks.BuildConfig;
-import com.hardbacknutter.nevertomanybooks.debug.Logger;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -40,6 +41,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
+
+import com.hardbacknutter.nevertomanybooks.App;
+import com.hardbacknutter.nevertomanybooks.BuildConfig;
+import com.hardbacknutter.nevertomanybooks.debug.Logger;
 
 public final class DateUtils {
 
@@ -92,11 +97,11 @@ public final class DateUtils {
         // Used for formatting *non-user* dates for SQL. e.g. publication dates...
         TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
         UTC_SQL_DATE_TIME_HH_MM_SS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-                App.getSystemLocale());
+                                                          App.getSystemLocale());
         UTC_SQL_DATE_TIME_HH_MM_SS.setTimeZone(TZ_UTC);
 
         UTC_SQL_DATE_TIME_HH_MM = new SimpleDateFormat("yyyy-MM-dd HH:mm",
-                App.getSystemLocale());
+                                                       App.getSystemLocale());
         UTC_SQL_DATE_TIME_HH_MM.setTimeZone(TZ_UTC);
 
         UTC_SQL_DATE_YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd", App.getSystemLocale());
@@ -112,7 +117,7 @@ public final class DateUtils {
 
     /**
      * create the parser list. These will be tried IN THE ORDER DEFINED HERE.
-     *
+     * <p>
      * FIXME: these are created at first use, so do not support switching Locale on the fly.
      * the month is (localized) text, or english
      */
@@ -120,7 +125,7 @@ public final class DateUtils {
         // check the device language
         final boolean userIsEnglishSpeaking =
                 Objects.equals(Locale.ENGLISH.getISO3Language(),
-                        App.getSystemLocale().getISO3Language());
+                               App.getSystemLocale().getISO3Language());
 
         // allow re-creating.
         PARSE_DATE_FORMATS.clear();
@@ -247,7 +252,7 @@ public final class DateUtils {
         // try System Locale.
         try {
             DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
-                    App.getSystemLocale());
+                                                       App.getSystemLocale());
             df.setLenient(lenient);
             return df.parse(dateString);
         } catch (@NonNull final ParseException ignore) {
@@ -310,7 +315,7 @@ public final class DateUtils {
     public static String toPrettyDateTime(@NonNull final Locale locale,
                                           @NonNull final Date date) {
         return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,
-                locale).format(date);
+                                              locale).format(date);
     }
 
     /**
@@ -403,7 +408,6 @@ public final class DateUtils {
      *
      * @return Formatted date, e.g. '2011-11-01' or '2011-11'
      */
-    @SuppressLint("DefaultLocale")
     @NonNull
     public static String buildPartialDate(@Nullable final Integer year,
                                           @Nullable final Integer month,

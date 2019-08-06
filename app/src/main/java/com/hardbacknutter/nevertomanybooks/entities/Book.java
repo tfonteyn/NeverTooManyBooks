@@ -1,21 +1,28 @@
 /*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.entities;
 
@@ -32,6 +39,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.FileProvider;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -51,17 +67,8 @@ import com.hardbacknutter.nevertomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 /**
  * Represents the underlying data for a book.
- *
- * @author pjw
  */
 public class Book
         extends DataManager
@@ -121,6 +128,7 @@ public class Book
     private static final int EDITION_LIMITED = 1 << 2;
     /** It's a bookclub edition. boooo.... */
     private static final int EDITION_BOOK_CLUB = 1 << 7;
+    private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
 
     /*
      * NEWKIND: edition.
@@ -172,12 +180,6 @@ public class Book
         putAll(bookData);
     }
 
-    @Override
-    @NonNull
-    public String getTitle() {
-        return getString(DBDefinitions.KEY_TITLE);
-    }
-
     /**
      * Perform sharing of book. Create chooser with matched apps for sharing some text like:
      * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
@@ -195,7 +197,9 @@ public class Book
         String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
 
         if (!series.isEmpty()) {
-            series = " (" + series.replace("#", "%23 ") + ')';
+            series = " (" + SERIES_NR_PATTERN.matcher(series)
+                                             .replaceAll(Matcher.quoteReplacement("%23 "))
+                     + ')';
         }
 
         //remove trailing 0's
@@ -219,7 +223,7 @@ public class Book
         // prepare the cover to post
         File coverFile = StorageUtils.getCoverFile(uuid);
         Uri coverURI = FileProvider
-                .getUriForFile(context, GenericFileProvider.AUTHORITY, coverFile);
+                               .getUriForFile(context, GenericFileProvider.AUTHORITY, coverFile);
 
 
         // TEST: There's a problem with the facebook app in android,
@@ -227,9 +231,9 @@ public class Book
         String text = context.getString(R.string.info_share_book_im_reading,
                                         title, author, series, ratingString);
         return new Intent(Intent.ACTION_SEND)
-                .setType("text/plain")
-                .putExtra(Intent.EXTRA_TEXT, text)
-                .putExtra(Intent.EXTRA_STREAM, coverURI);
+                       .setType("text/plain")
+                       .putExtra(Intent.EXTRA_TEXT, text)
+                       .putExtra(Intent.EXTRA_STREAM, coverURI);
     }
 
     /**
@@ -376,7 +380,7 @@ public class Book
     /**
      * Using the id, reload *all* other data for this book.
      *
-     * @param db the database
+     * @param db Database Access
      *
      * @return the book
      */
@@ -388,7 +392,7 @@ public class Book
     /**
      * Load the book details from the database.
      *
-     * @param db     the database
+     * @param db     Database Access
      * @param bookId of book (may be 0 for new, in which case we do nothing)
      *
      * @return the book
@@ -425,7 +429,7 @@ public class Book
     /**
      * Gets a complete list of Bookshelves each reflecting the book being on that shelf or not.
      *
-     * @param db the database
+     * @param db Database Access
      *
      * @return the list
      */
@@ -451,11 +455,11 @@ public class Book
     public ArrayList<CheckListItem<Integer>> getEditableEditionList() {
 
         ArrayList<CheckListItem<Integer>> list = new ArrayList<>();
-        for (Integer edition : EDITIONS.keySet()) {
-            //noinspection ConstantConditions
+        for (Map.Entry<Integer, Integer> entry : EDITIONS.entrySet()) {
+            Integer key = entry.getKey();
             list.add(new EditionCheckListItem(
-                    edition, EDITIONS.get(edition),
-                    (edition & getLong(DBDefinitions.KEY_EDITION_BITMASK)) != 0));
+                    key, entry.getValue(),
+                    (key & getLong(DBDefinitions.KEY_EDITION_BITMASK)) != 0));
         }
         return list;
     }
@@ -503,7 +507,7 @@ public class Book
     /**
      * Update author details from DB.
      *
-     * @param db Database connection
+     * @param db Database Access
      */
     public void refreshAuthorList(@NonNull final DAO db) {
         ArrayList<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
@@ -565,6 +569,12 @@ public class Book
         return getLocale(false);
     }
 
+    @Override
+    @NonNull
+    public String getTitle() {
+        return getString(DBDefinitions.KEY_TITLE);
+    }
+
     /**
      * Use the book's language setting to determine the Locale.
      *
@@ -609,7 +619,7 @@ public class Book
     /**
      * Update series details from DB.
      *
-     * @param db Database connection
+     * @param db Database Access
      */
     public void refreshSeriesList(@NonNull final Context context,
                                   @NonNull final DAO db) {

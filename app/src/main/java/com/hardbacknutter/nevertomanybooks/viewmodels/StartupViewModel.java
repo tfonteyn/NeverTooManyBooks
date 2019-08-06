@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.viewmodels;
 
 import android.content.Context;
@@ -8,6 +34,9 @@ import androidx.annotation.WorkerThread;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -24,9 +53,6 @@ import com.hardbacknutter.nevertomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener.TaskProgressMessage;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * <b>Note:</b> yes, this is overkill for the startup. Call it an experiment.
@@ -67,7 +93,7 @@ public class StartupViewModel
         }
     };
 
-    /** Database access. */
+    /** Database Access. */
     private DAO mDb;
     /** Flag to ensure tasks are only ever started once. */
     private boolean startupTasksShouldBeStarted = true;
@@ -133,7 +159,8 @@ public class StartupViewModel
             startTask(new DBCleanerTask(++taskId, mDb, mTaskListener));
 
             if (PreferenceManager.getDefaultSharedPreferences(context)
-                    .getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED, false)) {
+                                 .getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
+                                             false)) {
                 startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener));
             }
 
@@ -204,7 +231,7 @@ public class StartupViewModel
     static class DBCleanerTask
             extends TaskBase<Void> {
 
-        /** Database access. */
+        /** Database Access. */
         @NonNull
         private final DAO mDb;
 
@@ -212,7 +239,7 @@ public class StartupViewModel
          * Constructor.
          *
          * @param taskId       a task identifier, will be returned in the task finished listener.
-         * @param db           the database
+         * @param db           Database Access
          * @param taskListener for sending progress and finish messages to.
          */
         @UiThread
@@ -228,9 +255,6 @@ public class StartupViewModel
         protected Void doInBackground(final Void... params) {
             Thread.currentThread().setName("DBCleanerTask");
 
-            //TODO: should be using a user context.
-            Context context = App.getAppContext();
-
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Logger.debug(this, "doInBackground", "taskId=" + getId());
             }
@@ -241,7 +265,7 @@ public class StartupViewModel
                 // do a mass update of any languages not yet converted to ISO 639-2 codes
                 cleaner.updateLanguages();
                 // clean/correct style UUID's on Bookshelves for deleted styles.
-                cleaner.bookshelves(context);
+                cleaner.bookshelves();
 
                 // check & log, but don't update yet... need more testing
                 cleaner.maybeUpdate(true);
@@ -255,13 +279,11 @@ public class StartupViewModel
 
     /**
      * Task to rebuild FTS in background. Can take several seconds, so not done in onUpgrade().
-     *
-     * @author Philip Warner
      */
     static class RebuildFtsTask
             extends TaskBase<Void> {
 
-        /** Database access. */
+        /** Database Access. */
         @NonNull
         private final DAO mDb;
 
@@ -269,7 +291,7 @@ public class StartupViewModel
          * Constructor.
          *
          * @param taskId       a task identifier, will be returned in the task finished listener.
-         * @param db           the database
+         * @param db           Database Access
          * @param taskListener for sending progress and finish messages to.
          */
         @UiThread
@@ -289,14 +311,14 @@ public class StartupViewModel
                 Logger.debug(this, "doInBackground", "taskId=" + getId());
             }
             publishProgress(new TaskProgressMessage(mTaskId,
-                    R.string.progress_msg_rebuilding_search_index));
+                                                    R.string.progress_msg_rebuilding_search_index));
             try {
                 mDb.rebuildFts();
 
                 PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                        .edit()
-                        .remove(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED)
-                        .apply();
+                                 .edit()
+                                 .remove(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED)
+                                 .apply();
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;
@@ -311,13 +333,13 @@ public class StartupViewModel
     static class AnalyzeDbTask
             extends TaskBase<Void> {
 
-        /** Database access. */
+        /** Database Access. */
         @NonNull
         private final DAO mDb;
 
         /**
          * @param taskId       a task identifier, will be returned in the task finished listener.
-         * @param db           the database
+         * @param db           Database Access
          * @param taskListener for sending progress and finish messages to.
          */
         @UiThread

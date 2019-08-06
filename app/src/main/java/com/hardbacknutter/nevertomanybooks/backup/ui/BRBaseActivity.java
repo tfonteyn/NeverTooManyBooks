@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.backup.ui;
 
 import android.content.Context;
@@ -16,14 +42,14 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
-
-import java.io.File;
-import java.util.ArrayList;
 
 public abstract class BRBaseActivity
         extends BaseActivity {
@@ -103,7 +129,7 @@ public abstract class BRBaseActivity
     /**
      * Common for Backup and Restore activity; handles options-model results.
      */
-    protected void onTaskProgressMessage(final TaskListener.TaskProgressMessage message) {
+    protected void onTaskProgressMessage(@NonNull final TaskListener.TaskProgressMessage message) {
         if (mProgressDialog != null) {
             mProgressDialog.onProgress(message);
         }
@@ -165,11 +191,8 @@ public abstract class BRBaseActivity
         @NonNull
         private final LayoutInflater mInflater;
 
-
         /**
          * Constructor.
-         *
-         * @param inflater Current context
          */
         FileDetailsAdapter(@NonNull final LayoutInflater inflater) {
             mInflater = inflater;

@@ -1,21 +1,28 @@
 /*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.backup.ui;
 
@@ -35,6 +42,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
+import java.io.File;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.MenuHandler;
@@ -49,8 +58,6 @@ import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
-
-import java.io.File;
 
 /**
  * Lets the user choose an archive file to backup to.
@@ -85,10 +92,10 @@ public class BackupActivity
         setTitle(R.string.title_backup);
 
         String defaultFilename = getString(R.string.app_name) + '-'
-                + DateUtils.localSqlDateForToday()
-                .replace(" ", "-")
-                .replace(":", "")
-                + BackupManager.ARCHIVE_EXTENSION;
+                                 + DateUtils.localSqlDateForToday()
+                                            .replace(" ", "-")
+                                            .replace(":", "")
+                                 + BackupManager.ARCHIVE_EXTENSION;
 
         mFilenameView = findViewById(R.id.file_name);
         mFilenameView.setVisibility(View.VISIBLE);
@@ -100,20 +107,33 @@ public class BackupActivity
         fab.setOnClickListener(v -> doBackup());
     }
 
-    private void onTaskFinishedMessage(final TaskListener.TaskFinishedMessage<ExportOptions> message) {
+    /**
+     * The user selected a file.
+     *
+     * @param file selected
+     */
+    protected void onFileSelected(@NonNull final File file) {
+        // Put the name of the selected file into the filename field
+        mFilenameView.setText(file.getName());
+    }
+
+    private void onTaskFinishedMessage(final TaskListener
+                                                     .TaskFinishedMessage<ExportOptions> message) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
+
         //noinspection SwitchStatementWithTooFewBranches
         switch (message.taskId) {
             case R.id.TASK_ID_WRITE_TO_ARCHIVE:
                 if (message.success) {
                     //noinspection ConstantConditions
                     String msg = getString(R.string.export_info_success_archive_details,
-                            message.result.file.getParent(),
-                            message.result.file.getName(),
-                            StorageUtils.formatFileSize(this,
-                                    message.result.file.length()));
+                                           message.result.file.getParent(),
+                                           message.result.file.getName(),
+                                           StorageUtils.formatFileSize(this,
+                                                                       message.result.file
+                                                                               .length()));
 
                     new AlertDialog.Builder(BackupActivity.this)
                             .setTitle(R.string.lbl_backup_to_archive)
@@ -130,15 +150,14 @@ public class BackupActivity
                             .show();
                 } else {
                     String msg = getString(R.string.error_backup_failed)
-                            + ' ' + getString(R.string.error_storage_not_writable)
-                            + "\n\n"
-                            + getString(R.string.error_if_the_problem_persists);
+                                 + ' ' + getString(R.string.error_storage_not_writable)
+                                 + "\n\n"
+                                 + getString(R.string.error_if_the_problem_persists);
 
                     new AlertDialog.Builder(BackupActivity.this)
                             .setTitle(R.string.lbl_backup_to_archive)
                             .setMessage(msg)
-                            .setPositiveButton(android.R.string.ok,
-                                    (d, which) -> d.dismiss())
+                            .setPositiveButton(android.R.string.ok, (d, which) -> d.dismiss())
                             .create()
                             .show();
                 }
@@ -161,9 +180,9 @@ public class BackupActivity
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
         menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
-                .setIcon(R.drawable.ic_keyboard_hide)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
+            .setIcon(R.drawable.ic_keyboard_hide)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -182,22 +201,12 @@ public class BackupActivity
     }
 
     /**
-     * The user selected a file.
-     *
-     * @param file selected
-     */
-    protected void onFileSelected(@NonNull final File file) {
-        // Put the name of the selected file into the filename field
-        mFilenameView.setText(file.getName());
-    }
-
-    /**
      * Local handler for 'Save'. Perform basic validation, and pass on.
      */
     private void doBackup() {
         //noinspection ConstantConditions
         File file = new File(mModel.getRootDir().getAbsolutePath()
-                + File.separator + mFilenameView.getText().toString().trim());
+                             + File.separator + mFilenameView.getText().toString().trim());
         if (file.exists() && !file.isFile()) {
             UserMessage.show(mListView, R.string.warning_enter_valid_filename);
             return;
@@ -215,7 +224,7 @@ public class BackupActivity
                     FragmentManager fm = getSupportFragmentManager();
                     if (fm.findFragmentByTag(ExportOptionsDialogFragment.TAG) == null) {
                         ExportOptionsDialogFragment.newInstance(options)
-                                .show(fm, ExportOptionsDialogFragment.TAG);
+                                                   .show(fm, ExportOptionsDialogFragment.TAG);
                     }
                 })
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
@@ -239,8 +248,9 @@ public class BackupActivity
         if ((options.what & ExportOptions.EXPORT_SINCE) != 0) {
             // no date set, use "since last backup."
             if (options.dateFrom == null) {
-                String lastBackup = PreferenceManager.getDefaultSharedPreferences(this)
-                        .getString(BackupManager.PREF_LAST_BACKUP_DATE, null);
+                String lastBackup = PreferenceManager
+                                            .getDefaultSharedPreferences(this)
+                                            .getString(BackupManager.PREF_LAST_BACKUP_DATE, null);
                 if (lastBackup != null && !lastBackup.isEmpty()) {
                     options.dateFrom = DateUtils.parseDate(lastBackup);
                 }
@@ -253,8 +263,8 @@ public class BackupActivity
         FragmentManager fm = getSupportFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialogFragment.newInstance(
-                    R.string.progress_msg_backing_up, false, 0);
+            mProgressDialog = ProgressDialogFragment
+                                      .newInstance(R.string.progress_msg_backing_up, false, 0);
             mProgressDialog.show(fm, TAG);
 
             BackupTask task = new BackupTask(options, mOptionsModel.getTaskListener());

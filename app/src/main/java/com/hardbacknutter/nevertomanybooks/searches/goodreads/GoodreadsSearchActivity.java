@@ -1,34 +1,40 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.hardbacknutter.nevertomanybooks.goodreads;
+package com.hardbacknutter.nevertomanybooks.searches.goodreads;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
@@ -49,8 +55,8 @@ import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertomanybooks.database.cursors.MappedCursorRow;
+import com.hardbacknutter.nevertomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertomanybooks.goodreads.tasks.FetchWorksTask;
-import com.hardbacknutter.nevertomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewAdapterBase;
@@ -98,11 +104,11 @@ public class GoodreadsSearchActivity
     public static void open(@NonNull final Context context,
                             final long bookId) {
         if (!GoodreadsManager.hasCredentials()) {
-            context.startActivity(new Intent(context, GoodreadsRegisterActivity.class));
+            context.startActivity(new Intent(context, GoodreadsRegistrationActivity.class));
         }
 
         Intent data = new Intent(context, GoodreadsSearchActivity.class)
-                .putExtra(DBDefinitions.KEY_PK_ID, bookId);
+                              .putExtra(DBDefinitions.KEY_PK_ID, bookId);
         context.startActivity(data);
     }
 
@@ -112,7 +118,6 @@ public class GoodreadsSearchActivity
     }
 
     @Override
-    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -145,7 +150,7 @@ public class GoodreadsSearchActivity
         mListView.setLayoutManager(linearLayoutManager);
         mListView.addItemDecoration(
                 new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
-        mWorksAdapter = new WorksAdapter(this, mWorks);
+        mWorksAdapter = new WorksAdapter(getLayoutInflater(), mWorks);
         mListView.setAdapter(mWorksAdapter);
 
         findViewById(R.id.btn_search).setOnClickListener(v -> doSearch());
@@ -207,7 +212,7 @@ public class GoodreadsSearchActivity
      * ENHANCE: Implement edition lookup - requires access to work.editions API from GR
      */
     private void onWorkSelected(@NonNull final GoodreadsWork work) {
-        String msg = "Not implemented: edition lookup - requires access to work.editions API from GR";
+        String msg = "Not implemented: requires access to work.editions API from GR";
         UserMessage.show(mListView, msg);
     }
 
@@ -219,7 +224,7 @@ public class GoodreadsSearchActivity
         private final TaskListener<List<GoodreadsWork>> mTaskListener =
                 message -> mWorks.setValue(message.result);
 
-        /** Database access. */
+        /** Database Access. */
         private DAO mDb;
         /** Data from the 'incoming' book. */
         private long mBookId;
@@ -313,8 +318,6 @@ public class GoodreadsSearchActivity
 
     /**
      * Holder pattern for search results.
-     *
-     * @author Philip Warner
      */
     private static class Holder
             extends RecyclerViewViewHolderBase {
@@ -338,8 +341,6 @@ public class GoodreadsSearchActivity
     /**
      * Adapter that uses holder pattern to display Goodreads books and
      * allows for background image retrieval.
-     *
-     * @author Philip Warner
      */
     private class WorksAdapter
             extends RecyclerViewAdapterBase<GoodreadsWork, Holder> {
@@ -347,12 +348,11 @@ public class GoodreadsSearchActivity
         /**
          * Constructor.
          *
-         * @param context Current context
-         * @param items   the list
+         * @param items the list
          */
-        WorksAdapter(@NonNull final Context context,
+        WorksAdapter(@NonNull final LayoutInflater layoutInflater,
                      @NonNull final List<GoodreadsWork> items) {
-            super(context, items, null);
+            super(layoutInflater, items, null);
         }
 
         @NonNull
@@ -361,7 +361,7 @@ public class GoodreadsSearchActivity
                                          final int viewType) {
 
             View view = getLayoutInflater()
-                    .inflate(R.layout.row_goodreads_work_item, parent, false);
+                                .inflate(R.layout.row_goodreads_work_item, parent, false);
             return new Holder(view);
         }
 

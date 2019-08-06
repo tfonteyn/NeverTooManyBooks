@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="displaying_n_books">
+        <item quantity="one">Affichage de %1$d livre</item>
+        <item quantity="other">Affichage de %1$d livres</item>
+    </plurals>
+
+    <plurals name="n_books_found">
+        <item quantity="one">%1$d livre trouvé</item>
+        <item quantity="other">%1$d livres trouvés</item>
+    </plurals>
+
+    <plurals name="n_books">
+        <item quantity="one">%1$d livre</item>
+        <item quantity="other">%1$d livres</item>
+    </plurals>
+
+    <plurals name="n_covers">
+        <item quantity="one">%1$d couverture</item>
+        <item quantity="other">%1$d couvertures</item>
+    </plurals>
+
+    <plurals name="n_stars">
+        <item quantity="one">%1$s étoile</item>
+        <item quantity="other">%1$s étoiles</item>
+    </plurals>
+</resources>

@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks;
 
 import android.annotation.SuppressLint;
@@ -37,13 +43,13 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
-import com.hardbacknutter.nevertomanybooks.database.DAO;
-import com.hardbacknutter.nevertomanybooks.debug.Logger;
-
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertomanybooks.database.DAO;
+import com.hardbacknutter.nevertomanybooks.debug.Logger;
 
 /**
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
@@ -52,9 +58,7 @@ import java.util.TimerTask;
  * The form allows entering free text, author, title.
  * <p>
  * The search gets the ID's of matching books, and returns this list when the 'show' button
- * is tapped. *Only* this list is returned; the original fields are not.
- *
- * @author Philip Warner
+ * is tapped. <strong>Only this list is returned</strong>; the original fields are not.
  */
 public class FTSSearchActivity
         extends BaseActivity {
@@ -63,7 +67,7 @@ public class FTSSearchActivity
     private static final int TIMER_TICK = 250;
     /** Handle inter-thread messages. */
     private final Handler mSCHandler = new Handler();
-    /** Database access. */
+    /** Database Access. */
     private DAO mDb;
 
     private String mAuthorSearchText;
@@ -117,25 +121,8 @@ public class FTSSearchActivity
         return R.layout.activity_search_fts;
     }
 
-    private void readArgs(@NonNull final Bundle args) {
-        mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-        mTitleSearchText = args.getString(UniqueId.BKEY_SEARCH_TITLE);
-        mKeywordsSearchText = args.getString(UniqueId.BKEY_SEARCH_TEXT);
-    }
-
-    // reminder: when converting to a fragment, don't forget this:
-//    @Override
-//    @CallSuper
-//    public void onCreate(@Nullable final Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        // make sure {@link #onCreateOptionsMenu} is called
-//        setHasOptionsMenu(true);
-//    }
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
@@ -179,12 +166,12 @@ public class FTSSearchActivity
         // Handle the 'Search' button.
         findViewById(R.id.btn_search).setOnClickListener(v -> {
             Intent data = new Intent()
-                    // pass these for displaying to the user
-                    .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText)
-                    .putExtra(UniqueId.BKEY_SEARCH_TITLE, mTitleSearchText)
-                    .putExtra(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText)
-                    // pass the book ID's for the list
-                    .putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
+                                  // pass these for displaying to the user
+                                  .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText)
+                                  .putExtra(UniqueId.BKEY_SEARCH_TITLE, mTitleSearchText)
+                                  .putExtra(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText)
+                                  // pass the book ID's for the list
+                                  .putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
             setResult(Activity.RESULT_OK, data);
             finish();
         });
@@ -192,13 +179,14 @@ public class FTSSearchActivity
         // Timer will be started in OnResume().
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.rebuild_fts)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-
-        return super.onCreateOptionsMenu(menu);
-    }
+    // reminder: when converting to a fragment, don't forget this:
+//    @Override
+//    public void onCreate(@Nullable final Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//
+//        // Mandatory
+//        setHasOptionsMenu(true);
+//    }
 
     @Override
     @CallSuper
@@ -215,6 +203,30 @@ public class FTSSearchActivity
     }
 
     /**
+     * When activity resumes, set search as dirty.
+     */
+    @Override
+    @CallSuper
+    protected void onResume() {
+        super.onResume();
+        userIsActive(true);
+    }
+
+    private void readArgs(@NonNull final Bundle args) {
+        mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR);
+        mTitleSearchText = args.getString(UniqueId.BKEY_SEARCH_TITLE);
+        mKeywordsSearchText = args.getString(UniqueId.BKEY_SEARCH_TEXT);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+        menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.rebuild_fts)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
      * Called in the timer thread, this code will run the search then queue the UI
      * updates to the main thread.
      */
@@ -225,8 +237,8 @@ public class FTSSearchActivity
 
         String tmpMsg = null;
         try (Cursor cursor = mDb.searchFts(mAuthorSearchText,
-                mTitleSearchText,
-                mKeywordsSearchText)) {
+                                           mTitleSearchText,
+                                           mKeywordsSearchText)) {
             // Null return means searchFts thought the parameters were effectively blank.
             if (cursor != null) {
                 int count = cursor.getCount();
@@ -265,16 +277,6 @@ public class FTSSearchActivity
     }
 
     /**
-     * When activity resumes, set search as dirty.
-     */
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-        userIsActive(true);
-    }
-
-    /**
      * When activity pauses, stop timer and get the search fields.
      */
     @Override
@@ -290,14 +292,6 @@ public class FTSSearchActivity
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
-        outState.putString(UniqueId.BKEY_SEARCH_TITLE, mTitleSearchText);
-        outState.putString(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText);
-    }
-
-    @Override
     @CallSuper
     public void onDestroy() {
         stopIdleTimer();
@@ -306,6 +300,14 @@ public class FTSSearchActivity
             mDb.close();
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
+        outState.putString(UniqueId.BKEY_SEARCH_TITLE, mTitleSearchText);
+        outState.putString(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText);
     }
 
     /**
@@ -343,8 +345,6 @@ public class FTSSearchActivity
      * Implements a timer task and does a search when the user is idle.
      * <p>
      * If a search happens, we stop the idle timer.
-     *
-     * @author Philip Warner
      */
     private class SearchUpdateTimer
             extends TimerTask {

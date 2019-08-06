@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.scanner;
 
 import android.annotation.SuppressLint;
@@ -23,8 +49,6 @@ import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 /**
  * Class to handle details of specific scanner interfaces and return a
  * Scanner object to the caller.
- *
- * @author pjw
  */
 public final class ScannerManager {
 
@@ -32,7 +56,10 @@ public final class ScannerManager {
     public static final int SCANNER_ZXING_COMPATIBLE = 0;
     public static final int SCANNER_ZXING = 1;
     public static final int SCANNER_PIC2SHOP = 2;
-
+    private static final String MARKET_URL_ZXING =
+            "market://details?id=com.google.zxing.client.android";
+    private static final String MARKET_URL_PIC2SHOP =
+            "market://details?id=com.visionsmarts.pic2shop";
     /** Collection of ScannerFactory objects. */
     @SuppressLint("UseSparseArrays")
     private static final Map<Integer, ScannerFactory> SCANNER_FACTORIES = new HashMap<>();
@@ -121,35 +148,23 @@ public final class ScannerManager {
         int messageId = noScanner ? R.string.info_install_scanner
                                   : R.string.warning_bad_scanner;
 
-        final AlertDialog dialog = new AlertDialog.Builder(activity)
+        new AlertDialog.Builder(activity)
                 .setIcon(R.drawable.ic_scanner)
                 .setTitle(R.string.title_install_scan)
                 .setMessage(messageId)
-                .create();
-
-        // we use POS and NEG for scanner choice. If we ever support 3, redo this lazy hack.
-        dialog.setButton(
-                AlertDialog.BUTTON_POSITIVE,
-                /* text hardcoded as a it is a product name */
-                "ZXing",
-                (d, which) -> installScanner(activity,
-                                             "market://details?id=com.google.zxing.client.android"));
-        dialog.setButton(
-                AlertDialog.BUTTON_NEGATIVE,
-                /* text hardcoded as a it is a product name */
-                "pic2shop",
-                (d, which) -> installScanner(activity,
-                                             "market://details?id=com.visionsmarts.pic2shop"));
-
-        dialog.setButton(
-                AlertDialog.BUTTON_NEUTRAL, activity.getString(android.R.string.cancel),
-                (d, which) -> {
+                .setNeutralButton(android.R.string.cancel, (d, w) -> {
                     //do nothing
                     activity.setResult(Activity.RESULT_CANCELED);
                     activity.finish();
-                });
-
-        dialog.show();
+                })
+                // we use POS and NEG for scanner choice. If we ever support 3, redo this lazy hack.
+                // text hardcoded as a it is a product name
+                .setNegativeButton("pic2shop",
+                                   (d, which) -> installScanner(activity, MARKET_URL_PIC2SHOP))
+                .setPositiveButton("ZXing",
+                                   (d, which) -> installScanner(activity, MARKET_URL_ZXING))
+                .create()
+                .show();
     }
 
     private static void installScanner(@NonNull final Activity activity,
@@ -167,8 +182,6 @@ public final class ScannerManager {
 
     /**
      * Support for creating scanner objects on the fly without knowing which ones are available.
-     *
-     * @author pjw
      */
     private interface ScannerFactory {
 

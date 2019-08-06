@@ -1,23 +1,29 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.baseactivity;
 
 import android.app.Activity;
@@ -53,8 +59,6 @@ import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.StartDragListener;
  * {@link #createListAdapter} needs to be implemented returning a suitable RecyclerView adapter.
  *
  * @param <T> the object type as used in the List
- *
- * @author Philip Warner
  */
 public abstract class EditObjectListActivity<T extends Parcelable>
         extends BaseActivity {
@@ -63,7 +67,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     @NonNull
     private final String mBKey;
 
-    /** Database access. */
+    /** Database Access. */
     protected DAO mDb;
 
     /** the rows. */
@@ -97,7 +101,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     }
 
     @Override
-    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -119,8 +122,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         listView.setHasFixedSize(true);
 
         // setup the adapter
-        mListAdapter = createListAdapter(mList, viewHolder ->
-                mItemTouchHelper.startDrag(viewHolder));
+        mListAdapter = createListAdapter(mList, vh -> mItemTouchHelper.startDrag(vh));
         listView.setAdapter(mListAdapter);
 
         SimpleItemTouchHelperCallback sitHelperCallback =
@@ -136,6 +138,29 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         }
 
         findViewById(R.id.btn_add).setOnClickListener(this::onAdd);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent data = new Intent()
+                              .putExtra(mBKey, mList)
+                              .putExtra(UniqueId.BKEY_GLOBAL_CHANGES_MADE, mGlobalReplacementsMade);
+
+        String name = mAutoCompleteTextView.getText().toString().trim();
+        if (!name.isEmpty()) {
+
+            // if the user had enter a (partial) new name, check if it's ok to leave
+            StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
+                // runs when user clicks 'exit anyway'. The list itself IS saved.
+                setResult(Activity.RESULT_OK, data);
+                finish();
+            });
+        }
+
+        // no current edit, so we're good to go.
+        setResult(Activity.RESULT_OK, data);
+        finish();
     }
 
     /**
@@ -155,26 +180,12 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected abstract void onAdd(@NonNull View target);
 
     @Override
-    public void onBackPressed() {
-
-        Intent data = new Intent()
-                .putExtra(mBKey, mList)
-                .putExtra(UniqueId.BKEY_GLOBAL_CHANGES_MADE, mGlobalReplacementsMade);
-
-        String name = mAutoCompleteTextView.getText().toString().trim();
-        if (!name.isEmpty()) {
-
-            // if the user had enter a (partial) new name, check if it's ok to leave
-            StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
-                // runs when user clicks 'exit anyway'. The list itself IS saved.
-                setResult(Activity.RESULT_OK, data);
-                finish();
-            });
+    @CallSuper
+    protected void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
         }
-
-        // no current edit, so we're good to go.
-        setResult(Activity.RESULT_OK, data);
-        finish();
+        super.onDestroy();
     }
 
     /**
@@ -188,14 +199,5 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         outState.putParcelableArrayList(mBKey, mList);
         outState.putLong(DBDefinitions.KEY_PK_ID, mRowId);
         outState.putString(DBDefinitions.KEY_TITLE, mBookTitle);
-    }
-
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 }

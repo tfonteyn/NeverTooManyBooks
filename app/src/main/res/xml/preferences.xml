@@ -6,7 +6,8 @@
     >
     <PreferenceCategory
         android:title="@string/pg_ui">
-        <!-- the list contains Locale string id's in contrast to other ListPreference which use 0,1... -->
+        <!-- the list contains Locale string id's in contrast to other
+             ListPreference which use 0,1... -->
         <ListPreference
             android:defaultValue="system"
             android:entries="@array/pe_ui_language"
@@ -39,7 +40,8 @@
             android:summary="@string/info_manage_fields"
             android:title="@string/pg_ui_field_visibility"
             >
-            <!-- NEWKIND: new fields visibility. Third part of the key name **MUST** be equal to the DOM column name. -->
+            <!-- NEWKIND: new fields visibility.
+                 Third part of the key name **MUST** be equal to the DOM column name. -->
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="fields.visibility.isbn"

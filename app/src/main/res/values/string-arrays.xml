@@ -25,7 +25,7 @@
         <item translatable="false">1</item>
     </string-array>
 
-    <!-- Preference - Book list state-related preferences -->
+    <!-- ListPreference - Book list state-related preferences -->
     <string-array name="pe_bob_list_state">
         <item>Preserve book list state</item>
         <item>Always start book lists expanded</item>
@@ -37,7 +37,8 @@
         <item translatable="false">2</item>
     </string-array>
 
-    <!--  Preference to override the default method used to generate book lists as defined by API level -->
+    <!--  ListPreference - override the default method used to generate book lists
+          as defined by API level -->
     <string-array name="pe_bob_list_generation">
         <item>@string/pe_use_recommended_option</item>
         <item>Force Fully Featured</item>
@@ -121,7 +122,10 @@
         <item>Books available</item>
     </string-array>
 
-    <!-- shared for all Boolean Filters: don't-use-filter (-1), filter-true (1), filter-false (0) -->
+    <!-- shared for all Boolean Filters:
+         don't-use-filter (-1),
+         filter-true (1),
+         filter-false (0) -->
     <string-array name="pv_bob_filter_values">
         <item translatable="false">-1</item>
         <item translatable="false">1</item>

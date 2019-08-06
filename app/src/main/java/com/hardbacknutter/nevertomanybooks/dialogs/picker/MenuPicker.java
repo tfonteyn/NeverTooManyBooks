@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.dialogs.picker;
 
 import android.content.Context;
@@ -35,20 +61,19 @@ public class MenuPicker<T>
      * The caller can create a menu calling {@link #createMenu(Context)},
      * populate it and pass it here.
      *
-     * @param context    Current context
      * @param title      for the dialog/menu
      * @param menu       the menu options to show
      * @param userObject a reference free to set/use by the caller
      * @param listener   callback handler with the MenuItem the user chooses + the position
      */
-    public MenuPicker(@NonNull final Context context,
+    public MenuPicker(@NonNull final LayoutInflater layoutInflater,
                       @Nullable final String title,
                       @NonNull final Menu menu,
                       @NonNull final T userObject,
                       @NonNull final ContextItemSelected<T> listener) {
-        super(context, title, null, false);
+        super(layoutInflater, title, null, false);
 
-        mAdapter = new MenuItemListAdapter(context, menu, menuItem -> {
+        mAdapter = new MenuItemListAdapter(layoutInflater, menu, menuItem -> {
             if (menuItem.hasSubMenu()) {
                 setTitle(menuItem.getTitle());
                 mAdapter.setMenu(menuItem.getSubMenu());
@@ -92,16 +117,16 @@ public class MenuPicker<T>
         @NonNull
         private final PickListener<MenuItem> mListener;
 
-        MenuItemListAdapter(@NonNull final Context context,
+        MenuItemListAdapter(@NonNull final LayoutInflater layoutInflater,
                             @NonNull final Menu menu,
                             @NonNull final PickListener<MenuItem> listener) {
 
-            mInflater = LayoutInflater.from(context);
+            mInflater = layoutInflater;
             mListener = listener;
             setMenu(menu);
 
             //noinspection ConstantConditions
-            mSubMenuPointer = context.getDrawable(R.drawable.ic_submenu);
+            mSubMenuPointer = layoutInflater.getContext().getDrawable(R.drawable.ic_submenu);
         }
 
         void setMenu(@NonNull final Menu menu) {

@@ -1,23 +1,29 @@
 /*
- * @copyright 2010 Evan Leybourn
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.searches.googlebooks;
 
 import androidx.annotation.CallSuper;
@@ -65,11 +71,15 @@ import org.xml.sax.helpers.DefaultHandler;
  *       xmlns:gd='http://schemas.google.com/g/2005'>
  *   <id>http://www.google.com/books/feeds/volumes</id>
  *   <updated>2010-02-28T03:28:09.000Z</updated>
- *   <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *   <category scheme='http://schemas.google.com/g/2005#kind'
+ *             term='http://schemas.google.com/books/2008#volume'/>
  *   <title type='text'>Search results for ISBN9780006483830</title>
- *   <link rel='alternate' type='text/html' href='http://www.google.com'/>
- *   <link rel='http://schemas.google.com/g/2005#feed' type='application/atom+xml' href='http://www.google.com/books/feeds/volumes'/>
- *   <link rel='self' type='application/atom+xml' href='http://www.google.com/books/feeds/volumes?q=ISBN9780006483830'/>
+ *   <link rel='alternate' type='text/html'
+ *         href='http://www.google.com'/>
+ *   <link rel='http://schemas.google.com/g/2005#feed' type='application/atom+xml'
+ *         href='http://www.google.com/books/feeds/volumes'/>
+ *   <link rel='self' type='application/atom+xml'
+ *         href='http://www.google.com/books/feeds/volumes?q=ISBN9780006483830'/>
  *   <author>
  *     <name>Google Books Search</name>
  *     <uri>http://www.google.com</uri>
@@ -86,16 +96,19 @@ import org.xml.sax.helpers.DefaultHandler;
  *     <title type='text'>The trigger</title>
  *     <link rel='http://schemas.google.com/books/2008/info'
  *           type='text/html'
- *           href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;dq=ISBN9780006483830&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
+ *           href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;dq=ISBN9780006483830
+ *           &amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
  *     <link rel='http://schemas.google.com/books/2008/preview'
  *           type='text/html'
- *           href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;dq=ISBN9780006483830&amp;ie=ISO-8859-1&amp;cd=1&amp;source=gbs_gdata'/>
+ *           href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;dq=ISBN9780006483830
+ *           &amp;ie=ISO-8859-1&amp;cd=1&amp;source=gbs_gdata'/>
  *     <link rel='http://schemas.google.com/books/2008/annotation'
  *           type='application/atom+xml'
  *           href='http://www.google.com/books/feeds/users/me/volumes'/>
  *     <link rel='alternate'
  *           type='text/html'
- *           href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;dq=ISBN9780006483830&amp;ie=ISO-8859-1'/>
+ *           href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;dq=ISBN9780006483830
+ *           &amp;ie=ISO-8859-1'/>
  *     <link rel='self'
  *           type='application/atom+xml'
  *           href='http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ'/>
@@ -151,15 +164,19 @@ import org.xml.sax.helpers.DefaultHandler;
  *                term='http://schemas.google.com/books/2008#volume'/>
  *    <title type='text'>The Geeks' Guide to World Domination</title>
  *    <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
- *      href='http://bks3.books.google.com/books?id=lf2EMetoLugC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;sig=ACfU3U1hcfy_NvWZbH46OzWwmQQCDV46lA&amp;source=gbs_gdata'/>
+ *      href='http://bks3.books.google.com/books?id=lf2EMetoLugC&amp;printsec=frontcover
+ *      &amp;img=1&amp;zoom=5&amp;sig=ACfU3U1hcfy_NvWZbH46OzWwmQQCDV46lA&amp;source=gbs_gdata'/>
  *    <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *      href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
+ *      href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340
+ *      &amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
  *    <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
- *      href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1&amp;cd=1&amp;source=gbs_gdata'/>
+ *      href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340
+ *      &amp;ie=ISO-8859-1&amp;cd=1&amp;source=gbs_gdata'/>
  *    <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
  *      href='http://www.google.com/books/feeds/users/me/volumes'/>
  *    <link rel='alternate' type='text/html'
- *      href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1'/>
+ *      href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340
+ *      &amp;ie=ISO-8859-1'/>
  *    <link rel='self' type='application/atom+xml'
  *      href='http://www.google.com/books/feeds/volumes/lf2EMetoLugC'/>
  *    <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
@@ -196,7 +213,8 @@ import org.xml.sax.helpers.DefaultHandler;
  *    xmlns:dc='http://purl.org/dc/terms'>
  *    <id>http://www.google.com/books/feeds/volumes</id>
  *    <updated>2019-07-17T09:02:42.000Z</updated>
- *    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *    <category scheme='http://schemas.google.com/g/2005#kind'
+ *              term='http://schemas.google.com/books/2008#volume'/>
  *    <title type='text'>Search results for ISBN&lt;0340198273&gt;</title>
  *    <link rel='alternate' type='text/html' href='http://www.google.com'/>
  *    <link rel='http://schemas.google.com/g/2005#feed' type='application/atom+xml'
@@ -204,7 +222,8 @@ import org.xml.sax.helpers.DefaultHandler;
  *    <link rel='self' type='application/atom+xml'
  *      href='https://www.google.com/books/feeds/volumes?q=ISBN%3C0340198273%3E'/>
  *    <link rel='next' type='application/atom+xml'
- *      href='https://www.google.com/books/feeds/volumes?q=ISBN%3C0340198273%3E&amp;start-index=11&amp;max-results=10'/>
+ *      href='https://www.google.com/books/feeds/volumes?q=ISBN%3C0340198273%3E
+ *      &amp;start-index=11&amp;max-results=10'/>
  *    <author>
  *      <name>Google Books Search</name>
  *      <uri>http://www.google.com</uri>
@@ -216,17 +235,21 @@ import org.xml.sax.helpers.DefaultHandler;
  *    <entry>
  *      <id>http://www.google.com/books/feeds/volumes/IVnpNAAACAAJ</id>
  *      <updated>2019-07-17T09:02:42.000Z</updated>
- *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <category scheme='http://schemas.google.com/g/2005#kind'
+ *                term='http://schemas.google.com/books/2008#volume'/>
  *      <title type='text'>The Anome</title>
  *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *          href='http://books.google.com/books?id=IVnpNAAACAAJ&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *            href='http://books.google.com/books?id=IVnpNAAACAAJ&amp;dq=ISBN%3C0340198273%3E
+ *            &amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
- *          href='http://books.google.com/books?id=IVnpNAAACAAJ&amp;dq=ISBN%3C0340198273%3E&amp;cd=1&amp;source=gbs_gdata'/>
+ *            href='http://books.google.com/books?id=IVnpNAAACAAJ&amp;dq=ISBN%3C0340198273%3E
+ *            &amp;cd=1&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
- *          href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *            href='http://www.google.com/books/feeds/users/me/volumes'/>
  *      <link rel='alternate' type='text/html'
- *          href='http://books.google.com/books?id=IVnpNAAACAAJ&amp;dq=ISBN%3C0340198273%3E'/>
- *      <link rel='self' type='application/atom+xml' href='https://www.google.com/books/feeds/volumes/IVnpNAAACAAJ'/>
+ *            href='http://books.google.com/books?id=IVnpNAAACAAJ&amp;dq=ISBN%3C0340198273%3E'/>
+ *      <link rel='self' type='application/atom+xml'
+ *            href='https://www.google.com/books/feeds/volumes/IVnpNAAACAAJ'/>
  *      <gbs:contentVersion>preview-1.0.0</gbs:contentVersion>
  *      <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
  *      <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
@@ -247,12 +270,15 @@ import org.xml.sax.helpers.DefaultHandler;
  *    <entry>
  *      <id>http://www.google.com/books/feeds/volumes/AYeaGwAACAAJ</id>
  *      <updated>2019-07-17T09:02:42.000Z</updated>
- *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <category scheme='http://schemas.google.com/g/2005#kind'
+ *      term='http://schemas.google.com/books/2008#volume'/>
  *      <title type='text'>The Faceless Man</title>
  *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *          href='http://books.google.com/books?id=AYeaGwAACAAJ&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=AYeaGwAACAAJ&amp;dq=ISBN%3C0340198273%3E&
+ *          amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
- *          href='http://books.google.com/books?id=AYeaGwAACAAJ&amp;dq=ISBN%3C0340198273%3E&amp;cd=2&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=AYeaGwAACAAJ&amp;dq=ISBN%3C0340198273%3E
+ *          &amp;cd=2&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
  *          href='http://www.google.com/books/feeds/users/me/volumes'/>
  *      <link rel='alternate' type='text/html'
@@ -279,18 +305,23 @@ import org.xml.sax.helpers.DefaultHandler;
  *    <entry>
  *      <id>http://www.google.com/books/feeds/volumes/sWuaFofonmIC</id>
  *      <updated>2019-07-17T09:02:42.000Z</updated>
- *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <category scheme='http://schemas.google.com/g/2005#kind'
+ *          term='http://schemas.google.com/books/2008#volume'/>
  *      <title type='text'>The Brave Free Men</title>
  *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
- *          href='http://books.google.com/books/content?id=sWuaFofonmIC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books/content?id=sWuaFofonmIC&amp;printsec=frontcover
+ *          &amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *          href='http://books.google.com/books?id=sWuaFofonmIC&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=sWuaFofonmIC&amp;dq=ISBN%3C0340198273%3E
+ *          &amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
- *          href='http://books.google.com/books?id=sWuaFofonmIC&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=3&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=sWuaFofonmIC&amp;printsec=frontcover
+ *          &amp;dq=ISBN%3C0340198273%3E&amp;cd=3&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
  *          href='http://www.google.com/books/feeds/users/me/volumes'/>
  *      <link rel='http://schemas.google.com/books/2008/buylink' type='text/html'
- *          href='https://play.google.com/store/books/details?id=sWuaFofonmIC&amp;rdid=book-sWuaFofonmIC&amp;rdot=1&amp;source=gbs_gdata'/>
+ *          href='https://play.google.com/store/books/details?id=sWuaFofonmIC
+ *          &amp;rdid=book-sWuaFofonmIC&amp;rdot=1&amp;source=gbs_gdata'/>
  *      <link rel='alternate' type='text/html'
  *          href='http://books.google.com/books?id=sWuaFofonmIC&amp;dq=ISBN%3C0340198273%3E'/>
  *      <link rel='self' type='application/atom+xml'
@@ -301,7 +332,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
  *      <dc:creator>Jack Vance</dc:creator>
  *      <dc:date>2011-12-19</dc:date>
- *      <dc:description>If they were to fight the people must regain control blah blah...</dc:description>
+ *      <dc:description>If they were to fight the people  blah blah...</dc:description>
  *      <dc:format>87 pages</dc:format>
  *      <dc:format>book</dc:format>
  *      <dc:identifier>sWuaFofonmIC</dc:identifier>
@@ -322,18 +353,23 @@ import org.xml.sax.helpers.DefaultHandler;
  *    <entry>
  *      <id>http://www.google.com/books/feeds/volumes/O_Ik7L1VSMsC</id>
  *      <updated>2019-07-17T09:02:42.000Z</updated>
- *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <category scheme='http://schemas.google.com/g/2005#kind'
+ *      term='http://schemas.google.com/books/2008#volume'/>
  *      <title type='text'>The Asutra</title>
  *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
- *          href='http://books.google.com/books/content?id=O_Ik7L1VSMsC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books/content?id=O_Ik7L1VSMsC&amp;printsec=frontcover
+ *          &amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *          href='http://books.google.com/books?id=O_Ik7L1VSMsC&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=O_Ik7L1VSMsC&amp;dq=ISBN%3C0340198273%3E
+ *          &amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
- *          href='http://books.google.com/books?id=O_Ik7L1VSMsC&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=4&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=O_Ik7L1VSMsC&amp;printsec=frontcover
+ *          &amp;dq=ISBN%3C0340198273%3E&amp;cd=4&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
  *          href='http://www.google.com/books/feeds/users/me/volumes'/>
  *      <link rel='http://schemas.google.com/books/2008/buylink' type='text/html'
- *          href='https://play.google.com/store/books/details?id=O_Ik7L1VSMsC&amp;rdid=book-O_Ik7L1VSMsC&amp;rdot=1&amp;source=gbs_gdata'/>
+ *          href='https://play.google.com/store/books/details?id=O_Ik7L1VSMsC
+ *          &amp;rdid=book-O_Ik7L1VSMsC&amp;rdot=1&amp;source=gbs_gdata'/>
  *      <link rel='alternate' type='text/html'
  *          href='http://books.google.com/books?id=O_Ik7L1VSMsC&amp;dq=ISBN%3C0340198273%3E'/>
  *      <link rel='self' type='application/atom+xml'
@@ -365,18 +401,23 @@ import org.xml.sax.helpers.DefaultHandler;
  *    <entry>
  *      <id>http://www.google.com/books/feeds/volumes/3Dm6V9QOPkoC</id>
  *      <updated>2019-07-17T09:02:42.000Z</updated>
- *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <category scheme='http://schemas.google.com/g/2005#kind'
+ *          term='http://schemas.google.com/books/2008#volume'/>
  *      <title type='text'>The Magnificent Showboats</title>
  *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
- *          href='http://books.google.com/books/content?id=3Dm6V9QOPkoC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books/content?id=3Dm6V9QOPkoC&amp;printsec=frontcover
+ *          &amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *          href='http://books.google.com/books?id=3Dm6V9QOPkoC&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=3Dm6V9QOPkoC&amp;dq=ISBN%3C0340198273%3E
+ *          &amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
- *          href='http://books.google.com/books?id=3Dm6V9QOPkoC&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=5&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=3Dm6V9QOPkoC&amp;printsec=frontcover
+ *          &amp;dq=ISBN%3C0340198273%3E&amp;cd=5&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
  *          href='http://www.google.com/books/feeds/users/me/volumes'/>
  *      <link rel='http://schemas.google.com/books/2008/buylink' type='text/html'
- *          href='https://play.google.com/store/books/details?id=3Dm6V9QOPkoC&amp;rdid=book-3Dm6V9QOPkoC&amp;rdot=1&amp;source=gbs_gdata'/>
+ *          href='https://play.google.com/store/books/details?id=3Dm6V9QOPkoC
+ *          &amp;rdid=book-3Dm6V9QOPkoC&amp;rdot=1&amp;source=gbs_gdata'/>
  *      <link rel='alternate' type='text/html'
  *          href='http://books.google.com/books?id=3Dm6V9QOPkoC&amp;dq=ISBN%3C0340198273%3E'/>
  *      <link rel='self' type='application/atom+xml'
@@ -387,7 +428,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
  *      <dc:creator>Jack Vance</dc:creator>
  *      <dc:date>2011-12-19</dc:date>
- *      <dc:description>The Magnificent Showboats follows the farcical blah blah... </dc:description>
+ *      <dc:description>The Magnificent Showboats follows the blah blah... </dc:description>
  *      <dc:format>102 pages</dc:format>
  *      <dc:format>book</dc:format>
  *      <dc:identifier>3Dm6V9QOPkoC</dc:identifier>
@@ -408,14 +449,18 @@ import org.xml.sax.helpers.DefaultHandler;
  * <entry>
  * <id>http://www.google.com/books/feeds/volumes/6RySDQAAQBAJ</id>
  * <updated>2019-07-17T09:02:42.000Z</updated>
- * <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ * <category scheme='http://schemas.google.com/g/2005#kind'
+ *      term='http://schemas.google.com/books/2008#volume'/>
  * <title type='text'>The Golden Amazon</title>
  *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
- *          href='http://books.google.com/books/content?id=6RySDQAAQBAJ&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books/content?id=6RySDQAAQBAJ&amp;printsec=frontcover
+ *          &amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *          href='http://books.google.com/books?id=6RySDQAAQBAJ&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=6RySDQAAQBAJ&amp;dq=ISBN%3C0340198273%3E
+ *          &amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
- *          href='http://books.google.com/books?id=6RySDQAAQBAJ&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=6&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=6RySDQAAQBAJ&amp;printsec=frontcover
+ *          &amp;dq=ISBN%3C0340198273%3E&amp;cd=6&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
  *          href='http://www.google.com/books/feeds/users/me/volumes'/>
  *      <link rel='alternate' type='text/html'
@@ -442,14 +487,18 @@ import org.xml.sax.helpers.DefaultHandler;
  * <entry>
  * <id>http://www.google.com/books/feeds/volumes/NsdMAAAACAAJ</id>
  * <updated>2019-07-17T09:02:42.000Z</updated>
- * <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ * <category scheme='http://schemas.google.com/g/2005#kind'
+ *      term='http://schemas.google.com/books/2008#volume'/>
  * <title type='text'>Space Time and Nathaniel</title>
  *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
- *          href='http://books.google.com/books/content?id=NsdMAAAACAAJ&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books/content?id=NsdMAAAACAAJ&amp;printsec=frontcover
+ *          &amp;img=1&amp;zoom=5&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *          href='http://books.google.com/books?id=NsdMAAAACAAJ&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=NsdMAAAACAAJ&amp;dq=ISBN%3C0340198273%3E
+ *          &amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
- *          href='http://books.google.com/books?id=NsdMAAAACAAJ&amp;dq=ISBN%3C0340198273%3E&amp;cd=7&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=NsdMAAAACAAJ&amp;dq=ISBN%3C0340198273%3E
+ *          &amp;cd=7&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
  *          href='http://www.google.com/books/feeds/users/me/volumes'/>
  *      <link rel='alternate' type='text/html'
@@ -476,18 +525,23 @@ import org.xml.sax.helpers.DefaultHandler;
  *    <entry>
  *      <id>http://www.google.com/books/feeds/volumes/Tp0sOVqefewC</id>
  *      <updated>2019-07-17T09:02:42.000Z</updated>
- *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <category scheme='http://schemas.google.com/g/2005#kind'
+ *              term='http://schemas.google.com/books/2008#volume'/>
  *      <title type='text'>Kavin's World</title>
  *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
- *          href='http://books.google.com/books/content?id=Tp0sOVqefewC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books/content?id=Tp0sOVqefewC&amp;printsec=frontcover
+ *          &amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *          href='http://books.google.com/books?id=Tp0sOVqefewC&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=Tp0sOVqefewC&amp;dq=ISBN%3C0340198273%3E
+ *          &amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
- *          href='http://books.google.com/books?id=Tp0sOVqefewC&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=8&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=Tp0sOVqefewC&amp;printsec=frontcover
+ *          &amp;dq=ISBN%3C0340198273%3E&amp;cd=8&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
  *          href='http://www.google.com/books/feeds/users/me/volumes'/>
  *      <link rel='http://schemas.google.com/books/2008/buylink' type='text/html'
- *          href='https://play.google.com/store/books/details?id=Tp0sOVqefewC&amp;rdid=book-Tp0sOVqefewC&amp;rdot=1&amp;source=gbs_gdata'/>
+ *          href='https://play.google.com/store/books/details?id=Tp0sOVqefewC
+ *          &amp;rdid=book-Tp0sOVqefewC&amp;rdot=1&amp;source=gbs_gdata'/>
  *      <link rel='alternate' type='text/html'
  *          href='http://books.google.com/books?id=Tp0sOVqefewC&amp;dq=ISBN%3C0340198273%3E'/>
  *      <link rel='self' type='application/atom+xml'
@@ -518,18 +572,23 @@ import org.xml.sax.helpers.DefaultHandler;
  *    <entry>
  *      <id>http://www.google.com/books/feeds/volumes/4ZCy30OedPMC</id>
  *      <updated>2019-07-17T09:02:42.000Z</updated>
- *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <category scheme='http://schemas.google.com/g/2005#kind'
+ *              term='http://schemas.google.com/books/2008#volume'/>
  *      <title type='text'>Eighty Minute Hour</title>
  *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
- *          href='http://books.google.com/books/content?id=4ZCy30OedPMC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books/content?id=4ZCy30OedPMC&amp;printsec=frontcover
+ *          &amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *          href='http://books.google.com/books?id=4ZCy30OedPMC&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=4ZCy30OedPMC&amp;dq=ISBN%3C0340198273%3E
+ *          &amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
- *          href='http://books.google.com/books?id=4ZCy30OedPMC&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=9&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=4ZCy30OedPMC&amp;printsec=frontcover
+ *          &amp;dq=ISBN%3C0340198273%3E&amp;cd=9&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
  *          href='http://www.google.com/books/feeds/users/me/volumes'/>
  *      <link rel='http://schemas.google.com/books/2008/buylink' type='text/html'
- *          href='https://play.google.com/store/books/details?id=4ZCy30OedPMC&amp;rdid=book-4ZCy30OedPMC&amp;rdot=1&amp;source=gbs_gdata'/>
+ *          href='https://play.google.com/store/books/details?id=4ZCy30OedPMC
+ *          &amp;rdid=book-4ZCy30OedPMC&amp;rdot=1&amp;source=gbs_gdata'/>
  *      <link rel='alternate' type='text/html'
  *          href='http://books.google.com/books?id=4ZCy30OedPMC&amp;dq=ISBN%3C0340198273%3E'/>
  *      <link rel='self' type='application/atom+xml'
@@ -561,18 +620,23 @@ import org.xml.sax.helpers.DefaultHandler;
  *    <entry>
  *      <id>http://www.google.com/books/feeds/volumes/BccqAwAAQBAJ</id>
  *      <updated>2019-07-17T09:02:42.000Z</updated>
- *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <category scheme='http://schemas.google.com/g/2005#kind'
+ *              term='http://schemas.google.com/books/2008#volume'/>
  *      <title type='text'>The Beast That Shouted Love at the Heart of the World</title>
  *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
- *          href='http://books.google.com/books/content?id=BccqAwAAQBAJ&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books/content?id=BccqAwAAQBAJ&amp;printsec=frontcover
+ *          &amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *          href='http://books.google.com/books?id=BccqAwAAQBAJ&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=BccqAwAAQBAJ&amp;dq=ISBN%3C0340198273%3E
+ *          &amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
- *          href='http://books.google.com/books?id=BccqAwAAQBAJ&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=10&amp;source=gbs_gdata'/>
+ *          href='http://books.google.com/books?id=BccqAwAAQBAJ&amp;printsec=frontcover
+ *          &amp;dq=ISBN%3C0340198273%3E&amp;cd=10&amp;source=gbs_gdata'/>
  *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
  *          href='http://www.google.com/books/feeds/users/me/volumes'/>
  *      <link rel='http://schemas.google.com/books/2008/buylink' type='text/html'
- *          href='https://play.google.com/store/books/details?id=BccqAwAAQBAJ&amp;rdid=book-BccqAwAAQBAJ&amp;rdot=1&amp;source=gbs_gdata'/>
+ *          href='https://play.google.com/store/books/details?id=BccqAwAAQBAJ
+ *          &amp;rdid=book-BccqAwAAQBAJ&amp;rdot=1&amp;source=gbs_gdata'/>
  *      <link rel='alternate' type='text/html'
  *          href='http://books.google.com/books?id=BccqAwAAQBAJ&amp;dq=ISBN%3C0340198273%3E'/>
  *      <link rel='self' type='application/atom+xml'
@@ -629,16 +693,6 @@ class SearchGoogleBooksHandler
         return url;
     }
 
-    @Override
-    @CallSuper
-    public void characters(@NonNull final char[] ch,
-                           final int start,
-                           final int length)
-            throws SAXException {
-        super.characters(ch, start, length);
-        mBuilder.append(ch, start, length);
-    }
-
     /**
      * Start each XML element. Specifically identify when we are in the item
      * element and set the appropriate flag.
@@ -684,5 +738,15 @@ class SearchGoogleBooksHandler
         // To be completely correct, we should maintain a stack of builders that are pushed and
         // popped as each startElement/endElement is called. But lets not be pedantic for now.
         mBuilder.setLength(0);
+    }
+
+    @Override
+    @CallSuper
+    public void characters(@NonNull final char[] ch,
+                           final int start,
+                           final int length)
+            throws SAXException {
+        super.characters(ch, start, length);
+        mBuilder.append(ch, start, length);
     }
 }

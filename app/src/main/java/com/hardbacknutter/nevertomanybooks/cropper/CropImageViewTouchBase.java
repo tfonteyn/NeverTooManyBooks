@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.hardbacknutter.nevertomanybooks.cropper;
 
 import android.content.Context;
@@ -134,6 +133,19 @@ public abstract class CropImageViewTouchBase
 
     @Override
     @CallSuper
+    public boolean onKeyDown(final int keyCode,
+                             @NonNull final KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && getScale() > 1.0f) {
+            // If we're large in, pressing Back jumps out to show the entire
+            // image, otherwise Back returns the user to the gallery.
+            zoomTo(1.0f);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    @CallSuper
     protected void onLayout(final boolean changed,
                             final int left,
                             final int top,
@@ -155,19 +167,6 @@ public abstract class CropImageViewTouchBase
             getProperBaseMatrix(mBitmapDisplayed, mBaseMatrix);
             setImageMatrix(getImageViewMatrix());
         }
-    }
-
-    @Override
-    @CallSuper
-    public boolean onKeyDown(final int keyCode,
-                             @NonNull final KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && getScale() > 1.0f) {
-            // If we're large in, pressing Back jumps out to show the entire
-            // image, otherwise Back returns the user to the gallery.
-            zoomTo(1.0f);
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     @Override

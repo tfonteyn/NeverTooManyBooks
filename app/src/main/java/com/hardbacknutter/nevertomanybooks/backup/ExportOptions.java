@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.backup;
 
 import android.content.SharedPreferences;
@@ -8,11 +34,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertomanybooks.App;
-
 import java.io.File;
 import java.util.Date;
 import java.util.Objects;
+
+import com.hardbacknutter.nevertomanybooks.App;
 
 public class ExportOptions
         implements Parcelable {
@@ -28,16 +54,16 @@ public class ExportOptions
     //public static final int IMPORT_5 = 1 << 5;
     //public static final int IMPORT_6 = 1 << 6;
     //public static final int IMPORT_7 = 1 << 7;
-    public static final int DATABASE = 1 << 8;
+    //public static final int DATABASE = 1 << 8;
 
     /**
      * Options value to indicate all things should be exported.
      * Note that XML_TABLES is NOT included as it's considered special interest.
      */
     public static final int ALL = BOOK_CSV
-            | PREFERENCES
-            | BOOK_LIST_STYLES
-            | COVERS;
+                                  | PREFERENCES
+                                  | BOOK_LIST_STYLES
+                                  | COVERS;
 
     /**
      * Options to indicate new books or books with more recent update_date
@@ -113,6 +139,12 @@ public class ExportOptions
         return PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
     }
 
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -137,12 +169,6 @@ public class ExportOptions
         }
     }
 
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
     public void validate() {
         // if we want 'since', we *must* have a valid dateFrom
         if ((what & ExportOptions.EXPORT_SINCE) != 0) {
@@ -157,9 +183,9 @@ public class ExportOptions
     @NonNull
     public String toString() {
         return "ExportOptions{"
-                + "file=`" + file + '`'
-                + ", what=0%" + Integer.toBinaryString(what)
-                + ", dateFrom=" + dateFrom
-                + '}';
+               + "file=`" + file + '`'
+               + ", what=0%" + Integer.toBinaryString(what)
+               + ", dateFrom=" + dateFrom
+               + '}';
     }
 }

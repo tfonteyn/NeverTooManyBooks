@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License V3
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.booklist;
 
 import android.content.Context;
@@ -34,15 +40,6 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 
-import com.hardbacknutter.nevertomanybooks.App;
-import com.hardbacknutter.nevertomanybooks.R;
-import com.hardbacknutter.nevertomanybooks.booklist.prefs.PBoolean;
-import com.hardbacknutter.nevertomanybooks.booklist.prefs.PPref;
-import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertomanybooks.database.definitions.DomainDefinition;
-import com.hardbacknutter.nevertomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertomanybooks.utils.UniqueMap;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -52,6 +49,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.hardbacknutter.nevertomanybooks.App;
+import com.hardbacknutter.nevertomanybooks.R;
+import com.hardbacknutter.nevertomanybooks.booklist.prefs.PBoolean;
+import com.hardbacknutter.nevertomanybooks.booklist.prefs.PPref;
+import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertomanybooks.database.definitions.DomainDefinition;
+import com.hardbacknutter.nevertomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertomanybooks.utils.UniqueMap;
 
 /**
  * Class representing a single level in the booklist hierarchy.
@@ -64,8 +70,6 @@ import java.util.Set;
  * <b>Note:</b> the way preferences are implemented means that all groups will add their
  * properties to the persisted state of a style. Not just the groups which are active/present
  * for that state. This is fine, as they won't get used unless activated.
- *
- * @author Philip Warner
  */
 public class BooklistGroup
         implements Serializable, Parcelable {
@@ -147,9 +151,10 @@ public class BooklistGroup
      * @return a group based on the passed in kind
      */
     @NonNull
-    public static BooklistGroup newInstance(@IntRange(from = 0, to = RowKind.ROW_KIND_MAX) final int kind,
-                                            @NonNull final String uuid,
-                                            final boolean isUserDefinedStyle) {
+    public static BooklistGroup newInstance(
+            @IntRange(from = 0, to = RowKind.ROW_KIND_MAX) final int kind,
+            @NonNull final String uuid,
+            final boolean isUserDefinedStyle) {
         switch (kind) {
             case RowKind.AUTHOR:
                 return new BooklistAuthorGroup(uuid, isUserDefinedStyle);
@@ -177,6 +182,12 @@ public class BooklistGroup
         return list;
     }
 
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -185,12 +196,6 @@ public class BooklistGroup
         dest.writeInt(mIsUserDefinedStyle ? 1 : 0);
         dest.writeList(mDomains);
         // now the prefs for this class (none on this level for now)
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     @NonNull
@@ -291,6 +296,7 @@ public class BooklistGroup
             implements Serializable, Parcelable {
 
         /** {@link Parcelable}. */
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         public static final Creator<BooklistSeriesGroup> CREATOR =
                 new Creator<BooklistSeriesGroup>() {
                     @Override
@@ -348,10 +354,6 @@ public class BooklistGroup
                                       mIsUserDefinedStyle);
         }
 
-        boolean showAll() {
-            return mAllSeries.isTrue();
-        }
-
         /**
          * Get the Preference objects that this group will contribute to a Style.
          */
@@ -395,6 +397,10 @@ public class BooklistGroup
             }
         }
 
+        boolean showAll() {
+            return mAllSeries.isTrue();
+        }
+
         /**
          * Pre-v200 Legacy support for reading serialized styles from archives and database upgrade.
          * <p>
@@ -420,6 +426,7 @@ public class BooklistGroup
             implements Serializable, Parcelable {
 
         /** {@link Parcelable}. */
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         public static final Creator<BooklistAuthorGroup> CREATOR =
                 new Creator<BooklistAuthorGroup>() {
                     @Override
@@ -491,17 +498,6 @@ public class BooklistGroup
                                            mIsUserDefinedStyle);
         }
 
-        boolean showAll() {
-            return mAllAuthors.isTrue();
-        }
-
-        /**
-         * @return {@code true} if we want "given-names last-name" formatted authors.
-         */
-        boolean showAuthorGivenNameFirst() {
-            return mGivenNameFirst.isTrue();
-        }
-
         /**
          * Get the Preference objects that this group will contribute to a Style.
          */
@@ -554,6 +550,17 @@ public class BooklistGroup
                 pGivenNameFirst.setSummaryOff(R.string.pv_bob_format_author_name_family_first);
                 category.addPreference(pGivenNameFirst);
             }
+        }
+
+        boolean showAll() {
+            return mAllAuthors.isTrue();
+        }
+
+        /**
+         * @return {@code true} if we want "given-names last-name" formatted authors.
+         */
+        boolean showAuthorGivenNameFirst() {
+            return mGivenNameFirst.isTrue();
         }
 
         /**
@@ -857,7 +864,9 @@ public class BooklistGroup
         @NonNull
         public String toString() {
             return "RowKind{"
-                   + "name=" + getName(App.getAppContext())
+                   + "name=" + App.getAppContext().getString(mLabelId)
+                   + "mKind=" + mKind
+                   + "=" + mDisplayDomain
                    + '}';
         }
     }
@@ -869,6 +878,7 @@ public class BooklistGroup
             implements Parcelable {
 
         /** {@link Parcelable}. */
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         public static final Creator<CompoundKey> CREATOR =
                 new Creator<CompoundKey>() {
                     @Override
@@ -929,17 +939,17 @@ public class BooklistGroup
             return domains;
         }
 
+        @SuppressWarnings("SameReturnValue")
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {
             dest.writeString(prefix);
             dest.writeTypedArray(domains, flags);
-        }
-
-        @SuppressWarnings("SameReturnValue")
-        @Override
-        public int describeContents() {
-            return 0;
         }
     }
 }

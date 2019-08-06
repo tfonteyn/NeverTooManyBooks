@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.goodreads.tasks;
 
 import android.content.Context;
@@ -12,6 +38,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertomanybooks.EditBookActivity;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -33,10 +63,6 @@ import com.hardbacknutter.nevertomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A Task *MUST* be serializable.
@@ -101,7 +127,7 @@ abstract class SendBooksLegacyTaskBase
     /**
      * Try to export one book.
      *
-     * @param context   Current context for accessing resources.
+     * @param context   Current context
      * @param grManager the Goodreads Manager
      *
      * @return {@code false} on failure, {@code true} on success
@@ -175,8 +201,6 @@ abstract class SendBooksLegacyTaskBase
 
     /**
      * All Event objects resulting from sending books to Goodreads.
-     *
-     * @author Philip Warner
      */
     private static class GrSendBookEvent
             extends Event {
@@ -276,7 +300,7 @@ abstract class SendBooksLegacyTaskBase
             holder.errorView.setText(getDescription());
 
             String date = DateUtils.toPrettyDateTime(LocaleUtils.from(context),
-                    eventsCursor.getEventDate());
+                                                     eventsCursor.getEventDate());
             holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
 
             holder.retryView.setVisibility(View.GONE);
@@ -284,8 +308,8 @@ abstract class SendBooksLegacyTaskBase
             holder.buttonView.setChecked(eventsCursor.isSelected());
             holder.buttonView.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
-                        BookEventHolder bookEventHolder = (BookEventHolder)
-                                buttonView.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
+                        BookEventHolder bookEventHolder =
+                                (BookEventHolder) buttonView.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
                         eventsCursor.setSelected(bookEventHolder.rowId, isChecked);
                     });
 
@@ -326,7 +350,8 @@ abstract class SendBooksLegacyTaskBase
                             GrSendBookEvent event =
                                     (GrSendBookEvent) view.getTag(R.id.TAG_GR_EVENT);
                             Intent intent = new Intent(context, EditBookActivity.class)
-                                    .putExtra(DBDefinitions.KEY_PK_ID, event.getBookId());
+                                                    .putExtra(DBDefinitions.KEY_PK_ID,
+                                                              event.getBookId());
                             context.startActivity(intent);
                         } catch (@NonNull final RuntimeException ignore) {
                             // not a book event?
@@ -347,7 +372,7 @@ abstract class SendBooksLegacyTaskBase
 
             // DELETE EVENT
             items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
-                    () -> QueueManager.getQueueManager().deleteEvent(id)));
+                                            () -> QueueManager.getQueueManager().deleteEvent(id)));
 
             // RETRY EVENT
             String isbn = db.getBookIsbn(mBookId);
@@ -357,7 +382,7 @@ abstract class SendBooksLegacyTaskBase
                         () -> {
                             try {
                                 GrSendBookEvent event = (GrSendBookEvent)
-                                        view.getTag(R.id.TAG_GR_EVENT);
+                                                                view.getTag(R.id.TAG_GR_EVENT);
                                 event.retry(context);
                                 QueueManager.getQueueManager().deleteEvent(id);
                             } catch (@NonNull final RuntimeException ignore) {
@@ -368,7 +393,7 @@ abstract class SendBooksLegacyTaskBase
         }
 
         /**
-         * Class to implement the 'holder' model for view we create.
+         * Class to implement the holder model for view we create.
          */
         static class BookEventHolder {
 
@@ -414,7 +439,7 @@ abstract class SendBooksLegacyTaskBase
         @Override
         @StringRes
         public int getTip() {
-            return R.string.gr_explain_goodreads_no_match;
+            return R.string.gr_explain_no_match;
         }
 
     }
@@ -437,7 +462,7 @@ abstract class SendBooksLegacyTaskBase
         @Override
         @StringRes
         public int getTip() {
-            return R.string.gr_explain_goodreads_no_isbn;
+            return R.string.gr_explain_no_isbn;
         }
 
     }

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.hardbacknutter.nevertomanybooks.cropper;
 
 import android.os.Bundle;
@@ -44,21 +43,11 @@ abstract class CropMonitoredActivity
     }
 
     @Override
-    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityCreated(this);
         }
-    }
-
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        for (LifeCycleListener listener : mListeners) {
-            listener.onActivityDestroyed(this);
-        }
-        super.onDestroy();
     }
 
     @Override
@@ -77,6 +66,15 @@ abstract class CropMonitoredActivity
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityStopped(this);
         }
+    }
+
+    @Override
+    @CallSuper
+    protected void onDestroy() {
+        for (LifeCycleListener listener : mListeners) {
+            listener.onActivityDestroyed(this);
+        }
+        super.onDestroy();
     }
 
     @SuppressWarnings({"EmptyMethod", "unused"})

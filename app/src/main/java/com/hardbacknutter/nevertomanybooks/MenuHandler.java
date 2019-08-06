@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks;
 
 import android.app.Activity;
@@ -70,23 +76,23 @@ public final class MenuHandler {
      */
     static void addCreateBookSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_BOOK_ADD, R.id.SUBMENU_BOOK_ADD,
-                0, R.string.menu_add_book)
-                .setIcon(R.drawable.ic_add);
+                                          0, R.string.menu_add_book)
+                              .setIcon(R.drawable.ic_add);
 
         subMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SCAN, 0,
-                R.string.menu_add_book_by_barcode_scan)
-                .setIcon(R.drawable.ic_add_a_photo);
+                    R.string.menu_add_book_by_barcode_scan)
+               .setIcon(R.drawable.ic_add_a_photo);
         subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN, 0,
-                R.string.menu_add_book_by_isbn)
-                .setIcon(R.drawable.ic_zoom_in);
+                    R.string.menu_add_book_by_isbn)
+               .setIcon(R.drawable.ic_zoom_in);
         subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, 0,
-                R.string.menu_search_internet)
-                .setIcon(R.drawable.ic_zoom_in);
+                    R.string.menu_search_internet)
+               .setIcon(R.drawable.ic_zoom_in);
         subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_MANUALLY, 0,
-                R.string.menu_add_book_manually)
-                .setIcon(R.drawable.ic_keyboard);
+                    R.string.menu_add_book_manually)
+               .setIcon(R.drawable.ic_keyboard);
     }
 
     /**
@@ -103,20 +109,22 @@ public final class MenuHandler {
         switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_ADD_BY_SCAN:
                 intent = new Intent(activity, BookSearchActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
-                        .putExtra(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE, true);
+                                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
+                                 .putExtra(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE, true);
                 activity.startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
                 return true;
 
             case R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN:
                 intent = new Intent(activity, BookSearchActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG);
+                                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG,
+                                           BookSearchByIsbnFragment.TAG);
                 activity.startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
                 return true;
 
             case R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT:
                 intent = new Intent(activity, BookSearchActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByTextFragment.TAG);
+                                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG,
+                                           BookSearchByTextFragment.TAG);
                 activity.startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
                 return true;
 
@@ -130,26 +138,24 @@ public final class MenuHandler {
         }
     }
 
-
     static void addViewBookSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_VIEW_BOOK_AT_SITE,
-                R.id.SUBMENU_VIEW_BOOK_AT_SITE,
-                ORDER_VIEW_BOOK_AT_SITE,
-                R.string.menu_view_book_at_ellipsis)
-                .setIcon(R.drawable.ic_link);
+                                          R.id.SUBMENU_VIEW_BOOK_AT_SITE,
+                                          ORDER_VIEW_BOOK_AT_SITE,
+                                          R.string.menu_view_book_at_ellipsis)
+                              .setIcon(R.drawable.ic_link);
         subMenu.add(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
-                R.id.MENU_VIEW_BOOK_AT_GOODREADS, 0,
-                R.string.goodreads);
+                    R.id.MENU_VIEW_BOOK_AT_GOODREADS, 0,
+                    R.string.goodreads);
         subMenu.add(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
-                R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING, 0,
-                R.string.library_thing);
+                    R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING, 0,
+                    R.string.library_thing);
         subMenu.add(R.id.MENU_VIEW_BOOK_AT_ISFDB,
-                R.id.MENU_VIEW_BOOK_AT_ISFDB, 0,
-                R.string.isfdb);
+                    R.id.MENU_VIEW_BOOK_AT_ISFDB, 0,
+                    R.string.isfdb);
         subMenu.add(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-                R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0,
-                R.string.open_library);
-
+                    R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0,
+                    R.string.open_library);
     }
 
     static void prepareViewBookSubMenu(@NonNull final Menu menu,
@@ -157,9 +163,9 @@ public final class MenuHandler {
         menu.setGroupVisible(
                 R.id.SUBMENU_VIEW_BOOK_AT_SITE,
                 0 != book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)
-                        || 0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)
-                        || 0 != book.getLong(DBDefinitions.KEY_ISFDB_ID)
-                        || !book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
+                || 0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)
+                || 0 != book.getLong(DBDefinitions.KEY_ISFDB_ID)
+                || !book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
     }
 
     static boolean handleViewBookSubMenu(@NonNull final Context context,
@@ -171,13 +177,13 @@ public final class MenuHandler {
                 SubMenu menu = menuItem.getSubMenu();
 
                 menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
-                        0 != book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
+                                     0 != book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
                 menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
-                        0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
+                                     0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
                 menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_ISFDB,
-                        0 != book.getLong(DBDefinitions.KEY_ISFDB_ID));
+                                     0 != book.getLong(DBDefinitions.KEY_ISFDB_ID));
                 menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-                        !book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
+                                     !book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
                 // let the normal call flow go on, it will display the submenu
                 return false;
 
@@ -187,17 +193,17 @@ public final class MenuHandler {
 
             case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
                 GoodreadsManager.openWebsite(context,
-                        book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
+                                             book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
                 LibraryThingManager.openWebsite(context,
-                        book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
+                                                book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
                 OpenLibraryManager.openWebsite(context,
-                        book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID));
+                                               book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID));
                 return true;
 
             default:
@@ -216,19 +222,19 @@ public final class MenuHandler {
      */
     static SubMenu addAmazonSearchSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_AMAZON_SEARCH, R.id.SUBMENU_AMAZON_SEARCH,
-                ORDER_AMAZON, R.string.amazon_ellipsis)
-                .setIcon(R.drawable.ic_search);
+                                          ORDER_AMAZON, R.string.amazon_ellipsis)
+                              .setIcon(R.drawable.ic_search);
 
         // we use the group to make the entry visible/invisible, hence it's == the actual id.
         subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR,
-                R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0,
-                R.string.menu_amazon_books_by_author);
+                    R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0,
+                    R.string.menu_amazon_books_by_author);
         subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
-                R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0,
-                R.string.menu_amazon_books_by_author_in_series);
+                    R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0,
+                    R.string.menu_amazon_books_by_author_in_series);
         subMenu.add(R.id.MENU_AMAZON_BOOKS_IN_SERIES,
-                R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0,
-                R.string.menu_amazon_books_in_series);
+                    R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0,
+                    R.string.menu_amazon_books_in_series);
 
         return subMenu;
     }
@@ -274,7 +280,7 @@ public final class MenuHandler {
 
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
-                        hasAuthor && hasSeries);
+                                     hasAuthor && hasSeries);
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
                 // let the normal call flow go on, it will display the submenu
                 return false;
@@ -289,12 +295,11 @@ public final class MenuHandler {
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
                 AmazonManager.openWebsite(context,
-                        book.getPrimaryAuthor(), book.getPrimarySeries());
+                                          book.getPrimaryAuthor(), book.getPrimarySeries());
                 return true;
 
             default:
                 return false;
         }
     }
-
 }

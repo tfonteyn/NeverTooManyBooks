@@ -1,21 +1,28 @@
 /*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.backup.csv;
 
@@ -31,9 +38,7 @@ import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 /**
  * Class to find covers for an importer when the import is reading from a local directory.
  * <p>
- * Used be the CSV file import class. It check for a cover with the UUID or the id
- *
- * @author pjw
+ * Used be the CSV file import class. It check for a cover with the UUID or the id.
  */
 public class LocalCoverFinder
         implements Importer.CoverFinder {
@@ -49,9 +54,29 @@ public class LocalCoverFinder
      *
      * @param srcPath the path where to look for cover files.
      */
-    public LocalCoverFinder(@NonNull final String srcPath) {
+    LocalCoverFinder(@NonNull final String srcPath) {
         mSrc = srcPath;
         mIsForeign = !mSrc.equals(StorageUtils.getSharedStorage().getAbsolutePath());
+    }
+
+    /**
+     * Entry point for the CSV importer.
+     *
+     * @param uuidFromFile used to find a cover file; uuid must be valid. No checks are made.
+     *
+     * @throws IOException on failure
+     */
+    @Override
+    public void copyOrRenameCoverFile(@NonNull final String uuidFromFile)
+            throws IOException {
+        // Only copy UUID files if they are foreign...since they already exists, otherwise.
+        if (mIsForeign) {
+            File source = findExternalCover(uuidFromFile);
+            if (source == null || !source.exists() || source.length() == 0) {
+                return;
+            }
+            copyFileToCoverImageIfMissing(source, uuidFromFile);
+        }
     }
 
     /**
@@ -93,26 +118,6 @@ public class LocalCoverFinder
         }
     }
 
-    /**
-     * Entry point for the CSV importer.
-     *
-     * @param uuidFromFile used to find a cover file; uuid must be valid. No checks are made.
-     *
-     * @throws IOException on failure
-     */
-    @Override
-    public void copyOrRenameCoverFile(@NonNull final String uuidFromFile)
-            throws IOException {
-        // Only copy UUID files if they are foreign...since they already exists, otherwise.
-        if (mIsForeign) {
-            File source = findExternalCover(uuidFromFile);
-            if (source == null || !source.exists() || source.length() == 0) {
-                return;
-            }
-            copyFileToCoverImageIfMissing(source, uuidFromFile);
-        }
-    }
-
     @Nullable
     private File findExternalCover(@NonNull final String name) {
         // Find the original, if present.
@@ -150,7 +155,7 @@ public class LocalCoverFinder
 
     /**
      * Copy a specified source file into the default cover location for a new file.
-     * DO NO Overwrite EXISTING FILES.
+     * <strong>Does not overwrite existing files</strong>
      *
      * @param source  file to copy
      * @param newUuid the uuid to use for the destination file name

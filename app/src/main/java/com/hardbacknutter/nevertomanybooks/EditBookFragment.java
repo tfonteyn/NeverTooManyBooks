@@ -1,23 +1,29 @@
 /*
- * @copyright 2010 Evan Leybourn
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks;
 
 import android.app.Activity;
@@ -41,13 +47,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.android.material.tabs.TabLayout;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertomanybooks.entities.Book;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Fragment that hosts child fragments to edit a book.
@@ -94,6 +100,57 @@ public class EditBookFragment
         View view = inflater.inflate(R.layout.fragment_edit_book, container, false);
         mViewPager = view.findViewById(R.id.tab_fragment);
         return view;
+    }
+
+    /**
+     * the only thing on this level is the TAB we're on.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(REQUEST_BKEY_TAB, mViewPager.getCurrentItem());
+    }
+
+    /**
+     * Add the menu items which are common to all child fragments.
+     */
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+
+        int saveOrAddText = mBookModel.isExistingBook() ? R.string.btn_confirm_save
+                                                        : R.string.btn_confirm_add;
+
+        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
+                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
+            .setIcon(R.drawable.ic_keyboard_hide)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        menu.add(Menu.NONE, R.id.MENU_SAVE,
+                 MenuHandler.ORDER_SAVE, saveOrAddText)
+            .setIcon(R.drawable.ic_save)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        menu.add(R.id.MENU_UPDATE_FROM_INTERNET, R.id.MENU_UPDATE_FROM_INTERNET,
+                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields)
+            .setIcon(R.drawable.ic_cloud_download);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    /**
+     * Set visibility of menu items as appropriate.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        menu.setGroupVisible(R.id.MENU_UPDATE_FROM_INTERNET, mBookModel.isExistingBook());
     }
 
     @Override
@@ -151,58 +208,6 @@ public class EditBookFragment
         mViewPager.setCurrentItem(showTab);
     }
 
-    /**
-     * the only thing on this level is the TAB we're on.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(REQUEST_BKEY_TAB, mViewPager.getCurrentItem());
-    }
-
-    /**
-     * Add the menu items which are common to all child fragments.
-     */
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-
-        int saveOrAddText = mBookBaseFragmentModel.isExistingBook() ? R.string.btn_confirm_save
-                                                                    : R.string.btn_confirm_add;
-
-        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
-            .setIcon(R.drawable.ic_keyboard_hide)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        menu.add(Menu.NONE, R.id.MENU_SAVE,
-                 MenuHandler.ORDER_SAVE, saveOrAddText)
-            .setIcon(R.drawable.ic_save)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        menu.add(R.id.MENU_UPDATE_FROM_INTERNET, R.id.MENU_UPDATE_FROM_INTERNET,
-                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields)
-            .setIcon(R.drawable.ic_cloud_download);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    /**
-     * Set visibility of menu items as appropriate.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-
-        menu.setGroupVisible(R.id.MENU_UPDATE_FROM_INTERNET,
-                             mBookBaseFragmentModel.isExistingBook());
-    }
-
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
@@ -255,7 +260,7 @@ public class EditBookFragment
         // Reminder: Field validation is done on a per-fragment basis when Field values
         // are transferred to DataManager (Book) values.
 
-        Book book = mBookBaseFragmentModel.getBook();
+        Book book = mBookModel.getBook();
         // Now validate the book data
         if (!book.validate()) {
             //noinspection ConstantConditions
@@ -287,16 +292,15 @@ public class EditBookFragment
         if (book.getId() == 0) {
             String isbn = book.getString(DBDefinitions.KEY_ISBN);
             /* Check if the book already exists */
-            if (!isbn.isEmpty() && ((mBookBaseFragmentModel.getDb().getBookIdFromIsbn(isbn,
-                                                                                      true) > 0))) {
+            if (!isbn.isEmpty() && ((mBookModel.getDb().getBookIdFromIsbn(isbn, true) > 0))) {
                 //noinspection ConstantConditions
                 new AlertDialog.Builder(getContext())
                         .setTitle(R.string.title_duplicate_book)
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setMessage(R.string.confirm_duplicate_book_message)
                         .setCancelable(false)
-                        .setNegativeButton(android.R.string.cancel, (d, which) ->
-                                mActivity.finish())
+                        .setNegativeButton(android.R.string.cancel,
+                                           (d, which) -> mActivity.finish())
                         .setPositiveButton(android.R.string.ok, (d, which) -> saveBook())
                         .create()
                         .show();
@@ -313,8 +317,7 @@ public class EditBookFragment
      */
     private void saveBook() {
         //noinspection ConstantConditions
-        Book book = mBookBaseFragmentModel.saveBook(getContext());
-
+        Book book = mBookModel.saveBook(getContext());
         Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, book.getId());
         mActivity.setResult(Activity.RESULT_OK, data);
         mActivity.finish();
@@ -345,14 +348,14 @@ public class EditBookFragment
             return mFragmentList.size();
         }
 
-        void add(@NonNull final FragmentHolder fragmentHolder) {
-            mFragmentList.add(fragmentHolder);
-        }
-
         @Override
         @NonNull
         public CharSequence getPageTitle(final int position) {
             return mFragmentList.get(position).getTitle();
+        }
+
+        void add(@NonNull final FragmentHolder fragmentHolder) {
+            mFragmentList.add(fragmentHolder);
         }
     }
 

@@ -26,14 +26,14 @@
  * </p>
  * http://www.isfdb.org/wiki/index.php/ISFDB:FAQ#What_ISFDB_URLs_are_stable_and_safe_to_use_when_linking.3F
  * <ul>
- *      <li>ea.cgi - This displays the ISFDB bibliography for one author.</li>
- *      <li>title.cgi - This displays bibliographic information for one title.</li>
- *      <li>pe.cgi - This displays titles associated with a particular series. </li>
- *      <li>pl.cgi - This displays the bibliographic information for one publication.</li>
+ * <li>ea.cgi - This displays the ISFDB bibliography for one author.</li>
+ * <li>title.cgi - This displays bibliographic information for one title.</li>
+ * <li>pe.cgi - This displays titles associated with a particular series. </li>
+ * <li>pl.cgi - This displays the bibliographic information for one publication.</li>
  * </ul>
  * <p>
- *     The advanced search returns a URL with "adv_search_results.cgi" and <br>
- *         (if searching for 'publications') a content the same as "title.cgi"
+ * The advanced search returns a URL with "adv_search_results.cgi" and <br>
+ * (if searching for 'publications') a content the same as "title.cgi"
  * </p>
  * <p>
  * Web API: http://www.isfdb.org/wiki/index.php/Web_API

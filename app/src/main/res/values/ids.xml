@@ -155,11 +155,11 @@
 
     <!-- debug options for the options menu; only shown in debug mode. -->
     <item name="SUBMENU_DEBUG" type="id" />
-    <item name="MENU_DEBUG_DUMP_PREFS" type="id" />
-    <item name="MENU_DEBUG_DUMP_STYLE" type="id" />
-    <item name="MENU_DEBUG_DUMP_TRACKER" type="id" />
-    <item name="MENU_DEBUG_DUMP_BOB_TABLES" type="id" />
-    <item name="MENU_DEBUG_EXPORT_DATABASE" type="id" />
+    <item name="MENU_DEBUG_PREFS" type="id" />
+    <item name="MENU_DEBUG_STYLE" type="id" />
+    <item name="MENU_DEBUG_TRACKER" type="id" />
+    <item name="MENU_DEBUG_TABLES" type="id" />
+    <item name="MENU_EXPORT_DATABASE" type="id" />
     <item name="MENU_DEBUG_RUN_TEST" type="id" />
 
     <!-- END predefined menu items -->

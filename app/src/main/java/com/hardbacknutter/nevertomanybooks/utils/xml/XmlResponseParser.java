@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.utils.xml;
 
 import androidx.annotation.CallSuper;
@@ -40,8 +46,6 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
  * <p>
  * This class is used with the {@link XmlFilter} class to call user-defined code at
  * specific points in an XML file.
- *
- * @author Philip Warner
  */
 public class XmlResponseParser
         extends DefaultHandler {
@@ -60,19 +64,6 @@ public class XmlResponseParser
         // Build the root context and add to hierarchy.
         ElementContext tag = new ElementContext(rootFilter);
         mParents.add(tag);
-    }
-
-    /**
-     * Gather inter-tag text.
-     */
-    @Override
-    @CallSuper
-    public void characters(@NonNull final char[] ch,
-                           final int start,
-                           final int length)
-            throws SAXException {
-        super.characters(ch, start, length);
-        mBuilder.append(ch, start, length);
     }
 
     /**
@@ -132,7 +123,7 @@ public class XmlResponseParser
         if (!localName.equals(tag.getLocalName())) {
             throw new IllegalStateException(
                     "End element `" + localName + "` does not match start element"
-                            + " `" + tag.getLocalName() + '`');
+                    + " `" + tag.getLocalName() + '`');
         }
 
         // Save the text that appeared inside this tag (but not inside inner tags)
@@ -146,5 +137,18 @@ public class XmlResponseParser
         // Reset the inter-tag text and append the previously saved 'pre-text'.
         mBuilder.setLength(0);
         mBuilder.append(tag.getText());
+    }
+
+    /**
+     * Gather inter-tag text.
+     */
+    @Override
+    @CallSuper
+    public void characters(@NonNull final char[] ch,
+                           final int start,
+                           final int length)
+            throws SAXException {
+        super.characters(ch, start, length);
+        mBuilder.append(ch, start, length);
     }
 }

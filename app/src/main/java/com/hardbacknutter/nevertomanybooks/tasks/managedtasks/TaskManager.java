@@ -1,23 +1,29 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.tasks.managedtasks;
 
 import android.content.Context;
@@ -62,8 +68,6 @@ import com.hardbacknutter.nevertomanybooks.utils.Csv;
  * <p>
  * {@link TaskManagerListener} can be implemented by other objects for receiving
  * {@link TaskProgressMessage}, {@link TaskUserMessage} and {@link TaskFinishedMessage}
- *
- * @author Philip Warner
  */
 public class TaskManager {
 
@@ -129,7 +133,10 @@ public class TaskManager {
         }
 
     };
-
+    /**
+     * Indicates tasks are being cancelled. This is reset when a new task is added.
+     */
+    private boolean mCancelling;
     /** Controller instance (strong reference) for this object. */
     @SuppressWarnings("FieldCanBeLocal")
     private final TaskManagerController mController = new TaskManagerController() {
@@ -144,12 +151,6 @@ public class TaskManager {
             return TaskManager.this;
         }
     };
-
-    /**
-     * Indicates tasks are being cancelled. This is reset when a new task is added.
-     */
-    private boolean mCancelling;
-
     /**
      * Indicates the TaskManager is terminating; will close after last task exits.
      */
@@ -160,7 +161,7 @@ public class TaskManager {
      */
     public TaskManager(@NonNull final Context context) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debug(this,"Constructor", "context=" + context);
+            Logger.debug(this, "Constructor", "context=" + context);
         }
         mContext = context;
         mMessageSenderId = MESSAGE_SWITCH.createSender(mController);
@@ -201,7 +202,7 @@ public class TaskManager {
                 // Tell the ManagedTask we are listening for messages.
                 ManagedTask.MESSAGE_SWITCH.addListener(task.getSenderId(), true,
                                                        mManagedTaskListener
-                );
+                                                      );
             }
         }
     }
@@ -356,7 +357,7 @@ public class TaskManager {
      */
     public void cancelAllTasksAndStopListening() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debug(this,"cancelAllTasksAndStopListening");
+            Logger.debug(this, "cancelAllTasksAndStopListening");
 
         }
         // stop listening, used as sanity check in addTask.
@@ -369,7 +370,7 @@ public class TaskManager {
      */
     public void cancelAllTasks() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debug(this,"cancelAllTasks");
+            Logger.debug(this, "cancelAllTasks");
 
         }
         synchronized (mTaskInfoList) {
@@ -385,24 +386,24 @@ public class TaskManager {
     }
 
     @Override
-    protected void finalize()
-            throws Throwable {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debug(this,"finalize");
-        }
-        super.finalize();
-    }
-
-    @Override
     @NonNull
     public String toString() {
         return "TaskManager{"
-                + "mMessageSenderId=" + mMessageSenderId
-                + ", mTaskInfoList=" + mTaskInfoList
-                + ", mBaseMessage=`" + mBaseMessage + '`'
-                + ", mCancelling=" + mCancelling
-                + ", mIsClosing=" + mIsClosing
-                + '}';
+               + "mMessageSenderId=" + mMessageSenderId
+               + ", mTaskInfoList=" + mTaskInfoList
+               + ", mBaseMessage=`" + mBaseMessage + '`'
+               + ", mCancelling=" + mCancelling
+               + ", mIsClosing=" + mIsClosing
+               + '}';
+    }
+
+    @Override
+    protected void finalize()
+            throws Throwable {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+            Logger.debug(this, "finalize");
+        }
+        super.finalize();
     }
 
     public static class TaskFinishedMessage
@@ -429,8 +430,8 @@ public class TaskManager {
         @NonNull
         public String toString() {
             return "TaskFinishedMessage{"
-                    + ", mTask=" + mTask
-                    + '}';
+                   + ", mTask=" + mTask
+                   + '}';
         }
     }
 
@@ -460,10 +461,10 @@ public class TaskManager {
         @NonNull
         public String toString() {
             return "TaskProgressMessage{"
-                    + "mAbsPosition=" + mAbsPosition
-                    + ", mMax=" + mMax
-                    + ", mMessage=`" + mMessage + '`'
-                    + '}';
+                   + "mAbsPosition=" + mAbsPosition
+                   + ", mMax=" + mMax
+                   + ", mMessage=`" + mMessage + '`'
+                   + '}';
         }
     }
 
@@ -487,8 +488,8 @@ public class TaskManager {
         @NonNull
         public String toString() {
             return "TaskUserMessage{"
-                    + "mMessage=`" + mMessage + '`'
-                    + '}';
+                   + "mMessage=`" + mMessage + '`'
+                   + '}';
         }
     }
 

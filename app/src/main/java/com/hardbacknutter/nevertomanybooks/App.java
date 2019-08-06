@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks;
 
 import android.app.Application;
@@ -49,13 +55,8 @@ import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
-import com.hardbacknutter.nevertomanybooks.debug.DebugReport;
-import com.hardbacknutter.nevertomanybooks.debug.Logger;
-import com.hardbacknutter.nevertomanybooks.debug.Tracker;
-import com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.QueueManager;
-import com.hardbacknutter.nevertomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
+import java.util.Locale;
+import java.util.Set;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -64,14 +65,16 @@ import org.acra.annotation.AcraDialog;
 import org.acra.annotation.AcraMailSender;
 import org.acra.annotation.AcraToast;
 
-import java.util.Locale;
-import java.util.Set;
+import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertomanybooks.debug.DebugReport;
+import com.hardbacknutter.nevertomanybooks.debug.Logger;
+import com.hardbacknutter.nevertomanybooks.debug.Tracker;
+import com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.QueueManager;
+import com.hardbacknutter.nevertomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 
 /**
- * Application implementation. Useful for making globals available and for being a
- * central location for logically application-specific objects such as preferences.
- *
- * @author Philip Warner
+ * Application implementation.
  */
 @AcraMailSender(
         mailTo = "test@local.net",
@@ -86,38 +89,36 @@ import java.util.Set;
         resTheme = R.style.AppTheme_DayNight,
         resIcon = R.drawable.ic_warning,
         resCommentPrompt = R.string.acra_resDialogCommentPrompt)
-@AcraCore(reportContent = {
-        ReportField.APP_VERSION_CODE,
-        ReportField.APP_VERSION_NAME,
-        ReportField.PACKAGE_NAME,
-        ReportField.PHONE_MODEL,
-        ReportField.ANDROID_VERSION,
-        ReportField.BUILD,
-        ReportField.BRAND,
-        ReportField.PRODUCT,
-        ReportField.TOTAL_MEM_SIZE,
-        ReportField.AVAILABLE_MEM_SIZE,
-
-        ReportField.CUSTOM_DATA,
-        ReportField.STACK_TRACE,
-        ReportField.STACK_TRACE_HASH,
-        ReportField.DISPLAY,
-
-        ReportField.USER_COMMENT,
-        ReportField.USER_APP_START_DATE,
-        ReportField.USER_CRASH_DATE,
-        ReportField.THREAD_DETAILS},
-
+@AcraCore(
         resReportSendSuccessToast = R.string.acra_resReportSendSuccessToast,
-        resReportSendFailureToast = R.string.error_email_failed)
+        resReportSendFailureToast = R.string.error_email_failed,
+        reportContent = {ReportField.APP_VERSION_CODE,
+                         ReportField.APP_VERSION_NAME,
+                         ReportField.PACKAGE_NAME,
+                         ReportField.PHONE_MODEL,
+                         ReportField.ANDROID_VERSION,
+                         ReportField.BUILD,
+                         ReportField.BRAND,
+                         ReportField.PRODUCT,
+                         ReportField.TOTAL_MEM_SIZE,
+                         ReportField.AVAILABLE_MEM_SIZE,
+
+                         ReportField.CUSTOM_DATA,
+                         ReportField.STACK_TRACE,
+                         ReportField.STACK_TRACE_HASH,
+                         ReportField.DISPLAY,
+
+                         ReportField.USER_COMMENT,
+                         ReportField.USER_APP_START_DATE,
+                         ReportField.USER_CRASH_DATE,
+                         ReportField.THREAD_DETAILS}
+)
 public class App
         extends Application {
 
     /**
      * Users can select which fields they use / don't want to use.
-     * <p>
      * Each field has an entry in the Preferences.
-     * <p>
      * The key is suffixed with the name of the field.
      */
     public static final String PREFS_FIELD_VISIBILITY = "fields.visibility.";
@@ -150,25 +151,24 @@ public class App
 
     /**
      * As defined in res/themes.xml.
-     * <p>
-     * MODE_NIGHT_AUTO_BATTERY  <item>Set by Battery Saver</item>
-     * MODE_NIGHT_FOLLOW_SYSTEM <item>Use system default</item>  API28+
-     * <item>Day / Night</item>
-     * MODE_NIGHT_YES
-     * <item>Dark</item>
-     * MODE_NIGHT_NO
-     * <item>Light</item>
+     * <ul>
+     * <li>MODE_NIGHT_AUTO_BATTERY (API < 27) / MODE_NIGHT_FOLLOW_SYSTEM (API 28+)</li>
+     * <li>MODE_NIGHT_YES</li>
+     * <li>MODE_NIGHT_NO</li>
+     * </ul>
      */
     private static final int[] APP_THEMES = {
             R.style.AppTheme_DayNight,
             R.style.AppTheme_Dark,
             R.style.AppTheme_Light,
-    };
+            };
+
     /**
      * Give static methods access to our singleton.
      * <b>Note:</b> never store a context in a static, use the instance instead
      */
     public static App sInstance;
+
     /**
      * internal; check if an Activity should do a 'recreate()'.
      * See {@link BaseActivity} in the onResume method.
@@ -181,7 +181,7 @@ public class App
     /** The locale used at startup; so that we can revert to system locale if we want to. */
     private static Locale sSystemInitialLocale = Locale.getDefault();
 
-    /** create a singleton. */
+    /** Singleton. */
     @SuppressWarnings("unused")
     public App() {
         sInstance = this;
@@ -190,7 +190,7 @@ public class App
     /**
      * WARNING: try not to use this to get resource strings!
      * Doing so can return inconsistent translations.
-     * Only use when you're absolutely sure there is no other option.
+     * Only use when you're absolutely sure there is no other option; e.g. in background tasks.
      *
      * @return Application Context.
      */
@@ -224,6 +224,12 @@ public class App
         return packageInfo;
     }
 
+    /**
+     * Convenience method.
+     *
+     * @param title   the title to display
+     * @param message the message to display
+     */
     public static void showNotification(@NonNull final String title,
                                         @NonNull final String message) {
         showNotification(getAppContext(), title, message);
@@ -242,25 +248,25 @@ public class App
 
         // Create the notifier if not done yet.
         if (sNotifier == null) {
-            sNotifier = (NotificationManager)
-                    sInstance.getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
+            sNotifier = (NotificationManager) sInstance.getApplicationContext()
+                                                       .getSystemService(NOTIFICATION_SERVICE);
         }
 
         Intent intent = new Intent(context, StartupActivity.class)
-                .setAction(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_LAUNCHER);
+                                .setAction(Intent.ACTION_MAIN)
+                                .addCategory(Intent.CATEGORY_LAUNCHER);
 
         // The PendingIntent to launch our activity if the user selects this notification
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         Notification notification = new Notification.Builder(context)
-                .setSmallIcon(R.drawable.ic_info_outline)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setWhen(System.currentTimeMillis())
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build();
+                                            .setSmallIcon(R.drawable.ic_info_outline)
+                                            .setContentTitle(title)
+                                            .setContentText(message)
+                                            .setWhen(System.currentTimeMillis())
+                                            .setAutoCancel(true)
+                                            .setContentIntent(pendingIntent)
+                                            .build();
 
         sNotifier.notify(NOTIFICATION_ID, notification);
     }
@@ -299,7 +305,7 @@ public class App
     /**
      * @param context Current context
      * @param attr    attribute id to resolve
-     *                Must be a type that has "android.R.attr.textSize" value.
+     *                Must be a type that has a {@code android.R.attr.textSize} value.
      *
      * @return Attribute dimension value multiplied by the appropriate
      * metric and truncated to integer pixels, or -1 if not defined.
@@ -331,13 +337,13 @@ public class App
     public static String getManifestString(@Nullable final String name) {
         ApplicationInfo ai;
         try {
-            ai = sInstance.getApplicationContext()
-                    .getPackageManager()
-                    .getApplicationInfo(sInstance.getPackageName(),
-                            PackageManager.GET_META_DATA);
+            ai = sInstance.getApplicationContext().getPackageManager()
+                          .getApplicationInfo(sInstance.getPackageName(),
+                                              PackageManager.GET_META_DATA);
         } catch (@NonNull final PackageManager.NameNotFoundException e) {
             throw new IllegalStateException(e);
         }
+
         String result = ai.metaData.getString(name);
         if (result == null) {
             return "";
@@ -350,7 +356,8 @@ public class App
      *
      * @return the preference value string, can be empty, but never {@code null}
      */
-    public static boolean getPrefBoolean(@NonNull final String key, final boolean defaultValue) {
+    public static boolean getPrefBoolean(@NonNull final String key,
+                                         final boolean defaultValue) {
         Context context = sInstance.getApplicationContext();
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(key, defaultValue);
     }
@@ -364,12 +371,12 @@ public class App
     public static String getPrefString(@NonNull final String key) {
         Context context = sInstance.getApplicationContext();
         String value = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(key, null);
+                                        .getString(key, null);
         return value != null ? value : "";
     }
 
     /**
-     * {@link ListPreference} store the selected value as a String.
+     * {@link ListPreference} stores the selected value as a String.
      * But they are really Integer values. Hence this transmogrification....
      *
      * @return int (stored as String) global preference
@@ -378,7 +385,7 @@ public class App
                                         final int defaultValue) {
         Context context = sInstance.getApplicationContext();
         String value = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(key, null);
+                                        .getString(key, null);
         if (value == null || value.isEmpty()) {
             return defaultValue;
         }
@@ -395,7 +402,7 @@ public class App
                                                        final int defaultValue) {
         Context context = sInstance.getApplicationContext();
         Set<String> value = PreferenceManager.getDefaultSharedPreferences(context)
-                .getStringSet(key, null);
+                                             .getStringSet(key, null);
         if (value == null || value.isEmpty()) {
             return defaultValue;
         }
@@ -405,7 +412,7 @@ public class App
     @SuppressWarnings("unused")
     public static boolean isRtl() {
         return TextUtils.getLayoutDirectionFromLocale(LocaleUtils.getPreferredLocale())
-                == View.LAYOUT_DIRECTION_RTL;
+               == View.LAYOUT_DIRECTION_RTL;
     }
 
     /**
@@ -440,7 +447,7 @@ public class App
         }
 
         if (BuildConfig.DEBUG) {
-            debugDayNightMode();
+            dumpDayNightMode();
         }
         return changed;
     }
@@ -474,30 +481,30 @@ public class App
      */
     public static boolean isUsed(@NonNull final String fieldName) {
         return PreferenceManager.getDefaultSharedPreferences(sInstance.getApplicationContext())
-                .getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
+                                .getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
 
     /**
      * DEBUG only.
      */
-    private static void debugDayNightMode() {
+    private static void dumpDayNightMode() {
 
         switch (sCurrentTheme) {
             case 0:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "sCurrentTheme=THEME_DAY_NIGHT");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "sCurrentTheme=THEME_DAY_NIGHT");
                 break;
             case 1:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "sCurrentTheme=THEME_DARK");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "sCurrentTheme=THEME_DARK");
                 break;
             case 2:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "sCurrentTheme=THEME_LIGHT");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "sCurrentTheme=THEME_LIGHT");
                 break;
             default:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "sCurrentTheme=eh? " + sCurrentTheme);
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "sCurrentTheme=eh? " + sCurrentTheme);
                 break;
         }
 
@@ -506,55 +513,55 @@ public class App
 
         switch (defNightMode) {
             case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "getDefaultNightMode=MODE_NIGHT_FOLLOW_SYSTEM");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_FOLLOW_SYSTEM");
                 break;
             //noinspection deprecation
             case AppCompatDelegate.MODE_NIGHT_AUTO_TIME:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "getDefaultNightMode=MODE_NIGHT_AUTO_TIME");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_AUTO_TIME");
                 break;
             case AppCompatDelegate.MODE_NIGHT_NO:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "getDefaultNightMode=MODE_NIGHT_NO");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_NO");
                 break;
             case AppCompatDelegate.MODE_NIGHT_YES:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "getDefaultNightMode=MODE_NIGHT_YES");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_YES");
                 break;
             case AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "getDefaultNightMode=MODE_NIGHT_AUTO_BATTERY");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_AUTO_BATTERY");
                 break;
             case AppCompatDelegate.MODE_NIGHT_UNSPECIFIED:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "getDefaultNightMode=MODE_NIGHT_UNSPECIFIED");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_UNSPECIFIED");
                 break;
             default:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "getDefaultNightMode=Twilight Zone");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "getDefaultNightMode=Twilight Zone");
                 break;
 
         }
         int currentNightMode = getAppContext().getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK;
+                               & Configuration.UI_MODE_NIGHT_MASK;
 
         switch (currentNightMode) {
             case Configuration.UI_MODE_NIGHT_NO:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "currentNightMode=UI_MODE_NIGHT_NO");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "currentNightMode=UI_MODE_NIGHT_NO");
                 break;
             case Configuration.UI_MODE_NIGHT_YES:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "currentNightMode=UI_MODE_NIGHT_YES");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "currentNightMode=UI_MODE_NIGHT_YES");
                 break;
             case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "currentNightMode=UI_MODE_NIGHT_UNDEFINED");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "currentNightMode=UI_MODE_NIGHT_UNDEFINED");
                 break;
             default:
-                Logger.debug(App.class, "debugDayNightMode",
-                        "currentNightMode=Twilight Zone");
+                Logger.debug(App.class, "dumpDayNightMode",
+                             "currentNightMode=Twilight Zone");
                 break;
         }
     }
@@ -573,7 +580,7 @@ public class App
      */
     public static void hideKeyboard(@NonNull final View view) {
         InputMethodManager imm = (InputMethodManager)
-                view.getContext().getSystemService(INPUT_METHOD_SERVICE);
+                                         view.getContext().getSystemService(INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
@@ -593,7 +600,6 @@ public class App
     }
 
     @Override
-    @CallSuper
     public void onCreate() {
         // Get the preferred locale as soon as possible
         setSystemLocale();
@@ -608,7 +614,7 @@ public class App
     }
 
     /**
-     * Ensure to re-apply our internal user-preferred Locale to the Application (this) object.
+     * Ensure to re-apply the user-preferred Locale to the Application (this) object.
      *
      * @param newConfig The new device configuration.
      */
@@ -627,16 +633,18 @@ public class App
             //API: 24: newConfig.getLocales().get(0)
             Logger.debug(this, "onConfigurationChanged", newConfig.locale);
         }
-
     }
 
+    /**
+     * Preserve the system (device) Locale, and set the user-preferred Locale.
+     */
     private void setSystemLocale() {
         try {
             // preserve startup==system Locale
             sSystemInitialLocale = Locale.getDefault();
             LocaleUtils.applyPreferred(getBaseContext());
         } catch (@NonNull final RuntimeException e) {
-            // Not much we can do...we want locale set early, but not fatal if it fails.
+            // Not much we can do.
             Logger.error(this, e);
         }
     }

@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.booklist;
 
 import android.annotation.SuppressLint;
@@ -32,6 +38,20 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BooklistAdapter;
@@ -53,25 +73,13 @@ import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.utils.Csv;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-
 /**
  * Represents a specific style of book list (e.g. authors/series).
  * Individual {@link BooklistGroup} objects are added to a {@link BooklistStyle} in order
  * to describe the resulting list style.
  * <p>
+ * 2019-08-04: due to the move to a new package/directory structure, it is no longer
+ * possible to import legacy (binary) styles. TODO: remove code or fix it
  * <p>
  * 2018-12-20: the implementation no longer stores serialized blobs, neither in the database nor
  * in backup archives (but can still read them from archives/database upgrades).<br>
@@ -82,7 +90,6 @@ import java.util.UUID;
  * Every setting in a style is backed by a {@link PPref} which handles the storage
  * of that setting.<br>
  * *All* style settings are private to a style, there is no inheritance of global settings.<br>
- * <p>
  * <p>
  * ENHANCE: re-introduce global inheritance ? But would that actually be used ?
  * <p>
@@ -96,8 +103,6 @@ import java.util.UUID;
  * then use a {@link BooklistAdapter} .GenericStringHolder}, otherwise add a new holder.</li>
  * </ol>
  * Need to at least modify {@link BooklistAdapter} #createHolder
- *
- * @author Philip Warner
  */
 public class BooklistStyle
         implements Serializable, Parcelable, Entity {
@@ -218,6 +223,7 @@ public class BooklistStyle
      * Note to self: a 'List' will NOT be deserialize'd, must be the original ArrayList
      * Do not rename.
      */
+    @SuppressWarnings("FieldNotUsedInToString")
     private ArrayList<BooklistGroup> mGroups;
 
     /**
@@ -269,10 +275,15 @@ public class BooklistStyle
      */
     private transient Map<String, Filter> mFilters;
 
+    @SuppressWarnings("FieldNotUsedInToString")
     private transient BooleanFilter mFilterRead;
+    @SuppressWarnings("FieldNotUsedInToString")
     private transient BooleanFilter mFilterSigned;
+    @SuppressWarnings("FieldNotUsedInToString")
     private transient BooleanFilter mFilterAnthology;
+    @SuppressWarnings("FieldNotUsedInToString")
     private transient BooleanFilter mFilterLoaned;
+    @SuppressWarnings("FieldNotUsedInToString")
     private transient BitmaskFilter mFilterEdition;
 
     /**
@@ -326,7 +337,7 @@ public class BooklistStyle
      * @param isNew   when set to true, partially override the incoming data so we get
      *                a 'new' object but with the settings from the Parcel.
      *                The new id will be 0, and the uuid will be newly generated.
-     * @param context Current context for accessing resources,
+     * @param context Current context
      *                will be {@code null} when doNew==false !
      */
     private BooklistStyle(@NonNull final Parcel in,
@@ -481,6 +492,12 @@ public class BooklistStyle
         mFilters.put(mFilterEdition.getKey(), mFilterEdition);
     }
 
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -514,12 +531,6 @@ public class BooklistStyle
         mFilterEdition.writeToParcel(dest);
     }
 
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
     /**
      * Accessor.
      * Positive ID's: user-defined styles
@@ -541,7 +552,7 @@ public class BooklistStyle
     }
 
     /**
-     * @param context Current context for accessing resources.
+     * @param context Current context
      *
      * @return the system name or user-defined name based on kind of style this object defines.
      */
@@ -872,7 +883,8 @@ public class BooklistStyle
     /**
      * @return {@code true} if this style has the specified group.
      */
-    public boolean hasGroupKind(@IntRange(from = 0, to = BooklistGroup.RowKind.ROW_KIND_MAX) final int kind) {
+    public boolean hasGroupKind(
+            @IntRange(from = 0, to = BooklistGroup.RowKind.ROW_KIND_MAX) final int kind) {
         return mStyleGroups.getGroupKinds().contains(kind);
     }
 
@@ -1050,7 +1062,7 @@ public class BooklistStyle
      * <p>
      * TODO: have a think... don't use Parceling, but simply copy the prefs + db entry.
      *
-     * @param context Current context for accessing resources.
+     * @param context Current context
      */
     @NonNull
     public BooklistStyle clone(@NonNull final Context context) {
@@ -1102,6 +1114,11 @@ public class BooklistStyle
         getPrefs().edit().clear().apply();
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(mUuid);
+    }
+
     /**
      * Equality.
      * <p>
@@ -1126,11 +1143,6 @@ public class BooklistStyle
 
         // ignore case because paranoia (import)
         return mUuid.equalsIgnoreCase(that.mUuid);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(mUuid);
     }
 
     @Override
@@ -1195,8 +1207,9 @@ public class BooklistStyle
      */
     public boolean showAuthorGivenNameFirst(@NonNull final Context context) {
         if (hasGroupKind(BooklistGroup.RowKind.AUTHOR)) {
-            BooklistGroup.BooklistAuthorGroup authorGroup = (BooklistGroup.BooklistAuthorGroup)
-                    (mStyleGroups.getGroupForKind(BooklistGroup.RowKind.AUTHOR));
+            BooklistGroup.BooklistAuthorGroup authorGroup =
+                    (BooklistGroup.BooklistAuthorGroup)
+                            (mStyleGroups.getGroupForKind(BooklistGroup.RowKind.AUTHOR));
             if (authorGroup != null) {
                 return authorGroup.showAuthorGivenNameFirst();
             }
@@ -1263,6 +1276,14 @@ public class BooklistStyle
             writeGroupIds();
         }
 
+        @Override
+        @NonNull
+        public String toString() {
+            return "PStyleGroups{" + super.toString()
+                   + ", mGroups=" + mGroups
+                   + '}';
+        }
+
         /**
          * Add a new group to the end of the list.
          *
@@ -1289,11 +1310,6 @@ public class BooklistStyle
             return super.add(ed, list, group.getKind());
         }
 
-        @Override
-        public void add(@NonNull final Integer element) {
-            throw new IllegalStateException("use add(BooklistGroup) instead");
-        }
-
         /**
          * We need the *kind* of group to remove (and NOT the group itself),
          * so we can (optionally) replace it with a new (different) copy.
@@ -1312,14 +1328,24 @@ public class BooklistStyle
         }
 
         @Override
-        public void remove(@NonNull final Integer element) {
-            throw new IllegalStateException("use remove(BooklistGroup) instead");
+        public void writeToParcel(@NonNull final Parcel dest) {
+            dest.writeList(mGroups);
         }
 
         @Override
         public void clear() {
             mGroups.clear();
             super.clear();
+        }
+
+        @Override
+        public void add(@NonNull final Integer element) {
+            throw new IllegalStateException("use add(BooklistGroup) instead");
+        }
+
+        @Override
+        public void remove(@NonNull final Integer element) {
+            throw new IllegalStateException("use remove(BooklistGroup) instead");
         }
 
         /**
@@ -1331,19 +1357,6 @@ public class BooklistStyle
                 list.add(group.getKind());
             }
             set(list);
-        }
-
-        @Override
-        public void writeToParcel(@NonNull final Parcel dest) {
-            dest.writeList(mGroups);
-        }
-
-        @Override
-        @NonNull
-        public String toString() {
-            return "PStyleGroups{" + super.toString()
-                   + ",mGroups=" + mGroups
-                   + '}';
         }
     }
 }

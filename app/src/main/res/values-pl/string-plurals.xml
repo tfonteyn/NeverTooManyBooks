@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="displaying_n_books">
+        <item quantity="one">Wyświetlanie %1$d książki</item>
+        <item quantity="few">Wyświetlanie %1$d książek</item>
+        <item quantity="many">Wyświetlanie %1$d książek</item>
+        <item quantity="other">Wyświetlanie %1$d książki</item>
+    </plurals>
+
+    <plurals name="n_books_found">
+        <item quantity="one">Znaleziono %1$d książkę</item>
+        <item quantity="few">%1$d książki znalezione</item>
+        <item quantity="many">Znaleziono %1$d książek</item>
+        <item quantity="other">Znaleziono 1%1$d książki</item>
+    </plurals>
+
+    <!-- Short text for "n books" -->
+    <plurals name="n_books">
+        <item quantity="one">%1$d książka</item>
+        <item quantity="few">%1$d książki</item>
+        <item quantity="many">%1$d książek</item>
+        <item quantity="other">%1$d książki</item>
+    </plurals>
+
+    <!-- Short text for "n covers" -->
+    <plurals name="n_covers">
+        <item quantity="one">%1$d okładka</item>
+        <item quantity="few">%1$d okładki</item>
+        <item quantity="many">%1$d okładek</item>
+        <item quantity="other">%1$d okładki</item>
+    </plurals>
+
+    <!-- Short text for "n stars" -->
+    <plurals name="n_stars">
+        <item quantity="one">%1$s gwiazdka</item>
+        <item quantity="few">%1$s gwiazdki</item>
+        <item quantity="many">%1$s gwiazdek</item>
+        <item quantity="other">%1$s gwiazdki</item>
+    </plurals>
+</resources>

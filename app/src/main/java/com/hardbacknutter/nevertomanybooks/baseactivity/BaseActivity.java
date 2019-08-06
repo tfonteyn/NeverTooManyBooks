@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.baseactivity;
 
 import android.content.Intent;
@@ -54,7 +80,6 @@ public abstract class BaseActivity
     }
 
     @Override
-    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         // apply the user-preferred Locale to the configuration before super.onCreate
         LocaleUtils.applyPreferred(this);
@@ -95,46 +120,6 @@ public abstract class BaseActivity
     }
 
     /**
-     * When resuming, recreate activity if needed.
-     * <p>
-     * The current (2nd) incarnation of restart-logic is still rather broken
-     * as it does not deal with back-stack.
-     * URGENT:    if (getThemeFromThisContext != App.getTheme) then recreate() ...
-     * <p>
-     * https://www.hidroh.com/2015/02/25/support-multiple-themes-android-app-part-2/
-     */
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(this, "BaseActivity.onResume",
-                    LocaleUtils.toDebugString(this));
-        }
-
-        if (App.isInNeedOfRecreating()) {
-            recreate();
-            App.setIsRecreating();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.debugExit(this, "BaseActivity.onResume", "Recreate!");
-            }
-
-        } else if (App.isRecreating()) {
-            App.clearRecreateFlag();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.debugExit(this, "BaseActivity.onResume", "isRecreating");
-            }
-
-        } else {
-            // this is just paranoia... the flag should already have been cleared.
-            App.clearRecreateFlag();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.debugExit(this, "BaseActivity.onResume", "Resuming");
-            }
-        }
-    }
-
-    /**
      * If the drawer is open and the user click the back-button, close the drawer
      * and ignore the back-press.
      */
@@ -160,22 +145,22 @@ public abstract class BaseActivity
 
             case R.id.nav_manage_bookshelves:
                 startActivityForResult(new Intent(this, EditBookshelfListActivity.class),
-                        UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
+                                       UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
                 return true;
 
             case R.id.nav_edit_list_styles:
                 startActivityForResult(new Intent(this, PreferredStylesActivity.class),
-                        UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+                                       UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
                 return true;
 
             case R.id.nav_settings:
                 startActivityForResult(new Intent(this, SettingsActivity.class),
-                        UniqueId.REQ_NAV_PANEL_SETTINGS);
+                                       UniqueId.REQ_NAV_PANEL_SETTINGS);
                 return true;
 
             case R.id.nav_admin:
                 startActivityForResult(new Intent(this, AdminActivity.class),
-                        UniqueId.REQ_NAV_PANEL_ADMIN);
+                                       UniqueId.REQ_NAV_PANEL_ADMIN);
                 return true;
 
             case R.id.nav_about:
@@ -224,9 +209,10 @@ public abstract class BaseActivity
         switch (requestCode) {
 
             case UniqueId.REQ_NAV_PANEL_SETTINGS:
-                if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
+                if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT
+                                          || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
                     Logger.debug(this, "BaseActivity.onActivityResult",
-                            "REQ_NAV_PANEL_SETTINGS");
+                                 "REQ_NAV_PANEL_SETTINGS");
                 }
                 //noinspection SwitchStatementWithTooFewBranches
                 switch (resultCode) {
@@ -240,7 +226,7 @@ public abstract class BaseActivity
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debug(this, "BaseActivity.onActivityResult",
-                            "REQ_NAV_PANEL_EDIT_BOOKSHELVES");
+                                 "REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
                 return;
 
@@ -248,7 +234,7 @@ public abstract class BaseActivity
             case UniqueId.REQ_NAV_PANEL_EDIT_STYLES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debug(this, "BaseActivity.onActivityResult",
-                            "REQ_NAV_PANEL_EDIT_STYLES");
+                                 "REQ_NAV_PANEL_EDIT_STYLES");
                 }
                 return;
 
@@ -256,7 +242,7 @@ public abstract class BaseActivity
             case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debug(this, "BaseActivity.onActivityResult",
-                            "REQ_NAV_PANEL_ADMIN");
+                                 "REQ_NAV_PANEL_ADMIN");
                 }
                 return;
 
@@ -267,9 +253,9 @@ public abstract class BaseActivity
                     // the super call will redirect those.
                     if ((requestCode & 0xFF) != 0) {
                         Logger.warn(this, "BaseActivity.onActivityResult",
-                                "NOT HANDLED",
-                                "requestCode=" + requestCode,
-                                "resultCode=" + resultCode);
+                                    "NOT HANDLED",
+                                    "requestCode=" + requestCode,
+                                    "resultCode=" + resultCode);
                     }
                 }
                 super.onActivityResult(requestCode, resultCode, data);
@@ -277,6 +263,46 @@ public abstract class BaseActivity
         }
 
         Tracker.exitOnActivityResult(this);
+    }
+
+    /**
+     * When resuming, recreate activity if needed.
+     * <p>
+     * The current (2nd) incarnation of restart-logic is still rather broken
+     * as it does not deal with back-stack.
+     * URGENT:  if (getThemeFromThisContext != App.getTheme) then recreate() ...
+     * <p>
+     * https://www.hidroh.com/2015/02/25/support-multiple-themes-android-app-part-2/
+     */
+    @Override
+    @CallSuper
+    protected void onResume() {
+        super.onResume();
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+            Logger.debugEnter(this, "BaseActivity.onResume",
+                              LocaleUtils.toDebugString(this));
+        }
+
+        if (App.isInNeedOfRecreating()) {
+            recreate();
+            App.setIsRecreating();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Logger.debugExit(this, "BaseActivity.onResume", "Recreate!");
+            }
+
+        } else if (App.isRecreating()) {
+            App.clearRecreateFlag();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Logger.debugExit(this, "BaseActivity.onResume", "isRecreating");
+            }
+
+        } else {
+            // this is just paranoia... the flag should already have been cleared.
+            App.clearRecreateFlag();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Logger.debugExit(this, "BaseActivity.onResume", "Resuming");
+            }
+        }
     }
 
     /**
@@ -289,7 +315,7 @@ public abstract class BaseActivity
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.debugEnter(this, "BaseActivity.onSharedPreferenceChanged",
-                    "key=" + key);
+                              "key=" + key);
         }
 
         // Trigger a recreate of this activity, if the setting has changed.

@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.goodreads.api;
 
 import androidx.annotation.NonNull;
@@ -28,8 +34,8 @@ import java.io.IOException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertomanybooks.utils.BookNotFoundException;
+import com.hardbacknutter.nevertomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertomanybooks.utils.xml.XmlResponseParser;
 
@@ -37,9 +43,7 @@ import com.hardbacknutter.nevertomanybooks.utils.xml.XmlResponseParser;
  * API handler for the "auth.user" call. Just gets the current user details.
  * <p>
  * <a href="https://www.goodreads.com/api/index#auth.user">
- *     https://www.goodreads.com/api/index#auth.user</a>
- *
- * @author Philip Warner
+ * https://www.goodreads.com/api/index#auth.user</a>
  */
 public class AuthUserApiHandler
         extends ApiHandler {
@@ -78,7 +82,7 @@ public class AuthUserApiHandler
             return mUserId;
 
         } catch (@NonNull final CredentialsException | BookNotFoundException | IOException
-                | RuntimeException e) {
+                                        | RuntimeException e) {
             return 0;
         }
     }
@@ -109,12 +113,13 @@ public class AuthUserApiHandler
     private void buildFilters() {
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XML_USER)
                  .setStartAction(context -> mUserId
-                         = Long.parseLong(context.getAttributes().getValue("", XmlTags.XML_ID)));
+                                                    = Long.parseLong(
+                         context.getAttributes().getValue("", XmlTags.XML_ID)));
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XML_USER,
                               XmlTags.XML_NAME)
                  .setEndAction(context -> mUsername
-                         = context.getBody());
+                                                  = context.getBody());
     }
 
     @Nullable

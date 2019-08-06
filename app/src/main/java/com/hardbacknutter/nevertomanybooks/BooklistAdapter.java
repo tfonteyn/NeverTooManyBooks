@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks;
 
 import android.content.Context;
@@ -44,6 +50,9 @@ import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.ref.WeakReference;
+import java.util.Locale;
+
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistGroup.RowKind;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistSupportProvider;
@@ -63,9 +72,6 @@ import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertomanybooks.widgets.FastScrollerOverlay;
 
-import java.lang.ref.WeakReference;
-import java.util.Locale;
-
 /**
  * Handles all views in a multi-type list showing books, authors, series etc.
  * <p>
@@ -79,8 +85,6 @@ import java.util.Locale;
  * </pre>
  * <p>
  * ROW_INFO is important, as it's that one that gets shown/hidden when needed.
- *
- * @author Philip Warner
  */
 public class BooklistAdapter
         extends RecyclerView.Adapter<BooklistAdapter.RowViewHolder>
@@ -89,7 +93,7 @@ public class BooklistAdapter
     /** The padding indent (in pixels) added for each level: padding = (level-1) * mLevelIndent. */
     private final int mLevelIndent;
 
-    /** Database access. */
+    /** Database Access. */
     @NonNull
     private final DAO mDb;
     @NonNull
@@ -107,21 +111,21 @@ public class BooklistAdapter
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param style   The style is used by (some) individual rows.
-     * @param db      the database
+     * @param style The style is used by (some) individual rows.
+     * @param db    Database Access
      */
-    public BooklistAdapter(@NonNull final Context context,
+    public BooklistAdapter(@NonNull final LayoutInflater inflater,
                            @NonNull final BooklistStyle style,
                            @NonNull final DAO db,
                            @Nullable final Cursor cursor) {
 
-        mInflater = LayoutInflater.from(context);
+        mInflater = inflater;
         mDb = db;
         mCursor = cursor;
         mStyle = style;
 
-        mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.booklist_level_indent);
+        mLevelIndent = mInflater.getContext().getResources()
+                                .getDimensionPixelSize(R.dimen.booklist_level_indent);
     }
 
     /**
@@ -151,11 +155,43 @@ public class BooklistAdapter
         mOnItemLongClick = onItemLongClick;
     }
 
+    @NonNull
+    @Override
+    public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                            final int viewType) {
+
+        //noinspection ConstantConditions
+        BooklistMappedCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+
+        // The view depends on the viewType + level.
+        View view = createView(parent, viewType, row.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
+
+        // do holder type dependent init.
+        return createHolder(viewType, view, row);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull final RowViewHolder holder,
+                                 final int position) {
+
+        // tag for the position, so the click-listeners can get it.
+        holder.itemView.setTag(R.id.TAG_POSITION, position);
+        holder.itemView.setOnClickListener(mOnItemClick);
+        holder.itemView.setOnLongClickListener(mOnItemLongClick);
+
+        // position the data we need to bind.
+        //noinspection ConstantConditions
+        mCursor.moveToPosition(position);
+        BooklistMappedCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+        // actual binding depends on the type of row (i.e. holder), so let the holder do it.
+        holder.onBindViewHolder(row, mStyle);
+    }
+
+    @Override
     public int getItemViewType(final int position) {
-        // At least on Android 2.3.4 we see attempts to get item types for cached items beyond the
-        // end of empty cursors. This implies a cleanup ordering issue, but has not been confirmed.
-        // This code attempts to gather more details of how this error occurs.
-        //
+        //TEST: At least on Android 2.3.4 we see attempts to get item types for cached items
+        // beyond the end of empty cursors. This implies a cleanup ordering issue, but has
+        // not been confirmed. This code attempts to gather more details of how this error occurs.
         // This DOES NOT fix the error; just gathers more debug info
         //
         if (mCursor == null) {
@@ -173,22 +209,9 @@ public class BooklistAdapter
         }
     }
 
+    @Override
     public int getItemCount() {
         return mCursor == null ? 0 : mCursor.getCount();
-    }
-
-    @NonNull
-    public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                            final int viewType) {
-
-        //noinspection ConstantConditions
-        BooklistMappedCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
-
-        // The view depends on the viewType + level.
-        View view = createView(parent, viewType, row.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
-
-        // do holder type dependent init.
-        return createHolder(viewType, view, row);
     }
 
     private View createView(@NonNull final ViewGroup parent,
@@ -240,7 +263,6 @@ public class BooklistAdapter
         }
 
         View view = mInflater.inflate(layoutId, parent, false);
-
         view.setPaddingRelative(indent * mLevelIndent, 0, 0, 0);
 
         // Scale text if required
@@ -289,7 +311,7 @@ public class BooklistAdapter
     }
 
     /**
-     * Return a 'Holder' object for the row pointed to by row.
+     * Return a Holder object for the row pointed to by row.
      *
      * @return the holder
      */
@@ -368,23 +390,6 @@ public class BooklistAdapter
         }
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull final RowViewHolder holder,
-                                 final int position) {
-
-        // tag for the position, so the click-listeners can get it.
-        holder.itemView.setTag(R.id.TAG_POSITION, position);
-        holder.itemView.setOnClickListener(mOnItemClick);
-        holder.itemView.setOnLongClickListener(mOnItemLongClick);
-
-        // position the data we need to bind.
-        //noinspection ConstantConditions
-        mCursor.moveToPosition(position);
-        BooklistMappedCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
-        // actual binding depends on the type of row (i.e. holder), so let the holder do it.
-        holder.onBindViewHolder(row, mStyle);
-    }
-
     /**
      * Get the text to display for the row at the current cursor position.
      * <p>
@@ -414,7 +419,7 @@ public class BooklistAdapter
     }
 
     /**
-     * URGENT: this really needs performance testing.
+     * See {@link BooksOnBookshelfModel#TMP_USE_BOB_EXTRAS_TASK}.
      * <p>
      * Background task to get 'extra' details for a book row.
      * Doing this in a background task keeps the booklist cursor simple and small.
@@ -431,7 +436,7 @@ public class BooklistAdapter
         @NonNull
         private final WeakReference<GetBookExtrasTaskFinishedListener> mTaskListener;
 
-        /** Database access. */
+        /** Database Access. */
         @NonNull
         private final DAO mDb;
 
@@ -451,7 +456,7 @@ public class BooklistAdapter
          * Constructor.
          *
          * @param context      Current context
-         * @param db           the database
+         * @param db           Database Access
          * @param bookId       Book to fetch
          * @param taskListener View holder for the book, used as callback for task results.
          * @param extraFields  bit mask with the fields that should be fetched.
@@ -576,7 +581,7 @@ public class BooklistAdapter
     }
 
     /**
-     * Base for all row 'holder' classes.
+     * Base for all row Holder classes.
      */
     abstract static class RowViewHolder
             extends RecyclerView.ViewHolder {
@@ -642,7 +647,7 @@ public class BooklistAdapter
         /** View that stores the related book field. */
         final TextView bookshelvesView;
 
-        /** Database access. */
+        /** Database Access. */
         @NonNull
         private final DAO mDb;
 
@@ -666,7 +671,6 @@ public class BooklistAdapter
                         showOrHide(publisherView, results.getString(DBDefinitions.KEY_PUBLISHER));
                         showOrHide(isbnView, results.getString(DBDefinitions.KEY_ISBN));
                         showOrHide(formatView, results.getString(DBDefinitions.KEY_FORMAT));
-
                         showOrHide(locationView, mLocationLabel,
                                    results.getString(DBDefinitions.KEY_LOCATION));
                         showOrHide(bookshelvesView, mShelvesLabel,
@@ -678,7 +682,7 @@ public class BooklistAdapter
          * Constructor.
          *
          * @param itemView the view specific for this holder
-         * @param db       the database.
+         * @param db       Database Access.
          * @param style    to use
          */
         BookHolder(@NonNull final View itemView,
@@ -698,8 +702,7 @@ public class BooklistAdapter
 
             // visibility is independent from actual data, so set here.
             readView = itemView.findViewById(R.id.read);
-            readView.setVisibility(App.isUsed(DBDefinitions.KEY_READ) ? View.VISIBLE
-                                                                      : View.GONE);
+            readView.setVisibility(App.isUsed(DBDefinitions.KEY_READ) ? View.VISIBLE : View.GONE);
 
             // visibility is independent from actual data, so set here.
             onLoanView = itemView.findViewById(R.id.on_loan);
@@ -708,11 +711,7 @@ public class BooklistAdapter
 
             // visibility is independent from actual data, so set here.
             coverView = itemView.findViewById(R.id.coverImage);
-            if (style.isUsed(UniqueId.BKEY_IMAGE)) {
-                coverView.setVisibility(View.VISIBLE);
-            } else {
-                coverView.setVisibility(View.GONE);
-            }
+            coverView.setVisibility(style.isUsed(UniqueId.BKEY_IMAGE) ? View.VISIBLE : View.GONE);
 
             // visibility depends on actual data
             seriesNumView = itemView.findViewById(R.id.series_num);
@@ -811,9 +810,9 @@ public class BooklistAdapter
                             .execute();
                 }
             } else {
-                showOrHide(style, rowData, DBDefinitions.KEY_AUTHOR_FORMATTED, authorView);
                 showOrHide(style, rowData, DBDefinitions.KEY_BOOKSHELF_CSV, bookshelvesView);
 
+                showOrHide(style, rowData, DBDefinitions.KEY_AUTHOR_FORMATTED, authorView);
                 showOrHide(style, rowData, DBDefinitions.KEY_PUBLISHER, publisherView);
                 showOrHide(style, rowData, DBDefinitions.KEY_ISBN, isbnView);
                 showOrHide(style, rowData, DBDefinitions.KEY_FORMAT, formatView);

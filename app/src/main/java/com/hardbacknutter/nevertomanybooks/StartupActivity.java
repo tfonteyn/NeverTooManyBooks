@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks;
 
 import android.Manifest;
@@ -30,7 +36,6 @@ import android.text.Html;
 import android.util.Log;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -42,6 +47,8 @@ import androidx.core.content.PermissionChecker;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
+import java.lang.ref.WeakReference;
+
 import com.hardbacknutter.nevertomanybooks.backup.ui.BackupActivity;
 import com.hardbacknutter.nevertomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
@@ -51,13 +58,9 @@ import com.hardbacknutter.nevertomanybooks.utils.UpgradeMessageManager;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.viewmodels.StartupViewModel;
 
-import java.lang.ref.WeakReference;
-
 /**
  * Single Activity to be the 'Main' activity for the app.
  * It does app-startup stuff which is initially to start the 'real' main activity.
- *
- * @author Philip Warner
  */
 public class StartupActivity
         extends AppCompatActivity {
@@ -68,17 +71,20 @@ public class StartupActivity
     public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
     public static final String PREF_STARTUP_COUNTDOWN = "Startup.StartCountdown";
-    /**
-     * Number of app startup's between offers to backup.
-     * RELEASE: set to 5
-     */
-    private static final int PROMPT_WAIT_BACKUP = 50;
-
+    /** Number of app startup's between offers to backup. */
+    private static final int PROMPT_WAIT_BACKUP;
     /** Indicates the upgrade message has been shown. */
     private static boolean sUpgradeMessageShown;
-
     /** Self reference for use by tasks and during upgrades. */
     private static WeakReference<StartupActivity> sStartupActivity;
+
+    static {
+        if (BuildConfig.DEBUG) {
+            PROMPT_WAIT_BACKUP = 50;
+        } else {
+            PROMPT_WAIT_BACKUP = 5;
+        }
+    }
 
     /** Flag indicating a backup is required after startup. */
     private boolean mBackupRequired;
@@ -101,7 +107,6 @@ public class StartupActivity
     }
 
     @Override
-    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         LocaleUtils.applyPreferred(this);
         setTheme(App.getThemeResId());
@@ -118,9 +123,9 @@ public class StartupActivity
         // https://developer.android.com/reference/android/os/StrictMode
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STRICT_MODE) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                    .detectAll()
-                    .penaltyLog()
-                    .build());
+                                               .detectAll()
+                                               .penaltyLog()
+                                               .build());
         }
 
         // get our ViewModel; we init in mStartupStage == 1.
@@ -171,7 +176,9 @@ public class StartupActivity
         if (mModel.isStartupTasksShouldBeStarted()) {
             // listen for progress messages
             mModel.getTaskProgressMessage().observe(this, resId ->
-                    mProgressMessageView.setText(getString(resId)));
+                                                                  mProgressMessageView
+                                                                          .setText(getString(
+                                                                                  resId)));
 
             // when tasks are done, move on to next startup-stage
             mModel.getTaskFinished().observe(this, finished -> {
@@ -184,7 +191,7 @@ public class StartupActivity
             mModel.getTaskException().observe(this, e -> {
                 if (e != null) {
                     App.showNotification(this, getString(R.string.error_unknown),
-                            e.getLocalizedMessage());
+                                         e.getLocalizedMessage());
                     finish();
                 }
             });
@@ -233,7 +240,6 @@ public class StartupActivity
      */
     private void backupRequired() {
         mBackupRequired = false;
-
         if (decreaseStartupCounters()) {
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_help_outline)
@@ -289,7 +295,7 @@ public class StartupActivity
             ed.putInt(PREF_STARTUP_COUNTDOWN, opened - 1);
         }
         ed.putInt(PREF_STARTUP_COUNT, startCount)
-                .apply();
+          .apply();
 
         return opened == 0;
     }
@@ -302,7 +308,7 @@ public class StartupActivity
      */
     private boolean initStorage() {
         int p = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                                                  Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (p != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
                     this,
@@ -331,7 +337,7 @@ public class StartupActivity
         switch (requestCode) {
             case UniqueId.REQ_ANDROID_PERMISSIONS:
                 if (grantResults.length > 0
-                        && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     if (initStorage()) {
                         startNextStage();
                     }

@@ -1,23 +1,29 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.searches;
 
 import android.content.Context;
@@ -26,6 +32,15 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -45,21 +60,10 @@ import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * ManagedTask to update requested fields by doing a search.
  * <p>
  * NEWKIND must stay in sync with {@link UpdateFieldsFromInternetActivity}
- *
- * @author Philip Warner
  */
 public class UpdateFieldsFromInternetTask
         extends ManagedTask {
@@ -76,7 +80,7 @@ public class UpdateFieldsFromInternetTask
     /** Active search manager. */
     private final SearchCoordinator mSearchCoordinator;
 
-    /** Database access. */
+    /** Database Access. */
     private DAO mDb;
 
     // Data related to current row being processed
@@ -190,6 +194,83 @@ public class UpdateFieldsFromInternetTask
         mCurrentBookId = fromBookIdOnwards;
     }
 
+    /**
+     * See if there is a reason to fetch ANY data by checking which fields this book needs.
+     *
+     * @param requestedFields the FieldUsage map to clean up
+     *
+     * @return the consolidated FieldUsage map
+     */
+    private Map<String, FieldUsage> getCurrentBookFieldUsages(
+            @NonNull final Map<String, FieldUsage> requestedFields) {
+
+        Map<String, FieldUsage> fieldUsages = new LinkedHashMap<>();
+        for (FieldUsage usage : requestedFields.values()) {
+            switch (usage.usage) {
+                case Append:
+                case Overwrite:
+                    // Append + Overwrite: we always need to get the data
+                    fieldUsages.put(usage.fieldId, usage);
+                    break;
+
+                case CopyIfBlank:
+                    currentCopyIfBlank(fieldUsages, usage);
+                    break;
+
+                case Skip:
+                    // duh...
+                    break;
+            }
+        }
+
+        return fieldUsages;
+    }
+
+    private void currentCopyIfBlank(@NonNull final Map<String, FieldUsage> fieldUsages,
+                                    @NonNull final FieldUsage usage) {
+        // Handle special cases first, 'default:' for the rest
+        switch (usage.fieldId) {
+            // - If it's a thumbnail, then see if it's missing or empty.
+            case UniqueId.BKEY_IMAGE:
+                File file = StorageUtils.getCoverFile(mCurrentUuid);
+                if (!file.exists() || file.length() == 0) {
+                    fieldUsages.put(usage.fieldId, usage);
+                }
+                break;
+
+            // We should never have a book without authors, but be paranoid
+            case UniqueId.BKEY_AUTHOR_ARRAY:
+            case UniqueId.BKEY_SERIES_ARRAY:
+            case UniqueId.BKEY_TOC_ENTRY_ARRAY:
+                if (mOriginalBookData.containsKey(usage.fieldId)) {
+                    ArrayList list = mOriginalBookData.getParcelableArrayList(usage.fieldId);
+                    if (list == null || list.isEmpty()) {
+                        fieldUsages.put(usage.fieldId, usage);
+                    }
+                }
+                break;
+
+            default:
+                // If the original was blank, add to list
+                String value = mOriginalBookData.getString(usage.fieldId);
+                if (value == null || value.isEmpty()) {
+                    fieldUsages.put(usage.fieldId, usage);
+                }
+                break;
+        }
+    }
+
+    /**
+     * The task is done.
+     */
+    @Override
+    public void onTaskFinish() {
+        if (mDb != null) {
+            mDb.close();
+            mDb = null;
+        }
+    }
+
     @Override
     public void runTask()
             throws InterruptedException {
@@ -293,83 +374,6 @@ public class UpdateFieldsFromInternetTask
                 mFinalMessage = context.getString(R.string.progress_end_cancelled_info,
                                                   mFinalMessage);
             }
-        }
-    }
-
-    /**
-     * See if there is a reason to fetch ANY data by checking which fields this book needs.
-     *
-     * @param requestedFields the FieldUsage map to clean up
-     *
-     * @return the consolidated FieldUsage map
-     */
-    private Map<String, FieldUsage> getCurrentBookFieldUsages(
-            @NonNull final Map<String, FieldUsage> requestedFields) {
-
-        Map<String, FieldUsage> fieldUsages = new LinkedHashMap<>();
-        for (FieldUsage usage : requestedFields.values()) {
-            switch (usage.usage) {
-                case Append:
-                case Overwrite:
-                    // Append + Overwrite: we always need to get the data
-                    fieldUsages.put(usage.fieldId, usage);
-                    break;
-
-                case CopyIfBlank:
-                    currentCopyIfBlank(fieldUsages, usage);
-                    break;
-
-                case Skip:
-                    // duh...
-                    break;
-            }
-        }
-
-        return fieldUsages;
-    }
-
-    private void currentCopyIfBlank(@NonNull final Map<String, FieldUsage> fieldUsages,
-                                    @NonNull final FieldUsage usage) {
-        // Handle special cases first, 'default:' for the rest
-        switch (usage.fieldId) {
-            // - If it's a thumbnail, then see if it's missing or empty.
-            case UniqueId.BKEY_IMAGE:
-                File file = StorageUtils.getCoverFile(mCurrentUuid);
-                if (!file.exists() || file.length() == 0) {
-                    fieldUsages.put(usage.fieldId, usage);
-                }
-                break;
-
-            // We should never have a book without authors, but be paranoid
-            case UniqueId.BKEY_AUTHOR_ARRAY:
-            case UniqueId.BKEY_SERIES_ARRAY:
-            case UniqueId.BKEY_TOC_ENTRY_ARRAY:
-                if (mOriginalBookData.containsKey(usage.fieldId)) {
-                    ArrayList list = mOriginalBookData.getParcelableArrayList(usage.fieldId);
-                    if (list == null || list.isEmpty()) {
-                        fieldUsages.put(usage.fieldId, usage);
-                    }
-                }
-                break;
-
-            default:
-                // If the original was blank, add to list
-                String value = mOriginalBookData.getString(usage.fieldId);
-                if (value == null || value.isEmpty()) {
-                    fieldUsages.put(usage.fieldId, usage);
-                }
-                break;
-        }
-    }
-
-    /**
-     * The task is done.
-     */
-    @Override
-    public void onTaskFinish() {
-        if (mDb != null) {
-            mDb.close();
-            mDb = null;
         }
     }
 

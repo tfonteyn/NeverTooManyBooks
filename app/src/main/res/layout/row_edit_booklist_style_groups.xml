@@ -50,7 +50,7 @@
     <ImageView
         android:id="@id/ROW_GRABBER_ICON"
         style="@style/RowButton.DragHandle"
-        android:contentDescription="@string/btn_drag_handle"
+        android:contentDescription="@string/hint_btn_drag_handle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/ROW_DETAILS"
         app:layout_constraintTop_toTopOf="parent"

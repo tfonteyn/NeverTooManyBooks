@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.searches.openlibrary;
 
 import android.content.Context;
@@ -9,6 +35,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
@@ -25,25 +64,13 @@ import com.hardbacknutter.nevertomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-
 /**
  * <a href="https://openlibrary.org/developers/api">https://openlibrary.org/developers/api</a>
  * <p>
  * Initial testing... TLDR: works, but data not complete or not stable (maybe I am to harsh though)
  * <p>
- * <a href="https://openlibrary.org/dev/docs/api/books">https://openlibrary.org/dev/docs/api/books</a>
+ * <a href="https://openlibrary.org/dev/docs/api/books">
+ * https://openlibrary.org/dev/docs/api/books</a>
  * - allows searching by all identifiers. Example isbn:  bibkeys=ISBN:0201558025
  * <ul>
  * <li> response format: jscmd=data:<br>
@@ -103,82 +130,6 @@ public class OpenLibraryManager
     }
 
     /**
-     * <a href="https://openlibrary.org/dev/docs/api/covers">https://openlibrary.org/dev/docs/api/covers</a>
-     * <p>
-     * http://covers.openlibrary.org/b/isbn/0385472579-S.jpg?default=false
-     * <p>
-     * S/M/L
-     *
-     * @param isbn to search for
-     * @param size of image to get.
-     *
-     * @return found/saved File, or {@code null} when none found (or any other failure)
-     */
-    @Nullable
-    @Override
-    @WorkerThread
-    public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final ImageSize size) {
-
-        // sanity check
-        if (!ISBN.isValid(isbn)) {
-            return null;
-        }
-
-        String sizeParam;
-        if (size == null) {
-            sizeParam = "L";
-        } else {
-            switch (size) {
-                case SMALL:
-                    sizeParam = "S";
-                    break;
-                case MEDIUM:
-                    sizeParam = "M";
-                    break;
-                case LARGE:
-                    sizeParam = "L";
-                    break;
-
-                default:
-                    sizeParam = "L";
-                    break;
-            }
-        }
-
-        // Fetch, then save it with a suffix
-        String fileSpec = ImageUtils.saveImage(String.format(BASE_URL_COVERS, isbn, sizeParam),
-                isbn, FILENAME_SUFFIX + '_' + size);
-        if (fileSpec != null) {
-            return new File(fileSpec);
-        }
-        return null;
-
-    }
-
-    @Override
-    @WorkerThread
-    public boolean isAvailable() {
-        return NetworkUtils.isAlive(getBaseURL());
-    }
-
-    @Override
-    public boolean isIsbnOnly() {
-        return true;
-    }
-
-    @Override
-    public boolean siteSupportsMultipleSizes() {
-        return true;
-    }
-
-    @StringRes
-    @Override
-    public int getNameResId() {
-        return R.string.open_library;
-    }
-
-    /**
      * <a href="https://openlibrary.org/dev/docs/api/books">
      * https://openlibrary.org/dev/docs/api/books</a>
      *
@@ -232,6 +183,83 @@ public class OpenLibraryManager
         } else {
             return new Bundle();
         }
+    }
+
+    /**
+     * <a href="https://openlibrary.org/dev/docs/api/covers">
+     * https://openlibrary.org/dev/docs/api/covers</a>
+     * <p>
+     * http://covers.openlibrary.org/b/isbn/0385472579-S.jpg?default=false
+     * <p>
+     * S/M/L
+     *
+     * @param isbn to search for
+     * @param size of image to get.
+     *
+     * @return found/saved File, or {@code null} when none found (or any other failure)
+     */
+    @Nullable
+    @Override
+    @WorkerThread
+    public File getCoverImage(@NonNull final String isbn,
+                              @Nullable final ImageSize size) {
+
+        // sanity check
+        if (!ISBN.isValid(isbn)) {
+            return null;
+        }
+
+        String sizeParam;
+        if (size == null) {
+            sizeParam = "L";
+        } else {
+            switch (size) {
+                case SMALL:
+                    sizeParam = "S";
+                    break;
+                case MEDIUM:
+                    sizeParam = "M";
+                    break;
+                case LARGE:
+                    sizeParam = "L";
+                    break;
+
+                default:
+                    sizeParam = "L";
+                    break;
+            }
+        }
+
+        // Fetch, then save it with a suffix
+        String fileSpec = ImageUtils.saveImage(String.format(BASE_URL_COVERS, isbn, sizeParam),
+                                               isbn, FILENAME_SUFFIX + '_' + size);
+        if (fileSpec != null) {
+            return new File(fileSpec);
+        }
+        return null;
+
+    }
+
+    @Override
+    @WorkerThread
+    public boolean isAvailable() {
+        return NetworkUtils.isAlive(getBaseURL());
+    }
+
+    @Override
+    public boolean isIsbnOnly() {
+        return true;
+    }
+
+    @Override
+    public boolean siteSupportsMultipleSizes() {
+        return true;
+    }
+
+    @StringRes
+    @Override
+    public int getNameResId() {
+        return R.string.open_library;
     }
 
     /**

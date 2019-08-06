@@ -1,27 +1,32 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.searches.librarything;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,30 +35,33 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
+import com.hardbacknutter.nevertomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertomanybooks.utils.Throttler;
-
-import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 /**
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
@@ -72,7 +80,7 @@ import javax.xml.parsers.SAXParserFactory;
  * &apikey={DEVKEY}&isbn={ISBN}
  *
  * <p>
- * xml see {@link com.hardbacknutter.nevertomanybooks.searches.SearchCoordinator#search} header
+ * xml see {@link SearchCoordinator#search} header
  * <p>
  * ENHANCE: extend the use of LibraryThing:
  * - Lookup title using keywords: http://www.librarything.com/api/thingTitle/hand oberon
@@ -83,8 +91,6 @@ import javax.xml.parsers.SAXParserFactory;
  * #coverlist_customcovers
  * then all 'img'
  * and use the href.
- *
- * @author Philip Warner
  */
 public class LibraryThingManager
         implements SearchEngine {
@@ -110,13 +116,14 @@ public class LibraryThingManager
     /** fetches all isbn's from editions related to the requested isbn. */
     private static final String EDITIONS_URL = BASE_URL + "/api/thingISBN/%s";
 
-    /** param 1: devkey, param 2: size; param 3: isbn. */
+    /** param 1: dev key, param 2: size; param 3: isbn. */
     private static final String BASE_URL_COVERS
             = "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
 
     /** Can only send requests at a throttled speed. */
     @NonNull
     private static final Throttler THROTTLER = new Throttler();
+    private static final Pattern DEV_KEY_PATTERN = Pattern.compile("[\\r\\t\\n\\s]*");
 
     /**
      * Constructor.
@@ -144,11 +151,11 @@ public class LibraryThingManager
      * @param prefSuffix String used to flag in preferences if we showed the alert from
      *                   that caller already or not yet.
      */
-    public static void showLtAlertIfNecessary(@NonNull final Context context,
-                                              final boolean required,
-                                              @NonNull final String prefSuffix) {
-        if (LibraryThingManager.noKey()) {
-            needLibraryThingAlert(context, required, prefSuffix);
+    public static void alertRegistrationBeneficial(@NonNull final Context context,
+                                                   final boolean required,
+                                                   @NonNull final String prefSuffix) {
+        if (!hasKey()) {
+            alertRegistrationNeeded(context, required, prefSuffix);
         }
     }
 
@@ -161,51 +168,24 @@ public class LibraryThingManager
      * @param prefSuffix String used to flag in preferences if we showed the alert from
      *                   that caller already or not yet.
      */
-    public static void needLibraryThingAlert(@NonNull final Context context,
-                                             final boolean required,
-                                             @NonNull final String prefSuffix) {
+    public static void alertRegistrationNeeded(@NonNull final Context context,
+                                               final boolean required,
+                                               @NonNull final String prefSuffix) {
 
-        boolean showAlert;
-        @StringRes
-        int msgId;
         final String prefName = PREFS_HIDE_ALERT + prefSuffix;
+        boolean showAlert;
         if (required) {
-            msgId = R.string.lt_required_info;
             showAlert = true;
         } else {
-            msgId = R.string.lt_uses_info;
             showAlert = !PreferenceManager.getDefaultSharedPreferences(context)
-                    .getBoolean(prefName, false);
+                                          .getBoolean(prefName, false);
         }
 
-        if (!showAlert) {
-            return;
+        if (showAlert) {
+            Intent intent = new Intent(context, LibraryThingRegistrationActivity.class);
+            StandardDialogs.registrationDialog(context, R.string.library_thing,
+                                               intent, required, prefName);
         }
-
-        final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.lt_registration_title)
-                .setMessage(msgId)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(R.string.btn_more_info, (d, which) -> {
-                    Intent intent = new Intent(context, LibraryThingAdminActivity.class);
-                    context.startActivity(intent);
-                    d.dismiss();
-                })
-                .create();
-
-        if (!required) {
-            dialog.setButton(
-                    DialogInterface.BUTTON_NEUTRAL,
-                    context.getString(R.string.btn_disable_message),
-                    (d, which) -> {
-                        PreferenceManager.getDefaultSharedPreferences(context)
-                                .edit().putBoolean(prefName, true).apply();
-                        d.dismiss();
-                    });
-        }
-
-        dialog.show();
     }
 
     /**
@@ -264,14 +244,14 @@ public class LibraryThingManager
     /**
      * external users (to this class) should call this before doing any searches.
      *
-     * @return {@code true} if there is no dev key configured.
+     * @return {@code true} if there is a developer key configured.
      */
-    public static boolean noKey() {
-        boolean noKey = getDevKey().isEmpty();
-        if (noKey) {
-            Logger.warn(LibraryThingManager.class, "noKey", "LibraryThing key not available");
+    public static boolean hasKey() {
+        boolean hasKey = !getDevKey().isEmpty();
+        if (BuildConfig.DEBUG && !hasKey) {
+            Logger.debug(LibraryThingManager.class, "hasKey", "LibraryThing key not available");
         }
-        return noKey;
+        return hasKey;
     }
 
     /**
@@ -281,66 +261,14 @@ public class LibraryThingManager
     private static String getDevKey() {
         String key = SearchEngine.getPref().getString(PREFS_DEV_KEY, null);
         if (key != null && !key.isEmpty()) {
-            return key.replaceAll("[\\r\\t\\n\\s]*", "");
+            return DEV_KEY_PATTERN.matcher(key).replaceAll("");
         }
         return "";
     }
 
-    /**
-     * dev-key needed for this call.
-     *
-     * @param isbn to search for
-     * @param size of image to get.
-     *
-     * @return found/saved File, or {@code null} if none found (or any other failure)
-     */
-    @Nullable
-    @WorkerThread
-    @Override
-    public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final ImageSize size) {
-
-        // sanity check
-        if (noKey()) {
-            return null;
-        }
-        // sanity check
-        if (!ISBN.isValid(isbn)) {
-            return null;
-        }
-
-        String sizeParam;
-        if (size == null) {
-            sizeParam = "L";
-        } else {
-            switch (size) {
-                case SMALL:
-                    sizeParam = "small";
-                    break;
-                case MEDIUM:
-                    sizeParam = "medium";
-                    break;
-                case LARGE:
-                    sizeParam = "large";
-                    break;
-
-                default:
-                    sizeParam = "large";
-                    break;
-            }
-        }
-
-        // Make sure we follow LibraryThing ToS (no more than 1 request/second).
-        THROTTLER.waitUntilRequestAllowed();
-
-        // Fetch, then save it with a suffix
-        String url = String.format(BASE_URL_COVERS, getDevKey(), sizeParam, isbn);
-        String fileSpec = ImageUtils.saveImage(url, isbn, FILENAME_SUFFIX + '_' + size);
-        if (fileSpec != null) {
-            return new File(fileSpec);
-        }
-
-        return null;
+    @SuppressWarnings("unused")
+    static void resetTips() {
+        TipManager.reset(PREFS_HIDE_ALERT);
     }
 
     /**
@@ -414,10 +342,67 @@ public class LibraryThingManager
         return bookData;
     }
 
+    /**
+     * dev-key needed for this call.
+     *
+     * @param isbn to search for
+     * @param size of image to get.
+     *
+     * @return found/saved File, or {@code null} if none found (or any other failure)
+     */
+    @Nullable
+    @WorkerThread
+    @Override
+    public File getCoverImage(@NonNull final String isbn,
+                              @Nullable final ImageSize size) {
+
+        // sanity check
+        if (!hasKey()) {
+            return null;
+        }
+        // sanity check
+        if (!ISBN.isValid(isbn)) {
+            return null;
+        }
+
+        String sizeParam;
+        if (size == null) {
+            sizeParam = "L";
+        } else {
+            switch (size) {
+                case SMALL:
+                    sizeParam = "small";
+                    break;
+                case MEDIUM:
+                    sizeParam = "medium";
+                    break;
+                case LARGE:
+                    sizeParam = "large";
+                    break;
+
+                default:
+                    sizeParam = "large";
+                    break;
+            }
+        }
+
+        // Make sure we follow LibraryThing ToS (no more than 1 request/second).
+        THROTTLER.waitUntilRequestAllowed();
+
+        // Fetch, then save it with a suffix
+        String url = String.format(BASE_URL_COVERS, getDevKey(), sizeParam, isbn);
+        String fileSpec = ImageUtils.saveImage(url, isbn, FILENAME_SUFFIX + '_' + size);
+        if (fileSpec != null) {
+            return new File(fileSpec);
+        }
+
+        return null;
+    }
+
     @Override
     @WorkerThread
     public boolean isAvailable() {
-        return !noKey() && NetworkUtils.isAlive(getBaseURL());
+        return hasKey() && NetworkUtils.isAlive(getBaseURL());
     }
 
     @Override

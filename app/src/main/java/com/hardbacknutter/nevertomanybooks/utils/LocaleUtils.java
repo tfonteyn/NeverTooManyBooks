@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.utils;
 
 import android.content.Context;
@@ -11,17 +37,17 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertomanybooks.App;
-import com.hardbacknutter.nevertomanybooks.BuildConfig;
-import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertomanybooks.debug.Logger;
-import com.hardbacknutter.nevertomanybooks.settings.Prefs;
-
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.regex.Pattern;
+
+import com.hardbacknutter.nevertomanybooks.App;
+import com.hardbacknutter.nevertomanybooks.BuildConfig;
+import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertomanybooks.debug.Logger;
+import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 
 /**
  * Languages:
@@ -576,21 +602,21 @@ public final class LocaleUtils {
     }
 
     public static String toDebugString(@NonNull final Context context) {
-        Locale currentLocale = from(context);
+        Locale current = from(context);
         Locale configLocale = context.getResources().getConfiguration().locale;
         if (configLocale == null) {
             configLocale = Locale.ENGLISH;
         }
         return ""
                + "\nsSystemInitialLocale       : " + App.getSystemLocale().getDisplayName()
-               + "\nsSystemInitialLocale(cur)  : " + App.getSystemLocale().getDisplayName(currentLocale)
+               + "\nsSystemInitialLocale(cur)  : " + App.getSystemLocale().getDisplayName(current)
                + "\nconfiguration.locale       : " + configLocale.getDisplayName()
-               + "\nconfiguration.locale(cur)  : " + configLocale.getDisplayName(currentLocale)
+               + "\nconfiguration.locale(cur)  : " + configLocale.getDisplayName(current)
 
                + "\nLocale.getDefault()        : " + Locale.getDefault().getDisplayName()
-               + "\nLocale.getDefault(cur)     : " + Locale.getDefault().getDisplayName(currentLocale)
-               + "\ngetPreferredLocale()        : " + getPreferredLocale().getDisplayName()
-               + "\ngetPreferredLocale(cur)     : " + getPreferredLocale().getDisplayName(currentLocale)
+               + "\nLocale.getDefault(cur)     : " + Locale.getDefault().getDisplayName(current)
+               + "\ngetPreferredLocale()       : " + getPreferredLocale().getDisplayName()
+               + "\ngetPreferredLocale(cur)    : " + getPreferredLocale().getDisplayName(current)
 
                + "\nApp.isInNeedOfRecreating() : " + App.isInNeedOfRecreating()
                + "\nApp.isRecreating()         : " + App.isRecreating();

@@ -1,24 +1,30 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.hardbacknutter.nevertomanybooks.goodreads;
+package com.hardbacknutter.nevertomanybooks.searches.goodreads;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -26,7 +32,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -34,17 +39,14 @@ import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertomanybooks.goodreads.tasks.GoodreadsTasks;
 import com.hardbacknutter.nevertomanybooks.goodreads.tasks.RequestAuthTask;
-import com.hardbacknutter.nevertomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 
 /**
  * Activity to allow the user to authorize the application to access their
  * Goodreads account and to explain Goodreads.
- *
- * @author Philip Warner
  */
-public class GoodreadsRegisterActivity
+public class GoodreadsRegistrationActivity
         extends BaseActivity {
 
     private View mAuthButton;
@@ -56,7 +58,7 @@ public class GoodreadsRegisterActivity
             if (msg != null) {
                 showUserMessage(msg);
             } else {
-                RequestAuthTask.needsRegistration(GoodreadsRegisterActivity.this,
+                RequestAuthTask.needsRegistration(GoodreadsRegistrationActivity.this,
                                                   mTaskListener);
             }
         }
@@ -75,7 +77,6 @@ public class GoodreadsRegisterActivity
     }
 
     @Override
-    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -96,7 +97,7 @@ public class GoodreadsRegisterActivity
 
         // Forget credentials
         View blurb = findViewById(R.id.forget_blurb);
-        View blurbButton = findViewById(R.id.btn_forget_credentials);
+        View blurbButton = findViewById(R.id.btn_delete_credentials);
         if (GoodreadsManager.hasCredentials()) {
             blurb.setVisibility(View.VISIBLE);
             blurbButton.setVisibility(View.VISIBLE);

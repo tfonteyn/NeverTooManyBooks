@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".searches.librarything.LibraryThingAdminActivity"
+    tools:context=".searches.librarything.LibraryThingRegistrationActivity"
     >
 
     <include layout="@layout/inc_appbar" />
@@ -44,7 +44,7 @@
                 android:id="@+id/register_url"
                 style="@style/Url"
                 android:layout_marginTop="@dimen/border1"
-                android:text="@string/lt_register_text"
+                android:text="@string/lt_url_text_register"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/b1"
@@ -54,7 +54,7 @@
                 android:id="@+id/dev_key_url"
                 style="@style/Url"
                 android:layout_marginTop="@dimen/border1"
-                android:text="@string/lt_dev_key_text"
+                android:text="@string/lt_url_text_dev_key"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/register_url"
@@ -64,7 +64,7 @@
                 android:id="@+id/b2"
                 style="@style/Blurb"
                 android:layout_marginTop="@dimen/border1"
-                android:text="@string/lt_got_key"
+                android:text="@string/lt_lbl_key"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/indents"
                 app:layout_constraintTop_toBottomOf="@id/dev_key_url"
@@ -75,7 +75,7 @@
                 android:id="@+id/dev_key"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/lt_developer_key"
+                android:hint="@string/hint_developer_key"
                 android:inputType="text"
                 android:maxLines="1"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -92,25 +92,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/dev_key"
-                />
-
-            <TextView
-                android:id="@+id/b3"
-                style="@style/Blurb"
-                android:text="@string/lt_reset_messages_info"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/confirm"
-                />
-
-            <Button
-                android:id="@+id/reset_messages"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_reset"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/b3"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

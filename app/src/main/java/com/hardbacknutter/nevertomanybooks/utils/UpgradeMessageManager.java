@@ -1,21 +1,28 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.utils;
 
@@ -25,6 +32,9 @@ import android.content.pm.PackageInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -45,7 +55,8 @@ public final class UpgradeMessageManager {
      */
     private static final int[][] UPGRADE_MESSAGES = {
             {200, R.string.new_in_600},
-    };
+            };
+    private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 
     /** The message generated for this instance; will be set first time it is generated. */
     @Nullable
@@ -57,7 +68,7 @@ public final class UpgradeMessageManager {
     /**
      * Get the upgrade message for the running app instance; caches the result for later use.
      *
-     * @param context Current context for accessing resources.
+     * @param context Current context
      *
      * @return Upgrade message (or blank string)
      */
@@ -72,7 +83,7 @@ public final class UpgradeMessageManager {
 
         // See if we have a saved version id; if it's 0, it's an upgrade from a pre-98 install.
         long lastVersion = PreferenceManager.getDefaultSharedPreferences(context)
-                .getLong(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
+                                            .getLong(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
 
         boolean first = true;
         for (int[] msg : UPGRADE_MESSAGES) {
@@ -85,7 +96,8 @@ public final class UpgradeMessageManager {
             }
         }
 
-        sMessage = message.toString().replace("\n", "<br/>");
+        sMessage = CR_PATTERN.matcher(message.toString())
+                             .replaceAll(Matcher.quoteReplacement("<br/>"));
         return sMessage;
     }
 
@@ -94,9 +106,9 @@ public final class UpgradeMessageManager {
      */
     public static void setUpgradeAcknowledged() {
         PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                .edit()
-                .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, getVersion())
-                .apply();
+                         .edit()
+                         .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, getVersion())
+                         .apply();
     }
 
     /**

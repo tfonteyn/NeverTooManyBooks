@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.database;
 
 import android.database.Cursor;
@@ -6,9 +32,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+
+import java.io.File;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -28,8 +55,6 @@ import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.utils.SerializationUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UpgradeMessageManager;
-
-import java.io.File;
 
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB;
@@ -86,7 +111,6 @@ import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.TBL_BOO
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
-
 /**
  * Our version of {@link SQLiteOpenHelper} handling {@link #onCreate} and {@link #onUpgrade}.
  * Uses the application context.
@@ -113,13 +137,13 @@ public final class DBHelper
      */
     private static final String[] DATABASE_CREATE_INDICES = {
             "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + TBL_AUTHORS
-                    + " (" + DOM_AUTHOR_FAMILY_NAME + DAO.COLLATION + ')',
+            + " (" + DOM_AUTHOR_FAMILY_NAME + DAO.COLLATION + ')',
             "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + TBL_AUTHORS
-                    + " (" + DOM_AUTHOR_GIVEN_NAMES + DAO.COLLATION + ')',
+            + " (" + DOM_AUTHOR_GIVEN_NAMES + DAO.COLLATION + ')',
 
             "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS
-                    + " (" + DOM_TITLE + DAO.COLLATION + ')',
-    };
+            + " (" + DOM_TITLE + DAO.COLLATION + ')',
+            };
 
 
     /** Readers/Writer lock for this database. */
@@ -138,7 +162,7 @@ public final class DBHelper
                      @NonNull final SQLiteDatabase.CursorFactory factory,
                      @SuppressWarnings("SameParameterValue")
                      @NonNull final Synchronizer synchronizer) {
-        // *always* use the app context!
+        // ALWAYS use the app context here!
         super(App.getAppContext(), DATABASE_NAME, factory, DATABASE_VERSION);
         sSynchronizer = synchronizer;
     }
@@ -173,14 +197,15 @@ public final class DBHelper
      * destination that are not in the source will be defaulted or set to {@code null}
      * if no default is defined.
      *
-     * @param db          the database
+     * @param db          Database Access
      * @param source      from table
      * @param destination to table
      * @param toRemove    (optional) List of fields to be removed from the source table
      *                    (skipped in copy)
      */
     static void copyTableSafely(@NonNull final SynchronizedDb db,
-                                @SuppressWarnings("SameParameterValue") @NonNull final String source,
+                                @SuppressWarnings("SameParameterValue") @NonNull
+                                final String source,
                                 @NonNull final String destination,
                                 @NonNull final String... toRemove) {
         // Get the source info
@@ -206,7 +231,8 @@ public final class DBHelper
             }
         }
         String colList = columns.toString();
-        String sql = "INSERT INTO " + destination + '(' + colList + ") SELECT " + colList + " FROM " + source;
+        String sql = "INSERT INTO " + destination + '(' + colList + ") SELECT "
+                     + colList + " FROM " + source;
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.executeInsert();
         }
@@ -215,7 +241,7 @@ public final class DBHelper
     /**
      * Renames the original table, recreates it, and loads the data into the new table.
      *
-     * @param db              the database
+     * @param db              Database Access
      * @param tableToRecreate the table
      * @param toRemove        (optional) List of fields to be removed from the source table
      */
@@ -236,16 +262,16 @@ public final class DBHelper
      * Run at installation (and v200 upgrade) time to add the builtin style ID's to the database.
      * This allows foreign keys to work.
      *
-     * @param db the database
+     * @param db Database Access
      */
     private static void prepareStylesTable(@NonNull final SQLiteDatabase db) {
         String sqlInsertStyles =
                 "INSERT INTO " + TBL_BOOKLIST_STYLES
-                        + '(' + DOM_PK_ID
-                        + ',' + DOM_STYLE_IS_BUILTIN
-                        + ',' + DOM_UUID
-                        // 1==true
-                        + ") VALUES(?,1,?)";
+                + '(' + DOM_PK_ID
+                + ',' + DOM_STYLE_IS_BUILTIN
+                + ',' + DOM_UUID
+                // 1==true
+                + ") VALUES(?,1,?)";
         try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
             for (int id = BooklistStyles.BUILTIN_MAX_ID; id < 0; id++) {
                 stmt.bindLong(1, id);
@@ -255,7 +281,7 @@ public final class DBHelper
                 if (BuildConfig.DEBUG /* always */) {
                     if (id == -1) {
                         Logger.debug(BooklistStyles.class, "prepareStylesTable",
-                                "Ignore the debug message about inserting -1 here...");
+                                     "Ignore the debug message about inserting -1 here...");
                     }
                 }
                 stmt.executeInsert();
@@ -263,14 +289,8 @@ public final class DBHelper
         }
     }
 
-    /**
-     * This function is called when the database is first created.
-     *
-     * @param db The database to be created
-     */
     @SuppressWarnings("unused")
     @Override
-    @CallSuper
     public void onCreate(@NonNull final SQLiteDatabase db) {
         // 'Upgrade' from not being installed. Run this first to avoid racing issues.
         UpgradeMessageManager.setUpgradeAcknowledged();
@@ -282,22 +302,22 @@ public final class DBHelper
         SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
         TableDefinition.createTables(syncedDb,
-                // app tables
-                TBL_BOOKLIST_STYLES,
-                // basic user data tables
-                TBL_BOOKSHELF,
-                TBL_AUTHORS,
-                TBL_SERIES,
-                TBL_BOOKS,
-                TBL_TOC_ENTRIES,
-                // link tables
-                TBL_BOOK_TOC_ENTRIES,
-                TBL_BOOK_AUTHOR,
-                TBL_BOOK_BOOKSHELF,
-                TBL_BOOK_SERIES,
-                TBL_BOOK_LOANEE,
-                // permanent booklist management tables
-                TBL_BOOK_LIST_NODE_SETTINGS);
+                                     // app tables
+                                     TBL_BOOKLIST_STYLES,
+                                     // basic user data tables
+                                     TBL_BOOKSHELF,
+                                     TBL_AUTHORS,
+                                     TBL_SERIES,
+                                     TBL_BOOKS,
+                                     TBL_TOC_ENTRIES,
+                                     // link tables
+                                     TBL_BOOK_TOC_ENTRIES,
+                                     TBL_BOOK_AUTHOR,
+                                     TBL_BOOK_BOOKSHELF,
+                                     TBL_BOOK_SERIES,
+                                     TBL_BOOK_LOANEE,
+                                     // permanent booklist management tables
+                                     TBL_BOOK_LIST_NODE_SETTINGS);
 
         // create the indexes not covered in the calls above.
         createIndices(syncedDb, false);
@@ -307,16 +327,79 @@ public final class DBHelper
 
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
         syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                + '(' + DOM_BOOKSHELF
-                + ',' + DOM_FK_STYLE_ID
-                + ") VALUES ("
-                + "'" + App.getAppContext().getString(R.string.bookshelf_my_books)
-                + "'," + BooklistStyles.DEFAULT_STYLE_ID
-                + ')');
+                         + '(' + DOM_BOOKSHELF
+                         + ',' + DOM_FK_STYLE_ID
+                         + ") VALUES ("
+                         + "'" + App.getAppContext().getString(R.string.bookshelf_my_books)
+                         + "'," + BooklistStyles.DEFAULT_STYLE_ID
+                         + ')');
 
         //reminder: FTS columns don't need a type nor constraints
         TBL_BOOKS_FTS.create(syncedDb, false);
 
+        createTriggers(syncedDb);
+    }
+
+    /**
+     * Since renaming the application, a direct upgrade from the original database is
+     * actually no longer needed/done. Migrating from BC to this rewritten version should
+     * be a simple 'backup to archive' in the old app, and an 'import from archive' in this app.
+     * <p>
+     * Leaving the code here below for now, but it's bound to be completely removed soon.
+     * <p>
+     * This function is called each time the database is upgraded.
+     * It will run all upgrade scripts between the oldVersion and the newVersion.
+     * <p>
+     * Minimal application version 5.2.2 (database version 82). Older versions not supported.
+     * <p>
+     * REMINDER: do not use [column].ref() or [table].create/createAll.
+     * The 'current' definition might not match the upgraded definition!
+     *
+     * @param db         The SQLiteDatabase to be upgraded
+     * @param oldVersion The current version number of the SQLiteDatabase
+     * @param newVersion The new version number of the SQLiteDatabase
+     *
+     * @see #DATABASE_VERSION
+     */
+    @SuppressWarnings("unused")
+    @Override
+    public void onUpgrade(@NonNull final SQLiteDatabase db,
+                          final int oldVersion,
+                          final int newVersion) {
+
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(this, "onUpgrade",
+                              "Old database version: " + oldVersion,
+                              "Upgrading database: " + db.getPath());
+        }
+        if (oldVersion < 82) {
+            throw new UpgradeException(R.string.error_database_upgrade_failed);
+        }
+
+        StartupActivity startup = StartupActivity.getActiveActivity();
+        if (startup != null) {
+            startup.onProgress(R.string.progress_msg_upgrading);
+        }
+
+        if (oldVersion != newVersion) {
+            StorageUtils.exportFile(db.getPath(), "DbUpgrade-" + oldVersion + '-' + newVersion);
+        }
+
+        int curVersion = oldVersion;
+        SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
+
+        // db82 == app179 == 5.2.2 == last official version.
+        if (curVersion < newVersion && curVersion == 82) {
+            // db100 == app200 == 6.0.0;
+            //noinspection UnusedAssignment
+            curVersion = 100;
+            upgradeTo100(db, syncedDb);
+
+        }
+
+        // Rebuild all indices
+        createIndices(syncedDb, true);
+        // Rebuild all triggers
         createTriggers(syncedDb);
     }
 
@@ -361,10 +444,10 @@ public final class DBHelper
          */
         name = "after_delete_on_" + TBL_BOOK_BOOKSHELF;
         body = " AFTER DELETE ON " + TBL_BOOK_BOOKSHELF + " FOR EACH ROW\n"
-                + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
-                + " END";
+               + " BEGIN\n"
+               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
+               + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
@@ -376,12 +459,12 @@ public final class DBHelper
          */
         name = "after_update_on" + TBL_BOOKSHELF;
         body = " AFTER UPDATE ON " + TBL_BOOKSHELF + " FOR EACH ROW\n"
-                + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                + " WHERE " + DOM_PK_ID + " IN \n"
-                + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_BOOKSHELF
-                + " WHERE " + DOM_FK_BOOKSHELF + "=Old." + DOM_PK_ID + ");\n"
-                + " END";
+               + " BEGIN\n"
+               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + DOM_PK_ID + " IN \n"
+               + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_BOOKSHELF
+               + " WHERE " + DOM_FK_BOOKSHELF + "=Old." + DOM_PK_ID + ");\n"
+               + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
@@ -412,20 +495,20 @@ public final class DBHelper
          */
         name = "after_update_on" + TBL_AUTHORS;
         body = " AFTER UPDATE ON " + TBL_AUTHORS + " FOR EACH ROW\n"
-                + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+               + " BEGIN\n"
+               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
 
-                + " WHERE " + DOM_PK_ID + " IN \n"
-                // actual books by this Author
-                + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_AUTHOR
-                + " WHERE " + DOM_FK_AUTHOR + "=Old." + DOM_PK_ID + ")\n"
+               + " WHERE " + DOM_PK_ID + " IN \n"
+               // actual books by this Author
+               + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_AUTHOR
+               + " WHERE " + DOM_FK_AUTHOR + "=Old." + DOM_PK_ID + ")\n"
 
-                + " OR " + DOM_PK_ID + " IN \n"
-                // books with entries in anthologies by this Author
-                + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_TOC_ENTRIES.ref()
-                + TBL_BOOK_TOC_ENTRIES.join(TBL_TOC_ENTRIES)
-                + " WHERE " + DOM_FK_AUTHOR + "=Old." + DOM_PK_ID + ");\n"
-                + " END";
+               + " OR " + DOM_PK_ID + " IN \n"
+               // books with entries in anthologies by this Author
+               + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_TOC_ENTRIES.ref()
+               + TBL_BOOK_TOC_ENTRIES.join(TBL_TOC_ENTRIES)
+               + " WHERE " + DOM_FK_AUTHOR + "=Old." + DOM_PK_ID + ");\n"
+               + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
@@ -437,10 +520,10 @@ public final class DBHelper
          */
         name = "after_delete_on_" + TBL_BOOK_SERIES;
         body = " AFTER DELETE ON " + TBL_BOOK_SERIES + " FOR EACH ROW\n"
-                + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
-                + " END";
+               + " BEGIN\n"
+               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
+               + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
@@ -452,12 +535,12 @@ public final class DBHelper
          */
         name = "after_update_on" + TBL_SERIES;
         body = " AFTER UPDATE ON " + TBL_SERIES + " FOR EACH ROW\n"
-                + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                + " WHERE " + DOM_PK_ID + " IN \n"
-                + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_SERIES
-                + " WHERE " + DOM_FK_SERIES + "=Old." + DOM_PK_ID + ");\n"
-                + " END";
+               + " BEGIN\n"
+               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + DOM_PK_ID + " IN \n"
+               + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_SERIES
+               + " WHERE " + DOM_FK_SERIES + "=Old." + DOM_PK_ID + ");\n"
+               + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
@@ -469,10 +552,10 @@ public final class DBHelper
          */
         name = "after_delete_on_" + TBL_BOOK_LOANEE;
         body = " AFTER DELETE ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
-                + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
-                + " END";
+               + " BEGIN\n"
+               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
+               + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
@@ -484,10 +567,10 @@ public final class DBHelper
          */
         name = "after_update_on_" + TBL_BOOK_LOANEE;
         body = " AFTER UPDATE ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
-                + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                + " WHERE " + DOM_PK_ID + "=New." + DOM_FK_BOOK + ";\n"
-                + " END";
+               + " BEGIN\n"
+               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + DOM_PK_ID + "=New." + DOM_FK_BOOK + ";\n"
+               + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
@@ -499,10 +582,10 @@ public final class DBHelper
          */
         name = "after_insert_on_" + TBL_BOOK_LOANEE;
         body = " AFTER INSERT ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
-                + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                + " WHERE " + DOM_PK_ID + "=New." + DOM_FK_BOOK + ";\n"
-                + " END";
+               + " BEGIN\n"
+               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + DOM_PK_ID + "=New." + DOM_FK_BOOK + ";\n"
+               + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
@@ -515,10 +598,10 @@ public final class DBHelper
          */
         name = "after_delete_on_" + TBL_BOOKS;
         body = " AFTER DELETE ON " + TBL_BOOKS + " FOR EACH ROW\n"
-                + " BEGIN\n"
-                + "  DELETE FROM " + TBL_BOOKS_FTS
-                + " WHERE " + DOM_PK_DOCID + '=' + "Old." + DOM_PK_ID + ";\n"
-                + " END";
+               + " BEGIN\n"
+               + "  DELETE FROM " + TBL_BOOKS_FTS
+               + " WHERE " + DOM_PK_DOCID + '=' + "Old." + DOM_PK_ID + ";\n"
+               + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
@@ -529,17 +612,17 @@ public final class DBHelper
          */
         name = "after_update_of_" + DOM_BOOK_ISBN + "_on_" + TBL_BOOKS;
         body = " AFTER UPDATE OF " + DOM_BOOK_ISBN + " ON " + TBL_BOOKS + " FOR EACH ROW\n"
-                + " WHEN New." + DOM_BOOK_ISBN + " <> Old." + DOM_BOOK_ISBN + '\n'
-                + " BEGIN\n"
-                + "    UPDATE " + TBL_BOOKS + " SET "
-                + /* */ DOM_BOOK_GOODREADS_ID + "=0"
-                + ',' + DOM_BOOK_ISFDB_ID + "=0"
-                + ',' + DOM_BOOK_LIBRARY_THING_ID + "=0"
-                + ',' + DOM_BOOK_OPEN_LIBRARY_ID + "=0"
+               + " WHEN New." + DOM_BOOK_ISBN + " <> Old." + DOM_BOOK_ISBN + '\n'
+               + " BEGIN\n"
+               + "    UPDATE " + TBL_BOOKS + " SET "
+               + /* */ DOM_BOOK_GOODREADS_ID + "=0"
+               + ',' + DOM_BOOK_ISFDB_ID + "=0"
+               + ',' + DOM_BOOK_LIBRARY_THING_ID + "=0"
+               + ',' + DOM_BOOK_OPEN_LIBRARY_ID + "=0"
 
-                + ',' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=''"
-                + /* */ " WHERE " + DOM_PK_ID + "=New." + DOM_PK_ID + ";\n"
-                + " END";
+               + ',' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=''"
+               + /* */ " WHERE " + DOM_PK_ID + "=New." + DOM_PK_ID + ";\n"
+               + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
@@ -582,89 +665,26 @@ public final class DBHelper
         syncedDb.analyze();
     }
 
-    /**
-     * Since renaming the application, a direct upgrade from the original database is
-     * actually no longer needed/done. Migrating from BC to this rewritten version should
-     * be a simple 'backup to archive' in the old app, and an 'import from archive' in this app.
-     *
-     * Leaving the code here below for now, but it's bound to be completely removed soon.
-     *
-     * This function is called each time the database is upgraded.
-     * It will run all upgrade scripts between the oldVersion and the newVersion.
-     * <p>
-     * Minimal application version 5.2.2 (database version 82). Older versions not supported.
-     * <p>
-     * REMINDER: do not use [column].ref() or [table].create/createAll.
-     * The 'current' definition might not match the upgraded definition!
-     *
-     * @param db         The database to be upgraded
-     * @param oldVersion The current version number of the database
-     * @param newVersion The new version number of the database
-     *
-     * @see #DATABASE_VERSION
-     */
-    @SuppressWarnings("unused")
-    @Override
-    public void onUpgrade(@NonNull final SQLiteDatabase db,
-                          final int oldVersion,
-                          final int newVersion) {
-
-        if (BuildConfig.DEBUG /* always */) {
-            Logger.debugEnter(this, "onUpgrade",
-                    "Old database version: " + oldVersion,
-                    "Upgrading database: " + db.getPath());
-        }
-        if (oldVersion < 82) {
-            throw new UpgradeException(R.string.error_database_upgrade_failed);
-        }
-
-        StartupActivity startup = StartupActivity.getActiveActivity();
-        if (startup != null) {
-            startup.onProgress(R.string.progress_msg_upgrading);
-        }
-
-        if (oldVersion != newVersion) {
-            StorageUtils.exportFile(db.getPath(), "DbUpgrade-" + oldVersion + '-' + newVersion);
-        }
-
-        int curVersion = oldVersion;
-        SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
-
-        // db82 == app179 == 5.2.2 == last official version.
-        if (curVersion < newVersion && curVersion == 82) {
-            // db100 == app200 == 6.0.0;
-            //noinspection UnusedAssignment
-            curVersion = 100;
-            upgradeTo100(db, syncedDb);
-
-        }
-
-        // Rebuild all indices
-        createIndices(syncedDb, true);
-        // Rebuild all triggers
-        createTriggers(syncedDb);
-    }
-
     private void upgradeTo100(@NonNull final SQLiteDatabase db,
                               @NonNull final SynchronizedDb syncedDb) {
         // we're now using the 'real' cache directory
         StorageUtils.deleteFile(new File(StorageUtils.getSharedStorage()
-                + File.separator + "tmp_images"));
+                                         + File.separator + "tmp_images"));
 
         // migrate old properties.
         Prefs.migratePreV200preferences(App.getAppContext(), Prefs.PREF_LEGACY_BOOK_CATALOGUE);
 
         // add the UUID field for the move of styles to SharedPreferences
         db.execSQL("ALTER TABLE " + TBL_BOOKLIST_STYLES
-                + " ADD " + DOM_UUID + " text not null default ''");
+                   + " ADD " + DOM_UUID + " text not null default ''");
 
         // insert the builtin style ID's so foreign key rules are possible.
         prepareStylesTable(db);
 
         // convert user styles from serialized storage to SharedPreference xml.
         try (Cursor stylesCursor = db.rawQuery("SELECT " + DOM_PK_ID + ",style"
-                        + " FROM " + TBL_BOOKLIST_STYLES,
-                null)) {
+                                               + " FROM " + TBL_BOOKLIST_STYLES,
+                                               null)) {
             while (stylesCursor.moveToNext()) {
                 long id = stylesCursor.getLong(0);
                 byte[] blob = stylesCursor.getBlob(1);
@@ -674,8 +694,8 @@ public final class DBHelper
                     style = SerializationUtils.deserializeObject(blob);
                     // update db with the newly created prefs file name.
                     db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES
-                            + " SET " + DOM_UUID + "='" + style.getUuid() + '\''
-                            + " WHERE " + DOM_PK_ID + '=' + id);
+                               + " SET " + DOM_UUID + "='" + style.getUuid() + '\''
+                               + " WHERE " + DOM_PK_ID + '=' + id);
 
                 } catch (@NonNull final SerializationUtils.DeserializationException e) {
                     Logger.error(this, e, "BooklistStyle id=" + id);
@@ -698,57 +718,57 @@ public final class DBHelper
         // the author name and title could be bad
         final String UNKNOWN = App.getAppContext().getString(R.string.unknown);
         db.execSQL("UPDATE " + TBL_AUTHORS
-                + " SET " + DOM_AUTHOR_FAMILY_NAME + "='" + UNKNOWN + '\''
-                + " WHERE " + DOM_AUTHOR_FAMILY_NAME + "=''"
-                + " OR " + DOM_AUTHOR_FAMILY_NAME + " IS NULL");
+                   + " SET " + DOM_AUTHOR_FAMILY_NAME + "='" + UNKNOWN + '\''
+                   + " WHERE " + DOM_AUTHOR_FAMILY_NAME + "=''"
+                   + " OR " + DOM_AUTHOR_FAMILY_NAME + " IS NULL");
 
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_TITLE + "='" + UNKNOWN + '\''
-                + " WHERE " + DOM_TITLE + "='' OR " + DOM_TITLE + " IS NULL");
+                   + " WHERE " + DOM_TITLE + "='' OR " + DOM_TITLE + " IS NULL");
 
         // clean columns where we are adding a "not null default ''" constraint
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_FORMAT + "=''"
-                + " WHERE " + DOM_BOOK_FORMAT + " IS NULL");
+                   + " WHERE " + DOM_BOOK_FORMAT + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GENRE + "=''"
-                + " WHERE " + DOM_BOOK_GENRE + " IS NULL");
+                   + " WHERE " + DOM_BOOK_GENRE + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LANGUAGE + "=''"
-                + " WHERE " + DOM_BOOK_LANGUAGE + " IS NULL");
+                   + " WHERE " + DOM_BOOK_LANGUAGE + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LOCATION + "=''"
-                + " WHERE " + DOM_BOOK_LOCATION + " IS NULL");
+                   + " WHERE " + DOM_BOOK_LOCATION + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PUBLISHER + "=''"
-                + " WHERE " + DOM_BOOK_PUBLISHER + " IS NULL");
+                   + " WHERE " + DOM_BOOK_PUBLISHER + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_ISBN + "=''"
-                + " WHERE " + DOM_BOOK_ISBN + " IS NULL");
+                   + " WHERE " + DOM_BOOK_ISBN + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PRICE_LISTED + "=''"
-                + " WHERE " + DOM_BOOK_PRICE_LISTED + " IS NULL");
+                   + " WHERE " + DOM_BOOK_PRICE_LISTED + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DESCRIPTION + "=''"
-                + " WHERE " + DOM_BOOK_DESCRIPTION + " IS NULL");
+                   + " WHERE " + DOM_BOOK_DESCRIPTION + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_NOTES + "=''"
-                + " WHERE " + DOM_BOOK_NOTES + " IS NULL");
+                   + " WHERE " + DOM_BOOK_NOTES + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_START + "=''"
-                + " WHERE " + DOM_BOOK_READ_START + " IS NULL");
+                   + " WHERE " + DOM_BOOK_READ_START + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_END + "=''"
-                + " WHERE " + DOM_BOOK_READ_END + " IS NULL");
+                   + " WHERE " + DOM_BOOK_READ_END + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DATE_PUBLISHED + "=''"
-                + " WHERE " + DOM_BOOK_DATE_PUBLISHED + " IS NULL");
+                   + " WHERE " + DOM_BOOK_DATE_PUBLISHED + " IS NULL");
 
         // clean boolean columns where we have seen non-0/1 values.
         // 'true'/'false' were seen in 5.2.2 exports. 't'/'f' just because paranoid.
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=1"
-                + " WHERE lower(" + DOM_BOOK_READ + ") IN ('true', 't')");
+                   + " WHERE lower(" + DOM_BOOK_READ + ") IN ('true', 't')");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=0"
-                + " WHERE lower(" + DOM_BOOK_READ + ") IN ('false', 'f')");
+                   + " WHERE lower(" + DOM_BOOK_READ + ") IN ('false', 'f')");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=1"
-                + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('true', 't')");
+                   + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('true', 't')");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=0"
-                + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('false', 'f')");
+                   + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('false', 'f')");
 
         // Make sure the TOC bitmask is valid: int: 0,1,3. Reset anything else to 0.
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_TOC_BITMASK + "=0"
-                + " WHERE " + DOM_BOOK_TOC_BITMASK + " NOT IN (0,1,3)");
+                   + " WHERE " + DOM_BOOK_TOC_BITMASK + " NOT IN (0,1,3)");
 
         // probably not needed, but there were some 'COALESCE' usages. Paranoia again...
         db.execSQL("UPDATE " + TBL_BOOKSHELF + " SET " + DOM_BOOKSHELF + "=''"
-                + " WHERE " + DOM_BOOKSHELF + " IS NULL");
+                   + " WHERE " + DOM_BOOKSHELF + " IS NULL");
 
         // recreate to get column types & constraints properly updated.
         recreateAndReloadTable(syncedDb, TBL_BOOKS);
@@ -756,25 +776,25 @@ public final class DBHelper
         // anthology-titles are now cross-book;
         // e.g. one 'story' can be present in multiple books
         db.execSQL("CREATE TABLE " + TBL_BOOK_TOC_ENTRIES
-                + '(' + DOM_FK_BOOK + " integer REFERENCES "
-                + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE"
+                   + '(' + DOM_FK_BOOK + " integer REFERENCES "
+                   + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE"
 
-                + ',' + DOM_FK_TOC_ENTRY + " integer REFERENCES "
-                + TBL_TOC_ENTRIES + " ON DELETE CASCADE ON UPDATE CASCADE"
+                   + ',' + DOM_FK_TOC_ENTRY + " integer REFERENCES "
+                   + TBL_TOC_ENTRIES + " ON DELETE CASCADE ON UPDATE CASCADE"
 
-                + ',' + DOM_BOOK_TOC_ENTRY_POSITION + " integer not null"
-                + ", PRIMARY KEY (" + DOM_FK_BOOK
-                + ',' + DOM_FK_TOC_ENTRY + ')'
-                + ", FOREIGN KEY (" + DOM_FK_BOOK + ')'
-                + " REFERENCES " + TBL_BOOKS + '(' + DOM_PK_ID + ')'
-                + ", FOREIGN KEY (" + DOM_FK_TOC_ENTRY + ')'
-                + " REFERENCES " + TBL_TOC_ENTRIES + '(' + DOM_PK_ID + ')'
-                + ')');
+                   + ',' + DOM_BOOK_TOC_ENTRY_POSITION + " integer not null"
+                   + ", PRIMARY KEY (" + DOM_FK_BOOK
+                   + ',' + DOM_FK_TOC_ENTRY + ')'
+                   + ", FOREIGN KEY (" + DOM_FK_BOOK + ')'
+                   + " REFERENCES " + TBL_BOOKS + '(' + DOM_PK_ID + ')'
+                   + ", FOREIGN KEY (" + DOM_FK_TOC_ENTRY + ')'
+                   + " REFERENCES " + TBL_TOC_ENTRIES + '(' + DOM_PK_ID + ')'
+                   + ')');
 
         // move the existing book-anthology links to the new table
         db.execSQL("INSERT INTO " + TBL_BOOK_TOC_ENTRIES
-                + " SELECT " + DOM_FK_BOOK + ',' + DOM_PK_ID + ','
-                + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
+                   + " SELECT " + DOM_FK_BOOK + ',' + DOM_PK_ID + ','
+                   + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
 
         // reorganise the original table
         recreateAndReloadTable(syncedDb, TBL_TOC_ENTRIES,
@@ -786,25 +806,26 @@ public final class DBHelper
 
         // add the 'ORDER BY' columns
         db.execSQL("ALTER TABLE " + TBL_BOOKS
-                + " ADD " + DOM_TITLE_OB + " text not null default ''");
+                   + " ADD " + DOM_TITLE_OB + " text not null default ''");
         UpgradeDatabase.v200_setOrderByColumn(db, TBL_BOOKS, DOM_TITLE, DOM_TITLE_OB);
 
         db.execSQL("ALTER TABLE " + TBL_SERIES
-                + " ADD " + DOM_SERIES_TITLE_OB + " text not null default ''");
-        UpgradeDatabase.v200_setOrderByColumn(db, TBL_SERIES, DOM_SERIES_TITLE, DOM_SERIES_TITLE_OB);
+                   + " ADD " + DOM_SERIES_TITLE_OB + " text not null default ''");
+        UpgradeDatabase
+                .v200_setOrderByColumn(db, TBL_SERIES, DOM_SERIES_TITLE, DOM_SERIES_TITLE_OB);
 
         db.execSQL("ALTER TABLE " + TBL_TOC_ENTRIES
-                + " ADD " + DOM_TITLE_OB + " text not null default ''");
+                   + " ADD " + DOM_TITLE_OB + " text not null default ''");
         UpgradeDatabase.v200_setOrderByColumn(db, TBL_TOC_ENTRIES, DOM_TITLE, DOM_TITLE_OB);
 
         db.execSQL("ALTER TABLE " + TBL_AUTHORS
-                + " ADD " + DOM_AUTHOR_FAMILY_NAME_OB + " text not null default ''");
+                   + " ADD " + DOM_AUTHOR_FAMILY_NAME_OB + " text not null default ''");
         UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_FAMILY_NAME,
-                DOM_AUTHOR_FAMILY_NAME_OB);
+                                              DOM_AUTHOR_FAMILY_NAME_OB);
         db.execSQL("ALTER TABLE " + TBL_AUTHORS
-                + " ADD " + DOM_AUTHOR_GIVEN_NAMES_OB + " text not null default ''");
+                   + " ADD " + DOM_AUTHOR_GIVEN_NAMES_OB + " text not null default ''");
         UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_GIVEN_NAMES,
-                DOM_AUTHOR_GIVEN_NAMES_OB);
+                                              DOM_AUTHOR_GIVEN_NAMES_OB);
 
             /* move cover files to a sub-folder.
             Only files with matching rows in 'books' are moved. */

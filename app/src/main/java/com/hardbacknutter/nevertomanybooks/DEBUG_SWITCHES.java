@@ -52,7 +52,8 @@ public final class DEBUG_SWITCHES {
     public static final boolean BOOKLIST_BUILDER = false;
 
     /* ****************************************************************************************** */
-    /** {@link com.hardbacknutter.nevertomanybooks.viewmodels.BooksOnBookshelfModel#initBookList}. */
+    /** {@link com.hardbacknutter.nevertomanybooks.viewmodels
+     * .BooksOnBookshelfModel#initBookList}. */
     public static final boolean BOB_INIT_BOOK_LIST = false;
     /** {@link CoverBrowserFragment}. */
     public static final boolean COVER_BROWSER = false;
@@ -156,7 +157,8 @@ public final class DEBUG_SWITCHES {
     /** dump the style each time it is accessed. Medium length in the log. */
     public static final boolean DUMP_STYLE = false;
     /**
-     * Dump (just) the URL used in {@link com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection}.
+     * Dump (just) the URL used in
+     * {@link com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection}.
      */
     public static final boolean DUMP_HTTP_URL = false;
     /**

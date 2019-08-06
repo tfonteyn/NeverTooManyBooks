@@ -68,21 +68,24 @@ public class CFSRecyclerView
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CFSRecyclerView,
                                                           defStyleAttr, defStyleRes);
 
-            boolean enableFastScroller = a
-                    .getBoolean(R.styleable.CFSRecyclerView_cfsEnabled, false);
+            boolean enableFastScroller =
+                    a.getBoolean(R.styleable.CFSRecyclerView_cfsEnabled, false);
 
             if (enableFastScroller) {
-                StateListDrawable verticalThumbDrawable = (StateListDrawable) a
-                        .getDrawable(R.styleable.CFSRecyclerView_cfsVerticalThumbDrawable);
-                Drawable verticalTrackDrawable = a
-                        .getDrawable(R.styleable.CFSRecyclerView_cfsVerticalTrackDrawable);
-                StateListDrawable horizontalThumbDrawable = (StateListDrawable) a
-                        .getDrawable(R.styleable.CFSRecyclerView_cfsHorizontalThumbDrawable);
-                Drawable horizontalTrackDrawable = a
-                        .getDrawable(R.styleable.CFSRecyclerView_cfsHorizontalTrackDrawable);
+                StateListDrawable verticalThumbDrawable =
+                        (StateListDrawable) a.getDrawable(
+                                R.styleable.CFSRecyclerView_cfsVerticalThumbDrawable);
+                StateListDrawable horizontalThumbDrawable =
+                        (StateListDrawable) a.getDrawable(
+                                R.styleable.CFSRecyclerView_cfsHorizontalThumbDrawable);
+
+                Drawable verticalTrackDrawable =
+                        a.getDrawable(R.styleable.CFSRecyclerView_cfsVerticalTrackDrawable);
+                Drawable horizontalTrackDrawable =
+                        a.getDrawable(R.styleable.CFSRecyclerView_cfsHorizontalTrackDrawable);
 
                 if (verticalThumbDrawable == null || verticalTrackDrawable == null
-                        || horizontalThumbDrawable == null || horizontalTrackDrawable == null) {
+                    || horizontalThumbDrawable == null || horizontalTrackDrawable == null) {
                     throw new IllegalArgumentException(
                             "Trying to set fast scroller without all required drawables.");
                 }

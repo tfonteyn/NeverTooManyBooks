@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
@@ -39,8 +45,6 @@ import com.hardbacknutter.nevertomanybooks.dialogs.TipManager.TipOwner;
 
 /**
  * Activity to display all Events in the QueueManager.
- *
- * @author Philip Warner
  */
 public class EventQueueListActivity
         extends BindableItemListActivity {
@@ -51,48 +55,6 @@ public class EventQueueListActivity
     /** Task ID, if provided in intent. */
     private long mTaskId;
 
-    @Override
-    @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-
-        mTaskId = getIntent().getLongExtra(REQ_BKEY_TASK_ID, 0);
-        // Once we have the task id, call the parent
-        super.onCreate(savedInstanceState);
-
-        setTitle(R.string.gr_tq_title_task_errors);
-
-        QueueManager.getQueueManager().registerEventListener(mChangeListener);
-
-        Button cleanupBtn = findViewById(R.id.cleanup);
-        cleanupBtn.setText(R.string.gr_tq_btn_cleanup_old_events);
-        cleanupBtn.setOnClickListener(v -> QueueManager.getQueueManager().cleanupOldEvents());
-
-        if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_background_task_events,
-                               null);
-        }
-    }
-
-    /**
-     * Build a context menu dialogue when an item is clicked.
-     */
-    @Override
-    public void onListItemClick(@NonNull final AdapterView<?> parent,
-                                @NonNull final View v,
-                                final int position,
-                                final long id) {
-
-        final Event event = (Event) v.getTag(R.id.TAG_GR_EVENT);
-
-        // If it owns a hint, display it first
-        if (event instanceof TipOwner) {
-            TipManager.display(getLayoutInflater(), ((TipOwner) event).getTip(),
-                               () -> showContextMenu(parent, v, event, position, id));
-        } else {
-            showContextMenu(parent, v, event, position, id);
-        }
-    }
-
     private void showContextMenu(@NonNull final AdapterView<?> parent,
                                  @NonNull final View v,
                                  @NonNull final Event event,
@@ -101,13 +63,6 @@ public class EventQueueListActivity
         List<ContextDialogItem> items = new ArrayList<>();
         event.addContextMenuItems(this, parent, v, position, id, items, mDb);
         ContextDialogItem.showContextDialog(this, items);
-    }
-
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        QueueManager.getQueueManager().unregisterEventListener(mChangeListener);
-        super.onDestroy();
     }
 
     @Override
@@ -129,6 +84,53 @@ public class EventQueueListActivity
             return QueueManager.getQueueManager().getAllEvents();
         } else {
             return QueueManager.getQueueManager().getTaskEvents(mTaskId);
+        }
+    }
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+
+        mTaskId = getIntent().getLongExtra(REQ_BKEY_TASK_ID, 0);
+        // Once we have the task id, call the parent
+        super.onCreate(savedInstanceState);
+
+        setTitle(R.string.gr_tq_title_task_errors);
+
+        QueueManager.getQueueManager().registerEventListener(mChangeListener);
+
+        Button cleanupBtn = findViewById(R.id.cleanup);
+        cleanupBtn.setText(R.string.gr_tq_btn_cleanup_old_events);
+        cleanupBtn.setOnClickListener(v -> QueueManager.getQueueManager().cleanupOldEvents());
+
+        if (savedInstanceState == null) {
+            TipManager.display(getLayoutInflater(), R.string.tip_background_task_events, null);
+        }
+    }
+
+    @Override
+    @CallSuper
+    protected void onDestroy() {
+        QueueManager.getQueueManager().unregisterEventListener(mChangeListener);
+        super.onDestroy();
+    }
+
+    /**
+     * Build a context menu dialogue when an item is clicked.
+     */
+    @Override
+    public void onListItemClick(@NonNull final AdapterView<?> parent,
+                                @NonNull final View v,
+                                final int position,
+                                final long id) {
+
+        final Event event = (Event) v.getTag(R.id.TAG_GR_EVENT);
+
+        // If it owns a hint, display it first
+        if (event instanceof TipOwner) {
+            TipManager.display(getLayoutInflater(), ((TipOwner) event).getTip(),
+                               () -> showContextMenu(parent, v, event, position, id));
+        } else {
+            showContextMenu(parent, v, event, position, id);
         }
     }
 }

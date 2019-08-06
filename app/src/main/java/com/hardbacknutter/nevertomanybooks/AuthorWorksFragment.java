@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks;
 
 import android.content.Context;
@@ -13,7 +39,6 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
@@ -23,6 +48,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertomanybooks.dialogs.TipManager;
@@ -31,8 +58,6 @@ import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertomanybooks.widgets.FastScrollerOverlay;
 import com.hardbacknutter.nevertomanybooks.widgets.cfs.CFSRecyclerView;
-
-import java.util.ArrayList;
 
 /**
  * Display all TocEntry's for an Author.
@@ -44,20 +69,20 @@ public class AuthorWorksFragment
     /** Fragment manager tag. */
     public static final String TAG = "AuthorWorksFragment";
 
-    /** Optional. Also show the authors book. Defaults to {@code true}. */
+    /** Optional. Show the TOC. Defaults to {@code true}. */
     public static final String BKEY_WITH_TOC = TAG + ":withTocEntries";
+    /** Optional. Show the books. Defaults to {@code true}. */
     public static final String BKEY_WITH_BOOKS = TAG + ":withBooks";
 
     /** The ViewModel. */
     private AuthorWorksModel mModel;
+    /** The Adapter. */
     private TocAdapter mAdapter;
 
     @Override
-    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // make sure {@link #onCreateOptionsMenu} is called
+        // Mandatory
         setHasOptionsMenu(true);
     }
 
@@ -66,7 +91,6 @@ public class AuthorWorksFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.fragment_author_works, container, false);
     }
 
@@ -95,11 +119,12 @@ public class AuthorWorksFragment
                     new FastScrollerOverlay(getContext(), R.drawable.fast_scroll_overlay));
         }
 
-        mAdapter = new TocAdapter(getContext(), mModel);
+        mAdapter = new TocAdapter(getLayoutInflater());
         listView.setAdapter(mAdapter);
 
-        TipManager.display(getLayoutInflater(),
-                           R.string.tip_authors_works, null);
+        if (savedInstanceState == null) {
+            TipManager.display(getLayoutInflater(), R.string.tip_authors_works, null);
+        }
     }
 
     @Override
@@ -154,14 +179,14 @@ public class AuthorWorksFragment
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
-        String menuTitle = item.getTitle();
-        final MenuPicker<Integer> picker = new MenuPicker<>(getContext(), menuTitle, menu, position,
-                                                            this::onContextItemSelected);
-        picker.show();
+        String title = item.getTitle();
+        new MenuPicker<>(getLayoutInflater(), title, menu, position, this::onContextItemSelected)
+                .show();
     }
 
     /**
-     * <ul>Delete.
+     * Delete the current entry.
+     * <ul>
      * <li>TocEntry.TYPE_BOOK: confirmation from user is requested.</li>
      * <li>TocEntry.TYPE_TOC: deletion is immediate.</li>
      * </ul>
@@ -212,23 +237,24 @@ public class AuthorWorksFragment
                 // story in one book, goto that book.
                 if (bookIds.size() == 1) {
                     intent = new Intent(getContext(), BookDetailsActivity.class)
-                            .putExtra(DBDefinitions.KEY_PK_ID, bookIds.get(0));
+                                     .putExtra(DBDefinitions.KEY_PK_ID, bookIds.get(0));
                     startActivity(intent);
 
                 } else {
                     // multiple books, go to the list, filtering on the books.
                     intent = new Intent(getContext(), BooksOnBookshelf.class)
-                            // clear the back-stack. We want to keep BooksOnBookshelf on top
-                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            // bring up list, filtered on the book ID's
-                            .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
+                                     // clear the back-stack.
+                                     // We want to keep BooksOnBookshelf on top
+                                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                     // bring up list, filtered on the book ID's
+                                     .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
                     startActivity(intent);
                 }
                 break;
 
             case Book:
                 intent = new Intent(getContext(), BookDetailsActivity.class)
-                        .putExtra(DBDefinitions.KEY_PK_ID, item.getId());
+                                 .putExtra(DBDefinitions.KEY_PK_ID, item.getId());
                 startActivity(intent);
                 break;
 
@@ -278,21 +304,13 @@ public class AuthorWorksFragment
         private final Drawable mStoryIndicator;
         /** Caching the inflater. */
         private final LayoutInflater mInflater;
-        /** The ViewModel. */
-        private final AuthorWorksModel mModel;
 
         /**
          * Constructor.
-         *
-         * @param context Current context
-         * @param model   the ViewModel for this fragment.
          */
-        TocAdapter(@NonNull final Context context,
-                   @NonNull final AuthorWorksModel model) {
-
-            mModel = model;
-            mInflater = LayoutInflater.from(context);
-
+        TocAdapter(@NonNull final LayoutInflater inflater) {
+            mInflater = inflater;
+            Context context = mInflater.getContext();
             mBookIndicator = context.getDrawable(R.drawable.ic_book);
             mStoryIndicator = context.getDrawable(R.drawable.ic_paragraph);
         }
@@ -301,9 +319,7 @@ public class AuthorWorksFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-
             TocEntry.Type type = TocEntry.Type.get((char) viewType);
-
             View itemView;
             switch (type) {
                 case Toc:
@@ -319,7 +335,6 @@ public class AuthorWorksFragment
             Holder holder = new Holder(itemView);
 
             // decorate the row depending on toc entry or actual book
-
             switch (type) {
                 case Toc:
                     holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -335,11 +350,6 @@ public class AuthorWorksFragment
                     throw new IllegalArgumentException("type=" + viewType);
             }
             return holder;
-        }
-
-        @Override
-        public int getItemViewType(final int position) {
-            return mModel.getTocEntries().get(position).getType().getInt();
         }
 
         @Override
@@ -361,7 +371,7 @@ public class AuthorWorksFragment
                     holder.firstPublicationView.setVisibility(View.GONE);
                 } else {
                     String fp = holder.firstPublicationView
-                            .getContext().getString(R.string.brackets, date);
+                                        .getContext().getString(R.string.brackets, date);
                     holder.firstPublicationView.setText(fp);
                     holder.firstPublicationView.setVisibility(View.VISIBLE);
                 }
@@ -383,6 +393,11 @@ public class AuthorWorksFragment
         }
 
         @Override
+        public int getItemViewType(final int position) {
+            return mModel.getTocEntries().get(position).getType().getInt();
+        }
+
+        @Override
         public int getItemCount() {
             return mModel.getTocEntries().size();
         }
@@ -393,7 +408,7 @@ public class AuthorWorksFragment
                                        final int position) {
             // make sure it's still in range.
             int index = MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
-            // first character only, don't care about Locale locale...
+            // first character only, don't care about Locale...
             return new String[]{mModel.getTocEntries().get(index)
                                       .getTitle().substring(0, 1).toUpperCase()};
         }

@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.entities;
 
 import android.content.Context;
@@ -8,6 +34,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyles;
@@ -16,10 +46,6 @@ import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.database.cursors.ColumnMapper;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StringList;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Represents a Bookshelf.
@@ -143,7 +169,7 @@ public class Bookshelf
     @NonNull
     public static Bookshelf fromString(@NonNull final String element) {
         List<String> list = new StringList<String>()
-                .decode(element, false, FIELD_SEPARATOR);
+                                    .decode(element, false, FIELD_SEPARATOR);
 
         String name = list.get(0);
         // check if we have a style
@@ -222,20 +248,20 @@ public class Bookshelf
         mId = id;
     }
 
-    @NonNull
-    public String getName() {
+    @Override
+    public String getLabel() {
         return mName;
     }
 
-    @Override
-    public String getLabel() {
+    @NonNull
+    public String getName() {
         return mName;
     }
 
     /**
      * Set the style for this bookshelf. The style will also be set as the global default.
      *
-     * @param db    the database used to update the bookshelf
+     * @param db    Database Access
      * @param style to set
      */
     public void setStyle(@NonNull final DAO db,
@@ -251,7 +277,7 @@ public class Bookshelf
     /**
      * Returns a valid style for this bookshelf.
      *
-     * @param db the database (needed to check existence and/or to get defaults)
+     * @param db Database Access
      *
      * @return the style associated with this bookshelf.
      */
@@ -271,7 +297,7 @@ public class Bookshelf
     /**
      * Check the current style and if it had to be corrected, update this shelf in the database.
      *
-     * @param db the database
+     * @param db Database Access
      */
     public void validateStyle(@NonNull final DAO db) {
         String uuid = mStyleUuid;
@@ -292,14 +318,6 @@ public class Bookshelf
         mCachedStyle = null;
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeLong(mId);
-        dest.writeString(mName);
-        dest.writeString(mStyleUuid);
-    }
-
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
@@ -307,26 +325,11 @@ public class Bookshelf
     }
 
     @Override
-    @NonNull
-    public String toString() {
-        return "Bookshelf{"
-               + "mId=" + mId
-               + ", mName=`" + mName + '`'
-               + ", mStyleUuid=" + mStyleUuid
-               + ", mCachedStyle=" + (mCachedStyle == null ? "null" : mCachedStyle.getUuid())
-               + '}';
-    }
-
-    /**
-     * Support for encoding to a text file.
-     *
-     * @return the object encoded as a String.
-     * <p>
-     * "name * styleUUID"
-     */
-    @NonNull
-    public String stringEncoded() {
-        return mName + ' ' + FIELD_SEPARATOR + ' ' + mStyleUuid;
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeLong(mId);
+        dest.writeString(mName);
+        dest.writeString(mStyleUuid);
     }
 
     @NonNull
@@ -344,6 +347,18 @@ public class Bookshelf
     }
 
     /**
+     * Support for encoding to a text file.
+     *
+     * @return the object encoded as a String.
+     * <p>
+     * "name * styleUUID"
+     */
+    @NonNull
+    public String stringEncoded() {
+        return mName + ' ' + FIELD_SEPARATOR + ' ' + mStyleUuid;
+    }
+
+    /**
      * Each Bookshelf is defined exactly by a unique ID.
      */
     @SuppressWarnings("SameReturnValue")
@@ -352,9 +367,13 @@ public class Bookshelf
         return true;
     }
 
-
     public boolean isDefault() {
         return mId == DEFAULT_ID;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mId, mName);
     }
 
     /**
@@ -384,7 +403,13 @@ public class Bookshelf
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(mId, mName);
+    @NonNull
+    public String toString() {
+        return "Bookshelf{"
+               + "mId=" + mId
+               + ", mName=`" + mName + '`'
+               + ", mStyleUuid=" + mStyleUuid
+               + ", mCachedStyle=" + (mCachedStyle == null ? "null" : mCachedStyle.getUuid())
+               + '}';
     }
 }

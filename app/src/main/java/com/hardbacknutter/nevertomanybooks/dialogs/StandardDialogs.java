@@ -1,35 +1,48 @@
 /*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.dialogs;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
+import androidx.preference.PreferenceManager;
 
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.entities.Author;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 
 public final class StandardDialogs {
 
@@ -106,10 +119,12 @@ public final class StandardDialogs {
                                        @NonNull final List<Author> authorList,
                                        @NonNull final Runnable onDoDelete) {
 
+        Locale userLocale = LocaleUtils.getPreferredLocale();
         // Format the list of authors nicely
         StringBuilder authors = new StringBuilder();
         if (authorList.isEmpty()) {
-            authors.append('<').append(context.getString(R.string.unknown).toUpperCase())
+            authors.append('<')
+                   .append(context.getString(R.string.unknown).toUpperCase(userLocale))
                    .append('>');
         } else {
             // "a1, a2 and a3"
@@ -136,5 +151,53 @@ public final class StandardDialogs {
                 })
                 .create()
                 .show();
+    }
+
+    /**
+     * Show a registration request dialog.
+     *
+     * @param context   Current context
+     * @param siteResId Site string resource id
+     * @param intent    Intent to start if the user wants more information.
+     * @param required  Show third button allowing disabling message or not.
+     * @param prefName  Preference name to use for disabling the message if requested
+     */
+    public static void registrationDialog(@NonNull final Context context,
+                                          @StringRes final int siteResId,
+                                          @NonNull final Intent intent,
+                                          final boolean required,
+                                          @NonNull final String prefName) {
+
+        String site = context.getString(siteResId);
+        String message;
+        if (required) {
+            message = context.getString(R.string.info_registration_required, site);
+        } else {
+            message = context.getString(R.string.info_registration_benefits, site);
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                                     .setIconAttribute(android.R.attr.alertDialogIcon)
+                                     .setTitle(R.string.title_registration)
+                                     .setMessage(message)
+                                     .setNegativeButton(android.R.string.cancel,
+                                                        (d, which) -> d.dismiss())
+                                     .setPositiveButton(R.string.btn_tell_me_more, (d, which) -> {
+                                         context.startActivity(intent);
+                                         d.dismiss();
+                                     })
+                                     .create();
+
+        if (!required) {
+            dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+                             context.getString(R.string.btn_disable_message),
+                             (d, which) -> {
+                                 PreferenceManager.getDefaultSharedPreferences(context)
+                                                  .edit().putBoolean(prefName, true).apply();
+                                 d.dismiss();
+                             });
+        }
+
+        dialog.show();
     }
 }

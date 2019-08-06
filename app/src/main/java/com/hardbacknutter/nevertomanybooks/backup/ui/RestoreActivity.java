@@ -1,21 +1,28 @@
 /*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.backup.ui;
 
@@ -30,6 +37,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
 
+import java.io.File;
+
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.backup.ImportOptions;
@@ -39,8 +48,6 @@ import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
-
-import java.io.File;
 
 /**
  * Lets the user choose an archive file to import from.
@@ -73,79 +80,6 @@ public class RestoreActivity
         setTitle(R.string.title_import);
     }
 
-    private void onTaskFinishedMessage(final TaskListener.TaskFinishedMessage<ImportOptions> message) {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-        }
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (message.taskId) {
-            case R.id.TASK_ID_READ_FROM_ARCHIVE:
-                if (message.success) {
-                    // see if there are any pre-200 preferences that need migrating.
-                    if ((message.result.what & ImportOptions.PREFERENCES) != 0) {
-                        Prefs.migratePreV200preferences(this,
-                                Prefs.PREF_LEGACY_BOOK_CATALOGUE);
-                    }
-                    String importMsg;
-                    if (message.result.results != null) {
-                        importMsg = '\n'
-                                + getString(R.string.progress_msg_n_created_m_updated,
-                                message.result.results.booksCreated,
-                                message.result.results.booksUpdated);
-                        if (message.result.results.booksFailed > 0) {
-                            importMsg += '\n'
-                                    + getString(R.string.error_failed_x,
-                                    message.result.results.booksFailed);
-                        }
-                        importMsg += '\n'
-                                + getString(R.string.progress_msg_covers_handled,
-                                message.result.results.coversImported);
-                    } else {
-                        importMsg = getString(R.string.progress_end_import_complete);
-                    }
-
-                    new AlertDialog.Builder(RestoreActivity.this)
-                            .setTitle(R.string.lbl_import_from_archive)
-                            .setMessage(importMsg)
-                            .setPositiveButton(android.R.string.ok, (d, which) -> {
-                                d.dismiss();
-                                Intent data = new Intent().putExtra(
-                                        UniqueId.BKEY_IMPORT_RESULT,
-                                        message.result.what);
-                                setResult(Activity.RESULT_OK, data);
-                                finish();
-                            })
-                            .create()
-                            .show();
-                } else {
-                    String msg = getString(R.string.error_import_failed)
-                            + ' ' + getString(R.string.error_storage_not_readable)
-                            + "\n\n"
-                            + getString(R.string.error_if_the_problem_persists);
-
-                    new AlertDialog.Builder(RestoreActivity.this)
-                            .setTitle(R.string.lbl_import_from_archive)
-                            .setMessage(msg)
-                            .setPositiveButton(android.R.string.ok,
-                                    (d, which) -> d.dismiss())
-                            .create()
-                            .show();
-                }
-                break;
-
-            default:
-                Logger.warnWithStackTrace(this, "Unknown taskId=" + message.taskId);
-                break;
-        }
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment fragment) {
-        if (ImportOptionsDialogFragment.TAG.equals(fragment.getTag())) {
-            ((ImportOptionsDialogFragment) fragment).setListener(mOptionsListener);
-        }
-    }
-
     /**
      * The user selected a file.
      *
@@ -169,8 +103,8 @@ public class RestoreActivity
                     // ask user what options they want
                     FragmentManager fm = getSupportFragmentManager();
                     if (fm.findFragmentByTag(ImportOptionsDialogFragment.TAG) == null) {
-                        ImportOptionsDialogFragment.newInstance(options).show(fm,
-                                ImportOptionsDialogFragment.TAG);
+                        ImportOptionsDialogFragment.newInstance(options)
+                                                   .show(fm, ImportOptionsDialogFragment.TAG);
                     }
                 })
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
@@ -181,6 +115,80 @@ public class RestoreActivity
                 .create()
                 .show();
 
+    }
+
+    private void onTaskFinishedMessage(final TaskListener
+                                                     .TaskFinishedMessage<ImportOptions> message) {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (message.taskId) {
+            case R.id.TASK_ID_READ_FROM_ARCHIVE:
+                if (message.success) {
+                    // see if there are any pre-200 preferences that need migrating.
+                    if ((message.result.what & ImportOptions.PREFERENCES) != 0) {
+                        Prefs.migratePreV200preferences(this,
+                                                        Prefs.PREF_LEGACY_BOOK_CATALOGUE);
+                    }
+                    String importMsg;
+                    if (message.result.results != null) {
+                        importMsg = '\n'
+                                    + getString(R.string.progress_msg_n_created_m_updated,
+                                                message.result.results.booksCreated,
+                                                message.result.results.booksUpdated);
+                        if (message.result.results.booksFailed > 0) {
+                            importMsg += '\n'
+                                         + getString(R.string.error_failed_x,
+                                                     message.result.results.booksFailed);
+                        }
+                        importMsg += '\n'
+                                     + getString(R.string.progress_msg_covers_handled,
+                                                 message.result.results.coversImported);
+                    } else {
+                        importMsg = getString(R.string.progress_end_import_complete);
+                    }
+
+                    new AlertDialog.Builder(RestoreActivity.this)
+                            .setTitle(R.string.lbl_import_from_archive)
+                            .setMessage(importMsg)
+                            .setPositiveButton(android.R.string.ok, (d, which) -> {
+                                d.dismiss();
+                                Intent data = new Intent().putExtra(
+                                        UniqueId.BKEY_IMPORT_RESULT,
+                                        message.result.what);
+                                setResult(Activity.RESULT_OK, data);
+                                finish();
+                            })
+                            .create()
+                            .show();
+                } else {
+                    String msg = getString(R.string.error_import_failed)
+                                 + ' ' + getString(R.string.error_storage_not_readable)
+                                 + "\n\n"
+                                 + getString(R.string.error_if_the_problem_persists);
+
+                    new AlertDialog.Builder(RestoreActivity.this)
+                            .setTitle(R.string.lbl_import_from_archive)
+                            .setMessage(msg)
+                            .setPositiveButton(android.R.string.ok,
+                                               (d, which) -> d.dismiss())
+                            .create()
+                            .show();
+                }
+                break;
+
+            default:
+                Logger.warnWithStackTrace(this, "Unknown taskId=" + message.taskId);
+                break;
+        }
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment fragment) {
+        if (ImportOptionsDialogFragment.TAG.equals(fragment.getTag())) {
+            ((ImportOptionsDialogFragment) fragment).setListener(mOptionsListener);
+        }
     }
 
     /**

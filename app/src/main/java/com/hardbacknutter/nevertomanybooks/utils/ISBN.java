@@ -1,21 +1,28 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.utils;
 
@@ -25,6 +32,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -197,7 +205,7 @@ public class ISBN {
      * <li>Either one invalid ? no match</li>
      * <li>ISBN/UPC as objects equal ? MATCH</li>
      * </ol>
-     *
+     * <p>
      * TODO: SIMPLIFY ISBN matches...
      *
      * @return {@code true} if the 2 codes match.
@@ -267,7 +275,7 @@ public class ISBN {
 
         // TODO: should we even check this ?
         boolean foundAlpha = false;
-        asin = asin.toUpperCase().trim();
+        asin = asin.toUpperCase(Locale.ENGLISH).trim();
         for (int i = 0; i < asin.length(); i++) {
             int pos = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(asin.charAt(i));
             // Make sure it's a valid char
@@ -297,8 +305,8 @@ public class ISBN {
             case 13:
                 // Start with 978 or 979
                 return digits.get(0) == 9 && digits.get(1) == 7
-                        && (digits.get(2) == 8 || digits.get(2) == 9)
-                        && (getChecksum(digits) == 0);
+                       && (digits.get(2) == 8 || digits.get(2) == 9)
+                       && (getChecksum(digits) == 0);
             default:
                 return false;
         }
@@ -426,7 +434,7 @@ public class ISBN {
 
     /**
      * This method does NOT check if the actual digits form a valid ISBN.
-     *
+     * <p>
      * Allows and ignore '-' characters.
      *
      * @return list of digits
@@ -529,19 +537,24 @@ public class ISBN {
 //        }
 //    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(mDigits);
+    }
+
     /**
      * Two ISBN objects are equal if they match these checks (in this order).
      * <ol>
-     *     <li>objects being '==' ? MATCH</li>
-     *     <li>Either or both == null ? no match</li>
-     *     <li>Incoming object is not an ISBN ? no match</li>
-     *     <li>Either or both invalid, compare their digits for exact match</li>
-     *     <li>Same length, compare their digits for exact match</li>
-     *     <li>compare the 9 significant isbn digits for equality.</li>
+     * <li>objects being '==' ? MATCH</li>
+     * <li>Either or both == null ? no match</li>
+     * <li>Incoming object is not an ISBN ? no match</li>
+     * <li>Either or both invalid, compare their digits for exact match</li>
+     * <li>Same length, compare their digits for exact match</li>
+     * <li>compare the 9 significant isbn digits for equality.</li>
      * </ol>
      *
      * <b>Note:</b> hash codes are done over the {@link #mDigits} objects.
-     *
+     * <p>
      * TODO: SIMPLIFY ISBN equals...
      */
     @Override
@@ -574,11 +587,6 @@ public class ISBN {
         } else {
             return digitsMatch(9, 3, cmp, 0);
         }
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(mDigits);
     }
 
     /**

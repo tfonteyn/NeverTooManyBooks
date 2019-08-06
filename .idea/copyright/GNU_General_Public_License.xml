@@ -1,0 +1,7 @@
+<component name="CopyrightManager">
+  <copyright>
+    <option name="keyword" value="@Copyright 2019 HardBackNutter" />
+    <option name="notice" value="@Copyright 2019 HardBackNutter&#10;@License GNU General Public License&#10;&#10;This file is part of NeverToManyBooks.&#10;&#10;In August 2018, this project was forked from:&#10;Book Catalogue 5.2.2 @copyright 2010 Philip Warner &amp;amp; Evan Leybourn&#10;&#10;Without their original creation, this project would not exist in its current form.&#10;It was however largely rewritten/refactored and any comments on this fork &#10;should be directed at HardBackNutter and not at the original creator.&#10;&#10;NeverToManyBooks is free software: you can redistribute it and/or modify&#10;it under the terms of the GNU General Public License as published by&#10;the Free Software Foundation, either version 3 of the License, or&#10;(at your option) any later version.&#10;&#10;NeverToManyBooks is distributed in the hope that it will be useful,&#10;but WITHOUT ANY WARRANTY; without even the implied warranty of&#10;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. &#10;See the GNU General Public License for more details.&#10;&#10;You should have received a copy of the GNU General Public License&#10;along with NeverToManyBooks. If not, see &lt;http://www.gnu.org/licenses/&gt;." />
+    <option name="myName" value="GNU General Public License" />
+  </copyright>
+</component>

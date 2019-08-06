@@ -1,23 +1,29 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.entities;
 
 import android.content.Context;
@@ -27,23 +33,20 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertomanybooks.App;
-import com.hardbacknutter.nevertomanybooks.database.DAO;
-import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertomanybooks.database.cursors.ColumnMapper;
-import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertomanybooks.utils.StringList;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertomanybooks.database.DAO;
+import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertomanybooks.database.cursors.ColumnMapper;
+import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertomanybooks.utils.StringList;
+
 /**
  * Class to hold author data.
- *
- * @author Philip Warner
  */
 public class Author
         implements Parcelable, ItemWithFixableId, Entity {
@@ -96,8 +99,8 @@ public class Author
      * "James jr. Tiptree" -> suffix as a middle name.
      * "Dr. Asimov" -> titles... pre or suffixed
      */
-    private static final Pattern FAMILY_NAME_SUFFIX = Pattern
-            .compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior|II|III");
+    private static final Pattern FAMILY_NAME_SUFFIX =
+            Pattern.compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior|II|III");
 
     /** Row ID. */
     private long mId;
@@ -257,43 +260,6 @@ public class Author
     }
 
     /**
-     * Syntax sugar to set the names in one call.
-     *
-     * @param familyName Family name
-     * @param givenNames Given names
-     */
-    public void setName(@NonNull final String familyName,
-                        @NonNull final String givenNames) {
-        mFamilyName = familyName;
-        mGivenNames = givenNames;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeLong(mId);
-        dest.writeString(mFamilyName);
-        dest.writeString(mGivenNames);
-        dest.writeInt(mIsComplete ? 1 : 0);
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @NonNull
-    public String getFamilyName() {
-        return mFamilyName;
-    }
-
-    @NonNull
-    public String getGivenNames() {
-        return mGivenNames;
-    }
-
-    /**
      * Return the 'human readable' version of the name (e.g. 'Isaac Asimov').
      *
      * @return formatted Author name
@@ -308,6 +274,43 @@ public class Author
     }
 
     /**
+     * Syntax sugar to set the names in one call.
+     *
+     * @param familyName Family name
+     * @param givenNames Given names
+     */
+    public void setName(@NonNull final String familyName,
+                        @NonNull final String givenNames) {
+        mFamilyName = familyName;
+        mGivenNames = givenNames;
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeLong(mId);
+        dest.writeString(mFamilyName);
+        dest.writeString(mGivenNames);
+        dest.writeInt(mIsComplete ? 1 : 0);
+    }
+
+    @NonNull
+    public String getFamilyName() {
+        return mFamilyName;
+    }
+
+    @NonNull
+    public String getGivenNames() {
+        return mGivenNames;
+    }
+
+    /**
      * Return the name in a sortable form (e.g. 'Asimov, Isaac').
      *
      * @return formatted name
@@ -319,33 +322,6 @@ public class Author
         } else {
             return mFamilyName;
         }
-    }
-
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "Author{"
-                + "mId=" + mId
-                + ", mFamilyName=`" + mFamilyName + '`'
-                + ", mGivenNames=`" + mGivenNames + '`'
-                + ", mIsComplete=" + mIsComplete
-                + '}';
-    }
-
-    /**
-     * Support for encoding to a text file.
-     *
-     * @return the object encoded as a String.
-     * <p>
-     * "familyName, givenName"
-     */
-    public String stringEncoded() {
-        // Always use givenNames even if blank because we need to KNOW they are blank.
-        // There is a slim chance that family name may contain spaces (e.g. 'Anonymous Anarchists').
-        return StringList.escapeListItem(mFamilyName, FIELD_SEPARATOR)
-                + FIELD_SEPARATOR + ' '
-                + StringList.escapeListItem(mGivenNames, FIELD_SEPARATOR);
     }
 
     /**
@@ -382,12 +358,32 @@ public class Author
     }
 
     /**
+     * Support for encoding to a text file.
+     *
+     * @return the object encoded as a String.
+     * <p>
+     * "familyName, givenName"
+     */
+    public String stringEncoded() {
+        // Always use givenNames even if blank because we need to KNOW they are blank.
+        // There is a slim chance that family name may contain spaces (e.g. 'Anonymous Anarchists').
+        return StringList.escapeListItem(mFamilyName, FIELD_SEPARATOR)
+               + FIELD_SEPARATOR + ' '
+               + StringList.escapeListItem(mGivenNames, FIELD_SEPARATOR);
+    }
+
+    /**
      * Each author is defined exactly by a unique ID.
      */
     @SuppressWarnings("SameReturnValue")
     @Override
     public boolean isUniqueById() {
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mId, mFamilyName, mGivenNames);
     }
 
     /**
@@ -414,12 +410,18 @@ public class Author
         }
         // one or both are 'new' or their ID's are the same.
         return Objects.equals(mFamilyName, that.mFamilyName)
-                && Objects.equals(mGivenNames, that.mGivenNames)
-                && (mIsComplete == that.mIsComplete);
+               && Objects.equals(mGivenNames, that.mGivenNames)
+               && (mIsComplete == that.mIsComplete);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(mId, mFamilyName, mGivenNames);
+    @NonNull
+    public String toString() {
+        return "Author{"
+               + "mId=" + mId
+               + ", mFamilyName=`" + mFamilyName + '`'
+               + ", mGivenNames=`" + mGivenNames + '`'
+               + ", mIsComplete=" + mIsComplete
+               + '}';
     }
 }

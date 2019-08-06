@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks;
 
 import android.app.Activity;
@@ -17,6 +43,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
+import java.util.Objects;
+import java.util.regex.Pattern;
+
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.debug.Tracker;
@@ -26,9 +55,6 @@ import com.hardbacknutter.nevertomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
-
-import java.util.Objects;
-import java.util.regex.Pattern;
 
 // Try stopping the soft input keyboard to pop up at all cost when entering isbn....
 
@@ -116,14 +142,14 @@ public class BookSearchByIsbnFragment
                                              @NonNull final Bundle bookData) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                         Logger.debugEnter(this, "onSearchFinished",
-                                "SearchCoordinatorId="
-                                        + mBookSearchBaseModel.getSearchCoordinatorId());
+                                          "SearchCoordinatorId="
+                                          + mBookSearchBaseModel.getSearchCoordinatorId());
                     }
                     try {
                         if (!wasCancelled) {
                             mTaskManager.sendHeaderUpdate(R.string.progress_msg_adding_book);
                             Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
 
                             // Clear the data entry fields ready for the next one
@@ -144,7 +170,6 @@ public class BookSearchByIsbnFragment
                     }
                 }
             };
-
 
     @Nullable
     private CompoundButton mAllowAsinCb;
@@ -167,45 +192,6 @@ public class BookSearchByIsbnFragment
         mIsbnView = view.findViewById(R.id.isbn);
         mAllowAsinCb = view.findViewById(R.id.allow_asin);
         return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            mScannerStarted = savedInstanceState.getBoolean(BKEY_SCANNER_STARTED, false);
-        }
-
-        // setup the UI if we have one.
-        View root = getView();
-        if (root != null) {
-            initUI(root);
-        } else {
-            // otherwise we're scanning
-            //noinspection ConstantConditions
-            mScanner = ScannerManager.getScanner(getContext());
-            if (mScanner == null) {
-                ScannerManager.promptForScannerInstallAndFinish(mActivity, true);
-                // Prevent our activity to finish.
-                mDisplayingAlert = true;
-            } else {
-                // we have a scanner, but first check if we already have an isbn from somewhere
-                if (!mBookSearchBaseModel.getIsbnSearchText().isEmpty()) {
-                    prepareSearch();
-                } else {
-                    // let's scan....
-                    try {
-                        startScannerActivity();
-                    } catch (@NonNull final RuntimeException e) {
-                        // we had a scanner setup, but something went wrong starting it.
-                        ScannerManager.promptForScannerInstallAndFinish(mActivity, false);
-                        // Prevent our activity to finish.
-                        mDisplayingAlert = true;
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -383,33 +369,38 @@ public class BookSearchByIsbnFragment
     private void isbnAlreadyPresent(final long existingId) {
         @SuppressWarnings("ConstantConditions")
         AlertDialog dialog = new AlertDialog.Builder(getContext())
-                .setTitle(R.string.title_duplicate_book)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setMessage(R.string.confirm_duplicate_book_message)
-                .create();
+                                     .setTitle(R.string.title_duplicate_book)
+                                     .setIconAttribute(android.R.attr.alertDialogIcon)
+                                     .setMessage(R.string.confirm_duplicate_book_message)
+                                     .create();
 
         // User wants to add regardless
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.btn_confirm_add),
-                (d, which) -> startSearch());
+                         (d, which) -> startSearch());
 
         // User wants to review the existing book
         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit),
-                (d, which) -> {
-                    Intent intent = new Intent(getContext(), EditBookActivity.class)
-                            .putExtra(DBDefinitions.KEY_PK_ID, existingId);
-                    startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-                });
+                         (d, which) -> {
+                             Intent intent = new Intent(getContext(), EditBookActivity.class)
+                                                     .putExtra(DBDefinitions.KEY_PK_ID, existingId);
+                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+                         });
 
         // User aborts this isbn
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                (d, which) -> {
-                    // reset the now-discarded details
-                    mBookSearchBaseModel.clearSearchText();
-                    if (mScanMode) {
-                        startScannerActivity();
-                    }
-                });
+                         (d, which) -> {
+                             // reset the now-discarded details
+                             mBookSearchBaseModel.clearSearchText();
+                             if (mScanMode) {
+                                 startScannerActivity();
+                             }
+                         });
         dialog.show();
+    }
+
+    @Override
+    SearchCoordinator.SearchFinishedListener getSearchFinishedListener() {
+        return mSearchFinishedListener;
     }
 
     /**
@@ -425,42 +416,6 @@ public class BookSearchByIsbnFragment
         }
 
         return true;
-    }
-
-    @Override
-    SearchCoordinator.SearchFinishedListener getSearchFinishedListener() {
-        return mSearchFinishedListener;
-    }
-
-    /**
-     * Start scanner activity if we have a scanner.
-     */
-    private void startScannerActivity() {
-        // sanity check.
-        if (mScanner == null) {
-            return;
-        }
-
-        if (!mScannerStarted) {
-            mScannerStarted = true;
-            mScanner.startActivityForResult(mActivity, REQ_IMAGE_FROM_SCANNER);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (mIsbnView != null) {
-            mBookSearchBaseModel.setIsbnSearchText(mIsbnView.getText().toString().trim());
-        }
-    }
-
-    @Override
-    @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_ISBN, mBookSearchBaseModel.getIsbnSearchText());
-        outState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
     }
 
     @Override
@@ -489,7 +444,7 @@ public class BookSearchByIsbnFragment
                         Intent lastBookData = mBookSearchBaseModel.getLastBookData();
                         mActivity.setResult(lastBookData != null ? Activity.RESULT_OK
                                                                  : Activity.RESULT_CANCELED,
-                                lastBookData);
+                                            lastBookData);
                         // and exit if no dialog present.
                         if (!mDisplayingAlert) {
                             mActivity.finish();
@@ -506,5 +461,75 @@ public class BookSearchByIsbnFragment
         }
 
         Tracker.exitOnActivityResult(this);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mScannerStarted = savedInstanceState.getBoolean(BKEY_SCANNER_STARTED, false);
+        }
+
+        // setup the UI if we have one.
+        View root = getView();
+        if (root != null) {
+            initUI(root);
+        } else {
+            // otherwise we're scanning
+            //noinspection ConstantConditions
+            mScanner = ScannerManager.getScanner(getContext());
+            if (mScanner == null) {
+                ScannerManager.promptForScannerInstallAndFinish(mActivity, true);
+                // Prevent our activity to finish.
+                mDisplayingAlert = true;
+            } else {
+                // we have a scanner, but first check if we already have an isbn from somewhere
+                if (!mBookSearchBaseModel.getIsbnSearchText().isEmpty()) {
+                    prepareSearch();
+                } else {
+                    // let's scan....
+                    try {
+                        startScannerActivity();
+                    } catch (@NonNull final RuntimeException e) {
+                        // we had a scanner setup, but something went wrong starting it.
+                        ScannerManager.promptForScannerInstallAndFinish(mActivity, false);
+                        // Prevent our activity to finish.
+                        mDisplayingAlert = true;
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    @CallSuper
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(DBDefinitions.KEY_ISBN, mBookSearchBaseModel.getIsbnSearchText());
+        outState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mIsbnView != null) {
+            mBookSearchBaseModel.setIsbnSearchText(mIsbnView.getText().toString().trim());
+        }
+    }
+
+    /**
+     * Start scanner activity if we have a scanner.
+     */
+    private void startScannerActivity() {
+        // sanity check.
+        if (mScanner == null) {
+            return;
+        }
+
+        if (!mScannerStarted) {
+            mScannerStarted = true;
+            mScanner.startActivityForResult(mActivity, REQ_IMAGE_FROM_SCANNER);
+        }
     }
 }

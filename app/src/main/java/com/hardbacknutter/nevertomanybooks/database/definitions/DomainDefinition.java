@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks.database.definitions;
 
 import android.os.Parcel;
@@ -13,8 +39,6 @@ import java.util.List;
 
 /**
  * Class to store domain name and definition.
- *
- * @author Philip Warner
  */
 public class DomainDefinition
         implements Parcelable, Serializable {
@@ -197,6 +221,15 @@ public class DomainDefinition
     }
 
     /**
+     * Check if this domain is pre-prepared for sorting.
+     *
+     * @return {@code true} if this field should be used as-is for sorting.
+     */
+    public boolean isPrePreparedOrderBy() {
+        return mIsPrePreparedOrderBy;
+    }
+
+    /**
      * Set a flag that this domain is in fact pre-prepared for sorting.
      * i.e. the values are stripped of spaces etc.. before being stored.
      *
@@ -208,15 +241,6 @@ public class DomainDefinition
     public DomainDefinition setPrePreparedOrderBy(final boolean prePreparedOrderBy) {
         mIsPrePreparedOrderBy = prePreparedOrderBy;
         return this;
-    }
-
-    /**
-     * Check if this domain is pre-prepared for sorting.
-     *
-     * @return {@code true} if this field should be used as-is for sorting.
-     */
-    public boolean isPrePreparedOrderBy() {
-        return mIsPrePreparedOrderBy;
     }
 
     /**
@@ -242,6 +266,12 @@ public class DomainDefinition
         return mIsPrimaryKey;
     }
 
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -253,14 +283,8 @@ public class DomainDefinition
         dest.writeInt(mIsPrePreparedOrderBy ? 1 : 0);
     }
 
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
     /**
-     * toString() NOT DEBUG
+     * toString() <strong>NOT DEBUG, must only ever return the table name</strong>
      * <p>
      * useful for using the DomainDefinition in place of a domain name.
      *

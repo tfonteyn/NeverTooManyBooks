@@ -1,23 +1,29 @@
 /*
- * @copyright 2011 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.datamanager;
 
 import android.annotation.SuppressLint;
@@ -46,6 +52,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.io.File;
+import java.io.Serializable;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+
 import com.google.android.material.button.MaterialButton;
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -58,16 +76,6 @@ import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
-
-import java.io.File;
-import java.io.Serializable;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 /**
  * This is the class that manages data and views for an Activity; access to the data that
@@ -106,7 +114,8 @@ import java.util.Objects;
  * <li>IN  (with formatter):
  * <br>(DataManager/Bundle) -> format() (via accessor) -> transform (in accessor) -> View</li>
  * <li>OUT ( no formatter ):
- * <br>(DataManager/Bundle) -> transform (in accessor) -> validator -> (ContentValues or Object)</li>
+ * <br>(DataManager/Bundle) -> transform (in accessor) -> validator
+ * -> (ContentValues or Object)</li>
  * <li>OUT (with formatter):
  * <br>(DataManager/Bundle) -> transform (in accessor) -> extract (via accessor)
  * -> validator -> (ContentValues or Object)</li>
@@ -128,8 +137,6 @@ import java.util.Objects;
  * this can be used to perform view-specific tasks like setting onClick() handlers.</li>
  * </ol>
  * TODO: Rationalize the use of this collection with the {@link DataManager}.
- *
- * @author Philip Warner
  */
 public class Fields {
 
@@ -506,8 +513,6 @@ public class Fields {
      * with the crossValidating flag set to false, then, if all validations were successful,
      * they are all called a second time with the flag set to true.
      * This is done in {@link #validate(Bundle)}
-     *
-     * @author Philip Warner
      */
     public interface FieldValidator {
 
@@ -535,8 +540,6 @@ public class Fields {
      * have succeeded.
      * <p>
      * Serializable: because it's a member of a serializable class (and lint...)
-     *
-     * @author Philip Warner
      */
     public interface FieldCrossValidator
             extends Serializable {
@@ -555,8 +558,6 @@ public class Fields {
     /**
      * Interface for view-specific accessors. One of these must be implemented for
      * each view type that is supported.
-     *
-     * @author Philip Warner
      */
     private interface FieldDataAccessor {
 
@@ -623,8 +624,6 @@ public class Fields {
 
     /**
      * Interface definition for Field formatter.
-     *
-     * @author Philip Warner
      */
     public interface FieldFormatter {
 
@@ -824,7 +823,7 @@ public class Fields {
                 Logger.debug(this, "afterTextChanged",
                              "s=`" + s.toString() + '`',
                              "extract=`" + value + '`'
-                );
+                            );
             }
             field.setValue(value);
         }
@@ -1179,8 +1178,6 @@ public class Fields {
      * Can be reused for multiple fields.
      * <p>
      * Does not support {@link FieldFormatter#extract}
-     *
-     * @author Philip Warner
      */
     public static class BinaryYesNoEmptyFormatter
             implements FieldFormatter {
@@ -1189,7 +1186,7 @@ public class Fields {
         private final String mNo;
 
         /**
-         * @param context Current context for accessing string resources.
+         * @param context Current context
          */
         public BinaryYesNoEmptyFormatter(@NonNull final Context context) {
             mYes = context.getString(R.string.yes);
@@ -1272,7 +1269,7 @@ public class Fields {
         private String jdkFormat(@NonNull final Field field,
                                  @NonNull final String source) {
             Float price = Float.parseFloat(source);
-            java.util.Currency currency = java.util.Currency.getInstance(mCurrencyCode);
+            Currency currency = java.util.Currency.getInstance(mCurrencyCode);
             // the result is rather dire... most currency 'symbol' are shown as 3-char codes
             // e.g. 'EUR','US$',...
             java.text.NumberFormat currencyFormatter =
@@ -1373,10 +1370,9 @@ public class Fields {
             }
             Context context = field.getView().getContext();
             List<String> list = new ArrayList<>();
-            for (Integer edition : Book.EDITIONS.keySet()) {
-                if ((edition & bitmask) != 0) {
-                    //noinspection ConstantConditions
-                    list.add(context.getString(Book.EDITIONS.get(edition)));
+            for (Map.Entry<Integer, Integer> entry : Book.EDITIONS.entrySet()) {
+                if ((entry.getKey() & bitmask) != 0) {
+                    list.add(context.getString(entry.getValue()));
                 }
             }
             return Csv.join(", ", list, null);
@@ -1465,8 +1461,6 @@ public class Fields {
      * Field definition contains all information and methods necessary to manage display and
      * extraction of data in a view.
      * ENHANCE: make generic? and use an actual type
-     *
-     * @author Philip Warner
      */
     public static class Field {
 
@@ -1483,13 +1477,13 @@ public class Fields {
          * column name (can be blank) used to access a {@link DataManager} (or Bundle).
          * <p>
          * - column is set, and doNoFetch==false:
-         * ===> fetched from the {@link DataManager} (or Bundle), and populated on the screen
-         * ===> extracted from the screen and put in {@link DataManager} (or Bundle)
+         * ==> fetched from the {@link DataManager} (or Bundle), and populated on the screen
+         * ==> extracted from the screen and put in {@link DataManager} (or Bundle)
          * <p>
          * - column is set, and doNoFetch==true:
-         * ===> fetched from the {@link DataManager} (or Bundle), but populating
+         * ==> fetched from the {@link DataManager} (or Bundle), but populating
          * the screen must be done manually.
-         * ===> extracted from the screen and put in {@link DataManager} (or Bundle)
+         * ==> extracted from the screen and put in {@link DataManager} (or Bundle)
          * <p>
          * - column is not set: field is defined, but data handling is fully manual.
          */

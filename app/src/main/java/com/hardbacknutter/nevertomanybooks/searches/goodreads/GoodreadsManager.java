@@ -1,26 +1,31 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.searches.goodreads;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +37,26 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import oauth.signpost.OAuth;
+import oauth.signpost.OAuthConsumer;
+import oauth.signpost.OAuthProvider;
+import oauth.signpost.basic.DefaultOAuthConsumer;
+import oauth.signpost.basic.DefaultOAuthProvider;
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
+import oauth.signpost.exception.OAuthNotAuthorizedException;
+import oauth.signpost.http.HttpParameters;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -40,9 +65,10 @@ import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.database.cursors.MappedCursorRow;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
+import com.hardbacknutter.nevertomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.goodreads.AuthorizationException;
-import com.hardbacknutter.nevertomanybooks.goodreads.GoodreadsAuthorizationActivity;
 import com.hardbacknutter.nevertomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertomanybooks.goodreads.GoodreadsShelves;
 import com.hardbacknutter.nevertomanybooks.goodreads.GoodreadsWork;
@@ -64,46 +90,53 @@ import com.hardbacknutter.nevertomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertomanybooks.utils.Throttler;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import oauth.signpost.OAuth;
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.OAuthProvider;
-import oauth.signpost.basic.DefaultOAuthConsumer;
-import oauth.signpost.basic.DefaultOAuthProvider;
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.exception.OAuthNotAuthorizedException;
-import oauth.signpost.http.HttpParameters;
-
 /**
  * Class to wrap all Goodreads API calls and manage an API connection.
- *
- * @author Philip Warner
  */
 public class GoodreadsManager
         implements SearchEngine {
 
+    /** file suffix for cover files. */
+    public static final String FILENAME_SUFFIX = "_GR";
+    /** Can only send requests at a throttled speed. */
+    @NonNull
+    public static final Throttler THROTTLER = new Throttler();
     /**
      * website & Root URL for API calls. Right now, identical,
      * but this leaves future changes easier.
      */
-    public static final String WEBSITE = "https://www.goodreads.com";
+    static final String WEBSITE = "https://www.goodreads.com";
     public static final String BASE_URL = WEBSITE;
+    /**
+     * AUTHORIZATION_CALLBACK is the call back Intent URL.
+     * Must match the intent filter(s) setup in the manifest with Intent.ACTION_VIEW
+     * for this activity.
+     * The scheme is hardcoded to avoid confusion between java and android package names.
+     * <p>
+     * scheme: com.hardbacknutter.nevertomanybooks
+     * host: goodreadsauth
+     *
+     * <pre>
+     *     {@code
+     *      <activity
+     *          android:name=".goodreads.GoodreadsAuthorizationActivity"
+     *          android:launchMode="singleInstance">
+     *          <intent-filter>
+     *              <action android:name="android.intent.action.VIEW" />
+     *
+     *              <category android:name="android.intent.category.DEFAULT" />
+     *              <category android:name="android.intent.category.BROWSABLE" />
+     *              <data
+     *                  android:host="goodreadsauth"
+     *                  android:scheme="com.hardbacknutter.nevertomanybooks" />
+     *          </intent-filter>
+     *      </activity>
+     *      }
+     * </pre>
+     */
 
-    /** file suffix for cover files. */
-    public static final String FILENAME_SUFFIX = "_GR";
-
-    /** Can only send requests at a throttled speed. */
-    @NonNull
-    public static final Throttler THROTTLER = new Throttler();
+    private static final String AUTHORIZATION_CALLBACK =
+            "com.hardbacknutter.nevertomanybooks://goodreadsauth";
 
     /** Browser url where to send the user to approve access. */
     private static final String AUTHORIZATION_WEBSITE_URL = BASE_URL + "/oauth/authorize?mobile=1";
@@ -114,6 +147,8 @@ public class GoodreadsManager
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "GoodReads.";
+    /** Preference that controls display of alert about Goodreads. */
+    private static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
     /** last time we synced with Goodreads. */
     private static final String PREFS_LAST_SYNC_DATE = PREF_PREFIX + "LastSyncDate";
     /** Used when requesting the website for authorization. Only temporarily stored. */
@@ -122,14 +157,12 @@ public class GoodreadsManager
     /** authorization tokens. */
     private static final String ACCESS_TOKEN = PREF_PREFIX + "AccessToken.Token";
     private static final String ACCESS_SECRET = PREF_PREFIX + "AccessToken.Secret";
-
     /** meta data keys in manifest. */
     private static final String GOODREADS_DEV_KEY = "goodreads.dev_key";
     private static final String GOODREADS_DEV_SECRET = "goodreads.dev_secret";
     /** the developer keys. */
     private static final String DEV_KEY = App.getManifestString(GOODREADS_DEV_KEY);
     private static final String DEV_SECRET = App.getManifestString(GOODREADS_DEV_SECRET);
-
     /** error string. */
     private static final String INVALID_CREDENTIALS =
             "Goodreads credentials need to be validated before accessing user data";
@@ -203,6 +236,11 @@ public class GoodreadsManager
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
+    @SuppressWarnings("unused")
+    static void resetTips() {
+        TipManager.reset(PREFS_HIDE_ALERT);
+    }
+
     /**
      * Construct a full or partial date string based on the y/m/d fields.
      *
@@ -214,7 +252,6 @@ public class GoodreadsManager
      *
      * @return the date string, or {@code null} if invalid
      */
-    @SuppressLint("DefaultLocale")
     @Nullable
     public static String buildDate(@NonNull final Bundle data,
                                    @NonNull final String yearKey,
@@ -261,15 +298,15 @@ public class GoodreadsManager
     /**
      * Clear the credentials from the preferences and local cache.
      */
-    public static void resetCredentials() {
+    static void resetCredentials() {
 
         sAccessToken = "";
         sAccessSecret = "";
         sHasValidCredentials = false;
         SearchEngine.getPref().edit()
-                .putString(ACCESS_TOKEN, "")
-                .putString(ACCESS_SECRET, "")
-                .apply();
+                    .putString(ACCESS_TOKEN, "")
+                    .putString(ACCESS_SECRET, "")
+                    .apply();
     }
 
     @AnyThread
@@ -289,10 +326,10 @@ public class GoodreadsManager
      *
      * @return {@code true} if we have credentials.
      */
-    public static boolean hasCredentials() {
+    static boolean hasCredentials() {
 
         if (sAccessToken != null && !sAccessToken.isEmpty()
-                && sAccessSecret != null && !sAccessSecret.isEmpty()) {
+            && sAccessSecret != null && !sAccessSecret.isEmpty()) {
             return true;
         }
 
@@ -302,7 +339,56 @@ public class GoodreadsManager
         sAccessSecret = prefs.getString(ACCESS_SECRET, null);
 
         return sAccessToken != null && !sAccessToken.isEmpty()
-                && sAccessSecret != null && !sAccessSecret.isEmpty();
+               && sAccessSecret != null && !sAccessSecret.isEmpty();
+    }
+
+    /**
+     * Check if we have a key; if not alert the user.
+     *
+     * @param context    Current context
+     * @param required   {@code true} if we must have access to Goodreads.
+     *                   {@code false} it it would be beneficial.
+     * @param prefSuffix String used to flag in preferences if we showed the alert from
+     *                   that caller already or not yet.
+     */
+    public static void alertRegistrationBeneficial(@NonNull final Context context,
+                                                   final boolean required,
+                                                   @NonNull final String prefSuffix) {
+        // if we have a key, just bail out. Otherwise bring up the dialog.
+        if (hasKey()) {
+            return;
+        }
+        alertRegistrationNeeded(context, required, prefSuffix);
+    }
+
+    /**
+     * Alert the user if not shown before that we require or would benefit from Goodreads access.
+     *
+     * @param context    Current context
+     * @param required   {@code true} if we must have access to Goodreads.
+     *                   {@code false} it it would be beneficial.
+     * @param prefSuffix String used to flag in preferences if we showed the alert from
+     *                   that caller already or not yet.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static void alertRegistrationNeeded(@NonNull final Context context,
+                                               final boolean required,
+                                               @NonNull final String prefSuffix) {
+
+        final String prefName = PREFS_HIDE_ALERT + prefSuffix;
+        boolean showAlert;
+        if (required) {
+            showAlert = true;
+        } else {
+            showAlert = !PreferenceManager.getDefaultSharedPreferences(context)
+                                          .getBoolean(prefName, false);
+        }
+
+        if (showAlert) {
+            Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
+            StandardDialogs.registrationDialog(context, R.string.goodreads,
+                                               intent, required, prefName);
+        }
     }
 
     /**
@@ -319,8 +405,8 @@ public class GoodreadsManager
         try {
             mConsumer.sign(request);
         } catch (@NonNull final OAuthMessageSignerException
-                | OAuthExpectationFailedException
-                | OAuthCommunicationException e) {
+                                        | OAuthExpectationFailedException
+                                        | OAuthCommunicationException e) {
             throw new IOException(e);
         }
     }
@@ -344,7 +430,8 @@ public class GoodreadsManager
             HttpParameters parameters = new HttpParameters();
             for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
                 // note we need to encode both key and value.
-                parameters.put(OAuth.percentEncode(entry.getKey()), OAuth.percentEncode(entry.getValue()));
+                parameters.put(OAuth.percentEncode(entry.getKey()),
+                               OAuth.percentEncode(entry.getValue()));
             }
             parameters.put("realm", request.getURL().toString());
 
@@ -355,8 +442,8 @@ public class GoodreadsManager
         try {
             mConsumer.sign(request);
         } catch (@NonNull final OAuthMessageSignerException
-                | OAuthExpectationFailedException
-                | OAuthCommunicationException e) {
+                                        | OAuthExpectationFailedException
+                                        | OAuthCommunicationException e) {
             throw new IOException(e);
         }
     }
@@ -430,6 +517,7 @@ public class GoodreadsManager
      * @throws IOException           on other failures
      */
     private long addBookToShelf(final long grBookId,
+                                @SuppressWarnings("SameParameterValue")
                                 @NonNull final String shelfName)
             throws CredentialsException, BookNotFoundException, IOException {
 
@@ -490,7 +578,8 @@ public class GoodreadsManager
                               @Nullable final String readStart,
                               @Nullable final String readEnd,
                               final int rating,
-                              @SuppressWarnings("SameParameterValue") @Nullable final String reviewText)
+                              @SuppressWarnings("SameParameterValue")
+                              @Nullable final String reviewText)
             throws CredentialsException, BookNotFoundException, IOException {
 
         if (mReviewUpdateApiHandler == null) {
@@ -647,7 +736,7 @@ public class GoodreadsManager
                 final String canonicalShelfName = GoodreadsShelf.canonicalizeName(shelf);
                 // Can only sent canonical shelf names if the book is on 0 or 1 of them.
                 boolean okToSend = exclusiveCount < 2
-                        || !grShelfList.isExclusive(canonicalShelfName);
+                                   || !grShelfList.isExclusive(canonicalShelfName);
 
                 if (okToSend && !grShelves.contains(canonicalShelfName)) {
                     shelvesToAddTo.add(shelf);
@@ -673,11 +762,11 @@ public class GoodreadsManager
             // Do not sync Notes<->Review. We will add a 'Review' field later.
             // ('notes' has been disabled from the SQL)
             updateReview(reviewId,
-                    bookCursorRow.getBoolean(DBDefinitions.KEY_READ),
-                    bookCursorRow.getString(DBDefinitions.KEY_READ_START),
-                    bookCursorRow.getString(DBDefinitions.KEY_READ_END),
-                    (int) bookCursorRow.getDouble(DBDefinitions.KEY_RATING),
-                    null);
+                         bookCursorRow.getBoolean(DBDefinitions.KEY_READ),
+                         bookCursorRow.getString(DBDefinitions.KEY_READ_START),
+                         bookCursorRow.getString(DBDefinitions.KEY_READ_END),
+                         (int) bookCursorRow.getDouble(DBDefinitions.KEY_RATING),
+                         null);
 
             return ExportResult.sent;
         }
@@ -707,7 +796,7 @@ public class GoodreadsManager
 
             } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
                 List<GoodreadsWork> goodreadsWorks = new SearchBooksApiHandler(this)
-                        .search(author + ' ' + title);
+                                                             .search(author + ' ' + title);
 
                 if (!goodreadsWorks.isEmpty()) {
                     return getBookById(goodreadsWorks.get(0).bookId, fetchThumbnail);
@@ -739,6 +828,25 @@ public class GoodreadsManager
             return null;
         }
         return SearchEngine.getCoverImageFallback(this, isbn);
+    }
+
+    /**
+     * Check developer key, credentials and website being up. Does NOT check credentials.
+     *
+     * @return {@code true} if we can contact this site for searching.
+     */
+    @Override
+    @WorkerThread
+    public boolean isAvailable() {
+        return hasKey()
+               && hasCredentials()
+               && NetworkUtils.isAlive(getBaseURL());
+    }
+
+    @StringRes
+    @Override
+    public int getNameResId() {
+        return R.string.goodreads;
     }
 
     /**
@@ -785,23 +893,6 @@ public class GoodreadsManager
         } else {
             throw new BookNotFoundException(isbn);
         }
-    }
-
-    /**
-     * Check developer key, credentials and website being up. Does NOT check credentials.
-     *
-     * @return {@code true} if we can use this site for searching.
-     */
-    @Override
-    @WorkerThread
-    public boolean isAvailable() {
-        return hasKey() && hasCredentials() && NetworkUtils.isAlive(getBaseURL());
-    }
-
-    @StringRes
-    @Override
-    public int getNameResId() {
-        return R.string.goodreads;
     }
 
     /**
@@ -864,7 +955,6 @@ public class GoodreadsManager
      *
      * @throws AuthorizationException with GoodReads
      * @throws IOException            on other failures
-     * @author Philip Warner
      */
     @WorkerThread
     public void requestAuthorization()
@@ -879,7 +969,7 @@ public class GoodreadsManager
         // Get the URL to send the user to so they can authenticate.
         try {
             authUrl = mProvider.retrieveRequestToken(mConsumer,
-                    GoodreadsAuthorizationActivity.AUTHORIZATION_CALLBACK);
+                                                     AUTHORIZATION_CALLBACK);
 
         } catch (@NonNull final OAuthCommunicationException e) {
             throw new IOException(e);
@@ -902,9 +992,9 @@ public class GoodreadsManager
         // Temporarily save the token; this GoodreadsManager object may be destroyed
         // before the web page returns.
         SearchEngine.getPref().edit()
-                .putString(REQUEST_TOKEN, mConsumer.getToken())
-                .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
-                .apply();
+                    .putString(REQUEST_TOKEN, mConsumer.getToken())
+                    .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
+                    .apply();
 
         // Open the web page, always use the app context here.
         App.getAppContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
@@ -928,7 +1018,7 @@ public class GoodreadsManager
 
         // sanity check; the tokens are stored in #requestAuthorization
         if (requestToken == null || requestToken.isEmpty()
-                || requestSecret == null || requestSecret.isEmpty()) {
+            || requestSecret == null || requestSecret.isEmpty()) {
             throw new IllegalStateException("No request token found in preferences");
         }
 
@@ -956,11 +1046,11 @@ public class GoodreadsManager
         sAccessSecret = mConsumer.getTokenSecret();
 
         prefs.edit()
-                .putString(ACCESS_TOKEN, sAccessToken)
-                .putString(ACCESS_SECRET, sAccessSecret)
-                .remove(REQUEST_TOKEN)
-                .remove(REQUEST_SECRET)
-                .apply();
+             .putString(ACCESS_TOKEN, sAccessToken)
+             .putString(ACCESS_SECRET, sAccessSecret)
+             .remove(REQUEST_TOKEN)
+             .remove(REQUEST_SECRET)
+             .apply();
     }
 
     /**
@@ -980,7 +1070,7 @@ public class GoodreadsManager
                 case sent:
                     return R.string.done;
                 case noIsbn:
-                    return R.string.gr_explain_goodreads_no_isbn;
+                    return R.string.gr_explain_no_isbn;
                 case notFound:
                     return R.string.warning_no_matching_book_found;
                 case ioError:

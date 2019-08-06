@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks;
 
 import android.app.Activity;
@@ -23,6 +49,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Objects;
+
 import com.hardbacknutter.nevertomanybooks.cropper.CropImageActivity;
 import com.hardbacknutter.nevertomanybooks.cropper.CropImageViewTouchBase;
 import com.hardbacknutter.nevertomanybooks.database.CoversDAO;
@@ -41,14 +75,6 @@ import com.hardbacknutter.nevertomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Handler for a displayed Cover ImageView element.
@@ -79,7 +105,7 @@ public class CoverHandler {
     @NonNull
     private final Context mContext;
 
-    /** Database access. */
+    /** Database Access. */
     @NonNull
     private final DAO mDb;
 
@@ -140,8 +166,8 @@ public class CoverHandler {
     }
 
     /**
-     * When the user clicks the switcher in the {@link CoverBrowserFragment}, we take that image and
-     * stuff it into the view.
+     * When the user clicks the switcher in the {@link CoverBrowserFragment},
+     * we take that image and stuff it into the view.
      *
      * @param fileSpec the file
      */
@@ -164,7 +190,8 @@ public class CoverHandler {
     private void getCoverBrowser(@NonNull final String isbn) {
         // we must use the same fragment manager as the hosting fragment.
         mCoverBrowserFragment = (CoverBrowserFragment)
-                mFragmentManager.findFragmentByTag(CoverBrowserFragment.TAG);
+                                        mFragmentManager
+                                                .findFragmentByTag(CoverBrowserFragment.TAG);
         if (mCoverBrowserFragment == null) {
             mCoverBrowserFragment = CoverBrowserFragment.newInstance(isbn, SearchSites.SEARCH_ALL);
             mCoverBrowserFragment.show(mFragmentManager, CoverBrowserFragment.TAG);
@@ -213,11 +240,10 @@ public class CoverHandler {
         menu.add(Menu.NONE, R.id.MENU_THUMB_CROP, 0, R.string.menu_cover_crop)
             .setIcon(R.drawable.ic_crop);
 
-        String menuTitle = mContext.getString(R.string.title_cover);
-        final MenuPicker<Integer> picker = new MenuPicker<>(mContext, menuTitle, menu,
-                                                            R.id.coverImage,
-                                                            this::onViewContextItemSelected);
-        picker.show();
+        String title = mContext.getString(R.string.title_cover);
+        new MenuPicker<>(LayoutInflater.from(mContext), title, menu,
+                         R.id.coverImage, this::onViewContextItemSelected)
+                .show();
     }
 
     /**
@@ -322,8 +348,8 @@ public class CoverHandler {
      */
     private void addCoverFromAlternativeEditions() {
         // this is essential, as we only get alternative editions from LibraryThing for now.
-        if (LibraryThingManager.noKey()) {
-            LibraryThingManager.needLibraryThingAlert(mContext, true, "cover_browser");
+        if (!LibraryThingManager.hasKey()) {
+            LibraryThingManager.alertRegistrationNeeded(mContext, true, "cover_browser");
             return;
         }
 
@@ -398,7 +424,7 @@ public class CoverHandler {
      */
     private void getCoverFromGallery() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
-                .setType("image/*");
+                                .setType("image/*");
         mCallerFragment.startActivityForResult(
                 Intent.createChooser(intent, mContext.getString(R.string.title_select_image)),
                 UniqueId.REQ_ACTION_GET_CONTENT);
@@ -501,7 +527,8 @@ public class CoverHandler {
 
     private void cropCoverImage(@NonNull final File imageFile) {
         boolean external = PreferenceManager.getDefaultSharedPreferences(mContext)
-                                            .getBoolean(Prefs.pk_thumbnails_external_cropper, false);
+                                            .getBoolean(Prefs.pk_thumbnails_external_cropper,
+                                                        false);
         if (external) {
             cropCoverImageExternal(imageFile);
         } else {
@@ -516,18 +543,19 @@ public class CoverHandler {
      */
     private void cropCoverImageInternal(@NonNull final File imageFile) {
         boolean wholeImage = PreferenceManager.getDefaultSharedPreferences(mContext)
-                                              .getBoolean(Prefs.pk_thumbnails_crop_whole_image, false);
+                                              .getBoolean(Prefs.pk_thumbnails_crop_whole_image,
+                                                          false);
 
         // Get the output file spec, and make sure it does not already exist.
         File cropped = getCroppedTempCoverFile();
         StorageUtils.deleteFile(cropped);
 
         Intent intent = new Intent(mContext, CropImageActivity.class)
-                .putExtra(CropImageActivity.BKEY_IMAGE_ABSOLUTE_PATH,
-                          imageFile.getAbsolutePath())
-                .putExtra(CropImageActivity.BKEY_OUTPUT_ABSOLUTE_PATH,
-                          cropped.getAbsolutePath())
-                .putExtra(CropImageActivity.BKEY_WHOLE_IMAGE, wholeImage);
+                                .putExtra(CropImageActivity.BKEY_IMAGE_ABSOLUTE_PATH,
+                                          imageFile.getAbsolutePath())
+                                .putExtra(CropImageActivity.BKEY_OUTPUT_ABSOLUTE_PATH,
+                                          cropped.getAbsolutePath())
+                                .putExtra(CropImageActivity.BKEY_WHOLE_IMAGE, wholeImage);
 
         mCallerFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_INTERNAL);
     }
@@ -555,17 +583,17 @@ public class CoverHandler {
 
         //call the standard crop action intent (the device may not support it)
         Intent intent = new Intent("com.android.camera.action.CROP")
-                // image Uri and type
-                .setDataAndType(inputURI, "image/*")
-                // not interested in faces
-                .putExtra("noFaceDetection", true)
-                // {@code true} to return a Bitmap,
-                // {@code false} to directly save the cropped image
-                .putExtra("return-data", false)
-                //indicate we want to crop
-                .putExtra("crop", true)
-                // and allow scaling
-                .putExtra("scale", true);
+                                // image Uri and type
+                                .setDataAndType(inputURI, "image/*")
+                                // not interested in faces
+                                .putExtra("noFaceDetection", true)
+                                // {@code true} to return a Bitmap,
+                                // {@code false} to directly save the cropped image
+                                .putExtra("return-data", false)
+                                //indicate we want to crop
+                                .putExtra("crop", true)
+                                // and allow scaling
+                                .putExtra("scale", true);
 
         // other options not needed for now.
 //            //indicate aspect of desired crop

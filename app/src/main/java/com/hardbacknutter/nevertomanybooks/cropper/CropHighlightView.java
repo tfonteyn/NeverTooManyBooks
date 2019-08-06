@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.hardbacknutter.nevertomanybooks.cropper;
 
 import android.content.Context;
@@ -115,7 +114,8 @@ class CropHighlightView {
         mOutlinePaint.setAntiAlias(true);
         mOutlinePaintNoFocus = res.getColor(R.color.CropHighlightView_outlinePaint_noFocus, theme);
         mOutlinePaintCircle = res.getColor(R.color.CropHighlightView_outlinePaint_circle, theme);
-        mOutlinePaintRectangle = res.getColor(R.color.CropHighlightView_outlinePaint_rectangle, theme);
+        mOutlinePaintRectangle = res.getColor(R.color.CropHighlightView_outlinePaint_rectangle,
+                                              theme);
     }
 
     boolean hasFocus() {

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.hardbacknutter.nevertomanybooks.widgets.ddsupport;
 
 import android.graphics.Canvas;
@@ -48,31 +47,13 @@ public class SimpleItemTouchHelperCallback
     }
 
     @Override
-    public boolean isLongPressDragEnabled() {
-        return mIsLongPressDragEnabled;
-    }
-
-    public void setLongPressDragEnabled(final boolean longPressDragEnabled) {
-        mIsLongPressDragEnabled = longPressDragEnabled;
-    }
-
-    @Override
-    public boolean isItemViewSwipeEnabled() {
-        return mIsItemViewSwipeEnabled;
-    }
-
-    public void setItemViewSwipeEnabled(final boolean itemViewSwipeEnabled) {
-        mIsItemViewSwipeEnabled = itemViewSwipeEnabled;
-    }
-
-    @Override
     public int getMovementFlags(@NonNull final RecyclerView recyclerView,
                                 @NonNull final RecyclerView.ViewHolder viewHolder) {
 
         // Set movement flags based on the layout manager
         if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
             final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN
-                    | ItemTouchHelper.START | ItemTouchHelper.END;
+                                  | ItemTouchHelper.START | ItemTouchHelper.END;
             final int swipeFlags = 0;
             return makeMovementFlags(dragFlags, swipeFlags);
 
@@ -98,28 +79,28 @@ public class SimpleItemTouchHelperCallback
     }
 
     @Override
+    public boolean isLongPressDragEnabled() {
+        return mIsLongPressDragEnabled;
+    }
+
+    public void setLongPressDragEnabled(final boolean longPressDragEnabled) {
+        mIsLongPressDragEnabled = longPressDragEnabled;
+    }
+
+    @Override
+    public boolean isItemViewSwipeEnabled() {
+        return mIsItemViewSwipeEnabled;
+    }
+
+    public void setItemViewSwipeEnabled(final boolean itemViewSwipeEnabled) {
+        mIsItemViewSwipeEnabled = itemViewSwipeEnabled;
+    }
+
+    @Override
     public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder,
                          final int direction) {
         // Notify the adapter of the dismissal
         mAdapter.onItemSwiped(viewHolder.getAdapterPosition());
-    }
-
-    @Override
-    public void onChildDraw(@NonNull final Canvas c,
-                            @NonNull final RecyclerView recyclerView,
-                            @NonNull final RecyclerView.ViewHolder viewHolder,
-                            final float dX,
-                            final float dY,
-                            final int actionState,
-                            final boolean isCurrentlyActive) {
-        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            // Fade out the view as it is swiped out of the parent's bounds
-            final float alpha = ALPHA_FULL - Math.abs(dX) / (float) viewHolder.itemView.getWidth();
-            viewHolder.itemView.setAlpha(alpha);
-            viewHolder.itemView.setTranslationX(dX);
-        } else {
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-        }
     }
 
     @Override
@@ -148,6 +129,24 @@ public class SimpleItemTouchHelperCallback
             // Tell the view holder it's time to restore the idle state
             ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
             itemViewHolder.onItemClear();
+        }
+    }
+
+    @Override
+    public void onChildDraw(@NonNull final Canvas c,
+                            @NonNull final RecyclerView recyclerView,
+                            @NonNull final RecyclerView.ViewHolder viewHolder,
+                            final float dX,
+                            final float dY,
+                            final int actionState,
+                            final boolean isCurrentlyActive) {
+        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+            // Fade out the view as it is swiped out of the parent's bounds
+            final float alpha = ALPHA_FULL - Math.abs(dX) / (float) viewHolder.itemView.getWidth();
+            viewHolder.itemView.setAlpha(alpha);
+            viewHolder.itemView.setTranslationX(dX);
+        } else {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }
     }
 }

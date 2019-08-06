@@ -1,21 +1,28 @@
 /*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.backup.archivebase;
 
@@ -25,6 +32,16 @@ import android.database.Cursor;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
+
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -42,28 +59,16 @@ import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
 /**
  * Basic implementation of format-agnostic BackupWriter methods using
  * only a limited set of methods from the base interface.
- *
- * @author pjw
  */
 public abstract class BackupWriterAbstract
         implements BackupWriter {
 
     private static final int BUFFER_SIZE = 32768;
 
-    /** Database access. */
+    /** Database Access. */
     @NonNull
     private final DAO mDb;
 
@@ -133,8 +138,10 @@ public abstract class BackupWriterAbstract
 
                 Exporter mExporter = new CsvExporter(context, mSettings);
                 try (OutputStream output = new FileOutputStream(tempBookCsvFile)) {
-                    //FIXME: we know the # of covers... should pass it.
-                    infoValues.bookCount = mExporter.doBooks(output, mProgressListener, includeCovers);
+                    // we know the # of covers...
+                    // but getting the progress 100% right is not really important
+                    infoValues.bookCount = mExporter.doBooks(output, mProgressListener,
+                                                             includeCovers);
                 }
             }
 
@@ -183,6 +190,18 @@ public abstract class BackupWriterAbstract
                 Logger.error(this, e, "Failed to close writer");
             }
         }
+    }
+
+    /**
+     * Actual writer should override and close their output.
+     *
+     * @throws IOException on failure
+     */
+    @Override
+    @CallSuper
+    public void close()
+            throws IOException {
+        mDb.close();
     }
 
     private void doInfo(@NonNull final BackupInfo.InfoUserValues infoValues)
@@ -257,6 +276,8 @@ public abstract class BackupWriterAbstract
     /**
      * Write each cover file corresponding to a book to the archive.
      *
+     * @param dryRun when {@code true}, no writing is done, we only count them.
+     *
      * @return the number of covers written
      *
      * @throws IOException on failure
@@ -307,17 +328,5 @@ public abstract class BackupWriterAbstract
         }
 
         return ok;
-    }
-
-    /**
-     * Actual writer should override and close their output.
-     *
-     * @throws IOException on failure
-     */
-    @Override
-    @CallSuper
-    public void close()
-            throws IOException {
-        mDb.close();
     }
 }

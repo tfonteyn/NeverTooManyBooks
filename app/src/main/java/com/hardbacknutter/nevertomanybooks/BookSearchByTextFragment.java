@@ -1,3 +1,29 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverToManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverToManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.hardbacknutter.nevertomanybooks;
 
 import android.content.Intent;
@@ -13,6 +39,9 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Locale;
+
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.debug.Tracker;
@@ -20,9 +49,6 @@ import com.hardbacknutter.nevertomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
-
-import java.util.ArrayList;
-import java.util.Locale;
 
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
@@ -53,8 +79,8 @@ public class BookSearchByTextFragment
                                              @NonNull final Bundle bookData) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                         Logger.debugEnter(this, "onSearchFinished",
-                                "SearchCoordinatorId="
-                                        + mBookSearchBaseModel.getSearchCoordinatorId());
+                                          "SearchCoordinatorId="
+                                          + mBookSearchBaseModel.getSearchCoordinatorId());
                     }
                     try {
                         if (!wasCancelled) {
@@ -62,23 +88,23 @@ public class BookSearchByTextFragment
 
                             if (!bookData.containsKey(DBDefinitions.KEY_TITLE)) {
                                 bookData.putString(DBDefinitions.KEY_TITLE,
-                                        mTitleView.getText().toString().trim());
+                                                   mTitleView.getText().toString().trim());
                             }
                             //noinspection ConstantConditions
                             if (!bookData.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)
-                                    || bookData.getParcelableArrayList(
+                                || bookData.getParcelableArrayList(
                                     UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
                                 // does NOT use the array, that's reserved for verified names.
                                 bookData.putString(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                        mAuthorView.getText().toString().trim());
+                                                   mAuthorView.getText().toString().trim());
                             }
                             if (!bookData.containsKey(DBDefinitions.KEY_PUBLISHER)) {
                                 bookData.putString(DBDefinitions.KEY_PUBLISHER,
-                                        mPublisherView.getText().toString().trim());
+                                                   mPublisherView.getText().toString().trim());
                             }
 
                             Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
 
                             // Clear the data entry fields ready for the next one
@@ -106,35 +132,8 @@ public class BookSearchByTextFragment
         mPublisherView = view.findViewById(R.id.publisher);
         boolean usePublisher = SearchSites.usePublisher(inflater.getContext());
         view.findViewById(R.id.publisher_group)
-                .setVisibility(usePublisher ? View.VISIBLE : View.GONE);
+            .setVisibility(usePublisher ? View.VISIBLE : View.GONE);
         return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mTitleView.setText(mBookSearchBaseModel.getTitleSearchText());
-        mAuthorView.setText(mBookSearchBaseModel.getAuthorSearchText());
-        mPublisherView.setText(mBookSearchBaseModel.getPublisherSearchText());
-
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.lbl_search_for_books);
-
-        populateAuthorList();
-
-        //noinspection ConstantConditions
-        getView().findViewById(R.id.btn_search).setOnClickListener(v -> {
-            mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
-            mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
-            mBookSearchBaseModel.setPublisherSearchText(mPublisherView.getText().toString().trim());
-            prepareSearch();
-        });
-
-        // Display hint if required
-        if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_book_search_by_text, null);
-        }
     }
 
     private void prepareSearch() {
@@ -174,18 +173,51 @@ public class BookSearchByTextFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
-        // for now nothing local.
-//        switch (requestCode) {
-//            default:
-        super.onActivityResult(requestCode, resultCode, data);
-//                break;
-//        }
 
+        super.onActivityResult(requestCode, resultCode, data);
         // refresh, we could have modified/created Authors while editing
-        // (even when cancelled the edit)
+        // (even when the edit was cancelled )
         populateAuthorList();
 
         Tracker.exitOnActivityResult(this);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mTitleView.setText(mBookSearchBaseModel.getTitleSearchText());
+        mAuthorView.setText(mBookSearchBaseModel.getAuthorSearchText());
+        mPublisherView.setText(mBookSearchBaseModel.getPublisherSearchText());
+
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.lbl_search_for_books);
+
+        populateAuthorList();
+
+        //noinspection ConstantConditions
+        getView().findViewById(R.id.btn_search).setOnClickListener(v -> {
+            mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
+            mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
+            mBookSearchBaseModel.setPublisherSearchText(mPublisherView.getText().toString().trim());
+            prepareSearch();
+        });
+
+        if (savedInstanceState == null) {
+            TipManager.display(getLayoutInflater(), R.string.tip_book_search_by_text, null);
+        }
+    }
+
+    @Override
+    @CallSuper
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR,
+                           mBookSearchBaseModel.getAuthorSearchText());
+        outState.putString(DBDefinitions.KEY_TITLE,
+                           mBookSearchBaseModel.getTitleSearchText());
+        outState.putString(DBDefinitions.KEY_PUBLISHER,
+                           mBookSearchBaseModel.getPublisherSearchText());
     }
 
     @Override
@@ -194,18 +226,6 @@ public class BookSearchByTextFragment
         mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
         mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
         mBookSearchBaseModel.setPublisherSearchText(mPublisherView.getText().toString().trim());
-    }
-
-    @Override
-    @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR,
-                mBookSearchBaseModel.getAuthorSearchText());
-        outState.putString(DBDefinitions.KEY_TITLE,
-                mBookSearchBaseModel.getTitleSearchText());
-        outState.putString(DBDefinitions.KEY_PUBLISHER,
-                mBookSearchBaseModel.getPublisherSearchText());
     }
 
     /**
@@ -220,8 +240,8 @@ public class BookSearchByTextFragment
         final ArrayList<String> authors = mBookSearchBaseModel.getAuthorNames(mAuthorNames, locale);
         // Now get an adapter based on the combined names
         mAuthorAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                authors);
+                                            android.R.layout.simple_dropdown_item_1line,
+                                            authors);
         mAuthorView.setAdapter(mAuthorAdapter);
     }
 }

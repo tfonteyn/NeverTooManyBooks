@@ -1,28 +1,33 @@
 /*
- * @copyright 2013 Evan Leybourn
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -46,6 +51,10 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.datamanager.Fields;
@@ -72,10 +81,6 @@ import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertomanybooks.widgets.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.StartDragListener;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the Content Tab.
@@ -104,7 +109,7 @@ public class EditBookTocFragment
     /** the rows. */
     private ArrayList<TocEntry> mList;
     /** The adapter for the list. */
-    private TocListAdapterForEditing mListAdapter;
+    private TocListEditAdapter mListAdapter;
     /** The View for the list. */
     private RecyclerView mListView;
     /** Drag and drop support for the list view. */
@@ -119,20 +124,6 @@ public class EditBookTocFragment
 
     private final IsfdbResultsListener mIsfdbResultsListener = new IsfdbResultsListener() {
         /**
-         * we got one or more editions from ISFDB.
-         * Store the url's locally as the user might want to try the next in line
-         */
-        public void onGotISFDBEditions(@Nullable final ArrayList<Editions.Edition> editions) {
-            mIsfdbEditions = editions != null ? editions : new ArrayList<>();
-            if (!mIsfdbEditions.isEmpty()) {
-                new IsfdbGetBookTask(mIsfdbEditions, this).execute();
-            } else {
-                //noinspection ConstantConditions
-                UserMessage.show(getView(), R.string.warning_no_editions);
-            }
-        }
-
-        /**
          * we got a book.
          *
          * @param bookData our book from ISFDB.
@@ -145,7 +136,7 @@ public class EditBookTocFragment
                 return;
             }
 
-            Book book = mBookBaseFragmentModel.getBook();
+            Book book = mBookModel.getBook();
 
             // update the book with series information that was gathered from the TOC
             List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
@@ -169,19 +160,31 @@ public class EditBookTocFragment
                 }
             }
 
-            // finally the TOC itself; not saved here but only put on display for the user to approve
+            // finally the TOC itself;  only put on display for the user to approve
             FragmentManager fm = getChildFragmentManager();
             if (fm.findFragmentByTag(ConfirmToc.TAG) == null) {
                 boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
                 ConfirmToc.newInstance(bookData, hasOtherEditions).show(fm, ConfirmToc.TAG);
             }
+        }
 
+        /**
+         * we got one or more editions from ISFDB.
+         * Store the url's locally as the user might want to try the next in line
+         */
+        public void onGotISFDBEditions(@Nullable final ArrayList<Editions.Edition> editions) {
+            mIsfdbEditions = editions != null ? editions : new ArrayList<>();
+            if (!mIsfdbEditions.isEmpty()) {
+                new IsfdbGetBookTask(mIsfdbEditions, this).execute();
+            } else {
+                //noinspection ConstantConditions
+                UserMessage.show(getView(), R.string.warning_no_editions);
+            }
         }
     };
 
     private final ConfirmToc.ConfirmTocResults mConfirmTocResultsListener =
             new ConfirmToc.ConfirmTocResults() {
-
                 /**
                  * The user approved, so add the TOC to the list and refresh the screen
                  * (still not saved to database).
@@ -189,8 +192,7 @@ public class EditBookTocFragment
                 public void commitISFDBData(final long tocBitMask,
                                             @NonNull final List<TocEntry> tocEntries) {
                     if (tocBitMask != 0) {
-                        Book book = mBookBaseFragmentModel.getBook();
-
+                        Book book = mBookModel.getBook();
                         book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
                         getField(R.id.multiple_authors).setValueFrom(book);
                     }
@@ -205,8 +207,7 @@ public class EditBookTocFragment
                 public void getNextEdition() {
                     // remove the top one, and try again
                     mIsfdbEditions.remove(0);
-                    new IsfdbGetBookTask(mIsfdbEditions,
-                            mIsfdbResultsListener).execute();
+                    new IsfdbGetBookTask(mIsfdbEditions, mIsfdbResultsListener).execute();
                 }
             };
 
@@ -214,7 +215,6 @@ public class EditBookTocFragment
     private Integer mEditPosition;
     private final EditTocEntryDialogFragment.EditTocEntryResults mEditTocEntryResultsListener =
             new EditTocEntryDialogFragment.EditTocEntryResults() {
-
                 /**
                  * Add the author/title from the edit fields as a new row in the TOC list.
                  */
@@ -228,7 +228,6 @@ public class EditBookTocFragment
                         TocEntry original = mList.get(mEditPosition);
                         original.copyFrom(tocEntry);
                     }
-
                     mListAdapter.notifyDataSetChanged();
                 }
             };
@@ -243,62 +242,23 @@ public class EditBookTocFragment
         return view;
     }
 
-    /**
-     * Has no specific Arguments or savedInstanceState.
-     * All storage interaction is done via:
-     * <ul>
-     * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
-     * <li>{@link #onSaveFieldsToBook} from base class onPause</li>
-     * </ul>
-     * {@inheritDoc}
-     */
     @Override
-    @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0, R.string.menu_populate_toc)
+            .setIcon(R.drawable.ic_autorenew);
 
-        Book book = mBookBaseFragmentModel.getBook();
-
-        // Author to use if mMultipleAuthorsView is set to false
-        List<Author> authorList = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        if (!authorList.isEmpty()) {
-            mBookAuthor = authorList.get(0);
-
-        } else {
-            // not ideal, but oh well.
-            String unknown = getString(R.string.unknown);
-            mBookAuthor = new Author(unknown, unknown);
-        }
-
-        // used to call Search sites to populate the TOC
-        mIsbn = book.getString(DBDefinitions.KEY_ISBN);
-
-        // do other stuff here that might affect the view.
-
-        // Fix the focus order for the views
-        //noinspection ConstantConditions
-        FocusSettings.fix(getView());
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (ConfirmToc.TAG.equals(childFragment.getTag())) {
-            ((ConfirmToc) childFragment).setListener(mConfirmTocResultsListener);
-
-        } else if (EditTocEntryDialogFragment.TAG.equals(childFragment.getTag())) {
-            ((EditTocEntryDialogFragment) childFragment).setListener(mEditTocEntryResultsListener);
-        }
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     protected void initFields() {
         super.initFields();
         Fields fields = getFields();
-
         Field field;
         // Anthology is provided as a bitmask, see {@link Book#initValidators()}
         fields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
-                .getView().setOnClickListener(v -> {
+              .getView().setOnClickListener(v -> {
             // enable controls as applicable.
             mMultipleAuthorsView.setEnabled(((Checkable) v).isChecked());
         });
@@ -318,55 +278,40 @@ public class EditBookTocFragment
         mListView.setHasFixedSize(true);
     }
 
-    @Override
-    protected void onLoadFieldsFromBook() {
-        super.onLoadFieldsFromBook();
-
-        Book book = mBookBaseFragmentModel.getBook();
-
-        mMultipleAuthorsView.setEnabled(book.getBoolean(Book.HAS_MULTIPLE_WORKS));
-
-        // Populate the list view with the book content table.
-        mList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
-
-        //noinspection ConstantConditions
-        mListAdapter = new TocListAdapterForEditing(
-                getContext(), mList, viewHolder -> mItemTouchHelper.startDrag(viewHolder));
-        mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                mBookBaseFragmentModel.setDirty(true);
-            }
-        });
-        mListView.setAdapter(mListAdapter);
-
-        SimpleItemTouchHelperCallback sitHelperCallback =
-                new SimpleItemTouchHelperCallback(mListAdapter);
-        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mListView);
-
-        // hide unwanted fields
-        showOrHideFields(false);
-    }
-
     /**
-     * The toc list is not a 'real' field. Hence the need to store it manually here.
+     * Has no specific Arguments or savedInstanceState.
+     * All storage interaction is done via:
+     * <ul>
+     * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
+     * <li>{@link #onSaveFieldsToBook} from base class onPause</li>
+     * </ul>
+     * {@inheritDoc}
      */
     @Override
-    protected void onSaveFieldsToBook() {
-        super.onSaveFieldsToBook();
-        // no special validation done.
-        mBookBaseFragmentModel.getBook()
-                .putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
-    }
+    @CallSuper
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0, R.string.menu_populate_toc)
-                .setIcon(R.drawable.ic_autorenew);
+        Book book = mBookModel.getBook();
 
-        super.onCreateOptionsMenu(menu, inflater);
+        // Author to use if mMultipleAuthorsView is set to false
+        List<Author> authorList = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        if (!authorList.isEmpty()) {
+            mBookAuthor = authorList.get(0);
+        } else {
+            // not ideal, but oh well.
+            String unknown = getString(R.string.unknown);
+            mBookAuthor = new Author(unknown, unknown);
+        }
+
+        // used to call Search sites to populate the TOC
+        mIsbn = book.getString(DBDefinitions.KEY_ISBN);
+
+        // do other stuff here that might affect the view.
+
+        // Fix the focus order for the views
+        //noinspection ConstantConditions
+        FocusSettings.fix(getView());
     }
 
     @Override
@@ -375,9 +320,8 @@ public class EditBookTocFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
-                if (mBookBaseFragmentModel.getBook().containsKey(DBDefinitions.KEY_ISFDB_ID)) {
-                    long isfdbId = mBookBaseFragmentModel.getBook()
-                            .getLong(DBDefinitions.KEY_ISFDB_ID);
+                if (mBookModel.getBook().containsKey(DBDefinitions.KEY_ISFDB_ID)) {
+                    long isfdbId = mBookModel.getBook().getLong(DBDefinitions.KEY_ISFDB_ID);
                     //noinspection ConstantConditions
                     UserMessage.show(getView(), R.string.progress_msg_connecting);
                     new IsfdbGetBookTask(isfdbId, mIsfdbResultsListener).execute();
@@ -398,20 +342,68 @@ public class EditBookTocFragment
         }
     }
 
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (ConfirmToc.TAG.equals(childFragment.getTag())) {
+            ((ConfirmToc) childFragment).setListener(mConfirmTocResultsListener);
+
+        } else if (EditTocEntryDialogFragment.TAG.equals(childFragment.getTag())) {
+            ((EditTocEntryDialogFragment) childFragment).setListener(mEditTocEntryResultsListener);
+        }
+    }
+
+    @Override
+    protected void onLoadFieldsFromBook() {
+        super.onLoadFieldsFromBook();
+
+        Book book = mBookModel.getBook();
+        mMultipleAuthorsView.setEnabled(book.getBoolean(Book.HAS_MULTIPLE_WORKS));
+
+        // Populate the list view with the book content table.
+        mList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+
+        mListAdapter = new TocListEditAdapter(getLayoutInflater(), mList,
+                                              vh -> mItemTouchHelper.startDrag(vh));
+        mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                mBookModel.setDirty(true);
+            }
+        });
+        mListView.setAdapter(mListAdapter);
+
+        SimpleItemTouchHelperCallback sitHelperCallback =
+                new SimpleItemTouchHelperCallback(mListAdapter);
+        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        mItemTouchHelper.attachToRecyclerView(mListView);
+
+        // hide unwanted fields
+        showOrHideFields(false);
+    }
+
+    /**
+     * The toc list is not a 'real' field. Hence the need to store it manually here.
+     */
+    @Override
+    protected void onSaveFieldsToBook() {
+        super.onSaveFieldsToBook();
+        // no special validation done.
+        mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
+    }
+
     private void onCreateContextMenu(final int position) {
 
         TocEntry item = mList.get(position);
         @SuppressWarnings("ConstantConditions")
         Menu menu = MenuPicker.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-                .setIcon(R.drawable.ic_edit);
+            .setIcon(R.drawable.ic_edit);
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-                .setIcon(R.drawable.ic_delete);
+            .setIcon(R.drawable.ic_delete);
 
-        String menuTitle = item.getTitle();
-        final MenuPicker<Integer> picker = new MenuPicker<>(getContext(), menuTitle, menu, position,
-                this::onContextItemSelected);
-        picker.show();
+        String title = item.getTitle();
+        new MenuPicker<>(getLayoutInflater(), title, menu, position, this::onContextItemSelected)
+                .show();
     }
 
     /**
@@ -434,7 +426,7 @@ public class EditBookTocFragment
             case R.id.MENU_DELETE:
                 //noinspection ConstantConditions
                 StandardDialogs.deleteTocEntryAlert(getContext(), tocEntry, () -> {
-                    if (mBookBaseFragmentModel.getDb().deleteTocEntry(tocEntry.getId()) == 1) {
+                    if (mBookModel.getDb().deleteTocEntry(tocEntry.getId()) == 1) {
                         mList.remove(tocEntry);
                         mListAdapter.notifyItemRemoved(position);
                     }
@@ -464,7 +456,7 @@ public class EditBookTocFragment
         FragmentManager fm = getChildFragmentManager();
         if (fm.findFragmentByTag(EditTocEntryDialogFragment.TAG) == null) {
             EditTocEntryDialogFragment.newInstance(tocEntry, mMultipleAuthorsView.isChecked())
-                    .show(fm, EditTocEntryDialogFragment.TAG);
+                                      .show(fm, EditTocEntryDialogFragment.TAG);
         }
     }
 
@@ -530,34 +522,37 @@ public class EditBookTocFragment
             @SuppressLint("InflateParams")
             @SuppressWarnings("ConstantConditions")
             View root = getActivity().getLayoutInflater()
-                    .inflate(R.layout.dialog_toc_confirm, null);
+                                     .inflate(R.layout.dialog_toc_confirm, null);
 
             TextView textView = root.findViewById(R.id.content);
             if (hasToc) {
-                StringBuilder message = new StringBuilder(getString(R.string.warning_toc_confirm))
-                        .append("\n\n")
-                        .append(Csv.join(", ", mTocEntries, TocEntry::getTitle));
+                StringBuilder message =
+                        new StringBuilder(getString(R.string.warning_toc_confirm))
+                                .append("\n\n")
+                                .append(Csv.join(", ", mTocEntries, TocEntry::getTitle));
                 textView.setText(message);
+
             } else {
                 textView.setText(getString(R.string.error_auto_toc_population_failed));
             }
 
             @SuppressWarnings("ConstantConditions")
-            AlertDialog dialog = new AlertDialog.Builder(getContext())
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setView(root)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                    .create();
+            AlertDialog dialog =
+                    new AlertDialog.Builder(getContext())
+                            .setIconAttribute(android.R.attr.alertDialogIcon)
+                            .setView(root)
+                            .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
+                            .create();
 
             if (hasToc) {
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                        this::onCommitToc);
+                                 this::onCommitToc);
             }
 
             // if we found multiple editions, allow a re-try with the next edition
             if (mHasOtherEditions) {
                 dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.retry),
-                        this::onGetNext);
+                                 this::onGetNext);
             }
 
             return dialog;
@@ -570,7 +565,7 @@ public class EditBookTocFragment
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                     Logger.debug(this, "onCommitToc",
-                            Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
                 }
             }
         }
@@ -582,7 +577,7 @@ public class EditBookTocFragment
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                     Logger.debug(this, "onGetNext",
-                            Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
                 }
             }
         }
@@ -618,19 +613,18 @@ public class EditBookTocFragment
         }
     }
 
-    private class TocListAdapterForEditing
+    private class TocListEditAdapter
             extends RecyclerViewAdapterBase<TocEntry, Holder> {
 
         /**
          * Constructor.
          *
-         * @param context Current context
-         * @param items   the list
+         * @param items the list
          */
-        TocListAdapterForEditing(@NonNull final Context context,
-                                 @NonNull final List<TocEntry> items,
-                                 @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+        TocListEditAdapter(@NonNull final LayoutInflater layoutInflater,
+                           @NonNull final List<TocEntry> items,
+                           @NonNull final StartDragListener dragStartListener) {
+            super(layoutInflater, items, dragStartListener);
         }
 
         @NonNull
@@ -639,7 +633,7 @@ public class EditBookTocFragment
                                          final int viewType) {
 
             View view = getLayoutInflater()
-                    .inflate(R.layout.row_edit_toc_entry, parent, false);
+                                .inflate(R.layout.row_edit_toc_entry, parent, false);
             return new Holder(view);
         }
 
@@ -670,7 +664,6 @@ public class EditBookTocFragment
                 onCreateContextMenu(holder.getAdapterPosition());
                 return true;
             });
-
         }
     }
 }

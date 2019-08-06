@@ -1,23 +1,29 @@
 /*
- * @copyright 2010 Evan Leybourn
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.searches.googlebooks;
 
 import android.os.Bundle;
@@ -49,24 +55,24 @@ import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
  *   {@code
  *   <?xml version='1.0' encoding='UTF-8'?>
  *   <entry xmlns='http://www.w3.org/2005/Atom'
- *    xmlns:gbs='http://schemas.google.com/books/2008'
- *    xmlns:dc='http://purl.org/dc/terms'
- *    xmlns:batch='http://schemas.google.com/gdata/batch'
- *    xmlns:gd='http://schemas.google.com/g/2005'>
+ *          xmlns:gbs='http://schemas.google.com/books/2008'
+ *          xmlns:dc='http://purl.org/dc/terms'
+ *          xmlns:batch='http://schemas.google.com/gdata/batch'
+ *          xmlns:gd='http://schemas.google.com/g/2005'>
  *
  *   <id>http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ</id>
  *   <updated>2010-02-28T10:49:24.000Z</updated>
  *   <category scheme='http://schemas.google.com/g/2005#kind'
- *    term='http://schemas.google.com/books/2008#volume'/>
+ *      term='http://schemas.google.com/books/2008#volume'/>
  *   <title type='text'>The trigger</title>
  *   <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *    href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
+ *      href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
  *   <link rel='http://schemas.google.com/books/2008/annotation'
- *     type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *      type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
  *   <link rel='alternate' type='text/html'
- *     href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1'/>
+ *      href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1'/>
  *   <link rel='self' type='application/atom+xml'
- *     href='http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ'/>
+ *      href='http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ'/>
  *   <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
  *   <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
  *   <gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
@@ -89,14 +95,15 @@ import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
  *
  * <?xml version='1.0' encoding='UTF-8'?>
  * <entry xmlns='http://www.w3.org/2005/Atom'
- * xmlns:gbs='http://schemas.google.com/books/2008'
- * xmlns:dc='http://purl.org/dc/terms'
- * xmlns:batch='http://schemas.google.com/gdata/batch'
- * xmlns:gd='http://schemas.google.com/g/2005'>
+ *        xmlns:gbs='http://schemas.google.com/books/2008'
+ *        xmlns:dc='http://purl.org/dc/terms'
+ *        xmlns:batch='http://schemas.google.com/gdata/batch'
+ *        xmlns:gd='http://schemas.google.com/g/2005'>
  *
  * <id>http://www.google.com/books/feeds/volumes/lf2EMetoLugC</id>
  * <updated>2010-03-01T07:31:23.000Z</updated>
- * <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ * <category scheme='http://schemas.google.com/g/2005#kind'
+ *           term='http://schemas.google.com/books/2008#volume'/>
  * <title type='text'>The Geeks' Guide to World Domination</title>
  * <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
  *      href='http://bks3.books.google.com/books?
@@ -106,10 +113,14 @@ import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
  *      &amp;zoom=5
  *      &amp;sig=ACfU3U1hcfy_NvWZbH46OzWwmQQCDV46lA
  *      &amp;source=gbs_gdata'/>
- * <link rel='http://schemas.google.com/books/2008/info' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
- * <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
- * <link rel='alternate' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;ie=ISO-8859-1'/>
- * <link rel='self' type='application/atom+xml' href='http://www.google.com/books/feeds/volumes/lf2EMetoLugC'/>
+ * <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *      href='http://books.google.com/books?id=lf2EMetoLugC&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
+ * <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
+ *       href='http://www.google.com/books/feeds/users/me/volumes'/>
+ * <link rel='alternate' type='text/html'
+ *       href='http://books.google.com/books?id=lf2EMetoLugC&amp;ie=ISO-8859-1'/>
+ * <link rel='self' type='application/atom+xml'
+ *       href='http://www.google.com/books/feeds/volumes/lf2EMetoLugC'/>
  * <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
  * <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
  * <gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
@@ -248,14 +259,15 @@ class SearchGoogleBooksEntryHandler
         }
     }
 
+    /**
+     * Store the accumulated data in the results.
+     */
     @Override
-    @CallSuper
-    public void characters(@NonNull final char[] ch,
-                           final int start,
-                           final int length)
+    public void endDocument()
             throws SAXException {
-        super.characters(ch, start, length);
-        mBuilder.append(ch, start, length);
+        super.endDocument();
+
+        mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
     }
 
     /**
@@ -274,7 +286,7 @@ class SearchGoogleBooksEntryHandler
         // the url is an attribute of the xml element; not the content
         if (mFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
             if ("http://schemas.google.com/books/2008/thumbnail"
-                    .equals(attributes.getValue("", "rel"))) {
+                        .equals(attributes.getValue("", "rel"))) {
 
                 String thumbnail = attributes.getValue("", "href");
                 String name = mBookData.getString(DBDefinitions.KEY_ISBN, "");
@@ -415,14 +427,13 @@ class SearchGoogleBooksEntryHandler
         mBuilder.setLength(0);
     }
 
-    /**
-     * Store the accumulated data in the results.
-     */
     @Override
-    public void endDocument()
+    @CallSuper
+    public void characters(@NonNull final char[] ch,
+                           final int start,
+                           final int length)
             throws SAXException {
-        super.endDocument();
-
-        mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+        super.characters(ch, start, length);
+        mBuilder.append(ch, start, length);
     }
 }

@@ -1,23 +1,29 @@
 /*
- * @copyright 2012 Philip Warner
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertomanybooks.database.cursors;
 
 import android.content.Context;
@@ -27,6 +33,8 @@ import android.database.CursorIndexOutOfBoundsException;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.Locale;
 
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -38,8 +46,6 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
-
-import java.util.Locale;
 
 /**
  * CursorRow object for the BooklistCursor.
@@ -71,7 +77,7 @@ public class BooklistMappedCursorRow
                                    @NonNull final BooklistStyle style) {
         super(cursor
 
-        );
+             );
 
         mStyle = style;
     }
@@ -106,20 +112,20 @@ public class BooklistMappedCursorRow
     /**
      * Get the full set of 'level' texts for this row.
      *
-     * @param context Current context for accessing resources.
+     * @param context Current context
      *
      * @return level-text array
      */
     @Nullable
     public String[] getLevelText(@NonNull final Context context) {
         return new String[]{getLevelText(context, 1),
-                getLevelText(context, 2)};
+                            getLevelText(context, 2)};
     }
 
     /**
      * Get the text associated with the matching level group for the current item.
      *
-     * @param context Current context for accessing resources.
+     * @param context Current context
      * @param level   to get
      *
      * @return the text for that level, or {@code null} if none present.
@@ -155,16 +161,16 @@ public class BooklistMappedCursorRow
         //        at android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)
         //        at android.database.AbstractWindowedCursor.checkPosition(AbstractWindowedCursor.java:136)
         //        at android.database.AbstractWindowedCursor.getString(AbstractWindowedCursor.java:50)
-        //        at hardbacknutter.nevertomanybooks.booklist.BooklistPseudoCursor.getString(BooklistPseudoCursor.java:340)
-        //        at hardbacknutter.nevertomanybooks.database.cursors.MappedCursorRow.getString(MappedCursorRow.java:57)
-        //        at hardbacknutter.nevertomanybooks.database.cursors.BooklistMappedCursorRow.getLevelText(BooklistMappedCursorRow.java:170)
-        //        at hardbacknutter.nevertomanybooks.BooksOnBookshelf.setHeaderText(BooksOnBookshelf.java:1687)
-        //        at hardbacknutter.nevertomanybooks.BooksOnBookshelf.access$400(BooksOnBookshelf.java:103)
-        //        at hardbacknutter.nevertomanybooks.BooksOnBookshelf$4.onScrolled(BooksOnBookshelf.java:489)
+        //        at com.hardbacknutter.nevertomanybooks.booklist.BooklistPseudoCursor.getString(BooklistPseudoCursor.java:340)
+        //        at com.hardbacknutter.nevertomanybooks.database.cursors.MappedCursorRow.getString(MappedCursorRow.java:57)
+        //        at com.hardbacknutter.nevertomanybooks.database.cursors.BooklistMappedCursorRow.getLevelText(BooklistMappedCursorRow.java:170)
+        //        at com.hardbacknutter.nevertomanybooks.BooksOnBookshelf.setHeaderText(BooksOnBookshelf.java:1687)
+        //        at com.hardbacknutter.nevertomanybooks.BooksOnBookshelf.access$400(BooksOnBookshelf.java:103)
+        //        at com.hardbacknutter.nevertomanybooks.BooksOnBookshelf$4.onScrolled(BooksOnBookshelf.java:489)
 
         int columnIndex = mLevelCol[index];
         try {
-            //booom
+            //boom
             String text = getString(columnIndex);
 
             return formatRowGroup(context, level, text);
@@ -183,7 +189,7 @@ public class BooklistMappedCursorRow
     /**
      * Perform any special formatting for a row group.
      *
-     * @param context Current context for accessing resources.
+     * @param context Current context
      * @param level   Level of the row group
      * @param source  Source value
      *

@@ -1,21 +1,28 @@
 /*
- * @copyright 2013 Evan Leybourn
- * @license GNU General Public License
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file is part of NeverToManyBooks.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverToManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * NeverToManyBooks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertomanybooks.backup.csv;
 
@@ -27,6 +34,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -50,20 +67,8 @@ import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StringList;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 /**
  * Implementation of Importer that reads a CSV file.
- *
- * @author pjw
  */
 public class CsvImporter
         implements Importer {
@@ -81,7 +86,7 @@ public class CsvImporter
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
     private static final String LEGACY_BOOKSHELF_TEXT_COLUMN = "bookshelf_text";
 
-    /** Database access. */
+    /** Database Access. */
     @NonNull
     private final DAO mDb;
 
@@ -96,7 +101,7 @@ public class CsvImporter
     /**
      * Constructor.
      *
-     * @param context  Current context for accessing resources.
+     * @param context  Current context
      * @param settings {@link ImportOptions#file} is not used, as we must support
      *                 reading from a stream.
      *                 {@link ImportOptions#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
@@ -181,7 +186,7 @@ public class CsvImporter
                              DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
                              DBDefinitions.KEY_AUTHOR_FORMATTED,
                              OLD_STYLE_AUTHOR_NAME
-        );
+                            );
 
         // need a title.
         // ENHANCE: We should accept UPDATED books where the incoming row does not have a title.
@@ -326,6 +331,11 @@ public class CsvImporter
 
     /**
      * insert or update a single book.
+     *
+     * @param context    Current context
+     * @param userLocale the users preferred Locale
+     *
+     * @return the imported book id
      */
     private long importBook(@NonNull final Context context,
                             @NonNull final Locale userLocale,
@@ -402,7 +412,8 @@ public class CsvImporter
     private void handleBookshelves(@NonNull final Book book) {
         String encodedList = book.getString(DBDefinitions.KEY_BOOKSHELF);
         ArrayList<Bookshelf> list = StringList.getBookshelfCoder()
-                                              .decode(encodedList, false, Bookshelf.MULTI_SHELF_SEPARATOR);
+                                              .decode(encodedList, false,
+                                                      Bookshelf.MULTI_SHELF_SEPARATOR);
         book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
 
         book.remove(DBDefinitions.KEY_BOOKSHELF);
@@ -415,6 +426,10 @@ public class CsvImporter
      * <p>
      * Ignore the actual value of the DBDefinitions.KEY_TOC_BITMASK! it will be
      * 'reset' to mirror what we actually have when storing the book data
+     *
+     * @param context Current context
+     * @param db      Database Access
+     * @param book    the book
      */
     private void handleAnthology(@NonNull final Context context,
                                  @NonNull final DAO db,
@@ -438,6 +453,10 @@ public class CsvImporter
      * Database access is strictly limited to fetching ID's.
      * <p>
      * Get the list of series from whatever source is available.
+     *
+     * @param context Current context
+     * @param db      Database Access
+     * @param book    the book
      */
     private void handleSeries(@NonNull final Context context,
                               @NonNull final DAO db,
@@ -468,6 +487,10 @@ public class CsvImporter
      * Database access is strictly limited to fetching ID's.
      * <p>
      * Get the list of authors from whatever source is available.
+     *
+     * @param context Current context
+     * @param db      Database Access
+     * @param book    the book
      */
     private void handleAuthors(@NonNull final Context context,
                                @NonNull final DAO db,
@@ -546,7 +569,11 @@ public class CsvImporter
         while (next != '\0') {
             // Get current and next char
             c = next;
-            next = (pos < endPos) ? row.charAt(pos + 1) : '\0';
+            if (pos < endPos) {
+                next = row.charAt(pos + 1);
+            } else {
+                next = '\0';
+            }
 
             // If we are 'escaped', just append the char, handling special cases
             if (inEsc) {
@@ -558,7 +585,11 @@ public class CsvImporter
                         if (next == QUOTE_CHAR) {
                             // Double-quote: Advance one more and append a single quote
                             pos++;
-                            next = (pos < endPos) ? row.charAt(pos + 1) : '\0';
+                            if (pos < endPos) {
+                                next = row.charAt(pos + 1);
+                            } else {
+                                next = '\0';
+                            }
                             sb.append(c);
                         } else {
                             // Leave the quote
@@ -728,7 +759,6 @@ public class CsvImporter
                     book.putString(DBDefinitions.KEY_BOOK_UUID, uuid);
                 }
             }
-
         }
     }
 }
