@@ -61,19 +61,20 @@ public class MenuPicker<T>
      * The caller can create a menu calling {@link #createMenu(Context)},
      * populate it and pass it here.
      *
+     * @param inflater   LayoutInflater to use
      * @param title      for the dialog/menu
      * @param menu       the menu options to show
      * @param userObject a reference free to set/use by the caller
      * @param listener   callback handler with the MenuItem the user chooses + the position
      */
-    public MenuPicker(@NonNull final LayoutInflater layoutInflater,
+    public MenuPicker(@NonNull final LayoutInflater inflater,
                       @Nullable final String title,
                       @NonNull final Menu menu,
                       @NonNull final T userObject,
                       @NonNull final ContextItemSelected<T> listener) {
-        super(layoutInflater, title, null, false);
+        super(inflater, title, null, false);
 
-        mAdapter = new MenuItemListAdapter(layoutInflater, menu, menuItem -> {
+        mAdapter = new MenuItemListAdapter(inflater, menu, menuItem -> {
             if (menuItem.hasSubMenu()) {
                 setTitle(menuItem.getTitle());
                 mAdapter.setMenu(menuItem.getSubMenu());
@@ -117,16 +118,21 @@ public class MenuPicker<T>
         @NonNull
         private final PickListener<MenuItem> mListener;
 
-        MenuItemListAdapter(@NonNull final LayoutInflater layoutInflater,
+        /**
+         * @param inflater LayoutInflater to use
+         * @param menu     Menu (list of items) to display
+         * @param listener Callback handler
+         */
+        MenuItemListAdapter(@NonNull final LayoutInflater inflater,
                             @NonNull final Menu menu,
                             @NonNull final PickListener<MenuItem> listener) {
 
-            mInflater = layoutInflater;
+            mInflater = inflater;
             mListener = listener;
             setMenu(menu);
 
             //noinspection ConstantConditions
-            mSubMenuPointer = layoutInflater.getContext().getDrawable(R.drawable.ic_submenu);
+            mSubMenuPointer = inflater.getContext().getDrawable(R.drawable.ic_submenu);
         }
 
         void setMenu(@NonNull final Menu menu) {

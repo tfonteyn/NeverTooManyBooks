@@ -59,16 +59,17 @@ public class ValuePicker {
     /**
      * Constructor.
      *
+     * @param inflater   LayoutInflater to use
      * @param title      Dialog title
      * @param message    Message to display at the top
      * @param showCancel set to {@code true} to show a 'cancel' button.
      */
-    ValuePicker(@NonNull final LayoutInflater layoutInflater,
+    ValuePicker(@NonNull final LayoutInflater inflater,
                 @Nullable final String title,
                 @Nullable final String message,
                 final boolean showCancel) {
 
-        View root = layoutInflater.inflate(R.layout.dialog_popupmenu, null);
+        View root = inflater.inflate(R.layout.dialog_popupmenu, null);
 
         // Optional message
         TextView messageView = root.findViewById(R.id.message);
@@ -79,7 +80,7 @@ public class ValuePicker {
             messageView.setVisibility(View.GONE);
         }
 
-        Context context = layoutInflater.getContext();
+        Context context = inflater.getContext();
         // list of options
         mListView = root.findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);

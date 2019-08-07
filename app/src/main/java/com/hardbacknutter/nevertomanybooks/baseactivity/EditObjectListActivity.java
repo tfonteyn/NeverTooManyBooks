@@ -166,6 +166,9 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /**
      * Get the specific adapter from the child class.
      *
+     * @param list              List of series
+     * @param dragStartListener Listener to handle the user moving rows up and down
+     *
      * @return adapter
      */
     protected abstract RecyclerViewAdapterBase

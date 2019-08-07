@@ -117,8 +117,9 @@ public class SearchOrderFragment
     }
 
     /**
-     * @return the list, or {@code null} if this fragment was not displayed,
-     * i.e. the list was not even loaded.
+     * Get the list if this fragment has been displayed.
+     *
+     * @return the list or or {@code null} if not loaded
      */
     @Nullable
     public ArrayList<Site> getList() {
@@ -149,12 +150,14 @@ public class SearchOrderFragment
         /**
          * Constructor.
          *
-         * @param items list of sites
+         * @param inflater          LayoutInflater to use
+         * @param items             List of sites
+         * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        SearchSiteListAdapter(@NonNull final LayoutInflater layoutInflater,
+        SearchSiteListAdapter(@NonNull final LayoutInflater inflater,
                               @NonNull final List<Site> items,
                               @NonNull final StartDragListener dragStartListener) {
-            super(layoutInflater, items, dragStartListener);
+            super(inflater, items, dragStartListener);
         }
 
         @NonNull

@@ -74,9 +74,6 @@ public abstract class TQTask
     public abstract boolean run(@NonNull QueueManager queueManager,
                                 @NonNull Context context);
 
-    /**
-     * Create a new View.
-     */
     @Override
     @NonNull
     public View getView(@NonNull final LayoutInflater inflater,
@@ -91,9 +88,6 @@ public abstract class TQTask
         return view;
     }
 
-    /**
-     * Bind task details to passed View.
-     */
     @Override
     public void bindView(@NonNull final View view,
                          @NonNull final Context context,

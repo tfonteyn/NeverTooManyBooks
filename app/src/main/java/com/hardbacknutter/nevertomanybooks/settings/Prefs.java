@@ -518,8 +518,9 @@ public final class Prefs {
                                           (Boolean) oldValue);
 
                         } else if (entry.getKey().startsWith("lt_hide_alert_")) {
-                            ed.putString(entry.getKey().replace("lt_hide_alert_",
-                                                                LibraryThingManager.PREFS_HIDE_ALERT),
+                            ed.putString(entry.getKey()
+                                              .replace("lt_hide_alert_",
+                                                       LibraryThingManager.PREFS_HIDE_ALERT),
                                          (String) oldValue);
 
                         } else if (entry.getKey().startsWith("field_visibility_")) {
@@ -531,8 +532,9 @@ public final class Prefs {
 
                                 default:
                                     // move everything else
-                                    ed.putBoolean(entry.getKey().replace("field_visibility_",
-                                                                         App.PREFS_FIELD_VISIBILITY),
+                                    ed.putBoolean(entry.getKey()
+                                                       .replace("field_visibility_",
+                                                                App.PREFS_FIELD_VISIBILITY),
                                                   (Boolean) oldValue);
                                     break;
                             }

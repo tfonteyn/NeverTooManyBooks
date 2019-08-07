@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.database.cursors.BooklistCursor;
 import com.hardbacknutter.nevertomanybooks.database.cursors.BooklistMappedCursorRow;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
+import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 
 /**
  * Philip Warner: Yet Another Rabbit Burrow ("YARB" -- did I invent a new acronym?).
@@ -377,6 +378,17 @@ public class BooklistPseudoCursor
 //                             "mActiveCursor=" + mActiveCursor);
 //            }
         }
+
+        Logger.debug(this,"onMove",
+                     "ImageUtils.cacheChecks=" + ImageUtils.cacheChecks,
+                     "ImageUtils.cacheTicks=" + (ImageUtils.cacheTicks.get() / 1_000_000),
+
+                     "ImageUtils.fileChecks=" + ImageUtils.fileChecks,
+                     "ImageUtils.fileTicks=" + (ImageUtils.fileTicks.get() / 1_000_000),
+
+                     "ImageUtils.taskChecks=" + ImageUtils.taskChecks,
+                     "ImageUtils.taskTicks=" + (ImageUtils.taskTicks.get() / 1_000_000)
+                     );
         return true;
     }
 

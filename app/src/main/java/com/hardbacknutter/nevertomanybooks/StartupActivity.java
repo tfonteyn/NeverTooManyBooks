@@ -79,7 +79,7 @@ public class StartupActivity
     private static WeakReference<StartupActivity> sStartupActivity;
 
     static {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             PROMPT_WAIT_BACKUP = 50;
         } else {
             PROMPT_WAIT_BACKUP = 5;

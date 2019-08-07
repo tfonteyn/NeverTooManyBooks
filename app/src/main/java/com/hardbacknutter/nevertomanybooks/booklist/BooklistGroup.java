@@ -833,7 +833,7 @@ public class BooklistGroup
         }
 
         /**
-         * The display domain will never be {@code null}, except for a BOOK!
+         * The display domain will never be {@code null}, except for a BOOK.
          */
         @NonNull
         public DomainDefinition getDisplayDomain() {
@@ -925,9 +925,9 @@ public class BooklistGroup
         }
 
         /**
-         * Never {@code null} but can be empty (for a BOOK).
+         * Get the unique prefix used to represent a key in the hierarchy.
          *
-         * @return Unique prefix used to represent a key in the hierarchy.
+         * @return prefix, never {@code null} but will be empty for a BOOK.
          */
         @NonNull
         String getPrefix() {

@@ -221,8 +221,10 @@ public class StyleSettingsFragment
     }
 
     /**
-     * @return the list of in-use extra-field names in a human readable format.
+     * Get the list of in-use extra-field names in a human readable format.
+     * @return list of labels, can be empty, but never {@code null}
      */
+    @NonNull
     private List<String> getExtraFieldsLabels() {
 
         int extraFields = mStyle.getExtraFieldsStatus();

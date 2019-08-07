@@ -393,11 +393,7 @@ public class AdminFragment
 
         /* Erase cover cache */
         root.findViewById(R.id.lbl_erase_cover_cache)
-            .setOnClickListener(v -> {
-                try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
-                    coversDBAdapter.deleteAll();
-                }
-            });
+            .setOnClickListener(v -> CoversDAO.deleteAll());
 
         /* Cleanup files */
         root.findViewById(R.id.lbl_cleanup_files)

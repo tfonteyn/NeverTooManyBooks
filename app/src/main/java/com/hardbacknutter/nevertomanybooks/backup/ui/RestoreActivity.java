@@ -114,7 +114,6 @@ public class RestoreActivity
                 })
                 .create()
                 .show();
-
     }
 
     private void onTaskFinishedMessage(final TaskListener

@@ -44,6 +44,7 @@ import java.util.TimeZone;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
+import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 
 public final class DateUtils {
@@ -281,7 +282,7 @@ public final class DateUtils {
                     return DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date);
                 }
                 // failed to parse
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
                     Logger.warnWithStackTrace(DateUtils.class, "failed: " + dateString);
                 }
                 return dateString;
@@ -298,7 +299,7 @@ public final class DateUtils {
 
             default:
                 // failed to parse
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
                     Logger.warnWithStackTrace(DateUtils.class, "failed: " + dateString);
                 }
                 return dateString;

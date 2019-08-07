@@ -350,10 +350,17 @@ public class EditSeriesListActivity
     protected class SeriesListAdapter
             extends RecyclerViewAdapterBase<Series, Holder> {
 
-        SeriesListAdapter(@NonNull final LayoutInflater layoutInflater,
+        /**
+         * Constructor.
+         *
+         * @param inflater          LayoutInflater to use
+         * @param items             List of Series
+         * @param dragStartListener Listener to handle the user moving rows up and down
+         */
+        SeriesListAdapter(@NonNull final LayoutInflater inflater,
                           @NonNull final ArrayList<Series> items,
                           @NonNull final StartDragListener dragStartListener) {
-            super(layoutInflater, items, dragStartListener);
+            super(inflater, items, dragStartListener);
         }
 
         @NonNull

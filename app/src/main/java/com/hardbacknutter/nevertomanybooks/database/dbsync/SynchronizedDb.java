@@ -337,7 +337,7 @@ public class SynchronizedDb {
      * Locking-aware wrapper for underlying database method.
      * <p>
      * <b>Note:</b> as far as I can tell, the Statement behind this call is not cached.
-     * So this is fine for single-action inserts, but not for loops (should use a prepared stmt).
+     * So this is fine for single-action deletes, but not for loops (should use a prepared stmt).
      *
      * @return the number of rows affected if a whereClause is passed in, 0
      * otherwise. To remove all rows and get a count pass "1" as the

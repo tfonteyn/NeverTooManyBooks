@@ -129,7 +129,7 @@ public class EditBookTocFragment
          * @param bookData our book from ISFDB.
          */
         @Override
-        public void onGotISFDBBook(@Nullable final Bundle bookData) {
+        public void onGotIsfdbBook(@Nullable final Bundle bookData) {
             if (bookData == null) {
                 //noinspection ConstantConditions
                 UserMessage.show(getView(), R.string.warning_book_not_found);
@@ -172,7 +172,7 @@ public class EditBookTocFragment
          * we got one or more editions from ISFDB.
          * Store the url's locally as the user might want to try the next in line
          */
-        public void onGotISFDBEditions(@Nullable final ArrayList<Editions.Edition> editions) {
+        public void onGotIsfdbEditions(@Nullable final ArrayList<Editions.Edition> editions) {
             mIsfdbEditions = editions != null ? editions : new ArrayList<>();
             if (!mIsfdbEditions.isEmpty()) {
                 new IsfdbGetBookTask(mIsfdbEditions, this).execute();
@@ -189,7 +189,7 @@ public class EditBookTocFragment
                  * The user approved, so add the TOC to the list and refresh the screen
                  * (still not saved to database).
                  */
-                public void commitISFDBData(final long tocBitMask,
+                public void commitIsfdbData(final long tocBitMask,
                                             @NonNull final List<TocEntry> tocEntries) {
                     if (tocBitMask != 0) {
                         Book book = mBookModel.getBook();
@@ -561,7 +561,7 @@ public class EditBookTocFragment
         private void onCommitToc(@SuppressWarnings("unused") @NonNull final DialogInterface d,
                                  @SuppressWarnings("unused") final int which) {
             if (mListener.get() != null) {
-                mListener.get().commitISFDBData(mTocBitMask, mTocEntries);
+                mListener.get().commitIsfdbData(mTocBitMask, mTocEntries);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                     Logger.debug(this, "onCommitToc",
@@ -584,7 +584,7 @@ public class EditBookTocFragment
 
         interface ConfirmTocResults {
 
-            void commitISFDBData(long tocBitMask,
+            void commitIsfdbData(long tocBitMask,
                                  @NonNull List<TocEntry> tocEntries);
 
             void getNextEdition();
@@ -619,12 +619,14 @@ public class EditBookTocFragment
         /**
          * Constructor.
          *
-         * @param items the list
+         * @param inflater          LayoutInflater to use
+         * @param items             List of TocEntry's
+         * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        TocListEditAdapter(@NonNull final LayoutInflater layoutInflater,
+        TocListEditAdapter(@NonNull final LayoutInflater inflater,
                            @NonNull final List<TocEntry> items,
                            @NonNull final StartDragListener dragStartListener) {
-            super(layoutInflater, items, dragStartListener);
+            super(inflater, items, dragStartListener);
         }
 
         @NonNull

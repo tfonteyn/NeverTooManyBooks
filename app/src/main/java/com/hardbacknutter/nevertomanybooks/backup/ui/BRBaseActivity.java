@@ -193,6 +193,8 @@ public abstract class BRBaseActivity
 
         /**
          * Constructor.
+         *
+         * @param inflater LayoutInflater to use
          */
         FileDetailsAdapter(@NonNull final LayoutInflater inflater) {
             mInflater = inflater;

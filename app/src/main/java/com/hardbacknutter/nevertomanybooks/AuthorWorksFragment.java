@@ -217,8 +217,18 @@ public class AuthorWorksFragment
                             mAdapter.notifyItemRemoved(position);
                         });
                         return true;
+
+                    default:
+                        if (BuildConfig.DEBUG) {
+                            throw new IllegalArgumentException("" + item.getType());
+                        }
                 }
                 break;
+
+            default:
+                if (BuildConfig.DEBUG) {
+                    throw new IllegalArgumentException("" + menuItem.getItemId());
+                }
         }
 
         return false;
@@ -307,6 +317,8 @@ public class AuthorWorksFragment
 
         /**
          * Constructor.
+         *
+         * @param inflater LayoutInflater to use
          */
         TocAdapter(@NonNull final LayoutInflater inflater) {
             mInflater = inflater;

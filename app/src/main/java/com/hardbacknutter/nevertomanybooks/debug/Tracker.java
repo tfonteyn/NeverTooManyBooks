@@ -42,6 +42,9 @@ import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 
+/**
+ * Maintains a circular buffer of the last 100 events.
+ */
 public final class Tracker {
 
     private static final int K_MAX_EVENTS = 100;
@@ -59,12 +62,13 @@ public final class Tracker {
                                      @Nullable final Bundle savedInstanceState) {
         createEvent(a, State.Enter, "onCreate");
 
-        if (BuildConfig.DEBUG) {
-            Logger.debugEnter(a, "onCreate");
-        } else if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
             Logger.debugEnter(a, "onCreate",
                               "savedInstanceState=" + savedInstanceState);
             Logger.debugArguments(a, "onCreate");
+
+        } else if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(a, "onCreate");
         }
     }
 
@@ -73,7 +77,7 @@ public final class Tracker {
      */
     public static void exitOnCreate(@NonNull final Object a) {
         createEvent(a, State.Exit, "onCreate");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugExit(a, "onCreate");
         }
     }
@@ -86,12 +90,13 @@ public final class Tracker {
                                            @Nullable final Bundle savedInstanceState) {
         createEvent(dialogFragment, State.Enter, "onCreateDialog");
 
-        if (BuildConfig.DEBUG) {
-            Logger.debugEnter(dialogFragment, "onCreateDialog");
-        } else if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
             Logger.debugEnter(dialogFragment, "onCreateDialog",
                               "savedInstanceState=" + savedInstanceState);
             Logger.debugArguments(dialogFragment, "onCreateDialog");
+
+        } else if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(dialogFragment, "onCreateDialog");
         }
     }
 
@@ -100,7 +105,7 @@ public final class Tracker {
      */
     public static void exitOnCreateDialog(@NonNull final DialogFragment dialogFragment) {
         createEvent(dialogFragment, State.Exit, "onCreateDialog");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugExit(dialogFragment, "onCreateDialog");
         }
     }
@@ -113,18 +118,19 @@ public final class Tracker {
                                               @Nullable final Bundle savedInstanceState) {
         createEvent(fragment, State.Enter, "onActivityCreated");
 
-        if (BuildConfig.DEBUG) {
-            Logger.debugEnter(fragment, "onActivityCreated");
-        } else if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
             Logger.debugEnter(fragment, "onActivityCreated",
                               "savedInstanceState=" + savedInstanceState);
             Logger.debugArguments(fragment, "onActivityCreated");
+
+        } else if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(fragment, "onActivityCreated");
         }
     }
 
     public static void exitOnActivityCreated(@NonNull final Fragment fragment) {
         createEvent(fragment, State.Exit, "onActivityCreated");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugExit(fragment, "onActivityCreated");
         }
     }
@@ -139,13 +145,14 @@ public final class Tracker {
         createEvent(a, State.Enter, "onActivityResult" + requestCode + '|' + resultCode);
 
 
-        if (BuildConfig.DEBUG) {
-            Logger.debugEnter(a, "onActivityResult");
-        } else if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.debugEnter(a, "onActivityResult",
                               "requestCode=" + requestCode,
                               "resultCode=" + resultCode,
                               "data=" + data);
+
+        } else if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(a, "onActivityResult");
         }
     }
 
@@ -154,105 +161,105 @@ public final class Tracker {
      */
     public static void exitOnActivityResult(@NonNull final Object a) {
         createEvent(a, State.Exit, "onActivityResult");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugExit(a, "onActivityResult");
         }
     }
 
     public static void enterOnSaveInstanceState(@NonNull final Object a) {
         createEvent(a, State.Enter, "onSaveInstanceState");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugEnter(a, "onSaveInstanceState");
         }
     }
 
     public static void exitOnSaveInstanceState(@NonNull final Object a) {
         createEvent(a, State.Exit, "onSaveInstanceState");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugExit(a, "onSaveInstanceState");
         }
     }
 
     public static void enterOnLoadFieldsFromBook(@NonNull final Object a) {
         createEvent(a, State.Enter, "onLoadFieldsFromBook");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugEnter(a, "onLoadFieldsFromBook");
         }
     }
 
     public static void exitOnLoadFieldsFromBook(@NonNull final Object a) {
         createEvent(a, State.Exit, "onLoadFieldsFromBook");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugExit(a, "exitOnLoadFieldsFromBook");
         }
     }
 
     public static void enterOnSaveFieldsToBook(@NonNull final Object a) {
         createEvent(a, State.Enter, "onSaveFieldsToBook");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugEnter(a, "onSaveFieldsToBook");
         }
     }
 
     public static void exitOnSaveFieldsToBook(@NonNull final Object a) {
         createEvent(a, State.Exit, "onSaveFieldsToBook");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugExit(a, "onSaveFieldsToBook");
         }
     }
 
     public static void enterOnAttach(@NonNull final Object a) {
         createEvent(a, State.Enter, "onAttach");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugEnter(a, "onAttach");
         }
     }
 
     public static void exitOnAttach(@NonNull final Object a) {
         createEvent(a, State.Exit, "onAttach");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugExit(a, "onAttach");
         }
     }
 
     public static void enterOnDestroy(@NonNull final Object a) {
         createEvent(a, State.Enter, "onDestroy");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugEnter(a, "onDestroy");
         }
     }
 
     public static void exitOnDestroy(@NonNull final Object a) {
         createEvent(a, State.Exit, "onDestroy");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugExit(a, "onDestroy");
         }
     }
 
     public static void enterOnPause(@NonNull final Object a) {
         createEvent(a, State.Enter, "onPause");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugEnter(a, "onPause");
         }
     }
 
     public static void exitOnPause(@NonNull final Object a) {
         createEvent(a, State.Exit, "onPause");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugExit(a, "onPause");
         }
     }
 
     public static void enterOnResume(@NonNull final Object a) {
         createEvent(a, State.Enter, "onResume");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugEnter(a, "onResume");
         }
     }
 
     public static void exitOnResume(@NonNull final Object a) {
         createEvent(a, State.Exit, "onResume");
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debugExit(a, "onResume");
         }
     }

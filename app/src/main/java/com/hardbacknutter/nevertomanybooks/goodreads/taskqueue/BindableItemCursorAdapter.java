@@ -229,14 +229,14 @@ public class BindableItemCursorAdapter
          * <b>Note:</b> A single event subclass should NOT RETURN MORE THAN ONE TYPE OF VIEW.
          * If it needs to do this, create a new Event subclass or use a more complex view.
          *
-         * @param inflater that can be used to create the view.
-         * @param cursor   EventsCursor for this event, positioned at its row.
-         * @param parent   ViewGroup that will contain the new View.
+         * @param layoutInflater that can be used to create the view.
+         * @param cursor         EventsCursor for this event, positioned at its row.
+         * @param parent         ViewGroup that will contain the new View.
          *
          * @return a new view
          */
         @NonNull
-        View getView(@NonNull LayoutInflater inflater,
+        View getView(@NonNull LayoutInflater layoutInflater,
                      @NonNull BindableItemCursor cursor,
                      @NonNull ViewGroup parent);
 

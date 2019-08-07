@@ -137,7 +137,7 @@ public class BooklistMappedCursorRow
         if (mStyle.groupCount() < level) {
             return null;
         }
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             if (level > mLevelCol.length) {
                 throw new IllegalArgumentException(
                         "level=" + level + " is larger than mLevelCol size");

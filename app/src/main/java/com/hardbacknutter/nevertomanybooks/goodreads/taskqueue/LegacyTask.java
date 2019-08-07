@@ -81,6 +81,13 @@ public class LegacyTask
         return root;
     }
 
+    /**
+     * <strong>Note:</strong> the text is hardcoded here. It's unlikely to ever
+     * be seen by the user and destined to be removed altogether soon-ish.
+     * <p>
+     * <p>
+     * {@inheritDoc}
+     */
     @SuppressLint("SetTextI18n")
     @Override
     public void bindView(@NonNull final View view,

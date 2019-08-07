@@ -34,7 +34,7 @@ import java.util.ArrayList;
 
 public interface IsfdbResultsListener {
 
-    void onGotISFDBBook(@Nullable Bundle bookData);
+    void onGotIsfdbBook(@Nullable Bundle bookData);
 
-    void onGotISFDBEditions(@Nullable ArrayList<Editions.Edition> editions);
+    void onGotIsfdbEditions(@Nullable ArrayList<Editions.Edition> editions);
 }

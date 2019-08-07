@@ -58,18 +58,19 @@ public class FieldPicker<T>
      * TODO: use {@link com.hardbacknutter.nevertomanybooks.entities.Entity}.
      * But not all (far from) the values are entities.
      *
-     * @param title Dialog title
-     * @param field to get/set
-     * @param list  list to choose from
+     * @param inflater LayoutInflater to use
+     * @param title    Dialog title
+     * @param field    to get/set
+     * @param list     list to choose from
      */
-    public FieldPicker(@NonNull final LayoutInflater layoutInflater,
+    public FieldPicker(@NonNull final LayoutInflater inflater,
                        @Nullable final String title,
                        @NonNull final Field field,
                        @NonNull final List<T> list) {
-        super(layoutInflater, title, null, false);
+        super(inflater, title, null, false);
 
         final FieldListAdapter<T> adapter =
-                new FieldListAdapter<>(layoutInflater, field, list, item -> {
+                new FieldListAdapter<>(inflater, field, list, item -> {
                     dismiss();
                     field.setValue(item.toString());
                 });
@@ -94,16 +95,17 @@ public class FieldPicker<T>
         /**
          * Constructor.
          *
+         * @param inflater LayoutInflater to use
          * @param field    the Field
-         * @param items    list of items
+         * @param items    List of items
          * @param listener where to send the result back to
          */
-        FieldListAdapter(@NonNull final LayoutInflater layoutInflater,
+        FieldListAdapter(@NonNull final LayoutInflater inflater,
                          @NonNull final Field field,
                          @NonNull final List<T> items,
                          @NonNull final PickListener<T> listener) {
 
-            mInflater = layoutInflater;
+            mInflater = inflater;
             mListener = listener;
             mItems = items;
 

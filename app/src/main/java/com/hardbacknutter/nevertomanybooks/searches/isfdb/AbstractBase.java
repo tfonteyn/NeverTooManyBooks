@@ -67,9 +67,15 @@ abstract class AbstractBase {
     private static final Pattern CLEANUP_TITLE_PATTERN =
             Pattern.compile("[,.':;`~@#$%^&*(\\-=_+]*$");
 
+    // connect-timeout. Default is 5_000
+    private static final int CONNECT_TIMEOUT = 30_000;
+    // read-timeout. Default is 10_000
+    private static final int READ_TIMEOUT = 60_000;
+
     /** The parsed downloaded web page. */
     Document mDoc;
 
+    /** If the site drops connection, we retry once. */
     private boolean afterEofTryAgain = true;
 
     AbstractBase() {
@@ -110,12 +116,10 @@ abstract class AbstractBase {
                 // added due to https://github.com/square/okhttp/issues/1517
                 // it's a server issue, this is a workaround.
                 con.setRequestProperty("Connection", "close");
-                // connect-timeout. Default is 5_000
-                con.setConnectTimeout(30_000);
-                // read-timeout. Default is 10_000
-                con.setReadTimeout(60_000);
+                con.setConnectTimeout(CONNECT_TIMEOUT);
+                con.setReadTimeout(READ_TIMEOUT);
                 // the default is true...
-                con.setInstanceFollowRedirects(true);
+                //con.setInstanceFollowRedirects(true);
 
                 // GO!
                 terminatorConnection.open();
@@ -129,8 +133,7 @@ abstract class AbstractBase {
                 // sanity check
                 if (!Objects.equals(pageUrl, mDoc.location())) {
                     Logger.warn(this, "loadPage",
-                                "pageUrl=" + pageUrl,
-                                "location=" + mDoc.location());
+                                "pageUrl=" + pageUrl, "location=" + mDoc.location());
                 }
 
             } catch (@NonNull final HttpStatusException e) {
@@ -155,7 +158,6 @@ abstract class AbstractBase {
             } catch (@NonNull final IOException e) {
                 Logger.error(this, e, url);
                 return null;
-
             }
             // reset the flags.
             afterEofTryAgain = true;
@@ -166,8 +168,8 @@ abstract class AbstractBase {
 
     @NonNull
     String cleanUpName(@NonNull final String s) {
-        return CLEANUP_TITLE_PATTERN.matcher(s.trim()
-                                              .replace("\n", " ")).replaceAll("")
+        return CLEANUP_TITLE_PATTERN.matcher(s.trim().replace("\n", " "))
+                                    .replaceAll("")
                                     .trim();
     }
 

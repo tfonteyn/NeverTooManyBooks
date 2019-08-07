@@ -668,7 +668,7 @@ public final class LocaleUtils {
 
                 } catch (@NonNull final IllegalArgumentException e) {
                     // Currency.getInstance sanity catch....
-                    if (BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG /* always */) {
                         Logger.error(LocaleUtils.class, e, "splitPrice",
                                      "data[0]=" + data[0], "data[1]=" + data[1]);
                     }

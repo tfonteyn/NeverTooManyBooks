@@ -287,13 +287,20 @@ public class BooklistBuilder
         return App.getListPreference(Prefs.pk_bob_list_state, PREF_LIST_REBUILD_STATE_PRESERVED);
     }
 
+    /**
+     * @param context Current context
+     *
+     * @return {@code true} if AsyncTasks will be used
+     */
     public static boolean imagesAreGeneratedInBackground(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(Prefs.pk_bob_thumbnails_generating_mode, false);
     }
 
     /**
-     * Only valid if {@link #imagesAreGeneratedInBackground} returns {@code true}.
+     * @param context Current context
+     *
+     * @return {@code true} if resized images are cached in a database.
      */
     public static boolean imagesAreCached(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -482,7 +489,7 @@ public class BooklistBuilder
                                        ? SummaryBuilder.FLAG_SORT_DESCENDING
                                        : SummaryBuilder.FLAG_NONE;
 
-        SummaryBuilder summary = new SummaryBuilder(mSyncedDb, mStyle, mListTable, mUnknown);
+        SummaryBuilder summary = new SummaryBuilder();
 
         try {
             final long t0 = System.nanoTime();
@@ -2178,7 +2185,7 @@ public class BooklistBuilder
     /**
      * Accumulate data for the build() method.
      */
-    private static class SummaryBuilder {
+    private class SummaryBuilder {
 
         /** Flag (bitmask) indicating added domain has no special properties. */
         static final int FLAG_NONE = 0;
@@ -2216,19 +2223,8 @@ public class BooklistBuilder
         private final ArrayList<SortedDomainInfo> mSortedColumns = new ArrayList<>();
         /** The set is used as a simple mechanism to prevent duplicate domains. */
         private final Set<DomainDefinition> mSortedColumnsSet = new HashSet<>();
-        private final SynchronizedDb mSyncedDb;
-        private final BooklistStyle mStyle;
-        private final TableDefinition mListTable;
-        private final String mUnknown;
 
-        SummaryBuilder(@NonNull final SynchronizedDb syncedDb,
-                       @NonNull final BooklistStyle style,
-                       final TableDefinition listTable,
-                       final String unknown) {
-            mSyncedDb = syncedDb;
-            mStyle = style;
-            mListTable = listTable;
-            mUnknown = unknown;
+        private SummaryBuilder() {
         }
 
         /**
@@ -2357,7 +2353,7 @@ public class BooklistBuilder
                 String expression = mExpressions.get(domain);
                 if (Objects.equals(sourceExpression, expression)) {
                     // same expression, we do NOT want to add it. This is fine.
-                    if (BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG /* always */) {
                         Logger.warnWithStackTrace(this,
                                                   "duplicate domain/expression",
                                                   "domain.name=" + domain.name);
@@ -2386,8 +2382,9 @@ public class BooklistBuilder
             }
 
             // Not currently used
-            //if ((flags & FLAG_KEY) != 0)
-            //	mKeys.add(domain);
+            //if ((flags & FLAG_KEY) != 0) {
+            //    mKeys.add(domain);
+            //}
         }
 
         /**
@@ -2719,12 +2716,12 @@ public class BooklistBuilder
         }
 
         /**
-         * @return a clone of the CURRENT domains.
-         * <p>
          * Since BooklistGroup objects are processed in order, this allows us to get
          * the GROUP-BY fields applicable to the currently processed group, including all
          * outer groups.
          * Hence why it is cloned -- subsequent domains will modify this collection.
+         *
+         * @return a clone of the CURRENT domains.
          */
         @NonNull
         @SuppressWarnings("unchecked")

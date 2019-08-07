@@ -111,8 +111,9 @@ public class BooklistAdapter
     /**
      * Constructor.
      *
-     * @param style The style is used by (some) individual rows.
-     * @param db    Database Access
+     * @param inflater LayoutInflater to use
+     * @param style    The style is used by (some) individual rows.
+     * @param db       Database Access
      */
     public BooklistAdapter(@NonNull final LayoutInflater inflater,
                            @NonNull final BooklistStyle style,
@@ -738,7 +739,7 @@ public class BooklistAdapter
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
-            int imageMaxSize = ImageUtils.getMaxImageSize(style.getThumbnailScaleFactor());
+            int maxSize = ImageUtils.getMaxImageSize(style.getThumbnailScaleFactor());
 
             titleView.setText(rowData.getString(DBDefinitions.KEY_TITLE));
 
@@ -755,16 +756,18 @@ public class BooklistAdapter
                 // store the uuid for use in the onClick
                 coverView.setTag(R.id.TAG_UUID, rowData.getString(DBDefinitions.KEY_BOOK_UUID));
 
-                ImageUtils.setImageView(coverView, rowData.getString(DBDefinitions.KEY_BOOK_UUID),
-                                        imageMaxSize, imageMaxSize);
+                String uuid = rowData.getString(DBDefinitions.KEY_BOOK_UUID);
+                boolean isSet = ImageUtils.setImageView(coverView, uuid, maxSize, maxSize);
 
-                //Allow zooming by clicking on the image
-                coverView.setOnClickListener(v -> {
-                    FragmentActivity activity = (FragmentActivity) v.getContext();
-                    String uuid = (String) v.getTag(R.id.TAG_UUID);
-                    ZoomedImageDialogFragment.show(activity.getSupportFragmentManager(),
-                                                   StorageUtils.getCoverFile(uuid));
-                });
+                if (isSet) {
+                    //Allow zooming by clicking on the image
+                    coverView.setOnClickListener(v -> {
+                        FragmentActivity activity = (FragmentActivity) v.getContext();
+                        String currentUuid = (String) v.getTag(R.id.TAG_UUID);
+                        ZoomedImageDialogFragment.show(activity.getSupportFragmentManager(),
+                                                       StorageUtils.getCoverFile(currentUuid));
+                    });
+                }
             }
 
             if (App.isUsed(DBDefinitions.KEY_SERIES_TITLE) && rowData.hasSeriesNumber()) {

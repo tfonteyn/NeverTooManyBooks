@@ -66,12 +66,14 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
     /**
      * Constructor.
      *
-     * @param items the list
+     * @param inflater          LayoutInflater to use
+     * @param items             List of items
+     * @param dragStartListener Listener to handle the user moving rows up and down
      */
-    protected RecyclerViewAdapterBase(@NonNull final LayoutInflater layoutInflater,
+    protected RecyclerViewAdapterBase(@NonNull final LayoutInflater inflater,
                                       @NonNull final List<Item> items,
                                       @Nullable final StartDragListener dragStartListener) {
-        mInflater = layoutInflater;
+        mInflater = inflater;
         mDragStartListener = dragStartListener;
         mItems = items;
     }

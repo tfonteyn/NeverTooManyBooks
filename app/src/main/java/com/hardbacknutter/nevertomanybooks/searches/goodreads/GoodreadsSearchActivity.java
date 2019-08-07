@@ -348,11 +348,12 @@ public class GoodreadsSearchActivity
         /**
          * Constructor.
          *
-         * @param items the list
+         * @param inflater LayoutInflater to use
+         * @param items    List of items to display
          */
-        WorksAdapter(@NonNull final LayoutInflater layoutInflater,
+        WorksAdapter(@NonNull final LayoutInflater inflater,
                      @NonNull final List<GoodreadsWork> items) {
-            super(layoutInflater, items, null);
+            super(inflater, items, null);
         }
 
         @NonNull

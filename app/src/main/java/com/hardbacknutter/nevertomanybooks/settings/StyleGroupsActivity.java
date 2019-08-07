@@ -164,6 +164,8 @@ public class StyleGroupsActivity
 
     /**
      * Construct the list by wrapping each group individually.
+     *
+     * @return the list
      */
     @NonNull
     private ArrayList<GroupWrapper> getList() {
@@ -306,10 +308,17 @@ public class StyleGroupsActivity
     protected static class GroupWrapperListAdapter
             extends RecyclerViewAdapterBase<GroupWrapper, Holder> {
 
-        GroupWrapperListAdapter(@NonNull final LayoutInflater layoutInflater,
+        /**
+         * Constructor.
+         *
+         * @param inflater          LayoutInflater to use
+         * @param items             List of groups (in GroupWrapper)
+         * @param dragStartListener Listener to handle the user moving rows up and down
+         */
+        GroupWrapperListAdapter(@NonNull final LayoutInflater inflater,
                                 @NonNull final ArrayList<GroupWrapper> items,
                                 @NonNull final StartDragListener dragStartListener) {
-            super(layoutInflater, items, dragStartListener);
+            super(inflater, items, dragStartListener);
         }
 
         @NonNull

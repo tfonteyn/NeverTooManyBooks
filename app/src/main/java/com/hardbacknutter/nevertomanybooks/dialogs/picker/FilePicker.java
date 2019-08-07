@@ -55,19 +55,20 @@ public class FilePicker
     /**
      * Constructor.
      *
-     * @param title   for the dialog
-     * @param message optional message
-     * @param files   list to choose from
-     * @param handler which will receive the selected row item
+     * @param inflater LayoutInflater to use
+     * @param title    for the dialog
+     * @param message  optional message
+     * @param files    list to choose from
+     * @param handler  which will receive the selected row item
      */
-    public FilePicker(@NonNull final LayoutInflater layoutInflater,
+    public FilePicker(@NonNull final LayoutInflater inflater,
                       @Nullable final String title,
                       @Nullable final String message,
                       @NonNull final List<File> files,
                       @NonNull final PickListener<File> handler) {
-        super(layoutInflater, title, message, true);
+        super(inflater, title, message, true);
 
-        final FileItemListAdapter adapter = new FileItemListAdapter(layoutInflater, files, item -> {
+        final FileItemListAdapter adapter = new FileItemListAdapter(inflater, files, item -> {
             dismiss();
             handler.onPicked(item);
         });
@@ -87,13 +88,20 @@ public class FilePicker
         @NonNull
         private final PickListener<File> mListener;
 
-        FileItemListAdapter(@NonNull final LayoutInflater layoutInflater,
+        /**
+         * Constructor.
+         *
+         * @param inflater LayoutInflater to use
+         * @param list     List of items
+         * @param listener called upon user selection
+         */
+        FileItemListAdapter(@NonNull final LayoutInflater inflater,
                             @NonNull final List<File> list,
                             @NonNull final PickListener<File> listener) {
 
-            mInflater = layoutInflater;
+            mInflater = inflater;
             mListener = listener;
-            mLocale = LocaleUtils.from(layoutInflater.getContext());
+            mLocale = LocaleUtils.from(inflater.getContext());
             mList = list;
         }
 

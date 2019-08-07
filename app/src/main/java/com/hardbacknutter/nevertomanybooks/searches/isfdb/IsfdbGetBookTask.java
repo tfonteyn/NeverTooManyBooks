@@ -100,8 +100,9 @@ public class IsfdbGetBookTask
             } else if (mIsfdbId != 0) {
                 return new IsfdbBook().fetch(mIsfdbId, false, context);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debugWithStackTrace(this, "doInBackground", "how did we get here?");
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.debugWithStackTrace(this, "doInBackground",
+                                               "how did we get here?");
                 }
             }
 
@@ -119,7 +120,7 @@ public class IsfdbGetBookTask
     protected void onPostExecute(@Nullable final Bundle result) {
         // always send result, even if empty
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onGotISFDBBook(result);
+            mTaskListener.get().onGotIsfdbBook(result);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onPostExecute",

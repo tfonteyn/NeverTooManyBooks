@@ -1327,7 +1327,7 @@ public class DAO
 
             Author author = Author.fromString(book.getString(KEY_AUTHOR_FORMATTED));
             if (author.fixId(this) == 0) {
-                if (BuildConfig.DEBUG /* always. */) {
+                if (BuildConfig.DEBUG /* always */) {
                     Logger.debug(this, "preprocessLegacyAuthor",
                                  "KEY_AUTHOR_FORMATTED",
                                  "inserting author: " + author.stringEncoded());
@@ -1347,7 +1347,7 @@ public class DAO
 
             Author author = new Author(family, given);
             if (author.fixId(this) == 0) {
-                if (BuildConfig.DEBUG /* always. */) {
+                if (BuildConfig.DEBUG /* always */) {
                     Logger.debug(this, "preprocessLegacyAuthor",
                                  "KEY_AUTHOR_FAMILY_NAME",
                                  "inserting author: " + author.stringEncoded());
@@ -1515,9 +1515,7 @@ public class DAO
             StorageUtils.deleteFile(StorageUtils.getCoverFile(uuid));
             // remove from cache
             if (!uuid.isEmpty()) {
-                try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
-                    coversDBAdapter.delete(uuid);
-                }
+                CoversDAO.delete(uuid);
             }
         }
     }
@@ -4134,82 +4132,73 @@ public class DAO
          * FIXME: could we not just do books.* ?
          * <b>Developer:</b> adding fields ? Now is a good time to update {@link Book#duplicate}/
          */
-        private static final String BOOK = TBL_BOOKS.dotAs(DOM_PK_ID)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_UUID)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_TITLE)
-                                           // publication data
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISBN)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PUBLISHER)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_TOC_BITMASK)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_PUBLISHED)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED_CURRENCY)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_DATE_FIRST_PUBLICATION)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_FORMAT)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GENRE)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LANGUAGE)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PAGES)
-                                           // common blurb
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DESCRIPTION)
+        private static final String BOOK =
+                TBL_BOOKS.dotAs(DOM_PK_ID)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_UUID)
+                + ',' + TBL_BOOKS.dotAs(DOM_TITLE)
+                // publication data
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISBN)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PUBLISHER)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_TOC_BITMASK)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_PUBLISHED)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED_CURRENCY)
+                + ',' + TBL_BOOKS.dotAs(DOM_DATE_FIRST_PUBLICATION)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_FORMAT)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GENRE)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LANGUAGE)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PAGES)
+                // common blurb
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DESCRIPTION)
 
-                                           // partially edition info, partially user-owned info.
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_EDITION_BITMASK)
-                                           // user data
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_NOTES)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LOCATION)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_SIGNED)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_RATING)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_READ)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_READ_START)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_READ_END)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_ACQUIRED)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_PAID)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_PAID_CURRENCY)
-                                           // added/updated
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_ADDED)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_DATE_LAST_UPDATED)
-                                           // external links
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LIBRARY_THING_ID)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_OPEN_LIBRARY_ID)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISFDB_ID)
-                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_ID)
-                                           + ',' + TBL_BOOKS
-                                                           .dotAs(DOM_BOOK_GOODREADS_LAST_SYNC_DATE)
+                // partially edition info, partially user-owned info.
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_EDITION_BITMASK)
+                // user data
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_NOTES)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LOCATION)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_SIGNED)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_RATING)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_READ)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_READ_START)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_READ_END)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_ACQUIRED)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_PAID)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_PAID_CURRENCY)
+                // added/updated
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_ADDED)
+                + ',' + TBL_BOOKS.dotAs(DOM_DATE_LAST_UPDATED)
+                // external links
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LIBRARY_THING_ID)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_OPEN_LIBRARY_ID)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISFDB_ID)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_ID)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_LAST_SYNC_DATE)
 
-                                           // Find the first (i.e. primary) Series
-                                           + ',' + "(SELECT " + DOM_FK_SERIES + " FROM "
-                                           + TBL_BOOK_SERIES.ref()
-                                           + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '='
-                                           + TBL_BOOKS.dot(DOM_PK_ID)
-                                           + " ORDER BY " + DOM_BOOK_SERIES_POSITION
-                                           + " ASC  LIMIT 1)"
-                                           + " AS " + DOM_FK_SERIES
+                // Find the first (i.e. primary) Series
+                + ',' + "(SELECT " + DOM_FK_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
+                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+                + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC LIMIT 1)"
+                + " AS " + DOM_FK_SERIES
 
-                                           // Find the first (i.e. primary) Series number
-                                           + ',' + "(SELECT " + DOM_BOOK_NUM_IN_SERIES + " FROM "
-                                           + TBL_BOOK_SERIES.ref()
-                                           + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '='
-                                           + TBL_BOOKS.dot(DOM_PK_ID)
-                                           + " ORDER BY " + DOM_BOOK_SERIES_POSITION
-                                           + " ASC  LIMIT 1)"
-                                           + " AS " + DOM_BOOK_NUM_IN_SERIES
+                // Find the first (i.e. primary) Series number
+                + ',' + "(SELECT " + DOM_BOOK_NUM_IN_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
+                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+                + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC LIMIT 1)"
+                + " AS " + DOM_BOOK_NUM_IN_SERIES
 
-                                           // Get the total series count
-                                           + ','
-                                           + "(SELECT COUNT(*) FROM " + TBL_BOOK_SERIES.ref()
-                                           + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '='
-                                           + TBL_BOOKS.dot(DOM_PK_ID)
-                                           + ')' + " AS " + COLUMN_ALIAS_NR_OF_SERIES
+                // Get the total series count
+                + ','
+                + "(SELECT COUNT(*) FROM " + TBL_BOOK_SERIES.ref()
+                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+                + ')' + " AS " + COLUMN_ALIAS_NR_OF_SERIES
 
-                                           // Find the first (i.e. primary) Author
-                                           + ','
-                                           + "(SELECT " + DOM_FK_AUTHOR + " FROM " + TBL_BOOK_AUTHOR
-                                                                                             .ref()
-                                           + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '='
-                                           + TBL_BOOKS.dot(DOM_PK_ID)
-                                           + " ORDER BY " + DOM_BOOK_AUTHOR_POSITION
-                                           + ',' + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR) + " LIMIT 1)"
-                                           + " AS " + DOM_FK_AUTHOR
+                // Find the first (i.e. primary) Author
+                + ','
+                + "(SELECT " + DOM_FK_AUTHOR + " FROM " + TBL_BOOK_AUTHOR.ref()
+                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+                + " ORDER BY " + DOM_BOOK_AUTHOR_POSITION
+                + ',' + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR) + " LIMIT 1)"
+                + " AS " + DOM_FK_AUTHOR
 
 //                // Get the total author count. TODO: does not seem to get used any longer.
 //                + ','

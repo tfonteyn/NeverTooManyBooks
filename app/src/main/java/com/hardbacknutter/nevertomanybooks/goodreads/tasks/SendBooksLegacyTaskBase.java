@@ -245,6 +245,9 @@ abstract class SendBooksLegacyTaskBase
          * Return a view capable of displaying basic book event details,
          * ideally usable by all BookEvent subclasses.
          * This method also prepares the BookEventHolder object for the View.
+         * <p>
+         * <p>
+         * {@inheritDoc}
          */
         @Override
         @NonNull

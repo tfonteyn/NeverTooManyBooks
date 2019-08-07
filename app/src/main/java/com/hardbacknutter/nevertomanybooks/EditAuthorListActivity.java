@@ -289,10 +289,17 @@ public class EditAuthorListActivity
     protected class AuthorListAdapter
             extends RecyclerViewAdapterBase<Author, Holder> {
 
-        AuthorListAdapter(@NonNull final LayoutInflater layoutInflater,
+        /**
+         * Constructor.
+         *
+         * @param inflater          LayoutInflater to use
+         * @param items             List of Authors
+         * @param dragStartListener Listener to handle the user moving rows up and down
+         */
+        AuthorListAdapter(@NonNull final LayoutInflater inflater,
                           @NonNull final ArrayList<Author> items,
                           @NonNull final StartDragListener dragStartListener) {
-            super(layoutInflater, items, dragStartListener);
+            super(inflater, items, dragStartListener);
         }
 
         @NonNull

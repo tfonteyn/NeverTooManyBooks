@@ -73,7 +73,7 @@ public interface TaskListener<Result> {
     default void onTaskCancelled(@Nullable Integer taskId,
                                  Result result) {
         // do nothing.
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             throw new IllegalStateException("taskId=" + taskId);
         }
     }
@@ -84,7 +84,7 @@ public interface TaskListener<Result> {
     @UiThread
     default void onTaskProgress(@NonNull final TaskProgressMessage message) {
         // do nothing.
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             throw new IllegalStateException("taskId=" + message.taskId);
         }
     }

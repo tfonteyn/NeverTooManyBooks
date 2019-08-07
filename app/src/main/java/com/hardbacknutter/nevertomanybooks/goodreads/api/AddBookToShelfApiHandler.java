@@ -102,6 +102,37 @@ public class AddBookToShelfApiHandler
     }
 
     /**
+     * Add the passed book to the passed shelves.
+     * <p>
+     * We deliberately limit this call to a single book for now.
+     *
+     * @param grBookId   GoodReads book id
+     * @param shelfNames list of GoodReads shelf names
+     *
+     * @return reviewId
+     *
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
+     */
+    public long add(final long grBookId,
+                    @NonNull final List<String> shelfNames)
+            throws CredentialsException, BookNotFoundException, IOException {
+
+        String shelves = Csv.join(",", shelfNames);
+
+        mReviewId = 0;
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("bookids", String.valueOf(grBookId));
+        parameters.put("shelves", shelves);
+
+        DefaultHandler handler = new XmlResponseParser(mRootFilter);
+        executePost(URL_X_X, parameters, true, handler);
+
+        return mReviewId;
+    }
+
+    /**
      * Add the passed book to the passed shelf.
      *
      * @param grBookId  GoodReads book id
@@ -172,37 +203,6 @@ public class AddBookToShelfApiHandler
 
         DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executePost(URL_1_1, parameters, true, handler);
-
-        return mReviewId;
-    }
-
-    /**
-     * Add the passed book to the passed shelves.
-     * <p>
-     * We deliberately limit this call to a single book for now.
-     *
-     * @param grBookId   GoodReads book id
-     * @param shelfNames list of GoodReads shelf names
-     *
-     * @return reviewId
-     *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
-     */
-    public long add(final long grBookId,
-                    @NonNull final List<String> shelfNames)
-            throws CredentialsException, BookNotFoundException, IOException {
-
-        String shelves = Csv.join(",", shelfNames);
-
-        mReviewId = 0;
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("bookids", String.valueOf(grBookId));
-        parameters.put("shelves", shelves);
-
-        DefaultHandler handler = new XmlResponseParser(mRootFilter);
-        executePost(URL_X_X, parameters, true, handler);
 
         return mReviewId;
     }

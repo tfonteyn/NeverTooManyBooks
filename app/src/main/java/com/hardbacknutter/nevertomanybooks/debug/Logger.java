@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 
 /**
  * ALWAYS call methods like this:
- * * if (BuildConfig.DEBUG) {
+ * * if (BuildConfig.DEBUG ) {
  * *     Logger.blah(...);
  * * }
  * <p>

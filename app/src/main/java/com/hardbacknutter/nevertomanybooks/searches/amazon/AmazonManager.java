@@ -101,6 +101,8 @@ public final class AmazonManager
     }
 
     /**
+     * Start an intent to open the Amazon website.
+     *
      * @param context Current context
      * @param author  to search for
      * @param series  to search for

@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -58,6 +59,21 @@ import com.hardbacknutter.nevertomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection;
+
+// collapse all lines, restart app
+// scroll to Pratchett on 1st line, expand, scroll to end.
+////////////////////////////////////////////////////////////////////////////
+// using tasks, no caching
+// ImageUtils.taskChecks=175|ImageUtils.taskTicks=13580
+// ImageUtils.taskChecks=175|ImageUtils.taskTicks=11879
+////////////////////////////////////////////////////////////////////////////
+// NO tasks, no cache
+// ImageUtils.fileChecks=175|ImageUtils.fileChecks=2065
+// ImageUtils.fileChecks=175|ImageUtils.fileTicks=2094
+////////////////////////////////////////////////////////////////////////////
+// from cache
+// ImageUtils.cacheChecks=175|ImageUtils.cacheTicks=2305
+////////////////////////////////////////////////////////////////////////////
 
 public final class ImageUtils {
 
@@ -81,8 +97,15 @@ public final class ImageUtils {
     /** Thumbnail Scaling. */
     public static final int SCALE_2X_LARGE = 12;
 
-
     private static final int BUFFER_SIZE = 65536;
+
+    public static AtomicLong cacheTicks = new AtomicLong();
+    public static AtomicLong fileTicks = new AtomicLong();
+    public static AtomicLong taskTicks = new AtomicLong();
+
+    public static AtomicInteger cacheChecks = new AtomicInteger();
+    public static AtomicInteger fileChecks = new AtomicInteger();
+    public static AtomicInteger taskChecks = new AtomicInteger();
 
     private ImageUtils() {
     }
@@ -100,66 +123,82 @@ public final class ImageUtils {
     }
 
     /**
-     * Called in the UI thread, will either (1) use a cached cover or
+     * Called in the UI thread. Will either
+     * (1) use a cached cover or
      * (2) start a background task to create and load it.
      * <p>
-     * If a cached image is used a background task is still started to check the file date vs
+     * If a cached image is used a background task is still started to check the file date versus
      * the cache date. If the cached image date is < the file, it is rebuilt.
      *
-     * @param destView  View to populate
+     * @param imageView  View to populate
      * @param uuid      UUID of book to retrieve.
      * @param maxWidth  Max width of resulting image
      * @param maxHeight Max height of resulting image
      */
     @UiThread
-    public static void setImageView(@NonNull final ImageView destView,
+    public static boolean setImageView(@NonNull final ImageView imageView,
                                     @NonNull final String uuid,
                                     final int maxWidth,
                                     final int maxHeight) {
 
         boolean cacheWasChecked = false;
 
-        Context context = destView.getContext();
+        Context context = imageView.getContext();
+        long tick;
 
         // 1. If we want to check the cache, AND we don't have cache building happening, check it.
         if (BooklistBuilder.imagesAreCached(context)
             && !GetImageTask.hasActiveTasks()
-            && !ImageCacheWriterTask.hasActiveTasks()) {
-            try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
-                final Bitmap bm = coversDBAdapter.getImage(uuid, maxWidth, maxHeight);
-                if (bm != null) {
-                    // Remove any tasks that may be getting the image because they may overwrite
-                    // anything we do.
-                    // Remember: the view may have been re-purposed and have a different associated
-                    // task which must be removed from the view and removed from the queue.
-                    GetImageTask.clearOldTaskFromView(destView);
-                    ImageUtils.setImageView(destView, bm, maxWidth, maxHeight, true);
-                    return;
-                }
+            && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
+
+            tick = System.nanoTime();
+            Bitmap bm = CoversDAO.getImage(uuid, maxWidth, maxHeight);
+            cacheChecks.incrementAndGet();
+            if (bm != null) {
+                // Remove any tasks that may be getting the image because they may overwrite
+                // anything we do.
+                // Remember: the view may have been re-purposed and have a different associated
+                // task which must be removed from the view and removed from the queue.
+                GetImageTask.clearOldTaskFromView(imageView);
+                boolean isSet = ImageUtils.setImageView(imageView, bm, maxWidth, maxHeight, true);
+                cacheTicks.addAndGet(System.nanoTime() - tick);
+                return isSet;
             }
+            // make sure that the next step does not check again.
             cacheWasChecked = true;
         }
 
         // 2. The image is not in the cache but the original exists, queue a task if allowed.
         if (BooklistBuilder.imagesAreGeneratedInBackground(context)) {
             // use place holder to indicate an image is coming
-            destView.setImageResource(R.drawable.ic_image);
+            imageView.setImageResource(R.drawable.ic_image);
             // go get it
-            new GetImageTask(uuid, destView, maxWidth, maxHeight, cacheWasChecked)
+            new GetImageTask(uuid, imageView, maxWidth, maxHeight, cacheWasChecked)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            return;
+            // we don't know for sure, let's be optimistic.
+            return true;
         }
+
+        tick = System.nanoTime();
 
         // 3. Check if the file exists; if it does not set 'ic_broken_image' icon and exit.
         File file = StorageUtils.getCoverFile(uuid);
         if (!file.exists()) {
             // no image
-            destView.setImageResource(R.drawable.ic_broken_image);
-            return;
+            imageView.setImageResource(R.drawable.ic_broken_image);
+            return false;
         }
 
         // 4. go get it from the file system.
-        setImageView(destView, file, maxWidth, maxHeight, true);
+        // first display
+        boolean isSet = setImageView(imageView, file, maxWidth, maxHeight, true);
+        fileTicks.addAndGet(System.nanoTime() - tick);
+        fileChecks.incrementAndGet();
+        // now send to cache if needed/allowed.
+        if (isSet && BooklistBuilder.imagesAreCached(imageView.getContext())) {
+            saveToCache(imageView, uuid, maxWidth, maxHeight);
+        }
+        return isSet;
     }
 
     /**
@@ -173,7 +212,7 @@ public final class ImageUtils {
      * @param upscale   use the maximum h/w also as the minimum; thereby forcing upscaling.
      */
     @UiThread
-    public static void setImageView(@NonNull final ImageView destView,
+    public static boolean setImageView(@NonNull final ImageView destView,
                                     @NonNull final File file,
                                     final int maxWidth,
                                     final int maxHeight,
@@ -182,21 +221,11 @@ public final class ImageUtils {
         // Get the file, if it exists. Otherwise set 'ic_broken_image' icon and exit.
         if (!file.exists()) {
             destView.setImageResource(R.drawable.ic_broken_image);
-            return;
+            return false;
         }
 
         Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
-        setImageView(destView, bm, maxWidth, maxHeight, upscale);
-    }
-
-    @SuppressWarnings("unused")
-    @UiThread
-    private static void setImageView(@NonNull final ImageView destView,
-                                     @Nullable final Bitmap bm,
-                                     final int scale,
-                                     final boolean upscale) {
-        int maxSize = ImageUtils.getMaxImageSize(scale);
-        setImageView(destView, bm, maxSize, maxSize, upscale);
+        return setImageView(destView, bm, maxWidth, maxHeight, upscale);
     }
 
     /**
@@ -210,7 +239,7 @@ public final class ImageUtils {
      * @param upscale   use the maximum h/w also as the minimum; thereby forcing upscaling.
      */
     @UiThread
-    private static void setImageView(@NonNull final ImageView destView,
+    private static boolean setImageView(@NonNull final ImageView destView,
                                      @Nullable final Bitmap bm,
                                      final int maxWidth,
                                      final int maxHeight,
@@ -230,6 +259,7 @@ public final class ImageUtils {
         if (bm == null) {
             // no bitmap
             destView.setImageResource(R.drawable.ic_broken_image);
+            return false;
         } else {
             // upscale only when needed.
             if (bm.getHeight() < maxHeight && upscale) {
@@ -240,11 +270,12 @@ public final class ImageUtils {
                     // clean up the old one right now to save memory.
                     bm.recycle();
                     destView.setImageBitmap(scaledBitmap);
-                    return;
+                    return true;
                 }
             }
             // if not upscaling, let Android decide on any other scaling as needed.
             destView.setImageBitmap(bm);
+            return true;
         }
     }
 
@@ -254,15 +285,6 @@ public final class ImageUtils {
                                             final int scale) {
         int maxSize = ImageUtils.getMaxImageSize(scale);
         return createScaledBitmap(BitmapFactory.decodeFile(file.getPath()), maxSize, maxSize);
-    }
-
-    @SuppressWarnings("unused")
-    @NonNull
-    @AnyThread
-    public static Bitmap createScaledBitmap(@NonNull final Bitmap src,
-                                            final int scale) {
-        int maxSize = ImageUtils.getMaxImageSize(scale);
-        return createScaledBitmap(src, maxSize, maxSize);
     }
 
     /**
@@ -276,7 +298,7 @@ public final class ImageUtils {
      * the source bitmap, the source bitmap is returned and no new bitmap is
      * created.
      *
-     * @param src       The source bitmap.
+     * @param source       The source bitmap.
      * @param dstWidth  The new bitmap's desired width.
      * @param dstHeight The new bitmap's desired height.
      *
@@ -286,13 +308,13 @@ public final class ImageUtils {
      */
     @NonNull
     @AnyThread
-    private static Bitmap createScaledBitmap(@NonNull final Bitmap src,
+    private static Bitmap createScaledBitmap(@NonNull final Bitmap source,
                                              final int dstWidth,
                                              final int dstHeight) {
         Matrix matrix = new Matrix();
 
-        final int width = src.getWidth();
-        final int height = src.getHeight();
+        final int width = source.getWidth();
+        final int height = source.getHeight();
         if (width != dstWidth || height != dstHeight) {
             final float sx = (float) dstWidth / width;
             final float sy = (float) dstHeight / height;
@@ -302,7 +324,7 @@ public final class ImageUtils {
             float ratio = (sx < sy) ? sx : sy;
             matrix.setScale(ratio, ratio);
         }
-        return Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
+        return Bitmap.createBitmap(source, 0, 0, width, height, matrix, true);
     }
 
     /**
@@ -380,7 +402,7 @@ public final class ImageUtils {
                     opt.inSampleSize = 1;
                 }
 
-                final Bitmap tmpBm = BitmapFactory.decodeFile(fileSpec, opt);
+                Bitmap tmpBm = BitmapFactory.decodeFile(fileSpec, opt);
                 if (tmpBm == null) {
                     // We ran out of memory, most likely
                     // TODO: Need a way to try loading images after GC().
@@ -452,12 +474,27 @@ public final class ImageUtils {
         return success ? file.getAbsolutePath() : null;
     }
 
+    private static void saveToCache(@NonNull final ImageView imageView,
+                                    @NonNull final String uuid,
+                                    final int maxWidth,
+                                    final int maxHeight) {
+        // during displaying, the bitmap could have been up or downscaled.
+        // so we extract the currently displayed one to send to the cache.
+        Drawable drawable = imageView.getDrawable();
+        if (drawable instanceof BitmapDrawable) {
+            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+            // Queue the image to be written to the cache.
+            new CoversDAO.ImageCacheWriterTask(uuid, maxWidth, maxHeight, bitmap)
+                    .execute();
+        }
+    }
+
     /**
      * Given a URL, get an image and return as a byte array.
      *
      * @param url Image file URL
      *
-     * @return Downloaded byte[] or {@code null} upon failure
+     * @return Downloaded {@code byte[]} or {@code null} upon failure
      */
     @Nullable
     @WorkerThread
@@ -606,6 +643,8 @@ public final class ImageUtils {
 
         private Exception mException;
 
+        long mTick;
+
         /**
          * Constructor. Clean the view and save the details of what we want.
          * <p>
@@ -622,6 +661,8 @@ public final class ImageUtils {
                              final int width,
                              final int height,
                              final boolean cacheWasChecked) {
+
+            mTick = System.nanoTime();
 
             clearOldTaskFromView(imageView);
             mView = new WeakReference<>(imageView);
@@ -678,9 +719,7 @@ public final class ImageUtils {
 
                 // try cache
                 if (!mCacheWasChecked) {
-                    try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
-                        mBitmap = coversDBAdapter.getImage(mUuid, mWidth, mHeight);
-                    }
+                    mBitmap = CoversDAO.getImage(mUuid, mWidth, mHeight);
                     mWasInCache = mBitmap != null;
                 }
 
@@ -724,23 +763,15 @@ public final class ImageUtils {
 
             if (mBitmap != null) {
                 if (viewIsValid) {
-                    Context context = imageView.getContext();
                     // first display
                     setImageView(imageView, mBitmap, mWidth, mHeight, true);
+                    taskTicks.addAndGet(System.nanoTime() - mTick);
+                    taskChecks.incrementAndGet();
                     // now send to cache if needed/allowed.
-                    if (!mWasInCache && BooklistBuilder.imagesAreCached(context)) {
-                        // during displaying, the bitmap could have been up or downscaled.
-                        // so we extract the currently displayed one to send to the cache.
-                        Drawable drawable = imageView.getDrawable();
-                        if (drawable instanceof BitmapDrawable) {
-                            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-                            // Queue the image to be written to the cache.
-                            new ImageCacheWriterTask(mUuid, mWidth, mHeight, bitmap)
-                                    .execute();
-                        }
+                    if (!mWasInCache && BooklistBuilder.imagesAreCached(imageView.getContext())) {
+                        saveToCache(imageView, mUuid, mWidth, mHeight);
                     }
                 }
-
             } else {
                 if (viewIsValid) {
                     imageView.setImageResource(R.drawable.ic_broken_image);
@@ -757,67 +788,6 @@ public final class ImageUtils {
         @AnyThread
         private void cleanup() {
             RUNNING_TASKS.decrementAndGet();
-        }
-    }
-
-    /**
-     * Background task to save a bitmap into the covers thumbnail database. Runs in background
-     * because it involves compression and IO, and can be safely queued. Failures can be ignored
-     * because it is just writing to a cache used solely for optimization.
-     * <p>
-     * Standard AsyncTask for writing data. There is no point in more than one thread since
-     * the database will force serialization of the updates.
-     */
-    private static final class ImageCacheWriterTask
-            extends AsyncTask<Void, Void, Void> {
-
-        private static final AtomicInteger runningTasks = new AtomicInteger();
-
-        /** Bitmap to store. */
-        private final Bitmap mBitmap;
-        @NonNull
-        private final String mUuid;
-        private final int mMaxWidth;
-        private final int mMaxHeight;
-
-        /**
-         * Create a task that will compress the passed bitmap and write it to the database,
-         * it will also be recycled if flag is set.
-         *
-         * @param source Raw bitmap to store
-         */
-        @UiThread
-        private ImageCacheWriterTask(@NonNull final String uuid,
-                                     final int maxWidth,
-                                     final int maxHeight,
-                                     @NonNull final Bitmap source) {
-            mUuid = uuid;
-            mMaxWidth = maxWidth;
-            mMaxHeight = maxHeight;
-            mBitmap = source;
-        }
-
-        /**
-         * @return {@code true} if there is an active task in the queue.
-         */
-        @UiThread
-        static boolean hasActiveTasks() {
-            return runningTasks.get() != 0;
-        }
-
-        @Override
-        @WorkerThread
-        protected Void doInBackground(final Void... params) {
-            Thread.currentThread().setName("ImageCacheWriterTask");
-
-            runningTasks.incrementAndGet();
-
-            try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
-                coversDBAdapter.saveFile(mBitmap, mMaxWidth, mMaxHeight, mUuid);
-            }
-
-            runningTasks.decrementAndGet();
-            return null;
         }
     }
 }

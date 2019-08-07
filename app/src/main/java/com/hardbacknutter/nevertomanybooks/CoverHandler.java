@@ -30,7 +30,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
-import android.database.sqlite.SQLiteDoneException;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
@@ -485,8 +484,8 @@ public class CoverHandler {
         int attempts = 2;
         while (true) {
             try {
-                Bitmap bm = ImageUtils.createScaledBitmap(file.getPath(), imageSize, imageSize,
-                                                          true);
+                Bitmap bm = ImageUtils.createScaledBitmap(file.getPath(),
+                                                          imageSize, imageSize, true);
                 if (bm == null) {
                     return;
                 }
@@ -628,29 +627,16 @@ public class CoverHandler {
      */
     private void deleteCoverFile() {
         try {
-            File file = getCoverFile();
-            StorageUtils.deleteFile(file);
+            StorageUtils.deleteFile(getCoverFile());
         } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
         }
-        invalidateCachedImages();
+        // Ensure that the cached images for this book are deleted (if present).
+        if (mBook.getId() != 0) {
+            CoversDAO.delete(getUuid());
+        }
         // replace the old image with a placeholder.
         ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
-    }
-
-    /**
-     * Ensure that the cached images for this book are deleted (if present).
-     */
-    private void invalidateCachedImages() {
-        if (mBook.getId() != 0) {
-            try (CoversDAO db = CoversDAO.getInstance()) {
-                db.delete(getUuid());
-            } catch (@NonNull final SQLiteDoneException e) {
-                Logger.error(this, e, "SQLiteDoneException cleaning up cached cover images");
-            } catch (@NonNull final RuntimeException e) {
-                Logger.error(this, e, "RuntimeException cleaning up cached cover images");
-            }
-        }
     }
 
     /**

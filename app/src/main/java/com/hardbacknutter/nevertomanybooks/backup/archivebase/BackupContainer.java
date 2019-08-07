@@ -83,6 +83,8 @@ public interface BackupContainer {
      * Checks if the current archive looks valid. Does not need to be
      * exhaustive. Do not call if an archive is being written.
      *
+     * @param context Current context
+     *
      * @return {@code true} if valid
      */
     boolean isValid(@NonNull Context context);

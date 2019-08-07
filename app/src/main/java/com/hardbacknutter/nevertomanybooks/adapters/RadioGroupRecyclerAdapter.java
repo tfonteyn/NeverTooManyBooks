@@ -60,14 +60,19 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     private T mSelectedItem;
 
     /**
-     * @param items the list
+     * Constructor.
+     *
+     * @param inflater     LayoutInflater to use
+     * @param items        List of items
+     * @param selectedItem (optional) the pre-selected item
+     * @param listener     (optional) to send a selection to
      */
-    public RadioGroupRecyclerAdapter(@NonNull final LayoutInflater layoutInflater,
+    public RadioGroupRecyclerAdapter(@NonNull final LayoutInflater inflater,
                                      @NonNull final List<T> items,
                                      @Nullable final T selectedItem,
                                      @Nullable final SelectionListener<T> listener) {
 
-        mInflater = layoutInflater;
+        mInflater = inflater;
         mItems = items;
         mSelectedItem = selectedItem;
         mOnSelectionListener = listener;

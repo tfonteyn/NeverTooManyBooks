@@ -64,9 +64,7 @@ import static org.mockito.Mockito.when;
 
 class IsfdbBookTest {
 
-    @SuppressWarnings("FieldCanBeLocal")
     private static final String baseUri = "http://www.isfdb.org";
-    @SuppressWarnings("FieldCanBeLocal")
     private static final String filename = "/isfdb-valid-book.html";
     private static final String bookType_paperback = "Paperback";
 

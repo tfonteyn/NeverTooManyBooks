@@ -589,7 +589,7 @@ public class Book
         if (containsKey(DBDefinitions.KEY_LANGUAGE)) {
             String lang = getString(DBDefinitions.KEY_LANGUAGE);
             int len = lang.length();
-            // try to convert to is3 if needed.
+            // try to convert to iso3 if needed.
             if (len != 2 && len != 3) {
                 lang = LocaleUtils.getISO3Language(lang);
             }
@@ -607,7 +607,7 @@ public class Book
         } else {
             // this is not an issue as such, but helps during debug when the book *should*
             // have a language and did not.
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.debug(this, "getLocale", "no language set for",
                              "id=" + getId(),
                              "title=" + get(DBDefinitions.KEY_TITLE));

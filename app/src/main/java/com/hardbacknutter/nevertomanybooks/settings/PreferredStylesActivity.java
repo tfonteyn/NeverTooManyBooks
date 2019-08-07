@@ -68,9 +68,10 @@ import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
  * Activity to edit the list of styles.
- * - enable/disable their presence in the styles menu.
- * - Individual context menus allow cloning/editing/deleting of styles.
- * <p>
+ * <ul>
+ * <li>Enable/disable their presence in the styles menu</li>
+ * <li>Individual context menus allow cloning/editing/deleting of styles</li>
+ * </ul>
  * All changes are saved immediately.
  */
 public class PreferredStylesActivity
@@ -260,10 +261,17 @@ public class PreferredStylesActivity
     private class BooklistStylesAdapter
             extends RecyclerViewAdapterBase<BooklistStyle, Holder> {
 
-        BooklistStylesAdapter(@NonNull final LayoutInflater layoutInflater,
+        /**
+         * Constructor.
+         *
+         * @param inflater          LayoutInflater to use
+         * @param items             List of styles
+         * @param dragStartListener Listener to handle the user moving rows up and down
+         */
+        BooklistStylesAdapter(@NonNull final LayoutInflater inflater,
                               @NonNull final ArrayList<BooklistStyle> items,
                               @NonNull final StartDragListener dragStartListener) {
-            super(layoutInflater, items, dragStartListener);
+            super(inflater, items, dragStartListener);
         }
 
         @NonNull

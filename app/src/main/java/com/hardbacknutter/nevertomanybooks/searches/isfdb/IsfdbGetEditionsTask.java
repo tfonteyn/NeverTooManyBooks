@@ -82,7 +82,7 @@ public class IsfdbGetEditionsTask
     protected void onPostExecute(@Nullable final ArrayList<Editions.Edition> result) {
         // always send result, even if empty
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onGotISFDBEditions(result);
+            mTaskListener.get().onGotIsfdbEditions(result);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onPostExecute",

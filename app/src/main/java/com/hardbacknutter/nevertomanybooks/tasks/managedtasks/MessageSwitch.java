@@ -256,7 +256,7 @@ public class MessageSwitch<T, U> {
             implements Iterable<T> {
 
         /** Weak refs to all listeners. */
-        private final List<WeakReference<T>> mListeners = new ArrayList<>();
+        private final List<WeakReference<T>> mMessageListeners = new ArrayList<>();
         /** Last message sent. */
         @Nullable
         private MessageRoutingSlip mLastMessage;
@@ -272,8 +272,8 @@ public class MessageSwitch<T, U> {
 
         /** Add a listener to this queue. */
         void add(@NonNull final T listener) {
-            synchronized (mListeners) {
-                mListeners.add(new WeakReference<>(listener));
+            synchronized (mMessageListeners) {
+                mMessageListeners.add(new WeakReference<>(listener));
             }
         }
 
@@ -283,11 +283,11 @@ public class MessageSwitch<T, U> {
          * @param listener Listener to be removed
          */
         void remove(@NonNull final T listener) {
-            synchronized (mListeners) {
+            synchronized (mMessageListeners) {
                 // List of refs to be removed
                 List<WeakReference<T>> toRemove = new ArrayList<>();
                 // Loop the list for matches or dead refs
-                for (WeakReference<T> w : mListeners) {
+                for (WeakReference<T> w : mMessageListeners) {
                     T l = w.get();
                     if (l == null || l == listener) {
                         toRemove.add(w);
@@ -295,7 +295,7 @@ public class MessageSwitch<T, U> {
                 }
                 // Remove all listeners we found
                 for (WeakReference<T> w : toRemove) {
-                    mListeners.remove(w);
+                    mMessageListeners.remove(w);
                 }
             }
         }
@@ -313,8 +313,8 @@ public class MessageSwitch<T, U> {
         public Iterator<T> iterator() {
             List<T> list = new ArrayList<>();
             List<WeakReference<T>> toRemove = null;
-            synchronized (mListeners) {
-                for (WeakReference<T> w : mListeners) {
+            synchronized (mMessageListeners) {
+                for (WeakReference<T> w : mMessageListeners) {
                     T listener = w.get();
                     if (listener != null) {
                         list.add(listener);
@@ -327,7 +327,7 @@ public class MessageSwitch<T, U> {
                 }
                 if (toRemove != null) {
                     for (WeakReference<T> w : toRemove) {
-                        mListeners.remove(w);
+                        mMessageListeners.remove(w);
                     }
                 }
             }

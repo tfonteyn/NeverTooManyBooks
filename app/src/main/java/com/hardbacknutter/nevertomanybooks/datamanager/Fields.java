@@ -463,7 +463,11 @@ public class Fields {
     }
 
     /**
-     * @return the text message associated with the last validation exception to occur.
+     * Get the text message associated with the last validation exception to occur.
+     *
+     * @param context Current context
+     *
+     * @return the message
      */
     @NonNull
     public String getValidationExceptionMessage(@NonNull final Context context) {
@@ -1411,7 +1415,8 @@ public class Fields {
         public View findViewById(@IdRes final int id) {
             if (mActivity.get() == null) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debugWithStackTrace(this, "findViewById", "Activity is NULL");
+                    Logger.debugWithStackTrace(this, "findViewById",
+                                               "Activity is NULL");
                 }
                 return null;
             }
@@ -1578,7 +1583,7 @@ public class Fields {
             } else {
                 // field has no layout, store in a dummy String.
                 mFieldDataAccessor = new StringDataAccessor();
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG /* always */) {
                     Logger.debug(this, "Field",
                                  "Using StringDataAccessor",
                                  "sourceColumn=" + sourceColumn);
@@ -1674,7 +1679,7 @@ public class Fields {
         }
 
         /**
-         * Set scaling (if the field type supports it)
+         * Set scaling (if the field type supports it).
          *
          * @return field (for chaining)
          */
@@ -1826,7 +1831,7 @@ public class Fields {
 
         /**
          * Get the current value of this field and put it into the Bundle collection.
-         **/
+         */
         void putValueInto(@NonNull final DataManager target) {
             mFieldDataAccessor.setValue(this, target);
         }

@@ -27,7 +27,7 @@
 
         <meta-data
             android:name="beta.build"
-            android:value="2019-08-06" />
+            android:value="" />
 
         <!-- Application developer keys - stripped out in a git pre-commit script. -->
         <meta-data

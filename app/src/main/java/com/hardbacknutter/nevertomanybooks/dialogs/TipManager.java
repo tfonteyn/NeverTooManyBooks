@@ -153,7 +153,7 @@ public final class TipManager {
     /**
      * Display the passed tip, if the user has not disabled it.
      *
-     * @param inflater Inflater to use
+     * @param inflater LayoutInflater to use
      * @param stringId identifier for "from where" we want the tip to be displayed.
      *                 This allows two different places in the code use the same tip,
      *                 but one place being 'disable the tip' and another 'show'.
@@ -234,7 +234,7 @@ public final class TipManager {
         /**
          * display the tip.
          *
-         * @param inflater to use
+         * @param inflater LayoutInflater to use
          * @param stringId for the message
          * @param args     for the message
          * @param postRun  Runnable to start afterwards

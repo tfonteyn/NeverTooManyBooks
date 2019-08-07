@@ -207,6 +207,9 @@ public abstract class BackupReaderAbstract
                     case Info:
                         // skip, already handled
                         break;
+
+                    default:
+                        throw new IllegalArgumentException("" + entity.getType());
                 }
                 entity = nextEntity();
             }
@@ -248,7 +251,8 @@ public abstract class BackupReaderAbstract
     /**
      * Restore the books from the export file.
      *
-     * @param entity to restore
+     * @param context Current context
+     * @param entity  to restore
      *
      * @throws IOException on failure
      */

@@ -87,9 +87,6 @@ abstract class ApiHandlerNative {
      * @param grManager the Goodreads Manager
      */
     ApiHandlerNative(@NonNull final GoodreadsManager grManager) {
-        if (BuildConfig.DEBUG) {
-            Logger.debug(this, "ApiHandler", "NATIVE");
-        }
         mManager = grManager;
     }
 
@@ -192,9 +189,9 @@ abstract class ApiHandlerNative {
 //            }
 //            String oauth_query = sb.toString();
 //
-//            Logger.debug(this,"SIGN","natv_query=" + query);
+//            Logger.debug(this,"SIGN","native_query=" + query);
 //            Logger.debug(this,"SIGN","query_oath=" + oauth_query);
-//            Logger.debug(this,"SIGN","oauth_query.equals(natv_query)= "
+//            Logger.debug(this,"SIGN","oauth_query.equals(native_query)= "
 //                                        + oauth_query.equals(query));
 
             try (OutputStream os = request.getOutputStream();
@@ -230,7 +227,7 @@ abstract class ApiHandlerNative {
         request.connect();
 
         int code = request.getResponseCode();
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
             Logger.debug(this, "execute",
                          "\nrequest: " + request.getURL(),
                          "\nresponse: " + code + ' ' + request.getResponseMessage());
@@ -320,7 +317,7 @@ abstract class ApiHandlerNative {
         request.connect();
 
         int code = request.getResponseCode();
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
             Logger.debug(this, "execute",
                          "\nrequest: " + request.getURL(),
                          "\nresponse: " + code + ' ' + request.getResponseMessage());

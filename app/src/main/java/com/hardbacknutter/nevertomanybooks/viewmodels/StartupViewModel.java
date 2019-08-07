@@ -367,9 +367,7 @@ public class StartupViewModel
 
                 mDb.analyze();
                 if (BooklistBuilder.imagesAreCached(App.getAppContext())) {
-                    try (CoversDAO cdb = CoversDAO.getInstance()) {
-                        cdb.analyze();
-                    }
+                    CoversDAO.analyze();
                 }
 
             } catch (@NonNull final RuntimeException e) {
