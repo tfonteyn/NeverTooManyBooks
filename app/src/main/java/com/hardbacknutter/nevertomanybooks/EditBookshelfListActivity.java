@@ -214,7 +214,7 @@ public class EditBookshelfListActivity
         /**
          * Constructor.
          *
-         * @param inflater    LayoutInflater to use
+         * @param inflater LayoutInflater to use
          */
         BookshelfAdapter(@NonNull final LayoutInflater inflater) {
             mInflater = inflater;

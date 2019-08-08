@@ -47,14 +47,14 @@ public final class SoundManager {
 
     public static void beepLow(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_scanning_beep_if_isbn_invalid, true)) {
+                             .getBoolean(Prefs.pk_scanning_beep_if_invalid, true)) {
             playFile(context, R.raw.beep_low);
         }
     }
 
     public static void beepHigh(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_scanning_beep_if_isbn_valid, false)) {
+                             .getBoolean(Prefs.pk_scanning_beep_if_valid, false)) {
             playFile(context, R.raw.beep_high);
         }
     }

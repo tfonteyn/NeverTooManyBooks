@@ -358,8 +358,6 @@
     <string name="none">Hiçbiri</string>
     <string name="pe_bob_thumbnails_cache_resized_each_time">Gerekli olduğunda her seferinde yeniden boyutlandır (daha az yer kaplar, kaydırma daha yavaş olacaktır)</string>
     <string name="pe_bob_thumbnails_cache_resized_stored">Yeniden boyutlandırılmış ufak resimleri bellekte tut (daha fazla yer kaplar, dizelgeler daha hızlı kayar)</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Ardalanda iş oluştur (dizelgeler daha hızlı kayar, resimlerin görüntülenmesi gecikebilir)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Anında oluştur (dizelgeler daha yavaş kayar, resimler anında görüntülenir)</string>
     <string name="pe_use_recommended_option">Önerilen seçeneği kullanın</string>
     <string name="pg_bob_extra_book_details">Ek kitap ayarları</string>
     <string name="pg_booklist">Kitap listeleri</string>
@@ -414,7 +412,6 @@
     <string name="pt_bob_sort_author_name">Yazarları sırala</string>
     <string name="pt_bob_text_size">Kitap dizelgesi öğeleri boyutu</string>
     <string name="pt_bob_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
-    <string name="pt_bob_thumbnails_generating_mode">Küçük resimleri almak için bir arka plan görevi kullanın</string>
     <string name="pt_bob_thumbnails_show">Ufak resimleri göster</string>
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
     <string name="pt_cover_scale_factor">Listelerdeki görüntü boyutu</string>

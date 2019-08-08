@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertomanybooks.utils;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -118,29 +119,23 @@ public final class DateUtils {
 
     /**
      * create the parser list. These will be tried IN THE ORDER DEFINED HERE.
-     * <p>
-     * FIXME: these are created at first use, so do not support switching Locale on the fly.
-     * the month is (localized) text, or english
+     *
+     * @param alsoAddEnglish Flag. (We use a parameter to allow testing)
      */
-    private static void createParseDateFormats() {
-        // check the device language
-        final boolean userIsEnglishSpeaking =
-                Objects.equals(Locale.ENGLISH.getISO3Language(),
-                               App.getSystemLocale().getISO3Language());
-
+    @VisibleForTesting
+    static void createParseDateFormats(@NonNull final Locale locale,
+                                       final boolean alsoAddEnglish) {
         // allow re-creating.
         PARSE_DATE_FORMATS.clear();
 
-        //TODO: the order of adding the set of 3 "MM-dd" and "dd-MM" should be
-        // made dependent on the users locale. For now we favour US style first.
         // numerical formats
-        addParseDateFormat("MM-dd-yyyy HH:mm:ss", false);
-        addParseDateFormat("MM-dd-yyyy HH:mm", false);
-        addParseDateFormat("MM-dd-yyyy", false);
+        addParseDateFormat("MM-dd-yyyy HH:mm:ss", locale, false);
+        addParseDateFormat("MM-dd-yyyy HH:mm", locale, false);
+        addParseDateFormat("MM-dd-yyyy", locale, false);
 
-        addParseDateFormat("dd-MM-yyyy HH:mm:ss", false);
-        addParseDateFormat("dd-MM-yyyy HH:mm", false);
-        addParseDateFormat("dd-MM-yyyy", false);
+        addParseDateFormat("dd-MM-yyyy HH:mm:ss", locale, false);
+        addParseDateFormat("dd-MM-yyyy HH:mm", locale, false);
+        addParseDateFormat("dd-MM-yyyy", locale, false);
 
         // SQL date formats, numerical
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_TIME_HH_MM_SS);
@@ -150,39 +145,41 @@ public final class DateUtils {
 
         // add english if the user's System Locale is not English.
         // This is done because most (all?) internet sites we search are english.
-        addParseDateFormat("dd-MMM-yyyy HH:mm:ss", !userIsEnglishSpeaking);
-        addParseDateFormat("dd-MMM-yyyy HH:mm", !userIsEnglishSpeaking);
-        addParseDateFormat("dd-MMM-yyyy", !userIsEnglishSpeaking);
+        addParseDateFormat("dd-MMM-yyyy HH:mm:ss", locale, !alsoAddEnglish);
+        addParseDateFormat("dd-MMM-yyyy HH:mm", locale, !alsoAddEnglish);
+        addParseDateFormat("dd-MMM-yyyy", locale, !alsoAddEnglish);
 
-        addParseDateFormat("dd-MMM-yy HH:mm:ss", !userIsEnglishSpeaking);
-        addParseDateFormat("dd-MMM-yy HH:mm", !userIsEnglishSpeaking);
-        addParseDateFormat("dd-MMM-yy", !userIsEnglishSpeaking);
+        addParseDateFormat("dd-MMM-yy HH:mm:ss", locale, !alsoAddEnglish);
+        addParseDateFormat("dd-MMM-yy HH:mm", locale, !alsoAddEnglish);
+        addParseDateFormat("dd-MMM-yy", locale, !alsoAddEnglish);
 
-        // "13 March 2009" added due to OpenLibrary
-        addParseDateFormat("dd MMM yyyy", !userIsEnglishSpeaking);
-        // "January 12, 1987" added due to OpenLibrary
-        addParseDateFormat("MMM d, yyyy", !userIsEnglishSpeaking);
+        // added due to OpenLibrary
+        addParseDateFormat("dd MMM yyyy", locale, !alsoAddEnglish);
+        // added due to OpenLibrary
+        addParseDateFormat("MMM d, yyyy", locale, !alsoAddEnglish);
+        // added due to OpenLibrary
+        addParseDateFormat("MMM yyyy", locale, !alsoAddEnglish);
 
+        // Not sure these are really needed.
         // Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
-        addParseDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", !userIsEnglishSpeaking);
-        addParseDateFormat("EEE MMM dd HH:mm ZZZZ yyyy", !userIsEnglishSpeaking);
-        addParseDateFormat("EEE MMM dd ZZZZ yyyy", !userIsEnglishSpeaking);
-
-        // TEST: PARTIAL format... "March 2009" added due to OpenLibrary
-        addParseDateFormat("MMM yyyy", !userIsEnglishSpeaking);
+        addParseDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", locale, !alsoAddEnglish);
+        addParseDateFormat("EEE MMM dd HH:mm ZZZZ yyyy", locale, !alsoAddEnglish);
+        addParseDateFormat("EEE MMM dd ZZZZ yyyy", locale, !alsoAddEnglish);
     }
 
     /**
-     * Add a format to the parser list. It's always added in the System Locale format,
-     * and optionally in English.
+     * Add a format to the parser list using the passed Locale.
+     * Optionally add English Locale as well.
      *
      * @param format     date format to add
-     * @param addEnglish if set, also add the localized english version
+     * @param locale     locale to use
+     * @param addEnglish if set, also add Locale.ENGLISH
      */
     private static void addParseDateFormat(@NonNull final String format,
+                                           @NonNull final Locale locale,
                                            final boolean addEnglish) {
-        PARSE_DATE_FORMATS.add(new SimpleDateFormat(format, App.getSystemLocale()));
-        if (addEnglish) {
+        PARSE_DATE_FORMATS.add(new SimpleDateFormat(format, locale));
+        if (addEnglish && !Locale.ENGLISH.equals(locale)) {
             PARSE_DATE_FORMATS.add(new SimpleDateFormat(format, Locale.ENGLISH));
         }
     }
@@ -219,6 +216,8 @@ public final class DateUtils {
     /**
      * Attempt to parse a date string based on a range of possible formats; allow
      * for caller to specify if the parsing should be strict or lenient.
+     * <p>
+     * <b>Note:</b> the timestamp part is always set to 00:00:00
      *
      * @param dateString String to parse
      * @param lenient    {@code true} if parsing should be lenient
@@ -230,14 +229,17 @@ public final class DateUtils {
                                   final boolean lenient) {
         // create on first use.
         if (PARSE_DATE_FORMATS.isEmpty()) {
-            createParseDateFormats();
+            // check the device language
+            boolean userIsEnglishSpeaking =
+                    Objects.equals(Locale.ENGLISH.getISO3Language(),
+                                   App.getSystemLocale().getISO3Language());
+            createParseDateFormats(App.getSystemLocale(), userIsEnglishSpeaking);
         }
 
         // try all formats until one fits.
-        for (SimpleDateFormat sdf : PARSE_DATE_FORMATS) {
+        for (DateFormat df : PARSE_DATE_FORMATS) {
             try {
-                sdf.setLenient(lenient);
-                return sdf.parse(dateString);
+                return parseDate(df, dateString, lenient);
             } catch (@NonNull final ParseException ignore) {
             }
         }
@@ -245,20 +247,34 @@ public final class DateUtils {
         // try Default Locale.
         try {
             DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-            df.setLenient(lenient);
-            return df.parse(dateString);
+            return parseDate(df, dateString, lenient);
         } catch (@NonNull final ParseException ignore) {
         }
 
         // try System Locale.
         try {
-            DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
-                                                       App.getSystemLocale());
-            df.setLenient(lenient);
-            return df.parse(dateString);
+            DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, App.getSystemLocale());
+            return parseDate(df, dateString, lenient);
         } catch (@NonNull final ParseException ignore) {
         }
+
+        // give up.
         return null;
+    }
+
+    @Nullable
+    private static Date parseDate(@NonNull final DateFormat df,
+                                  @NonNull final String dateString,
+                                  final boolean lenient)
+            throws ParseException {
+        df.setLenient(lenient);
+        Date parsedDate = df.parse(dateString);
+        if (parsedDate != null) {
+            parsedDate.setHours(0);
+            parsedDate.setMinutes(0);
+            parsedDate.setSeconds(0);
+        }
+        return parsedDate;
     }
 
     /**

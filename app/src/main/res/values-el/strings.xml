@@ -359,8 +359,6 @@
     <string name="none">Κανένας</string>
     <string name="pe_bob_thumbnails_cache_resized_each_time">Αλλαγή μεγέθους όποτε χρειάζεται (χρήση λιγότερου αποθηκευτικού χώρου, πιο αργό scrolling)</string>
     <string name="pe_bob_thumbnails_cache_resized_stored">Αποθήκευση μικρογραφιών αλλαγμένου μεγέθους στην προσωρινή μνήμη (χρήση περισσότερου αποθηλευτικού χώρου, πιο γρήγορο scrolling στις λίστες)</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Χρήση νήματος παρασκηνίου (πιο γρήγορο scrolling στις λίστες, οι εικόνες ίσως καθυστερρούν να εμφανιστούν)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Άμεση παραγωγή (πιο αργό scrolling στις λίστες, οι εικόνες εμφανίζονται αμέσως)</string>
     <string name="pe_use_recommended_option">Χρησιμοποιήστε τη συνιστώμενη επιλογή</string>
     <string name="pg_bob_extra_book_details">Επιπλέον λεπτομέρειες βιβλίου</string>
     <string name="pg_booklist">Λίστα βιβλίων</string>
@@ -416,7 +414,6 @@
     <string name="pt_bob_sort_author_name">Ταξινόμηση δημιουργών</string>
     <string name="pt_bob_text_size">Μέγεθος αντικειμένων λίστας βιβλίων</string>
     <string name="pt_bob_thumbnails_cache_resized">Η μνήμη cache επέστρεψε τις μικρογραφίες</string>
-    <string name="pt_bob_thumbnails_generating_mode">Χρησιμοποιήστε το νήμα φόντου για να προσελκύσετε μικρογραφίες</string>
     <string name="pt_bob_thumbnails_show">Εμφάνιση μικρογραφιών</string>
     <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
     <string name="pt_cover_scale_factor">Μικρογραφεί μέγεθος σε λίστες</string>

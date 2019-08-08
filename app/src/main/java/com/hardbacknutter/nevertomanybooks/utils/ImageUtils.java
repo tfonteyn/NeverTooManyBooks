@@ -30,9 +30,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ImageView;
 
@@ -41,11 +38,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -55,24 +52,33 @@ import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
-import com.hardbacknutter.nevertomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
+import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection;
 
 // collapse all lines, restart app
-// scroll to Pratchett on 1st line, expand, scroll to end.
-////////////////////////////////////////////////////////////////////////////
-// using tasks, no caching
-// ImageUtils.taskChecks=175|ImageUtils.taskTicks=13580
-// ImageUtils.taskChecks=175|ImageUtils.taskTicks=11879
-////////////////////////////////////////////////////////////////////////////
-// NO tasks, no cache
+// scroll to Pratchett (175 books) on 1st line, expand, scroll to end.
+//////////////////////////////////////////////////////////////////////////// test 1
+// no cache
 // ImageUtils.fileChecks=175|ImageUtils.fileChecks=2065
 // ImageUtils.fileChecks=175|ImageUtils.fileTicks=2094
-////////////////////////////////////////////////////////////////////////////
+//
 // from cache
 // ImageUtils.cacheChecks=175|ImageUtils.cacheTicks=2305
+//
+// ==> without rescaling code (leaving it to Android) ==> no point in using a cache.
+////////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////// test 2
+// writing to cache with REAL scaling
+// ImageUtils.fileChecks=175|ImageUtils.fileTicks=2678
+
+// using cache
+// ImageUtils.cacheChecks=175|ImageUtils.cacheTicks=1585
+//
+// ==> so during the writing, its slower.... but afterwards, 50% faster compared to test 1
 ////////////////////////////////////////////////////////////////////////////
 
 public final class ImageUtils {
@@ -101,11 +107,9 @@ public final class ImageUtils {
 
     public static AtomicLong cacheTicks = new AtomicLong();
     public static AtomicLong fileTicks = new AtomicLong();
-    public static AtomicLong taskTicks = new AtomicLong();
 
     public static AtomicInteger cacheChecks = new AtomicInteger();
     public static AtomicInteger fileChecks = new AtomicInteger();
-    public static AtomicInteger taskChecks = new AtomicInteger();
 
     private ImageUtils() {
     }
@@ -123,174 +127,161 @@ public final class ImageUtils {
     }
 
     /**
-     * Called in the UI thread. Will either
-     * (1) use a cached cover or
-     * (2) start a background task to create and load it.
-     * <p>
-     * If a cached image is used a background task is still started to check the file date versus
-     * the cache date. If the cached image date is < the file, it is rebuilt.
+     * Load the image file into the destination view.
+     * Handles checking & storing in the cache.
      *
-     * @param imageView  View to populate
-     * @param uuid      UUID of book to retrieve.
+     * @param imageView View to populate
+     * @param uuid      UUID of book
      * @param maxWidth  Max width of resulting image
      * @param maxHeight Max height of resulting image
      */
     @UiThread
     public static boolean setImageView(@NonNull final ImageView imageView,
-                                    @NonNull final String uuid,
-                                    final int maxWidth,
-                                    final int maxHeight) {
+                                       @NonNull final String uuid,
+                                       final int maxWidth,
+                                       final int maxHeight) {
 
-        boolean cacheWasChecked = false;
-
-        Context context = imageView.getContext();
-        long tick;
-
-        // 1. If we want to check the cache, AND we don't have cache building happening, check it.
-        if (BooklistBuilder.imagesAreCached(context)
-            && !GetImageTask.hasActiveTasks()
+        // 1. If caching is used, and we don't have cache building happening, check it.
+        if (imagesAreCached(imageView.getContext())
             && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
 
-            tick = System.nanoTime();
-            Bitmap bm = CoversDAO.getImage(uuid, maxWidth, maxHeight);
+            long tick = System.nanoTime();
             cacheChecks.incrementAndGet();
+            Bitmap bm = CoversDAO.getImage(uuid, maxWidth, maxHeight);
             if (bm != null) {
-                // Remove any tasks that may be getting the image because they may overwrite
-                // anything we do.
-                // Remember: the view may have been re-purposed and have a different associated
-                // task which must be removed from the view and removed from the queue.
-                GetImageTask.clearOldTaskFromView(imageView);
                 boolean isSet = ImageUtils.setImageView(imageView, bm, maxWidth, maxHeight, true);
                 cacheTicks.addAndGet(System.nanoTime() - tick);
                 return isSet;
             }
-            // make sure that the next step does not check again.
-            cacheWasChecked = true;
         }
 
-        // 2. The image is not in the cache but the original exists, queue a task if allowed.
-        if (BooklistBuilder.imagesAreGeneratedInBackground(context)) {
-            // use place holder to indicate an image is coming
-            imageView.setImageResource(R.drawable.ic_image);
-            // go get it
-            new GetImageTask(uuid, imageView, maxWidth, maxHeight, cacheWasChecked)
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            // we don't know for sure, let's be optimistic.
-            return true;
-        }
-
-        tick = System.nanoTime();
-
-        // 3. Check if the file exists; if it does not set 'ic_broken_image' icon and exit.
+        // 2. Check if the file exists; if it does not set 'ic_broken_image' icon and exit.
         File file = StorageUtils.getCoverFile(uuid);
         if (!file.exists()) {
-            // no image
             imageView.setImageResource(R.drawable.ic_broken_image);
             return false;
         }
 
-        // 4. go get it from the file system.
-        // first display
-        boolean isSet = setImageView(imageView, file, maxWidth, maxHeight, true);
-        fileTicks.addAndGet(System.nanoTime() - tick);
-        fileChecks.incrementAndGet();
-        // now send to cache if needed/allowed.
-        if (isSet && BooklistBuilder.imagesAreCached(imageView.getContext())) {
-            saveToCache(imageView, uuid, maxWidth, maxHeight);
+        // 3. If caching is used, go get the image from the file system and send it to the cache.
+        if (imagesAreCached(imageView.getContext())) {
+            long tick = System.nanoTime();
+            fileChecks.incrementAndGet();
+            imageView.setMaxWidth(maxWidth);
+            imageView.setMaxHeight(maxHeight);
+            Bitmap bm = forceScaleBitmap(file.getAbsolutePath(), maxWidth, maxHeight, true);
+            if (bm != null) {
+                // display
+                imageView.setImageBitmap(bm);
+                // and send to the cache
+                new CoversDAO.ImageCacheWriterTask(uuid, maxWidth, maxHeight, bm)
+                        .execute();
+                fileTicks.addAndGet(System.nanoTime() - tick);
+                return true;
+
+            } else {
+                imageView.setImageResource(R.drawable.ic_broken_image);
+                return false;
+            }
         }
-        return isSet;
+
+        // 4. Just go get the image from the file system.
+        return setImageView(imageView, file, maxWidth, maxHeight, true);
     }
 
     /**
-     * Load the image file into the destination view.
-     * Scaling is done by Android, enforced by the view itself and the dimensions passed in.
+     * Convenience method for {@link #setImageView(ImageView, Bitmap, int, int, boolean)}.
      *
-     * @param destView  The ImageView to load with the file or an appropriate icon
+     * @param imageView The ImageView to load with the file or an appropriate icon
      * @param file      The file of the image
      * @param maxWidth  Maximum desired width of the image
      * @param maxHeight Maximum desired height of the image
      * @param upscale   use the maximum h/w also as the minimum; thereby forcing upscaling.
      */
     @UiThread
-    public static boolean setImageView(@NonNull final ImageView destView,
-                                    @NonNull final File file,
-                                    final int maxWidth,
-                                    final int maxHeight,
-                                    final boolean upscale) {
-
-        // Get the file, if it exists. Otherwise set 'ic_broken_image' icon and exit.
-        if (!file.exists()) {
-            destView.setImageResource(R.drawable.ic_broken_image);
-            return false;
+    public static boolean setImageView(@NonNull final ImageView imageView,
+                                       @NonNull final File file,
+                                       final int maxWidth,
+                                       final int maxHeight,
+                                       final boolean upscale) {
+        if (file.exists()) {
+            Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
+            return setImageView(imageView, bm, maxWidth, maxHeight, upscale);
         }
 
-        Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
-        return setImageView(destView, bm, maxWidth, maxHeight, upscale);
+        imageView.setImageResource(R.drawable.ic_broken_image);
+        return false;
     }
 
     /**
      * Load the image bitmap into the destination view.
      * Scaling is done by Android, enforced by the view itself and the dimensions passed in.
      *
-     * @param destView  The ImageView to load with the bitmap or an appropriate icon
-     * @param bm        The Bitmap of the image
+     * @param imageView The ImageView to load with the bitmap or an appropriate icon
+     * @param source    The Bitmap of the image
      * @param maxWidth  Maximum desired width of the image
      * @param maxHeight Maximum desired height of the image
      * @param upscale   use the maximum h/w also as the minimum; thereby forcing upscaling.
      */
     @UiThread
-    private static boolean setImageView(@NonNull final ImageView destView,
-                                     @Nullable final Bitmap bm,
-                                     final int maxWidth,
-                                     final int maxHeight,
-                                     final boolean upscale) {
+    private static boolean setImageView(@NonNull final ImageView imageView,
+                                        @Nullable final Bitmap source,
+                                        final int maxWidth,
+                                        final int maxHeight,
+                                        final boolean upscale) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.debug(ImageUtils.class, "setImageView",
                          "maxWidth=" + maxWidth,
                          "maxHeight=" + maxHeight,
                          "upscale=" + upscale,
-                         bm != null ? "bm.width=" + bm.getWidth() : "no bm",
-                         bm != null ? "bm.height=" + bm.getHeight() : "no bm");
+                         source != null ? "bm.width=" + source.getWidth() : "no bm",
+                         source != null ? "bm.height=" + source.getHeight() : "no bm");
         }
 
-        destView.setMaxWidth(maxWidth);
-        destView.setMaxHeight(maxHeight);
+        imageView.setMaxWidth(maxWidth);
+        imageView.setMaxHeight(maxHeight);
 
-        if (bm == null) {
-            // no bitmap
-            destView.setImageResource(R.drawable.ic_broken_image);
-            return false;
-        } else {
+        if (source != null) {
             // upscale only when needed.
-            if (bm.getHeight() < maxHeight && upscale) {
+            if (source.getHeight() < maxHeight && upscale) {
                 Bitmap scaledBitmap;
-//                scaledBitmap = Bitmap.createScaledBitmap(bm, maxWidth, maxHeight, true);
-                scaledBitmap = createScaledBitmap(bm, maxWidth, maxHeight);
-                if (!bm.equals(scaledBitmap)) {
+                scaledBitmap = createScaledBitmap(source, maxWidth, maxHeight);
+                if (!source.equals(scaledBitmap)) {
                     // clean up the old one right now to save memory.
-                    bm.recycle();
-                    destView.setImageBitmap(scaledBitmap);
+                    source.recycle();
+                    imageView.setImageBitmap(scaledBitmap);
                     return true;
                 }
             }
             // if not upscaling, let Android decide on any other scaling as needed.
-            destView.setImageBitmap(bm);
+            imageView.setImageBitmap(source);
             return true;
         }
+
+        imageView.setImageResource(R.drawable.ic_broken_image);
+        return false;
     }
 
+    /**
+     * Convenience method for {@link #createScaledBitmap(Bitmap, int, int)}
+     *
+     * @param file  The file of the image
+     * @param scale user preferred scale factor
+     *
+     * @return the bitmap
+     */
     @NonNull
     @AnyThread
     public static Bitmap createScaledBitmap(@NonNull final File file,
                                             final int scale) {
+        Bitmap bm = BitmapFactory.decodeFile(file.getPath());
         int maxSize = ImageUtils.getMaxImageSize(scale);
-        return createScaledBitmap(BitmapFactory.decodeFile(file.getPath()), maxSize, maxSize);
+        return createScaledBitmap(bm, maxSize, maxSize);
     }
 
     /**
      * Custom version of {@link Bitmap#createScaledBitmap}.
      * <p>
-     * The ratio correction was taken from the original BC code,
+     * The ratio correction was taken from the original BC code, see {@link #forceScaleBitmap},
      * but the file-decode scaling logic removed.
      * <p>
      * Creates a new bitmap, scaled from an existing bitmap, when possible. If the
@@ -298,7 +289,7 @@ public final class ImageUtils {
      * the source bitmap, the source bitmap is returned and no new bitmap is
      * created.
      *
-     * @param source       The source bitmap.
+     * @param source    The source bitmap.
      * @param dstWidth  The new bitmap's desired width.
      * @param dstHeight The new bitmap's desired height.
      *
@@ -312,12 +303,11 @@ public final class ImageUtils {
                                              final int dstWidth,
                                              final int dstHeight) {
         Matrix matrix = new Matrix();
-
-        final int width = source.getWidth();
-        final int height = source.getHeight();
+        int width = source.getWidth();
+        int height = source.getHeight();
         if (width != dstWidth || height != dstHeight) {
-            final float sx = (float) dstWidth / width;
-            final float sy = (float) dstHeight / height;
+            float sx = (float) dstWidth / width;
+            float sy = (float) dstHeight / height;
             // Next line from original method: using this still causes distortion,
             // matrix.setScale(sx, sy);
             // instead work out the ratio so that it fits exactly
@@ -329,10 +319,10 @@ public final class ImageUtils {
 
     /**
      * Get the image from the file specification.
-     * This is the original code BC code, using BitmapFactory.Options + File
-     * TEST: which one is better/faster ? original or simplified ?
      * <p>
-     * TODO: createScaledBitmap is an expensive operation. Make sure you really need it.
+     * <b>Note:</b>: forceScaleBitmap is an expensive operation. Make sure you really need it.
+     * This method is slower then {@link #createScaledBitmap} but produces a truly scaled
+     * bitmap to fit withing the bounds passed in.
      *
      * @param fileSpec  the file specification (NOT the uuid!)
      * @param maxWidth  Maximum desired width of the image
@@ -343,19 +333,19 @@ public final class ImageUtils {
      */
     @Nullable
     @AnyThread
-    public static Bitmap createScaledBitmap(@NonNull final String fileSpec,
-                                            final int maxWidth,
-                                            final int maxHeight,
-                                            final boolean exact) {
+    public static Bitmap forceScaleBitmap(@NonNull final String fileSpec,
+                                          final int maxWidth,
+                                          final int maxHeight,
+                                          final boolean exact) {
 
         // Read the file to get the bitmap size
-        final BitmapFactory.Options opt = new BitmapFactory.Options();
+        BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inJustDecodeBounds = true;
         if (new File(fileSpec).exists()) {
             BitmapFactory.decodeFile(fileSpec, opt);
         }
 
-        // If no size info, or a single pixel, assume file bad.
+        // If no size info, or a single pixel, assume the file is bad.
         if (opt.outHeight <= 0 || opt.outWidth <= 0 || (opt.outHeight == 1 && opt.outWidth == 1)) {
             return null;
         }
@@ -364,18 +354,17 @@ public final class ImageUtils {
         opt.inJustDecodeBounds = false;
 
         // Work out how to SCALE the file to fit in required box
-        final float widthRatio = (float) maxWidth / opt.outWidth;
-        final float heightRatio = (float) maxHeight / opt.outHeight;
+        float widthRatio = (float) maxWidth / opt.outWidth;
+        float heightRatio = (float) maxHeight / opt.outHeight;
 
         // Work out SCALE so that it fits exactly
         float ratio = (widthRatio < heightRatio) ? widthRatio : heightRatio;
 
         // Note that inSampleSize seems to ALWAYS be forced to a power of 2, no matter what we
         // specify, so we just work with powers of 2.
-        final int idealSampleSize = (int) Math.ceil(1 / ratio);
+        int idealSampleSize = (int) Math.ceil(1 / ratio);
         // Get the nearest *bigger* power of 2.
-        final int samplePow2 =
-                (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
+        int samplePow2 = (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.debug(ImageUtils.class, "createScaledBitmap",
@@ -392,7 +381,7 @@ public final class ImageUtils {
                          "samplePow2=" + samplePow2);
         }
 
-        final Bitmap bm;
+        Bitmap bm;
         try {
             if (exact) {
                 // Create one bigger than needed and SCALE it;
@@ -412,7 +401,7 @@ public final class ImageUtils {
                     return null;
                 }
 
-                final Matrix matrix = new Matrix();
+                Matrix matrix = new Matrix();
                 // Fix ratio based on new sample size and SCALE it.
                 ratio = ratio / (1.0f / opt.inSampleSize);
                 matrix.postScale(ratio, ratio);
@@ -472,21 +461,6 @@ public final class ImageUtils {
         }
 
         return success ? file.getAbsolutePath() : null;
-    }
-
-    private static void saveToCache(@NonNull final ImageView imageView,
-                                    @NonNull final String uuid,
-                                    final int maxWidth,
-                                    final int maxHeight) {
-        // during displaying, the bitmap could have been up or downscaled.
-        // so we extract the currently displayed one to send to the cache.
-        Drawable drawable = imageView.getDrawable();
-        if (drawable instanceof BitmapDrawable) {
-            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-            // Queue the image to be written to the cache.
-            new CoversDAO.ImageCacheWriterTask(uuid, maxWidth, maxHeight, bitmap)
-                    .execute();
-        }
     }
 
     /**
@@ -613,181 +587,12 @@ public final class ImageUtils {
     }
 
     /**
-     * Task to get a thumbnail from the file system or covers database.
-     * It will resize it as required and apply the resulting Bitmap to the related view.
-     * <p>
-     * We now use standard AsyncTask but run it on the parallel executor.
+     * @param context Current context
+     *
+     * @return {@code true} if resized images are cached in a database.
      */
-    private static class GetImageTask
-            extends AsyncTask<Void, Void, Void> {
-
-        private static final AtomicInteger RUNNING_TASKS = new AtomicInteger();
-
-        /** Reference to the view we are using. */
-        @NonNull
-        private final WeakReference<ImageView> mView;
-        /** ID of book whose cover we are getting. */
-        @NonNull
-        private final String mUuid;
-        /** Flag indicating original caller had checked cache. */
-        private final boolean mCacheWasChecked;
-        /** The width of the thumbnail retrieved (based on preferences). */
-        private final int mWidth;
-        /** The height of the thumbnail retrieved (based on preferences). */
-        private final int mHeight;
-        /** Resulting bitmap object. */
-        @Nullable
-        private Bitmap mBitmap;
-        /** Flag indicating image was found in the cache. */
-        private boolean mWasInCache;
-
-        private Exception mException;
-
-        long mTick;
-
-        /**
-         * Constructor. Clean the view and save the details of what we want.
-         * <p>
-         * Create a task to convert, set and store the image for the passed book.
-         * If cacheWasChecked = false, then the cache will be checked before any work is
-         * done, and if found in the cache it will be used. This option is included to
-         * reduce contention between background and foreground tasks: the foreground (UI)
-         * thread checks the cache only if there are no background cache-related tasks
-         * currently running.
-         */
-        @UiThread
-        private GetImageTask(@NonNull final String uuid,
-                             @NonNull final ImageView imageView,
-                             final int width,
-                             final int height,
-                             final boolean cacheWasChecked) {
-
-            mTick = System.nanoTime();
-
-            clearOldTaskFromView(imageView);
-            mView = new WeakReference<>(imageView);
-            mCacheWasChecked = cacheWasChecked;
-
-            mUuid = uuid;
-            mWidth = width;
-            mHeight = height;
-
-            // Clear current image
-            imageView.setImageBitmap(null);
-
-            // Associate the view with this task
-            imageView.setTag(R.id.TAG_GET_THUMBNAIL_TASK, this);
-        }
-
-        static boolean hasActiveTasks() {
-            return RUNNING_TASKS.get() != 0;
-        }
-
-        /**
-         * Remove any record of a prior thumbnail task from a View object to ensure that nothing
-         * overwrites the view.
-         */
-        static void clearOldTaskFromView(@NonNull final ImageView imageView) {
-            GetImageTask oldTask = (GetImageTask) imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK);
-            if (oldTask != null) {
-                imageView.setTag(R.id.TAG_GET_THUMBNAIL_TASK, null);
-                oldTask.cancel(true);
-            }
-        }
-
-        @Override
-        @Nullable
-        @WorkerThread
-        protected Void doInBackground(final Void... params) {
-            Thread.currentThread().setName("GetImageTask");
-
-            RUNNING_TASKS.incrementAndGet();
-
-            try {
-                // Get the view we are targeting and make sure it is valid
-                ImageView view = mView.get();
-                if (view == null) {
-                    mView.clear();
-                    return null;
-                }
-
-                // Make sure the view is still associated with this task.
-                // We don't want to overwrite the wrong image in a recycled view.
-                if (isCancelled() || !this.equals(view.getTag(R.id.TAG_GET_THUMBNAIL_TASK))) {
-                    return null;
-                }
-
-                // try cache
-                if (!mCacheWasChecked) {
-                    mBitmap = CoversDAO.getImage(mUuid, mWidth, mHeight);
-                    mWasInCache = mBitmap != null;
-                }
-
-                // Make sure the view is still ... bla bla as above
-                if (isCancelled() || !this.equals(view.getTag(R.id.TAG_GET_THUMBNAIL_TASK))) {
-                    return null;
-                }
-
-                // wasn't in cache, try file system.
-                if (mBitmap == null) {
-                    String fileSpec = StorageUtils.getCoverFile(mUuid).getPath();
-                    mBitmap = BitmapFactory.decodeFile(fileSpec, null);
-                }
-
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
-                Logger.error(this, e);
-                mException = e;
-            }
-            return null;
-        }
-
-        @Override
-        @UiThread
-        protected void onPostExecute(@Nullable final Void result) {
-
-            if (mException != null) {
-                return;
-            }
-
-            // Get the view we are targeting and make sure it is valid
-            ImageView imageView = mView.get();
-
-            // Make sure the view is still ... bla bla as above
-            boolean viewIsValid = imageView != null
-                                  && this.equals(imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK));
-
-            // we're done; clear the view tag
-            if (viewIsValid) {
-                imageView.setTag(R.id.TAG_GET_THUMBNAIL_TASK, null);
-            }
-
-            if (mBitmap != null) {
-                if (viewIsValid) {
-                    // first display
-                    setImageView(imageView, mBitmap, mWidth, mHeight, true);
-                    taskTicks.addAndGet(System.nanoTime() - mTick);
-                    taskChecks.incrementAndGet();
-                    // now send to cache if needed/allowed.
-                    if (!mWasInCache && BooklistBuilder.imagesAreCached(imageView.getContext())) {
-                        saveToCache(imageView, mUuid, mWidth, mHeight);
-                    }
-                }
-            } else {
-                if (viewIsValid) {
-                    imageView.setImageResource(R.drawable.ic_broken_image);
-                }
-            }
-        }
-
-        @Override
-        @UiThread
-        protected void onCancelled(final Void result) {
-            cleanup();
-        }
-
-        @AnyThread
-        private void cleanup() {
-            RUNNING_TASKS.decrementAndGet();
-        }
+    public static boolean imagesAreCached(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_images_cache_resized, false);
     }
 }

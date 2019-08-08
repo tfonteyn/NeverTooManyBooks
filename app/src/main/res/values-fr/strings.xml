@@ -361,8 +361,6 @@
     <string name="none">Aucun</string>
     <string name="pe_bob_thumbnails_cache_resized_each_time">Redimensionner à chaque fois que nécessaire (moins d’espace nécessaire, défilement des listes plus lent)</string>
     <string name="pe_bob_thumbnails_cache_resized_stored">Mettre les miniatures en cache (plus d’espace nécessaire, défilement des listes plus rapide)</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Utiliser un thread (défilement des listes plus rapide, affichage décalé des images)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Générer immédiatement (défilement des listes plus lent, affichage immédiat des images)</string>
     <string name="pe_use_recommended_option">Utilisez l’option recommandée</string>
     <string name="pg_bob_extra_book_details">Détails supplémentaires</string>
     <string name="pg_booklist">Listes de livres</string>
@@ -418,7 +416,6 @@
     <string name="pt_bob_sort_author_name">Trier les noms d’auteur</string>
     <string name="pt_bob_text_size">Taille des éléments de liste de livres</string>
     <string name="pt_bob_thumbnails_cache_resized">Mettre les miniatures en cache</string>
-    <string name="pt_bob_thumbnails_generating_mode">Utiliser une tâche en arrière-plan pour récupérer les miniatures</string>
     <string name="pt_bob_thumbnails_show">Montrer les miniatures</string>
     <string name="pt_collect_series_info_from_toc">Recueillir des informations sur la série de la table des matières</string>
     <string name="pt_cover_scale_factor">Taille de l’image dans les listes</string>

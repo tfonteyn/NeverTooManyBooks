@@ -246,102 +246,6 @@ public final class CoversDAO
         return null;
     }
 
-    private void open() {
-        final SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(TRACKED_CURSOR_FACTORY);
-        // Try to connect.
-        try {
-            sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
-        } catch (@NonNull final RuntimeException e) {
-            // Assume exception means DB corrupt. Log, rename, and retry
-            Logger.error(this, e, "Failed to open covers db");
-            if (!StorageUtils.renameFile(StorageUtils.getFile(COVERS_DATABASE_NAME),
-                                         StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"))) {
-                Logger.warn(this, "Failed to rename dead covers database: ");
-            }
-
-            // retry...
-            try {
-                sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
-            } catch (@NonNull final RuntimeException e2) {
-                // If we fail after creating a new DB, just give up.
-                Logger.error(this, e2, "Covers database unavailable");
-            }
-        }
-    }
-
-    /**
-     * Generic function to close the database.
-     * It does not 'close' the database in the literal sense, but
-     * performs a cleanup by closing all open statements when there are no instances left.
-     * (So it should really be called cleanup(); But it allows us to use try-with-resources.)
-     */
-    @Override
-    public void close() {
-        // must be in a synchronized, as we use noi twice.
-        synchronized (INSTANCE_COUNTER) {
-            int noi = INSTANCE_COUNTER.decrementAndGet();
-            if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, "close",
-                             "instances left: " + INSTANCE_COUNTER);
-            }
-
-            if (noi == 0) {
-                if (sSyncedDb != null) {
-                    mStatements.close();
-                }
-            }
-        }
-    }
-
-    /**
-     * Save the passed bitmap to a 'file' in the covers database.
-     * Compresses to {@link #IMAGE_QUALITY_PERCENTAGE} first.
-     */
-    @WorkerThread
-    private void saveFile(@NonNull final Bitmap bitmap,
-                          final int maxWidth,
-                          final int maxHeight,
-                          @NonNull final String uuid) {
-        if (sSyncedDb == null) {
-            return;
-        }
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        // Rapid scrolling of view could already have recycled the bitmap.
-        if (bitmap.isRecycled()) {
-            return;
-        }
-        try {
-            bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_QUALITY_PERCENTAGE, out);
-        } catch (@NonNull final IllegalStateException e) {
-            // java.lang.IllegalStateException: Can't compress a recycled bitmap
-            // don't care; this is just a cache; don't even log.
-            return;
-        }
-
-        byte[] image = out.toByteArray();
-
-        String cacheId = constructCacheId(uuid, maxWidth, maxHeight);
-        ContentValues cv = new ContentValues();
-        cv.put(DOM_CACHE_ID.name, cacheId);
-        cv.put(DOM_IMAGE.name, image);
-        cv.put(DOM_WIDTH.name, bitmap.getHeight());
-        cv.put(DOM_HEIGHT.name, bitmap.getWidth());
-
-
-        SynchronizedStatement existsStmt = mStatements.get(STMT_EXISTS);
-        if (existsStmt == null) {
-            existsStmt = mStatements.add(sSyncedDb, STMT_EXISTS, SQL_COUNT_ID);
-        }
-        existsStmt.bindString(1, cacheId);
-        if (existsStmt.count() == 0) {
-            sSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
-        } else {
-            sSyncedDb.update(TBL_IMAGE.getName(), cv,
-                             DOM_CACHE_ID.name + "=?", new String[]{cacheId});
-        }
-    }
-
     /**
      * Delete the cached covers associated with the passed book uuid.
      * <p>
@@ -392,6 +296,104 @@ public final class CoversDAO
             sSyncedDb.analyze();
         } catch (@NonNull final RuntimeException e) {
             Logger.error(CoversDAO.class, e);
+        }
+    }
+
+    private void open() {
+        final SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(TRACKED_CURSOR_FACTORY);
+        // Try to connect.
+        try {
+            sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
+        } catch (@NonNull final RuntimeException e) {
+            // Assume exception means DB corrupt. Log, rename, and retry
+            Logger.error(this, e, "Failed to open covers db");
+            if (!StorageUtils.renameFile(StorageUtils.getFile(COVERS_DATABASE_NAME),
+                                         StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"))) {
+                Logger.warn(this, "Failed to rename dead covers database: ");
+            }
+
+            // retry...
+            try {
+                sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
+            } catch (@NonNull final RuntimeException e2) {
+                // If we fail after creating a new DB, just give up.
+                Logger.error(this, e2, "Covers database unavailable");
+            }
+        }
+    }
+
+    /**
+     * Generic function to close the database.
+     * It does not 'close' the database in the literal sense, but
+     * performs a cleanup by closing all open statements when there are no instances left.
+     * (So it should really be called cleanup(); But it allows us to use try-with-resources.)
+     */
+    @Override
+    public void close() {
+        // must be in a synchronized, as we use noi twice.
+        synchronized (INSTANCE_COUNTER) {
+            int noi = INSTANCE_COUNTER.decrementAndGet();
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.debug(this, "close",
+                             "instances left: " + INSTANCE_COUNTER);
+            }
+
+            if (noi == 0) {
+                if (sSyncedDb != null) {
+                    mStatements.close();
+                }
+            }
+        }
+    }
+
+    /**
+     * Save the passed bitmap to a 'file' in the covers database.
+     * Compresses to {@link #IMAGE_QUALITY_PERCENTAGE} first.
+     * <p>
+     * This will either insert or update a row in the database.
+     */
+    @WorkerThread
+    private void saveFile(@NonNull final String uuid,
+                          @NonNull final Bitmap bitmap,
+                          final int maxWidth,
+                          final int maxHeight) {
+        if (sSyncedDb == null) {
+            return;
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        // Rapid scrolling of view could already have recycled the bitmap.
+        if (bitmap.isRecycled()) {
+            return;
+        }
+        try {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_QUALITY_PERCENTAGE, out);
+        } catch (@NonNull final IllegalStateException e) {
+            // Again: Rapid scrolling of view could already have recycled the bitmap.
+            // java.lang.IllegalStateException: Can't compress a recycled bitmap
+            // don't care at this point; this is just a cache; don't even log.
+            return;
+        }
+
+        byte[] image = out.toByteArray();
+
+        String cacheId = constructCacheId(uuid, maxWidth, maxHeight);
+        ContentValues cv = new ContentValues();
+        cv.put(DOM_CACHE_ID.name, cacheId);
+        cv.put(DOM_IMAGE.name, image);
+        cv.put(DOM_WIDTH.name, bitmap.getHeight());
+        cv.put(DOM_HEIGHT.name, bitmap.getWidth());
+
+        SynchronizedStatement existsStmt = mStatements.get(STMT_EXISTS);
+        if (existsStmt == null) {
+            existsStmt = mStatements.add(sSyncedDb, STMT_EXISTS, SQL_COUNT_ID);
+        }
+        existsStmt.bindString(1, cacheId);
+        if (existsStmt.count() == 0) {
+            sSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
+        } else {
+            sSyncedDb.update(TBL_IMAGE.getName(), cv,
+                             DOM_CACHE_ID.name + "=?", new String[]{cacheId});
         }
     }
 
@@ -465,7 +467,7 @@ public final class CoversDAO
     }
 
     /**
-     * Background task to save a bitmap into the covers thumbnail database. Runs in background
+     * Background task to save a bitmap into the covers thumbnail database. Runs in the background
      * because it involves compression and IO, and can be safely queued. Failures can be ignored
      * because it is just writing to a cache used solely for optimization.
      * <p>
@@ -517,7 +519,7 @@ public final class CoversDAO
             runningTasks.incrementAndGet();
 
             try (CoversDAO coversDBAdapter = getInstance()) {
-                coversDBAdapter.saveFile(mBitmap, mMaxWidth, mMaxHeight, mUuid);
+                coversDBAdapter.saveFile(mUuid, mBitmap, mMaxWidth, mMaxHeight);
             }
 
             runningTasks.decrementAndGet();

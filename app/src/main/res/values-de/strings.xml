@@ -360,8 +360,6 @@
     <string name="none">Keiner</string>
     <string name="pe_bob_thumbnails_cache_resized_each_time">Größe bei Bedarf ändern (geringerer Speicherverbrauch, langsamerer Bildlauf)</string>
     <string name="pe_bob_thumbnails_cache_resized_stored">Cover-Bilder zwischenspeichern (höherer Speicherverbrauch, schnellerer Bildlauf)</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Im Hintergrund laden (schnellerer Bildlauf, Bilder können verzögert sein)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Sofort erzeugen (langsamerer Bildlauf, Bilder sofort angezeigt)</string>
     <string name="pe_use_recommended_option">Verwenden Sie die empfohlene Option</string>
     <string name="pg_bob_extra_book_details">Zusätzliche Buchdetails</string>
     <string name="pg_booklist">Buchlisten</string>
@@ -417,7 +415,6 @@
     <string name="pt_bob_sort_author_name">Autorennamen sortieren</string>
     <string name="pt_bob_text_size">Größe der Einträge in der Bücherliste</string>
     <string name="pt_bob_thumbnails_cache_resized">Größe der Cover-Bilder ändern zwischenspeichern</string>
-    <string name="pt_bob_thumbnails_generating_mode">Cover-Bilder im Hintergrund laden</string>
     <string name="pt_bob_thumbnails_show">Cover-Bilder anzeigen</string>
     <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
     <string name="pt_cover_scale_factor">Bildgröße in Listen</string>

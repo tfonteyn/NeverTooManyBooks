@@ -841,8 +841,6 @@
     <string name="pt_thumbnails_crop_frame_is_whole_image">Default crop frame is whole image</string>
     <!-- SwitchPreference - use an external app. (Intent) to handle cropping-->
     <string name="pt_thumbnails_external_cropper">Use an external image cropper</string>
-    <!-- Preference - Thumbnails are fetched in a background task -->
-    <string name="pt_bob_thumbnails_generating_mode">Use a background task to fetch images</string>
     <!-- Preference - Thumbnails are cached in a database to avoid resizing all the time -->
     <string name="pt_bob_thumbnails_cache_resized">Resized images are cached</string>
     <!-- ListPreference - Degrees by which to rotate camera images automatically -->
@@ -874,18 +872,12 @@
         Family name first e.g. “Wheatley, Phillis”
     </string>
 
-    <string name="pe_bob_thumbnails_generating_mode_background">
-        Use background task to load images (scrolling will be faster, images may be delayed)
-    </string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">
-        Load images immediately (scrolling will be slower)</string>
     <string name="pe_bob_thumbnails_cache_resized_each_time">
         Resize images each time they are needed (uses less storage, scrolling will be slower)
     </string>
     <string name="pe_bob_thumbnails_cache_resized_stored">
         Cache resized images (scrolling will be faster, uses more storage)
     </string>
-
 
     <!-- ####################################################################################### -->
     <!-- == Field labels == -->

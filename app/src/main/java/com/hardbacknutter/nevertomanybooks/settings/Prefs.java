@@ -73,26 +73,23 @@ public final class Prefs {
     public static final String pk_ui_theme = "App.Theme";
     public static final String pk_ui_messages_use = "App.UserMessage";
 
-    public static final String pk_ui_network_mobile_data = "network.mobile_data";
+    public static final String pk_network_mobile_data = "network.mobile_data";
 
     public static final String pk_scanning_preferred_scanner = "ScannerManager.PreferredScanner";
-
-
-    public static final String pk_thumbnails_zoom_upscale =
-            "Image.Zoom.Upscale";
-    public static final String pk_thumbnails_rotate_auto =
-            "Image.Camera.Autorotate";
-    public static final String pk_thumbnail_cropper_layer_type =
-            "Image.ViewLayerType";
-    public static final String pk_thumbnails_external_cropper =
-            "Image.Cropper.UseExternalApp";
-    public static final String pk_thumbnails_crop_whole_image =
-            "Image.Cropper.FrameIsWholeImage";
-
-    public static final String pk_scanning_beep_if_isbn_valid
-            = "SoundManager.BeepIfScannedIsbnValid";
-    public static final String pk_scanning_beep_if_isbn_invalid =
+    public static final String pk_scanning_beep_if_valid =
+            "SoundManager.BeepIfScannedIsbnValid";
+    public static final String pk_scanning_beep_if_invalid =
             "SoundManager.BeepIfScannedIsbnInvalid";
+
+    public static final String pk_reformat_titles_on_insert = "title.reformat.insert";
+    public static final String pk_reformat_titles_on_update = "title.reformat.update";
+
+    public static final String pk_images_cache_resized = "Image.Cache.Resized";
+    public static final String pk_images_zoom_upscale = "Image.Zoom.Upscale";
+    public static final String pk_images_rotate_auto = "Image.Camera.Autorotate";
+    public static final String pk_images_external_cropper = "Image.Cropper.UseExternalApp";
+    public static final String pk_images_crop_whole_image = "Image.Cropper.FrameIsWholeImage";
+    public static final String pk_images_cropper_layer_type = "Image.ViewLayerType";
 
     public static final String pk_bob_open_book_read_only =
             "BooksOnBookshelf.OpenBookReadOnly";
@@ -100,10 +97,7 @@ public final class Prefs {
             "BookList.ListRebuildState";
     public static final String pk_bob_list_generation =
             "BookList.CompatibilityMode";
-    public static final String pk_bob_thumbnails_generating_mode =
-            "BookList.ThumbnailsInBackground";
-    public static final String pk_bob_thumbnails_cache_resized =
-            "BookList.ThumbnailsCached";
+
     public static final String pk_bob_style_name =
             "BookList.Style.Name";
     public static final String pk_bob_groups =
@@ -125,9 +119,6 @@ public final class Prefs {
             "BookList.Style.Group.Authors.DisplayFirstThenLast";
     public static final String pk_bob_sort_author_name =
             "BookList.Style.Sort.Author.GivenFirst";
-
-    public static final String pk_reformat_titles_on_insert = "title.reformat.insert";
-    public static final String pk_reformat_titles_on_update = "title.reformat.update";
 
     /** Show the cover image for each book. */
     public static final String pk_bob_thumbnails_show = "BookList.Style.Show.Thumbnails";
@@ -347,23 +338,19 @@ public final class Prefs {
                         break;
 
                     case "App.CropFrameWholeImage":
-                        ed.putBoolean(pk_thumbnails_crop_whole_image, (Boolean) oldValue);
+                        ed.putBoolean(pk_images_crop_whole_image, (Boolean) oldValue);
                         break;
 
                     case "App.UseExternalImageCropper":
-                        ed.putBoolean(pk_thumbnails_external_cropper, (Boolean) oldValue);
+                        ed.putBoolean(pk_images_external_cropper, (Boolean) oldValue);
                         break;
 
                     case "BookList.Global.CacheThumbnails":
-                        ed.putBoolean(pk_bob_thumbnails_cache_resized, (Boolean) oldValue);
-                        break;
-
-                    case "BookList.Global.BackgroundThumbnails":
-                        ed.putBoolean(pk_bob_thumbnails_generating_mode, (Boolean) oldValue);
+                        ed.putBoolean(pk_images_cache_resized, (Boolean) oldValue);
                         break;
 
                     case "App.AutorotateCameraImages":
-                        ed.putString(pk_thumbnails_rotate_auto, String.valueOf(oldValue));
+                        ed.putString(pk_images_rotate_auto, String.valueOf(oldValue));
                         break;
 
                     /*
@@ -483,6 +470,7 @@ public final class Prefs {
                     case "App.includeClassicView":
                     case "App.DisableBackgroundImage":
                     case "BookList.Global.FlatBackground":
+                    case "BookList.Global.BackgroundThumbnails":
                     case "state_current_group_count":
                     case "state_sort":
                     case "state_bookshelf":

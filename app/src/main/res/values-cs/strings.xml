@@ -358,8 +358,6 @@
     <string name="none">Žádný</string>
     <string name="pe_bob_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně paměti, rolování bude pomalejší)</string>
     <string name="pe_bob_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více paměti)</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Použít úlohu na pozadí k načtení obrázků (rolování bude rychlejší, obrázky mohou být zpožděny)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Načíst obrázky okamžitě (rolování bude pomalejší)</string>
     <string name="pe_use_recommended_option">Použijte doporučenou možnost</string>
     <string name="pg_bob_extra_book_details">Podrobnosti o knize</string>
     <string name="pg_booklist">Seznamy knih</string>
@@ -414,7 +412,6 @@
     <string name="pt_bob_sort_author_name">Seřadit podle jména autora</string>
     <string name="pt_bob_text_size">Velikost položek na seznamu knih</string>
     <string name="pt_bob_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
-    <string name="pt_bob_thumbnails_generating_mode">Chcete-li načíst obrázky, použijte úkol na pozadí</string>
     <string name="pt_bob_thumbnails_show">Zobrazit náhledy</string>
     <string name="pt_collect_series_info_from_toc">Sbírejte informace o sériích z obsahu</string>
     <string name="pt_cover_scale_factor">Velikost miniatur v seznamech</string>

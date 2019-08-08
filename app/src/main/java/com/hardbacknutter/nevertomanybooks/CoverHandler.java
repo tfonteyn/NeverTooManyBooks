@@ -390,7 +390,7 @@ public class CoverHandler {
                                     @Nullable final Bitmap bitmap) {
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
             Matrix matrix = new Matrix();
-            matrix.postRotate(App.getListPreference(Prefs.pk_thumbnails_rotate_auto, 0));
+            matrix.postRotate(App.getListPreference(Prefs.pk_images_rotate_auto, 0));
             Bitmap result = Bitmap.createBitmap(bitmap, 0, 0,
                                                 bitmap.getWidth(), bitmap.getHeight(),
                                                 matrix, true);
@@ -484,8 +484,8 @@ public class CoverHandler {
         int attempts = 2;
         while (true) {
             try {
-                Bitmap bm = ImageUtils.createScaledBitmap(file.getPath(),
-                                                          imageSize, imageSize, true);
+                Bitmap bm = ImageUtils.forceScaleBitmap(file.getPath(),
+                                                        imageSize, imageSize, true);
                 if (bm == null) {
                     return;
                 }
@@ -526,7 +526,7 @@ public class CoverHandler {
 
     private void cropCoverImage(@NonNull final File imageFile) {
         boolean external = PreferenceManager.getDefaultSharedPreferences(mContext)
-                                            .getBoolean(Prefs.pk_thumbnails_external_cropper,
+                                            .getBoolean(Prefs.pk_images_external_cropper,
                                                         false);
         if (external) {
             cropCoverImageExternal(imageFile);
@@ -542,7 +542,7 @@ public class CoverHandler {
      */
     private void cropCoverImageInternal(@NonNull final File imageFile) {
         boolean wholeImage = PreferenceManager.getDefaultSharedPreferences(mContext)
-                                              .getBoolean(Prefs.pk_thumbnails_crop_whole_image,
+                                              .getBoolean(Prefs.pk_images_crop_whole_image,
                                                           false);
 
         // Get the output file spec, and make sure it does not already exist.

@@ -34,7 +34,6 @@ import android.database.sqlite.SQLiteDoneException;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -285,26 +284,6 @@ public class BooklistBuilder
      */
     public static int getPreferredListRebuildState() {
         return App.getListPreference(Prefs.pk_bob_list_state, PREF_LIST_REBUILD_STATE_PRESERVED);
-    }
-
-    /**
-     * @param context Current context
-     *
-     * @return {@code true} if AsyncTasks will be used
-     */
-    public static boolean imagesAreGeneratedInBackground(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_bob_thumbnails_generating_mode, false);
-    }
-
-    /**
-     * @param context Current context
-     *
-     * @return {@code true} if resized images are cached in a database.
-     */
-    public static boolean imagesAreCached(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_bob_thumbnails_cache_resized, false);
     }
 
     /**

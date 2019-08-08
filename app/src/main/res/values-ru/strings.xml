@@ -356,8 +356,6 @@
     <string name="none">Никто</string>
     <string name="pe_bob_thumbnails_cache_resized_each_time">Не кэшировать (используется меньше места, но пролистывание будет медленнее)</string>
     <string name="pe_bob_thumbnails_cache_resized_stored">Кэшировать(используется больше места, но пролистывание быстрее)</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Использовать фоновый поток (списки пролистываются быстрее, картинки показываются по мере их загрузки)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Создавать немедленно (списки пролистываются медленнее, зато картинки показываются сразу)</string>
     <string name="pe_use_recommended_option">Используйте рекомендуемый вариант</string>
     <string name="pg_bob_extra_book_details">Дополнительная информация</string>
     <string name="pg_booklist">Списки книг</string>
@@ -412,7 +410,6 @@
     <string name="pt_bob_sort_author_name">Сортировать авторов</string>
     <string name="pt_bob_text_size">Размер элемента списка книг</string>
     <string name="pt_bob_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
-    <string name="pt_bob_thumbnails_generating_mode">Используйте фоновое задание для извлечения миниатюр</string>
     <string name="pt_bob_thumbnails_show">Показывать миниатюры</string>
     <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
     <string name="pt_cover_scale_factor">Размер изображения в списках</string>

@@ -359,8 +359,6 @@
     <string name="none">Nessuna</string>
     <string name="pe_bob_thumbnails_cache_resized_each_time">Ridimensiona ogni volta (richiede meno spazio di memorizzazione, ma lo scorrimento sarà più lento)</string>
     <string name="pe_bob_thumbnails_cache_resized_stored">Memorizza le miniature ridimensionate (richiede più spazio di memorizzazione, ma gli elenchi scorreranno più velocemente)</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">In sottofondo (scorrimento elenchi più veloce, immagini mostrate con ritardo)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Immediata (scorrimento elenchi più lento, immagini mostrate immediatamente)</string>
     <string name="pe_use_recommended_option">Utilizzare l\'opzione consigliata</string>
     <string name="pg_bob_extra_book_details">Dettagli libro aggiuntivi</string>
     <string name="pg_booklist">Elenchi di libri</string>
@@ -416,7 +414,6 @@
     <string name="pt_bob_sort_author_name">Ordina i nomi degli autori</string>
     <string name="pt_bob_text_size">Dimensione degli elementi dell\'elenco libri</string>
     <string name="pt_bob_thumbnails_cache_resized">Memorizza le miniature ridimensionate</string>
-    <string name="pt_bob_thumbnails_generating_mode">Generazione miniature copertine in sottofondo</string>
     <string name="pt_bob_thumbnails_show">Mostra miniature</string>
     <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie da TOC</string>
     <string name="pt_cover_scale_factor">Dimensione miniature in elenchi</string>

@@ -278,16 +278,8 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_directions_run"
-            android:key="BookList.ThumbnailsInBackground"
-            android:summaryOff="@string/pe_bob_thumbnails_generating_mode_immediately"
-            android:summaryOn="@string/pe_bob_thumbnails_generating_mode_background"
-            android:title="@string/pt_bob_thumbnails_generating_mode" />
-
-        <SwitchPreference
-            android:defaultValue="false"
             android:icon="@drawable/ic_cached"
-            android:key="BookList.ThumbnailsCached"
+            android:key="Image.Cache.Resized"
             android:summaryOff="@string/pe_bob_thumbnails_cache_resized_each_time"
             android:summaryOn="@string/pe_bob_thumbnails_cache_resized_stored"
             android:title="@string/pt_bob_thumbnails_cache_resized" />

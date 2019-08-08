@@ -110,7 +110,7 @@ public class ZoomedImageDialogFragment
                               @Nullable final Bundle savedInstanceState) {
 
         boolean upscale = PreferenceManager.getDefaultSharedPreferences(view.getContext())
-                                           .getBoolean(Prefs.pk_thumbnails_zoom_upscale, true);
+                                           .getBoolean(Prefs.pk_images_zoom_upscale, true);
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
 

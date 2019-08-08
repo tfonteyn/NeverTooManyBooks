@@ -118,7 +118,7 @@ public abstract class CropImageViewTouchBase
             return;
         }
 
-        int type = App.getListPreference(Prefs.pk_thumbnail_cropper_layer_type,
+        int type = App.getListPreference(Prefs.pk_images_cropper_layer_type,
                                          LAYER_TYPE_USE_DEFAULT);
         if (type == -1) {
             return;

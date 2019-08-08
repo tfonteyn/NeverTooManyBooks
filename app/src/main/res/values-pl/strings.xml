@@ -358,8 +358,6 @@
     <string name="none">Żaden</string>
     <string name="pe_bob_thumbnails_cache_resized_each_time">Zmień rozmiar obrazów za każdym razem, gdy są potrzebne (zużywa mniej pamięci, przewijanie będzie wolniejsze)</string>
     <string name="pe_bob_thumbnails_cache_resized_stored">Buforuj obrazy o zmienionym rozmiarze (przewijanie będzie szybsze, zużyje więcej pamięci)</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Użyj zadania w tle, aby załadować obrazy (przewijanie będzie szybsze, obrazy mogą być opóźnione)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Natychmiastowe ładowanie obrazów (przewijanie będzie wolniejsze)</string>
     <string name="pe_use_recommended_option">Użyj zalecanej opcji</string>
     <string name="pg_bob_extra_book_details">Dodatkowe szczegóły książki</string>
     <string name="pg_booklist">Listy książek</string>
@@ -414,7 +412,6 @@
     <string name="pt_bob_sort_author_name">Sortowanie nazw autorów</string>
     <string name="pt_bob_text_size">Rozmiar tekstu listy książek</string>
     <string name="pt_bob_thumbnails_cache_resized">Zmienione obrazy są buforowane</string>
-    <string name="pt_bob_thumbnails_generating_mode">Użyj zadania w tle, aby załadować obrazy</string>
     <string name="pt_bob_thumbnails_show">Pokaż miniaturki</string>
     <string name="pt_collect_series_info_from_toc">Zbierz informacje o serii z spisu treści</string>
     <string name="pt_cover_scale_factor">Rozmiar obrazu na listach</string>

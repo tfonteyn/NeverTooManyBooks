@@ -379,16 +379,13 @@ public class BooklistPseudoCursor
 //            }
         }
 
-        Logger.debug(this,"onMove",
+        Logger.debug(this, "onMove",
                      "ImageUtils.cacheChecks=" + ImageUtils.cacheChecks,
                      "ImageUtils.cacheTicks=" + (ImageUtils.cacheTicks.get() / 1_000_000),
 
                      "ImageUtils.fileChecks=" + ImageUtils.fileChecks,
-                     "ImageUtils.fileTicks=" + (ImageUtils.fileTicks.get() / 1_000_000),
-
-                     "ImageUtils.taskChecks=" + ImageUtils.taskChecks,
-                     "ImageUtils.taskTicks=" + (ImageUtils.taskTicks.get() / 1_000_000)
-                     );
+                     "ImageUtils.fileTicks=" + (ImageUtils.fileTicks.get() / 1_000_000)
+                    );
         return true;
     }
 

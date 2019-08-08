@@ -52,8 +52,10 @@ public final class DEBUG_SWITCHES {
     public static final boolean BOOKLIST_BUILDER = false;
 
     /* ****************************************************************************************** */
-    /** {@link com.hardbacknutter.nevertomanybooks.viewmodels
-     * .BooksOnBookshelfModel#initBookList}. */
+    /**
+     * {@link com.hardbacknutter.nevertomanybooks.viewmodels
+     * .BooksOnBookshelfModel#initBookList}.
+     */
     public static final boolean BOB_INIT_BOOK_LIST = false;
     /** {@link CoverBrowserFragment}. */
     public static final boolean COVER_BROWSER = false;

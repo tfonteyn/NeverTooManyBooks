@@ -360,8 +360,6 @@
     <string name="none">Ninguno</string>
     <string name="pe_bob_thumbnails_cache_resized_each_time">Redimensionar cada vez que se necesitan (se utiliza menos almacenamiento, el desplazamiento será más lento)</string>
     <string name="pe_bob_thumbnails_cache_resized_stored">Miniaturas redimensionadas en caché (usa más almacenamiento, desplazamiento más rápido)</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Usar hilo de fondo (desplazamiento más rápido, las imágenes pueden retrasarse)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Generar inmediatamente (desplazamiento más lento, las imágenes se muestran inmediatamente)</string>
     <string name="pe_use_recommended_option">Usa la opción recomendada</string>
     <string name="pg_bob_extra_book_details">Detalles adicionales</string>
     <string name="pg_booklist">Listas de libros</string>
@@ -417,7 +415,6 @@
     <string name="pt_bob_sort_author_name">Ordenar autores</string>
     <string name="pt_bob_text_size">Tamaño de los elementos en el listado</string>
     <string name="pt_bob_thumbnails_cache_resized">Miniaturas redimensionadas en caché</string>
-    <string name="pt_bob_thumbnails_generating_mode">Utilice el hilo de fondo para cambiar el tamaño de las miniaturas</string>
     <string name="pt_bob_thumbnails_show">Mostrar miniaturas</string>
     <string name="pt_collect_series_info_from_toc">Recopilar información de la serie de TOC</string>
     <string name="pt_cover_scale_factor">Tamaño de la imagen en listas.</string>

@@ -80,7 +80,7 @@ public final class NetworkUtils {
 
     private static boolean isAllowMobileData() {
         return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                .getBoolean(Prefs.pk_ui_network_mobile_data, false);
+                                .getBoolean(Prefs.pk_network_mobile_data, false);
     }
 
     /**

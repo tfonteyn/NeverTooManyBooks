@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.R;
-import com.hardbacknutter.nevertomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.database.DBCleaner;
@@ -52,6 +51,7 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener.TaskProgressMessage;
+import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 
 /**
@@ -366,7 +366,7 @@ public class StartupViewModel
                 }
 
                 mDb.analyze();
-                if (BooklistBuilder.imagesAreCached(App.getAppContext())) {
+                if (ImageUtils.imagesAreCached(App.getAppContext())) {
                     CoversDAO.analyze();
                 }
 
