@@ -80,13 +80,18 @@ import com.hardbacknutter.nevertomanybooks.utils.Csv;
 public class BooksOnBookshelfModel
         extends ViewModel {
 
+    private static final String TAG = "BooksOnBookshelf";
+
     /** see class doc. */
     public static final boolean TMP_USE_BOB_EXTRAS_TASK = false;
 
     /** Preference name - Saved position of last top row. */
-    public static final String PREF_BOB_TOP_ROW = "BooksOnBookshelf.TopRow";
+    public static final String PREF_BOB_TOP_ROW = TAG + ".TopRow";
     /** Preference name - Saved position of last top row offset from view top. */
-    public static final String PREF_BOB_TOP_ROW_OFFSET = "BooksOnBookshelf.TopRowOffset";
+    public static final String PREF_BOB_TOP_ROW_OFFSET = TAG + ".TopRowOffset";
+
+    /** collapsed/expanded. */
+    public static final String BKEY_LIST_STATE = TAG + ":list.state";
 
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
@@ -213,9 +218,11 @@ public class BooksOnBookshelfModel
             // Get preferred booklist state to use from preferences;
             // always do this here in init, as the prefs might have changed anytime.
             mRebuildState = BooklistBuilder.getPreferredListRebuildState();
+
         } else {
-            // Always preserve state when rebuilding/recreating etc
-            mRebuildState = BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED;
+            // Unless set by the caller, preserve state when rebuilding/recreating etc
+            mRebuildState = args.getInt(BKEY_LIST_STATE,
+                                        BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED);
         }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);

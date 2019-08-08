@@ -224,9 +224,10 @@ public class BooksOnBookshelf
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
         mModel = ViewModelProviders.of(this).get(BooksOnBookshelfModel.class);
+        mModel.init(this, getIntent().getExtras(), savedInstanceState);
+
         mModel.getUserMessage().observe(this, this::showUserMessage);
         mModel.getNeedsGoodreads().observe(this, this::needsGoodreads);
-        mModel.init(this, getIntent().getExtras(), savedInstanceState);
         mModel.restoreCurrentBookshelf(this);
 
         // listen for the booklist being ready to display.

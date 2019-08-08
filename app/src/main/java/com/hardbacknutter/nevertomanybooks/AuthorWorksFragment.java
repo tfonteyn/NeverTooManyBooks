@@ -50,12 +50,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertomanybooks.viewmodels.AuthorWorksModel;
+import com.hardbacknutter.nevertomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertomanybooks.widgets.FastScrollerOverlay;
 import com.hardbacknutter.nevertomanybooks.widgets.cfs.CFSRecyclerView;
 
@@ -257,7 +259,12 @@ public class AuthorWorksFragment
                                      // We want to keep BooksOnBookshelf on top
                                      .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                                      // bring up list, filtered on the book ID's
-                                     .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
+                                     .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
+                                     // if we don't expand, then you often end up
+                                     // with the author as a single line, and no books shown
+                                     // which is quite confusing to the user.
+                                     .putExtra(BooksOnBookshelfModel.BKEY_LIST_STATE,
+                                               BooklistBuilder.PREF_LIST_REBUILD_ALWAYS_EXPANDED);
                     startActivity(intent);
                 }
                 break;
