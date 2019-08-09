@@ -34,7 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
@@ -81,7 +81,7 @@ public class EditBookActivity
         // delete any leftover temporary thumbnails
         StorageUtils.deleteTempCoverFile();
 
-        BookBaseFragmentModel model = ViewModelProviders.of(this)
+        BookBaseFragmentModel model = new ViewModelProvider(this)
                                                         .get(BookBaseFragmentModel.class);
 
         Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());

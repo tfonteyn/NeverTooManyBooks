@@ -51,7 +51,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -272,7 +272,7 @@ public class BookFragment
         // parent takes care of initialising the Fields.
         super.onActivityCreated(savedInstanceState);
 
-        mFlattenedBooklistModel = ViewModelProviders.of(this).get(FlattenedBooklistModel.class);
+        mFlattenedBooklistModel = new ViewModelProvider(this).get(FlattenedBooklistModel.class);
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
         mFlattenedBooklistModel.init(args, mBookModel.getBook().getId());
 

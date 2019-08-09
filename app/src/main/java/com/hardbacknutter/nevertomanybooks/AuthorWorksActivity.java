@@ -32,7 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertomanybooks.viewmodels.AuthorWorksModel;
@@ -68,7 +68,7 @@ public class AuthorWorksActivity
 
     @Override
     public void onBackPressed() {
-        AuthorWorksModel model = ViewModelProviders.of(this).get(AuthorWorksModel.class);
+        AuthorWorksModel model = new ViewModelProvider(this).get(AuthorWorksModel.class);
 
         if (model.isAtLeastOneBookDeleted()) {
             setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);

@@ -42,7 +42,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -100,7 +100,7 @@ public class AuthorWorksFragment
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
-        mModel = ViewModelProviders.of(getActivity()).get(AuthorWorksModel.class);
+        mModel = new ViewModelProvider(getActivity()).get(AuthorWorksModel.class);
         mModel.init(requireArguments());
 
         String title = mModel.getAuthor().getLabel() + " [" + mModel.getTocEntries().size() + ']';

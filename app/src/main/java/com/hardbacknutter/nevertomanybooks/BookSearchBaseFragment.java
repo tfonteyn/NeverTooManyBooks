@@ -39,7 +39,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
 
@@ -199,7 +199,7 @@ public abstract class BookSearchBaseFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mBookSearchBaseModel = ViewModelProviders.of(this).get(BookSearchBaseModel.class);
+        mBookSearchBaseModel = new ViewModelProvider(this).get(BookSearchBaseModel.class);
 
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mBookSearchBaseModel.init(args);

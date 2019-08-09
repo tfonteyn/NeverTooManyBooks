@@ -35,7 +35,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
 
@@ -66,7 +66,7 @@ public class RestoreActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mOptionsModel = ViewModelProviders.of(this).get(ImportOptionsTaskModel.class);
+        mOptionsModel = new ViewModelProvider(this).get(ImportOptionsTaskModel.class);
         mOptionsModel.getTaskFinishedMessage().observe(this, this::onTaskFinishedMessage);
         mOptionsModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
         mOptionsModel.getTaskCancelledMessage().observe(this, this::onTaskCancelledMessage);

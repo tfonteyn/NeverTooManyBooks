@@ -40,7 +40,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -123,7 +123,7 @@ public class GoodreadsSearchActivity
 
         setTitle(getString(R.string.progress_msg_searching_site, getString(R.string.goodreads)));
 
-        mModel = ViewModelProviders.of(this).get(GrSearchViewModel.class);
+        mModel = new ViewModelProvider(this).get(GrSearchViewModel.class);
         Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
         mModel.init(args);
         mModel.getWorks().observe(this, this::onSearchResult);

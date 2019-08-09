@@ -44,7 +44,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -263,7 +263,7 @@ public abstract class BookBaseFragment
 
         // Activity scope!
         //noinspection ConstantConditions
-        mBookModel = ViewModelProviders.of(getActivity()).get(BookBaseFragmentModel.class);
+        mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
         mBookModel.init(args);
         mBookModel.getUserMessage().observe(this, this::showUserMessage);

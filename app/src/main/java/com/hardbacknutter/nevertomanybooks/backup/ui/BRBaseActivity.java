@@ -37,7 +37,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -82,7 +82,7 @@ public abstract class BRBaseActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mModel = ViewModelProviders.of(this).get(BRBaseModel.class);
+        mModel = new ViewModelProvider(this).get(BRBaseModel.class);
         mModel.init(this);
         mModel.getFileDetails().observe(this, this::onGotFileList);
 

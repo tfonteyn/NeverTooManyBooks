@@ -42,7 +42,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -297,7 +297,7 @@ public class AdminFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mModel = ViewModelProviders.of(this).get(IntegerTaskModel.class);
+        mModel = new ViewModelProvider(this).get(IntegerTaskModel.class);
         mModel.getTaskFinishedMessage().observe(this, this::onTaskFinishedMessage);
         mModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
         mModel.getTaskCancelledMessage().observe(this, this::onTaskCancelledMessage);

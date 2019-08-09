@@ -44,7 +44,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
@@ -129,7 +129,7 @@ public class StartupActivity
         }
 
         // get our ViewModel; we init in mStartupStage == 1.
-        mModel = ViewModelProviders.of(this).get(StartupViewModel.class);
+        mModel = new ViewModelProvider(this).get(StartupViewModel.class);
 
         if (!initStorage()) {
             // we asked for permissions. TBC in onRequestPermissionsResult

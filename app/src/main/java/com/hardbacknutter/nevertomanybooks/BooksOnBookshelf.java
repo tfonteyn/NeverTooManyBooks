@@ -48,7 +48,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -223,7 +223,7 @@ public class BooksOnBookshelf
         // set the search capability to local (application) search
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
-        mModel = ViewModelProviders.of(this).get(BooksOnBookshelfModel.class);
+        mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);
         mModel.init(this, getIntent().getExtras(), savedInstanceState);
 
         mModel.getUserMessage().observe(this, this::showUserMessage);

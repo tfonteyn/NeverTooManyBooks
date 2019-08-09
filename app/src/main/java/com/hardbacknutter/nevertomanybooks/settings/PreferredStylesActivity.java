@@ -39,7 +39,7 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -97,7 +97,7 @@ public class PreferredStylesActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mModel = ViewModelProviders.of(this).get(PreferredStylesViewModel.class);
+        mModel = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
         mModel.init();
 
         mListView = findViewById(android.R.id.list);
