@@ -28,7 +28,6 @@ package com.hardbacknutter.nevertomanybooks;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -295,7 +294,6 @@ public class AuthorWorksFragment
         final TextView authorView;
         @Nullable
         final TextView firstPublicationView;
-
         @Nullable
         final CompoundButton multipleBooksView;
 
@@ -306,7 +304,7 @@ public class AuthorWorksFragment
             authorView = itemView.findViewById(R.id.author);
             // optional
             firstPublicationView = itemView.findViewById(R.id.year);
-            // optional
+            // optional icon to indicate a story appears in more then one book
             multipleBooksView = itemView.findViewById(R.id.cbx_multiple_books);
         }
     }
@@ -315,10 +313,6 @@ public class AuthorWorksFragment
             extends RecyclerView.Adapter<Holder>
             implements FastScrollerOverlay.SectionIndexerV2 {
 
-        /** Icon to show for a book. */
-        private final Drawable mBookIndicator;
-        /** Icon to show for not a book. e.g. a short story... */
-        private final Drawable mStoryIndicator;
         /** Caching the inflater. */
         private final LayoutInflater mInflater;
 
@@ -329,9 +323,6 @@ public class AuthorWorksFragment
          */
         TocAdapter(@NonNull final LayoutInflater inflater) {
             mInflater = inflater;
-            Context context = mInflater.getContext();
-            mBookIndicator = context.getDrawable(R.drawable.ic_book);
-            mStoryIndicator = context.getDrawable(R.drawable.ic_paragraph);
         }
 
         @NonNull
@@ -351,24 +342,7 @@ public class AuthorWorksFragment
                     throw new IllegalArgumentException("type=" + viewType);
             }
 
-            Holder holder = new Holder(itemView);
-
-            // decorate the row depending on toc entry or actual book
-            switch (type) {
-                case Toc:
-                    holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            mStoryIndicator, null, null, null);
-                    break;
-
-                case Book:
-                    holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            mBookIndicator, null, null, null);
-                    break;
-
-                default:
-                    throw new IllegalArgumentException("type=" + viewType);
-            }
-            return holder;
+            return new Holder(itemView);
         }
 
         @Override
@@ -378,7 +352,6 @@ public class AuthorWorksFragment
             TocEntry tocEntry = mModel.getTocEntries().get(position);
 
             holder.titleView.setText(tocEntry.getTitle());
-
             // optional
             if (holder.authorView != null) {
                 holder.authorView.setText(tocEntry.getAuthor().getLabel());
@@ -399,7 +372,8 @@ public class AuthorWorksFragment
             if (holder.multipleBooksView != null) {
                 boolean isSet = tocEntry.getBookCount() > 1;
                 holder.multipleBooksView.setChecked(isSet);
-                holder.multipleBooksView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                // Using INVISIBLE, to get the proper margin just like other rows.
+                holder.multipleBooksView.setVisibility(isSet ? View.VISIBLE : View.INVISIBLE);
             }
             // click -> get the book(s) for that entry and display.
             holder.itemView.setOnClickListener(v -> gotoBook(tocEntry));

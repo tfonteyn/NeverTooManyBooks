@@ -6,15 +6,24 @@
     style="@style/OptionRow"
     >
 
+    <CheckBox
+        android:id="@+id/cbx_multiple_books"
+        style="@style/Flag.MultipleBooks"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBaseline_toBaselineOf="@id/title"
+        tools:visibility="visible"
+        tools:checked="true"
+        />
+
     <TextView
         android:id="@+id/title"
         style="@style/TextDetail"
         android:layout_width="0dp"
-        android:drawableStart="@drawable/ic_paragraph"
         android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/year"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cbx_multiple_books"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Sentinel, The"
         />
@@ -24,19 +33,9 @@
         style="@style/TextDetail.Small"
         android:layout_marginStart="@dimen/indent2"
         android:textIsSelectable="false"
-        app:layout_constraintEnd_toStartOf="@id/cbx_multiple_books"
         app:layout_constraintBaseline_toBaselineOf="@id/title"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:text="(1951)"
         />
 
-    <CheckBox
-        android:id="@+id/cbx_multiple_books"
-        style="@style/Flag.MultipleBooks"
-        android:visibility="gone"
-        android:layout_marginStart="@dimen/border2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBaseline_toBaselineOf="@id/title"
-        tools:visibility="visible"
-        tools:checked="true"
-        />
 </androidx.constraintlayout.widget.ConstraintLayout>
