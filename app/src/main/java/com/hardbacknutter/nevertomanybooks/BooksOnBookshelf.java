@@ -277,6 +277,64 @@ public class BooksOnBookshelf
     }
 
     @Override
+    public void onAttachFragment(@NonNull final Fragment fragment) {
+        if (StylePickerDialogFragment.TAG.equals(fragment.getTag())) {
+            ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
+
+        } else if (EditAuthorDialogFragment.TAG.equals(fragment.getTag())) {
+            ((EditAuthorBaseDialogFragment) fragment).setListener(mBookChangedListener);
+
+        } else if (EditPublisherDialogFragment.TAG.equals(fragment.getTag())) {
+            ((EditPublisherDialogFragment) fragment).setListener(mBookChangedListener);
+
+        } else if (EditSeriesDialogFragment.TAG.equals(fragment.getTag())) {
+            ((EditSeriesDialogFragment) fragment).setListener(mBookChangedListener);
+
+        } else if (LendBookDialogFragment.TAG.equals(fragment.getTag())) {
+            ((LendBookDialogFragment) fragment).setListener(mBookChangedListener);
+        }
+    }
+
+
+    @Override
+    @CallSuper
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+
+        // add the 'add book' submenu
+        MenuHandler.addCreateBookSubMenu(menu);
+
+        menu.add(Menu.NONE, R.id.MENU_SORT, 0, R.string.menu_sort_and_style_ellipsis)
+            .setIcon(R.drawable.ic_sort_by_alpha)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+        menu.add(Menu.NONE, R.id.MENU_EXPAND, 0, R.string.menu_expand_all)
+            .setIcon(R.drawable.ic_unfold_more);
+
+        menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
+            .setIcon(R.drawable.ic_unfold_less);
+
+        // This will use the currently displayed book list (the book ID's)
+        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, 0, R.string.lbl_update_fields)
+            .setIcon(R.drawable.ic_cloud_download);
+
+        menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, 0, R.string.menu_clear_search_filters)
+            .setIcon(R.drawable.ic_undo);
+
+        if (BuildConfig.DEBUG /* always */) {
+            SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
+                                              0, R.string.debug);
+
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_RUN_TEST, 0, R.string.debug_test);
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, R.string.lbl_style);
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, R.string.debug_history);
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_TABLES, 0, R.string.debug_bob_tables);
+            subMenu.add(Menu.NONE, R.id.MENU_EXPORT_DATABASE, 0, R.string.lbl_copy_database);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
@@ -347,6 +405,46 @@ public class BooksOnBookshelf
                        || super.onOptionsItemSelected(item);
         }
     }
+
+    /** Syntax sugar. */
+    private void showStylePicker() {
+        StylePickerDialogFragment.newInstance(getSupportFragmentManager(),
+                                              mModel.getCurrentStyle(), false);
+    }
+
+    /**
+     * Expand/Collapse the current position in the list.
+     *
+     * @param expand {@code true} to expand, {@code false} to collapse
+     */
+    private void expandOrCollapseAllNodes(final boolean expand) {
+
+        int layoutPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+        // It is possible that the list will be empty, if so, ignore
+        if (layoutPosition != RecyclerView.NO_POSITION) {
+            BooklistAdapter.RowViewHolder holder = (BooklistAdapter.RowViewHolder)
+                                                           mListView
+                                                                   .findViewHolderForLayoutPosition(
+                                                                           layoutPosition);
+
+            @SuppressWarnings("ConstantConditions")
+            int oldAbsPos = holder.absolutePosition;
+
+            savePosition();
+
+            // get the builder from the current cursor.
+            @SuppressWarnings("ConstantConditions")
+            BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
+            // do the work, and re-position.
+            booklistBuilder.expandAll(expand);
+            savePosition(booklistBuilder.getPosition(oldAbsPos));
+
+            // pass in a new cursor and display the list.
+            // the old cursor will get closed afterwards.
+            displayList(booklistBuilder.getNewListCursor(), null);
+        }
+    }
+
 
     /**
      * Reminder: don't do any commits on the fragment manager.
@@ -579,55 +677,6 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called if an interaction with Goodreads failed due to authorization issues.
-     * Prompts the user to register.
-     *
-     * @param needs {@code true} if registration is needed
-     */
-    private void needsGoodreads(@Nullable final Boolean needs) {
-        if (needs != null && needs) {
-            RequestAuthTask.needsRegistration(this, mModel.getGoodreadsTaskListener());
-        }
-    }
-
-    /**
-     * Allows the ViewModel to send us a message to display to the user.
-     * <p>
-     * If the type is {@code Integer} we assume it's a {@code StringRes}
-     * else we do a toString() it.
-     *
-     * @param message to display, either a {@code Integer (StringRes)} or a {@code String}
-     */
-    private void showUserMessage(@Nullable final Object message) {
-        if (message instanceof Integer) {
-            UserMessage.show(mListView, (int) message);
-        } else if (message != null) {
-            UserMessage.show(mListView, message.toString());
-        }
-    }
-
-    /**
-     * FIXME: we should not create the adapter twice.
-     * Need a reliable way of creating it in {@link #onCreate} and loading in {@link #displayList}.
-     */
-    private void initAdapter(@Nullable final Cursor cursor) {
-
-        //This turned out not to work, or at least not reliably.
-        // make sure any old views with potentially incorrect layout are removed
-//        mListView.getRecycledViewPool().clear();
-//        // (re)set the adapter with the current style
-//        mAdapter.setStyle(mModel.getCurrentStyle());
-//        // set the list, this will trigger the adapter to refresh.
-//        mAdapter.setCursor(mModel.getListCursor());
-
-        mAdapter = new BooklistAdapter(getLayoutInflater(), mModel.getCurrentStyle(),
-                                       mModel.getDb(), cursor);
-        mAdapter.setOnItemClickListener(this::onItemClick);
-        mAdapter.setOnItemLongClickListener(this::onItemLongClick);
-        mListView.setAdapter(mAdapter);
-    }
-
-    /**
      * Populate the BookShelf list in the Spinner and set the current bookshelf/style.
      * <p>
      * <b>Note:</b> no longer triggers a rebuild, as it was getting messy who/when/where.
@@ -661,6 +710,36 @@ public class BooksOnBookshelf
         // Flag up if the selection was different.
         return previous == null || !previous.equalsIgnoreCase(selected);
     }
+
+    /**
+     * Save position when paused.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onPause() {
+        if (mModel.getSearchCriteria().isEmpty()) {
+            savePosition();
+        }
+        super.onPause();
+    }
+
+    /**
+     * If the current list is has any search criteria enabled, clear them and rebuild the list.
+     * Otherwise handle the back-key as normal.
+     */
+    @Override
+    public void onBackPressed() {
+        if (mModel.getSearchCriteria().isEmpty()) {
+            super.onBackPressed();
+
+        } else {
+            mModel.getSearchCriteria().clear();
+            initBookList(true);
+        }
+    }
+
 
     /**
      * Queue a rebuild of the underlying cursor and data. This is a wrapper for calling
@@ -705,12 +784,11 @@ public class BooksOnBookshelf
             BooklistPseudoCursor resultListCursor = holder.getResultListCursor();
             if (resultListCursor != null && !resultListCursor.isClosed()) {
                 displayList(resultListCursor, holder.getResultTargetRows());
-                return;
             }
+        } else {
+            // no new list; restore the adapter to use the old list. See #onResume
+            mAdapter.setCursor(mModel.getListCursor());
         }
-
-        // no new list; restore the adapter to use the old list. See #onResume
-        mAdapter.setCursor(mModel.getListCursor());
     }
 
     /**
@@ -799,174 +877,88 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Save position when paused.
-     * <p>
-     * <br>{@inheritDoc}
+     * FIXME: we should not create the adapter twice.
+     * Need a reliable way of creating it in {@link #onCreate} and loading in {@link #displayList}.
      */
-    @Override
-    @CallSuper
-    public void onPause() {
-        if (mModel.getSearchCriteria().isEmpty()) {
-            savePosition();
-        }
-        super.onPause();
-    }
+    private void initAdapter(@Nullable final Cursor cursor) {
 
-    @Override
-    public void onAttachFragment(@NonNull final Fragment fragment) {
-        if (StylePickerDialogFragment.TAG.equals(fragment.getTag())) {
-            ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
+        //This turned out not to work, or at least not reliably.
+        // make sure any old views with potentially incorrect layout are removed
+//        mListView.getRecycledViewPool().clear();
+//        // (re)set the adapter with the current style
+//        mAdapter.setStyle(mModel.getCurrentStyle());
+//        // set the list, this will trigger the adapter to refresh.
+//        mAdapter.setCursor(mModel.getListCursor());
 
-        } else if (EditAuthorDialogFragment.TAG.equals(fragment.getTag())) {
-            ((EditAuthorBaseDialogFragment) fragment).setListener(mBookChangedListener);
-
-        } else if (EditPublisherDialogFragment.TAG.equals(fragment.getTag())) {
-            ((EditPublisherDialogFragment) fragment).setListener(mBookChangedListener);
-
-        } else if (EditSeriesDialogFragment.TAG.equals(fragment.getTag())) {
-            ((EditSeriesDialogFragment) fragment).setListener(mBookChangedListener);
-
-        } else if (LendBookDialogFragment.TAG.equals(fragment.getTag())) {
-            ((LendBookDialogFragment) fragment).setListener(mBookChangedListener);
-        }
+        mAdapter = new BooklistAdapter(getLayoutInflater(), mModel.getCurrentStyle(),
+                                       mModel.getDb(), cursor);
+        mAdapter.setOnItemClickListener(this::onItemClick);
+        mAdapter.setOnItemLongClickListener(this::onItemLongClick);
+        mListView.setAdapter(mAdapter);
     }
 
     /**
-     * Save current position information in the preferences, including view nodes that are expanded.
-     * We do this to preserve this data across application shutdown/startup.
-     *
+     * Set the position once we know how many items appear in a typical
+     * view and we can tell if it is already in the view.
      * <p>
-     * ENHANCE: Handle positions a little better when books are deleted.
-     * <p>
-     * Deleting a book by 'n' authors from the last author in list results in the list decreasing
-     * in length by, potentially, n*2 items. The current code will return to the old position
-     * in the list after such an operation...which will be too far down.
+     * called from {@link #displayList}
      */
-    private void savePosition(final int topRow) {
-        if (!isDestroyed()) {
-            mModel.savePosition(topRow, mListView);
+    private void fixPositionWhenDrawn(@NonNull final ArrayList<BookRowInfo> targetRows) {
+        // Find the actual extend of the current view and get centre.
+        int first = mLayoutManager.findFirstVisibleItemPosition();
+        int last = mLayoutManager.findLastVisibleItemPosition();
+        int centre = (last + first) / 2;
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
+            Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
+                         " New List: (" + first + ", " + last + ")<-" + centre);
         }
-    }
-
-    /** Convenience method for {@link #savePosition(int)}. */
-    private void savePosition() {
-        if (!isDestroyed()) {
-            mModel.savePosition(mLayoutManager.findFirstVisibleItemPosition(), mListView);
+        // Get the first 'target' and make it 'best candidate'
+        BookRowInfo best = targetRows.get(0);
+        int dist = Math.abs(best.listPosition - centre);
+        // Loop all other rows, looking for a nearer one
+        for (int i = 1; i < targetRows.size(); i++) {
+            BookRowInfo ri = targetRows.get(i);
+            int newDist = Math.abs(ri.listPosition - centre);
+            if (newDist < dist) {
+                dist = newDist;
+                best = ri;
+            }
         }
-    }
 
-    /**
-     * android.intent.action.SEARCH.
-     */
-    private void handleStandardSearchIntent() {
-        String searchText = "";
-        if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
-            // Return the search results instead of all books (for the bookshelf)
-            searchText = getIntent().getStringExtra(SearchManager.QUERY).trim();
-
-        } else if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
-            // Handle a suggestions click (because the suggestions all use ACTION_VIEW)
-            searchText = getIntent().getDataString();
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
+            Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
+                         " Best listPosition @" + best.listPosition);
         }
-        mModel.getSearchCriteria().setKeywords(searchText);
-//        setFilterTextField();
-    }
+        // Try to put at top if not already visible, or only partially visible
+        if (first >= best.listPosition || last <= best.listPosition) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
+                Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
+                             " Adjusting position");
+            }
+            // setSelectionFromTop does not seem to always do what is expected.
+            // But adding smoothScrollToPosition seems to get the job done reasonably well.
+            //
+            // Specific problem occurs if:
+            // - put phone in portrait mode
+            // - edit a book near bottom of list
+            // - turn phone to landscape
+            // - save the book (don't cancel)
+            // Book will be off bottom of screen without the smoothScroll in the second Runnable.
+            //
+            mLayoutManager.scrollToPositionWithOffset(best.listPosition, 0);
+            // Code below does not behave as expected.
+            // Results in items often being near bottom.
+            //lv.setSelectionFromTop(best.listPosition, lv.getHeight() / 2);
 
-    @Override
-    @CallSuper
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+            // Without this call some positioning may be off by one row (see above).
+            final int newPos = best.listPosition;
+            mListView.post(() -> mListView.smoothScrollToPosition(newPos));
 
-        // add the 'add book' submenu
-        MenuHandler.addCreateBookSubMenu(menu);
-
-        menu.add(Menu.NONE, R.id.MENU_SORT, 0, R.string.menu_sort_and_style_ellipsis)
-            .setIcon(R.drawable.ic_sort_by_alpha)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
-        menu.add(Menu.NONE, R.id.MENU_EXPAND, 0, R.string.menu_expand_all)
-            .setIcon(R.drawable.ic_unfold_more);
-
-        menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
-            .setIcon(R.drawable.ic_unfold_less);
-
-        // This will use the currently displayed book list (the book ID's)
-        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, 0, R.string.lbl_update_fields)
-            .setIcon(R.drawable.ic_cloud_download);
-
-        menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, 0, R.string.menu_clear_search_filters)
-            .setIcon(R.drawable.ic_undo);
-
-        if (BuildConfig.DEBUG /* always */) {
-            SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
-                                              0, R.string.debug);
-
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_RUN_TEST, 0, R.string.debug_test);
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, R.string.lbl_style);
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, R.string.debug_history);
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_TABLES, 0, R.string.debug_bob_tables);
-            subMenu.add(Menu.NONE, R.id.MENU_EXPORT_DATABASE, 0, R.string.lbl_copy_database);
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    /**
-     * There was a search requested by the user.
-     *
-     * @return Returns {@code true} if search launched, and {@code false} if the activity does
-     * not respond to search.
-     * <p>
-     * <b>Note:</b> uses the 'advanced' FTS search activity. To use the standard search,
-     * comment this method out. The system will use {@link SearchSuggestionProvider}
-     * as configured in res/xml/searchable.xml
-     * <p>
-     * FIXME: https://developer.android.com/guide/topics/search/search-dialog
-     * the way this is implemented is a bit of a shoehorn... to be revisited.
-     */
-    @Override
-    public boolean onSearchRequested() {
-        Intent intent = new Intent(this, FTSSearchActivity.class);
-        mModel.getSearchCriteria().to(intent);
-        startActivityForResult(intent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
-        return true;
-    }
-
-    /** Syntax sugar. */
-    private void showStylePicker() {
-        StylePickerDialogFragment.newInstance(getSupportFragmentManager(),
-                                              mModel.getCurrentStyle(), false);
-    }
-
-    /**
-     * Expand/Collapse the current position in the list.
-     *
-     * @param expand {@code true} to expand, {@code false} to collapse
-     */
-    private void expandOrCollapseAllNodes(final boolean expand) {
-
-        int layoutPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
-        // It is possible that the list will be empty, if so, ignore
-        if (layoutPosition != RecyclerView.NO_POSITION) {
-            BooklistAdapter.RowViewHolder holder = (BooklistAdapter.RowViewHolder)
-                                                           mListView
-                                                                   .findViewHolderForLayoutPosition(
-                                                                           layoutPosition);
-
-            @SuppressWarnings("ConstantConditions")
-            int oldAbsPos = holder.absolutePosition;
-
-            savePosition();
-
-            // get the builder from the current cursor.
-            @SuppressWarnings("ConstantConditions")
-            BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
-            // do the work, and re-position.
-            booklistBuilder.expandAll(expand);
-            savePosition(booklistBuilder.getPosition(oldAbsPos));
-
-            // pass in a new cursor and display the list.
-            // the old cursor will get closed afterwards.
-            displayList(booklistBuilder.getNewListCursor(), null);
+            //int newTop = best.listPosition - (last-first)/2;
+            // if (BuildConfig.DEBUG && BOB_FIX_POSITION) {
+            //Logger.info(this, "fixPositionWhenDrawn", "New Top @" + newTop );
+            //}
+            //lv.setSelection(newTop);
         }
     }
 
@@ -1501,69 +1493,67 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Set the position once we know how many items appear in a typical
-     * view and we can tell if it is already in the view.
+     * Save current position information in the preferences, including view nodes that are expanded.
+     * We do this to preserve this data across application shutdown/startup.
+     *
      * <p>
-     * called from {@link #displayList}
+     * ENHANCE: Handle positions a little better when books are deleted.
+     * <p>
+     * Deleting a book by 'n' authors from the last author in list results in the list decreasing
+     * in length by, potentially, n*2 items. The current code will return to the old position
+     * in the list after such an operation...which will be too far down.
      */
-    private void fixPositionWhenDrawn(@NonNull final ArrayList<BookRowInfo> targetRows) {
-        // Find the actual extend of the current view and get centre.
-        int first = mLayoutManager.findFirstVisibleItemPosition();
-        int last = mLayoutManager.findLastVisibleItemPosition();
-        int centre = (last + first) / 2;
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-            Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
-                         " New List: (" + first + ", " + last + ")<-" + centre);
-        }
-        // Get the first 'target' and make it 'best candidate'
-        BookRowInfo best = targetRows.get(0);
-        int dist = Math.abs(best.listPosition - centre);
-        // Loop all other rows, looking for a nearer one
-        for (int i = 1; i < targetRows.size(); i++) {
-            BookRowInfo ri = targetRows.get(i);
-            int newDist = Math.abs(ri.listPosition - centre);
-            if (newDist < dist) {
-                dist = newDist;
-                best = ri;
-            }
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-            Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
-                         " Best listPosition @" + best.listPosition);
-        }
-        // Try to put at top if not already visible, or only partially visible
-        if (first >= best.listPosition || last <= best.listPosition) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-                Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
-                             " Adjusting position");
-            }
-            // setSelectionFromTop does not seem to always do what is expected.
-            // But adding smoothScrollToPosition seems to get the job done reasonably well.
-            //
-            // Specific problem occurs if:
-            // - put phone in portrait mode
-            // - edit a book near bottom of list
-            // - turn phone to landscape
-            // - save the book (don't cancel)
-            // Book will be off bottom of screen without the smoothScroll in the second Runnable.
-            //
-            mLayoutManager.scrollToPositionWithOffset(best.listPosition, 0);
-            // Code below does not behave as expected.
-            // Results in items often being near bottom.
-            //lv.setSelectionFromTop(best.listPosition, lv.getHeight() / 2);
-
-            // Without this call some positioning may be off by one row (see above).
-            final int newPos = best.listPosition;
-            mListView.post(() -> mListView.smoothScrollToPosition(newPos));
-
-            //int newTop = best.listPosition - (last-first)/2;
-            // if (BuildConfig.DEBUG && BOB_FIX_POSITION) {
-            //Logger.info(this, "fixPositionWhenDrawn", "New Top @" + newTop );
-            //}
-            //lv.setSelection(newTop);
+    private void savePosition(final int topRow) {
+        if (!isDestroyed()) {
+            mModel.savePosition(topRow, mListView);
         }
     }
+
+    /** Convenience method for {@link #savePosition(int)}. */
+    private void savePosition() {
+        if (!isDestroyed()) {
+            mModel.savePosition(mLayoutManager.findFirstVisibleItemPosition(), mListView);
+        }
+    }
+
+    /**
+     * android.intent.action.SEARCH.
+     */
+    private void handleStandardSearchIntent() {
+        String searchText = "";
+        if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+            // Return the search results instead of all books (for the bookshelf)
+            searchText = getIntent().getStringExtra(SearchManager.QUERY).trim();
+
+        } else if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
+            // Handle a suggestions click (because the suggestions all use ACTION_VIEW)
+            searchText = getIntent().getDataString();
+        }
+        mModel.getSearchCriteria().setKeywords(searchText);
+//        setFilterTextField();
+    }
+
+    /**
+     * There was a search requested by the user.
+     *
+     * @return Returns {@code true} if search launched, and {@code false} if the activity does
+     * not respond to search.
+     * <p>
+     * <b>Note:</b> uses the 'advanced' FTS search activity. To use the standard search,
+     * comment this method out. The system will use {@link SearchSuggestionProvider}
+     * as configured in res/xml/searchable.xml
+     * <p>
+     * FIXME: https://developer.android.com/guide/topics/search/search-dialog
+     * the way this is implemented is a bit of a shoehorn... to be revisited.
+     */
+    @Override
+    public boolean onSearchRequested() {
+        Intent intent = new Intent(this, FTSSearchActivity.class);
+        mModel.getSearchCriteria().to(intent);
+        startActivityForResult(intent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
+        return true;
+    }
+
 
     /**
      * Convenience wrapper method that handles the 4 steps of preparing the list header.
@@ -1671,6 +1661,34 @@ public class BooksOnBookshelf
                     mHeaderTextView[1].setText(row.getLevelText(this, 2));
                 }
             }
+        }
+    }
+
+    /**
+     * Called if an interaction with Goodreads failed due to authorization issues.
+     * Prompts the user to register.
+     *
+     * @param needs {@code true} if registration is needed
+     */
+    private void needsGoodreads(@Nullable final Boolean needs) {
+        if (needs != null && needs) {
+            RequestAuthTask.needsRegistration(this, mModel.getGoodreadsTaskListener());
+        }
+    }
+
+    /**
+     * Allows the ViewModel to send us a message to display to the user.
+     * <p>
+     * If the type is {@code Integer} we assume it's a {@code StringRes}
+     * else we do a toString() it.
+     *
+     * @param message to display, either a {@code Integer (StringRes)} or a {@code String}
+     */
+    private void showUserMessage(@Nullable final Object message) {
+        if (message instanceof Integer) {
+            UserMessage.show(mListView, (int) message);
+        } else if (message != null) {
+            UserMessage.show(mListView, message.toString());
         }
     }
 }
