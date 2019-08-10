@@ -45,6 +45,7 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import oauth.signpost.OAuth;
@@ -261,11 +262,11 @@ public class GoodreadsManager
 
         String date = null;
         if (data.containsKey(yearKey)) {
-            date = String.format("%04d", data.getLong(yearKey));
+            date = String.format(Locale.ENGLISH, "%04d", data.getLong(yearKey));
             if (data.containsKey(monthKey)) {
-                date += '-' + String.format("%02d", data.getLong(monthKey));
+                date += '-' + String.format(Locale.ENGLISH, "%02d", data.getLong(monthKey));
                 if (data.containsKey(dayKey)) {
-                    date += '-' + String.format("%02d", data.getLong(dayKey));
+                    date += '-' + String.format(Locale.ENGLISH, "%02d", data.getLong(dayKey));
                 }
             }
             if (resultKey != null && !date.isEmpty()) {

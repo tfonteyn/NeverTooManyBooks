@@ -48,6 +48,9 @@ import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 
+/**
+ * FIXME: replace deprecated classes/methods.
+ */
 public final class DateUtils {
 
     /** Month full names cache for each Locale. */
@@ -432,7 +435,7 @@ public final class DateUtils {
         if (year == null || year == 0) {
             return "";
         } else {
-            String value = String.format("%04d", year);
+            String value = String.format(Locale.ENGLISH, "%04d", year);
             if (month != null && month > 0) {
                 String mm = month.toString();
                 if (mm.length() == 1) {
