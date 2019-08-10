@@ -132,6 +132,9 @@ public class XmlExporter
     @NonNull
     private final ExportOptions mSettings;
 
+    /**
+     * Constructor.
+     */
     public XmlExporter() {
         mDb = new DAO();
         mSettings = new ExportOptions();
@@ -191,32 +194,50 @@ public class XmlExporter
         return ' ' + attr + "=\"" + value + '"';
     }
 
+    private static String attr(@NonNull final String attr,
+                               final boolean value) {
+        return ' ' + attr + "=\"" + value + '"';
+    }
+
     /**
      * Generic String value attribute. The String will be encoded.
+     *
+     * If the incoming value is empty, an empty string is returned.
      *
      * @param attr  attribute name
      * @param value attribute value, a string
      *
-     * @return string representation of the attribute, with leading space.
+     * @return string representation of the attribute, with leading space; or an empty string.
      */
     private static String attr(@NonNull final String attr,
                                @NonNull final String value) {
-        return ' ' + attr + "=\"" + encodeString(value) + '"';
+        if (!value.isEmpty()) {
+            return ' ' + attr + "=\"" + encodeString(value) + '"';
+        } else {
+            return "";
+        }
     }
 
+
     /**
+     * Generic tag with (optional) name and value attribute, empty body.
      * String values are automatically encoded.
      *
-     * @return tag with (optional) name and value attribute, empty body
+     * @return the tag, or an empty string if the value was empty.
      */
     private static String tag(@NonNull final String tag,
                               @Nullable final String name,
                               @NonNull final Object value)
             throws IOException {
         if (value instanceof String) {
-            // strings are encoded
-            return '<' + tag + (name != null ? name(name) : "")
-                   + value(encodeString(String.valueOf(value))) + "/>\n";
+            String valueString = value.toString();
+            if (!valueString.isEmpty()) {
+                // strings are encoded
+                return '<' + tag + (name != null ? name(name) : "")
+                       + value(encodeString(String.valueOf(value))) + "/>\n";
+            } else {
+                return "";
+            }
         } else {
             // non-strings as-is; for boolean this means: true,false
             return typedTag(name, value);
@@ -224,29 +245,40 @@ public class XmlExporter
     }
 
     /**
-     * No encoding of the value is done here.
+     * Generic tag with (optional) name attribute and content body.
+     * No encoding of the value is done.
      *
-     * @return tag with (optional) name attribute and content body
+     * @return the tag, or an empty string if the value was empty.
      */
     private static String tagWithBody(@NonNull final String tag,
                                       @Nullable final String name,
                                       @NonNull final Object value) {
 
-        return '<' + tag + (name != null ? name(name) : "") + '>'
-               + value
-               + "</" + tag + ">\n";
+        String valueString = value.toString();
+        if (!valueString.isEmpty()) {
+            return '<' + tag + (name != null ? name(name) : "") + '>'
+                   + value
+                   + "</" + tag + ">\n";
+        } else {
+            return "";
+        }
     }
 
-
     /**
-     * @return tag with (optional) name attribute and CDATA content body
+     * Generic tag with (optional) name attribute and CDATA content body.
+     *
+     * @return the tag, or an empty string if the value was empty.
      */
     private static String tagWithCData(@NonNull final String tag,
                                        @Nullable final String name,
                                        @NonNull final String value) {
-        return '<' + tag + (name != null ? name(name) : "") + ">\n"
-               + "<![CDATA[" + value + "]]>\n"
-               + "</" + tag + ">\n";
+        if (!value.isEmpty()) {
+            return '<' + tag + (name != null ? name(name) : "") + ">\n"
+                   + "<![CDATA[" + value + "]]>\n"
+                   + "</" + tag + ">\n";
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -469,6 +501,7 @@ public class XmlExporter
 
             if (!listener.isCancelled()
                 && (mSettings.what & ExportOptions.PREFERENCES) != 0) {
+                //noinspection UnusedAssignment
                 listener.onProgress(delta++, R.string.lbl_settings);
                 doPreferences(out, listener);
             }
@@ -530,7 +563,6 @@ public class XmlExporter
         try (Cursor cursor = mDb.fetchAuthors()) {
             ColumnMapper mapper = new ColumnMapper(cursor);
             while (cursor.moveToNext()) {
-                //URGENT: redo this with child xml tags, and give each tag a 'type' attribute
                 out.append('<' + XmlTags.XML_AUTHOR)
                    .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))
 
@@ -539,7 +571,7 @@ public class XmlExporter
                    .append(attr(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES,
                                 mapper.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES)))
                    .append(attr(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
-                                mapper.getInt(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)))
+                                mapper.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)))
                    .append("/>\n");
                 count++;
             }
@@ -575,7 +607,7 @@ public class XmlExporter
                    .append(attr(DBDefinitions.KEY_SERIES_TITLE,
                                 mapper.getString(DBDefinitions.KEY_SERIES_TITLE)))
                    .append(attr(DBDefinitions.KEY_SERIES_IS_COMPLETE,
-                                mapper.getInt(DBDefinitions.KEY_SERIES_IS_COMPLETE)))
+                                mapper.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE)))
                    .append("/>\n");
             }
         }
@@ -613,16 +645,24 @@ public class XmlExporter
                                 cursorRow.getString(DBDefinitions.KEY_TITLE)))
                    .append(attr(DBDefinitions.KEY_ISBN,
                                 cursorRow.getString(DBDefinitions.KEY_ISBN)))
+                   .append(attr(DBDefinitions.KEY_READ,
+                                cursorRow.getBoolean(DBDefinitions.KEY_READ)))
+                   .append(attr(DBDefinitions.KEY_READ_START,
+                                cursorRow.getString(DBDefinitions.KEY_READ_START)))
+                   .append(attr(DBDefinitions.KEY_READ_END,
+                                cursorRow.getString(DBDefinitions.KEY_READ_END)))
                    .append("\n")
 
-                   // publishing information
                    .append(attr(DBDefinitions.KEY_PUBLISHER,
                                 cursorRow.getString(DBDefinitions.KEY_PUBLISHER)))
                    .append(attr(DBDefinitions.KEY_DATE_PUBLISHED,
                                 cursorRow.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
+                   .append(attr(DBDefinitions.KEY_PRICE_LISTED,
+                                cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED)))
+                   .append(attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                                cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
                    .append(attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
                                 cursorRow.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
-                   .append("\n")
                    .append(attr(DBDefinitions.KEY_FORMAT,
                                 cursorRow.getString(DBDefinitions.KEY_FORMAT)))
                    .append(attr(DBDefinitions.KEY_PAGES,
@@ -635,35 +675,18 @@ public class XmlExporter
                                 cursorRow.getLong(DBDefinitions.KEY_TOC_BITMASK)))
                    .append("\n")
 
-                   // reading facts
-                   .append(attr(DBDefinitions.KEY_READ,
-                                cursorRow.getInt(DBDefinitions.KEY_READ)))
-                   .append(attr(DBDefinitions.KEY_READ_START,
-                                cursorRow.getString(DBDefinitions.KEY_READ_START)))
-                   .append(attr(DBDefinitions.KEY_READ_END,
-                                cursorRow.getString(DBDefinitions.KEY_READ_END)))
-                   .append("\n")
-
-                   // price information
-                   .append(attr(DBDefinitions.KEY_PRICE_LISTED,
-                                cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED)))
-                   .append(attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                                cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
                    .append(attr(DBDefinitions.KEY_PRICE_PAID,
                                 cursorRow.getString(DBDefinitions.KEY_PRICE_PAID)))
                    .append(attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
                                 cursorRow.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
                    .append(attr(DBDefinitions.KEY_DATE_ACQUIRED,
                                 cursorRow.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
-                   .append("\n")
-
-
                    .append(attr(DBDefinitions.KEY_LOCATION,
                                 cursorRow.getString(DBDefinitions.KEY_LOCATION)))
                    .append(attr(DBDefinitions.KEY_RATING,
                                 cursorRow.getDouble(DBDefinitions.KEY_RATING)))
                    .append(attr(DBDefinitions.KEY_SIGNED,
-                                cursorRow.getInt(DBDefinitions.KEY_SIGNED)))
+                                cursorRow.getBoolean(DBDefinitions.KEY_SIGNED)))
                    .append(attr(DBDefinitions.KEY_EDITION_BITMASK,
                                 cursorRow.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
                    .append("\n")
