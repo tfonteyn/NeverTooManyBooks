@@ -54,9 +54,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -92,7 +92,7 @@ class IsfdbBookTest {
 
         when(mContext.getApplicationContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
-        when(mContext.createConfigurationContext(anyObject())).thenReturn(mContext);
+        when(mContext.createConfigurationContext(any())).thenReturn(mContext);
         when(mContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mSharedPreferences);
 
         when(mContext.getString(R.string.book_format_paperback)).thenReturn(bookType_paperback);
