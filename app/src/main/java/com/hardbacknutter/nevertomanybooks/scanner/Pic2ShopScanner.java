@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import java.util.Arrays;
 
@@ -88,15 +89,16 @@ public class Pic2ShopScanner
      * one of the intents is valid, or catch the resulting errors.
      */
     @Override
-    public void startActivityForResult(@NonNull final Activity activity,
+    public void startActivityForResult(@NonNull final Fragment fragment,
                                        final int requestCode) {
         Intent intent;
-        if (isFreeScannerAppInstalled(activity)) {
+        //noinspection ConstantConditions
+        if (isFreeScannerAppInstalled(fragment.getContext())) {
             intent = new Intent(Free.ACTION);
         } else {
             intent = new Intent(Pro.ACTION).putExtra(Pro.FORMATS, Pro.BARCODE_TYPES);
         }
-        activity.startActivityForResult(intent, requestCode);
+        fragment.startActivityForResult(intent, requestCode);
     }
 
     @Override

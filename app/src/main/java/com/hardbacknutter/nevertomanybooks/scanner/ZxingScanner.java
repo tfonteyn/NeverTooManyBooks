@@ -26,12 +26,12 @@
  */
 package com.hardbacknutter.nevertomanybooks.scanner;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 /**
  * This object will start a Zxing compatible scanner and extract the data
@@ -90,14 +90,14 @@ public class ZxingScanner
     }
 
     @Override
-    public void startActivityForResult(@NonNull final Activity activity,
+    public void startActivityForResult(@NonNull final Fragment fragment,
                                        final int requestCode) {
         Intent intent = new Intent(ACTION);
         if (mMustBeZxing) {
             intent.setPackage(PACKAGE);
         }
         // not limiting the format, just grab anything supported.
-        activity.startActivityForResult(intent, requestCode);
+        fragment.startActivityForResult(intent, requestCode);
     }
 
     @NonNull

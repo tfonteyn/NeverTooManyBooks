@@ -30,11 +30,24 @@ import android.app.Activity;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 /**
  * Interface defining required methods for any external scanner interface.
+ * At least one of the {@link #startActivityForResult} methods must be implemented before using.
  */
 public interface Scanner {
+
+    /**
+     * Start the activity with the passed request code.
+     *
+     * @param fragment    calling fragment
+     * @param requestCode which will be passed back to onActivityResult
+     */
+    default void startActivityForResult(@NonNull Fragment fragment,
+                                        int requestCode) {
+        throw new IllegalStateException("must be implemented");
+    }
 
     /**
      * Start the activity with the passed request code.
@@ -42,8 +55,10 @@ public interface Scanner {
      * @param activity    calling activity
      * @param requestCode which will be passed back to onActivityResult
      */
-    void startActivityForResult(@NonNull Activity activity,
-                                int requestCode);
+    default void startActivityForResult(@NonNull Activity activity,
+                                        int requestCode) {
+        throw new IllegalStateException("must be implemented");
+    }
 
     /**
      * @return the barcode from the resulting intent of a scan action.

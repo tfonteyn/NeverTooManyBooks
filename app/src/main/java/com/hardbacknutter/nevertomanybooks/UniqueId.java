@@ -66,9 +66,11 @@ public final class UniqueId {
     public static final int REQ_BOOK_SEARCH = 2_101;
     /** Request code: open the advanced (FTS) local search screen. */
     public static final int REQ_ADVANCED_LOCAL_SEARCH = 2_102;
+    /** Request code: open the scanner. */
+    public static final int REQ_IMAGE_FROM_SCANNER = 2_103;
 
     /** Request code: open the admin page to order and en/disable sites. */
-    public static final int REQ_PREFERRED_SEARCH_SITES = 2_103;
+    public static final int REQ_PREFERRED_SEARCH_SITES = 2_201;
 
     /** Request code: ask the CoverBrowserFragment to get an alternative edition cover. */
     public static final int REQ_ALT_EDITION = 3_001;

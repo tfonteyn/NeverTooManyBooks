@@ -38,7 +38,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import com.hardbacknutter.nevertomanybooks.BookSearchBaseFragment;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
@@ -85,8 +84,6 @@ public class BookSearchBaseModel
     public void init(@NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO();
-
-            mSearchCoordinatorId = args.getLong(BookSearchBaseFragment.BKEY_SEARCH_COORDINATOR_ID);
 
             // optional, use all if not defined
             mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);

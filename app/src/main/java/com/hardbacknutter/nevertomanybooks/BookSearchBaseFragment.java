@@ -65,11 +65,6 @@ public abstract class BookSearchBaseFragment
     /** Fragment manager tag. */
     private static final String TAG = "BookSearchBaseFragment";
 
-    /** stores an active search id, or 0 when none active. */
-    public static final String BKEY_SEARCH_COORDINATOR_ID = TAG + ":SearchCoordinatorId";
-    /** the last book data (intent) we got from a successful EditBook. */
-    private static final String BKEY_LAST_BOOK_INTENT = TAG + ":LastBookIntent";
-
     /** hosting activity. */
     AppCompatActivity mActivity;
     TaskManager mTaskManager;
@@ -235,14 +230,6 @@ public abstract class BookSearchBaseFragment
                     .addListener(mBookSearchBaseModel.getSearchCoordinatorId(), true,
                                  getSearchFinishedListener());
         }
-    }
-
-    @Override
-    @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong(BKEY_SEARCH_COORDINATOR_ID, mBookSearchBaseModel.getSearchCoordinatorId());
-        outState.putParcelable(BKEY_LAST_BOOK_INTENT, mBookSearchBaseModel.getLastBookData());
     }
 
     /**
