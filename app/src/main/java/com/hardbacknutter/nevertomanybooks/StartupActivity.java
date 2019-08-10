@@ -28,7 +28,6 @@ package com.hardbacknutter.nevertomanybooks;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -45,7 +44,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
 
@@ -67,27 +65,11 @@ public class StartupActivity
 
     /** the 'LastVersion' i.e. the version which was installed before the current one. */
     public static final String PREF_STARTUP_LAST_VERSION = "Startup.LastVersion";
-    /** Number of times the app has been started. */
-    public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
-    /** Triggers some actions when the countdown reaches 0; then gets reset. */
-    public static final String PREF_STARTUP_COUNTDOWN = "Startup.StartCountdown";
-    /** Number of app startup's between offers to backup. */
-    private static final int PROMPT_WAIT_BACKUP;
     /** Indicates the upgrade message has been shown. */
     private static boolean sUpgradeMessageShown;
     /** Self reference for use by tasks and during upgrades. */
     private static WeakReference<StartupActivity> sStartupActivity;
 
-    static {
-        if (BuildConfig.DEBUG /* always */) {
-            PROMPT_WAIT_BACKUP = 50;
-        } else {
-            PROMPT_WAIT_BACKUP = 5;
-        }
-    }
-
-    /** Flag indicating a backup is required after startup. */
-    private boolean mBackupRequired;
     /** stage the startup is at. */
     private int mStartupStage;
 
@@ -113,7 +95,6 @@ public class StartupActivity
 
         super.onCreate(savedInstanceState);
 
-        // the UI
         setContentView(R.layout.activity_startup);
         mProgressMessageView = findViewById(R.id.progressMessage);
 
@@ -130,6 +111,7 @@ public class StartupActivity
 
         // get our ViewModel; we init in mStartupStage == 1.
         mModel = new ViewModelProvider(this).get(StartupViewModel.class);
+        mModel.init(this);
 
         if (!initStorage()) {
             // we asked for permissions. TBC in onRequestPermissionsResult
@@ -175,10 +157,8 @@ public class StartupActivity
     private void startTasks() {
         if (mModel.isStartupTasksShouldBeStarted()) {
             // listen for progress messages
-            mModel.getTaskProgressMessage().observe(this, resId ->
-                                                                  mProgressMessageView
-                                                                          .setText(getString(
-                                                                                  resId)));
+            mModel.getTaskProgressMessage()
+                  .observe(this, resId -> mProgressMessageView.setText(getString(resId)));
 
             // when tasks are done, move on to next startup-stage
             mModel.getTaskFinished().observe(this, finished -> {
@@ -234,13 +214,13 @@ public class StartupActivity
     }
 
     /**
-     * If the backup-counter has reached zer, prompt the user to make a backup.
+     * Prompt the user to make a backup.
      * <p>
      * Note the backup is not done here; we just set a flag if requested.
      */
     private void backupRequired() {
-        mBackupRequired = false;
-        if (decreaseStartupCounters()) {
+        mModel.setBackupRequired(false);
+        if (mModel.isDoPeriodicAction()) {
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_help_outline)
                     .setTitle(R.string.app_name)
@@ -248,7 +228,7 @@ public class StartupActivity
                     .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, which) -> {
                         d.dismiss();
-                        mBackupRequired = true;
+                        mModel.setBackupRequired(true);
                     })
                     .setOnDismissListener(d -> startNextStage())
                     .create()
@@ -266,7 +246,7 @@ public class StartupActivity
         Intent intent = new Intent(this, BooksOnBookshelf.class);
         startActivity(intent);
 
-        if (mBackupRequired) {
+        if (mModel.isBackupRequired()) {
             Intent backupIntent = new Intent(this, BackupActivity.class);
             startActivity(backupIntent);
         }
@@ -277,28 +257,6 @@ public class StartupActivity
         finish();
     }
 
-    /**
-     * Decrease and store the number of times the app was opened.
-     * Used for proposing Backup/Amazon
-     *
-     * @return {@code true} when counter reached 0
-     */
-    private boolean decreaseStartupCounters() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int opened = prefs.getInt(PREF_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
-        int startCount = prefs.getInt(PREF_STARTUP_COUNT, 0) + 1;
-
-        final SharedPreferences.Editor ed = prefs.edit();
-        if (opened == 0) {
-            ed.putInt(PREF_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
-        } else {
-            ed.putInt(PREF_STARTUP_COUNTDOWN, opened - 1);
-        }
-        ed.putInt(PREF_STARTUP_COUNT, startCount)
-          .apply();
-
-        return opened == 0;
-    }
 
     /**
      * Checks if we have the needed permissions.

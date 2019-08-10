@@ -44,7 +44,6 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
-import com.hardbacknutter.nevertomanybooks.StartupActivity;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyles;
@@ -56,6 +55,7 @@ import com.hardbacknutter.nevertomanybooks.searches.librarything.LibraryThingMan
 import com.hardbacknutter.nevertomanybooks.utils.Csv;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.viewmodels.BooksOnBookshelfModel;
+import com.hardbacknutter.nevertomanybooks.viewmodels.StartupViewModel;
 
 /**
  * The preference key names here are the ones that define USER settings.
@@ -422,11 +422,11 @@ public final class Prefs {
                      * Internal settings
                      */
                     case "state_opened":
-                        ed.putInt(StartupActivity.PREF_STARTUP_COUNTDOWN, (Integer) oldValue);
+                        ed.putInt(StartupViewModel.PREF_STARTUP_COUNTDOWN, (Integer) oldValue);
                         break;
 
                     case "Startup.StartCount":
-                        ed.putInt(StartupActivity.PREF_STARTUP_COUNT, (Integer) oldValue);
+                        ed.putInt(StartupViewModel.PREF_STARTUP_COUNT, (Integer) oldValue);
                         break;
 
                     case "BooksOnBookshelf.BOOKSHELF":
