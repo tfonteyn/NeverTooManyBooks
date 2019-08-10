@@ -123,7 +123,7 @@
     <string name="gr_auth_blurb_part2">Une fois enregistré ou si vous êtes déjà utilisateur de Goodreads, vous pouvez autoriser &APP_NAME; à accéder à vos données Goodreads en pressant le bouton ci-dessous. Vous serez redirigé vers une page sur laquelle vous devrez vous connecter à Goodreads et autoriser cette application. Nous n’aurons jamais connaissance de votre mot de passe, et vous pourrez désactiver cet accès sur le site Goodreads. Il est possible que vous arriviez sur une page blanche. Cliquez simplement sur le bouton «retour» pour revenir ici !</string>
     <string name="gr_auth_blurb_part3">Mais rappelez-vous… il n’est pas nécessaire de faire tout cela : &APP_NAME; fonctionne très bien sans ça !</string>
     <string name="gr_auth_blurb_part4">Cette application est déjà autorisée auprès de Goodreads. Si vous souhaitez effacer vos données de connexion, vos pouvez cliquer sur le bouton ci-dessous. Mais, il est aussi important  d’enlever cette autoristation sur le site de Goodreads également.</string>
-    <string name="gr_auth_check">Autorisation Goodreads en cours</string>
+    <string name="X_gr_auth_check">Autorisation Goodreads en cours</string>
     <string name="gr_auth_error">Autorisation Goodreads en erreur.</string>
     <string name="gr_auth_successful">Autorisation Goodreads accordée</string>
     <string name="gr_btn_send_all">Tout envoyer</string>
@@ -395,7 +395,7 @@
     <string name="progress_msg_process_booklist_style">Styles de la liste de lecture…</string>
     <string name="progress_msg_process_cover">Couvertures…</string>
     <string name="progress_msg_process_preferences">Préférences…</string>
-    <string name="progress_msg_reading_directory">Recherche dans le répertoire …</string>
+    <string name="X_progress_msg_reading_directory">Recherche dans le répertoire …</string>
     <string name="progress_msg_rebuilding_search_index">Construction de l’index de recherche en cours…</string>
     <string name="progress_msg_saving_image">Sauvegarde d’image…</string>
     <string name="progress_msg_searching">Recherche en cours…</string>

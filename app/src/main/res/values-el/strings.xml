@@ -121,7 +121,7 @@
     <string name="gr_auth_blurb_part2">Όταν εγγραφείτε, ή αν είστε ήδη χρήστης του Goodreads, μπορείτε να δώσετε άδεια στο &APP_NAME; να έχει πρόσβαση στα δεδομένα του Goodreads σας πατώντας στο παρακάτω κουμπί. Θα σας μεταφέρει σε μια ιστοσελίδα όπου θα πρέπει να συνδεθείτε στο Goodreads και να δώσετε άδεια στην εφαρμογή. Εμείς ποτέ δεν βλέπουμε τον κωδικό πρόσβασής σας. Μπορείτε να απενεργοποιήσετε την πρόσβαση μέσω της ιστοσελίδας Goodreads. Εαν καταλήξετε σε μια κενή ιστοσελίδα, κάντε κλικ στο κουμπί επιστροφής για να επιστρέψετε εδώ!</string>
     <string name="gr_auth_blurb_part3">Ωστόσο, να θυμάστε… ότι δεν είναι απαραίτητο να γίνει κάτι από τα παραπάνω: Το &APP_NAME; δουλεύει μια χαρά και χώρις αυτό!</string>
     <string name="gr_auth_blurb_part4">Έχετε ήδη δώσει άδεια σε αυτή την εφαρμογή. Αν θέλετε να διαγράψετε τα διαπιστευτήρια από αυτό το τηλέφωνο, μπορείτε να το κάνετε πατώντας το παρακάτω κουμπί. Αλλά είναι επίσης σημαντικό να διαγράψετε την εγγραφή της εφαρμογής και στην ιστοσελίδα Goodreads.</string>
-    <string name="gr_auth_check">Ελεγχος αδειοδότησης Goodreads</string>
+    <string name="X_gr_auth_check">Ελεγχος αδειοδότησης Goodreads</string>
     <string name="gr_auth_error">Η αδειοδότηση του Goodreads οδήγησε σε λάθος.</string>
     <string name="gr_auth_successful">Επιτυχής η αδειοδότηση Goodreads</string>
     <string name="gr_btn_send_all">Αποστολή όλων</string>
@@ -393,7 +393,7 @@
     <string name="progress_msg_process_booklist_style">Στυλ βιβλίου…</string>
     <string name="progress_msg_process_cover">Καλύπτει…</string>
     <string name="progress_msg_process_preferences">Προτιμήσεις…</string>
-    <string name="progress_msg_reading_directory">Γίνεται αναζήτηση στον κατάλογο…</string>
+    <string name="X_progress_msg_reading_directory">Γίνεται αναζήτηση στον κατάλογο…</string>
     <string name="progress_msg_rebuilding_search_index">Ανακατασκευή Ευρετηρίου Αναζήτησης…</string>
     <string name="progress_msg_saving_image">Αποθήκευση της εικόνας…</string>
     <string name="progress_msg_searching">Γίνεται αναζήτηση…</string>

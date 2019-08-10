@@ -122,7 +122,7 @@
     <string name="gr_auth_blurb_part2">Als registrierter Nutzer können Sie den Zugriff von &APP_NAME; auf Ihre Daten bei Goodreads autorisieren. Drücken Sie dazu den Button unten. Sie werden auf eine Website weitergeleitet, auf der Sie sich bei Goodreads anmelden und den Zugriff autorisieren können. Wir werden Ihr Kennwort nie sehen, und Sie können den Zugriff auf der Website von Goodreads jederzeit beenden. Wegen der Unwägbarkeiten des Webs kann es sein, dass Sie anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den „Zurück“-Button, um hierher zurückzukehren!</string>
     <string name="gr_auth_blurb_part3">Aber denken Sie daran… Sie müssen nichts davon tun: &APP_NAME; funktioniert ganz wunderbar ohne Goodreads!</string>
     <string name="gr_auth_blurb_part4">Sie haben diese App anscheinend bereits autorisiert. Wenn Sie die Zugangsdaten von diesem Gerät löschen möchten, klicken Sie bitte den untenstehenden Knopf. Vergessen Sie nicht, diese App auch auf der Goodreads-Website zu de-autorisieren.\n</string>
-    <string name="gr_auth_check">Autorisierungsprüfung für Goodreads</string>
+    <string name="X_gr_auth_check">Autorisierungsprüfung für Goodreads</string>
     <string name="gr_auth_error">Die Autorisierung bei Goodreads endete fehlerhaft</string>
     <string name="gr_auth_successful">Autorisierung bei Goodreads erfolgreich</string>
     <string name="gr_btn_send_all">Alles senden</string>
@@ -394,7 +394,7 @@
     <string name="progress_msg_process_booklist_style">Bücherlistenstile…</string>
     <string name="progress_msg_process_cover">Buchumschläge…</string>
     <string name="progress_msg_process_preferences">Einstellungen…</string>
-    <string name="progress_msg_reading_directory">Durchsuche Verzeichnis…</string>
+    <string name="X_progress_msg_reading_directory">Durchsuche Verzeichnis…</string>
     <string name="progress_msg_rebuilding_search_index">Suchindex wird regeneriert…</string>
     <string name="progress_msg_saving_image">Bild speichern…</string>
     <string name="progress_msg_searching">Suche…</string>

@@ -120,7 +120,7 @@
     <string name="gr_auth_blurb_part2">Kayıt olduktan sonra veya kayıtlı bir kullanıcı iseniz Goodreads verilerinize ulaşmak için aşağıdaki düğmeye basın. Sizi Goodreads\'e giriş yapabileceğiniz bir ağ sayfasına yönlendirecektir. Açarsözünüzü (şifrenizi) biz kesinlikle görmeyeceğiz ve dilediğiniz zaman erişimi Goodreads ağ sayfasından iptal edebilirsiniz. Bazen boş bir bete düşerseniz geri düğmesine basıp buraya dönebilirsiniz!</string>
     <string name="gr_auth_blurb_part3">Ancak unutmayın… bunu yapmanız zorunlu değil, &APP_NAME; tek başına da gayet de çalışır!</string>
     <string name="gr_auth_blurb_part4">Bu uygulamayı zaten yetkilendirmiş görünüyorsunuz. Kimlik bilgilerini bu telefondan silmek istiyorsanız, aşağıdaki düğmeye basarak bunu yapabilirsiniz. Ancak, başvurunun Goodreads web sitesindeki kaydını silmek önemlidir.</string>
-    <string name="gr_auth_check">Goodreads yetkilendirme denetimi</string>
+    <string name="X_gr_auth_check">Goodreads yetkilendirme denetimi</string>
     <string name="gr_auth_error">Goodreads yetkilendirmesi bir hataya neden oldu</string>
     <string name="gr_auth_successful">Goodreads yetkilendirmesi başarılı</string>
     <string name="gr_btn_send_all">Tümünü gönder</string>
@@ -391,7 +391,7 @@
     <string name="progress_msg_process_booklist_style">Kitap Listesi Stilleri…</string>
     <string name="progress_msg_process_cover">Kapaklar…</string>
     <string name="progress_msg_process_preferences">Tercihler…</string>
-    <string name="progress_msg_reading_directory">Dizin aranıyor…</string>
+    <string name="X_progress_msg_reading_directory">Dizin aranıyor…</string>
     <string name="progress_msg_rebuilding_search_index">Arama dizini yeniden oluşturuluyor…</string>
     <string name="progress_msg_saving_image">Resim kaydediliyor…</string>
     <string name="progress_msg_searching">Aranıyor…</string>

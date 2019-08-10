@@ -122,7 +122,7 @@
     <string name="gr_auth_blurb_part2">Una vez se haya registrado, o si ya es usuario de Goodreads, puede autorizar el acceso de &APP_NAME; a sus datos de Goodreads pulsando sobre el botón siguiente. Le llevará a una página web en la que tendrá que acceder a Goodreads para autorizar esta aplicación. Nosotros nunca veremos su contraseña, y podrá desactivar el acceso desde el sitio web de Goodreads. Debido a la imprevisibilidad de la web, puede terminar en una página en blanco. En ese caso, pulse el botón Atrás de su navegador para volver aquí.</string>
     <string name="gr_auth_blurb_part3">Pero recuerde…que no es necesario hacer nada de esto: &APP_NAME; funciona perfectamente sin ello.</string>
     <string name="gr_auth_blurb_part4">Parece que ya ha autorizado esta aplicación. Si quiere eliminar los datos de acceso (credenciales) de este dispositivo, puede hacerlo pulsando el botón siguiente. También es importante que elimine la autorización para esta aplicación en el sitio web de Goodreads.</string>
-    <string name="gr_auth_check">Comprobación de autorización en Goodreads</string>
+    <string name="X_gr_auth_check">Comprobación de autorización en Goodreads</string>
     <string name="gr_auth_error">Error de autorización en Goodreads.</string>
     <string name="gr_auth_successful">Autorización satisfactoria en Goodreads</string>
     <string name="gr_btn_send_all">Enviar todo</string>
@@ -394,7 +394,7 @@
     <string name="progress_msg_process_booklist_style">Estilos de listas de libros…</string>
     <string name="progress_msg_process_cover">Portadas…</string>
     <string name="progress_msg_process_preferences">Preferencias…</string>
-    <string name="progress_msg_reading_directory">Buscando directorio…</string>
+    <string name="X_progress_msg_reading_directory">Buscando directorio…</string>
     <string name="progress_msg_rebuilding_search_index">Reconstruyendo índices…</string>
     <string name="progress_msg_saving_image">Guardando imagen…</string>
     <string name="progress_msg_searching">Buscando…</string>

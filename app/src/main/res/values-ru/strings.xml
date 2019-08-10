@@ -118,7 +118,7 @@
     <string name="gr_auth_blurb_part1">Goodreads это сайт, чья основная миссия это «помогать людям находить и делиться книгами, которые они любят». У них есть обширная база данных с книгами и отзывами на них. И если Вы зарегистрированный пользователь Goodreads, наше приложение может экспортировать и импортировать ваши книги, полки и обзоры. Наше приложение полностью автономно и не требует Goodreads, но если Вам интересно, вы можете зарегистрироваться здесь:</string>
     <string name="gr_auth_blurb_part2">Как только Вы зарегистрируетесь или если уже зарегистрировались на Goodreads, Вы сможете авторизоваться через наше приложение для доступа к вашим данным на Goodreads. Для этого нажмите на кнопку Авторизация ниже. Вы перейдете на страницу, где сможете авторизоваться. Наше приложение не знает и не хранит Ваши пароли. Также Вы можете заблокировать доступ через сайт Goodreads. Из-за капризов интернет соединения Вы можете увидеть пустую страницу. В этом случае просто нажмите кнопку Назад, чтобы вернуться сюда!</string><string name="gr_auth_blurb_part3">Но помните…всё это делать не обязательно: наше приложение замечательно работает и без этого!</string>
     <string name="gr_auth_blurb_part4">Похоже, вы уже авторизовали это приложение. Если вы хотите удалить учетные данные с этого телефона, то вы можете сделать это, нажав кнопку ниже. В этом случае не забудьте деавторизировать приложение на сайте Goodreads.</string>
-    <string name="gr_auth_check">Проверка авторизации Goodreads</string>
+    <string name="X_gr_auth_check">Проверка авторизации Goodreads</string>
     <string name="gr_auth_error">Авторизация Goodreads завершилась с ошибкой.</string>
     <string name="gr_auth_successful">Авторизация Goodreads прошла успешно</string>
     <string name="gr_btn_send_all">Отправить все</string>
@@ -389,7 +389,7 @@
     <string name="progress_msg_process_booklist_style">Стили списков книг…</string>
     <string name="progress_msg_process_cover">обложки…</string>
     <string name="progress_msg_process_preferences">предпочтения…</string>
-    <string name="progress_msg_reading_directory">Просмотр папки…</string>
+    <string name="X_progress_msg_reading_directory">Просмотр папки…</string>
     <string name="progress_msg_rebuilding_search_index">Перестроение индексов поиска…</string>
     <string name="progress_msg_saving_image">Сохранение изображения…</string>
     <string name="progress_msg_searching">Поиск…</string>

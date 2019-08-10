@@ -121,7 +121,7 @@
     <string name="gr_auth_blurb_part2">Una volta registrato, o se sei già utente di Goodreads, puoi autorizzare &APP_NAME; ad accedere ai tuoi dati di Goodreads premendo il bottone qui sotto. Verrà aperta una nuova pagina web in cui dovrai eseguire il login a Goodreads ed autorizzare questa applicazione. Non saremo a conoscenza della relativa password, e potrai revocare l\'accesso dal sito di Goodreads. A causa della volatilità di Internet, il link potrebbe non essere più corretto. Clicca sul bottone Indietro per tornare in questo punto!</string>
     <string name="gr_auth_blurb_part3">Ma ricorda… ciò non è affatto obbligatorio: &APP_NAME; funziona perfettamente anche senza!</string>
     <string name="gr_auth_blurb_part4">Questa applicazione sembra essere già stata autorizzata. Se desideri cancellare le credenziali da questo apparecchio, premi il pulsante qui sotto. Ricordati altresì che occorre anche rimuovere l\'autorizzazione all\'applicazione nel sito di Goodreads.</string>
-    <string name="gr_auth_check">Verifica autorizzazione Goodreads</string>
+    <string name="X_gr_auth_check">Verifica autorizzazione Goodreads</string>
     <string name="gr_auth_error">Errore durante l\'autorizzazione di Goodreads.</string>
     <string name="gr_auth_successful">Autorizzazione Goodreads concessa</string>
     <string name="gr_btn_send_all">Invia tutti</string>
@@ -393,7 +393,7 @@
     <string name="progress_msg_process_booklist_style">Stili della lista di libri…</string>
     <string name="progress_msg_process_cover">Copertine…</string>
     <string name="progress_msg_process_preferences">Preferenze…</string>
-    <string name="progress_msg_reading_directory">Ricerca nella cartella…</string>
+    <string name="X_progress_msg_reading_directory">Ricerca nella cartella…</string>
     <string name="progress_msg_rebuilding_search_index">Ricostruzione indice di ricerca…</string>
     <string name="progress_msg_saving_image">Salvataggio dell\'immagine…</string>
     <string name="progress_msg_searching">Ricerca…</string>

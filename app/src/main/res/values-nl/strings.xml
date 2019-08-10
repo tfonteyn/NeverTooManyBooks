@@ -122,7 +122,7 @@
     <string name="gr_auth_blurb_part2">Eenmaal geregistreerd, of als u al gebruiker bent, kunt u &APP_NAME; toestemming verlenen de Goodreads gegevens te benaderen door op de knop hier beneden te drukken. Het brengt u naar een web pagina waar u op Goodreads moet inloggen en deze applicatie moet autoriseren. Wij zullen nooit in staat zijn uw wachtwoord te zien en u kunt ten alle tijden de toegang uitschakelen via de Goodreads website. Dankzij de grilligheid van het Internet kunt u blijven zitten met een lege pagina. Tik dan op de Terug-toets om hier terug te keren!</string>
     <string name="gr_auth_blurb_part3">Maar onthoud goed… er is geen noodzaak om dit te doen: &APP_NAME; werkt prima zonder Goodreads!</string>
     <string name="gr_auth_blurb_part4">Het lijkt er op dat u deze app al heeft geautoriseerd. als u de inloggegevens op dit apparaat wilt wissen kunt u dat doen door op de knop hieronder te drukken. Maar het is ook belangrijk de autorisatie van de applicatie op de website van Goodreads te verwijderen.</string>
-    <string name="gr_auth_check">Goodreads autorisatie controle</string>
+    <string name="X_gr_auth_check">Goodreads autorisatie controle</string>
     <string name="gr_auth_error">Goodreads autorisatie leidde tot een fout.</string>
     <string name="gr_auth_successful">Goodreads autorisatie gelukt</string>
     <string name="gr_btn_send_all">Zend alles</string>
@@ -394,7 +394,7 @@
     <string name="progress_msg_process_booklist_style">Boekenlijst stijlen…</string>
     <string name="progress_msg_process_cover">Omslagen…</string>
     <string name="progress_msg_process_preferences">Voorkeuren…</string>
-    <string name="progress_msg_reading_directory">Doorzoeken map…</string>
+    <string name="X_progress_msg_reading_directory">Doorzoeken map…</string>
     <string name="progress_msg_rebuilding_search_index">Zoekindex opnieuw opbouwen…</string>
     <string name="progress_msg_saving_image">Scan wordt bewaard…</string>
     <string name="progress_msg_searching">Aan \'t zoeken…</string>

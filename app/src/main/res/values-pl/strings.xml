@@ -11,7 +11,7 @@
     <string name="X_info_no_authors_yet">Brak autora(ów) tej ksiażki. Dodaj autora używając pola tekstowego na górze.</string>
     <string name="X_info_no_books_yet">Na tej półce nie ma książek. Dodaj jakąś przy pomocy menu na dole ekranu.</string>
     <string name="X_info_no_series_yet">Brak serii dla tej ksiażki. Dodaj serię używając pola tekstowego na górze.</string>
-    <string name="X_info_reset_tips">Od czasu do czasu program może wyświetlać komunikaty z LibraryThing.\n Naciśnij przycisk poniżej, by przywrócić komunikaty, które były wyłączone.</string>
+    <string name="X_info_reset_tips">Od czasu do czasu program może wyświetlać komunikaty z %1$s.\n Naciśnij przycisk poniżej, by przywrócić komunikaty, które były wyłączone.</string>
     <string name="X_lbl_loan_book_available">Dostępny</string>
     <string name="X_lbl_select_fields_to_update">Wybierz pola do aktualizacji</string>
     <string name="X_menu_delete_series">Usuń serię…</string>
@@ -120,7 +120,7 @@
     <string name="gr_auth_blurb_part2">Po zarejestrowaniu lub jeśli jesteś już użytkownikiem Goodreads, możesz autoryzować dostęp do danych Goodreads, naciskając poniższy przycisk. Spowoduje to przejście do strony internetowej, na której będziesz musiał zalogować się do Goodreads i autoryzować tę aplikację. Nigdy nie zobaczymy Twojego hasła i możesz wyłączyć dostęp za pośrednictwem strony Goodreads. Ze względu na kaprysy sieci, możesz skończyć na pustej stronie internetowej. Wystarczy dotknąć przycisku Wstecz, aby wrócić tutaj!</string>
     <string name="gr_auth_blurb_part3">Ale pamiętaj… nie ma potrzeby tego robić: bez niego działa dobrze!</string>
     <string name="gr_auth_blurb_part4">Wygląda na to, że już autoryzowałeś tę aplikację. Jeśli chcesz usunąć poświadczenia z tego telefonu, możesz to zrobić, naciskając poniższy przycisk. Ważne jest jednak również, aby usunąć rejestrację aplikacji na stronie Goodreads.</string>
-    <string name="gr_auth_check">Sprawdzanie autoryzacji Goodreads</string>
+    <string name="X_gr_auth_check">Sprawdzanie autoryzacji Goodreads</string>
     <string name="gr_auth_error">Autoryzacja Goodreads spowodowała błąd.</string>
     <string name="gr_auth_successful">Autoryzacja Goodreads powiodła się</string>
     <string name="gr_btn_send_all">Wyślij wszystko</string>
@@ -391,7 +391,7 @@
     <string name="progress_msg_process_booklist_style">Style listy książek…</string>
     <string name="progress_msg_process_cover">Okładki…</string>
     <string name="progress_msg_process_preferences">Preferencje…</string>
-    <string name="progress_msg_reading_directory">Czytanie folderów…</string>
+    <string name="X_progress_msg_reading_directory">Czytanie folderów…</string>
     <string name="progress_msg_rebuilding_search_index">Przebudowywanie indeksu wyszukiwania…</string>
     <string name="progress_msg_saving_image">Zapisywanie obrazu…</string>
     <string name="progress_msg_searching">Badawczy…</string>

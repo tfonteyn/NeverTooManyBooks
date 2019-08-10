@@ -120,7 +120,7 @@
     <string name="gr_auth_blurb_part2">Pokud jste se na Goodreads registroval, nebo pokud již jste registrovaným uživatelem, můžete autorizovat &APP_NAME; k přístupu k Vašim datům na Goodreads prostřednictvím tlačítka níže. Následně budete přesunut na webovou stránku, na které se přihlásíte do Goodreads a autorizujete tuto aplikaci. Tato aplikace nikdy nebude znát Vaše heslo a udělenou autorizaci můžete kdykoli zrušit přes webové stránky Goodreads. Při problémech s připojením k internetu můžete skončit na prázdné stránce - v tom případě prostě použijte tlačítko zpět pro návrat na tuto obrazovku!</string>
     <string name="gr_auth_blurb_part3">Pamatujte…žádná z těchto možností není povinná: &APP_NAME; je samostatná aplikace a pracuje zcela správně i bez nich!</string>
     <string name="gr_auth_blurb_part4">Vypadá to, že jste tuto aplikaci již autorizovali. Pokud chcete smazat pověření z tohoto telefonu, můžete tak učinit stisknutím tlačítka níže. Je však také důležité odstranit registraci aplikace na webových stránkách Goodreads.</string>
-    <string name="gr_auth_check">Kontrola Goodreads autorizace</string>
+    <string name="X_gr_auth_check">Kontrola Goodreads autorizace</string>
     <string name="gr_auth_error">Goodreads autorizace skončila chybou.</string>
     <string name="gr_auth_successful">Goodreads autorizace v pořádku</string>
     <string name="gr_btn_send_all">Odeslat vše</string>
@@ -391,7 +391,7 @@
     <string name="progress_msg_process_booklist_style">Styly seznamu…</string>
     <string name="progress_msg_process_cover">Přebal…</string>
     <string name="progress_msg_process_preferences">Předvolby…</string>
-    <string name="progress_msg_reading_directory">Čtení složek…</string>
+    <string name="X_progress_msg_reading_directory">Čtení složek…</string>
     <string name="progress_msg_rebuilding_search_index">Obnovování indexu pro vyhledávání…</string>
     <string name="progress_msg_saving_image">Uložení obrázku…</string>
     <string name="progress_msg_searching">Vyhledávání…</string>
