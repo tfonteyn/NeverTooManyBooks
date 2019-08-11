@@ -36,9 +36,9 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
-import com.hardbacknutter.nevertomanybooks.backup.FormattedMessageException;
 import com.hardbacknutter.nevertomanybooks.goodreads.AuthorizationException;
 import com.hardbacknutter.nevertomanybooks.searches.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertomanybooks.utils.FormattedMessageException;
 
 /**
  * Simple class to run in background and verify Goodreads credentials then
@@ -72,27 +72,26 @@ public class AuthorizationResultCheckTask
 
     @Override
     protected void onPostExecute(@NonNull final Boolean result) {
-        //TODO: should be using a user context.
-        Context context = App.getAppContext();
+        Context userContext = App.getFakeUserContext();
 
         if (result) {
-            App.showNotification(context.getString(R.string.info_authorized),
-                                 context.getString(R.string.gr_auth_successful));
+            App.showNotification(userContext.getString(R.string.info_authorized),
+                                 userContext.getString(R.string.gr_auth_successful));
 
         } else {
             String msg;
             if (mException instanceof FormattedMessageException) {
-                msg = ((FormattedMessageException) mException).getFormattedMessage(context);
+                msg = ((FormattedMessageException) mException).getLocalizedMessage(userContext);
 
             } else if (mException != null) {
-                msg = context.getString(R.string.gr_auth_error) + ' '
-                      + context.getString(R.string.error_if_the_problem_persists);
+                msg = userContext.getString(R.string.gr_auth_error) + ' '
+                      + userContext.getString(R.string.error_if_the_problem_persists);
 
             } else {
-                msg = context.getString(R.string.error_site_authentication_failed,
-                                        context.getString(R.string.goodreads));
+                msg = userContext.getString(R.string.error_site_authentication_failed,
+                                            userContext.getString(R.string.goodreads));
             }
-            App.showNotification(context.getString(R.string.info_not_authorized), msg);
+            App.showNotification(userContext.getString(R.string.info_not_authorized), msg);
         }
     }
 }

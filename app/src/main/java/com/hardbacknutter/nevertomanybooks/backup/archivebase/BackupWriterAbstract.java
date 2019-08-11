@@ -104,8 +104,7 @@ public abstract class BackupWriterAbstract
         mSettings = settings;
         mProgressListener = listener;
 
-        //TODO: should be using a user context.
-        Context context = App.getAppContext();
+        Context userContext = App.getFakeUserContext();
 
         // do a cleanup first
         mDb.purge();
@@ -136,7 +135,7 @@ public abstract class BackupWriterAbstract
                 tempBookCsvFile = File.createTempFile("tmp_books_csv_", ".tmp");
                 tempBookCsvFile.deleteOnExit();
 
-                Exporter mExporter = new CsvExporter(context, mSettings);
+                Exporter mExporter = new CsvExporter(userContext, mSettings);
                 try (OutputStream output = new FileOutputStream(tempBookCsvFile)) {
                     // we know the # of covers...
                     // but getting the progress 100% right is not really important

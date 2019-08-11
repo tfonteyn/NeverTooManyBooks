@@ -103,9 +103,8 @@ public class BackupTask
     protected ExportOptions doInBackground(final Void... params) {
         Thread.currentThread().setName("BackupTask");
 
-        //TODO: should be using a user context.
-        Context context = App.getAppContext();
-        try (BackupWriter writer = BackupManager.getWriter(context, mTmpFile)) {
+        Context userContext = App.getFakeUserContext();
+        try (BackupWriter writer = BackupManager.getWriter(userContext, mTmpFile)) {
 
             writer.backup(mSettings, new ProgressListener() {
 

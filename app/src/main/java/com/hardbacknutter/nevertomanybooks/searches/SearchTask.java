@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
-import com.hardbacknutter.nevertomanybooks.backup.FormattedMessageException;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
@@ -52,6 +51,7 @@ import com.hardbacknutter.nevertomanybooks.entities.Series.SeriesDetails;
 import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertomanybooks.utils.FormattedMessageException;
 
 /**
  * Searches a single {@link SearchEngine},
@@ -284,7 +284,7 @@ public class SearchTask
         try {
             if (e instanceof FormattedMessageException) {
                 // we have a clean user message.
-                s = ((FormattedMessageException) e).getFormattedMessage(context);
+                s = ((FormattedMessageException) e).getLocalizedMessage(context);
             } else {
                 // best shot
                 s = e.getLocalizedMessage();

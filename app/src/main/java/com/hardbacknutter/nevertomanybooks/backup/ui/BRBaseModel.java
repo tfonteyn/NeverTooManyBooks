@@ -175,8 +175,7 @@ public class BRBaseModel
         protected ArrayList<BRBaseActivity.FileDetails> doInBackground(final Void... params) {
             Thread.currentThread().setName("FileListerTask");
 
-            //TODO: should be using a user context.
-            Context context = App.getAppContext();
+            Context userContext = App.getFakeUserContext();
 
             ArrayList<BRBaseActivity.FileDetails> fileDetails = new ArrayList<>();
 
@@ -195,7 +194,7 @@ public class BRBaseModel
                 BackupFileDetails backupFileDetails = new BackupFileDetails(file);
                 // for each backup archive found, read the info block.
                 if (BackupManager.isArchive(file)) {
-                    try (BackupReader reader = BackupManager.getReader(context, file)) {
+                    try (BackupReader reader = BackupManager.getReader(userContext, file)) {
                         backupFileDetails.setInfo(reader.getInfo());
                     } catch (@NonNull final IOException e) {
                         Logger.error(this, e);

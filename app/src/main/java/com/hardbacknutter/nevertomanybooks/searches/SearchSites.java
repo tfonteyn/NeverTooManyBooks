@@ -78,7 +78,6 @@ public final class SearchSites {
     public static final int LIBRARY_THING = 1 << 2;
 
     /** search source to use. */
-    @SuppressWarnings("WeakerAccess")
     public static final int GOODREADS = 1 << 3;
 
     /**

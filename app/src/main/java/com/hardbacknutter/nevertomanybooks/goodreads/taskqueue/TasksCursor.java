@@ -208,7 +208,7 @@ public final class TasksCursor
         try {
             task = SerializationUtils.deserializeObject(blob);
         } catch (@NonNull final SerializationUtils.DeserializationException de) {
-            task = new LegacyTask(App.getAppContext());
+            task = new LegacyTask(App.getFakeUserContext());
         }
         task.setId(getId());
         return task;

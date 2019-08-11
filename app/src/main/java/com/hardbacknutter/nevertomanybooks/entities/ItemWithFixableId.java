@@ -77,7 +77,7 @@ public interface ItemWithFixableId {
             // try to find the item.
             long itemId = item.fixId(context, db);
 
-            String uniqueName = item.stringEncoded().trim().toUpperCase();
+            String uniqueName = item.stringEncoded().trim().toUpperCase(item.getLocale());
 
             // Series special case: same name + different number.
             // This means different series positions will have the same id+name but will have
@@ -115,9 +115,8 @@ public interface ItemWithFixableId {
      * @return the item id (also set on the item).
      */
     default long fixId(@NonNull DAO db) {
-        //TODO: should be using a user context.
-        Context context = App.getAppContext();
-        return fixId(context, db, getLocale());
+        Context userContext = App.getFakeUserContext();
+        return fixId(userContext, db, getLocale());
     }
 
     /**

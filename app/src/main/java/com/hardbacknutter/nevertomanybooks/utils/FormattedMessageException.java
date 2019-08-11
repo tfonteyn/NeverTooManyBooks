@@ -24,25 +24,55 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverToManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertomanybooks.backup;
+package com.hardbacknutter.nevertomanybooks.utils;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertomanybooks.App;
 
-public interface FormattedMessageException {
+/**
+ * * String ID and args are stored for later retrieval.
+ * * The messages will be shown to the user.
+ */
+public abstract class FormattedMessageException
+        extends Exception {
+
+    @StringRes
+    final int mStringId;
+    /** Args to pass to format function. */
+    @Nullable
+    private final Object[] mArgs;
+
+    @SuppressWarnings("WeakerAccess")
+    public FormattedMessageException(@StringRes final int stringId) {
+        mStringId = stringId;
+        mArgs = null;
+    }
+
+    public FormattedMessageException(@StringRes final int stringId,
+                                     @NonNull final Object... args) {
+        mStringId = stringId;
+        mArgs = args;
+    }
 
     /**
-     * Use {@link #getFormattedMessage} directly if possible.
+     * Use {@link #getLocalizedMessage(Context)} directly if possible.
      */
-    default String getLocalizedMessage() {
-        //TODO: should be using a user context.
-        Context context = App.getAppContext();
-        return getFormattedMessage(context);
+    public String getLocalizedMessage() {
+        Context userContext = App.getFakeUserContext();
+        return getLocalizedMessage(userContext);
     }
 
     @NonNull
-    String getFormattedMessage(@NonNull Context context);
+    public String getLocalizedMessage(@NonNull final Context context) {
+        if (mArgs != null) {
+            return context.getString(mStringId, mArgs);
+        } else {
+            return context.getString(mStringId);
+        }
+    }
 }

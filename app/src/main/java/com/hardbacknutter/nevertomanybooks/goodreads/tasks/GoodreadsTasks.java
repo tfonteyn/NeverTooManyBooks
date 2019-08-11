@@ -33,8 +33,8 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
-import com.hardbacknutter.nevertomanybooks.backup.FormattedMessageException;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener.TaskFinishedMessage;
+import com.hardbacknutter.nevertomanybooks.utils.FormattedMessageException;
 
 /**
  * Common utilities.
@@ -64,16 +64,15 @@ public final class GoodreadsTasks {
         //Reminder:  'success' only means the call itself was successful.
         // It still depends on the 'result' code what the next step is.
 
-        //TODO: should be using a user context.
-        Context context = App.getAppContext();
+        Context userContext = App.getFakeUserContext();
 
         // if auth failed, either first or second time, complain and bail out.
         if (message.result == GR_RESULT_CODE_AUTHORIZATION_FAILED
             ||
             (message.result == GR_RESULT_CODE_AUTHORIZATION_NEEDED
              && message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH)) {
-            return context.getString(R.string.error_site_authentication_failed,
-                                     context.getString(R.string.goodreads));
+            return userContext.getString(R.string.error_site_authentication_failed,
+                                         userContext.getString(R.string.goodreads));
         }
 
 
@@ -83,14 +82,14 @@ public final class GoodreadsTasks {
 
         } else if (message.success) {
             // authenticated fine, just show info results.
-            return context.getString(message.result);
+            return userContext.getString(message.result);
 
         } else {
             // some non-auth related error occurred.
-            String msg = context.getString(message.result);
+            String msg = userContext.getString(message.result);
             if (message.exception instanceof FormattedMessageException) {
                 msg += ' ' + ((FormattedMessageException) message.exception)
-                                     .getFormattedMessage(context);
+                                     .getLocalizedMessage(userContext);
 
             } else if (message.exception != null) {
                 msg += ' ' + message.exception.getLocalizedMessage();

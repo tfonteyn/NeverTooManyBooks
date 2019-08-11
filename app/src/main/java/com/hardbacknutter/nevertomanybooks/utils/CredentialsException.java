@@ -32,7 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertomanybooks.R;
-import com.hardbacknutter.nevertomanybooks.backup.FormattedMessageException;
 
 /**
  * Thrown when for some reason a website rejects our requests.
@@ -42,10 +41,7 @@ import com.hardbacknutter.nevertomanybooks.backup.FormattedMessageException;
  * Note that the exception message can/will be shown to the end-user.
  */
 public class CredentialsException
-        extends Exception
-        implements FormattedMessageException {
-
-    private static final long serialVersionUID = 4153245540785393862L;
+        extends FormattedMessageException {
 
     /** Args to pass to format function. */
     @StringRes
@@ -57,25 +53,12 @@ public class CredentialsException
      * @param site String resource id with the name of the site.
      */
     public CredentialsException(@StringRes final int site) {
-        mSite = site;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param site  String resource id with the name of the site.
-     * @param cause the cause
-     */
-    public CredentialsException(@StringRes final int site,
-                                @NonNull final Throwable cause) {
-        super(cause);
+        super(R.string.error_site_authentication_failed);
         mSite = site;
     }
 
     @NonNull
-    @Override
-    public String getFormattedMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_site_authentication_failed,
-                                 context.getString(mSite));
+    public String getLocalizedMessage(@NonNull final Context context) {
+        return context.getString(mStringId, context.getString(mSite));
     }
 }

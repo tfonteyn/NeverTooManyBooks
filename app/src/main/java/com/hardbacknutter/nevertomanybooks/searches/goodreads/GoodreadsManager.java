@@ -614,7 +614,8 @@ public class GoodreadsManager
      * @throws IOException           on other failures
      */
     @NonNull
-    public ExportResult sendOneBook(@NonNull final DAO db,
+    public ExportResult sendOneBook(@NonNull final Context context,
+                                    @NonNull final DAO db,
                                     @NonNull final MappedCursorRow bookCursorRow)
             throws CredentialsException, BookNotFoundException, IOException {
 
@@ -633,7 +634,7 @@ public class GoodreadsManager
             grBookId = bookCursorRow.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
             if (grBookId != 0) {
                 // Get the book details to make sure we have a valid book ID
-                grBook = getBookById(grBookId, false);
+                grBook = getBookById(context, grBookId, false);
             }
         } catch (@NonNull final CredentialsException | BookNotFoundException | IOException e) {
             grBookId = 0;
@@ -648,7 +649,7 @@ public class GoodreadsManager
             }
 
             // Get the book details using ISBN
-            grBook = getBookByIsbn(isbn, false);
+            grBook = getBookByIsbn(context, isbn, false);
             if (grBook.containsKey(DBDefinitions.KEY_GOODREADS_BOOK_ID)) {
                 grBookId = grBook.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
             }
@@ -790,17 +791,20 @@ public class GoodreadsManager
                          final boolean fetchThumbnail)
             throws CredentialsException,
                    IOException {
+
+        Context userContext = App.getFakeUserContext();
+
         try {
             // getBookByIsbn will check on isbn being valid.
             if (isbn != null && !isbn.isEmpty()) {
-                return getBookByIsbn(isbn, fetchThumbnail);
+                return getBookByIsbn(userContext, isbn, fetchThumbnail);
 
             } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
                 List<GoodreadsWork> goodreadsWorks = new SearchBooksApiHandler(this)
                                                              .search(author + ' ' + title);
 
                 if (!goodreadsWorks.isEmpty()) {
-                    return getBookById(goodreadsWorks.get(0).bookId, fetchThumbnail);
+                    return getBookById(userContext, goodreadsWorks.get(0).bookId, fetchThumbnail);
                 } else {
                     return new Bundle();
                 }
@@ -860,12 +864,13 @@ public class GoodreadsManager
      * @throws IOException           on other failures
      */
     @NonNull
-    private Bundle getBookById(final long bookId,
+    private Bundle getBookById(@NonNull final Context context,
+                               final long bookId,
                                final boolean fetchThumbnail)
             throws CredentialsException, BookNotFoundException, IOException {
 
         if (bookId != 0) {
-            ShowBookByIdApiHandler api = new ShowBookByIdApiHandler(this);
+            ShowBookByIdApiHandler api = new ShowBookByIdApiHandler(context, this);
             // Run the search
             return api.get(bookId, fetchThumbnail);
         } else {
@@ -883,12 +888,13 @@ public class GoodreadsManager
      * @throws IOException           on other failures
      */
     @NonNull
-    private Bundle getBookByIsbn(@Nullable final String isbn,
+    private Bundle getBookByIsbn(@NonNull final Context context,
+                                 @Nullable final String isbn,
                                  final boolean fetchThumbnail)
             throws CredentialsException, BookNotFoundException, IOException {
 
         if (ISBN.isValid(isbn)) {
-            ShowBookByIsbnApiHandler api = new ShowBookByIsbnApiHandler(this);
+            ShowBookByIsbnApiHandler api = new ShowBookByIsbnApiHandler(context, this);
             // Run the search
             return api.get(isbn, fetchThumbnail);
         } else {

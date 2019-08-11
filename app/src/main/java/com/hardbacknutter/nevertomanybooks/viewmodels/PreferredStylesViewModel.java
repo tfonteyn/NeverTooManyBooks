@@ -26,8 +26,6 @@
  */
 package com.hardbacknutter.nevertomanybooks.viewmodels;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
@@ -127,7 +125,7 @@ public class PreferredStylesViewModel
         mList.remove(style);
     }
 
-    public void saveMenuOrder(@NonNull final Context context) {
-        BooklistStyles.savePreferredStyleMenuOrder(context, mList);
+    public void saveMenuOrder() {
+        BooklistStyles.savePreferredStyleMenuOrder(mList);
     }
 }

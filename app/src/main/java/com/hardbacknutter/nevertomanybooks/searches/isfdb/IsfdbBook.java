@@ -49,6 +49,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
@@ -143,6 +144,8 @@ public class IsfdbBook
     /** accumulate all series for this book. */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
+    @NonNull
+    private final Format mFormatMap;
     private String mPath;
     /** List of all editions (ISFDB 'publicationRecord') of this book. */
     private List<Editions.Edition> mEditions;
@@ -153,8 +156,9 @@ public class IsfdbBook
     @Nullable
     private String mFirstPublication;
 
-    IsfdbBook() {
+    IsfdbBook(@NonNull final Context context) {
         super();
+        mFormatMap = new Format(context);
     }
 
     //ENHANCE: pass and store these ISFDB ID's?
@@ -163,8 +167,10 @@ public class IsfdbBook
 
 
     @VisibleForTesting
-    IsfdbBook(@Nullable final Document doc) {
+    IsfdbBook(@NonNull final Context context,
+              @Nullable final Document doc) {
         super(doc);
+        mFormatMap = new Format(context);
     }
 
     @Nullable
@@ -175,35 +181,29 @@ public class IsfdbBook
     /**
      * @param isfdbId        ISFDB native book id
      * @param fetchThumbnail whether to get thumbnails as well
-     * @param context        Current context
-     *
      * @return Bundle with book data
      *
      * @throws SocketTimeoutException on timeout
      */
     @NonNull
     public Bundle fetch(final long isfdbId,
-                        final boolean fetchThumbnail,
-                        @NonNull final Context context)
+                        final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
         return fetch(IsfdbManager.getBaseURL() + String.format(BOOK_URL, isfdbId),
-                     fetchThumbnail, context);
+                     fetchThumbnail);
     }
 
     /**
      * @param path           A fully qualified ISFDB search url
      * @param fetchThumbnail whether to get thumbnails as well
-     * @param context        Current context
-     *
      * @return Bundle with book data
      *
      * @throws SocketTimeoutException on timeout
      */
     @NonNull
     public Bundle fetch(@NonNull final String path,
-                        final boolean fetchThumbnail,
-                        @NonNull final Context context)
+                        final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
         mPath = path;
@@ -213,22 +213,19 @@ public class IsfdbBook
         }
 
         Bundle bookData = new Bundle();
-        return parseDoc(bookData, fetchThumbnail, context);
+        return parseDoc(bookData, fetchThumbnail);
     }
 
     /**
      * @param editions       List of ISFDB Editions with native book id
      * @param fetchThumbnail whether to get thumbnails as well
-     * @param context        Current context
-     *
      * @return Bundle with book data
      *
      * @throws SocketTimeoutException on timeout
      */
     @NonNull
     public Bundle fetch(@Size(min = 1) @NonNull final List<Editions.Edition> editions,
-                        final boolean fetchThumbnail,
-                        @NonNull final Context context)
+                        final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
         mEditions = editions;
@@ -247,7 +244,7 @@ public class IsfdbBook
         }
 
         Bundle bookData = new Bundle();
-        return parseDoc(bookData, fetchThumbnail, context);
+        return parseDoc(bookData, fetchThumbnail);
     }
 
     /**
@@ -375,15 +372,13 @@ public class IsfdbBook
      *
      * @param bookData       a new Bundle()  (must be passed in so we mock it in test)
      * @param fetchThumbnail whether to get thumbnails as well
-     * @param context        Current context
      *
      * @return Bundle with book data, can be empty, but never {@code null}
      */
     @NonNull
     @VisibleForTesting
     Bundle parseDoc(@NonNull final Bundle bookData,
-                    final boolean fetchThumbnail,
-                    @NonNull final Context context)
+                    final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
         Element contentBox = mDoc.select("div.contentbox").first();
@@ -499,7 +494,7 @@ public class IsfdbBook
                     // <span class="tooltiptext tooltipnarrow">Trade paperback. bla bla...
                     // need to lift "tp".
                     tmpString = li.childNode(3).childNode(0).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_FORMAT, Format.map(context, tmpString));
+                    bookData.putString(DBDefinitions.KEY_FORMAT, mFormatMap.map(tmpString));
 
                 } else if ("Type:".equalsIgnoreCase(fieldName)) {
                     // <li><b>Type:</b> COLLECTION
@@ -581,9 +576,10 @@ public class IsfdbBook
         // Default to a localised 'English" as ISFDB is after all (I presume) 95% english
         bookData.putString(DBDefinitions.KEY_LANGUAGE, Locale.ENGLISH.getISO3Language());
 
-        boolean addSeriesFromToc = PreferenceManager.getDefaultSharedPreferences(context)
-                                                    .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC,
-                                                                false);
+        boolean addSeriesFromToc = PreferenceManager
+                                           .getDefaultSharedPreferences(App.getAppContext())
+                                           .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC,
+                                                       false);
 
         // the table of content
         ArrayList<TocEntry> toc = getTocList(bookData, addSeriesFromToc);

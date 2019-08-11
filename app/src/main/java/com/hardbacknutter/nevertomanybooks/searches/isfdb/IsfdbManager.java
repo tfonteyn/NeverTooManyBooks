@@ -130,8 +130,7 @@ public class IsfdbManager
                          final boolean fetchThumbnail)
             throws IOException {
 
-        //TODO: should be using a user context.
-        Context context = App.getAppContext();
+        Context userContext = App.getFakeUserContext();
 
         List<Editions.Edition> editions;
 
@@ -166,7 +165,7 @@ public class IsfdbManager
             }
 
             // as per user settings.
-            if (PreferenceManager.getDefaultSharedPreferences(context)
+            if (PreferenceManager.getDefaultSharedPreferences(userContext)
                                  .getBoolean(PREFS_USE_PUBLISHER, false)) {
                 if (publisher != null && !publisher.isEmpty()) {
                     index++;
@@ -186,7 +185,7 @@ public class IsfdbManager
         }
 
         if (!editions.isEmpty()) {
-            return new IsfdbBook().fetch(editions, fetchThumbnail, context);
+            return new IsfdbBook(userContext).fetch(editions, fetchThumbnail);
         } else {
             return new Bundle();
         }

@@ -49,7 +49,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertomanybooks.backup.ExportOptions;
-import com.hardbacknutter.nevertomanybooks.backup.FormattedMessageException;
 import com.hardbacknutter.nevertomanybooks.backup.ImportOptions;
 import com.hardbacknutter.nevertomanybooks.backup.csv.CsvExporter;
 import com.hardbacknutter.nevertomanybooks.backup.csv.ExportCSVTask;
@@ -71,6 +70,7 @@ import com.hardbacknutter.nevertomanybooks.goodreads.tasks.SendBooksTask;
 import com.hardbacknutter.nevertomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener.TaskFinishedMessage;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener.TaskProgressMessage;
+import com.hardbacknutter.nevertomanybooks.utils.FormattedMessageException;
 import com.hardbacknutter.nevertomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
@@ -136,7 +136,7 @@ public class AdminFragment
                     if (message.exception instanceof FormattedMessageException) {
                         //noinspection ConstantConditions
                         msg = ((FormattedMessageException) message.exception)
-                                      .getFormattedMessage(getContext());
+                                      .getLocalizedMessage(getContext());
                     } else if (message.exception != null) {
                         msg = message.exception.getLocalizedMessage();
                     } else {

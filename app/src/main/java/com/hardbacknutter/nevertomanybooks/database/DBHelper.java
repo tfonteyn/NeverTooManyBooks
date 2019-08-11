@@ -232,7 +232,7 @@ public final class DBHelper
                          + '(' + DOM_BOOKSHELF
                          + ',' + DOM_FK_STYLE_ID
                          + ") VALUES ("
-                         + "'" + App.getAppContext().getString(R.string.bookshelf_my_books)
+                         + "'" + App.getFakeUserContext().getString(R.string.bookshelf_my_books)
                          + "'," + BooklistStyles.DEFAULT_STYLE_ID
                          + ')');
 

@@ -91,14 +91,14 @@ public class IsfdbGetBookTask
     protected Bundle doInBackground(final Void... params) {
         Thread.currentThread().setName("IsfdbGetBookTask");
         try {
-            //TODO: should be using a user context.
-            Context context = App.getAppContext();
+            Context userContext = App.getFakeUserContext();
 
             if (mEditions != null) {
-                return new IsfdbBook().fetch(mEditions, false, context);
+                return new IsfdbBook(userContext).fetch(mEditions, false);
 
             } else if (mIsfdbId != 0) {
-                return new IsfdbBook().fetch(mIsfdbId, false, context);
+                return new IsfdbBook(userContext).fetch(mIsfdbId, false);
+
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.debugWithStackTrace(this, "doInBackground",

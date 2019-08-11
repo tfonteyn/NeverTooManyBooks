@@ -395,7 +395,7 @@ public final class UpgradeDatabase {
                                          + File.separator + "tmp_images"));
 
         // migrate old properties.
-        Prefs.migratePreV200preferences(App.getAppContext(), Prefs.PREF_LEGACY_BOOK_CATALOGUE);
+        Prefs.migratePreV200preferences(App.getFakeUserContext(), Prefs.PREF_LEGACY_BOOK_CATALOGUE);
 
         // add the UUID field for the move of styles to SharedPreferences
         db.execSQL("ALTER TABLE " + TBL_BOOKLIST_STYLES
@@ -438,7 +438,7 @@ public final class UpgradeDatabase {
         // Due to a number of code remarks, and some observation... do a clean of some columns.
         // these two are due to a remark in the CSV exporter that (at one time?)
         // the author name and title could be bad
-        final String UNKNOWN = App.getAppContext().getString(R.string.unknown);
+        final String UNKNOWN = App.getFakeUserContext().getString(R.string.unknown);
         db.execSQL("UPDATE " + TBL_AUTHORS
                    + " SET " + DOM_AUTHOR_FAMILY_NAME + "='" + UNKNOWN + '\''
                    + " WHERE " + DOM_AUTHOR_FAMILY_NAME + "=''"

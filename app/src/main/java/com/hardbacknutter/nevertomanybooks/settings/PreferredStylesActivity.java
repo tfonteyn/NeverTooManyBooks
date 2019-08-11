@@ -114,7 +114,7 @@ public class PreferredStylesActivity
             @Override
             public void onChanged() {
                 // we save the order after each change.
-                mModel.saveMenuOrder(PreferredStylesActivity.this);
+                mModel.saveMenuOrder();
                 // and make sure the results flags up we changed something.
                 setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES);
             }

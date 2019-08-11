@@ -97,8 +97,7 @@ public abstract class BackupReaderAbstract
                         @NonNull final ProgressListener listener)
             throws IOException, ImportException {
 
-        //TODO: should be using a user context.
-        Context context = App.getAppContext();
+        Context userContext = App.getFakeUserContext();
         Locale userLocale = LocaleUtils.getPreferredLocale();
 
         mSettings = settings;
@@ -144,7 +143,7 @@ public abstract class BackupReaderAbstract
                     case Books:
                         if ((mSettings.what & ImportOptions.BOOK_CSV) != 0) {
                             // a CSV file with all book data
-                            mSettings.results = restoreBooks(context, userLocale, entity);
+                            mSettings.results = restoreBooks(userContext, userLocale, entity);
                             entitiesRead |= ImportOptions.BOOK_CSV;
                         }
                         break;
@@ -184,7 +183,7 @@ public abstract class BackupReaderAbstract
                             // read them into the 'old' prefs. Migration is done at a later stage.
                             try (XmlImporter importer = new XmlImporter()) {
                                 importer.doPreferences(entity, mProgressListener,
-                                                       context.getSharedPreferences(
+                                                       userContext.getSharedPreferences(
                                                                Prefs.PREF_LEGACY_BOOK_CATALOGUE,
                                                                Context.MODE_PRIVATE));
                             }

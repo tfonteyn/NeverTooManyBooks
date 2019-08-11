@@ -194,7 +194,7 @@ class ImportLegacyTask
             return ok;
         } catch (@NonNull final CredentialsException e) {
             Logger.error(this, e);
-            throw new RuntimeException(e.getLocalizedMessage());
+            throw new RuntimeException(e.getLocalizedMessage(context));
         }
     }
 
@@ -589,9 +589,8 @@ class ImportLegacyTask
             }
             //TEST see above
             //--- begin 2019-02-04 ---
-            //TODO: should be using a user context.
-            Context context = App.getAppContext();
-            ItemWithFixableId.pruneList(context, db, bsList);
+            Context userContext = App.getFakeUserContext();
+            ItemWithFixableId.pruneList(userContext, db, bsList);
             //--- end 2019-02-04 ---
 
             bookData.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);

@@ -543,9 +543,8 @@ public final class BooklistStyles {
      *
      * @param uuidSet of style uuid's
      */
-    private static void setPreferredStyleMenuOrder(@NonNull final Context context,
-                                                   @NonNull final Set<String> uuidSet) {
-        PreferenceManager.getDefaultSharedPreferences(context)
+    private static void setPreferredStyleMenuOrder(@NonNull final Set<String> uuidSet) {
+        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                          .edit()
                          .putString(PREF_BL_PREFERRED_STYLES, TextUtils.join(",", uuidSet))
                          .apply();
@@ -556,11 +555,10 @@ public final class BooklistStyles {
      *
      * @param style to add.
      */
-    public static void addPreferredStyle(@NonNull final Context context,
-                                         @NonNull final BooklistStyle style) {
+    public static void addPreferredStyle(@NonNull final BooklistStyle style) {
         Set<String> list = getPreferredStyleMenuOrder();
         list.add(style.getUuid());
-        setPreferredStyleMenuOrder(context, list);
+        setPreferredStyleMenuOrder(list);
     }
 
     /**
@@ -570,14 +568,13 @@ public final class BooklistStyles {
      *
      * @param styles full list of preferred styles to save 'in order'
      */
-    public static void savePreferredStyleMenuOrder(@NonNull final Context context,
-                                                   @NonNull final List<BooklistStyle> styles) {
+    public static void savePreferredStyleMenuOrder(@NonNull final List<BooklistStyle> styles) {
         Set<String> list = new LinkedHashSet<>();
         for (BooklistStyle style : styles) {
             if (style.isPreferred()) {
                 list.add(style.getUuid());
             }
         }
-        setPreferredStyleMenuOrder(context, list);
+        setPreferredStyleMenuOrder(list);
     }
 }

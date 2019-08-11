@@ -118,9 +118,9 @@ class IsfdbBookTest {
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        IsfdbBook isfdbBook = new IsfdbBook(doc);
+        IsfdbBook isfdbBook = new IsfdbBook(mContext, doc);
         // we've set the doc, so no internet download will be done.
-        Bundle bookData = isfdbBook.parseDoc(mBundle, false, mContext);
+        Bundle bookData = isfdbBook.parseDoc(mBundle, false);
 
         assertFalse(bookData.isEmpty());
 

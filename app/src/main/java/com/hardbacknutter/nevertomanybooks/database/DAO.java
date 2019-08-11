@@ -2597,9 +2597,8 @@ public class DAO
     @NonNull
     private String getAllBooksSql(@NonNull final String whereClause) {
 
-        //TODO: should be using a user context.
-        Context context = App.getAppContext();
-        String andOthersText = context.getString(R.string.and_others);
+        Context userContext = App.getFakeUserContext();
+        String andOthersText = userContext.getString(R.string.and_others);
 
         // "a." (TBL_AUTHOR), "b." (TBL_BOOKS), "s." (TBL_SERIES}
         // BUT... here they have double-use:

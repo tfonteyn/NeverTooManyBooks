@@ -52,6 +52,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.button.MaterialButton;
+
 import java.io.File;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
@@ -64,7 +66,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import com.google.android.material.button.MaterialButton;
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -479,12 +480,12 @@ public class Fields {
             int cnt = 1;
             if (iterator.hasNext()) {
                 message.append('(').append(cnt).append(") ").append(
-                        iterator.next().getFormattedMessage(context));
+                        iterator.next().getLocalizedMessage(context));
             }
             while (iterator.hasNext()) {
                 cnt++;
                 message.append(" (").append(cnt).append(") ").append(
-                        iterator.next().getFormattedMessage(context)).append('\n');
+                        iterator.next().getLocalizedMessage(context)).append('\n');
             }
             return message.toString();
         }

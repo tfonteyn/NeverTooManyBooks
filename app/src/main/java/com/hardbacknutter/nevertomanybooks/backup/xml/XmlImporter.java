@@ -59,7 +59,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.backup.ExportOptions;
@@ -953,7 +952,7 @@ public class XmlImporter
             }
             // add to the menu of preferred styles if needed.
             if (mStyle.isPreferred()) {
-                BooklistStyles.addPreferredStyle(App.getAppContext(), mStyle);
+                BooklistStyles.addPreferredStyle(mStyle);
             }
 
             // the prefs are written on the fly, but we still need the db entry saved.

@@ -69,7 +69,24 @@ public final class Format {
         MAPPER.put("hardcover", R.string.book_format_hardcover);
     }
 
-    private Format() {
+    @NonNull
+    private final Context mContext;
+    @NonNull
+    private final Locale mLocale;
+
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     */
+    public Format(@NonNull final Context context) {
+        mContext = context;
+        Locale locale = context.getResources().getConfiguration().locale;
+        if (locale != null) {
+            mLocale = locale;
+        } else {
+            mLocale = Locale.ENGLISH;
+        }
     }
 
     /**
@@ -79,15 +96,8 @@ public final class Format {
      *
      * @return localized equivalent, or the source if no mapping exists.
      */
-    public static String map(@NonNull final Context context,
-                             @NonNull final String source) {
-
-        Locale locale = context.getResources().getConfiguration().locale;
-        if (locale == null) {
-            locale = Locale.ENGLISH;
-        }
-        Integer resId = MAPPER.get(source.toLowerCase(locale));
-        return resId != null ? context.getString(resId)
-                             : source;
+    public String map(@NonNull final String source) {
+        Integer resId = MAPPER.get(source.toLowerCase(mLocale));
+        return resId != null ? mContext.getString(resId) : source;
     }
 }

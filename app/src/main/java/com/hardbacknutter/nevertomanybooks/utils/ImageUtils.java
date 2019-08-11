@@ -26,7 +26,6 @@
  */
 package com.hardbacknutter.nevertomanybooks.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -142,8 +141,7 @@ public final class ImageUtils {
                                        final int maxHeight) {
 
         // 1. If caching is used, and we don't have cache building happening, check it.
-        if (imagesAreCached(imageView.getContext())
-            && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
+        if (imagesAreCached() && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
 
             long tick = System.nanoTime();
             cacheChecks.incrementAndGet();
@@ -163,7 +161,7 @@ public final class ImageUtils {
         }
 
         // 3. If caching is used, go get the image from the file system and send it to the cache.
-        if (imagesAreCached(imageView.getContext())) {
+        if (imagesAreCached()) {
             long tick = System.nanoTime();
             fileChecks.incrementAndGet();
             imageView.setMaxWidth(maxWidth);
@@ -587,12 +585,10 @@ public final class ImageUtils {
     }
 
     /**
-     * @param context Current context
-     *
      * @return {@code true} if resized images are cached in a database.
      */
-    public static boolean imagesAreCached(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
+    public static boolean imagesAreCached() {
+        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                                 .getBoolean(Prefs.pk_images_cache_resized, false);
     }
 }

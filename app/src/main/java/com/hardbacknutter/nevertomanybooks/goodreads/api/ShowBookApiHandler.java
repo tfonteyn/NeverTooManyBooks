@@ -37,7 +37,6 @@ import java.util.ArrayList;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
@@ -68,6 +67,7 @@ import com.hardbacknutter.nevertomanybooks.utils.xml.XmlResponseParser;
 public abstract class ShowBookApiHandler
         extends ApiHandler {
 
+
     // Current series being processed
     // private int mCurrSeriesId = 0;
     private final XmlHandler mHandleSeriesStart = context -> {
@@ -90,15 +90,14 @@ public abstract class ShowBookApiHandler
 //        } catch (@NonNull final Exception ignore) {
 //        }
     };
-
+    @NonNull
+    private final Format mFormatMap;
     /** Transient global data for current work in search results. */
     private Bundle mBookData;
-
     private final XmlHandler mHandleText = context -> {
         final String name = (String) context.getUserArg();
         mBookData.putString(name, context.getBody());
     };
-
     private final XmlHandler mHandleLong = context -> {
         final String name = (String) context.getUserArg();
         try {
@@ -108,7 +107,6 @@ public abstract class ShowBookApiHandler
             // Ignore but don't add
         }
     };
-
     private final XmlHandler mHandleFloat = context -> {
         final String name = (String) context.getUserArg();
         try {
@@ -118,7 +116,6 @@ public abstract class ShowBookApiHandler
             // Ignore but don't add
         }
     };
-
     private final XmlHandler mHandleBoolean = context -> {
         final String name = (String) context.getUserArg();
         try {
@@ -135,7 +132,6 @@ public abstract class ShowBookApiHandler
         } catch (@NonNull final NumberFormatException ignore) {
         }
     };
-
     /** Local storage for Series the book appears in. */
     @Nullable
     private ArrayList<Series> mSeries;
@@ -145,6 +141,9 @@ public abstract class ShowBookApiHandler
     /** Local storage for shelf names. */
     @Nullable
     private ArrayList<String> mShelves;
+    @NonNull
+    private final String mEBookString;
+
     /**
      * Create a new shelves collection when the "shelves" tag is encountered.
      */
@@ -241,12 +240,16 @@ public abstract class ShowBookApiHandler
      *
      * @throws CredentialsException with GoodReads
      */
-    ShowBookApiHandler(@NonNull final GoodreadsManager grManager)
+    ShowBookApiHandler(@NonNull final Context context,
+                       @NonNull final GoodreadsManager grManager)
             throws CredentialsException {
         super(grManager);
         if (!grManager.hasValidCredentials()) {
             throw new CredentialsException(R.string.goodreads);
         }
+
+        mFormatMap = new Format(context);
+        mEBookString = context.getString(R.string.book_format_ebook);
 
         buildFilters();
     }
@@ -270,10 +273,6 @@ public abstract class ShowBookApiHandler
 
         mBookData = new Bundle();
         mShelves = null;
-
-        //TODO: should be using a user context.
-        Context context = App.getAppContext();
-        String ebook = context.getString(R.string.book_format_ebook);
 
         DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executeGet(url, null, true, handler);
@@ -319,13 +318,13 @@ public abstract class ShowBookApiHandler
         // is it an eBook ? Overwrite the format key
         if (mBookData.containsKey(ShowBookFieldName.IS_EBOOK)
             && mBookData.getBoolean(ShowBookFieldName.IS_EBOOK)) {
-            mBookData.putString(DBDefinitions.KEY_FORMAT, ebook);
+            mBookData.putString(DBDefinitions.KEY_FORMAT, mEBookString);
 
         } else if (mBookData.containsKey(DBDefinitions.KEY_FORMAT)) {
             // normalise the format
             String source = mBookData.getString(DBDefinitions.KEY_FORMAT);
             if (source != null && !source.isEmpty()) {
-                mBookData.putString(DBDefinitions.KEY_FORMAT, Format.map(context, source));
+                mBookData.putString(DBDefinitions.KEY_FORMAT, mFormatMap.map(source));
             }
         }
 

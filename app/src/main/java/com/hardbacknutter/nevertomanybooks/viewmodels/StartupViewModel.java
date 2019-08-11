@@ -434,7 +434,7 @@ public class StartupViewModel
                 }
 
                 mDb.analyze();
-                if (ImageUtils.imagesAreCached(App.getAppContext())) {
+                if (ImageUtils.imagesAreCached()) {
                     CoversDAO.analyze();
                 }
 

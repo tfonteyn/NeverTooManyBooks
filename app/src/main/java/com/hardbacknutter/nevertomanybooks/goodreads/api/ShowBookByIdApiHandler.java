@@ -26,6 +26,7 @@
  */
 package com.hardbacknutter.nevertomanybooks.goodreads.api;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -55,9 +56,10 @@ public class ShowBookByIdApiHandler
      *
      * @throws CredentialsException with GoodReads
      */
-    public ShowBookByIdApiHandler(@NonNull final GoodreadsManager grManager)
+    public ShowBookByIdApiHandler(@NonNull final Context context,
+                                  @NonNull final GoodreadsManager grManager)
             throws CredentialsException {
-        super(grManager);
+        super(context, grManager);
     }
 
     /**

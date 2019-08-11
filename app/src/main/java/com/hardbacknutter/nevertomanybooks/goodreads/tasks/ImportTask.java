@@ -63,7 +63,8 @@ public class ImportTask
                       @NonNull final TaskListener<Integer> taskListener) {
         super(R.id.TASK_ID_GR_IMPORT, taskListener);
         mIsSync = isSync;
-        mTaskDescription = App.getAppContext().getString(R.string.gr_import_all_from_goodreads);
+        mTaskDescription = App.getFakeUserContext()
+                              .getString(R.string.gr_import_all_from_goodreads);
     }
 
     @Override

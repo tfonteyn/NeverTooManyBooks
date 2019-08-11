@@ -431,9 +431,7 @@ public final class CoversDAO
 
         public static String getDatabasePath() {
             // *always* use the app context!
-            return App.getAppContext()
-                      .getDatabasePath(COVERS_DATABASE_NAME)
-                      .getAbsolutePath();
+            return App.getAppContext().getDatabasePath(COVERS_DATABASE_NAME).getAbsolutePath();
         }
 
         /**

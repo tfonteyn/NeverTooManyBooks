@@ -188,14 +188,28 @@ public class App
     }
 
     /**
-     * WARNING: try not to use this to get resource strings!
-     * Doing so can return inconsistent translations.
-     * Only use when you're absolutely sure there is no other option; e.g. in background tasks.
+     * Get the Application Context.
      *
-     * @return Application Context.
+     * @return context
      */
     @NonNull
     public static Context getAppContext() {
+        return sInstance.getApplicationContext();
+    }
+
+    /**
+     * Syntax sugar... used in places where we <strong>really want a user context</strong> but
+     * can't have one. In other words: this is purely a mnemonic reminder for the developer.
+     * <p>
+     * WARNING: can return inconsistent translations when the user has a complicated setup.
+     * e.g. user device and user app preference use a different Locale.
+     * <p>
+     * FIXME: eliminate this where possible.
+     *
+     * @return context
+     */
+    @NonNull
+    public static Context getFakeUserContext() {
         return sInstance.getApplicationContext();
     }
 
@@ -215,7 +229,7 @@ public class App
     public static PackageInfo getPackageInfo(final int flags) {
         PackageInfo packageInfo = null;
         try {
-            Context context = getAppContext();
+            Context context = sInstance.getApplicationContext();
             // Get app info from the manifest
             PackageManager manager = context.getPackageManager();
             packageInfo = manager.getPackageInfo(context.getPackageName(), flags);
@@ -232,7 +246,7 @@ public class App
      */
     public static void showNotification(@NonNull final String title,
                                         @NonNull final String message) {
-        showNotification(getAppContext(), title, message);
+        showNotification(sInstance.getApplicationContext(), title, message);
     }
 
     /**
@@ -352,9 +366,9 @@ public class App
     }
 
     /**
-     * Get a global preference String. Null values results are returned as an empty string.
+     * Get a global preference boolean.
      *
-     * @return the preference value string, can be empty, but never {@code null}
+     * @return the preference value
      */
     public static boolean getPrefBoolean(@NonNull final String key,
                                          final boolean defaultValue) {
@@ -534,7 +548,8 @@ public class App
                 break;
 
         }
-        int currentNightMode = getAppContext().getResources().getConfiguration().uiMode
+        int currentNightMode = sInstance.getApplicationContext().getResources()
+                                        .getConfiguration().uiMode
                                & Configuration.UI_MODE_NIGHT_MASK;
 
         String currentMode = "currentNightMode";
@@ -593,7 +608,7 @@ public class App
         setSystemLocale();
 
         // load the preferred theme from preferences.
-        isThemeChanged(App.getAppContext());
+        isThemeChanged(sInstance.getApplicationContext());
 
         // create the singleton QueueManager
         QueueManager.init();

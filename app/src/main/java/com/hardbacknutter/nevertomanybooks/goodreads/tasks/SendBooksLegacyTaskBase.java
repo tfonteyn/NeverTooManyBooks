@@ -142,7 +142,7 @@ abstract class SendBooksLegacyTaskBase
         GoodreadsManager.ExportResult result;
         Exception exportException = null;
         try {
-            result = grManager.sendOneBook(db, bookCursorRow);
+            result = grManager.sendOneBook(context, db, bookCursorRow);
 
         } catch (@NonNull final CredentialsException e) {
             result = GoodreadsManager.ExportResult.credentialsError;

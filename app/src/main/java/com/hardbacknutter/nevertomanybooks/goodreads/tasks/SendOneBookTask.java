@@ -26,11 +26,14 @@
  */
 package com.hardbacknutter.nevertomanybooks.goodreads.tasks;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.database.cursors.BookCursor;
@@ -73,6 +76,8 @@ public class SendOneBookTask
     protected Integer doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.SendOneBookTask " + mBookId);
 
+        Context userContext = App.getFakeUserContext();
+
         GoodreadsManager.ExportResult result = null;
         try {
             if (!NetworkUtils.isNetworkAvailable()) {
@@ -92,7 +97,7 @@ public class SendOneBookTask
                     }
                     publishProgress(new TaskProgressMessage(mTaskId,
                                                             R.string.progress_msg_sending));
-                    result = grManager.sendOneBook(db, bookCursor.getCursorRow());
+                    result = grManager.sendOneBook(userContext, db, bookCursor.getCursorRow());
                     if (result == GoodreadsManager.ExportResult.sent) {
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);

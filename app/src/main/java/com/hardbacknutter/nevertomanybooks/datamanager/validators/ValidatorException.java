@@ -26,37 +26,19 @@
  */
 package com.hardbacknutter.nevertomanybooks.datamanager.validators;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertomanybooks.backup.FormattedMessageException;
+import com.hardbacknutter.nevertomanybooks.utils.FormattedMessageException;
 
 /**
- * Exception class for all validation errors. String ID and args are stored for later retrieval.
- * <p>
- * The messages will be shown to the user, hence the need for a String resource.
+ * Exception class for all validation errors.
  */
 public class ValidatorException
-        extends RuntimeException
-        implements FormattedMessageException {
-
-    private static final long serialVersionUID = 171094428181491962L;
-    @StringRes
-    private final int mStringId;
-    /** Args to pass to format function. */
-    @NonNull
-    private final Object[] mArgs;
+        extends FormattedMessageException {
 
     public ValidatorException(@StringRes final int stringId,
                               @NonNull final Object... args) {
-        mStringId = stringId;
-        mArgs = args;
-    }
-
-    @NonNull
-    public String getFormattedMessage(@NonNull final Context context) {
-        return context.getString(mStringId, mArgs);
+        super(stringId, args);
     }
 }

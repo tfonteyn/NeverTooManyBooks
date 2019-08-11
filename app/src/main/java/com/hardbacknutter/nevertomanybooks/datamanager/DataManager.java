@@ -596,7 +596,7 @@ public class DataManager {
             int cnt = 0;
             for (ValidatorException e : mValidationExceptions) {
                 message.append(" (").append(++cnt).append(") ")
-                       .append(e.getFormattedMessage(context))
+                       .append(e.getLocalizedMessage(context))
                        .append('\n');
             }
             return message.toString();

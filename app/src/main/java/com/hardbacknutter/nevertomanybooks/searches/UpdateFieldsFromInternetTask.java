@@ -460,10 +460,9 @@ public class UpdateFieldsFromInternetTask
                 }
             }
 
-            //TODO: should be using a user context.
-            Context context = App.getAppContext();
+            Context userContext = App.getFakeUserContext();
             Locale userLocale = LocaleUtils.getPreferredLocale();
-            mDb.updateBook(context, userLocale, mCurrentBookId, new Book(newBookData), 0);
+            mDb.updateBook(userContext, userLocale, mCurrentBookId, new Book(newBookData), 0);
         }
     }
 

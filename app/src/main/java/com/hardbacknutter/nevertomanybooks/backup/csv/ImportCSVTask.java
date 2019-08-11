@@ -79,13 +79,12 @@ public class ImportCSVTask
     protected Integer doInBackground(final Void... params) {
         Thread.currentThread().setName("ImportCSVTask");
 
-        //TODO: should be using a user context.
-        Context context = App.getAppContext();
+        Context userContext = App.getFakeUserContext();
         Locale userLocale = LocaleUtils.getPreferredLocale();
 
         try (FileInputStream is = new FileInputStream(mSettings.file)) {
             //noinspection ConstantConditions
-            mImporter.doBooks(context, userLocale,
+            mImporter.doBooks(userContext, userLocale,
                               is, new LocalCoverFinder(mSettings.file.getParent()),
                               new ProgressListener() {
 

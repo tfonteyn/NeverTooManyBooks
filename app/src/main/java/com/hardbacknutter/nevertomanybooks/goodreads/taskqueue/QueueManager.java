@@ -26,7 +26,6 @@
  */
 package com.hardbacknutter.nevertomanybooks.goodreads.taskqueue;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -310,9 +309,7 @@ public final class QueueManager {
      */
     boolean runTask(@NonNull final Task task) {
         if (task instanceof TQTask) {
-            //TODO: should be using a user context.
-            Context context = App.getAppContext();
-            return ((TQTask) task).run(this, context);
+            return ((TQTask) task).run(this, App.getFakeUserContext());
         } else {
             // Either extend RunnableTask, or override QueueManager.runTask()
             throw new IllegalStateException("Can not handle tasks that are not RunnableTasks");
