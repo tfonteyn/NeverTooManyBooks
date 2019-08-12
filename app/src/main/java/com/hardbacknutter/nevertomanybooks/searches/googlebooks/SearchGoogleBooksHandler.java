@@ -32,7 +32,6 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -702,9 +701,7 @@ class SearchGoogleBooksHandler
     public void startElement(@NonNull final String uri,
                              @NonNull final String localName,
                              @NonNull final String qName,
-                             @NonNull final Attributes attributes)
-            throws SAXException {
-        super.startElement(uri, localName, qName, attributes);
+                             @NonNull final Attributes attributes) {
         if (!mEntryDone && localName.equalsIgnoreCase(XML_ENTRY)) {
             mInEntry = true;
         }
@@ -717,9 +714,7 @@ class SearchGoogleBooksHandler
     @CallSuper
     public void endElement(@NonNull final String uri,
                            @NonNull final String localName,
-                           @NonNull final String qName)
-            throws SAXException {
-        super.endElement(uri, localName, qName);
+                           @NonNull final String qName) {
         /* the bits we want:
          *     <entry>
          *       <id>http://www.google.com/books/feeds/volumes/lf2EMetoLugC</id>
@@ -744,9 +739,7 @@ class SearchGoogleBooksHandler
     @CallSuper
     public void characters(@NonNull final char[] ch,
                            final int start,
-                           final int length)
-            throws SAXException {
-        super.characters(ch, start, length);
+                           final int length) {
         mBuilder.append(ch, start, length);
     }
 }

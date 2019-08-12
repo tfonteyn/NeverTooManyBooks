@@ -37,6 +37,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -130,8 +131,6 @@ public class IsfdbManager
                          final boolean fetchThumbnail)
             throws IOException {
 
-        Context userContext = App.getFakeUserContext();
-
         List<Editions.Edition> editions;
 
         if (ISBN.isValid(isbn)) {
@@ -165,7 +164,7 @@ public class IsfdbManager
             }
 
             // as per user settings.
-            if (PreferenceManager.getDefaultSharedPreferences(userContext)
+            if (PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                                  .getBoolean(PREFS_USE_PUBLISHER, false)) {
                 if (publisher != null && !publisher.isEmpty()) {
                     index++;
@@ -185,10 +184,24 @@ public class IsfdbManager
         }
 
         if (!editions.isEmpty()) {
-            return new IsfdbBook(userContext).fetch(editions, fetchThumbnail);
+            return new IsfdbBook().fetch(editions, fetchThumbnail);
         } else {
             return new Bundle();
         }
+    }
+
+    /**
+     * @param isbn to search for
+     * @param size of image to get.
+     *
+     * @return found/saved File, or {@code null} if none found (or any other failure)
+     */
+    @Nullable
+    @Override
+    @WorkerThread
+    public File getCoverImage(@NonNull final String isbn,
+                              @Nullable final ImageSize size) {
+        return SearchEngine.getCoverImageFallback(this, isbn);
     }
 
     @Override

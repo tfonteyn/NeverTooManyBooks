@@ -26,7 +26,6 @@
  */
 package com.hardbacknutter.nevertomanybooks.searches.isfdb;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -56,7 +55,6 @@ import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.entities.Author;
-import com.hardbacknutter.nevertomanybooks.entities.Format;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
@@ -144,8 +142,6 @@ public class IsfdbBook
     /** accumulate all series for this book. */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
-    @NonNull
-    private final Format mFormatMap;
     private String mPath;
     /** List of all editions (ISFDB 'publicationRecord') of this book. */
     private List<Editions.Edition> mEditions;
@@ -156,9 +152,8 @@ public class IsfdbBook
     @Nullable
     private String mFirstPublication;
 
-    IsfdbBook(@NonNull final Context context) {
+    IsfdbBook() {
         super();
-        mFormatMap = new Format(context);
     }
 
     //ENHANCE: pass and store these ISFDB ID's?
@@ -167,10 +162,8 @@ public class IsfdbBook
 
 
     @VisibleForTesting
-    IsfdbBook(@NonNull final Context context,
-              @Nullable final Document doc) {
+    IsfdbBook(@Nullable final Document doc) {
         super(doc);
-        mFormatMap = new Format(context);
     }
 
     @Nullable
@@ -494,7 +487,7 @@ public class IsfdbBook
                     // <span class="tooltiptext tooltipnarrow">Trade paperback. bla bla...
                     // need to lift "tp".
                     tmpString = li.childNode(3).childNode(0).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_FORMAT, mFormatMap.map(tmpString));
+                    bookData.putString(DBDefinitions.KEY_FORMAT, tmpString);
 
                 } else if ("Type:".equalsIgnoreCase(fieldName)) {
                     // <li><b>Type:</b> COLLECTION
@@ -895,7 +888,7 @@ public class IsfdbBook
                         String[] data = DOT_PATTERN.split(tmp);
                         // check if there really was a series number
                         if (data.length > 1) {
-                            seriesNum = Series.cleanupSeriesPosition(data[1]);
+                            seriesNum = Series.cleanupSeriesNumber(data[1]);
                         }
                     }
                     Series newSeries = new Series(seriesName);

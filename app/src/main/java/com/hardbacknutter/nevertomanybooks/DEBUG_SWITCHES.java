@@ -45,7 +45,7 @@ public final class DEBUG_SWITCHES {
 
     /* ****************************************************************************************** */
     /** {@link com.hardbacknutter.nevertomanybooks.tasks.managedtasks.ManagedTask}. */
-    public static final boolean MANAGED_TASKS = true;
+    public static final boolean MANAGED_TASKS = false;
     /** Where listeners are held in a WeakReference, log dead references. */
     public static final boolean TRACE_WEAK_REFERENCES = false;
     /** {@link com.hardbacknutter.nevertomanybooks.booklist.BooklistBuilder} and related. */

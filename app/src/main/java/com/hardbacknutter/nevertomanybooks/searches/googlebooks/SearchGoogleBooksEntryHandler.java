@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertomanybooks.App;
@@ -263,9 +262,7 @@ class SearchGoogleBooksEntryHandler
      * Store the accumulated data in the results.
      */
     @Override
-    public void endDocument()
-            throws SAXException {
-        super.endDocument();
+    public void endDocument() {
 
         mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
     }
@@ -279,9 +276,7 @@ class SearchGoogleBooksEntryHandler
     public void startElement(@NonNull final String uri,
                              @NonNull final String localName,
                              @NonNull final String qName,
-                             @NonNull final Attributes attributes)
-            throws SAXException {
-        super.startElement(uri, localName, qName, attributes);
+                             @NonNull final Attributes attributes) {
 
         // the url is an attribute of the xml element; not the content
         if (mFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
@@ -339,9 +334,7 @@ class SearchGoogleBooksEntryHandler
     @CallSuper
     public void endElement(@NonNull final String uri,
                            @NonNull final String localName,
-                           @NonNull final String qName)
-            throws SAXException {
-        super.endElement(uri, localName, qName);
+                           @NonNull final String qName) {
 
         switch (localName.toLowerCase(mLocale)) {
             case XML_TITLE:
@@ -431,9 +424,7 @@ class SearchGoogleBooksEntryHandler
     @CallSuper
     public void characters(@NonNull final char[] ch,
                            final int start,
-                           final int length)
-            throws SAXException {
-        super.characters(ch, start, length);
+                           final int length) {
         mBuilder.append(ch, start, length);
     }
 }

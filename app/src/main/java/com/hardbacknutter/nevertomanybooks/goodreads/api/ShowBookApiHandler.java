@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.entities.Author;
-import com.hardbacknutter.nevertomanybooks.entities.Format;
+import com.hardbacknutter.nevertomanybooks.entities.ParsedBookTitle;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertomanybooks.goodreads.tasks.GoodreadsTasks;
@@ -91,7 +91,7 @@ public abstract class ShowBookApiHandler
 //        }
     };
     @NonNull
-    private final Format mFormatMap;
+    private final String mEBookString;
     /** Transient global data for current work in search results. */
     private Bundle mBookData;
     private final XmlHandler mHandleText = context -> {
@@ -141,9 +141,6 @@ public abstract class ShowBookApiHandler
     /** Local storage for shelf names. */
     @Nullable
     private ArrayList<String> mShelves;
-    @NonNull
-    private final String mEBookString;
-
     /**
      * Create a new shelves collection when the "shelves" tag is encountered.
      */
@@ -219,7 +216,7 @@ public abstract class ShowBookApiHandler
             } else {
                 Series newSeries = new Series(mCurrSeriesName);
                 newSeries.setNumber(
-                        Series.cleanupSeriesPosition(String.valueOf(mCurrSeriesPosition)));
+                        Series.cleanupSeriesNumber(String.valueOf(mCurrSeriesPosition)));
                 mSeries.add(newSeries);
             }
             mCurrSeriesName = null;
@@ -248,7 +245,6 @@ public abstract class ShowBookApiHandler
             throw new CredentialsException(R.string.goodreads);
         }
 
-        mFormatMap = new Format(context);
         mEBookString = context.getString(R.string.book_format_ebook);
 
         buildFilters();
@@ -319,13 +315,6 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(ShowBookFieldName.IS_EBOOK)
             && mBookData.getBoolean(ShowBookFieldName.IS_EBOOK)) {
             mBookData.putString(DBDefinitions.KEY_FORMAT, mEBookString);
-
-        } else if (mBookData.containsKey(DBDefinitions.KEY_FORMAT)) {
-            // normalise the format
-            String source = mBookData.getString(DBDefinitions.KEY_FORMAT);
-            if (source != null && !source.isEmpty()) {
-                mBookData.putString(DBDefinitions.KEY_FORMAT, mFormatMap.map(source));
-            }
         }
 
         if (mBookData.containsKey(DBDefinitions.KEY_LANGUAGE)) {
@@ -340,24 +329,22 @@ public abstract class ShowBookApiHandler
         // Example: "<title>The Anome (Durdane, #1)</title>"
         if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
             String thisTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
-            Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
-            if (details != null && !details.getTitle().isEmpty()) {
+            ParsedBookTitle parsedBookTitle = ParsedBookTitle.parseBrackets(thisTitle);
+            if (parsedBookTitle != null && !parsedBookTitle.getSeriesTitle().isEmpty()) {
                 if (mSeries == null) {
                     mSeries = new ArrayList<>();
                 }
-                Series newSeries = new Series(details.getTitle());
-                newSeries.setNumber(details.getPosition());
+                Series newSeries = new Series(parsedBookTitle.getSeriesTitle());
+                newSeries.setNumber(parsedBookTitle.getSeriesNumber());
                 mSeries.add(newSeries);
                 // It's tempting to replace KEY_TITLE with ORIG_TITLE, but that does
                 // bad things to translations (it uses the original language)
-                mBookData.putString(DBDefinitions.KEY_TITLE,
-                                    thisTitle.substring(0, details.startChar - 1));
+                mBookData.putString(DBDefinitions.KEY_TITLE, parsedBookTitle.getBookTitle());
 //                if (mBookData.containsKey(ShowBookFieldName.ORIG_TITLE)) {
 //                    mBookData.putString(DBDefinitions.KEY_TITLE,
 //                                        mBookData.getString(ShowBookFieldName.ORIG_TITLE));
 //                } else {
-//                    mBookData.putString(DBDefinitions.KEY_TITLE,
-//                                        thisTitle.substring(0, details.startChar - 1));
+//                    mBookData.putString(DBDefinitions.KEY_TITLE, parsedBookTitle.getBookTitle());
 //                }
             }
         } else if (mBookData.containsKey(ShowBookFieldName.ORIG_TITLE)) {

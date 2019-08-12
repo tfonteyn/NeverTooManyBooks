@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertomanybooks.entities.Author;
 import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.entities.ItemWithFixableId;
+import com.hardbacknutter.nevertomanybooks.entities.ParsedBookTitle;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertomanybooks.goodreads.api.ListReviewsApiHandler;
@@ -537,24 +538,23 @@ class ImportLegacyTask
          */
         if (bookData.containsKey(DBDefinitions.KEY_TITLE)) {
             String bookTitle = bookData.getString(DBDefinitions.KEY_TITLE);
-            Series.SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
-            if (details != null && !details.getTitle().isEmpty()) {
-                ArrayList<Series> allSeries;
+            ParsedBookTitle parsedBookTitle = ParsedBookTitle.parseBrackets(bookTitle);
+            if (parsedBookTitle != null && !parsedBookTitle.getSeriesTitle().isEmpty()) {
+                ArrayList<Series> seriesList;
                 if (bookCursorRow == null) {
-                    allSeries = new ArrayList<>();
+                    seriesList = new ArrayList<>();
                 } else {
-                    allSeries = db.getSeriesByBookId(
+                    seriesList = db.getSeriesByBookId(
                             bookCursorRow.getLong(DBDefinitions.KEY_PK_ID));
                 }
 
-                Series newSeries = new Series(details.getTitle());
-                newSeries.setNumber(details.getPosition());
-                allSeries.add(newSeries);
-                bookData.putString(DBDefinitions.KEY_TITLE,
-                                   bookTitle.substring(0, details.startChar - 1));
+                Series newSeries = new Series(parsedBookTitle.getSeriesTitle());
+                newSeries.setNumber(parsedBookTitle.getSeriesNumber());
+                seriesList.add(newSeries);
+                bookData.putString(DBDefinitions.KEY_TITLE, parsedBookTitle.getBookTitle());
 
-                Series.pruneSeriesList(allSeries);
-                bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, allSeries);
+                Series.pruneSeriesList(seriesList);
+                bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
             }
         }
 

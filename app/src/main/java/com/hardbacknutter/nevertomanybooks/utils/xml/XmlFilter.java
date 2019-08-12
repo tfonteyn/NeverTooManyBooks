@@ -37,13 +37,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertomanybooks.App;
+import com.hardbacknutter.nevertomanybooks.goodreads.api.SearchBooksApiHandler;
 
 /**
  * A class to help parsing Sax Xml output. For Goodreads XML output, 90% of the XML can be
  * thrown away but we do need to ensure we get the tags from the right context. The XmlFilter
  * objects build a tree of filters and XmlHandler objects that make this process more manageable.
  * <p>
- * See SearchBooksApiHandler for an example of usage.
+ * See {@link SearchBooksApiHandler} for an example of usage.
  */
 public class XmlFilter {
 

@@ -35,7 +35,6 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -402,10 +401,7 @@ class SearchAmazonHandler
     public void startElement(@NonNull final String uri,
                              @NonNull final String localName,
                              @NonNull final String qName,
-                             @NonNull final Attributes attributes)
-            throws SAXException {
-        super.startElement(uri, localName, qName, attributes);
-
+                             @NonNull final Attributes attributes) {
         if (!mEntryDone && localName.equalsIgnoreCase(XML_ERROR)) {
             mInError = true;
 
@@ -447,9 +443,7 @@ class SearchAmazonHandler
     @CallSuper
     public void endElement(@NonNull final String uri,
                            @NonNull final String localName,
-                           @NonNull final String qName)
-            throws SAXException {
-        super.endElement(uri, localName, qName);
+                           @NonNull final String qName) {
 
         if (mInImage && localName.equalsIgnoreCase(XML_THUMBNAIL)) {
             mThumbnailUrl = mBuilder.toString();
@@ -550,9 +544,7 @@ class SearchAmazonHandler
     @CallSuper
     public void characters(final char[] ch,
                            final int start,
-                           final int length)
-            throws SAXException {
-        super.characters(ch, start, length);
+                           final int length) {
         mBuilder.append(ch, start, length);
     }
 }

@@ -118,9 +118,6 @@ abstract class AbstractBase {
                 con.setRequestProperty("Connection", "close");
                 con.setConnectTimeout(CONNECT_TIMEOUT);
                 con.setReadTimeout(READ_TIMEOUT);
-                // the default is true...
-                //con.setInstanceFollowRedirects(true);
-
                 // GO!
                 terminatorConnection.open();
 

@@ -231,7 +231,7 @@ public class LibraryThingManager
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(LibraryThingManager.class, e);
+                Logger.debugWithStackTrace(LibraryThingManager.class, e, url);
             }
         }
 
@@ -315,7 +315,7 @@ public class LibraryThingManager
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(this, e);
+                Logger.debugWithStackTrace(this, e, url);
             }
             throw new IOException(e);
         }

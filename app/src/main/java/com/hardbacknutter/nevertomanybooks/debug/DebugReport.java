@@ -239,9 +239,8 @@ public final class DebugReport {
             for (String fileSpec : files) {
                 File file = StorageUtils.getFile(fileSpec);
                 if (file.exists() && file.length() > 0) {
-                    attachmentUris.add(FileProvider.getUriForFile(context,
-                                                                  GenericFileProvider.AUTHORITY,
-                                                                  file));
+                    attachmentUris.add(FileProvider.getUriForFile(
+                            context, GenericFileProvider.AUTHORITY, file));
                 }
             }
 

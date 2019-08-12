@@ -436,17 +436,17 @@ public class CoverHandler {
         Uri selectedImageUri = data.getData();
 
         if (selectedImageUri != null) {
-            boolean imageOk = false;
+            int bytesRead = 0;
             // If no 'content' scheme, then use the content resolver.
             try (InputStream is = mContext.getContentResolver()
                                           .openInputStream(selectedImageUri)) {
-                imageOk = StorageUtils.saveInputStreamToFile(is, getCoverFile());
+                bytesRead = StorageUtils.saveInputStreamToFile(is, getCoverFile());
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
                 Logger.error(this, e, "Unable to copy content to file");
             }
 
-            if (imageOk) {
+            if (bytesRead > 0) {
                 // Update the ImageView with the new image
                 ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
             } else {

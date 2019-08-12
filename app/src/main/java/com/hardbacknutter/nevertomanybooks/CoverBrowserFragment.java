@@ -339,8 +339,7 @@ public class CoverBrowserFragment
         if (fileInfo.hasFileSpec()) {
             // Load the temp file and apply to the switcher
             File file = new File(fileInfo.fileSpec);
-            // arbitrary '100' bytes.
-            if (file.exists() && file.length() > 100) {
+            if (file.exists() && file.length() > ImageUtils.MIN_IMAGE_FILE_SIZE) {
 
                 // store the path. It will be send back to the caller.
                 mImageSwitcherView.setTag(R.id.TAG_FILE_SPEC, file.getAbsolutePath());

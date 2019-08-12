@@ -36,7 +36,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertomanybooks.UniqueId;
@@ -562,13 +561,9 @@ class SearchLibraryThingHandler
      * Store the accumulated data in the results.
      */
     @Override
-    public void endDocument()
-            throws SAXException {
-        super.endDocument();
-
+    public void endDocument() {
         mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
         mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
-
     }
 
     /**
@@ -580,9 +575,7 @@ class SearchLibraryThingHandler
     public void startElement(@NonNull final String uri,
                              @NonNull final String localName,
                              @NonNull final String qName,
-                             @NonNull final Attributes attributes)
-            throws SAXException {
-        super.startElement(uri, localName, qName, attributes);
+                             @NonNull final Attributes attributes) {
 
         // reset the string. See note in endElement() for a discussion.
         mBuilder.setLength(0);
@@ -641,9 +634,7 @@ class SearchLibraryThingHandler
     @CallSuper
     public void endElement(@NonNull final String uri,
                            @NonNull final String localName,
-                           @NonNull final String qName)
-            throws SAXException {
-        super.endElement(uri, localName, qName);
+                           @NonNull final String qName) {
 
         if (localName.equalsIgnoreCase(XML_FIELD)) {
             // end of Field reached, reset the current field
@@ -692,9 +683,7 @@ class SearchLibraryThingHandler
     @CallSuper
     public void characters(final char[] ch,
                            final int start,
-                           final int length)
-            throws SAXException {
-        super.characters(ch, start, length);
+                           final int length) {
         mBuilder.append(ch, start, length);
     }
 

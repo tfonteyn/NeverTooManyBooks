@@ -67,6 +67,10 @@ public final class Format {
         MAPPER.put("mass market paperback", R.string.book_format_paperback);
         MAPPER.put("paperback", R.string.book_format_paperback);
         MAPPER.put("hardcover", R.string.book_format_hardcover);
+
+        // KBNL, not already listed above.
+        MAPPER.put("geb.", R.string.book_format_hardcover);
+
     }
 
     @NonNull

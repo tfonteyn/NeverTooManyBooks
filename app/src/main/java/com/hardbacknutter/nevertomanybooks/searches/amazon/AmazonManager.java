@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -198,14 +199,15 @@ public final class AmazonManager
         // See class docs: adding throttling
         THROTTLER.waitUntilRequestAllowed();
 
+        String url = PROXY_URL + query;
         // Get it
-        try (TerminatorConnection con = TerminatorConnection.openConnection(PROXY_URL + query)) {
+        try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(this, e);
+                Logger.debugWithStackTrace(this, e, url);
             }
             throw new IOException(e);
         }
@@ -216,6 +218,20 @@ public final class AmazonManager
             throw new IOException(error);
         }
         return bookData;
+    }
+
+    /**
+     * @param isbn to search for
+     * @param size of image to get.
+     *
+     * @return found/saved File, or {@code null} if none found (or any other failure)
+     */
+    @Nullable
+    @Override
+    @WorkerThread
+    public File getCoverImage(@NonNull final String isbn,
+                              @Nullable final ImageSize size) {
+        return SearchEngine.getCoverImageFallback(this, isbn);
     }
 
     @Override

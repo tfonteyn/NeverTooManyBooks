@@ -519,10 +519,10 @@ public final class StorageUtils {
      * @param is  InputStream to read
      * @param out File to save
      *
-     * @return {@code true} if successful
+     * @return number of bytes read; -1 on failure but could be 0 on "non-success"
      */
-    public static boolean saveInputStreamToFile(@Nullable final InputStream is,
-                                                @NonNull final File out) {
+    public static int saveInputStreamToFile(@Nullable final InputStream is,
+                                            @NonNull final File out) {
         Objects.requireNonNull(is);
 
         File temp = null;
@@ -532,14 +532,16 @@ public final class StorageUtils {
             OutputStream tempFos = new FileOutputStream(temp);
             // Copy from input to temp file
             byte[] buffer = new byte[65536];
-            int len1;
-            while ((len1 = is.read(buffer)) >= 0) {
-                tempFos.write(buffer, 0, len1);
+            int total = 0;
+            int len;
+            while ((len = is.read(buffer)) >= 0) {
+                tempFos.write(buffer, 0, len);
+                total += len;
             }
             tempFos.close();
             // All OK, so rename to real output file
             renameFile(temp, out);
-            return true;
+            return total;
 
         } catch (@NonNull final ProtocolException e) {
             // typically happens when the server hangs up: unexpected end of stream
@@ -552,7 +554,7 @@ public final class StorageUtils {
         } finally {
             deleteFile(temp);
         }
-        return false;
+        return -1;
     }
 
     /**

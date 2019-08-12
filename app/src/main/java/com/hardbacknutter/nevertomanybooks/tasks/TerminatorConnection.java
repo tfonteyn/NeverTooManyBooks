@@ -94,6 +94,19 @@ public final class TerminatorConnection
      */
     public TerminatorConnection(@NonNull final String urlStr)
             throws IOException {
+        this(urlStr, false);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param urlStr URL to retrieve
+     *
+     * @throws IOException on failure
+     */
+    public TerminatorConnection(@NonNull final String urlStr,
+                                final boolean redirect)
+            throws IOException {
 
         final URL url = new URL(urlStr);
 
@@ -109,9 +122,13 @@ public final class TerminatorConnection
         mKillDelayInMillis = KILL_CONNECT_DELAY;
 
         mCon = (HttpURLConnection) url.openConnection();
+        mCon.setInstanceFollowRedirects(redirect);
         mCon.setUseCaches(false);
         mCon.setConnectTimeout(CONNECT_TIMEOUT);
         mCon.setReadTimeout(READ_TIMEOUT);
+
+
+        // Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36
     }
 
     /**
@@ -128,6 +145,25 @@ public final class TerminatorConnection
     public static TerminatorConnection openConnection(@NonNull final String urlStr)
             throws IOException {
         TerminatorConnection tCon = new TerminatorConnection(urlStr);
+        tCon.open();
+        return tCon;
+    }
+
+    /**
+     * Convenience function. Get an *open* TerminatorConnection from a URL
+     *
+     * @param urlStr URL to retrieve
+     *
+     * @return the open connection
+     *
+     * @throws IOException on failure
+     */
+    @WorkerThread
+    @NonNull
+    public static TerminatorConnection openConnection(@NonNull final String urlStr,
+                                                      final boolean redirect)
+            throws IOException {
+        TerminatorConnection tCon = new TerminatorConnection(urlStr, redirect);
         tCon.open();
         return tCon;
     }
@@ -152,8 +188,8 @@ public final class TerminatorConnection
                 // make the actual connection
                 inputStream = new BufferedInputStream(mCon.getInputStream());
 
-                // throw any error code after connect.
-                if (mCon.getResponseCode() >= 300) {
+                // throw any real error code after connect.
+                if (mCon.getResponseCode() >= 400) {
                     close();
                     throw new IOException("response: " + mCon.getResponseCode()
                                           + ' ' + mCon.getResponseMessage());

@@ -54,7 +54,7 @@ public interface SearchEngine {
 
     /**
      * If an implementation does not support a specific (and faster) way/api
-     * to fetch a cover image, then {@link SearchEngine#getCoverImage(String, ImageSize)}
+     * to fetch a cover image, then {@link #getCoverImage(String, ImageSize)}
      * can call this fallback method.
      * Do NOT use if the site either does not support returning images during search,
      * or does not support isbn searches.
@@ -150,10 +150,8 @@ public interface SearchEngine {
      */
     @Nullable
     @WorkerThread
-    default File getCoverImage(@NonNull final String isbn,
-                               @Nullable final ImageSize size) {
-        return getCoverImageFallback(this, isbn);
-    }
+    File getCoverImage(@NonNull final String isbn,
+                       @Nullable final ImageSize size);
 
     /**
      * Generic test to be implemented by individual site search managers to check if

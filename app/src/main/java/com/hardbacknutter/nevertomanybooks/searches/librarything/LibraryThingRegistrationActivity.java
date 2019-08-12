@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 
@@ -132,11 +133,10 @@ public class LibraryThingRegistrationActivity
                     long length = tmpFile.length();
                     StorageUtils.deleteFile(tmpFile);
 
-                    if (length < 100) {
-                        return R.string.lt_key_is_incorrect;
-                    } else {
-                        // all ok
+                    if (length > ImageUtils.MIN_IMAGE_FILE_SIZE) {
                         return R.string.lt_key_is_correct;
+                    } else {
+                        return R.string.lt_key_is_incorrect;
                     }
                 }
                 if (isCancelled()) {

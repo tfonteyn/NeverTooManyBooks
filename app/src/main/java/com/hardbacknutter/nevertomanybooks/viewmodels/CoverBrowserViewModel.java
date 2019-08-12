@@ -295,6 +295,9 @@ public class CoverBrowserViewModel
      */
     public static class FileManager {
 
+        /** The minimum side (height/width) and image has to be to be considered valid. */
+        static final int MIN_IMAGE_SIDE = 10;
+
         /**
          * Downloaded files.
          * key = isbn + '_' + size.
@@ -331,7 +334,7 @@ public class CoverBrowserViewModel
                     opt.inJustDecodeBounds = true;
                     BitmapFactory.decodeFile(file.getAbsolutePath(), opt);
                     // If too small, it's no good
-                    ok = opt.outHeight >= 10 && opt.outWidth >= 10;
+                    ok = opt.outHeight >= MIN_IMAGE_SIDE && opt.outWidth >= MIN_IMAGE_SIDE;
                 } catch (@NonNull final RuntimeException e) {
                     // Failed to decode; probably not an image
                     ok = false;

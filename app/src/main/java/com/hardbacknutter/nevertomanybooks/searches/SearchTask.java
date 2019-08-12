@@ -46,8 +46,8 @@ import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
+import com.hardbacknutter.nevertomanybooks.entities.ParsedBookTitle;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
-import com.hardbacknutter.nevertomanybooks.entities.Series.SeriesDetails;
 import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertomanybooks.utils.CredentialsException;
@@ -236,22 +236,20 @@ public class SearchTask
     private void checkForSeriesNameInTitle() {
         String bookTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
         if (bookTitle != null) {
-            SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
-            if (details != null && !details.getTitle().isEmpty()) {
-                ArrayList<Series> list =
+            ParsedBookTitle parsedBookTitle = ParsedBookTitle.parseBrackets(bookTitle);
+            if (parsedBookTitle != null && !parsedBookTitle.getSeriesTitle().isEmpty()) {
+                ArrayList<Series> seriesList =
                         mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-                if (list == null) {
-                    list = new ArrayList<>();
+                if (seriesList == null) {
+                    seriesList = new ArrayList<>();
                 }
-                Series newSeries = new Series(details.getTitle());
-                newSeries.setNumber(details.getPosition());
-                list.add(newSeries);
+                Series newSeries = new Series(parsedBookTitle.getSeriesTitle());
+                newSeries.setNumber(parsedBookTitle.getSeriesNumber());
+                seriesList.add(newSeries);
                 // store Series back
-                mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
-                // remove series info from the book title.
-                bookTitle = bookTitle.substring(0, details.startChar - 1).trim();
-                // and store title back
-                mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
+                mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
+                // and store cleaned book title back
+                mBookData.putString(DBDefinitions.KEY_TITLE, parsedBookTitle.getBookTitle());
             }
         }
     }

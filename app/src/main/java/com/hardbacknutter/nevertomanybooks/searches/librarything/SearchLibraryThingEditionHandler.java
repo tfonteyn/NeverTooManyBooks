@@ -31,7 +31,6 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -77,9 +76,7 @@ class SearchLibraryThingEditionHandler
     @CallSuper
     public void endElement(@NonNull final String uri,
                            @NonNull final String localName,
-                           @NonNull final String qName)
-            throws SAXException {
-        super.endElement(uri, localName, qName);
+                           @NonNull final String qName) {
 
         if (localName.equalsIgnoreCase(XML_ISBN)) {
             // Add the isbn
@@ -97,9 +94,7 @@ class SearchLibraryThingEditionHandler
     @CallSuper
     public void characters(final char[] ch,
                            final int start,
-                           final int length)
-            throws SAXException {
-        super.characters(ch, start, length);
+                           final int length) {
         mBuilder.append(ch, start, length);
     }
 

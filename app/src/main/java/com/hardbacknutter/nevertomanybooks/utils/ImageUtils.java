@@ -82,6 +82,13 @@ import com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection;
 
 public final class ImageUtils {
 
+    /**
+     * The minimum size an image file must be to be considered valid.
+     * 200: based on LibraryThing 1x1 pixel placeholder being 178 bytes in download
+     * (43 after compression on disk).
+     */
+    public static final int MIN_IMAGE_FILE_SIZE = 200;
+
     /*
      * Scaling of thumbnails.
      * Must be kept in sync with res/values/strings-preferences.xml#pv_cover_scale_factor
@@ -104,9 +111,9 @@ public final class ImageUtils {
 
     private static final int BUFFER_SIZE = 65536;
 
+    // temp debug
     public static AtomicLong cacheTicks = new AtomicLong();
     public static AtomicLong fileTicks = new AtomicLong();
-
     public static AtomicInteger cacheChecks = new AtomicInteger();
     public static AtomicInteger fileChecks = new AtomicInteger();
 
@@ -155,7 +162,7 @@ public final class ImageUtils {
 
         // 2. Check if the file exists; if it does not set 'ic_broken_image' icon and exit.
         File file = StorageUtils.getCoverFile(uuid);
-        if (!file.exists()) {
+        if (!file.exists() || file.length() < MIN_IMAGE_FILE_SIZE) {
             imageView.setImageResource(R.drawable.ic_broken_image);
             return false;
         }
@@ -201,7 +208,7 @@ public final class ImageUtils {
                                        final int maxWidth,
                                        final int maxHeight,
                                        final boolean upscale) {
-        if (file.exists()) {
+        if (file.exists() && file.length() > MIN_IMAGE_FILE_SIZE) {
             Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
             return setImageView(imageView, bm, maxWidth, maxHeight, upscale);
         }
@@ -449,16 +456,16 @@ public final class ImageUtils {
 
         final File file = StorageUtils.getTempCoverFile(name, suffix);
 
-        boolean success = false;
+        int bytesRead = 0;
         try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
-            success = StorageUtils.saveInputStreamToFile(con.inputStream, file);
+            bytesRead = StorageUtils.saveInputStreamToFile(con.inputStream, file);
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(ImageUtils.class, e);
             }
         }
 
-        return success ? file.getAbsolutePath() : null;
+        return bytesRead > 0 ? file.getAbsolutePath() : null;
     }
 
     /**

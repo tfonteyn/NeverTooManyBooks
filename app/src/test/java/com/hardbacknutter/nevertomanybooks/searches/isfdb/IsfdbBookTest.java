@@ -65,7 +65,7 @@ import static org.mockito.Mockito.when;
 class IsfdbBookTest {
 
     private static final String baseUri = "http://www.isfdb.org";
-    private static final String filename = "/isfdb-valid-book.html";
+    private static final String filename = "/isfdb-book-1.html";
     private static final String bookType_paperback = "Paperback";
 
     @Mock
@@ -118,7 +118,7 @@ class IsfdbBookTest {
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        IsfdbBook isfdbBook = new IsfdbBook(mContext, doc);
+        IsfdbBook isfdbBook = new IsfdbBook(doc);
         // we've set the doc, so no internet download will be done.
         Bundle bookData = isfdbBook.parseDoc(mBundle, false);
 

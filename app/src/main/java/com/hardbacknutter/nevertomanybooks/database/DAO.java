@@ -84,6 +84,7 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.entities.Author;
 import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertomanybooks.entities.Format;
 import com.hardbacknutter.nevertomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
@@ -1172,6 +1173,12 @@ public class DAO
         // Handle all price related fields.
         preprocessPrices(book, bookLocale);
 
+        // Map website formats to standard ones. TODO: make this a pref.
+        if (book.containsKey(DBDefinitions.KEY_FORMAT)) {
+            Format mapper = new Format(context);
+            String format = mapper.map(book.getString(DBDefinitions.KEY_FORMAT));
+            book.putString(DBDefinitions.KEY_FORMAT, format);
+        }
 
         // Remove blank external ID's
         for (DomainDefinition domain : new DomainDefinition[]{

@@ -75,36 +75,28 @@ public class Series
             };
 
     /**
-     * Regular expression - TODO: make this user controlled ? Add more languages here?
+     * The possible prefixes to a number as seen in the wild.
      * <p>
+     * TODO: make this user controlled ? Add more languages here?
      * or use //Resources res = LocaleUtils.getLocalizedResources(mContext, series.getLocale());
      */
-    private static final String NUMBER_PREFIXES =
-            "(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)";
+    static final String NUMBER_PREFIX_REGEXP =
+            "(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|deel|dl.|)";
+    /** The numeric part of the number. Supports roman numerals as well. */
+    static final String NUMBER_REGEXP = "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
 
-    /**
-     * Trim extraneous punctuation and whitespace from the title.
-     * Combine the alpha part with the numeric part. The latter supports roman numerals as well.
-     */
-    private static final String SERIES_REGEX_SUFFIX =
-            NUMBER_PREFIXES + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
-
-    /** Parse a string into title + number. */
-
-    private static final Pattern FROM_STRING_PATTERN = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
-
-    /** Parse series title/numbers embedded in a book title. */
-    private static final Pattern SERIES_FROM_BOOK_TITLE_PATTERN =
-            Pattern.compile("(.*?)(,|\\s)\\s*" + SERIES_REGEX_SUFFIX,
+    /** Remove extraneous text from series number. */
+    private static final Pattern NUMBER_CLEANUP_PATTERN =
+            Pattern.compile("^\\s*" + NUMBER_PREFIX_REGEXP + NUMBER_REGEXP,
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    /** Remove extraneous text from series position. */
-    private static final Pattern POS_CLEANUP_PATTERN =
-            Pattern.compile("^\\s*" + SERIES_REGEX_SUFFIX,
-                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    /** Remove any leading zeros from series number. */
+    private static final Pattern REMOVE_LEADING_ZEROS_PATTERN =
+            Pattern.compile("^[0-9]+$");
 
-    /** Remove any leading zeros from series position. */
-    private static final Pattern POS_REMOVE_LEADING_ZEROS_PATTERN = Pattern.compile("^[0-9]+$");
+    /** Parse a string into title + number. Used by the constructor. */
+    private static final Pattern CONSTRUCT_FROM_STRING_PATTERN =
+            Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
 
     private long mId;
     @NonNull
@@ -181,10 +173,10 @@ public class Series
      */
     @NonNull
     public static Series fromString(@NonNull final String fromString) {
-        Matcher matcher = FROM_STRING_PATTERN.matcher(fromString);
+        Matcher matcher = CONSTRUCT_FROM_STRING_PATTERN.matcher(fromString);
         if (matcher.find()) {
             Series newSeries = new Series(matcher.group(1).trim());
-            newSeries.setNumber(cleanupSeriesPosition(matcher.group(2)));
+            newSeries.setNumber(cleanupSeriesNumber(matcher.group(2)));
             return newSeries;
         } else {
             return new Series(fromString.trim());
@@ -192,66 +184,34 @@ public class Series
     }
 
     /**
-     * Try to extract a series from a book title.
+     * Try to cleanup a series number by removing superfluous text.
      *
-     * @param title Book title to parse
+     * @param numberToClean to cleanup
      *
-     * @return structure with parsed details of the Series
-     */
-    @Nullable
-    public static SeriesDetails findSeriesFromBookTitle(@Nullable final String title) {
-        if (title == null || title.isEmpty()) {
-            return null;
-        }
-
-        SeriesDetails details = null;
-        int openBracket = title.lastIndexOf('(');
-        // We want a title that does not START with a bracket!
-        if (openBracket >= 1) {
-            int closeBracket = title.lastIndexOf(')');
-            if (closeBracket > -1 && openBracket < closeBracket) {
-                details = new SeriesDetails(title.substring(openBracket + 1, closeBracket),
-                                            openBracket);
-
-                Matcher matcher = SERIES_FROM_BOOK_TITLE_PATTERN.matcher(details.getTitle());
-                if (matcher.find()) {
-                    details.setTitle(matcher.group(1));
-                    details.setPosition(matcher.group(4));
-                }
-            }
-        }
-        return details;
-    }
-
-    /**
-     * Try to cleanup a series position number by removing superfluous text.
-     *
-     * @param position Position title to cleanup
-     *
-     * @return the series number (remember: it's really alphanumeric)
+     * @return the series number (alphanumeric), can be empty, but never {@code null}
      */
     @NonNull
-    public static String cleanupSeriesPosition(@Nullable final String position) {
-        if (position == null) {
+    public static String cleanupSeriesNumber(@Nullable final String numberToClean) {
+        if (numberToClean == null || numberToClean.trim().isEmpty()) {
             return "";
         }
 
-        String pos = position.trim();
+        String number = numberToClean.trim();
 
-        Matcher matcher = POS_CLEANUP_PATTERN.matcher(pos);
+        Matcher matcher = NUMBER_CLEANUP_PATTERN.matcher(number);
         if (matcher.find()) {
-            pos = matcher.group(2);
-            if (POS_REMOVE_LEADING_ZEROS_PATTERN.matcher(pos).find()) {
-                return String.valueOf(Long.parseLong(pos));
+            number = matcher.group(2);
+            if (REMOVE_LEADING_ZEROS_PATTERN.matcher(number).find()) {
+                return String.valueOf(Long.parseLong(number));
             }
         }
 
-        return pos;
+        return number;
     }
 
     /**
      * Remove series from the list where the titles are the same, but one entry has a
-     * {@code null} or empty position.
+     * {@code null} or empty number.
      * e.g. the following list should be processed as indicated:
      * <p>
      * fred(5)
@@ -298,7 +258,7 @@ public class Series
                             toDelete.add(series);
                         }
                         //else {
-                        // Nothing to do: this is a different series position
+                        // Nothing to do: this is a different series number
                         // keep both
                         //}
                     }
@@ -461,7 +421,7 @@ public class Series
     }
 
     /**
-     * Each position in a series ('Elric(1)', 'Elric(2)' etc) will have the same
+     * Each number in a series ('Elric(1)', 'Elric(2)' etc) will have the same
      * ID, so they are not unique by ID.
      */
     @SuppressWarnings("SameReturnValue")
@@ -513,56 +473,6 @@ public class Series
                + ", mIsComplete=" + mIsComplete
                + ", mNumber=`" + mNumber + '`'
                + '}';
-    }
-
-    /**
-     * Value class giving resulting series info after parsing a series title.
-     */
-    public static class SeriesDetails {
-
-        public final int startChar;
-        @NonNull
-        private String mPosition = "";
-        @NonNull
-        private String mTitle;
-
-        SeriesDetails(@NonNull final String title,
-                      final int startChar) {
-            mTitle = title;
-            this.startChar = startChar;
-        }
-
-        /**
-         * @return series title
-         */
-        @NonNull
-        public String getTitle() {
-            return mTitle;
-        }
-
-        /**
-         * @param title of series
-         */
-        void setTitle(@NonNull final String title) {
-            mTitle = title;
-        }
-
-        /**
-         * @return the position, aka the 'number' of the book in this series
-         */
-        @NonNull
-        public String getPosition() {
-            return mPosition;
-        }
-
-        /**
-         * Clean and store the position of a book.
-         *
-         * @param position the position/number of a book in this series; can be {@code null}
-         */
-        void setPosition(@Nullable final String position) {
-            mPosition = cleanupSeriesPosition(position);
-        }
     }
 
 }
