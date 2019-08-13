@@ -608,9 +608,10 @@ public class Book
             // this is not an issue as such, but helps during debug when the book *should*
             // have a language and did not.
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, "getLocale", "no language set for",
-                             "id=" + getId(),
-                             "title=" + get(DBDefinitions.KEY_TITLE));
+                Logger.debugWithStackTrace(this, "getLocale",
+                                           "no language set",
+                                           "id=" + getId(),
+                                           "title=" + get(DBDefinitions.KEY_TITLE));
             }
             return LocaleUtils.getPreferredLocale();
         }

@@ -378,7 +378,6 @@ public class XmlImporter
                 mTag = mTagStack.pop();
 
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(this, e);
                 throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag.name
                                            + '(' + mTag.type + ')', e);
             }
@@ -467,7 +466,6 @@ public class XmlImporter
                 mTag = mTagStack.pop();
 
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(this, e);
                 throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag, e);
             }
         };

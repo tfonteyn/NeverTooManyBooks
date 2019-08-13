@@ -150,7 +150,7 @@ public class SynchronizedDb {
                 }
             } catch (@NonNull final NoSuchFieldException | IllegalAccessException e) {
                 // already in debug block
-                Logger.error(SynchronizedDb.class, e);
+                Logger.debug(SynchronizedDb.class, "printRefCount", e);
             }
         }
     }

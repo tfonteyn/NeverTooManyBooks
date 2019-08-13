@@ -298,15 +298,12 @@ public class SearchCoordinator {
         mSearchingAsin = false;
         try {
             if (mIsbn != null && !mIsbn.isEmpty()) {
+                mWaitingForIsbn = false;
                 if (mHasValidIsbn) {
-                    // We have a valid ISBN, just do the search
-                    mWaitingForIsbn = false;
-                    // go go go !!!
                     tasksStarted = startSearches(mSearchFlags);
                 } else {
                     // Assume it's an ASIN, and just search Amazon
                     mSearchingAsin = true;
-                    mWaitingForIsbn = false;
                     tasksStarted = startSearches(SearchSites.AMAZON);
                 }
             } else {

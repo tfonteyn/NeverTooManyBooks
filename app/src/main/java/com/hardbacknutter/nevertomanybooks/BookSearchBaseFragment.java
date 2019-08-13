@@ -47,8 +47,6 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
@@ -199,15 +197,9 @@ public abstract class BookSearchBaseFragment
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mBookSearchBaseModel.init(args);
 
-        if ((mBookSearchBaseModel.getSearchSites() & SearchSites.GOODREADS) != 0) {
-            //noinspection ConstantConditions
-            GoodreadsManager.alertRegistrationBeneficial(getContext(), false, "search");
-        }
-
-        if ((mBookSearchBaseModel.getSearchSites() & SearchSites.LIBRARY_THING) != 0) {
-            //noinspection ConstantConditions
-            LibraryThingManager.alertRegistrationBeneficial(getContext(), false, "search");
-        }
+        //noinspection ConstantConditions
+        SearchSites.alertRegistrationBeneficial(getContext(), "search",
+                                                mBookSearchBaseModel.getSearchSites());
 
         // Check general network connectivity. If none, WARN the user.
         if (!NetworkUtils.isNetworkAvailable()) {

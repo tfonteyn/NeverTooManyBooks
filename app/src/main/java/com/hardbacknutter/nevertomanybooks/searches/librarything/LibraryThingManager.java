@@ -51,7 +51,6 @@ import org.xml.sax.SAXException;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.R;
-import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertomanybooks.dialogs.TipManager;
@@ -321,22 +320,7 @@ public class LibraryThingManager
         }
 
         if (fetchThumbnail) {
-            File file = getCoverImage(isbn, ImageSize.LARGE);
-            if (file == null) {
-                file = getCoverImage(isbn, ImageSize.MEDIUM);
-                if (file == null) {
-                    file = getCoverImage(isbn, ImageSize.SMALL);
-                }
-            }
-            if (file != null) {
-                ArrayList<String> imageList =
-                        bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
-                if (imageList == null) {
-                    imageList = new ArrayList<>();
-                }
-                imageList.add(file.getAbsolutePath());
-                bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
-            }
+            getCoverImage(isbn, bookData);
         }
 
         return bookData;
@@ -367,7 +351,7 @@ public class LibraryThingManager
 
         String sizeParam;
         if (size == null) {
-            sizeParam = "L";
+            sizeParam = "large";
         } else {
             switch (size) {
                 case SMALL:

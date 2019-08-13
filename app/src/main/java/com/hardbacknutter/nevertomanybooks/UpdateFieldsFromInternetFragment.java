@@ -62,8 +62,6 @@ import com.hardbacknutter.nevertomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertomanybooks.searches.UpdateFieldsFromInternetTask;
-import com.hardbacknutter.nevertomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.ManagedTaskListener;
@@ -352,17 +350,8 @@ public class UpdateFieldsFromInternetFragment
         initFields();
         populateFields();
 
-        if ((mSearchSites & SearchSites.GOODREADS) != 0) {
-            //noinspection ConstantConditions
-            GoodreadsManager.alertRegistrationBeneficial(getContext(), false,
-                                                         "update_from_internet");
-        }
-
-        if ((mSearchSites & SearchSites.LIBRARY_THING) != 0) {
-            //noinspection ConstantConditions
-            LibraryThingManager.alertRegistrationBeneficial(getContext(), false,
-                                                            "update_from_internet");
-        }
+        //noinspection ConstantConditions
+        SearchSites.alertRegistrationBeneficial(getContext(), "update_from_internet", mSearchSites);
 
         if (savedInstanceState == null) {
             TipManager.display(getLayoutInflater(), R.string.tip_update_fields_from_internet, null);

@@ -179,9 +179,6 @@ public class Author
      * - multiple, and not concatenated, family names.
      * - more then 1 un-encoded comma.
      *
-     * <p>
-     * TODO: would be nice to redo with a rules based approach.
-     *
      * @param name a String containing the name
      *
      * @return Author

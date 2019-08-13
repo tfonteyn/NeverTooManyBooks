@@ -41,7 +41,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -49,6 +48,8 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
 
 /**
  * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>
@@ -62,10 +63,22 @@ public class KbNlManager
 
     /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+
     /** RELEASE: Chrome 2019-08-12. Update to latest version. */
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
                                              + " AppleWebKit/537.36 (KHTML, like Gecko)"
                                              + " Chrome/76.0.3809.100 Safari/537.36";
+
+    /**
+     * <b>Note:</b> This is not the same site as the search site itself.
+     * We have no indication that this site has an image we want, we just try it.
+     * <p>
+     * param 1: isbn, param 2: size.
+     */
+    private static final String BASE_URL_COVERS =
+            "https://webservices.bibliotheek.be/index.php?func=cover&ISBN=%1$s&coversize=%2$s";
+    /** file suffix for cover files. */
+    private static final String FILENAME_SUFFIX = "_KB";
 
     public KbNlManager() {
     }
@@ -102,7 +115,7 @@ public class KbNlManager
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
 
-        DefaultHandler handler = new KbNlHandler(bookData);
+        KbNlHandler handler = new KbNlHandler(bookData);
 
         try (TerminatorConnection terminatorConnection = new TerminatorConnection(url)) {
             HttpURLConnection con = terminatorConnection.getHttpURLConnection();
@@ -124,11 +137,16 @@ public class KbNlManager
             throw new IOException(e);
         }
 
+        if (fetchThumbnail) {
+            getCoverImage(isbn, bookData);
+        }
         return bookData;
     }
 
     /**
-     * Site does not have images.
+     * Ths kb.nl site does not have images, but we try bibliotheek.be.
+     *
+     * https://webservices.bibliotheek.be/index.php?func=cover&ISBN=9789463731454&coversize=large
      *
      * @param isbn to search for
      * @param size of image to get.
@@ -139,12 +157,48 @@ public class KbNlManager
     @Override
     public File getCoverImage(@NonNull final String isbn,
                               @Nullable final ImageSize size) {
+        // sanity check
+        if (!ISBN.isValid(isbn)) {
+            return null;
+        }
+
+        String sizeParam;
+        if (size == null) {
+            sizeParam = "large";
+        } else {
+            switch (size) {
+                case SMALL:
+                    sizeParam = "small";
+                    break;
+                case MEDIUM:
+                    sizeParam = "medium";
+                    break;
+                case LARGE:
+                    sizeParam = "large";
+                    break;
+
+                default:
+                    sizeParam = "large";
+                    break;
+            }
+        }
+
+        String url = String.format(BASE_URL_COVERS, isbn, sizeParam);
+        String fileSpec = ImageUtils.saveImage(url, isbn, FILENAME_SUFFIX + "_" + sizeParam);
+        if (fileSpec != null) {
+            return new File(fileSpec);
+        }
         return null;
     }
 
     @Override
-    public boolean isAvailable() {
+    public boolean siteSupportsMultipleSizes() {
         return true;
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return NetworkUtils.isAlive(getBaseURL());
     }
 
     @Override

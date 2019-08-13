@@ -338,7 +338,7 @@ public class CoverBrowserViewModel
                 } catch (@NonNull final RuntimeException e) {
                     // Failed to decode; probably not an image
                     ok = false;
-                    Logger.error(this, e, "Unable to decode thumbnail");
+                    Logger.error(this, e, "Unable to decode file");
                 }
             }
 

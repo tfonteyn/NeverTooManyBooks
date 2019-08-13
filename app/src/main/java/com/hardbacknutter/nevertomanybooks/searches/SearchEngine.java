@@ -139,19 +139,51 @@ public interface SearchEngine {
      * @param size of image to get.
      *
      * @return found/saved File, or {@code null} when none found (or any other failure)
-     * <p>
-     * If a site does not support a specific (and faster) way/api
-     * to fetch a cover image, then this default method is used, delegating to the
-     * {@link #search(String, String, String, String, boolean)} method.
-     * <p>
-     * A search for the book is done, with the 'fetchThumbnail' flag set to true.
-     * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
-     * {@code null} returned.
      */
     @Nullable
     @WorkerThread
     File getCoverImage(@NonNull final String isbn,
                        @Nullable final ImageSize size);
+
+
+    /**
+     * A site can support a single (default) or multiple sizes.
+     *
+     * @return {@code true} if multiple sizes are supported.
+     */
+    @AnyThread
+    default boolean siteSupportsMultipleSizes() {
+        return false;
+    }
+
+    /**
+     * Get a cover image. Try in order of large, medium, small depending on the site supporting
+     * multiple sizes.
+     *
+     * @param isbn     book to get an image for
+     * @param bookData bundle to populate with the image file spec
+     */
+    default void getCoverImage(@NonNull final String isbn,
+                               @NonNull final Bundle bookData) {
+        File file = getCoverImage(isbn, ImageSize.LARGE);
+        if (siteSupportsMultipleSizes()) {
+            if (file == null) {
+                file = getCoverImage(isbn, ImageSize.MEDIUM);
+                if (file == null) {
+                    file = getCoverImage(isbn, ImageSize.SMALL);
+                }
+            }
+        }
+        if (file != null) {
+            ArrayList<String> imageList =
+                    bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+            if (imageList == null) {
+                imageList = new ArrayList<>();
+            }
+            imageList.add(file.getAbsolutePath());
+            bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
+        }
+    }
 
     /**
      * Generic test to be implemented by individual site search managers to check if
@@ -174,16 +206,6 @@ public interface SearchEngine {
     }
 
     /**
-     * A site can support a single or multiple sizes.
-     *
-     * @return {@code true} if multiple sizes are supported.
-     */
-    @AnyThread
-    default boolean siteSupportsMultipleSizes() {
-        return false;
-    }
-
-    /**
      * @return the resource id for the human-readable name of the site
      */
     @AnyThread
@@ -193,9 +215,9 @@ public interface SearchEngine {
 
     /**
      * Sizes of thumbnails.
-     * These are open to interpretation (or not used) by individual {@link SearchEngine}.
+     * These are open to interpretation (or not used at all) by individual {@link SearchEngine}.
      */
     enum ImageSize {
-        SMALL, MEDIUM, LARGE
+        LARGE, MEDIUM, SMALL
     }
 }

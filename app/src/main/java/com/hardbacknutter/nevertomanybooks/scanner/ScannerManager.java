@@ -176,7 +176,7 @@ public final class ScannerManager {
             activity.finish();
         } catch (@NonNull final ActivityNotFoundException e) {
             UserMessage.show(activity, R.string.error_google_play_missing);
-            Logger.error(ScannerManager.class, e);
+            Logger.warn(ScannerManager.class, "installScanner", e);
         }
     }
 

@@ -142,7 +142,7 @@ public class ISBN {
             }
         } catch (@NonNull final NumberFormatException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.error(this, e);
+                Logger.debug(this, "Constructor", "s=" + s, e);
             }
         }
 
@@ -154,7 +154,7 @@ public class ISBN {
             }
         } catch (@NonNull final NumberFormatException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.error(this, e);
+                Logger.debug(this, "Constructor", "s=" + s, e);
             }
         }
     }

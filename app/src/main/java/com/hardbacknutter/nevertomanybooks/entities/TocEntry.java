@@ -73,6 +73,7 @@ public class TocEntry
             };
     /** String encoding use. */
     private static final char FIELD_SEPARATOR = '*';
+
     /**
      * Find the publication year in a string like "some title (1978-04-22)".
      * <p>
@@ -82,8 +83,6 @@ public class TocEntry
      * Used by:
      * - ISFDB import of anthology titles
      * - export/import
-     * <p>
-     * TODO: simplify pattern
      */
     private static final Pattern DATE_PATTERN = Pattern.compile("\\("
                                                                 + "([1|2]\\d\\d\\d"

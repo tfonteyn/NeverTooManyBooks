@@ -229,8 +229,7 @@ public abstract class BackupReaderAbstract
             }
             try {
                 close();
-            } catch (@NonNull final IOException e) {
-                Logger.error(this, e, "Failed to close reader");
+            } catch (@NonNull final IOException ignore) {
             }
         }
     }

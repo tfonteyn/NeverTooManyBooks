@@ -60,39 +60,35 @@ import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
  * <li>Optional: add to res/xml/preferences.xml if the url should be editable.<br>
  * See the Amazon example in that xml file.</li>
  * </ol>
+ *
+ * <b>Note:</b> never change the identifiers (bit flag) of the sites, as they are stored
+ * in user preferences.
  */
 public final class SearchSites {
 
     /** tag. */
     public static final String TAG = "SearchSites";
     public static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
-
     /** search source to use. */
-    @SuppressWarnings("WeakerAccess")
-    public static final int GOOGLE_BOOKS = 1;
-
+    static final int AMAZON = 1 << 1;
     /** search source to use. */
-    @SuppressWarnings("WeakerAccess")
-    public static final int AMAZON = 1 << 1;
-
+    private static final int GOOGLE_BOOKS = 1;
     /** search source to use. */
-    public static final int LIBRARY_THING = 1 << 2;
-
+    private static final int LIBRARY_THING = 1 << 2;
     /** search source to use. */
-    public static final int GOODREADS = 1 << 3;
-
+    private static final int GOODREADS = 1 << 3;
     /**
      * search source to use.
      * Speculative Fiction only. i.e. Science-Fiction/Fantasy etc...
      */
-    public static final int ISFDB = 1 << 4;
-
+    private static final int ISFDB = 1 << 4;
     /** search source to use. */
-    @SuppressWarnings("WeakerAccess")
-    public static final int OPEN_LIBRARY = 1 << 5;
-
-    /** search source to use. */
-    public static final int KBNL = 1 << 6;
+    private static final int OPEN_LIBRARY = 1 << 5;
+    /**
+     * search source to use.
+     * Dutch books & comics.
+     */
+    private static final int KBNL = 1 << 6;
 
     /** Mask including all search sources. */
     public static final int SEARCH_ALL = GOOGLE_BOOKS | AMAZON
@@ -103,6 +99,7 @@ public final class SearchSites {
     private static final ArrayList<Site> SEARCH_ORDER_DEFAULTS = new ArrayList<>();
     /** the default search site order for _dedicated_ cover searches. */
     private static final ArrayList<Site> COVER_SEARCH_ORDER_DEFAULTS = new ArrayList<>();
+
     /** ENHANCE: reliability order is not user configurable for now, but plumbing installed. */
     private static final List<Site> PREFERRED_RELIABILITY_ORDER;
     private static final String UNEXPECTED_SEARCH_SOURCE_ERROR = "Unexpected search source: ";
@@ -113,62 +110,67 @@ public final class SearchSites {
     private static ArrayList<Site> sPreferredCoverSearchOrder;
 
     /*
-     * default search order.
+     * Default search order for full details.
      *
-     *  Original app reliability order was:
-     *  {GOODREADS, AMAZON, GOOGLE_BOOKS, LIBRARY_THING}
+     * Original app reliability order was: {GOODREADS, AMAZON, GOOGLE_BOOKS, LIBRARY_THING}
      */
     static {
-        /*
-         * standard searches for full details.
-         */
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOODREADS, 0, 0));
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOOGLE_BOOKS, 1, 2));
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(LIBRARY_THING, 2, 3));
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(ISFDB, 3, 4));
+        int priority = 0;
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOODREADS, priority++, 0));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOOGLE_BOOKS, priority++, 2));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(LIBRARY_THING, priority++, 3));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(ISFDB, priority++, 4));
+
+        // Dutch. Disabled by default.
+        Site kbnl = Site.newSite(KBNL, priority++, 5);
+        kbnl.setEnabled(false);
+        SEARCH_ORDER_DEFAULTS.add(kbnl);
 
         // The proxy site has been broken since around April 2019.
         // 2019-08-11: still broken, disabling for now.
-        Site amazon = Site.newSite(AMAZON, 4, 1);
+        Site amazon = Site.newSite(AMAZON, priority++, 1);
         amazon.setEnabled(false);
         SEARCH_ORDER_DEFAULTS.add(amazon);
 
         // bottom of the list as the data from this site is not up to scratch. Disabled by default.
-        Site openLibrary = Site.newSite(OPEN_LIBRARY, 5, 5);
+        Site openLibrary = Site.newSite(OPEN_LIBRARY, priority++, 6);
         openLibrary.setEnabled(false);
         SEARCH_ORDER_DEFAULTS.add(openLibrary);
+    }
 
-        Site kbnl = Site.newSite(KBNL, 6, 6);
+    /*
+     * Default search order for dedicated cover lookup; does not use a reliability index.
+     */
+    static {
+        int priority = 0;
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOOGLE_BOOKS, priority++));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(LIBRARY_THING, priority++));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(ISFDB, priority++));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOODREADS, priority++));
+
+        // Dutch. Disabled by default.
+        Site kbnl = Site.newCoverSite(KBNL, priority++);
         kbnl.setEnabled(false);
-        SEARCH_ORDER_DEFAULTS.add(kbnl);
-
-        /*
-         * dedicated cover lookup; does not use a reliability index.
-         */
-        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOOGLE_BOOKS, 0));
-        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(LIBRARY_THING, 1));
-        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(ISFDB, 2));
-        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOODREADS, 3));
+        COVER_SEARCH_ORDER_DEFAULTS.add(kbnl);
 
         // The proxy site has been broken since around April 2019.
-        amazon = Site.newCoverSite(AMAZON, 4);
+        Site amazon = Site.newCoverSite(AMAZON, priority++);
         amazon.setEnabled(false);
         COVER_SEARCH_ORDER_DEFAULTS.add(amazon);
 
         // bottom of the list as the data from this site is not up to scratch. Disabled by default.
-        openLibrary = Site.newCoverSite(OPEN_LIBRARY, 5);
+        Site openLibrary = Site.newCoverSite(OPEN_LIBRARY, priority++);
         openLibrary.setEnabled(false);
         COVER_SEARCH_ORDER_DEFAULTS.add(openLibrary);
     }
 
-    /* ************************************************************************************** */
+    /*
+     * Create the user configurable lists.
+     */
     static {
-
+        // same length as the defaults.
         PREFERRED_RELIABILITY_ORDER = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
 
-        /*
-         * Create the user configurable lists.
-         */
         // we're going to use set(index,...), so make them big enough
         sPreferredSearchOrder = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
         sPreferredCoverSearchOrder = new ArrayList<>(COVER_SEARCH_ORDER_DEFAULTS);
@@ -191,8 +193,8 @@ public final class SearchSites {
      * Return the name for the site. This should/is a hardcoded single word.
      * It is used for:
      * <ol>
-     * <li>User-visible name in the app settings.</li>
      * <li>As the key into the actual preferences.</li>
+     * <li>User-visible name in the app settings.</li>
      * <li>Internal task(thread) name which in some circumstances will be user-visible.</li>
      * </ol>
      * <p>
@@ -200,7 +202,7 @@ public final class SearchSites {
      * <p>
      * <b>Note:</b> the name is also required in the actual {@link SearchEngine}
      * as a {@code StringRes} but the method here can not use that one without
-     * instantiating which we don't want here.
+     * instantiating which we don't want to do here.
      *
      * @param id for the site
      *
@@ -327,5 +329,27 @@ public final class SearchSites {
             site.saveToPrefs(ed);
         }
         ed.apply();
+    }
+
+    /**
+     * Bring up an Alert to the user if the searchSites include a site where registration
+     * is beneficial/required.
+     *
+     * @param context     Current context
+     * @param prefSuffix  Tip preference marker
+     * @param searchSites sites
+     *
+     * @see com.hardbacknutter.nevertomanybooks.dialogs.TipManager
+     */
+    public static void alertRegistrationBeneficial(@NonNull final Context context,
+                                                   @NonNull final String prefSuffix,
+                                                   final int searchSites) {
+        if ((searchSites & GOODREADS) != 0) {
+            GoodreadsManager.alertRegistrationBeneficial(context, false, prefSuffix);
+        }
+
+        if ((searchSites & LIBRARY_THING) != 0) {
+            LibraryThingManager.alertRegistrationBeneficial(context, false, prefSuffix);
+        }
     }
 }

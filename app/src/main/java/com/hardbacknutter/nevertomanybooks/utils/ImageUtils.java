@@ -209,6 +209,7 @@ public final class ImageUtils {
                                        final int maxHeight,
                                        final boolean upscale) {
         if (file.exists() && file.length() > MIN_IMAGE_FILE_SIZE) {
+            @Nullable
             Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
             return setImageView(imageView, bm, maxWidth, maxHeight, upscale);
         }
@@ -272,13 +273,17 @@ public final class ImageUtils {
      * @param file  The file of the image
      * @param scale user preferred scale factor
      *
-     * @return the bitmap
+     * @return the bitmap, or {@code null} if the file failed to decode.
      */
-    @NonNull
+    @Nullable
     @AnyThread
     public static Bitmap createScaledBitmap(@NonNull final File file,
                                             final int scale) {
+        @Nullable
         Bitmap bm = BitmapFactory.decodeFile(file.getPath());
+        if (bm == null) {
+            return null;
+        }
         int maxSize = ImageUtils.getMaxImageSize(scale);
         return createScaledBitmap(bm, maxSize, maxSize);
     }
@@ -304,9 +309,9 @@ public final class ImageUtils {
      */
     @NonNull
     @AnyThread
-    private static Bitmap createScaledBitmap(@NonNull final Bitmap source,
-                                             final int dstWidth,
-                                             final int dstHeight) {
+    public static Bitmap createScaledBitmap(@NonNull final Bitmap source,
+                                            final int dstWidth,
+                                            final int dstHeight) {
         Matrix matrix = new Matrix();
         int width = source.getWidth();
         int height = source.getHeight();
@@ -386,6 +391,7 @@ public final class ImageUtils {
                          "samplePow2=" + samplePow2);
         }
 
+        @Nullable
         Bitmap bm;
         try {
             if (exact) {
@@ -396,13 +402,9 @@ public final class ImageUtils {
                     opt.inSampleSize = 1;
                 }
 
+                @Nullable
                 Bitmap tmpBm = BitmapFactory.decodeFile(fileSpec, opt);
                 if (tmpBm == null) {
-                    // We ran out of memory, most likely
-                    // TODO: Need a way to try loading images after GC().
-                    // Otherwise, covers in cover browser will stay blank.
-                    Logger.warn(ImageUtils.class, "createScaledBitmap",
-                                "Unexpectedly failed to decode bitmap; memory exhausted?");
                     return null;
                 }
 

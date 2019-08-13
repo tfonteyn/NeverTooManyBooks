@@ -545,7 +545,7 @@ public final class StorageUtils {
 
         } catch (@NonNull final ProtocolException e) {
             // typically happens when the server hangs up: unexpected end of stream
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.debug(StorageUtils.class, "saveInputStreamToFile",
                              e.getLocalizedMessage());
             }

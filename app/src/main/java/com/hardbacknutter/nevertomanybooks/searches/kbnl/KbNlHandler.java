@@ -151,6 +151,11 @@ class KbNlHandler
         if (!mSeries.isEmpty()) {
             mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
         }
+
+        // As kb.nl is dutch, we're going to assume that all books are in Dutch.
+        if (!mBookData.isEmpty() && !mBookData.containsKey(DBDefinitions.KEY_LANGUAGE)) {
+            mBookData.putString(DBDefinitions.KEY_LANGUAGE, "nld");
+        }
     }
 
     @Override
@@ -264,7 +269,9 @@ class KbNlHandler
      *
      *  <psi:labelledData>
      *    <psi:line>
-     *      <psi:text href="CLK?IKT=12&amp;TRM=422449059&amp;REC=*">De buitengewone reis /  Silvio Camboni</psi:text>
+     *      <psi:text href="CLK?IKT=12&amp;TRM=422449059&amp;REC=*">
+     *          De buitengewone reis /  Silvio Camboni
+     *      </psi:text>
      *    </psi:line>
      *  </psi:labelledData>
      * }</pre>
@@ -364,7 +371,6 @@ class KbNlHandler
                         format = format.substring(1, format.length() - 1);
                     }
                     if (!format.isEmpty()) {
-                        //URGENT: move the Format.map call to the DAO
                         mBookData.putString(DBDefinitions.KEY_FORMAT, format);
                     }
                 }

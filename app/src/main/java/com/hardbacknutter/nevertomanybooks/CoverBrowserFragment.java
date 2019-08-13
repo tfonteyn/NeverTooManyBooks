@@ -344,14 +344,14 @@ public class CoverBrowserFragment
                 // store the path. It will be send back to the caller.
                 mImageSwitcherView.setTag(R.id.TAG_FILE_SPEC, file.getAbsolutePath());
 
+                @Nullable
                 Bitmap bm = ImageUtils.createScaledBitmap(file, ImageUtils.SCALE_X_LARGE);
-
-                // ImageSwitcher does not accept a bitmap; wants a Drawable instead.
-                mImageSwitcherView.setImageDrawable(new BitmapDrawable(getResources(), bm));
-
-                mImageSwitcherView.setVisibility(View.VISIBLE);
-                mStatusTextView.setText(R.string.info_tap_on_image_to_select);
-                return;
+                if (bm != null) {
+                    mImageSwitcherView.setImageDrawable(new BitmapDrawable(getResources(), bm));
+                    mImageSwitcherView.setVisibility(View.VISIBLE);
+                    mStatusTextView.setText(R.string.info_tap_on_image_to_select);
+                    return;
+                }
             }
         }
 

@@ -1,4 +1,11 @@
 /**
+ *
+ * Covers:
+ *
+ * https://webservices.bibliotheek.be/index.php?func=cover&ISBN=9789463731454&coversize=large
+ *
+ *
+ *
  * http://opc4.kb.nl/
  * <p>
  * OCLC / PiCarta  based.

@@ -194,7 +194,6 @@ class ImportLegacyTask
             }
             return ok;
         } catch (@NonNull final CredentialsException e) {
-            Logger.error(this, e);
             throw new RuntimeException(e.getLocalizedMessage(context));
         }
     }
@@ -289,7 +288,7 @@ class ImportLegacyTask
             db.analyze();
         } catch (@NonNull final RuntimeException e) {
             // Do nothing. Not a critical step.
-            Logger.error(this, e);
+            Logger.warn(this, "processReviews", e);
         }
         return true;
     }
