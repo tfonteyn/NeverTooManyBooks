@@ -44,11 +44,19 @@
     <string name="library_thing" translatable="false">LibraryThing</string>
     <string name="open_library" translatable="false">OpenLibrary</string>
     <string name="isfdb" translatable="false">ISFDB</string>
+    <string name="KBNL" translatable="false">KBNL</string>
     <string name="amazon" translatable="false">Amazon</string>
     <!-- specific for a submenu title -->
     <string name="amazon_ellipsis" translatable="false">Amazon…</string>
 
     <string name="brackets" translatable="false">(%1$s)</string>
+
+    <!--&lt;!&ndash; Regular expression with all possible prefixes-->
+    <!--(as seen in the wild) for a Series number. &ndash;&gt;-->
+    <!--<string name="series_prefixes" translatable="false">-->
+    <!--(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|dl.|)-->
+    <!--</string>-->
+    <!---->
 
     <!-- ListPreference - Preferred interface Language -->
     <!-- each language listed here must be written in its own language and spelling. -->

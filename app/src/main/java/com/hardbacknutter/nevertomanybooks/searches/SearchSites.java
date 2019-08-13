@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertomanybooks.searches.googlebooks.GoogleBooksManager;
 import com.hardbacknutter.nevertomanybooks.searches.isfdb.IsfdbManager;
+import com.hardbacknutter.nevertomanybooks.searches.kbnl.KbNlManager;
 import com.hardbacknutter.nevertomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertomanybooks.searches.openlibrary.OpenLibraryManager;
 import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
@@ -90,9 +91,13 @@ public final class SearchSites {
     @SuppressWarnings("WeakerAccess")
     public static final int OPEN_LIBRARY = 1 << 5;
 
+    /** search source to use. */
+    public static final int KBNL = 1 << 6;
+
     /** Mask including all search sources. */
     public static final int SEARCH_ALL = GOOGLE_BOOKS | AMAZON
-                                         | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY;
+                                         | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY
+                                         | KBNL;
 
     /** the default search site order for standard data/covers. */
     private static final ArrayList<Site> SEARCH_ORDER_DEFAULTS = new ArrayList<>();
@@ -123,7 +128,7 @@ public final class SearchSites {
         SEARCH_ORDER_DEFAULTS.add(Site.newSite(ISFDB, 3, 4));
 
         // The proxy site has been broken since around April 2019.
-        // 2019-05-26: still broken, disabling Amazon here for now.
+        // 2019-08-11: still broken, disabling for now.
         Site amazon = Site.newSite(AMAZON, 4, 1);
         amazon.setEnabled(false);
         SEARCH_ORDER_DEFAULTS.add(amazon);
@@ -132,6 +137,10 @@ public final class SearchSites {
         Site openLibrary = Site.newSite(OPEN_LIBRARY, 5, 5);
         openLibrary.setEnabled(false);
         SEARCH_ORDER_DEFAULTS.add(openLibrary);
+
+        Site kbnl = Site.newSite(KBNL, 6, 6);
+        kbnl.setEnabled(false);
+        SEARCH_ORDER_DEFAULTS.add(kbnl);
 
         /*
          * dedicated cover lookup; does not use a reliability index.
@@ -211,6 +220,8 @@ public final class SearchSites {
                 return "LibraryThing";
             case OPEN_LIBRARY:
                 return "OpenLibrary";
+            case KBNL:
+                return "KBNL";
 
             default:
                 throw new IllegalTypeException(UNEXPECTED_SEARCH_SOURCE_ERROR + id);
@@ -242,6 +253,9 @@ public final class SearchSites {
 
             case OPEN_LIBRARY:
                 return new OpenLibraryManager();
+
+            case KBNL:
+                return new KbNlManager();
 
             default:
                 throw new IllegalTypeException(UNEXPECTED_SEARCH_SOURCE_ERROR + id);
