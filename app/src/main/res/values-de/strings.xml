@@ -11,7 +11,7 @@
     <string name="X_info_no_authors_yet">Es wurde kein Autor für dieses Buch eingetragen. Bitte fügen Sie einen Autor über das Textfeld und den Knopf oben auf diesem Bildschirm hinzu.</string>
     <string name="X_info_no_books_yet">Es befinden sich keine Bücher im Bücherregal.Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.</string>
     <string name="X_info_no_series_yet">Es besteht keine Serie für dieses Buch. Sie können eine Serie über das Textfeld und den Knopf oben auf dieser Seite hinzufügen.</string>
-    <string name="X_info_reset_tips">Diese App zeigt fallweise optionale Meldungen zu LibraryThing an.\n Wenn diese Meldungen deaktiviert wurden können, Sie die Deaktivierung über den Knopf unten zurücksetzen.</string>
+    <string name="X_info_reset_tips">Diese App zeigt fallweise optionale Meldungen zu %1$s an.\n Wenn diese Meldungen deaktiviert wurden können, Sie die Deaktivierung über den Knopf unten zurücksetzen.</string>
     <string name="X_lbl_loan_book_available">Verfügbar</string>
     <string name="X_lbl_select_fields_to_update">Felder für Aktualisierung auswählen</string>
     <string name="X_menu_delete_series">Serie löschen…</string>

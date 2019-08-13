@@ -100,8 +100,8 @@ public class Bookshelf
     /**
      * Constructor without ID.
      */
-    public Bookshelf(@NonNull final String name,
-                     @NonNull final String styleUuid) {
+    private Bookshelf(@NonNull final String name,
+                      @NonNull final String styleUuid) {
         mName = name.trim();
         mStyleUuid = styleUuid;
 //        mCachedStyle = null;
@@ -121,9 +121,9 @@ public class Bookshelf
     /**
      * Full Constructor.
      */
-    public Bookshelf(final long id,
-                     @NonNull final String name,
-                     @NonNull final BooklistStyle style) {
+    private Bookshelf(final long id,
+                      @NonNull final String name,
+                      @NonNull final BooklistStyle style) {
         mId = id;
         mName = name.trim();
 

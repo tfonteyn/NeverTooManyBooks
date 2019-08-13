@@ -43,15 +43,15 @@ class DateUtilsTest {
 
     // 1987-06-25; i.e. the day > possible month number (0..11)
     @SuppressWarnings("deprecation")
-    private Date d_1987_06_25 = new Date(87, 5, 25);
+    private final Date d_1987_06_25 = new Date(87, 5, 25);
 
     // 1987-06-22; i.e. the day < possible month number (0..11)
     @SuppressWarnings("deprecation")
-    private Date d_1987_06_10 = new Date(87, 5, 10);
+    private final Date d_1987_06_10 = new Date(87, 5, 10);
 
     // 1987-06; partial date
     @SuppressWarnings("deprecation")
-    private Date d_1987_06_01 = new Date(87, 5, 1);
+    private final Date d_1987_06_01 = new Date(87, 5, 1);
 
 
     /**

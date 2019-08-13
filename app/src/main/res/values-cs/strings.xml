@@ -11,7 +11,7 @@
     <string name="X_info_no_authors_yet">Tato kniha nemá autora. Prosím přidejte jej prostřednictví pole v horní části obrazovky.</string>
     <string name="X_info_no_books_yet">V této knihovně nemáte v současnosti žádnou knihu. Pro přidání knihy použijte menu ve spodní části obrazovky.</string>
     <string name="X_info_no_series_yet">Pro tuto knihu není zadána žádná série. Pro její zadání můžete použít pole v horní části obrazovky.</string>
-    <string name="X_info_reset_tips">Čas od času zobrazí aplikace zprávu týkající se LibraryThing.\n Stiskněte tlačítko níže pro resetování všech těchto zpráv, které byly v minulosti zakázány.</string>
+    <string name="X_info_reset_tips">Čas od času zobrazí aplikace zprávu týkající se %1$s.\n Stiskněte tlačítko níže pro resetování všech těchto zpráv, které byly v minulosti zakázány.</string>
     <string name="X_lbl_loan_book_available">Dostupný</string>
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
     <string name="X_menu_delete_series">Smazat série…</string>

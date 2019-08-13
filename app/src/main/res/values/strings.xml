@@ -306,7 +306,6 @@
     <string name="progress_msg_searching_site">Searching %1$s</string>
 
     <string name="progress_msg_adding_book">Adding book…</string>
-    <string name="X_progress_msg_reading_directory">Reading folder…</string>
     <string name="progress_msg_cancelling">Cancelling…</string>
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Connecting to web site…</string>
@@ -397,7 +396,6 @@
     </string>
 
     <string name="gr_auth_error">Goodreads authorization resulted in an error.</string>
-    <string name="X_gr_auth_check">Goodreads authorization check</string>
     <string name="gr_auth_successful">Goodreads authorization successful</string>
     <string name="gr_import_all_from_goodreads">Import all from Goodreads</string>
     <string name="gr_action_cannot_be_completed">
@@ -1211,6 +1209,8 @@
     <string name="X_warning_missing_author">The author is missing.</string>
     <string name="X_warning_missing_title">The title is missing.</string>
 
+    <string name="X_progress_msg_reading_directory">Reading folder…</string>
+
     <string name="X_info_no_books_yet">
         There are no books on this Bookshelf.
         Please add some using the menu at the bottom of this screen.
@@ -1240,6 +1240,8 @@
 
     <string name="X_updated">Updated</string>
     <string name="X_size">Size</string>
+
+    <string name="X_gr_auth_check">Goodreads authorization check</string>
 
     <string name="X_anthology_titles">Anthology Titles</string>
     <string name="X_select_bookshelves">Select Bookshelves</string>

@@ -193,7 +193,7 @@ public class RestoreActivity
     /**
      * kick of the restore task.
      */
-    public void onOptionsSet(@NonNull final ImportOptions options) {
+    private void onOptionsSet(@NonNull final ImportOptions options) {
         // sanity check
         if (options.what == ImportOptions.NOTHING) {
             return;

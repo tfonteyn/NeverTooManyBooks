@@ -67,7 +67,7 @@ import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
 public final class SearchSites {
 
     /** tag. */
-    public static final String TAG = "SearchSites";
+    private static final String TAG = "SearchSites";
     public static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
     /** search source to use. */
     static final int AMAZON = 1 << 1;
@@ -133,6 +133,7 @@ public final class SearchSites {
         SEARCH_ORDER_DEFAULTS.add(amazon);
 
         // bottom of the list as the data from this site is not up to scratch. Disabled by default.
+        @SuppressWarnings("UnusedAssignment")
         Site openLibrary = Site.newSite(OPEN_LIBRARY, priority++, 6);
         openLibrary.setEnabled(false);
         SEARCH_ORDER_DEFAULTS.add(openLibrary);
@@ -159,6 +160,7 @@ public final class SearchSites {
         COVER_SEARCH_ORDER_DEFAULTS.add(amazon);
 
         // bottom of the list as the data from this site is not up to scratch. Disabled by default.
+        @SuppressWarnings("UnusedAssignment")
         Site openLibrary = Site.newCoverSite(OPEN_LIBRARY, priority++);
         openLibrary.setEnabled(false);
         COVER_SEARCH_ORDER_DEFAULTS.add(openLibrary);

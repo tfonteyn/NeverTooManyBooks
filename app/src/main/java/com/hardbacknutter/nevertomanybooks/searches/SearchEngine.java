@@ -133,6 +133,16 @@ public interface SearchEngine {
             throws CredentialsException, IOException;
 
     /**
+     * A site can support a single (default) or multiple sizes.
+     *
+     * @return {@code true} if multiple sizes are supported.
+     */
+    @AnyThread
+    default boolean siteSupportsMultipleSizes() {
+        return false;
+    }
+
+    /**
      * Get a cover image.
      *
      * @param isbn to search for
@@ -142,19 +152,8 @@ public interface SearchEngine {
      */
     @Nullable
     @WorkerThread
-    File getCoverImage(@NonNull final String isbn,
-                       @Nullable final ImageSize size);
-
-
-    /**
-     * A site can support a single (default) or multiple sizes.
-     *
-     * @return {@code true} if multiple sizes are supported.
-     */
-    @AnyThread
-    default boolean siteSupportsMultipleSizes() {
-        return false;
-    }
+    File getCoverImage(@NonNull String isbn,
+                       @Nullable ImageSize size);
 
     /**
      * Get a cover image. Try in order of large, medium, small depending on the site supporting

@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.google.android.material.snackbar.Snackbar;
+
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
@@ -54,7 +55,7 @@ public final class UserMessage {
     private static final int TOAST = 0;
     private static final int SNACKBAR = 1;
 
-    // the default value; rex/xml/preferences.xml must be set to the same
+    /** the default value; rex/xml/preferences.xml must be set to the same. */
     private static final int DEFAULT = SNACKBAR;
 
     private UserMessage() {

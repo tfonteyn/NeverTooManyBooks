@@ -167,7 +167,7 @@ public class App
      * Give static methods access to our singleton.
      * <b>Note:</b> never store a context in a static, use the instance instead
      */
-    public static App sInstance;
+    private static App sInstance;
 
     /**
      * internal; check if an Activity should do a 'recreate()'.

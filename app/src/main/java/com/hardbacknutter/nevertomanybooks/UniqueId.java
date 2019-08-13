@@ -169,7 +169,7 @@ public final class UniqueId {
     public static final String BKEY_ID_LIST = "idList";
 
     /**
-     * 3 uses:
+     * 3 uses.
      * <ul>
      * <li>Indicate if we 'have' a thumbnail (in which case {@link StorageUtils#getTempCoverFile()}
      * will point to that image.</li>

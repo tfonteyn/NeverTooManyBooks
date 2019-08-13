@@ -502,8 +502,8 @@ public abstract class BookBaseFragment
      * @param visibility to use
      * @param fields     list of fields to set visibility on
      */
-    void setVisibility(final int visibility,
-                       @NonNull @IdRes final int... fields) {
+    private void setVisibility(final int visibility,
+                               @NonNull @IdRes final int... fields) {
         View view = getView();
         for (int fieldId : fields) {
             //noinspection ConstantConditions

@@ -157,16 +157,16 @@ public class BooklistMappedCursorRow
 
         // ==> https://github.com/eleybourn/Book-Catalogue/issues/504
 
-        //    android.database.CursorIndexOutOfBoundsException: Index 0 requested, with a size of 0
-        //        at android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)
-        //        at android.database.AbstractWindowedCursor.checkPosition(AbstractWindowedCursor.java:136)
-        //        at android.database.AbstractWindowedCursor.getString(AbstractWindowedCursor.java:50)
-        //        at com.hardbacknutter.nevertomanybooks.booklist.BooklistPseudoCursor.getString(BooklistPseudoCursor.java:340)
-        //        at com.hardbacknutter.nevertomanybooks.database.cursors.MappedCursorRow.getString(MappedCursorRow.java:57)
-        //        at com.hardbacknutter.nevertomanybooks.database.cursors.BooklistMappedCursorRow.getLevelText(BooklistMappedCursorRow.java:170)
-        //        at com.hardbacknutter.nevertomanybooks.BooksOnBookshelf.setHeaderText(BooksOnBookshelf.java:1687)
-        //        at com.hardbacknutter.nevertomanybooks.BooksOnBookshelf.access$400(BooksOnBookshelf.java:103)
-        //        at com.hardbacknutter.nevertomanybooks.BooksOnBookshelf$4.onScrolled(BooksOnBookshelf.java:489)
+        // android.database.CursorIndexOutOfBoundsException: Index 0 requested, with a size of 0
+        // at android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)
+        // at android.database.AbstractWindowedCursor.checkPosition(AbstractWindowedCursor.java:136)
+        // at android.database.AbstractWindowedCursor.getString(AbstractWindowedCursor.java:50)
+        // at com.hardbacknutter.nevertomanybooks.booklist.BooklistPseudoCursor.getString(BooklistPseudoCursor.java:340)
+        // at com.hardbacknutter.nevertomanybooks.database.cursors.MappedCursorRow.getString(MappedCursorRow.java:57)
+        // at com.hardbacknutter.nevertomanybooks.database.cursors.BooklistMappedCursorRow.getLevelText(BooklistMappedCursorRow.java:170)
+        // at com.hardbacknutter.nevertomanybooks.BooksOnBookshelf.setHeaderText(BooksOnBookshelf.java:1687)
+        // at com.hardbacknutter.nevertomanybooks.BooksOnBookshelf.access$400(BooksOnBookshelf.java:103)
+        // at com.hardbacknutter.nevertomanybooks.BooksOnBookshelf$4.onScrolled(BooksOnBookshelf.java:489)
 
         int columnIndex = mLevelCol[index];
         try {

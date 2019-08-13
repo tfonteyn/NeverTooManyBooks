@@ -87,6 +87,7 @@ import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
  * <li>{@link BackupInfo}</li>
  * <li>{@link android.content.SharedPreferences}</li>
  * <li>{@link BooklistStyle}</li>
+ * </ul>
  * Reason:
  * <ul>
  * <li>more or less flat objects (Bundle or Bundle-like)</li>
@@ -111,16 +112,16 @@ import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
 public class XmlExporter
         implements Exporter, Closeable {
 
-    // uber-version of the exporter (not necessarily the same as the archive container !)
+    /** uber-version of the exporter (not necessarily the same as the archive container !). */
     private static final int XML_EXPORTER_VERSION = 2;
 
-    // individual format versions of table based data
+    /** individual format versions of table based data. */
     private static final int XML_EXPORTER_BOOKSHELVES_VERSION = 1;
     private static final int XML_EXPORTER_AUTHORS_VERSION = 1;
     private static final int XML_EXPORTER_SERIES_VERSION = 1;
     private static final int XML_EXPORTER_BOOKS_VERSION = 1;
 
-    // individual format version of Styles
+    /** individual format version of Styles. */
     private static final int XML_EXPORTER_STYLES_VERSION = 1;
 
     private static final int BUFFER_SIZE = 32768;

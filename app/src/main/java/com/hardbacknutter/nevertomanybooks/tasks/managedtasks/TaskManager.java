@@ -92,6 +92,7 @@ public class TaskManager {
      */
     private final List<TaskInfo> mTaskInfoList = new ArrayList<>();
 
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Context mContext;
 
@@ -102,6 +103,7 @@ public class TaskManager {
      */
     @Nullable
     private String mBaseMessage;
+    @SuppressWarnings("FieldNotUsedInToString")
     private final ManagedTaskListener mManagedTaskListener = new ManagedTaskListener() {
         /**
          * Listener for ManagedTask messages.
@@ -138,7 +140,7 @@ public class TaskManager {
      */
     private boolean mCancelling;
     /** Controller instance (strong reference) for this object. */
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "FieldNotUsedInToString"})
     private final TaskManagerController mController = new TaskManagerController() {
 
         public void requestAbort() {
@@ -409,6 +411,7 @@ public class TaskManager {
     public static class TaskFinishedMessage
             implements Message<TaskManagerListener> {
 
+        @SuppressWarnings("FieldNotUsedInToString")
         @NonNull
         private final TaskManager mTaskManager;
         @NonNull

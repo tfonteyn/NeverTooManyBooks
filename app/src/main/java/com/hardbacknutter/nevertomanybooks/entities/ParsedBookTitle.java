@@ -48,7 +48,7 @@ public class ParsedBookTitle {
                             + Series.NUMBER_REGEXP,
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     @NonNull
-    private String mBookTitle;
+    private final String mBookTitle;
     @NonNull
     private String mSeriesTitle;
     @NonNull

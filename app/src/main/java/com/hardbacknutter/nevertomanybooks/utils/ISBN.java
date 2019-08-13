@@ -57,7 +57,8 @@ public class ISBN {
     private static final String UNABLE_TO_CONVERT_ERROR = "Unable to convert invalid ISBN";
 
     /**
-     * <a href="https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside">https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside</a>
+     * <a href="https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside">
+     *     https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside</a>
      * <p>
      * The extended barcode combined with the UPC vendor prefix can be used to
      * reconstruct the ISBN.

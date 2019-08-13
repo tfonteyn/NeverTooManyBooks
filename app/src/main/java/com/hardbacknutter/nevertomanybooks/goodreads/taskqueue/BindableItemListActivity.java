@@ -55,7 +55,7 @@ abstract class BindableItemListActivity
     /**
      * Listener to handle add/change/delete.
      */
-    protected final QueueManager.ChangeListener mChangeListener = this::refreshData;
+    final QueueManager.ChangeListener mChangeListener = this::refreshData;
 
     /**
      * Subclass MUST implement to return the cursor that will be used to display items.
@@ -122,7 +122,7 @@ abstract class BindableItemListActivity
     }
 
     /** close a cursor and ignore failures. */
-    protected void closeCursor(@Nullable final Cursor cursor) {
+    private void closeCursor(@Nullable final Cursor cursor) {
         try {
             if (cursor != null) {
                 cursor.close();

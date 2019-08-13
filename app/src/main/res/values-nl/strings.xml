@@ -11,7 +11,7 @@
     <string name="X_info_no_authors_yet">Er zijn geen auteurs voor dit boek. Je kan er een toevoegen met het tekstveld en de knop bovenin dit scherm.</string>
     <string name="X_info_no_books_yet">Er staan geen boeken op deze boekenplank. Voeg er een paar toe via het menu onderaan dit scherm.</string>
     <string name="X_info_no_series_yet">Er zijn geen series voor dit boek. Je kan er een toevoegen met het tekstveld en de knop bovenin dit scherm.</string>
-    <string name="X_info_reset_tips">Van tijd tot tijd kan deze toepassing optionele berichten weergeven over LibraryThing.\nDruk op de knop hieronder om alle berichten die zijn uitgeschakeld te herstellen.</string>
+    <string name="X_info_reset_tips">Van tijd tot tijd kan deze toepassing optionele berichten weergeven over %1$s.\nDruk op de knop hieronder om alle berichten die zijn uitgeschakeld te herstellen.</string>
     <string name="X_lbl_loan_book_available">Beschikbaar</string>
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
     <string name="X_menu_delete_series">Verwijderen serie…</string>

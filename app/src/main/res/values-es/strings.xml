@@ -11,7 +11,7 @@
     <string name="X_info_no_authors_yet">El libro no tiene autor. Añada alguno utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
     <string name="X_info_no_books_yet">No hay libros en esta biblioteca. Añada alguno utilizando el menú al pie de esta pantalla.</string>
     <string name="X_info_no_series_yet">El libro no tiene serie. Puede especificar una utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
-    <string name="X_info_reset_tips">Esta aplicación puede mostrar, de vez en cuando, mensajes relacionados con LibraryThing.\n Pulse el botón siguiente para resetear cualquiera de los mensajes que hayan sido deshabilitados.</string>
+    <string name="X_info_reset_tips">Esta aplicación puede mostrar, de vez en cuando, mensajes relacionados con %1$s.\n Pulse el botón siguiente para resetear cualquiera de los mensajes que hayan sido deshabilitados.</string>
     <string name="X_lbl_loan_book_available">Disponible</string>
     <string name="X_lbl_select_fields_to_update">Seleccione campos para actualizar</string>
     <string name="X_menu_delete_series">Eliminar serie…</string>

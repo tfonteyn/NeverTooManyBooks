@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertomanybooks.BookSearchByIsbnFragment;
 public class BookSearchByScanModel
         extends ViewModel {
 
+    /** Only start the scanner automatically upon the very first start of the fragment. */
     private boolean mFirstStart = true;
     /** flag indicating we're running in SCAN mode. */
     private boolean mScanMode;

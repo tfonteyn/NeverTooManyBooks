@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertomanybooks.UniqueId;
@@ -76,12 +75,6 @@ class KbNlHandler
      */
     KbNlHandler(@NonNull final Bundle bookData) {
         mBookData = bookData;
-    }
-
-    @Override
-    public void startDocument()
-            throws SAXException {
-        super.startDocument();
     }
 
     @Override

@@ -375,16 +375,28 @@ import com.hardbacknutter.nevertomanybooks.entities.Series;
  *                <url>http://www.librarything.com/profile/lorax</url>
  *              </person>
  *              <factList>
- *                <fact>&lt;![CDATA[ Robbie:&lt;br&gt;"Ninety-eight � ninety-nine � &lt;i&gt;one hundred&lt;/i&gt;." ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ Runaround:&lt;br&gt;It was one of Gregory Powell's favorite platitudes that nothing was to be gained from excitement, so when Mike Donovan came leaping down the stairs toward him, red hair matted with perspiration, Powell frowned. ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ Reason:&lt;br&gt;Half a year later, the boys had changed their minds. ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ Catch That Rabbit:&lt;br&gt;The vacation was longer than two weeks. ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ Liar!&lt;br&gt;Alfred Lanning lit his cigar carefully, but the tips of his fingers were trembling slightly. ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ Little Lost Robot:&lt;br&gt;When I did see Susan Calvin again, it was at the door of her office. ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ Escape!:&lt;br&gt;When Susan Calvin returned from Hyper Base, Alfred Lanning was waiting for her. ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ Evidence:&lt;br&gt;Francis Quinn was a politician of the new school. ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ The Evitable Conflict:&lt;br&gt;The Coordinator, in his private study, had that medieval curiosity, a fireplace. ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ &lt;i&gt;I looked at my notes and I didn't like them.&lt;/i&gt; (Introduction) ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Robbie:&lt;br&gt;"Ninety-eight � ninety-nine � &lt;
+ *                i&gt;one hundred&lt;/i&gt;." ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Runaround:&lt;br&gt;It was one of Gregory Powell's favorite
+ *                platitudes that nothing was to be gained from excitement, so when Mike Donovan
+ *                came leaping down the stairs toward him, red hair matted with perspiration,
+ *                Powell frowned. ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Reason:&lt;br&gt;Half a year later, the boys had changed
+ *                their minds. ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Catch That Rabbit:&lt;br&gt;The vacation was longer than
+ *                two weeks. ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Liar!&lt;br&gt;Alfred Lanning lit his cigar carefully,
+ *                but the tips of his fingers were trembling slightly. ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Little Lost Robot:&lt;br&gt;When I did see Susan Calvin again,
+ *                it was at the door of her office. ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Escape!:&lt;br&gt;When Susan Calvin returned from Hyper Base,
+ *                Alfred Lanning was waiting for her. ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Evidence:&lt;br&gt;Francis Quinn was a politician of the new
+ *                school. ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ The Evitable Conflict:&lt;br&gt;The Coordinator, in his
+ *                private study, had that medieval curiosity, a fireplace. ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ &lt;i&gt;I looked at my notes and I didn't like them.&lt;
+ *                /i&gt; (Introduction) ]]&gt;</fact>
  *              </factList>
  *            </version>
  *          </versionList>

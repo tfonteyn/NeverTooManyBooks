@@ -95,7 +95,8 @@
             app:layout_constraintTop_toTopOf="@id/publisher"
             />
 
-        <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
+        <!-- This invisible View is needed to allow individual show/hide while
+             maintaining the baseline -->
         <TextView
             android:id="@+id/lbl_publication_dates_baseline"
             android:layout_width="0dp"
@@ -125,7 +126,8 @@
             app:layout_constraintStart_toStartOf="@id/date_published"
             />
 
-        <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
+        <!-- This invisible View is needed to allow individual show/hide while
+             maintaining the baseline -->
         <Button
             android:id="@+id/publication_dates_baseline"
             android:layout_width="0dp"
@@ -160,7 +162,8 @@
             app:layout_constraintTop_toBottomOf="@id/publication_dates_baseline"
             />
 
-        <!-- input type simpleTextEntry, so details like 'intro pages', 'appendix pages' etc can be used -->
+        <!-- input type simpleTextEntry, so details like 'intro pages', 'appendix pages'
+             etc can be used -->
         <EditText
             android:id="@+id/pages"
             style="@style/simpleTextEntry"

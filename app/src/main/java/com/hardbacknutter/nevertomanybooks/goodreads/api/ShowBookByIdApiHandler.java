@@ -52,6 +52,7 @@ public class ShowBookByIdApiHandler
     /**
      * Constructor.
      *
+     * @param context   Current context
      * @param grManager the Goodreads Manager
      *
      * @throws CredentialsException with GoodReads

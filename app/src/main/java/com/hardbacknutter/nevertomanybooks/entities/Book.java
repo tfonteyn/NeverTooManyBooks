@@ -476,8 +476,9 @@ public class Book
     }
 
     /**
-     * @return name of the first author in the list of authors for this book,
-     * or {@code null} if none
+     * Get the name of the first author in the list of authors for this book.
+     *
+     * @return the name or {@code null} if none
      */
     @Nullable
     public String getPrimaryAuthor() {
@@ -487,6 +488,8 @@ public class Book
 
     /**
      * TODO: use {@link DataAccessor}.
+     *
+     * @param context Current context
      *
      * @return a formatted string for author list.
      */
@@ -558,6 +561,12 @@ public class Book
         return getLocale(true);
     }
 
+    @Override
+    @NonNull
+    public String getTitle() {
+        return getString(DBDefinitions.KEY_TITLE);
+    }
+
     /**
      * Get the Book's locale (based on its language).
      *
@@ -567,12 +576,6 @@ public class Book
     @Override
     public Locale getLocale() {
         return getLocale(false);
-    }
-
-    @Override
-    @NonNull
-    public String getTitle() {
-        return getString(DBDefinitions.KEY_TITLE);
     }
 
     /**
@@ -620,7 +623,8 @@ public class Book
     /**
      * Update series details from DB.
      *
-     * @param db Database Access
+     * @param context Current context
+     * @param db      Database Access
      */
     public void refreshSeriesList(@NonNull final Context context,
                                   @NonNull final DAO db) {

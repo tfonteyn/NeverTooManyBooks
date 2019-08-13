@@ -78,10 +78,12 @@ public class PreferredStylesActivity
         extends BaseActivity {
 
     /** The adapter for the list. */
-    protected RecyclerViewAdapterBase mListAdapter;
+    private RecyclerViewAdapterBase mListAdapter;
     /** The View for the list. */
-    protected RecyclerView mListView;
-    protected LinearLayoutManager mLayoutManager;
+    @SuppressWarnings("FieldCanBeLocal")
+    private RecyclerView mListView;
+    @SuppressWarnings("FieldCanBeLocal")
+    private LinearLayoutManager mLayoutManager;
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
@@ -193,8 +195,8 @@ public class PreferredStylesActivity
      *
      * @return {@code true} if handled.
      */
-    public boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                         @NonNull final BooklistStyle style) {
+    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+                                          @NonNull final BooklistStyle style) {
 
         switch (menuItem.getItemId()) {
             case R.id.MENU_CLONE:

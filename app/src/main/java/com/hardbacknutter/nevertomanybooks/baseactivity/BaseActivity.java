@@ -42,6 +42,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+
 import com.hardbacknutter.nevertomanybooks.About;
 import com.hardbacknutter.nevertomanybooks.AdminActivity;
 import com.hardbacknutter.nevertomanybooks.App;
@@ -133,7 +134,7 @@ public abstract class BaseActivity
     }
 
     @CallSuper
-    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
+    private boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         }

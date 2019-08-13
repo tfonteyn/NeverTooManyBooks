@@ -449,10 +449,10 @@ public class BooksOnBookshelfModel
                 //ENHANCE:  see DAO#fetchBookExtrasById ... this needs work.
 //                if (style.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
 //                    blb.requireDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
-//                                      "GROUP_CONCAT("
-//                                      + DBDefinitions.TBL_BOOKSHELF.dot(DBDefinitions.DOM_BOOKSHELF)
-//                                      + ",', ')",
-//                                      false);
+//                                   "GROUP_CONCAT("
+//                                   + DBDefinitions.TBL_BOOKSHELF.dot(DBDefinitions.DOM_BOOKSHELF)
+//                                   + ",', ')",
+//                                   false);
 //                    blb.requireJoin(DBDefinitions.TBL_BOOKSHELF);
 //                }
 

@@ -40,7 +40,7 @@ public class XmlDumpParser
 
     private static final String TAG = "XmlDumpParser";
 
-    private boolean mNamespaceBegin = false;
+    private boolean mNamespaceBegin;
 
     private String mCurrentNamespace;
 

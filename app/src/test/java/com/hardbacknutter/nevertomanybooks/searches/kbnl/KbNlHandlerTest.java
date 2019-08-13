@@ -49,6 +49,8 @@ import com.hardbacknutter.nevertomanybooks.entities.Author;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KbNlHandlerTest {
 
@@ -91,6 +93,8 @@ class KbNlHandlerTest {
 
 
         List<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        assertNotNull(authors);
+        assertTrue(!authors.isEmpty());
         Author expectedAuthor;
         expectedAuthor = Author.fromString("Silvio Camboni");
         assertEquals(expectedAuthor, authors.get(0));
@@ -102,6 +106,8 @@ class KbNlHandlerTest {
         assertEquals(expectedAuthor, authors.get(3));
 
         List<Series> series = mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        assertNotNull(series);
+        assertTrue(!series.isEmpty());
         Series expectedSeries;
         expectedSeries = new Series("De buitengewone reis");
         expectedSeries.setNumber("1");
@@ -127,6 +133,8 @@ class KbNlHandlerTest {
         assertEquals("Bruna", mBookData.getString(DBDefinitions.KEY_PUBLISHER));
 
         List<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        assertNotNull(authors);
+        assertTrue(!authors.isEmpty());
         Author expectedAuthor;
         expectedAuthor = Author.fromString("Isaak Judovič Ozimov");
         assertEquals(expectedAuthor, authors.get(0));
@@ -134,6 +142,8 @@ class KbNlHandlerTest {
         assertEquals(expectedAuthor, authors.get(1));
 
         List<Series> series = mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        assertNotNull(series);
+        assertTrue(!series.isEmpty());
         Series expectedSeries;
         expectedSeries = new Series("Foundation-trilogie");
         expectedSeries.setNumber("1");

@@ -90,7 +90,9 @@ import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
  *
  *     <Item>
  *       <ASIN>0006483836</ASIN>
- *       <DetailPageURL>http://www.amazon.com/TRIGGER-CLARKE-KUBE-MCDOWELL/dp/0006483836%3FSubscriptionId%3DAKIAIHF2BM6OTOA23JEQ%26tag%3Dws%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D0006483836</DetailPageURL>
+ *       <DetailPageURL>http://www.amazon.com/TRIGGER-CLARKE-KUBE-MCDOWELL/dp/0006483836%3F
+ *       SubscriptionId%3DAKIAIHF2BM6OTOA23JEQ%26tag%3Dws%26linkCode%3Dxm2%26camp%3D2025
+ *       %26creative%3D165953%26creativeASIN%3D0006483836</DetailPageURL>
  *       <SalesRank>4575972</SalesRank>
  *
  *       <SmallImage>

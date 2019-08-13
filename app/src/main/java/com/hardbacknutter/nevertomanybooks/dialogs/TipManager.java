@@ -287,6 +287,7 @@ public final class TipManager {
         /**
          * Set the preference to indicate if this tip should be shown again.
          *
+         * @param context Current context
          * @param show Flag indicating future visibility
          */
         private void setShowAgain(@NonNull final Context context,
@@ -295,6 +296,11 @@ public final class TipManager {
                              .edit().putBoolean(mKey, show).apply();
         }
 
+        /**
+         * Reset visibility of this tip.
+         *
+         * @param context Current context
+         */
         void reset(@NonNull final Context context) {
             setShowAgain(context, true);
             mHasBeenDisplayed = false;

@@ -114,7 +114,7 @@ public class ShelvesListApiHandler
      * @throws IOException           on other failures
      */
     @NonNull
-    public Bundle get(final int page)
+    private Bundle get(final int page)
             throws CredentialsException, BookNotFoundException, IOException {
 
         String url = String.format(URL, mManager.getDevKey(), page, mManager.getUserId());

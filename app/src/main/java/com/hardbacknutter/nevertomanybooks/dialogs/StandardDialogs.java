@@ -51,6 +51,9 @@ public final class StandardDialogs {
 
     /**
      * Show a dialog asking if unsaved edits should be ignored.
+     *
+     * @param context   Current context
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
      */
     public static void showConfirmUnsavedEditsDialog(@NonNull final Context context,
                                                      @NonNull final Runnable onConfirm) {
@@ -71,10 +74,14 @@ public final class StandardDialogs {
 
     /**
      * Ask the user to confirm a delete.
+     *
+     * @param context   Current context
+     * @param series    Series we're about to delete
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
      */
     public static void deleteSeriesAlert(@NonNull final Context context,
                                          @NonNull final Series series,
-                                         @NonNull final Runnable onDoDelete) {
+                                         @NonNull final Runnable onConfirm) {
         new AlertDialog.Builder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_delete_series)
@@ -83,7 +90,7 @@ public final class StandardDialogs {
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     d.dismiss();
-                    onDoDelete.run();
+                    onConfirm.run();
                 })
                 .create()
                 .show();
@@ -91,10 +98,14 @@ public final class StandardDialogs {
 
     /**
      * Ask the user to confirm a delete.
+     *
+     * @param context   Current context
+     * @param tocEntry  TocEntry we're about to delete
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
      */
     public static void deleteTocEntryAlert(@NonNull final Context context,
                                            @NonNull final TocEntry tocEntry,
-                                           @NonNull final Runnable onDoDelete) {
+                                           @NonNull final Runnable onConfirm) {
         new AlertDialog.Builder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_delete_toc_entry)
@@ -105,7 +116,7 @@ public final class StandardDialogs {
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     d.dismiss();
-                    onDoDelete.run();
+                    onConfirm.run();
                 })
                 .create()
                 .show();
@@ -113,11 +124,16 @@ public final class StandardDialogs {
 
     /**
      * Ask the user to confirm a delete.
+     *
+     * @param context    Current context
+     * @param title      Title of book we're about to delete
+     * @param authorList Authors of book we're about to delete
+     * @param onConfirm  Runnable to execute if the user clicks the confirm button.
      */
     public static void deleteBookAlert(@NonNull final Context context,
                                        @NonNull final String title,
                                        @NonNull final List<Author> authorList,
-                                       @NonNull final Runnable onDoDelete) {
+                                       @NonNull final Runnable onConfirm) {
 
         Locale userLocale = LocaleUtils.getPreferredLocale();
         // Format the list of authors nicely
@@ -147,7 +163,7 @@ public final class StandardDialogs {
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     d.dismiss();
-                    onDoDelete.run();
+                    onConfirm.run();
                 })
                 .create()
                 .show();

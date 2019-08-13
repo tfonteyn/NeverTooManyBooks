@@ -112,10 +112,10 @@ public final class ImageUtils {
     private static final int BUFFER_SIZE = 65536;
 
     // temp debug
-    public static AtomicLong cacheTicks = new AtomicLong();
-    public static AtomicLong fileTicks = new AtomicLong();
-    public static AtomicInteger cacheChecks = new AtomicInteger();
-    public static AtomicInteger fileChecks = new AtomicInteger();
+    public static final AtomicLong cacheTicks = new AtomicLong();
+    public static final AtomicLong fileTicks = new AtomicLong();
+    public static final AtomicInteger cacheChecks = new AtomicInteger();
+    public static final AtomicInteger fileChecks = new AtomicInteger();
 
     private ImageUtils() {
     }
@@ -309,9 +309,9 @@ public final class ImageUtils {
      */
     @NonNull
     @AnyThread
-    public static Bitmap createScaledBitmap(@NonNull final Bitmap source,
-                                            final int dstWidth,
-                                            final int dstHeight) {
+    private static Bitmap createScaledBitmap(@NonNull final Bitmap source,
+                                             final int dstWidth,
+                                             final int dstHeight) {
         Matrix matrix = new Matrix();
         int width = source.getWidth();
         int height = source.getHeight();

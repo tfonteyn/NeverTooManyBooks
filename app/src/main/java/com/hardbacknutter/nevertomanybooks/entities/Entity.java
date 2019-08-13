@@ -37,12 +37,16 @@ import androidx.annotation.NonNull;
 public interface Entity {
 
     /**
-     * @return the database row id of the entity.
+     * Get the database row id of the entity.
+     *
+     * @return id
      */
     long getId();
 
     /**
-     * @return the label to use.
+     * Get the label to use.
+     *
+     * @return the label.
      */
     String getLabel();
 

@@ -62,13 +62,13 @@ class TaskQueueDBHelper
     static final String TBL_QUEUE = "queue";
     /** Scheduled task definition. */
     static final String TBL_TASK = "task";
-    /** Event table definition */
+    /** Event table definition. */
     static final String TBL_EVENT = "event";
-    /** File name for database */
+    /** File name for database. */
     private static final String DATABASE_NAME = "net.philipwarner.taskqueue.database.db";
     private static final int DATABASE_VERSION = 2;
 
-    // Collection of all table definitions
+    /** Collection of all table definitions. */
     private static final String[] TABLES = new String[]{
             "CREATE TABLE " + TBL_QUEUE + " ("
             + DOM_ID + " integer primary key autoincrement,"
@@ -90,7 +90,7 @@ class TaskQueueDBHelper
             "CREATE TABLE " + TBL_EVENT + " (" + DOM_ID + " integer primary key autoincrement,\n"
             + DOM_TASK_ID + " integer references " + TBL_TASK + ','
             + DOM_EVENT + " blob not null,"
-            + DOM_EVENT_DATE + " datetime default current_timestamp)"
+            + DOM_EVENT_DATE + " datetime default current_timestamp)",
     };
 
     private static final String[] INDEXES = new String[]{
@@ -114,7 +114,7 @@ class TaskQueueDBHelper
             + ',' + DOM_ID + ')',
             "CREATE INDEX " + TBL_EVENT + "_IX3 ON " + TBL_EVENT + " ("
             + DOM_TASK_ID
-            + ',' + DOM_ID + ')'
+            + ',' + DOM_ID + ')',
     };
 
     /**
@@ -132,15 +132,15 @@ class TaskQueueDBHelper
             Logger.debugEnter(this, "onCreate", "database: " + db.getPath());
         }
 
-        for (String TABLE : TABLES) {
-            db.execSQL(TABLE);
+        for (String table : TABLES) {
+            db.execSQL(table);
         }
 
         // Turn on foreign key support so that CASCADE works.
         db.execSQL("PRAGMA foreign_keys = ON");
 
-        for (String sql : INDEXES) {
-            db.execSQL(sql);
+        for (String index : INDEXES) {
+            db.execSQL(index);
         }
     }
 

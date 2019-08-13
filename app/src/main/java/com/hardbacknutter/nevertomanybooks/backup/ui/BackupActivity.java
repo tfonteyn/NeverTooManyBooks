@@ -42,9 +42,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.File;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.MenuHandler;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -238,7 +239,7 @@ public class BackupActivity
     /**
      * kick of the backup task.
      */
-    public void onOptionsSet(@NonNull final ExportOptions options) {
+    private void onOptionsSet(@NonNull final ExportOptions options) {
         // sanity check
         if (options.what == ExportOptions.NOTHING) {
             return;

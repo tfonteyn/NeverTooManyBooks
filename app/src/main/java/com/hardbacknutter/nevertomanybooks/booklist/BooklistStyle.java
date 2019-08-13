@@ -395,7 +395,7 @@ public class BooklistStyle
      * @return the SharedPreference
      */
     @NonNull
-    public SharedPreferences getPrefs() {
+    private SharedPreferences getPrefs() {
         return App.getAppContext().getSharedPreferences(mUuid, Context.MODE_PRIVATE);
     }
 

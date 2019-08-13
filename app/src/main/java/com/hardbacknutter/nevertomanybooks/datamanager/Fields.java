@@ -1474,6 +1474,7 @@ public class Fields {
         @IdRes
         public final int id;
         /** Owning collection. */
+        @SuppressWarnings("FieldNotUsedInToString")
         @NonNull
         private final WeakReference<Fields> mFields;
         /** Visibility group name. Used in conjunction with preferences to show/hide Views. */
@@ -1618,6 +1619,7 @@ public class Fields {
                    + ", group='" + group + '\''
                    + ", mColumn='" + mColumn + '\''
                    + ", formatter=" + formatter
+                   + ", mZeroIsEmpty=" + mZeroIsEmpty
                    + ", mIsUsed=" + mIsUsed
                    + ", mDoNoFetch=" + mDoNoFetch
                    + ", mFieldValidator=" + mFieldValidator

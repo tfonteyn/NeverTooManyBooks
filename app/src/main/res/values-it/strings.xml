@@ -11,7 +11,7 @@
     <string name="X_info_no_authors_yet">Nessun autore inserito per questo libro. Aggiungine utilizzando l\'area di testo e il pulsante nella parte superiore dello schermo.</string>
     <string name="X_info_no_books_yet">Non ci sono libri in questa libreria. Per aggiungerne utilizza il menù nella parte inferiore dello schermo.</string>
     <string name="X_info_no_series_yet">Nessuna serie inserita per questo libro. Puoi aggiungerne utilizzando l\'area di testo e il pulsante nella parte superiore dello schermo.</string>
-    <string name="X_info_reset_tips">Ogni tanto questa applicazione può visualizzare messaggi riguardanti LibraryThing.\n Premi il pulsante qui sotto per ripristinare i messaggi eventualmente disattivati.</string>
+    <string name="X_info_reset_tips">Ogni tanto questa applicazione può visualizzare messaggi riguardanti %1$s.\n Premi il pulsante qui sotto per ripristinare i messaggi eventualmente disattivati.</string>
     <string name="X_lbl_loan_book_available">Disponibile</string>
     <string name="X_lbl_select_fields_to_update">Seleziona i campi da aggiornare</string>
     <string name="X_menu_delete_series">Cancella serie…</string>

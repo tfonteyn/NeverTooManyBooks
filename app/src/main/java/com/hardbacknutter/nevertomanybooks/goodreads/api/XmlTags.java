@@ -29,7 +29,7 @@ package com.hardbacknutter.nevertomanybooks.goodreads.api;
 /**
  * Tag names for the Goodreads API.
  */
-public final class XmlTags {
+final class XmlTags {
 
     static final String XML_GOODREADS_RESPONSE = "GoodreadsResponse";
     static final String XML_NAME = "name";
@@ -115,4 +115,7 @@ public final class XmlTags {
     static final String XML_FORMAT = "format";
     /** <is_ebook>false</is_ebook>. */
     static final String XML_IS_EBOOK = "is_ebook";
+
+    private XmlTags() {
+    }
 }
