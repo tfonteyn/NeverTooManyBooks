@@ -22,7 +22,7 @@ function checkTempTableUsage {
 SRC="app/src/main"
 
 
-PR="${SRC}/java/com/hardbacknutter/nevertomanybooks"
+PR="${SRC}/java/com/hardbacknutter/nevertoomanybooks"
 checkTempTableUsage "${PR}/database/DBDefinitions.java"
 
 MF="AndroidManifest.xml"

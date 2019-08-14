@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.hardbacknutter.nevertomanybooks"
+          package="com.hardbacknutter.nevertoomanybooks"
           android:installLocation="auto"
           android:versionCode="200"
           android:versionName="6.0.0"
@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
-        android:name=".App"
+        android:name="com.hardbacknutter.nevertoomanybooks.App"
         android:allowBackup="true"
         android:icon="@drawable/ic_bookshelf3"
         android:label="@string/app_name"
@@ -27,7 +27,7 @@
 
         <meta-data
             android:name="beta.build"
-            android:value="2019-08-10" />
+            android:value="2019-08-14" />
 
         <!-- Application developer keys - stripped out in a git pre-commit script. -->
         <meta-data
@@ -38,11 +38,11 @@
             android:value="" />
 
         <provider
-            android:name=".searches.SearchSuggestionProvider"
+            android:name="com.hardbacknutter.nevertoomanybooks.searches.SearchSuggestionProvider"
             android:authorities="${packageName}.SearchSuggestionProvider"
             android:exported="false" />
         <provider
-            android:name=".utils.GenericFileProvider"
+            android:name="com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider"
             android:authorities="${packageName}.GenericFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -68,7 +68,7 @@
             So in theory it is OK to make it singleInstance
         -->
         <activity
-            android:name=".StartupActivity"
+            android:name="com.hardbacknutter.nevertoomanybooks.StartupActivity"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleInstance"
             android:noHistory="true">
@@ -80,7 +80,7 @@
         </activity>
 
         <!-- The real main activity; it's also the one that accepts search requests -->
-        <activity android:name=".BooksOnBookshelf">
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
 
@@ -93,15 +93,15 @@
         </activity>
 
         <!-- Admin pages -->
-        <activity android:name=".About" />
-        <activity android:name=".AdminActivity" />
-        <activity android:name=".settings.SettingsActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.About" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.AdminActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity" />
         <!-- Manage Bookshelves -->
-        <activity android:name=".EditBookshelfListActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.EditBookshelfListActivity" />
         <!-- Edit the user preferred book list styles -->
-        <activity android:name=".settings.PreferredStylesActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity" />
         <!-- Edit the groups for a style. -->
-        <activity android:name=".settings.StyleGroupsActivity">
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.StyleGroupsActivity">
             <intent-filter>
                 <action android:name="BooklistStyleGroups.EDIT" />
 
@@ -109,11 +109,11 @@
             </intent-filter>
         </activity>
         <!-- Data Import/Export -->
-        <activity android:name=".backup.ui.RestoreActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.backup.ui.RestoreActivity" />
         <!-- Update book Fields from the internet -->
-        <activity android:name=".UpdateFieldsFromInternetActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.UpdateFieldsFromInternetActivity" />
         <!-- Credentials Goodreads -->
-        <activity android:name=".searches.goodreads.GoodreadsRegistrationActivity">
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity">
             <intent-filter>
                 <action android:name="goodreads.credentials.EDIT" />
 
@@ -122,7 +122,7 @@
         </activity>
         <!-- Credentials LibraryThing -->
         <activity
-            android:name=".searches.librarything.LibraryThingRegistrationActivity"
+            android:name="com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
             <intent-filter>
                 <action android:name="librarything.credentials.EDIT" />
@@ -131,11 +131,11 @@
             </intent-filter>
         </activity>
         <!-- Goodreads background tasks & events -->
-        <activity android:name=".goodreads.taskqueue.TaskQueueListActivity" />
-        <activity android:name=".goodreads.taskqueue.EventQueueListActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueListActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.EventQueueListActivity" />
         <!-- Search Sites configuration -->
         <activity
-            android:name=".settings.SearchAdminActivity"
+            android:name="com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
             <intent-filter>
                 <action android:name="search.website.order.EDIT" />
@@ -145,33 +145,33 @@
         </activity>
         <!-- Local Search -->
         <activity
-            android:name=".FTSSearchActivity"
+            android:name="com.hardbacknutter.nevertoomanybooks.FTSSearchActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <!-- View a book -->
-        <activity android:name=".BookDetailsActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.BookDetailsActivity" />
         <!-- Add a Book through an internet search. -->
         <activity
-            android:name=".BookSearchActivity"
+            android:name="com.hardbacknutter.nevertoomanybooks.BookSearchActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <!-- Edit a book + the related author/series -->
         <activity
-            android:name=".EditBookActivity"
+            android:name="com.hardbacknutter.nevertoomanybooks.EditBookActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
-            android:name=".EditAuthorListActivity"
+            android:name="com.hardbacknutter.nevertoomanybooks.EditAuthorListActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
-            android:name=".EditSeriesListActivity"
+            android:name="com.hardbacknutter.nevertoomanybooks.EditSeriesListActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <!-- View an Author and all of his works. -->
-        <activity android:name=".AuthorWorksActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.AuthorWorksActivity" />
         <!-- Cropping an image, either from the cover of a book, or direct from a new scan -->
         <activity
-            android:name=".cropper.CropImageActivity"
+            android:name="com.hardbacknutter.nevertoomanybooks.cropper.CropImageActivity"
             android:theme="@style/AppTheme.FullScreen"
             />
         <!-- This Goodreads activity is commented out (waiting on API access) -->
-        <activity android:name=".searches.goodreads.GoodreadsSearchActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchActivity" />
         <!--
              The callback-activity after we requested authorizing this application
              for the current user to Goodreads.
@@ -179,7 +179,7 @@
              The scheme is hardcoded to avoid confusion between java and android package names.
         -->
         <activity
-            android:name=".searches.goodreads.GoodreadsAuthorizationActivity"
+            android:name="com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsAuthorizationActivity"
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -189,10 +189,10 @@
 
                 <data
                     android:host="goodreadsauth"
-                    android:scheme="com.hardbacknutter.nevertomanybooks" />
+                    android:scheme="com.hardbacknutter.nevertoomanybooks" />
             </intent-filter>
         </activity>
-        <activity android:name=".backup.ui.BackupActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.backup.ui.BackupActivity" />
     </application>
 
 </manifest>

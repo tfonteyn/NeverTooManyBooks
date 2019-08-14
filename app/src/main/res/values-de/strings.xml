@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes „…“  - Regex to find wrong ones: (”|‘|’|«|») -->
 <resources>
     <string name="X_about_help_tap_here">Klicken Sie hier, um die Online-Hilfe aufzurufen</string>

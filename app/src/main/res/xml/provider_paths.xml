@@ -2,5 +2,5 @@
 <paths>
     <!-- must stay in sync with utils/StorageUtils.java -->
     <external-path name="external" path="./bookCatalogue/"/>
-    <external-path name="external" path="./NeverToManyBooks/"/>
+    <external-path name="external" path="./NeverTooManyBooks/"/>
 </paths>

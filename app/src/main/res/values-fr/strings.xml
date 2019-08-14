@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’)
      Single Apos: ’
 -->

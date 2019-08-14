@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
-//if (project.hasProperty("NeverToManyBooks.signing")
-//        && new File(project.property("NeverToManyBooks.signing")).exists()) {
-//    apply from: project.property("NeverToManyBooks.signing")
+//if (project.hasProperty("NeverTooManyBooks.signing")
+//        && new File(project.property("NeverTooManyBooks.signing")).exists()) {
+//    apply from: project.property("NeverTooManyBooks.signing")
 //}
 
 android {
@@ -19,7 +19,7 @@ android {
     //  5.1     22      86.3
     //  5.0     21      89.3
     defaultConfig {
-        applicationId 'com.hardbacknutter.nevertomanybooks'
+        applicationId 'com.hardbacknutter.nevertoomanybooks'
         minSdkVersion 23
         targetSdkVersion 28
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

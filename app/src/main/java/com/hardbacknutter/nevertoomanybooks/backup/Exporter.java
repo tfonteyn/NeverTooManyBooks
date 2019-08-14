@@ -1,0 +1,59 @@
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its current form.
+ * It was however largely rewritten/refactored and any comments on this fork
+ * should be directed at HardBackNutter and not at the original creator.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.hardbacknutter.nevertoomanybooks.backup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
+/**
+ * TODO: fix inconsistencies introduced in the XmlExporter: OutputStream/BufferedWriter
+ * <p>
+ * Interface definition for an exporter.
+ */
+public interface Exporter {
+
+    /**
+     * Export Books to an OutputStream.
+     *
+     * @param outputStream      Stream for writing data
+     * @param listener          Progress and cancellation interface
+     * @param includeCoverCount If set, the progress count will be doubled to (presumably)
+     *                          cover the fact that each book has a cover.
+     *
+     * @return number of books exported
+     *
+     * @throws IOException on failure
+     */
+    @WorkerThread
+    int doBooks(@NonNull OutputStream outputStream,
+                @NonNull ProgressListener listener,
+                boolean includeCoverCount)
+            throws IOException;
+}

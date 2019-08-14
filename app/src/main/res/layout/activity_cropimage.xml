@@ -11,7 +11,7 @@
 
     <view
         android:id="@+id/coverImage"
-        class="com.hardbacknutter.nevertomanybooks.cropper.CropImageView"
+        class="com.hardbacknutter.nevertoomanybooks.cropper.CropImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/border2"
