@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +37,6 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Base for a Collection (List, Set,...) of elements (Integer, String, ...)
@@ -103,17 +103,17 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     }
 
     /**
-     * Bypass the real type.
+     * Bypass the real type. Writes out a CSV string.
      */
-    public void set(@Nullable final Set<String> value) {
+    public void set(@Nullable final Iterable values) {
         if (!mIsPersistent) {
             throw new IllegalArgumentException("uuid was empty");
         }
 
-        if (value == null) {
+        if (values == null) {
             remove();
         } else {
-            getPrefs().edit().putString(getKey(), TextUtils.join(DELIM, value)).apply();
+            getPrefs().edit().putString(getKey(), TextUtils.join(DELIM, values)).apply();
         }
     }
 

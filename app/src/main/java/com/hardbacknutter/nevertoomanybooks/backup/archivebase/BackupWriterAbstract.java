@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,77 +112,72 @@ public abstract class BackupWriterAbstract
 
         // keep track of what we wrote to the archive
         int entitiesWritten = ExportOptions.NOTHING;
+        int bookCount = 0;
+        int coverCount = 0;
 
-        File tempBookCsvFile = null;
+        boolean incBooks = (mSettings.what & ExportOptions.BOOK_CSV) != 0;
+        boolean incCovers = (mSettings.what & ExportOptions.COVERS) != 0;
+        boolean incStyles = (mSettings.what & ExportOptions.BOOK_LIST_STYLES) != 0;
+        boolean incPrefs = (mSettings.what & ExportOptions.PREFERENCES) != 0;
+        boolean incXml = (mSettings.what & ExportOptions.XML_TABLES) != 0;
 
-        BackupInfo.InfoUserValues infoValues = new BackupInfo.InfoUserValues();
-        infoValues.hasStyles = (mSettings.what & ExportOptions.BOOK_LIST_STYLES) != 0;
-        infoValues.hasPrefs = (mSettings.what & ExportOptions.PREFERENCES) != 0;
+        File tmpBookCsvFile = null;
 
-        boolean includeCovers = (mSettings.what & ExportOptions.COVERS) != 0;
         try {
             // If we are doing covers, get the exact number by counting them
-            if (!mProgressListener.isCancelled() && includeCovers) {
-                // just count the covers, no exporting as yet
-                if ((mSettings.what & ExportOptions.COVERS) != 0) {
-                    // we don't write here, only pretend, so we can count the covers.
-                    infoValues.coverCount = doCovers(true);
-                }
+            if (!mProgressListener.isCancelled() && incCovers) {
+                coverCount = doCovers(true);
             }
 
             // If we are doing books, generate the CSV file, and set the number
-            if ((mSettings.what & ExportOptions.BOOK_CSV) != 0) {
+            if (incBooks) {
                 // Get a temp file and set for delete
-                tempBookCsvFile = File.createTempFile("tmp_books_csv_", ".tmp");
-                tempBookCsvFile.deleteOnExit();
+                tmpBookCsvFile = File.createTempFile("tmp_books_csv_", ".tmp");
+                tmpBookCsvFile.deleteOnExit();
 
                 Exporter mExporter = new CsvExporter(userContext, mSettings);
-                try (OutputStream output = new FileOutputStream(tempBookCsvFile)) {
+                try (OutputStream output = new FileOutputStream(tmpBookCsvFile)) {
                     // we know the # of covers...
                     // but getting the progress 100% right is not really important
-                    infoValues.bookCount = mExporter.doBooks(output, mProgressListener,
-                                                             includeCovers);
+                    bookCount = mExporter.doBooks(output, mProgressListener, incCovers);
                 }
             }
 
             // we now have a known number of books; add the covers and we've more or less have an
             // exact number of steps. Added arbitrary 5 for the other entities we might do
-            mProgressListener.setMax(infoValues.coverCount + infoValues.bookCount + 5);
+            mProgressListener.setMax(coverCount + bookCount + 5);
 
-            // Process each component of the Archive, unless we are cancelled, as in Nikita
+            // Process each component of the Archive, unless we are cancelled.
             if (!mProgressListener.isCancelled()) {
-                doInfo(infoValues);
+                doInfo(bookCount, coverCount, incStyles, incPrefs);
             }
-
-            if (!mProgressListener.isCancelled()
-                && (mSettings.what & ExportOptions.XML_TABLES) != 0) {
-                doXmlTables();
-            }
-            if (!mProgressListener.isCancelled()
-                && (mSettings.what & ExportOptions.BOOK_CSV) != 0) {
-                try {
-                    //noinspection ConstantConditions
-                    putBooks(tempBookCsvFile);
-                } finally {
-                    StorageUtils.deleteFile(tempBookCsvFile);
-                }
-            }
-            if (!mProgressListener.isCancelled()
-                && (mSettings.what & ExportOptions.COVERS) != 0) {
-                doCovers(false);
-            }
-            if (!mProgressListener.isCancelled()
-                && (mSettings.what & ExportOptions.BOOK_LIST_STYLES) != 0) {
+            // Write styles and prefs first. This will facilitate & speedup
+            // importing as we'll be seeking in the input archive for them first.
+            if (!mProgressListener.isCancelled() && incStyles) {
                 doStyles();
             }
-            if (!mProgressListener.isCancelled()
-                && (mSettings.what & ExportOptions.PREFERENCES) != 0) {
+            if (!mProgressListener.isCancelled() && incPrefs) {
                 doPreferences();
             }
+            if (!mProgressListener.isCancelled() && incXml) {
+                doXmlTables();
+            }
+            if (!mProgressListener.isCancelled() && incBooks) {
+                try {
+                    putBooks(tmpBookCsvFile);
+                } finally {
+                    StorageUtils.deleteFile(tmpBookCsvFile);
+                }
+            }
+            // do covers last
+            if (!mProgressListener.isCancelled() && incCovers) {
+                doCovers(false);
+            }
+
         } finally {
             mSettings.what = entitiesWritten;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                Logger.debug(this, "backup", "exported covers#=" + infoValues.coverCount);
+                Logger.debug(this, "backup", "exported covers#=" + coverCount);
             }
             try {
                 close();
@@ -202,20 +198,25 @@ public abstract class BackupWriterAbstract
         mDb.close();
     }
 
-    private void doInfo(@NonNull final BackupInfo.InfoUserValues infoValues)
+    private void doInfo(final int bookCount,
+                        final int coverCount,
+                        final boolean hasStyles,
+                        final boolean hasPrefs)
             throws IOException {
         mProgressListener.onProgressStep(1, null);
 
-        final ByteArrayOutputStream data = new ByteArrayOutputStream();
-        final BufferedWriter out = new BufferedWriter(
-                new OutputStreamWriter(data, StandardCharsets.UTF_8), BUFFER_SIZE);
+        ByteArrayOutputStream data = new ByteArrayOutputStream();
 
-        try (XmlExporter xmlExporter = new XmlExporter()) {
-            xmlExporter.doBackupInfoBlock(out, mProgressListener,
-                                          BackupInfo.newInstance(getContainer(), infoValues));
+        try (OutputStreamWriter osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
+             BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE);
+             XmlExporter xmlExporter = new XmlExporter()) {
+
+            BackupInfo backupInfo = BackupInfo.newInstance(getContainer(),
+                                                           bookCount, coverCount,
+                                                           hasStyles, hasPrefs);
+            xmlExporter.doBackupInfoBlock(out, mProgressListener, backupInfo);
         }
 
-        out.close();
         putInfo(data.toByteArray());
     }
 
@@ -225,30 +226,30 @@ public abstract class BackupWriterAbstract
     private void doXmlTables()
             throws IOException {
         // Get a temp file and set for delete
-        final File tempXmlBackupFile = File.createTempFile("tmp_xml_", ".tmp");
-        tempXmlBackupFile.deleteOnExit();
+        File tmpFile = File.createTempFile("tmp_xml_", ".tmp");
+        tmpFile.deleteOnExit();
 
-        try (OutputStream output = new FileOutputStream(tempXmlBackupFile)) {
+        try (OutputStream output = new FileOutputStream(tmpFile)) {
             XmlExporter exporter = new XmlExporter(mSettings);
             exporter.doAll(output, mProgressListener);
-            putXmlData(tempXmlBackupFile);
+            putXmlData(tmpFile);
 
         } finally {
-            StorageUtils.deleteFile(tempXmlBackupFile);
+            StorageUtils.deleteFile(tmpFile);
         }
     }
 
     private void doPreferences()
             throws IOException {
         // Turn the preferences into an XML file in a byte array
-        final ByteArrayOutputStream data = new ByteArrayOutputStream();
-        final BufferedWriter out = new BufferedWriter(
-                new OutputStreamWriter(data, StandardCharsets.UTF_8), BUFFER_SIZE);
+        ByteArrayOutputStream data = new ByteArrayOutputStream();
 
-        try (XmlExporter xmlExporter = new XmlExporter()) {
+        try (OutputStreamWriter osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
+             BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE);
+             XmlExporter xmlExporter = new XmlExporter()) {
             xmlExporter.doPreferences(out, mProgressListener);
         }
-        out.close();
+
         putPreferences(data.toByteArray());
         mProgressListener.onProgressStep(1, null);
     }
@@ -258,14 +259,14 @@ public abstract class BackupWriterAbstract
         Map<String, BooklistStyle> bsMap = BooklistStyles.getUserStyles(mDb);
         if (!bsMap.isEmpty()) {
             // Turn the styles into an XML file in a byte array
-            final ByteArrayOutputStream data = new ByteArrayOutputStream();
-            final BufferedWriter out = new BufferedWriter(
-                    new OutputStreamWriter(data, StandardCharsets.UTF_8), BUFFER_SIZE);
+            ByteArrayOutputStream data = new ByteArrayOutputStream();
 
-            try (XmlExporter xmlExporter = new XmlExporter()) {
+            try (OutputStreamWriter osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
+                 BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE);
+                 XmlExporter xmlExporter = new XmlExporter()) {
                 xmlExporter.doStyles(out, mProgressListener);
             }
-            out.close();
+
             putBooklistStyles(data.toByteArray());
             mProgressListener.onProgressStep(1, null);
         }

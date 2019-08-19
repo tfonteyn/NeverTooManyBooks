@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -169,14 +170,13 @@ public final class UniqueId {
     public static final String BKEY_ID_LIST = "idList";
 
     /**
-     * 3 uses.
-     * <ul>
+     * <ol>3 uses.
      * <li>Indicate if we 'have' a thumbnail (in which case {@link StorageUtils#getTempCoverFile()}
      * will point to that image.</li>
      * <li>Flag to indicate we 'want' a thumbnail when downloading book information
      * from search sites.</li>
      * <li>User Visibility flag</li>
-     * </ul>
+     * </ol>
      * <br>type: {@code boolean}
      */
     public static final String BKEY_IMAGE = "thumbnail";
@@ -210,13 +210,6 @@ public final class UniqueId {
      * setResult
      */
     public static final String BKEY_EXPORT_RESULT = "exportResult";
-
-    /**
-     * {@link ExportOptions} or {@link ImportOptions}.
-     * <p>
-     * <br>type: {@code Parcel}
-     */
-    public static final String BKEY_IMPORT_EXPORT_OPTIONS = "importExportSettings";
 
     /**
      * Indicate the called activity made global changes.

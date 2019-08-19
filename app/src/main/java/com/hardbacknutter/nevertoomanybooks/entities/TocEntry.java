@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,22 +38,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.utils.IllegalTypeException;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * Class to represent a single title within an TOC(Anthology).
  * <p>
  * <b>Note:</b>
  * these are always insert/update'd ONLY when a book is insert/update'd
- * Hence writes are always a List<TocEntry> in one go. This circumvents the 'position' column
- * as the update will simply insert in-order and auto increment position.
+ * Hence writes are always a {@code List<TocEntry>} in one go.
+ * This circumvents the 'position' column as the update will simply insert in-order
+ * and auto increment the position.
  * Retrieving by bookId is always done ordered by position.
  */
 public class TocEntry
@@ -71,24 +69,7 @@ public class TocEntry
                     return new TocEntry[size];
                 }
             };
-    /** String encoding use. */
-    private static final char FIELD_SEPARATOR = '*';
 
-    /**
-     * Find the publication year in a string like "some title (1978-04-22)".
-     * <p>
-     * The pattern finds (1987), (1978-04) or (1987-04-22)
-     * Result is found in group 1.
-     * <p>
-     * Used by:
-     * - ISFDB import of anthology titles
-     * - export/import
-     */
-    private static final Pattern DATE_PATTERN = Pattern.compile("\\("
-                                                                + "([1|2]\\d\\d\\d"
-                                                                + "|[1|2]\\d\\d\\d-\\d\\d"
-                                                                + "|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)"
-                                                                + "\\)");
     private long mId;
     @NonNull
     private Author mAuthor;
@@ -100,6 +81,8 @@ public class TocEntry
     private Type mType;
     /** in-memory use only. Number of books this TocEntry appears in. */
     private int mBookCount;
+    /** cached locale. */
+    private Locale mLocale;
 
     /**
      * Constructor.
@@ -179,42 +162,6 @@ public class TocEntry
         }
 
         return false;
-    }
-
-    /**
-     * Constructor that will attempt to parse a single string into an TocEntry.
-     * <br>The date *must* match a patter of a (partial) SQL date string:
-     * <ul>
-     * <li>(YYYY)</li>
-     * <li>(YYYY-MM)</li>
-     * <li>(YYYY-MM-DD)</li>
-     * <li>(YYYY-DD-MM) might work depending on the user's locale. Not tested.</li>
-     * </ul>
-     * <br>V82 had no dates: Giants In The Sky * Blish, James
-     * <br>V200 accepts:
-     * <ul>
-     * <li>Giants In The Sky (1952) * Blish, James</li>
-     * <li>Giants In The Sky (1952-03) * Blish, James</li>
-     * <li>Giants In The Sky (1952-03-22) * Blish, James</li>
-     * </ul>
-     */
-    @NonNull
-    public static TocEntry fromString(@NonNull final String encodedString) {
-
-        List<String> list = new StringList<String>()
-                                    .decode(encodedString, false, FIELD_SEPARATOR);
-
-        Author author = Author.fromString(list.get(1));
-        String title = list.get(0);
-
-        Matcher matcher = TocEntry.DATE_PATTERN.matcher(title);
-        if (matcher.find()) {
-            // strip out the found pattern (including the brackets)
-            title = title.replace(matcher.group(0), "").trim();
-            return new TocEntry(author, title, matcher.group(1));
-        } else {
-            return new TocEntry(author, title, "");
-        }
     }
 
     /**
@@ -320,7 +267,10 @@ public class TocEntry
     @NonNull
     @Override
     public Locale getLocale() {
-        return LocaleUtils.getPreferredLocale();
+        if (mLocale == null) {
+            mLocale = LocaleUtils.getPreferredLocale();
+        }
+        return mLocale;
     }
 
     @Override
@@ -334,30 +284,8 @@ public class TocEntry
     }
 
     /**
-     * Support for encoding to a text file.
-     *
-     * @return the object encoded as a String.
-     * <p>
-     * If the year is known:
-     * "Giants In The Sky (1952) * Blish, James"
-     * else:
-     * "Giants In The Sky * Blish, James"
-     */
-    public String stringEncoded() {
-        String yearStr;
-        if (!mFirstPublicationDate.isEmpty()) {
-            // start with a space !
-            yearStr = " (" + mFirstPublicationDate + ')';
-        } else {
-            yearStr = "";
-        }
-        return StringList.escapeListItem(mTitle, FIELD_SEPARATOR, '(') + yearStr
-               + ' ' + FIELD_SEPARATOR + ' '
-               + mAuthor.stringEncoded();
-    }
-
-    /**
      * Each TocEntry is defined exactly by a unique ID.
+     * I.o.w. each combination of Title + Author (id) and publication date is unique.
      */
     @Override
     @SuppressWarnings("SameReturnValue")
@@ -365,13 +293,18 @@ public class TocEntry
         return true;
     }
 
+    /**
+     * Equality: <strong>id, Author(id) and Title</strong>.
+     *
+     * @return hash
+     */
     @Override
     public int hashCode() {
         return Objects.hash(mId, mAuthor, mTitle);
     }
 
     /**
-     * Equality.
+     * Equality: <strong>id, Author(id) and Title</strong>.
      * <p>
      * <li>it's the same Object</li>
      * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
@@ -392,10 +325,8 @@ public class TocEntry
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
-        // one or both are 'new' or their ID's are the same.
         return Objects.equals(mAuthor, that.mAuthor)
-               && Objects.equals(mTitle, that.mTitle)
-               && Objects.equals(mFirstPublicationDate, that.mFirstPublicationDate);
+               && Objects.equals(mTitle, that.mTitle);
 
     }
 
@@ -408,6 +339,7 @@ public class TocEntry
                + ", mTitle=`" + mTitle + '`'
                + ", mFirstPublicationDate=`" + mFirstPublicationDate + '`'
                + ", mType=`" + mType + '`'
+               + ", mLocale=" + mLocale
                + ", mBookCount=`" + mBookCount + '`'
                + '}';
     }
@@ -433,7 +365,7 @@ public class TocEntry
                 case TYPE_BOOK:
                     return Book;
                 default:
-                    throw new IllegalTypeException("c=" + c);
+                    throw new IllegalStateException("c=" + c);
             }
         }
 
@@ -491,7 +423,9 @@ public class TocEntry
         public static final int MULTIPLE_AUTHORS = 1 << 1;
 
         /**
-         * @return the int representation as stored in the database.
+         * Get the int representation as stored in the database.
+         *
+         * @return bitmask
          */
         public int getBitmask() {
             switch (this) {
@@ -529,7 +463,7 @@ public class TocEntry
                     return multipleAuthorsCollection;
 
                 default:
-                    throw new IllegalTypeException(String.valueOf(bitmask));
+                    throw new IllegalStateException(String.valueOf(bitmask));
             }
         }
     }

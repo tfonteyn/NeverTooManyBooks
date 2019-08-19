@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.baseactivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -62,8 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Base class for all (most?) Activity's.
  */
 public abstract class BaseActivity
-        extends AppCompatActivity
-        implements SharedPreferences.OnSharedPreferenceChangeListener {
+        extends AppCompatActivity {
 
     @Nullable
     FloatingActionButton mFloatingActionButton;
@@ -215,11 +213,8 @@ public abstract class BaseActivity
                     Logger.debug(this, "BaseActivity.onActivityResult",
                                  "REQ_NAV_PANEL_SETTINGS");
                 }
-                //noinspection SwitchStatementWithTooFewBranches
-                switch (resultCode) {
-                    case UniqueId.ACTIVITY_RESULT_RECREATE_NEEDED:
-                        App.setNeedsRecreating();
-                        break;
+                if (resultCode == UniqueId.ACTIVITY_RESULT_RECREATE_NEEDED) {
+                    App.setNeedsRecreating();
                 }
                 return;
 
@@ -303,37 +298,6 @@ public abstract class BaseActivity
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
                 Logger.debugExit(this, "BaseActivity.onResume", "Resuming");
             }
-        }
-    }
-
-    /**
-     * Apply preference changes.
-     */
-    @Override
-    @CallSuper
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
-                                          @NonNull final String key) {
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(this, "BaseActivity.onSharedPreferenceChanged",
-                              "key=" + key);
-        }
-
-        // Trigger a recreate of this activity, if the setting has changed.
-        switch (key) {
-            case Prefs.pk_ui_theme:
-                if (App.isThemeChanged(this)) {
-                    recreate();
-                    App.setIsRecreating();
-                }
-                break;
-
-            case Prefs.pk_ui_language:
-                if (LocaleUtils.isChanged(this)) {
-                    recreate();
-                    App.setIsRecreating();
-                }
-                break;
         }
     }
 }

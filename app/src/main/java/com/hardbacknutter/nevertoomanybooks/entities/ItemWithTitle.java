@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,15 +32,29 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public interface ItemWithTitle {
+
+    /**
+     * Cache for the pv_reformat_titles_prefixes strings.
+     * <p>
+     * Design-wise this is not very clean. We're in an interface after all.
+     * Setting the VisibleForTesting is also bogus, but it's better then leaving it completely
+     * public. At least this way Studio will warn us about illegal usage.
+     * Suggestions welcome.
+     */
+    @VisibleForTesting
+    Map<Locale, String> mLSTitlePrefix = new HashMap<>();
 
     /**
      * Get the locale of the actual item; e.g. a book written in Spanish should
@@ -63,13 +78,18 @@ public interface ItemWithTitle {
      * @return formatted title
      */
     default String preprocessTitle(@NonNull final Context userContext) {
+        // Getting the string from the resources is very slow.
+        // So we cache it for every Locale.
+        String orderPatter = mLSTitlePrefix.get(getLocale());
+        if (orderPatter == null) {
+            // the resources bundle in the language that the book (item) is written in.
+            Resources localeResources = LocaleUtils.getLocalizedResources(userContext, getLocale());
+            orderPatter = localeResources.getString(R.string.pv_reformat_titles_prefixes);
+            mLSTitlePrefix.put(getLocale(), orderPatter);
+        }
+
         StringBuilder newTitle = new StringBuilder();
         String[] titleWords = getTitle().split(" ");
-
-        // the resources bundle in the language that the book (item) is written in.
-        Resources localeResources = LocaleUtils.getLocalizedResources(userContext, getLocale());
-        String orderPatter = localeResources.getString(R.string.pv_reformat_titles_prefixes);
-
         try {
             if (titleWords[0].matches(orderPatter)) {
                 for (int i = 1; i < titleWords.length; i++) {

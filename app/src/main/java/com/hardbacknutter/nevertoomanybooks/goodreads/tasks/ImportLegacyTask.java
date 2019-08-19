@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.MappedCursorRow;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -201,6 +201,11 @@ class ImportLegacyTask
     /**
      * Repeatedly request review pages until we are done.
      *
+     * @param context    Current context
+     * @param userLocale the user Locale
+     *
+     * @return {@code true} if all went well
+     *
      * @throws CredentialsException with GoodReads
      */
     private boolean processReviews(@NonNull final Context context,
@@ -288,13 +293,16 @@ class ImportLegacyTask
             db.analyze();
         } catch (@NonNull final RuntimeException e) {
             // Do nothing. Not a critical step.
-            Logger.warn(this, "processReviews", e);
+            Logger.info(this, "processReviews", e);
         }
         return true;
     }
 
     /**
      * Process one review (book).
+     *
+     * @param context    Current context
+     * @param userLocale the user Locale
      */
     private void processReview(@NonNull final Context context,
                                @NonNull final Locale userLocale,
@@ -322,13 +330,12 @@ class ImportLegacyTask
 
             if (found) {
                 // If found, update all related books
-                MappedCursorRow cursorRow = cursor.getCursorRow();
                 do {
                     // Check for abort
                     if (isAborting()) {
                         break;
                     }
-                    updateBook(context, userLocale, db, cursorRow, review);
+                    updateBook(context, userLocale, db, cursor, review);
                 } while (cursor.moveToNext());
             } else {
                 // Create the book
@@ -386,14 +393,17 @@ class ImportLegacyTask
 
     /**
      * Update the book using the GR data.
+     *
+     * @param context    Current context
+     * @param userLocale the user Locale
      */
     private void updateBook(@NonNull final Context context,
                             @NonNull final Locale userLocale,
                             @NonNull final DAO db,
-                            @NonNull final MappedCursorRow bookCursorRow,
+                            @NonNull final BookCursor bookCursor,
                             @NonNull final Bundle review) {
         // Get last date book was sent to GR (may be null)
-        String lastGrSync = bookCursorRow.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE);
+        String lastGrSync = bookCursor.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE);
         // If the review has an 'updated' date, then see if we can compare to book
         if (review.containsKey(ListReviewsApiHandler.ReviewField.UPDATED)) {
             String lastUpdate = review.getString(ReviewField.UPDATED);
@@ -403,15 +413,19 @@ class ImportLegacyTask
                 return;
             }
         }
+
         // We build a new book bundle each time since it will build on the existing
         // data for the given book (taken from the cursor), not just replace it.
-        Book book = new Book(buildBundle(db, bookCursorRow, review));
-        db.updateBook(context, userLocale, bookCursorRow.getLong(DBDefinitions.KEY_PK_ID), book,
+        Book book = new Book(buildBundle(db, bookCursor, review));
+        db.updateBook(context, userLocale, bookCursor.getLong(DBDefinitions.KEY_PK_ID), book,
                       DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
     }
 
     /**
      * Create a new book.
+     *
+     * @param context    Current context
+     * @param userLocale the user Locale
      */
     private void insertBook(@NonNull final Context context,
                             @NonNull final Locale userLocale,
@@ -439,7 +453,7 @@ class ImportLegacyTask
      */
     @NonNull
     private Bundle buildBundle(@NonNull final DAO db,
-                               @Nullable final MappedCursorRow bookCursorRow,
+                               @Nullable final BookCursor bookCursorRow,
                                @NonNull final Bundle review) {
 
         Bundle bookData = new Bundle();
@@ -782,7 +796,6 @@ class ImportLegacyTask
     @NonNull
     @CallSuper
     public String getDescription(@NonNull final Context context) {
-
         String base = super.getDescription(context);
         if (mUpdatesAfter == null) {
             return base + " (" + context.getString(R.string.x_of_y, mPosition, mTotalBooks) + ')';
@@ -794,6 +807,7 @@ class ImportLegacyTask
     /**
      * Custom serialization support. The signature of this method should never be changed.
      *
+     * @throws IOException on failure
      * @see Serializable
      */
     private void writeObject(@NonNull final ObjectOutputStream out)
@@ -805,6 +819,8 @@ class ImportLegacyTask
     /**
      * Custom serialization support. The signature of this method should never be changed.
      *
+     * @throws IOException            on failure
+     * @throws ClassNotFoundException on failure
      * @see Serializable
      */
     private void readObject(@NonNull final ObjectInputStream is)

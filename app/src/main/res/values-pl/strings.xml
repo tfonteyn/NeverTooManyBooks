@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes „…”  - Regex to find wrong ones: (“|‘|’|«|») -->
 <resources>
@@ -16,12 +44,10 @@
     <string name="X_lbl_select_fields_to_update">Wybierz pola do aktualizacji</string>
     <string name="X_menu_delete_series">Usuń serię…</string>
     <string name="X_menu_delete_toc_entry">Usuń pozycję z antologii</string>
-    <string name="X_menu_edit_author">Edytuj autora…</string>
-    <string name="X_menu_edit_series">Edytuj serię…</string>
+    <string name="title_edit_author">Edytuj autora</string>
+    <string name="title_edit_series">Edytuj serię</string>
     <string name="X_menu_search_books">Przeszukaj książki</string>
     <string name="X_results_found">Znaleziono</string>
-    <string name="X_search_title">Katalog książek: Wynik wyszukiwania</string>
-    <string name="X_select_bookshelves">Wybierz półki na książki</string>
     <string name="X_size">Rozmiar</string>
     <string name="X_tip_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
     <string name="X_unsaved_edits_title">Niezapisane zmiany</string>
@@ -412,7 +438,7 @@
     <string name="pt_bob_sort_author_name">Sortowanie nazw autorów</string>
     <string name="pt_bob_text_size">Rozmiar tekstu listy książek</string>
     <string name="pt_bob_thumbnails_cache_resized">Zmienione obrazy są buforowane</string>
-    <string name="pt_bob_thumbnails_show">Pokaż miniaturki</string>
+    <string name="pt_bob_show_thumbnails">Pokaż miniaturki</string>
     <string name="pt_collect_series_info_from_toc">Zbierz informacje o serii z spisu treści</string>
     <string name="pt_cover_scale_factor">Rozmiar obrazu na listach</string>
     <string name="pt_reformat_titles_on_insert">Podczas dodawania</string>
@@ -432,8 +458,8 @@
     <string name="pt_ui_theme">Motyw</string>
     <string name="pv_bob_books_under_multiple_each_1s">Pod każdym %1$s</string>
     <string name="pv_bob_books_under_multiple_primary_1s_only">Pod głównym tylko %1$s</string>
-    <string name="pv_bob_format_author_name_family_first">Najpierw imię rodziny, np. „Lem, Stanisław”</string>
-    <string name="pv_bob_format_author_name_given_first">Pierwsze imię, np. „Stanisław Lem”</string>
+    <string name="pv_bob_author_name_family_first">Najpierw imię rodziny, np. „Lem, Stanisław”</string>
+    <string name="pv_bob_author_name_given_first">Pierwsze imię, np. „Stanisław Lem”</string>
     <string name="rebuild_fts">Odbuduj FTS (eksperymentalne!)</string>
     <string name="retry">spróbować\\nponownie</string>
     <string name="style_builtin_acquired_date">Nabyty</string>

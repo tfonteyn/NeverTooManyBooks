@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,10 +63,11 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.BookRowInfo;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistMappedCursorRow;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BooklistMappedCursorRow;
+import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -324,7 +326,6 @@ public class BooksOnBookshelf
             SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
                                               0, R.string.debug);
 
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_RUN_TEST, 0, R.string.debug_test);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, R.string.lbl_style);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, R.string.debug_history);
@@ -369,12 +370,6 @@ public class BooksOnBookshelf
             default:
                 if (BuildConfig.DEBUG  /* always */) {
                     switch (item.getItemId()) {
-                        case R.id.MENU_DEBUG_RUN_TEST:
-                            // manually swapped for whatever test I want to run...
-                            // crude? yup! nasty? absolutely!
-                            // doSomething();
-                            return true;
-
                         case R.id.MENU_DEBUG_PREFS:
                             Prefs.dumpPreferences(this, null);
                             return true;
@@ -395,9 +390,12 @@ public class BooksOnBookshelf
                             return true;
 
                         case R.id.MENU_EXPORT_DATABASE:
-                            StorageUtils.exportDatabaseFiles();
+                            StorageUtils.exportDatabaseFiles(this);
                             UserMessage.show(mListView, R.string.progress_end_backup_success);
                             return true;
+
+                        default:
+                            break;
                     }
                 }
 
@@ -422,10 +420,9 @@ public class BooksOnBookshelf
         int layoutPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         // It is possible that the list will be empty, if so, ignore
         if (layoutPosition != RecyclerView.NO_POSITION) {
-            BooklistAdapter.RowViewHolder holder = (BooklistAdapter.RowViewHolder)
-                                                           mListView
-                                                                   .findViewHolderForLayoutPosition(
-                                                                           layoutPosition);
+            BooklistAdapter.RowViewHolder holder =
+                    (BooklistAdapter.RowViewHolder)
+                            mListView.findViewHolderForLayoutPosition(layoutPosition);
 
             @SuppressWarnings("ConstantConditions")
             int oldAbsPos = holder.absolutePosition;
@@ -433,9 +430,9 @@ public class BooksOnBookshelf
             savePosition();
 
             // get the builder from the current cursor.
-            @SuppressWarnings("ConstantConditions")
-            BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
+            BooklistBuilder booklistBuilder = mModel.getBuilder();
             // do the work, and re-position.
+            //noinspection ConstantConditions
             booklistBuilder.expandAll(expand);
             savePosition(booklistBuilder.getPosition(oldAbsPos));
 
@@ -487,7 +484,7 @@ public class BooksOnBookshelf
                     default:
                         // no changes were made, we'l redisplay the list as-is.
                         if (resultCode != Activity.RESULT_CANCELED) {
-                            Logger.warnWithStackTrace(this, "unknown resultCode=" + resultCode);
+                            Logger.warnWithStackTrace(this, "resultCode=" + resultCode);
                         }
                         break;
                 }
@@ -557,6 +554,15 @@ public class BooksOnBookshelf
                                 mModel.setFullRebuild(true);
                             }
 
+                            if (App.isThemeChanged(this)
+                                || LocaleUtils.isChanged(this)) {
+                                recreate();
+                                App.setIsRecreating();
+                            }
+                        }
+                        if ((options & ImportOptions.BOOK_LIST_STYLES) != 0) {
+                            // Assume style changes make a rebuild needed.
+                            mModel.setFullRebuild(true);
                         }
                     }
                     //else if ((data != null) && data.hasExtra(UniqueId.BKEY_EXPORT_RESULT)) {
@@ -596,7 +602,7 @@ public class BooksOnBookshelf
 
                     default:
                         if (resultCode != Activity.RESULT_CANCELED) {
-                            Logger.warnWithStackTrace(this, "unknown resultCode=" + resultCode);
+                            Logger.warnWithStackTrace(this, "resultCode=" + resultCode);
                         }
                         break;
                 }
@@ -662,8 +668,7 @@ public class BooksOnBookshelf
                 Logger.debug(this, "onResume", "reusing existing list");
             }
             //noinspection ConstantConditions
-            BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
-            displayList(booklistBuilder.getNewListCursor(), null);
+            displayList(mModel.getBuilder().getNewListCursor(), null);
 
         } else {
             // rebuild for other reason... this should not be reached anyhow.
@@ -793,8 +798,7 @@ public class BooksOnBookshelf
 
     /**
      * Display the passed cursor in the ListView.
-     * Called from two places:
-     * <ul>
+     * <ul>Called from two places:
      * <li>After the builder is done.</li>
      * <li>When the user clicked expand/collapse.</li>
      * </ul>
@@ -816,7 +820,7 @@ public class BooksOnBookshelf
         mProgressBar.setVisibility(View.GONE);
 
         // Save the old list so we can close it later
-        BooklistPseudoCursor oldList = mModel.getListCursor();
+        final BooklistPseudoCursor oldCursor = mModel.getListCursor();
 
         // and set the new list
         mModel.setListCursor(newListCursor);
@@ -864,11 +868,12 @@ public class BooksOnBookshelf
         mListView.addOnScrollListener(mOnScrollListener);
 
         // all set, we can close the old list
-        if (oldList != null) {
-            if (!mModel.getListCursor().getBuilder().equals(oldList.getBuilder())) {
-                oldList.getBuilder().close();
+        if (oldCursor != null) {
+            //noinspection ConstantConditions
+            if (!mModel.getBuilder().equals(oldCursor.getBuilder())) {
+                oldCursor.getBuilder().close();
             }
-            oldList.close();
+            oldCursor.close();
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
@@ -905,9 +910,9 @@ public class BooksOnBookshelf
      */
     private void fixPositionWhenDrawn(@NonNull final ArrayList<BookRowInfo> targetRows) {
         // Find the actual extend of the current view and get centre.
-        int first = mLayoutManager.findFirstVisibleItemPosition();
-        int last = mLayoutManager.findLastVisibleItemPosition();
-        int centre = (last + first) / 2;
+        final int first = mLayoutManager.findFirstVisibleItemPosition();
+        final int last = mLayoutManager.findLastVisibleItemPosition();
+        final int centre = (last + first) / 2;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
             Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
                          " New List: (" + first + ", " + last + ")<-" + centre);
@@ -972,29 +977,29 @@ public class BooksOnBookshelf
     private void onItemClick(@NonNull final View view) {
         int position = (int) view.getTag(R.id.TAG_POSITION);
 
-        BooklistPseudoCursor listCursor = mModel.getListCursor();
+        final BooklistPseudoCursor cursor = mModel.getListCursor();
         //noinspection ConstantConditions
-        listCursor.moveToPosition(position);
-        BooklistMappedCursorRow row = listCursor.getCursorRow();
+        cursor.moveToPosition(position);
+
+        CursorMapper mapper = cursor.getCursorMapper();
 
         //noinspection SwitchStatementWithTooFewBranches
-        switch (row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)) {
+        switch (mapper.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)) {
             // If it's a book, view or edit it.
             case BooklistGroup.RowKind.BOOK:
-                long bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
+                final long bookId = mapper.getLong(DBDefinitions.KEY_FK_BOOK);
                 if (mModel.isReadOnly(view.getContext())) {
-                    String listTableName = listCursor.getBuilder().createFlattenedBooklist();
-                    Intent intent = new Intent(this, BookDetailsActivity.class)
-                                            .putExtra(DBDefinitions.KEY_PK_ID, bookId)
-                                            .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_TABLE,
-                                                      listTableName)
-                                            .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_POSITION,
-                                                      position);
+                    final String listTableName = cursor.getBuilder().createFlattenedBooklist();
+                    final Intent intent =
+                            new Intent(this, BookDetailsActivity.class)
+                                    .putExtra(DBDefinitions.KEY_PK_ID, bookId)
+                                    .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_TABLE, listTableName)
+                                    .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_POSITION, position);
                     startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
 
                 } else {
-                    Intent intent = new Intent(this, EditBookActivity.class)
-                                            .putExtra(DBDefinitions.KEY_PK_ID, bookId);
+                    final Intent intent = new Intent(this, EditBookActivity.class)
+                                                  .putExtra(DBDefinitions.KEY_PK_ID, bookId);
                     startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 }
                 break;
@@ -1006,9 +1011,9 @@ public class BooksOnBookshelf
                 // ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542
                 // we don't prohibit other levels any longer, but we don't store/recover them.
 //                if (row.getRowLevel() == 1) {
-                listCursor.getBuilder()
-                          .toggleExpandNode(row.getInt(DBDefinitions.KEY_BL_ABSOLUTE_POSITION));
-                listCursor.requery();
+                cursor.getBuilder()
+                      .toggleExpandNode(mapper.getInt(DBDefinitions.KEY_BL_ABSOLUTE_POSITION));
+                cursor.requery();
                 mAdapter.notifyDataSetChanged();
 //                }
                 break;
@@ -1019,27 +1024,30 @@ public class BooksOnBookshelf
      * User long-clicked on a row. Bring up a context menu as appropriate.
      */
     private boolean onItemLongClick(@NonNull final View view) {
-        int position = (int) view.getTag(R.id.TAG_POSITION);
+        final int position = (int) view.getTag(R.id.TAG_POSITION);
 
-        final BooklistPseudoCursor listCursor = mModel.getListCursor();
+        final BooklistPseudoCursor cursor = mModel.getListCursor();
         //noinspection ConstantConditions
-        listCursor.moveToPosition(position);
+        cursor.moveToPosition(position);
 
-        BooklistMappedCursorRow row = listCursor.getCursorRow();
-        Menu menu = MenuPicker.createMenu(this);
+        final BooklistMappedCursorRow row = cursor.getCursorRow();
+        final CursorMapper mapper = row.getCursorMapper();
+
+        final Menu menu = MenuPicker.createMenu(this);
         // build/check the menu for this row
-        if (onCreateContextMenu(menu, row)) {
+        if (onCreateContextMenu(menu, mapper)) {
             // we have a menu to show
             String title;
-            if (row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND) == BooklistGroup.RowKind.BOOK) {
-                title = row.getString(DBDefinitions.KEY_TITLE);
+
+            if (mapper.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND) == BooklistGroup.RowKind.BOOK) {
+                title = mapper.getString(DBDefinitions.KEY_TITLE);
             } else {
-                title = row.getLevelText(this, row.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
+                title = row.getLevelText(this, mapper.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
             }
             // bring up the context menu
             new MenuPicker<>(getLayoutInflater(), title, menu, position, (menuItem, pos) -> {
-                listCursor.moveToPosition(pos);
-                return onContextItemSelected(menuItem, listCursor.getCursorRow());
+                cursor.moveToPosition(pos);
+                return onContextItemSelected(menuItem, cursor.getCursorMapper());
             }).show();
         }
         return true;
@@ -1054,10 +1062,10 @@ public class BooksOnBookshelf
      * {@code false} if not OR if the only menus would be the 'search Amazon' set.
      */
     private boolean onCreateContextMenu(@NonNull final Menu /* in/out */ menu,
-                                        @NonNull final BooklistMappedCursorRow row) {
+                                        @NonNull final CursorMapper row) {
         menu.clear();
 
-        int rowKind = row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND);
+        final int rowKind = row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND);
         switch (rowKind) {
             case BooklistGroup.RowKind.BOOK:
                 if (row.getInt(DBDefinitions.KEY_READ) != 0) {
@@ -1205,7 +1213,7 @@ public class BooksOnBookshelf
                 break;
 
             default:
-                Logger.warnWithStackTrace(this, "Unexpected rowKind=" + rowKind);
+                Logger.warnWithStackTrace(this, "rowKind=" + rowKind);
                 break;
         }
 
@@ -1216,8 +1224,11 @@ public class BooksOnBookshelf
 
         // There is at least one other menu item.
         // Add Amazon menus if applicable.
-        boolean hasAuthor = row.hasAuthorId();
-        boolean hasSeries = row.hasSeriesId();
+        boolean hasAuthor = row.contains(DBDefinitions.KEY_FK_AUTHOR)
+                            && row.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
+        boolean hasSeries = row.contains(DBDefinitions.KEY_FK_SERIES)
+                            && row.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
+
         if (hasAuthor || hasSeries) {
             SubMenu subMenu = MenuHandler.addAmazonSearchSubMenu(menu);
             subMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
@@ -1237,7 +1248,7 @@ public class BooksOnBookshelf
      */
     @SuppressWarnings("UnusedReturnValue")
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          @NonNull final BooklistMappedCursorRow row) {
+                                          @NonNull final CursorMapper row) {
 
         FragmentManager fm = getSupportFragmentManager();
 
@@ -1462,8 +1473,10 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
             case R.id.SUBMENU_AMAZON_SEARCH:
                 // after the user selects the submenu, we make individual items visible/hidden.
-                boolean hasAuthor = row.hasAuthorId();
-                boolean hasSeries = row.hasSeriesId();
+                boolean hasAuthor = row.contains(DBDefinitions.KEY_FK_AUTHOR)
+                                    && row.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
+                boolean hasSeries = row.contains(DBDefinitions.KEY_FK_SERIES)
+                                    && row.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
 
                 SubMenu amazonSubMenu = menuItem.getSubMenu();
                 amazonSubMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
@@ -1625,7 +1638,7 @@ public class BooksOnBookshelf
             // 1. the cursor provides the data for this level, and
             // 2. the style defined the level.
             //noinspection ConstantConditions
-            if (mModel.getListCursor().getBuilder().levels() > level
+            if (mModel.getBuilder().levels() > level
                 && style.hasHeaderForLevel(level)) {
                 mHeaderTextView[index].setVisibility(View.VISIBLE);
                 mHeaderTextView[index].setText("");
@@ -1649,16 +1662,20 @@ public class BooksOnBookshelf
             mModel.setLastTopRow(0);
         }
 
-        // if (mModel.getCurrentStyle().hasHeaderForLevel(1)) {
         // use visibility which was set in {@link #setHeaderTextVisibility}
-        if (mHeaderTextView[0].getVisibility() == View.VISIBLE) {
-            BooklistPseudoCursor listCursor = mModel.getListCursor();
+        if (mHeaderTextView[0].getVisibility() == View.VISIBLE
+            || mHeaderTextView[1].getVisibility() == View.VISIBLE) {
+
+            BooklistPseudoCursor cursor = mModel.getListCursor();
             //noinspection ConstantConditions
-            if (listCursor.moveToPosition(mModel.getLastTopRow())) {
-                BooklistMappedCursorRow row = listCursor.getCursorRow();
-                mHeaderTextView[0].setText(row.getLevelText(this, 1));
-                if (mHeaderTextView[1].getVisibility() == View.VISIBLE) {
-                    mHeaderTextView[1].setText(row.getLevelText(this, 2));
+            if (cursor.moveToPosition(mModel.getLastTopRow())) {
+                final BooklistMappedCursorRow row = cursor.getCursorRow();
+
+                String[] lines = row.getLevelText(this);
+                for (int i = 0; i < lines.length; i++) {
+                    if (mHeaderTextView[i].getVisibility() == View.VISIBLE) {
+                        mHeaderTextView[i].setText(row.getLevelText(this, i + 1));
+                    }
                 }
             }
         }

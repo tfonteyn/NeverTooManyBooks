@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +59,7 @@ public class ISBN {
 
     /**
      * <a href="https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside">
-     *     https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside</a>
+     * https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside</a>
      * <p>
      * The extended barcode combined with the UPC vendor prefix can be used to
      * reconstruct the ISBN.
@@ -326,6 +327,8 @@ public class ISBN {
      * use the internal stored digits to construct a valid ISBN-10.
      *
      * @return a valid ISBN-10
+     *
+     * @throws NumberFormatException if conversion fails
      */
     @NonNull
     private String to10()
@@ -354,6 +357,8 @@ public class ISBN {
      * use the internal stored digits to construct a valid ISBN-13.
      *
      * @return a valid ISBN-13
+     *
+     * @throws NumberFormatException if conversion fails
      */
     @NonNull
     private String to13()
@@ -389,6 +394,8 @@ public class ISBN {
      *
      * @return 0 for valid, or the (10 - c) value,
      * where (10 - getChecksum()) IS the checksum digit
+     *
+     * @throws NumberFormatException if the digits list has an incorrect length
      */
     private int getChecksum(@NonNull final List<Integer> digits)
             throws NumberFormatException {
@@ -439,6 +446,8 @@ public class ISBN {
      * Allows and ignore '-' characters.
      *
      * @return list of digits
+     *
+     * @throws NumberFormatException if conversion fails
      */
     @NonNull
     private List<Integer> isbnToDigits(@NonNull final String isbn)
@@ -516,25 +525,25 @@ public class ISBN {
     }
 
 
-//    public boolean equals(@NonNull final ISBN cmp) {
+//    public boolean equals(@NonNull final ISBN that) {
 //
 //        // If either is invalid, require they match exactly
-//        if (!isValid() || !cmp.isValid()) {
-//            return mDigits.size() == cmp.mDigits.size()
-//                    && digitsMatch(mDigits.size(), 0, cmp, 0);
+//        if (!isValid() || !that.isValid()) {
+//            return mDigits.size() == that.mDigits.size()
+//                    && digitsMatch(mDigits.size(), 0, that, 0);
 //        }
 //
 //        // same length ? simple check
-//        if (mDigits.size() == cmp.mDigits.size()) {
-//            return digitsMatch(mDigits.size(), 0, cmp, 0);
+//        if (mDigits.size() == that.mDigits.size()) {
+//            return digitsMatch(mDigits.size(), 0, that, 0);
 //        }
 //
 //        // Both are valid ISBN codes and we know the lengths are either 10 or 13
 //        // when we get here. So ... compare the significant digits.
 //        if (mDigits.size() == 10) {
-//            return digitsMatch(9, 0, cmp, 3);
+//            return digitsMatch(9, 0, that, 3);
 //        } else {
-//            return digitsMatch(9, 3, cmp, 0);
+//            return digitsMatch(9, 3, that, 0);
 //        }
 //    }
 
@@ -559,14 +568,14 @@ public class ISBN {
      * TODO: SIMPLIFY ISBN equals...
      */
     @Override
-    public boolean equals(@Nullable final Object o) {
-        if (this == o) {
+    public boolean equals(@Nullable final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        ISBN cmp = (ISBN) o;
+        ISBN cmp = (ISBN) obj;
 
         // If either is invalid, no match
         if (!isValid() || !cmp.isValid()) {

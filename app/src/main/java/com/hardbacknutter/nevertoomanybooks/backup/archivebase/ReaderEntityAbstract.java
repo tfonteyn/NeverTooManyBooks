@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils.Deserializa
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
- * Basic implementation of format-agnostic ReaderEntity methods using
- * only a limited set of methods from the base interface.
+ * Basic implementation of the format-agnostic {@link ReaderEntity} methods.
  */
 public abstract class ReaderEntityAbstract
         implements ReaderEntity {
@@ -47,31 +47,36 @@ public abstract class ReaderEntityAbstract
     /** Buffer size for buffered streams. */
     private static final int BUFFER_SIZE = 32768;
 
+    /** Entity type. */
     @NonNull
-    private final BackupEntityType mType;
+    private final Type mType;
 
-    protected ReaderEntityAbstract(@NonNull final BackupEntityType type) {
+    /**
+     * Constructor.
+     *
+     * @param type Entity type
+     */
+    protected ReaderEntityAbstract(@NonNull final Type type) {
         mType = type;
     }
 
-    /** Get the type of this entity. */
     @NonNull
     @Override
-    public BackupEntityType getType() {
+    public Type getType() {
         return mType;
     }
 
     @Override
-    public void saveToDirectory(@NonNull final File dir)
+    public void saveToDirectory(@NonNull final File name)
             throws IOException {
-        if (!dir.isDirectory()) {
+        if (!name.isDirectory()) {
             throw new IllegalArgumentException("Not a directory");
         }
 
         // Build the new File and save
-        File destFile = new File(dir.getAbsoluteFile() + File.separator + getName());
+        File destFile = new File(name.getAbsoluteFile() + File.separator + getName());
         try {
-            StorageUtils.copyFile(getStream(), BUFFER_SIZE, destFile);
+            StorageUtils.copyFile(getInputStream(), BUFFER_SIZE, destFile);
         } finally {
             if (destFile.exists()) {
                 //noinspection ResultOfMethodCallIgnored
@@ -90,7 +95,7 @@ public abstract class ReaderEntityAbstract
         final byte[] buffer = new byte[BUFFER_SIZE];
 
         while (true) {
-            int cnt = getStream().read(buffer);
+            int cnt = getInputStream().read(buffer);
             if (cnt <= 0) {
                 break;
             }

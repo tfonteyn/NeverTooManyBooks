@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -96,6 +124,12 @@
 
             <SwitchPreference
                 android:defaultValue="false"
+                android:key="BookList.Style.Show.Publication.Date"
+                android:title="@string/lbl_date_published"
+                />
+
+            <SwitchPreference
+                android:defaultValue="false"
                 android:key="BookList.Style.Show.ISBN"
                 android:title="@string/lbl_isbn"
                 />
@@ -118,6 +152,15 @@
                 android:title="@string/lbl_author"
                 />
         </PreferenceScreen>
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_people"
+            android:key="BookList.UseTaskFor.BookDetails"
+            android:summaryOff="@string/pt_bob_show_details_uses_task_off"
+            android:summaryOn="@string/pt_bob_show_details_uses_task_on"
+            android:title="@string/pt_bob_show_details_uses_task"
+            />
 
         <MultiSelectListPreference
             android:defaultValue="@array/empty_array"
@@ -151,7 +194,7 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_image"
             android:key="BookList.Style.Show.Thumbnails"
-            android:title="@string/pt_bob_thumbnails_show"
+            android:title="@string/pt_bob_show_thumbnails"
             />
 
         <!-- default BooklistStyle.SCALE_MEDIUM == 4 -->
@@ -175,8 +218,8 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_sort_by_alpha"
             android:key="BookList.Style.Sort.Author.GivenFirst"
-            android:summaryOff="@string/pv_bob_format_author_name_family_first"
-            android:summaryOn="@string/pv_bob_format_author_name_given_first"
+            android:summaryOff="@string/pv_bob_author_name_family_first"
+            android:summaryOn="@string/pv_bob_author_name_given_first"
             android:title="@string/pt_bob_sort_author_name"
             />
 

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,13 +41,12 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Class to manage storage/retrieval of a piece of data from a bundle.
- * <p>
- * DataManager, e.g. a Book.
- * Datum, describes a single piece of data.
- * rawData, where the actual values are stored using the 'key' from the Datum.
- * <p>
- * A Datum has:
  * <ul>
+ * <li>DataManager, e.g. a Book.</li>
+ * <li>Datum, describes a single piece of data.</li>
+ * <li>rawData, where the actual values are stored using the 'key' from the Datum.</li>
+ * </ul>
+ * <ul>A Datum has:
  * <li>key: the name/id of this Datum:
  * <ul>
  * <li>without DataAccessor: the key is used directly to access the 'rawData'</li>
@@ -439,9 +439,10 @@ public class Datum {
     }
 
     /**
-     * Get the ArrayList<Parcelable> object from the collection.
+     * Get the {@code ArrayList<Parcelable>} object from the collection.
      *
      * @param rawData Raw data Bundle
+     * @param <T>     the type of the list elements
      *
      * @return The list, can be empty but never {@code null}
      */
@@ -466,7 +467,8 @@ public class Datum {
      * Store the value in the rawData, or using Accessor as necessary.
      *
      * @param rawData Raw data Bundle
-     * @param value   The ArrayList<Parcelable> object to store
+     * @param value   The {@code ArrayList<Parcelable>} object to store
+     * @param <T>     the type of the list elements
      */
     public <T extends Parcelable> void putParcelableArrayList(@NonNull final Bundle rawData,
                                                               @NonNull final ArrayList<T> value) {

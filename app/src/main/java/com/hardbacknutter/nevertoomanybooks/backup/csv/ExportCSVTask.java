@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +41,7 @@ import java.io.OutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
-import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
-import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.backup.ProgressListenerBase;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -52,9 +52,9 @@ public class ExportCSVTask
         extends TaskBase<Integer> {
 
     @NonNull
-    private final Exporter mExporter;
+    private final CsvExporter mExporter;
     @NonNull
-    private final File tmpFile;
+    private final File mTmpFile;
 
     /**
      * Constructor.
@@ -68,9 +68,8 @@ public class ExportCSVTask
                          @NonNull final ExportOptions settings,
                          @NonNull final TaskListener<Integer> taskListener) {
         super(R.id.TASK_ID_CSV_EXPORT, taskListener);
+        mTmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
         mExporter = new CsvExporter(context, settings);
-
-        tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
     }
 
     @Override
@@ -81,31 +80,24 @@ public class ExportCSVTask
     }
 
     private void cleanup() {
-        StorageUtils.deleteFile(tmpFile);
+        StorageUtils.deleteFile(mTmpFile);
     }
 
     @Override
     @Nullable
     @WorkerThread
     protected Integer doInBackground(final Void... params) {
-        Thread.currentThread().setName("ExportCSVTask");
+        Thread.currentThread().setName("ExportTask");
 
-        try (OutputStream out = new FileOutputStream(tmpFile)) {
+        try (OutputStream output = new FileOutputStream(mTmpFile)) {
             // start the export
-            mExporter.doBooks(out, new ProgressListener() {
-
-                private int mMaxPosition;
-
-                @Override
-                public void setMax(final int maxPosition) {
-                    mMaxPosition = maxPosition;
-                }
+            int total = mExporter.doBooks(output, new ProgressListenerBase() {
 
                 @Override
                 public void onProgress(final int absPosition,
                                        @Nullable final Object message) {
                     Object[] values = {message};
-                    publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
+                    publishProgress(new TaskProgressMessage(mTaskId, getMax(),
                                                             absPosition, values));
                 }
 
@@ -118,14 +110,26 @@ public class ExportCSVTask
             if (isCancelled()) {
                 return null;
             }
-            // success
-            CsvExporter.renameFiles(tmpFile);
+
+            return total;
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
             Logger.error(this, e);
             mException = e;
             cleanup();
+            return null;
         }
-        return null;
+    }
+
+    @Override
+    protected void onPostExecute(@NonNull final Integer result) {
+        // success
+        if (result > 0) {
+            mExporter.onSuccess(mTmpFile);
+        } else {
+            cleanup();
+        }
+
+        super.onPostExecute(result);
     }
 }

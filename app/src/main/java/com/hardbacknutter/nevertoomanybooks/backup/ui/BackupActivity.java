@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +70,7 @@ public class BackupActivity
     private static final String TAG = "BackupActivity";
 
     private EditText mFilenameView;
+
     /** The ViewModel. */
     private ExportOptionsTaskModel mOptionsModel;
 
@@ -118,8 +120,9 @@ public class BackupActivity
         mFilenameView.setText(file.getName());
     }
 
-    private void onTaskFinishedMessage(final TaskListener
-                                                     .TaskFinishedMessage<ExportOptions> message) {
+    private void onTaskFinishedMessage(
+            final TaskListener.TaskFinishedMessage<ExportOptions> message) {
+
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
@@ -128,22 +131,19 @@ public class BackupActivity
         switch (message.taskId) {
             case R.id.TASK_ID_WRITE_TO_ARCHIVE:
                 if (message.success) {
+                    File file = mOptionsModel.getFile();
                     //noinspection ConstantConditions
                     String msg = getString(R.string.export_info_success_archive_details,
-                                           message.result.file.getParent(),
-                                           message.result.file.getName(),
-                                           StorageUtils.formatFileSize(this,
-                                                                       message.result.file
-                                                                               .length()));
+                                           file.getParent(), file.getName(),
+                                           StorageUtils.formatFileSize(this, file.length()));
 
                     new AlertDialog.Builder(BackupActivity.this)
                             .setTitle(R.string.lbl_backup_to_archive)
                             .setMessage(msg)
                             .setPositiveButton(android.R.string.ok, (d, which) -> {
                                 d.dismiss();
-                                Intent data = new Intent().putExtra(
-                                        UniqueId.BKEY_EXPORT_RESULT,
-                                        message.result.what);
+                                Intent data = new Intent().putExtra(UniqueId.BKEY_EXPORT_RESULT,
+                                                                    message.result.what);
                                 setResult(Activity.RESULT_OK, data);
                                 finish();
                             })
@@ -165,7 +165,7 @@ public class BackupActivity
                 break;
 
             default:
-                Logger.warnWithStackTrace(this, "Unknown taskId=" + message.taskId);
+                Logger.warnWithStackTrace(this, "taskId=" + message.taskId);
                 break;
         }
     }
@@ -212,9 +212,9 @@ public class BackupActivity
             UserMessage.show(mListView, R.string.warning_enter_valid_filename);
             return;
         }
+        mOptionsModel.setFile(file);
 
-        final ExportOptions options = new ExportOptions();
-        options.file = file;
+        ExportOptions options = new ExportOptions();
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_backup_to_archive)
@@ -228,13 +228,11 @@ public class BackupActivity
                                                    .show(fm, ExportOptionsDialogFragment.TAG);
                     }
                 })
-                .setPositiveButton(android.R.string.ok, (d, which) -> {
-                    options.what = ExportOptions.ALL;
-                    onOptionsSet(options);
-                })
+                .setPositiveButton(android.R.string.ok, (d, which) -> onOptionsSet(options))
                 .create()
                 .show();
     }
+
 
     /**
      * kick of the backup task.
@@ -268,7 +266,9 @@ public class BackupActivity
                                       .newInstance(R.string.progress_msg_backing_up, false, 0);
             mProgressDialog.show(fm, TAG);
 
-            BackupTask task = new BackupTask(options, mOptionsModel.getTaskListener());
+            //noinspection ConstantConditions
+            BackupTask task = new BackupTask(mOptionsModel.getFile(), options,
+                                             mOptionsModel.getTaskListener());
             mOptionsModel.setTask(task);
             task.execute();
         }

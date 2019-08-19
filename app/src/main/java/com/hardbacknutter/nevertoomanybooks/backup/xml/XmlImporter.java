@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.xml;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
@@ -42,8 +44,10 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -61,8 +65,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
@@ -77,7 +79,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.IllegalTypeException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -105,9 +106,6 @@ public class XmlImporter
     @NonNull
     private final DAO mDb;
 
-    @NonNull
-    private final ImportOptions mSettings;
-
     /**
      * Stack for popping tags on if we go into one.
      * This is of course overkill, just to handle the list/set set,
@@ -122,42 +120,64 @@ public class XmlImporter
      */
     public XmlImporter() {
         mDb = new DAO();
-        mSettings = new ImportOptions();
-        mSettings.what = ExportOptions.ALL;
     }
 
     /**
-     * Constructor.
+     * Read the info block from an XML stream.
      *
-     * @param settings the import settings
+     * @param entity to read
+     * @param info   object to populate
+     *
+     * @throws IOException on failure
      */
-    public XmlImporter(@NonNull final ImportOptions settings) {
-        mDb = new DAO();
-        settings.validate();
-        mSettings = settings;
+    public void doBackupInfoBlock(@NonNull final ReaderEntity entity,
+                                  @NonNull final BackupInfo info)
+            throws IOException {
+        InputStreamReader reader = new InputStreamReader(entity.getInputStream(),
+                                                         StandardCharsets.UTF_8);
+        BufferedReader in = new BufferedReaderNoClose(reader, BUFFER_SIZE);
+        fromXml(in, new InfoReader(info), null);
     }
 
     /**
-     * counterpart of {@link XmlExporter} #encodeString}
-     * <p>
-     * Only String 'value' tags need decoding.
-     * <p>
-     * decode the bare essentials only. To decode all possible entities we could add the Apache
-     * 'lang' library I suppose.... maybe some day.
+     * Read Styles from an XML stream.
+     *
+     * @param entity   to read
+     * @param listener Progress and cancellation provider
+     *
+     * @throws IOException on failure
      */
-    private static String decodeString(@Nullable final String data) {
-        if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
-            return "";
-        }
+    public void doStyles(@NonNull final ReaderEntity entity,
+                         @Nullable final ProgressListener listener)
+            throws IOException {
+        InputStreamReader reader = new InputStreamReader(entity.getInputStream(),
+                                                         StandardCharsets.UTF_8);
+        BufferedReader in = new BufferedReaderNoClose(reader, BUFFER_SIZE);
+        fromXml(in, new StylesReader(mDb), listener);
+    }
 
-        // must be last of the entities
-        String result = data.trim();
-        result = AMP_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement("&"));
-        result = GT_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement(">"));
-        result = LT_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement("<"));
-        result = APOS_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement("'"));
-        result = QUOT_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement("\""));
-        return result;
+    /**
+     * Read Preferences from an XML stream.
+     * <p>
+     * <b>Note:</b> the passed in SharedPreferences is dependent on the caller.
+     * Do <strong>not</strong> replace with mSettings.getPrefs() !
+     *
+     * @param entity   to read
+     * @param prefs    object to populate
+     * @param listener Progress and cancellation provider
+     *
+     * @throws IOException on failure
+     */
+    public void doPreferences(@NonNull final ReaderEntity entity,
+                              @NonNull final SharedPreferences prefs,
+                              @Nullable final ProgressListener listener)
+            throws IOException {
+        InputStreamReader reader = new InputStreamReader(entity.getInputStream(),
+                                                         StandardCharsets.UTF_8);
+        BufferedReader in = new BufferedReaderNoClose(reader, BUFFER_SIZE);
+        SharedPreferences.Editor editor = prefs.edit();
+        fromXml(in, new PreferencesReader(editor), listener);
+        editor.apply();
     }
 
     /**
@@ -176,69 +196,26 @@ public class XmlImporter
     }
 
     /**
-     * WIP: the backup reader already checks the type/what.
-     * Intention is to move all logic for xml based entities to this class.
-     *
-     * @param entity to restore
-     *
-     * @throws IOException on failure
-     */
-    public void doEntity(@NonNull final ReaderEntity entity,
-                         @NonNull final ProgressListener listener)
-            throws IOException {
-        final BufferedReader in = new BufferedReaderNoClose(
-                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8), BUFFER_SIZE);
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (entity.getType()) {
-            case BooklistStyles:
-                if ((mSettings.what & ImportOptions.BOOK_LIST_STYLES) != 0) {
-                    fromXml(in, listener, new StylesReader(mDb));
-                }
-                break;
-
-            default:
-                throw new IllegalStateException("type=" + entity.getType());
-        }
-    }
-
-    /**
-     * Read the info block from an XML stream.
-     *
-     * @param entity to read
-     * @param info   object to populate
-     *
-     * @throws IOException on failure
-     */
-    public void doBackupInfoBlock(@NonNull final ReaderEntity entity,
-                                  @NonNull final BackupInfo info)
-            throws IOException {
-        final BufferedReader in = new BufferedReaderNoClose(
-                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8), BUFFER_SIZE);
-        fromXml(in, null, new InfoReader(info));
-    }
-
-    /**
-     * Read mStylePrefs from an XML stream into a given SharedPreferences object.
+     * counterpart of {@link XmlExporter} #encodeString}
      * <p>
-     * <b>Note:</b> the passed in SharedPreferences is dependent on the caller.
-     * Do <strong>not</strong> replace with mSettings.getPrefs() !
-     *
-     * @param entity   to read
-     * @param listener Progress and cancellation provider
-     * @param prefs    object to populate
-     *
-     * @throws IOException on failure
+     * Only String 'value' tags need decoding.
+     * <p>
+     * decode the bare essentials only. To decode all possible entities we could add the Apache
+     * 'lang' library I suppose.... maybe some day.
      */
-    public void doPreferences(@NonNull final ReaderEntity entity,
-                              @NonNull final ProgressListener listener,
-                              @NonNull final SharedPreferences prefs)
-            throws IOException {
-        final BufferedReader in = new BufferedReaderNoClose(
-                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8), BUFFER_SIZE);
-        SharedPreferences.Editor editor = prefs.edit();
-        fromXml(in, listener, new PreferencesReader(editor));
-        editor.apply();
+    private String decodeString(@Nullable final String data) {
+        if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
+            return "";
+        }
+
+        // must be last of the entities
+        String result = data.trim();
+        result = AMP_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement("&"));
+        result = GT_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement(">"));
+        result = LT_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement("<"));
+        result = APOS_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement("'"));
+        result = QUOT_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement("\""));
+        return result;
     }
 
     /**
@@ -249,8 +226,8 @@ public class XmlImporter
      * @throws IOException on failure
      */
     private void fromXml(@NonNull final BufferedReader in,
-                         @Nullable final ProgressListener listener,
-                         @NonNull final EntityReader<String> accessor)
+                         @NonNull final EntityReader<String> accessor,
+                         @Nullable final ProgressListener listener)
             throws IOException {
 
         // we need an uber-root to hang our tree on.
@@ -282,8 +259,8 @@ public class XmlImporter
                               @NonNull final EntityReader<String> accessor) {
         String listRootElement = accessor.getListRoot();
         String rootElement = accessor.getElementRoot();
-        // used to read in Set data
-        final Set<String> currentStringSet = new HashSet<>();
+        // used to read in Set/List data
+        final List<String> currentStringList = new ArrayList<>();
 
         // A new element under the root
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement)
@@ -339,6 +316,10 @@ public class XmlImporter
                     case XmlTags.XML_DOUBLE:
                         accessor.putDouble(mTag.name, Double.parseDouble(mTag.value));
                         break;
+
+                    default:
+                        Logger.warnWithStackTrace(this, "mTag.type=" + mTag.type);
+                        break;
                 }
                 mTag = mTagStack.pop();
             }
@@ -359,10 +340,15 @@ public class XmlImporter
                         break;
 
                     case XmlTags.XML_SET:
-                    case XmlTags.XML_LIST:
-                        accessor.putStringSet(mTag.name, currentStringSet);
+                        accessor.putStringSet(mTag.name, currentStringList);
                         // cleanup, ready for the next Set
-                        currentStringSet.clear();
+                        currentStringList.clear();
+                        break;
+
+                    case XmlTags.XML_LIST:
+                        accessor.putStringList(mTag.name, currentStringList);
+                        // cleanup, ready for the next List
+                        currentStringList.clear();
                         break;
 
                     case XmlTags.XML_SERIALIZABLE:
@@ -371,7 +357,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(this, "Unknown type: " + mTag.type);
+                        Logger.warnWithStackTrace(this, "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -411,7 +397,7 @@ public class XmlImporter
 
         /*
          * The exporter is generating List/Set tags with String/Int sub tags properly,
-         * but importing an Element in a Collection is always done as a String in a Set (for now?)
+         * but importing an Element in a Collection is always done as a String in a List (for now?)
          */
         // set/list elements with attributes.
         XmlFilter.XmlHandler startElementInCollection = context -> {
@@ -433,7 +419,11 @@ public class XmlImporter
                     case XmlTags.XML_LONG:
                     case XmlTags.XML_FLOAT:
                     case XmlTags.XML_DOUBLE:
-                        currentStringSet.add(mTag.value);
+                        currentStringList.add(mTag.value);
+                        break;
+
+                    default:
+                        Logger.warnWithStackTrace(this, "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -459,7 +449,11 @@ public class XmlImporter
                         // this 'case' is only here for completeness sake.
                     case XmlTags.XML_STRING:
                         // body strings use CDATA
-                        currentStringSet.add(context.getBody());
+                        currentStringList.add(context.getBody());
+                        break;
+
+                    default:
+                        Logger.warnWithStackTrace(this, "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -545,7 +539,7 @@ public class XmlImporter
                                  break;
 
                              default:
-                                 throw new IllegalTypeException(mTag.type);
+                                 throw new IllegalStateException(mTag.type);
                          }
 
                      } catch (@NonNull final NumberFormatException e) {
@@ -610,24 +604,47 @@ public class XmlImporter
         void putInt(@NonNull K key,
                     int value);
 
-        void putLong(@NonNull K key,
-                     long value);
+        default void putFloat(@NonNull final K key,
+                              final float value) {
+            throw new IllegalStateException("Float, key=" + key);
+        }
 
-        void putFloat(@NonNull K key,
-                      float value);
+        default void putLong(@NonNull final K key,
+                             final long value) {
+            throw new IllegalStateException("Long, key=" + key);
+        }
 
-        void putDouble(@NonNull K key,
-                       double value);
+        default void putDouble(@NonNull final K key,
+                               final double value) {
+            throw new IllegalStateException("Double, key=" + key);
+        }
 
-        void putStringSet(@NonNull K key,
-                          @NonNull Set<String> value);
+        /**
+         * Note the values can be passed in as a List or a Set,
+         * but store should be a Set of some type.
+         */
+        default void putStringSet(@NonNull final K key,
+                                  @NonNull final Iterable<String> value) {
+            throw new IllegalStateException("StringSet, key=" + key);
+        }
 
-        void putSerializable(@NonNull K key,
-                             @NonNull Serializable value);
+        /**
+         * Note the values can be passed in as a List or a Set,
+         * but store should be a List of some type.
+         */
+        default void putStringList(@NonNull final K key,
+                                   @NonNull final Iterable<String> value) {
+            throw new IllegalStateException("StringList, key=" + key);
+        }
+
+        default void putSerializable(@NonNull final K key,
+                                     @NonNull final Serializable value) {
+            throw new IllegalStateException("Serializable, key=" + key);
+        }
     }
 
     /**
-     * Record to preserve data while parsing XML input.
+     * Value class to preserve data while parsing XML input.
      */
     static class TagInfo {
 
@@ -673,8 +690,7 @@ public class XmlImporter
                 try {
                     id = Integer.parseInt(idStr);
                 } catch (@NonNull final NumberFormatException e) {
-                    Logger.warn(this, "TagInfo",
-                                "invalid id in xml t: " + name);
+                    Logger.error(this, e, "attr=" + name, "idStr=" + idStr);
                 }
             }
             value = attrs.getValue(XmlTags.ATTR_VALUE);
@@ -767,12 +783,6 @@ public class XmlImporter
         }
 
         @Override
-        public void putStringSet(@NonNull final String key,
-                                 @NonNull final Set<String> value) {
-            throw new IllegalTypeException("Collection<String>");
-        }
-
-        @Override
         public void putSerializable(@NonNull final String key,
                                     @NonNull final Serializable value) {
             mBundle.putSerializable(key, value);
@@ -849,22 +859,19 @@ public class XmlImporter
         }
 
         @Override
-        public void putDouble(@NonNull final String key,
-                              final double value) {
-            throw new IllegalTypeException(XmlTags.XML_DOUBLE);
-        }
-
-        @Override
         public void putStringSet(@NonNull final String key,
-                                 @NonNull final Set<String> value) {
-            mEditor.putStringSet(key, value);
-
+                                 @NonNull final Iterable<String> values) {
+            Set<String> valueSet = new HashSet<>();
+            for (String s : values) {
+                valueSet.add(s);
+            }
+            mEditor.putStringSet(key, valueSet);
         }
 
         @Override
-        public void putSerializable(@NonNull final String key,
-                                    @NonNull final Serializable value) {
-            throw new IllegalTypeException(XmlTags.XML_SERIALIZABLE);
+        public void putStringList(@NonNull final String key,
+                                  @NonNull final Iterable<String> values) {
+            mEditor.putString(key, TextUtils.join(",", values));
         }
     }
 
@@ -982,35 +989,19 @@ public class XmlImporter
         }
 
         @Override
-        public void putLong(@NonNull final String key,
-                            final long value) {
-            throw new IllegalTypeException(XmlTags.XML_LONG);
-        }
-
-        @Override
-        public void putFloat(@NonNull final String key,
-                             final float value) {
-            throw new IllegalTypeException(XmlTags.XML_FLOAT);
-        }
-
-        @Override
-        public void putDouble(@NonNull final String key,
-                              final double value) {
-            throw new IllegalTypeException(XmlTags.XML_DOUBLE);
-        }
-
-        @Override
         public void putStringSet(@NonNull final String key,
-                                 @NonNull final Set<String> value) {
+                                 @NonNull final Iterable<String> value) {
             PCollection p = (PCollection) mStylePrefs.get(key);
             //noinspection ConstantConditions
             p.set(value);
         }
 
         @Override
-        public void putSerializable(@NonNull final String key,
-                                    @NonNull final Serializable value) {
-            throw new IllegalTypeException(XmlTags.XML_SERIALIZABLE);
+        public void putStringList(@NonNull final String key,
+                                  @NonNull final Iterable<String> value) {
+            PCollection p = (PCollection) mStylePrefs.get(key);
+            //noinspection ConstantConditions
+            p.set(value);
         }
     }
 

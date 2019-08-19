@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +44,6 @@ import java.lang.ref.WeakReference;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -54,10 +54,19 @@ public class ExportOptionsDialogFragment
 
     /** Fragment manager tag. */
     public static final String TAG = "ExportOptionsDialogFragment";
+    private static final String BKEY_OPTIONS = TAG + ":options";
 
     private ExportOptions mOptions;
 
     private WeakReference<OptionsListener> mListener;
+
+    private Checkable cbxBooks;
+    private Checkable cbxCovers;
+    private Checkable cbxPrefs;
+    private Checkable cbxXml;
+    private Checkable mRadioSinceLastBackup;
+    private Checkable mRadioSinceDate;
+    private EditText mDateSinceView;
 
     /**
      * Constructor.
@@ -70,7 +79,7 @@ public class ExportOptionsDialogFragment
     public static ExportOptionsDialogFragment newInstance(@NonNull final ExportOptions options) {
         ExportOptionsDialogFragment frag = new ExportOptionsDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_OPTIONS, options);
+        args.putParcelable(BKEY_OPTIONS, options);
         frag.setArguments(args);
         return frag;
     }
@@ -80,7 +89,7 @@ public class ExportOptionsDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mOptions = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_OPTIONS);
+        mOptions = args.getParcelable(BKEY_OPTIONS);
     }
 
     @NonNull
@@ -90,6 +99,14 @@ public class ExportOptionsDialogFragment
         //noinspection ConstantConditions
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View root = layoutInflater.inflate(R.layout.dialog_export_options, null);
+
+        cbxBooks = root.findViewById(R.id.cbx_books_csv);
+        cbxCovers = root.findViewById(R.id.cbx_covers);
+        cbxPrefs = root.findViewById(R.id.cbx_preferences);
+        cbxXml = root.findViewById(R.id.cbx_xml_tables);
+        mRadioSinceLastBackup = root.findViewById(R.id.radioSinceLastBackup);
+        mRadioSinceDate = root.findViewById(R.id.radioSinceDate);
+        mDateSinceView = root.findViewById(R.id.txtDate);
 
         //noinspection ConstantConditions
         AlertDialog dialog =
@@ -117,7 +134,7 @@ public class ExportOptionsDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_OPTIONS, mOptions);
+        outState.putParcelable(BKEY_OPTIONS, mOptions);
     }
 
     public void setListener(@NonNull final OptionsListener listener) {
@@ -125,39 +142,34 @@ public class ExportOptionsDialogFragment
     }
 
     private void updateOptions() {
-        Dialog dialog = getDialog();
-        // what to export. All checked == ExportOptions.ALL
-        //noinspection ConstantConditions
-        if (((Checkable) dialog.findViewById(R.id.cbx_books_csv)).isChecked()) {
+        // what to export.
+        mOptions.what = ExportOptions.NOTHING;
+
+        if (cbxBooks.isChecked()) {
             mOptions.what |= ExportOptions.BOOK_CSV;
         }
-        if (((Checkable) dialog.findViewById(R.id.cbx_covers)).isChecked()) {
+        if (cbxCovers.isChecked()) {
             mOptions.what |= ExportOptions.COVERS;
         }
-        if (((Checkable) dialog.findViewById(R.id.cbx_preferences)).isChecked()) {
+        if (cbxPrefs.isChecked()) {
             mOptions.what |= ExportOptions.PREFERENCES | ExportOptions.BOOK_LIST_STYLES;
         }
-        // This one is not a part of ExportOptions.ALL, the user must explicitly want it.
-        if (((Checkable) dialog.findViewById(R.id.cbx_xml_tables)).isChecked()) {
+        if (cbxXml.isChecked()) {
             mOptions.what |= ExportOptions.XML_TABLES;
         }
 
-        Checkable radioSinceLastBackup = dialog.findViewById(R.id.radioSinceLastBackup);
-        Checkable radioSinceDate = dialog.findViewById(R.id.radioSinceDate);
-
-        if (radioSinceLastBackup.isChecked()) {
+        if (mRadioSinceLastBackup.isChecked()) {
             mOptions.what |= ExportOptions.EXPORT_SINCE;
             // it's up to the Exporter to determine/set the last backup date.
             mOptions.dateFrom = null;
 
-        } else if (radioSinceDate.isChecked()) {
-            EditText dateSinceView = dialog.findViewById(R.id.txtDate);
+        } else if (mRadioSinceDate.isChecked()) {
             try {
                 mOptions.what |= ExportOptions.EXPORT_SINCE;
-                mOptions.dateFrom =
-                        DateUtils.parseDate(dateSinceView.getText().toString().trim());
+                String date = mDateSinceView.getText().toString().trim();
+                mOptions.dateFrom = DateUtils.parseDate(date);
             } catch (@NonNull final RuntimeException e) {
-                UserMessage.show(dateSinceView, R.string.hint_date_not_set_with_brackets);
+                UserMessage.show(mDateSinceView, R.string.hint_date_not_set_with_brackets);
                 mOptions.what = ExportOptions.NOTHING;
             }
         }

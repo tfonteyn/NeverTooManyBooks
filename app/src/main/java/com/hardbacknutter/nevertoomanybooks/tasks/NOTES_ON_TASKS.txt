@@ -13,10 +13,12 @@ GOALS:
 3. ManagedTask's started from a BaseActivityWithTasks.
 
  * abstract {@link ManagedTask} extends Thread
- * Background task that is managed by TaskManager and uses TaskManager to coordinate display activities.
+ * Background task that is managed by TaskManager and uses TaskManager to coordinate
+   display activities.
  *
  * {@link TaskManager}
- * handles the management of multiple tasks and passing messages with the help of a {@link MessageSwitch}
+ * handles the management of multiple tasks and passing messages with the help
+   of a {@link MessageSwitch}
  *
  * {@link BaseActivityWithTasks}
  * Uses a TaskManager (and communicates with it) to handle messages for ManagedTask.
@@ -45,8 +47,8 @@ Hardcoded defaults clean up dead tasks after 7 days.
 
 WorkManager sounds like a good replacement.
 
- ----------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------
 5. CropImageActivity
 Has yet another form of background job definition. This one is small/clean.
- ----------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------
 

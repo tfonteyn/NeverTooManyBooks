@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +33,6 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.MappedCursorRow;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
@@ -78,9 +78,8 @@ class SendOneBookLegacyTask
 
         try (DAO db = new DAO();
              BookCursor bookCursor = db.fetchBookForExportToGoodreads(mBookId)) {
-            final MappedCursorRow cursorRow = bookCursor.getCursorRow();
             while (bookCursor.moveToNext()) {
-                if (!sendOneBook(queueManager, context, grManager, db, cursorRow)) {
+                if (!sendOneBook(queueManager, context, grManager, db, bookCursor)) {
                     // quit on error
                     return false;
                 }

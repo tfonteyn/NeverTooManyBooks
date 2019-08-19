@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -177,7 +178,7 @@ public class EditBookTocFragment
         public void onGotIsfdbEditions(@Nullable final ArrayList<Editions.Edition> editions) {
             mIsfdbEditions = editions != null ? editions : new ArrayList<>();
             if (!mIsfdbEditions.isEmpty()) {
-                new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),this).execute();
+                new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(), this).execute();
             } else {
                 //noinspection ConstantConditions
                 UserMessage.show(getView(), R.string.warning_no_editions);
@@ -283,8 +284,7 @@ public class EditBookTocFragment
 
     /**
      * Has no specific Arguments or savedInstanceState.
-     * All storage interaction is done via:
-     * <ul>
+     * <ul>All storage interaction is done via:
      * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
      * <li>{@link #onSaveFieldsToBook} from base class onPause</li>
      * </ul>

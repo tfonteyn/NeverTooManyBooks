@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’) -->
 <resources>
@@ -16,12 +44,10 @@
     <string name="X_lbl_select_fields_to_update">Выберите поля для обновления</string>
     <string name="X_menu_delete_series">Удаление серии…</string>
     <string name="X_menu_delete_toc_entry">Удалить название антологии</string>
-    <string name="X_menu_edit_author">Редактирование автора…</string>
-    <string name="X_menu_edit_series">Редактирование серии…</string>
+    <string name="title_edit_author">Редактирование автора</string>
+    <string name="title_edit_series">Редактирование серии</string>
     <string name="X_menu_search_books">Искать книги</string>
     <string name="X_results_found">Найденные результаты</string>
-    <string name="X_search_title">Книжный каталог: результаты поиска</string>
-    <string name="X_select_bookshelves">Выбор полок</string>
     <string name="X_size">Размер</string>
     <string name="X_tip_booklist_global_properties">Вы можете использовать этот экран, чтобы установить характеристики по умолчанию для всех стилей списка книг. Большинство свойств могут быть переопределены отдельными стилями, но значения по умолчанию определены здесь. Вы можете изменить способ отображения списков при запуске и настроить множество других параметров, которые будут применяться ко всем вашим стилям, когда это возможно.</string>
     <string name="X_unsaved_edits_title">Несохранённые изменения</string>
@@ -410,7 +436,7 @@
     <string name="pt_bob_sort_author_name">Сортировать авторов</string>
     <string name="pt_bob_text_size">Размер элемента списка книг</string>
     <string name="pt_bob_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
-    <string name="pt_bob_thumbnails_show">Показывать миниатюры</string>
+    <string name="pt_bob_show_thumbnails">Показывать миниатюры</string>
     <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
     <string name="pt_cover_scale_factor">Размер изображения в списках</string>
     <string name="pt_reformat_titles_on_insert">При добавлении</string>
@@ -430,8 +456,8 @@
     <string name="pt_ui_theme">тема</string>
     <string name="pv_bob_books_under_multiple_each_1s">Под каждым %1$s</string>
     <string name="pv_bob_books_under_multiple_primary_1s_only">Только под первым %1$s</string>
-    <string name="pv_bob_format_author_name_family_first">Первая фамилия, например «Достоевский, Фёдор»</string>
-    <string name="pv_bob_format_author_name_given_first">Первое имя, например «Фёдор Достоевский»</string>
+    <string name="pv_bob_author_name_family_first">Первая фамилия, например «Достоевский, Фёдор»</string>
+    <string name="pv_bob_author_name_given_first">Первое имя, например «Фёдор Достоевский»</string>
     <string name="rebuild_fts">Переобрать FTS\n(только альфа-версия!)</string>
     <string name="retry">Повторить</string>
     <string name="style_builtin_acquired_date">приобретенный</string>

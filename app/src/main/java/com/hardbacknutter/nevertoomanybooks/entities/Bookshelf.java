@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +35,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -43,21 +43,14 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.ColumnMapper;
+import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * Represents a Bookshelf.
  */
 public class Bookshelf
         implements Parcelable, ItemWithFixableId, Entity {
-
-    /**
-     * how to concat bookshelf names. This should be using '|' as {@link StringList}
-     * but backwards compatibility rules here.
-     */
-    public static final Character MULTI_SHELF_SEPARATOR = ',';
 
     /** {@link Parcelable}. */
     public static final Creator<Bookshelf> CREATOR =
@@ -82,8 +75,6 @@ public class Bookshelf
     public static final int DEFAULT_ID = 1;
     /** the virtual 'All Books'. */
     private static final int ALL_BOOKS = -1;
-    /** String encoding use. */
-    private static final char FIELD_SEPARATOR = '*';
     private long mId;
     @NonNull
     private String mName;
@@ -97,11 +88,14 @@ public class Bookshelf
     /** the style gets cached. It only gets reloaded when the mStyleUuid != cached one. */
     private BooklistStyle mCachedStyle;
 
+    /** cached locale. */
+    private Locale mLocale;
+
     /**
      * Constructor without ID.
      */
-    private Bookshelf(@NonNull final String name,
-                      @NonNull final String styleUuid) {
+    public Bookshelf(@NonNull final String name,
+                     @NonNull final String styleUuid) {
         mName = name.trim();
         mStyleUuid = styleUuid;
 //        mCachedStyle = null;
@@ -137,7 +131,7 @@ public class Bookshelf
      * @param mapper a cursor mapper.
      */
     public Bookshelf(final long id,
-                     @NonNull final ColumnMapper mapper) {
+                     @NonNull final CursorMapper mapper) {
         mId = id;
         mName = mapper.getString(DBDefinitions.KEY_BOOKSHELF);
         mStyleUuid = mapper.getString(DBDefinitions.KEY_UUID);
@@ -156,33 +150,6 @@ public class Bookshelf
         //noinspection ConstantConditions
         mStyleUuid = in.readString();
 //        mCachedStyle = null;
-    }
-
-    /**
-     * Constructor that will attempt to parse a single string into a Bookshelf.
-     *
-     * @param element the string to decode
-     *                <p>
-     *                format: "name"
-     *                format: "name * styleUUID"
-     */
-    @NonNull
-    public static Bookshelf fromString(@NonNull final String element) {
-        List<String> list = new StringList<String>()
-                                    .decode(element, false, FIELD_SEPARATOR);
-
-        String name = list.get(0);
-        // check if we have a style
-        if (list.size() > 1) {
-            String uuid = list.get(1).trim();
-            // it's quite possible that the UUID is not a style we (currently) know.
-            // but right now that does not matter as we'll check it when we actually access it.
-            return new Bookshelf(name, uuid);
-
-        }
-        // the right thing todo would be: get a database, then get the 'real' default style.
-        // as this is a lot of overkill for importing, we're just using the builtin default.
-        return new Bookshelf(name, BooklistStyles.DEFAULT_STYLE);
     }
 
     /**
@@ -295,6 +262,16 @@ public class Bookshelf
     }
 
     /**
+     * Do <strong>NOT</strong> call for anything else but export to a CSV file.
+     *
+     * @return the uuid of the style
+     */
+    @NonNull
+    public String getStyleUuid() {
+        return mStyleUuid;
+    }
+
+    /**
      * Check the current style and if it had to be corrected, update this shelf in the database.
      *
      * @param db Database Access
@@ -335,7 +312,10 @@ public class Bookshelf
     @NonNull
     @Override
     public Locale getLocale() {
-        return LocaleUtils.getPreferredLocale();
+        if (mLocale == null) {
+            mLocale = LocaleUtils.getPreferredLocale();
+        }
+        return mLocale;
     }
 
     @Override
@@ -344,18 +324,6 @@ public class Bookshelf
                       @NonNull final Locale locale) {
         mId = db.getBookshelfId(this);
         return mId;
-    }
-
-    /**
-     * Support for encoding to a text file.
-     *
-     * @return the object encoded as a String.
-     * <p>
-     * "name * styleUUID"
-     */
-    @NonNull
-    public String stringEncoded() {
-        return mName + ' ' + FIELD_SEPARATOR + ' ' + mStyleUuid;
     }
 
     /**
@@ -398,7 +366,6 @@ public class Bookshelf
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
-        // one or both are 'new' or their ID's are the same.
         return Objects.equals(mName, that.mName);
     }
 
@@ -408,6 +375,7 @@ public class Bookshelf
         return "Bookshelf{"
                + "mId=" + mId
                + ", mName=`" + mName + '`'
+               + ", mLocale=" + mLocale
                + ", mStyleUuid=" + mStyleUuid
                + ", mCachedStyle=" + (mCachedStyle == null ? "null" : mCachedStyle.getUuid())
                + '}';

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.MappedCursorRow;
+import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -591,8 +592,7 @@ public class GoodreadsManager
 
     /**
      * Wrapper to send an entire book, including shelves, to Goodreads.
-     * The bookCursorRow row has to have:
-     * <ul>
+     * <ul>The bookCursorRow row has to have:
      * <li>{@link DBDefinitions#KEY_PK_ID}</li>
      * <li>{@link DBDefinitions#KEY_GOODREADS_BOOK_ID}</li>
      * <li>{@link DBDefinitions#KEY_ISBN}</li>
@@ -604,8 +604,8 @@ public class GoodreadsManager
      * <p>
      * See {@link DAO#fetchBookForExportToGoodreads}
      *
-     * @param db            DB connection
-     * @param bookCursorRow single book to send
+     * @param db         DB connection
+     * @param bookCursor single book to send
      *
      * @return Disposition of book
      *
@@ -616,12 +616,12 @@ public class GoodreadsManager
     @NonNull
     public ExportResult sendOneBook(@NonNull final Context context,
                                     @NonNull final DAO db,
-                                    @NonNull final MappedCursorRow bookCursorRow)
+                                    @NonNull final BookCursor bookCursor)
             throws CredentialsException, BookNotFoundException, IOException {
 
 
-        long bookId = bookCursorRow.getLong(DBDefinitions.KEY_PK_ID);
-        String isbn = bookCursorRow.getString(DBDefinitions.KEY_ISBN);
+        long bookId = bookCursor.getLong(DBDefinitions.KEY_PK_ID);
+        String isbn = bookCursor.getString(DBDefinitions.KEY_ISBN);
 
         // Get the list of shelves from Goodreads. This is cached per instance of GoodreadsManager.
         GoodreadsShelves grShelfList = getShelves();
@@ -631,7 +631,7 @@ public class GoodreadsManager
 
         // See if the book already has a Goodreads ID and if it is valid.
         try {
-            grBookId = bookCursorRow.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
+            grBookId = bookCursor.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
             if (grBookId != 0) {
                 // Get the book details to make sure we have a valid book ID
                 grBook = getBookById(context, grBookId, false);
@@ -696,7 +696,7 @@ public class GoodreadsManager
             // because review.update does not seem to update them properly
             if (exclusiveCount == 0) {
                 String pseudoShelf;
-                if (bookCursorRow.getInt(DBDefinitions.KEY_READ) != 0) {
+                if (bookCursor.getInt(DBDefinitions.KEY_READ) != 0) {
                     pseudoShelf = "Read";
                 } else {
                     pseudoShelf = "To Read";
@@ -764,10 +764,10 @@ public class GoodreadsManager
             // Do not sync Notes<->Review. We will add a 'Review' field later.
             // ('notes' has been disabled from the SQL)
             updateReview(reviewId,
-                         bookCursorRow.getBoolean(DBDefinitions.KEY_READ),
-                         bookCursorRow.getString(DBDefinitions.KEY_READ_START),
-                         bookCursorRow.getString(DBDefinitions.KEY_READ_END),
-                         (int) bookCursorRow.getDouble(DBDefinitions.KEY_RATING),
+                         bookCursor.getBoolean(DBDefinitions.KEY_READ),
+                         bookCursor.getString(DBDefinitions.KEY_READ_START),
+                         bookCursor.getString(DBDefinitions.KEY_READ_END),
+                         (int) bookCursor.getDouble(DBDefinitions.KEY_RATING),
                          null);
 
             return ExportResult.sent;
@@ -992,7 +992,7 @@ public class GoodreadsManager
             // Make a valid URL for the parser (some come back without a schema)
             authUrl = "http://" + authUrl;
             if (BuildConfig.DEBUG /* always */) {
-                Logger.warn(this, "requestAuthorization", "replacing with: " + authUrl);
+                Logger.debug(this, "requestAuthorization", "replacing with: " + authUrl);
             }
         }
 
@@ -1086,10 +1086,8 @@ public class GoodreadsManager
                     return R.string.gr_auth_error;
                 case error:
                     return R.string.error_unexpected_error;
-
-                default:
-                    return R.string.error_unexpected_error;
             }
+            return R.string.error_unexpected_error;
         }
     }
 }

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.cursors;
+package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
@@ -34,9 +35,8 @@ import androidx.annotation.Nullable;
 
 import java.io.Closeable;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistSupportProvider;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.cursors.TrackedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 
 /**
@@ -72,7 +72,7 @@ public class BooklistCursor
     }
 
     /**
-     * Get a MappedCursorRow for this cursor. Constructs one if necessary.
+     * Get a BooklistMappedCursorRow for this cursor. Constructs one if necessary.
      *
      * @return BooklistMappedCursorRow
      */
@@ -102,7 +102,8 @@ public class BooklistCursor
         return "BooklistCursor{"
                + "mBuilder=" + mBuilder
                + ", mCursorRow.getId()="
-               + (mCursorRow != null ? mCursorRow.getLong(DBDefinitions.KEY_PK_ID) : "null")
+               + (mCursorRow != null ? mCursorRow.getCursorMapper().getLong(DBDefinitions.KEY_PK_ID)
+                                     : "null")
                + '}';
     }
 }

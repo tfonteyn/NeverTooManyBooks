@@ -1,4 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes „…“  - Regex to find wrong ones: (”|‘|’|«|») -->
 <resources>
@@ -16,12 +44,10 @@
     <string name="X_lbl_select_fields_to_update">Felder für Aktualisierung auswählen</string>
     <string name="X_menu_delete_series">Serie löschen…</string>
     <string name="X_menu_delete_toc_entry">Titel von Anthologie löschen</string>
-    <string name="X_menu_edit_author">Autor bearbeiten…</string>
-    <string name="X_menu_edit_series">Serie bearbeiten…</string>
+    <string name="title_edit_author">Autor bearbeiten</string>
+    <string name="title_edit_series">Serie bearbeiten</string>
     <string name="X_menu_search_books">Suche Bücher</string>
     <string name="X_results_found">Bücher gefunden</string>
-    <string name="X_search_title">Suchergebnisse</string>
-    <string name="X_select_bookshelves">Bücherregale wählen</string>
     <string name="X_size">Größe</string>
     <string name="X_tip_booklist_global_properties">In diesem Bildschirm können Sie die Standardeigenschaften aller Buchlistenstile festlegen. Die meisten Eigenschaften können von einzelnen Stilen überschrieben werden, aber die Standardwerte werden hier definiert. Sie können ändern, wie Listen beim Start angezeigt werden, und eine Reihe anderer Einstellungen vornehmen, die nach Möglichkeit auf alle Ihre Stile angewendet werden.</string>
     <string name="X_unsaved_edits_title">Ungespeicherte Änderungen</string>
@@ -415,7 +441,7 @@
     <string name="pt_bob_sort_author_name">Autorennamen sortieren</string>
     <string name="pt_bob_text_size">Größe der Einträge in der Bücherliste</string>
     <string name="pt_bob_thumbnails_cache_resized">Größe der Cover-Bilder ändern zwischenspeichern</string>
-    <string name="pt_bob_thumbnails_show">Cover-Bilder anzeigen</string>
+    <string name="pt_bob_show_thumbnails">Cover-Bilder anzeigen</string>
     <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
     <string name="pt_cover_scale_factor">Bildgröße in Listen</string>
     <string name="pt_reformat_titles_on_insert">Beim Hinzufügen</string>
@@ -437,8 +463,8 @@
     <string name="pt_ui_theme">Thema</string>
     <string name="pv_bob_books_under_multiple_each_1s">Unter jedem %1$s</string>
     <string name="pv_bob_books_under_multiple_primary_1s_only">Nur unter primärem %1$s</string>
-    <string name="pv_bob_format_author_name_family_first">Familienname zuerst (z.B. „Kafka, Franz“)</string>
-    <string name="pv_bob_format_author_name_given_first">Vorname zuerst (z.B. „Franz  Kafka“)</string>
+    <string name="pv_bob_author_name_family_first">Familienname zuerst (z.B. „Kafka, Franz“)</string>
+    <string name="pv_bob_author_name_given_first">Vorname zuerst (z.B. „Franz  Kafka“)</string>
     <string name="pv_reformat_titles_prefixes">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
     <string name="rebuild_fts">FTS neu aufbauen\n(nur alpha!)</string>
     <string name="retry">Wiederholen</string>

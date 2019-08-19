@@ -1,4 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes “…”  - Regex to find wrong ones: („|‘|’|«|») -->
 <resources>
@@ -16,12 +44,10 @@
     <string name="X_lbl_select_fields_to_update">Güncellenecek alanları seçin</string>
     <string name="X_menu_delete_series">Serileri sil…</string>
     <string name="X_menu_delete_toc_entry">Seçkiden eser sil</string>
-    <string name="X_menu_edit_author">Yazarı düzenle…</string>
-    <string name="X_menu_edit_series">Serileri düzenle…</string>
+    <string name="title_edit_author">Yazarı düzenle</string>
+    <string name="title_edit_series">Serileri düzenle</string>
     <string name="X_menu_search_books">Kiatp ara</string>
     <string name="X_results_found">Sonuç bulundu</string>
-    <string name="X_search_title">Kitap kataloğu: Arama sonuçları</string>
-    <string name="X_select_bookshelves">Raflardan seçin</string>
     <string name="X_size">Boyut</string>
     <string name="X_tip_booklist_global_properties">Tüm kitap listesi stillerinin varsayılan özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Çoğu özellik bireysel stiller tarafından geçersiz kılınabilir, ancak varsayılan değerler burada tanımlanır. Listelerin başlangıçta nasıl görüntüleneceğini değiştirebilir ve mümkün olduğunda tüm stillerinize uygulanacak çeşitli diğer tercihleri ayarlayabilirsiniz.</string>
     <string name="X_unsaved_edits_title">Kaydedilmemiş değişiklikler</string>
@@ -412,7 +438,7 @@
     <string name="pt_bob_sort_author_name">Yazarları sırala</string>
     <string name="pt_bob_text_size">Kitap dizelgesi öğeleri boyutu</string>
     <string name="pt_bob_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
-    <string name="pt_bob_thumbnails_show">Ufak resimleri göster</string>
+    <string name="pt_bob_show_thumbnails">Ufak resimleri göster</string>
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
     <string name="pt_cover_scale_factor">Listelerdeki görüntü boyutu</string>
     <string name="pt_reformat_titles_on_insert">Eklerken</string>
@@ -432,8 +458,8 @@
     <string name="pt_ui_theme">Tema</string>
     <string name="pv_bob_books_under_multiple_each_1s">Her %1$s altında</string>
     <string name="pv_bob_books_under_multiple_primary_1s_only">Yalnızca birincil %1$s altında</string>
-    <string name="pv_bob_format_author_name_family_first">Soyad başta, örneğin “Nesin, Aziz”</string>
-    <string name="pv_bob_format_author_name_given_first">Ad başta, örneğin “Aziz Nesin”</string>
+    <string name="pv_bob_author_name_family_first">Soyad başta, örneğin “Nesin, Aziz”</string>
+    <string name="pv_bob_author_name_given_first">Ad başta, örneğin “Aziz Nesin”</string>
     <string name="rebuild_fts">FTS\'yi yeniden yapıla\n(aşırı deneysel)</string>
     <string name="retry">Yeniden dene</string>
     <string name="style_builtin_acquired_date">Edinilen</string>

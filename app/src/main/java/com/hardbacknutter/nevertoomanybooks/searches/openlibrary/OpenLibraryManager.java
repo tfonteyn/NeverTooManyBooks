@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,8 +85,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * identifiers (including isbn). But "identifiers" with "detail" has no isbn's.
  * Instead isbn's are on the same level as "identifiers" itself.</li>
  * </ul>
- * Problems:
- * <ul>
+ * <ul>Problems:
  * <li>"data" does not contain all information that the site has.</li>
  * <li>"details" seems, by their own admission, not to be stable yet.</li>
  * <li>both: dates are not structured, but {@link DateUtils#parseDate(String)}

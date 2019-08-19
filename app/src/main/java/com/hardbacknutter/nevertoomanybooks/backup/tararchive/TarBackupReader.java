@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntity;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntity.BackupEntityType;
+import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntity.Type;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntityAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -58,12 +59,15 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class TarBackupReader
         extends BackupReaderAbstract {
 
+    @NonNull
+    private final TarBackupContainer mContainer;
+
     /** The INFO data read from the start of the archive. */
-    @NonNull
-    private final BackupInfo mInfo;
+    @Nullable
+    private BackupInfo mInfo;
     /** The data stream for the archive. */
-    @NonNull
-    private TarArchiveInputStream mInput;
+    @Nullable
+    private TarArchiveInputStream mInputStream;
     /** Used to allow 'peeking' at the input stream. */
     @Nullable
     private ReaderEntity mPushedEntity;
@@ -73,71 +77,33 @@ public class TarBackupReader
      *
      * @param context   Current context
      * @param container Parent
-     *
-     * @throws IOException on failure
      */
     TarBackupReader(@NonNull final Context context,
-                    @NonNull final TarBackupContainer container)
-            throws IOException {
+                    @NonNull final TarBackupContainer container) {
         super(context);
-        // Open the file and create the archive stream
-        FileInputStream is = new FileInputStream(container.getFile());
-        mInput = new TarArchiveInputStream(is);
-
-        // Find and process the INFO entry.
-        ReaderEntity entity = findEntity(BackupEntityType.Info);
-        if (entity == null) {
-            throw new IOException("Not a valid backup; no INFO entity found");
-        }
-        // read the INFO
-        mInfo = new BackupInfo();
-        try (XmlImporter importer = new XmlImporter()) {
-            importer.doBackupInfoBlock(entity, mInfo);
-        }
-
-        // close and re-open.
-        mInput.close();
-        is.close();
-        is = new FileInputStream(container.getFile());
-        mInput = new TarArchiveInputStream(is);
+        mContainer = container;
     }
 
-    /**
-     * Scan the input for the desired entity type.
-     * It's the responsibility of the caller to reset the input stream as/if needed.
-     *
-     * @param type to get
-     *
-     * @return the entity if found, or {@code null} if not found.
-     *
-     * @throws IOException on failure
-     */
-    private ReaderEntity findEntity(@NonNull final BackupEntityType type)
+    @Override
+    @Nullable
+    public ReaderEntity findEntity(@NonNull final Type type)
             throws IOException {
 
         TarArchiveEntry entry;
-
         while (true) {
-            entry = mInput.getNextTarEntry();
+            entry = getInputStream().getNextTarEntry();
             if (entry == null) {
                 return null;
             }
 
             // Based on the file name, determine entity type
-            BackupEntityType found = getBackupEntityType(entry);
+            Type found = getBackupEntityType(entry);
             if (type.equals(found)) {
                 return new TarBackupReaderEntity(type, this, entry);
             }
         }
     }
 
-    /**
-     * Get the next entity (allowing for peeking).
-     *
-     * @return the next entity found.
-     *
-     * @throws IOException on failure
-     */
     @Override
     @Nullable
     public ReaderEntity nextEntity()
@@ -149,21 +115,33 @@ public class TarBackupReader
             return e;
         }
 
-        TarArchiveEntry entry = mInput.getNextTarEntry();
+        TarArchiveEntry entry = getInputStream().getNextTarEntry();
         if (entry == null) {
             return null;
         }
 
-        // Based on the file name, determine entity type
-        BackupEntityType type = getBackupEntityType(entry);
-
-        // Create entity
+        Type type = getBackupEntityType(entry);
         return new TarBackupReaderEntity(type, this, entry);
     }
 
     @NonNull
     @Override
-    public BackupInfo getInfo() {
+    public BackupInfo getInfo()
+            throws IOException {
+        if (mInfo == null) {
+            // Find and process the INFO entry.
+            ReaderEntity entity = findEntity(Type.Info);
+            if (entity == null) {
+                throw new IOException("Not a valid backup; no INFO entity found");
+            }
+            // read the INFO
+            mInfo = new BackupInfo();
+            try (XmlImporter importer = new XmlImporter()) {
+                importer.doBackupInfoBlock(entity, mInfo);
+            }
+            // We MUST close the stream here, so the caller gets a pristine stream.
+            reset();
+        }
         return mInfo;
     }
 
@@ -175,58 +153,75 @@ public class TarBackupReader
      * @return the TarArchiveEntry type.
      */
     @NonNull
-    private BackupEntityType getBackupEntityType(@NonNull final TarArchiveEntry entry) {
+    private Type getBackupEntityType(@NonNull final TarArchiveEntry entry) {
         String name = entry.getName().toLowerCase(App.getSystemLocale());
 
         // check covers first, as we will have many
         if (name.endsWith(".jpg") || name.endsWith(".png")) {
-            return BackupEntityType.Cover;
+            return Type.Cover;
 
         } else if (TarBackupContainer.INFO_FILE.equalsIgnoreCase(name)
                    || TarBackupContainer.INFO_PATTERN.matcher(name).find()) {
-            return BackupEntityType.Info;
+            return Type.Info;
 
         } else if (TarBackupContainer.BOOKS_FILE.equalsIgnoreCase(name)
                    || TarBackupContainer.BOOKS_PATTERN.matcher(name).find()) {
-            return BackupEntityType.Books;
+            return Type.Books;
 
         } else if (TarBackupContainer.PREFERENCES.equalsIgnoreCase(name)) {
-            return BackupEntityType.Preferences;
+            return Type.Preferences;
 
         } else if (TarBackupContainer.STYLES.equalsIgnoreCase(name)) {
-            return BackupEntityType.BooklistStyles;
+            return Type.BooklistStyles;
 
         } else if (TarBackupContainer.DB_FILE.equalsIgnoreCase(name)) {
-            return BackupEntityType.Database;
+            return Type.Database;
 
             // pre-v200
         } else if (Pattern.compile('^' + "style.blob." + "[0-9]*$",
                                    Pattern.CASE_INSENSITIVE).matcher(name).find()) {
-            return BackupEntityType.BooklistStylesPreV200;
+            return Type.BooklistStylesPreV200;
 
             // pre-v200
         } else if ("preferences".equals(name)) {
-            return BackupEntityType.PreferencesPreV200;
+            return Type.PreferencesPreV200;
 
             // needs to be below any specific xml files.
         } else if (name.endsWith(".xml")) {
-            return BackupEntityType.XML;
+            return Type.XML;
 
         } else {
-            Logger.warn(this, "getBackupEntityType",
+            Logger.info(this, "getBackupEntityType",
                         "Unknown file in archive: " + entry.getName());
-            return BackupEntityType.Unknown;
+            return Type.Unknown;
         }
     }
 
     /**
-     * Accessor used by TarEntityReader to get access to the stream data.
+     * Get the input stream.
      *
      * @return the stream
+     *
+     * @throws IOException on failure
      */
     @NonNull
-    protected TarArchiveInputStream getInput() {
-        return mInput;
+    private TarArchiveInputStream getInputStream()
+            throws IOException {
+        if (mInputStream == null) {
+            // Open the file and create the archive stream
+            FileInputStream is = new FileInputStream(mContainer.getFile());
+            mInputStream = new TarArchiveInputStream(is);
+        }
+        return mInputStream;
+    }
+
+    @Override
+    public void reset()
+            throws IOException {
+        if (mInputStream != null) {
+            mInputStream.close();
+            mInputStream = null;
+        }
     }
 
     @Override
@@ -234,11 +229,11 @@ public class TarBackupReader
     public void close()
             throws IOException {
         super.close();
-        mInput.close();
+        reset();
     }
 
     /**
-     * Implementation of TAR-specific ReaderEntity functions.
+     * Implementation of TAR-specific {@link ReaderEntity} functions.
      */
     private static class TarBackupReaderEntity
             extends ReaderEntityAbstract {
@@ -255,7 +250,7 @@ public class TarBackupReader
          * @param reader Parent
          * @param entry  Corresponding archive entry
          */
-        TarBackupReaderEntity(@NonNull final BackupEntityType type,
+        TarBackupReaderEntity(@NonNull final Type type,
                               @NonNull final TarBackupReader reader,
                               @NonNull final TarArchiveEntry entry) {
             super(type);
@@ -263,31 +258,23 @@ public class TarBackupReader
             mEntry = entry;
         }
 
-        /**
-         * @return the original "file name" of the object.
-         */
         @NonNull
         @Override
         public String getName() {
             return mEntry.getName();
         }
 
-        /**
-         * @return the 'modified' date from archive entry
-         */
         @NonNull
         @Override
         public Date getDateModified() {
             return mEntry.getLastModifiedDate();
         }
 
-        /**
-         * @return the stream to read the entity
-         */
         @NonNull
         @Override
-        public InputStream getStream() {
-            return mReader.getInput();
+        public InputStream getInputStream()
+                throws IOException {
+            return mReader.getInputStream();
         }
     }
 }

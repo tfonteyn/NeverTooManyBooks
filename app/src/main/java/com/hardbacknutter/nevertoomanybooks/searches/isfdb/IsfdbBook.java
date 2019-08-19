@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -175,8 +176,9 @@ public class IsfdbBook
     }
 
     /**
-     * @param isfdbId        ISFDB native book id
-     * @param fetchThumbnail whether to get thumbnails as well
+     * @param isfdbId          ISFDB native book id
+     * @param addSeriesFromToc whether the TOC should get parsed for Series information
+     * @param fetchThumbnail   whether to get thumbnails as well
      *
      * @return Bundle with book data
      *
@@ -194,8 +196,9 @@ public class IsfdbBook
     }
 
     /**
-     * @param path           A fully qualified ISFDB search url
-     * @param fetchThumbnail whether to get thumbnails as well
+     * @param path             A fully qualified ISFDB search url
+     * @param addSeriesFromToc whether the TOC should get parsed for Series information
+     * @param fetchThumbnail   whether to get thumbnails as well
      *
      * @return Bundle with book data
      *
@@ -218,8 +221,9 @@ public class IsfdbBook
     }
 
     /**
-     * @param editions       List of ISFDB Editions with native book id
-     * @param fetchThumbnail whether to get thumbnails as well
+     * @param editions         List of ISFDB Editions with native book id
+     * @param addSeriesFromToc whether the TOC should get parsed for Series information
+     * @param fetchThumbnail   whether to get thumbnails as well
      *
      * @return Bundle with book data
      *
@@ -373,8 +377,9 @@ public class IsfdbBook
      * }
      * </pre>
      *
-     * @param bookData       a new Bundle()  (must be passed in so we mock it in test)
-     * @param fetchThumbnail whether to get thumbnails as well
+     * @param bookData         a new Bundle()  (must be passed in so we mock it in test)
+     * @param addSeriesFromToc whether the TOC should get parsed for Series information
+     * @param fetchThumbnail   whether to get thumbnails as well
      *
      * @return Bundle with book data, can be empty, but never {@code null}
      */
@@ -623,7 +628,7 @@ public class IsfdbBook
     }
 
     /**
-     * All lines are normally:
+     * All lines are normally.
      * <li> <abbr class="template" title="Online Computer Library Center">OCLC/WorldCat</abbr>:
      * <a href="http://www.worldcat.org/oclc/963112443" target="_blank">963112443</a>
      * <p>
@@ -788,6 +793,8 @@ public class IsfdbBook
      *
      * }
      * </pre>
+     *
+     * @param addSeriesFromToc whether the TOC should get parsed for Series information
      *
      * @return the TOC
      *

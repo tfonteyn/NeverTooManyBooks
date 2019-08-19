@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -163,13 +165,13 @@ class SearchGoogleBooksEntryHandler
 
     /* XML tags/attrs we look for. */
     /**
-     * Contains a direct link to this <entry>
+     * Contains a direct link to this entry
      * <id>http://www.google.com/books/feeds/volumes/IVnpNAAACAAJ</id>
      */
     private static final String ID = "id";
-    /** <dc:creator>Jack Vance</dc:creator> */
+    /** <dc:creator>Jack Vance</dc:creator>. */
     private static final String XML_AUTHOR = "creator";
-    /** <dc:title>The Anome</dc:title> */
+    /** <dc:title>The Anome</dc:title>. */
     private static final String XML_TITLE = "title";
     /**
      * First one is the google book id. Not worth storing for now.
@@ -179,24 +181,26 @@ class SearchGoogleBooksEntryHandler
      */
     private static final String XML_ISBN = "identifier";
     /**
+     * An SQL date String.
      * <dc:date>1977</dc:date>
      * <dc:date>2011-12-19</dc:date>
      */
     private static final String XML_DATE_PUBLISHED = "date";
-    /** <dc:publisher>Coronet</dc:publisher> */
+    /** <dc:publisher>Coronet</dc:publisher>. */
     private static final String XML_PUBLISHER = "publisher";
     /**
+     * Rather annoyingly, can contain seemingly non-structured text.
      * <dc:format>206 pages</dc:format>
      * <dc:format>book</dc:format>
      */
     private static final String XML_FORMAT = "format";
 
     private static final String XML_LINK = "link";
-    /** <dc:subject>English fiction</dc:subject> */
+    /** <dc:subject>English fiction</dc:subject>. */
     private static final String XML_GENRE = "subject";
-    /** <dc:description>If they were to fight ... </dc:description> */
+    /** <dc:description>If they were to fight ... </dc:description>. */
     private static final String XML_DESCRIPTION = "description";
-    /** <dc:language>en</dc:language> */
+    /** <dc:language>en</dc:language>. */
     private static final String XML_LANGUAGE = "language";
 
     //  *      <gbs:price type='SuggestedRetailPrice'>
@@ -233,6 +237,7 @@ class SearchGoogleBooksEntryHandler
      *
      * @param bookData       Bundle to save results in
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+     * @param isbn           of the book
      */
     SearchGoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
                                   final boolean fetchThumbnail,
@@ -276,7 +281,8 @@ class SearchGoogleBooksEntryHandler
     public void startElement(@NonNull final String uri,
                              @NonNull final String localName,
                              @NonNull final String qName,
-                             @NonNull final Attributes attributes) {
+                             @NonNull final Attributes attributes)
+            throws SAXException {
 
         // the url is an attribute of the xml element; not the content
         if (mFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
@@ -309,6 +315,9 @@ class SearchGoogleBooksEntryHandler
                 case XML_PRICE_RETAIL_PRICE:
                     mInRetailPriceTag = true;
                     break;
+
+                default:
+                    throw new SAXException(XML_PRICE + ", attributes: " + attributes);
             }
         } else if (XML_MONEY.equalsIgnoreCase(localName)) {
 
@@ -406,7 +415,7 @@ class SearchGoogleBooksEntryHandler
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                     // see what we are missing.
-                    Logger.warn(this, "endElement",
+                    Logger.debug(this, "endElement",
                                 "Skipping: " + localName + "->`" + mBuilder + '`');
                 }
                 break;

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.EditBookActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.MappedCursorRow;
+import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -137,12 +138,12 @@ abstract class SendBooksLegacyTaskBase
                         @NonNull final Context context,
                         @NonNull final GoodreadsManager grManager,
                         @NonNull final DAO db,
-                        @NonNull final MappedCursorRow bookCursorRow) {
+                        @NonNull final BookCursor bookCursor) {
 
         GoodreadsManager.ExportResult result;
         Exception exportException = null;
         try {
-            result = grManager.sendOneBook(context, db, bookCursorRow);
+            result = grManager.sendOneBook(context, db, bookCursor);
 
         } catch (@NonNull final CredentialsException e) {
             result = GoodreadsManager.ExportResult.credentialsError;
@@ -158,7 +159,7 @@ abstract class SendBooksLegacyTaskBase
             exportException = e;
         }
 
-        long bookId = bookCursorRow.getLong(DBDefinitions.KEY_PK_ID);
+        long bookId = bookCursor.getLong(DBDefinitions.KEY_PK_ID);
 
         switch (result) {
             case sent:

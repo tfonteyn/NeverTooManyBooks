@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,25 +97,26 @@ public final class DateUtils {
     private static final ArrayList<SimpleDateFormat> PARSE_DATE_FORMATS = new ArrayList<>(25);
 
     static {
+        // This set of formats are locale agnostic;
+        // but we must make sure these use the real system Locale.
+        Locale systemLocale = App.getSystemLocale();
+
         // Used for formatting *user* dates, in the locale timezone, for SQL. e.g. date read...
-        LOCAL_SQL_DATE = new SimpleDateFormat("yyyy-MM-dd", App.getSystemLocale());
+        LOCAL_SQL_DATE = new SimpleDateFormat("yyyy-MM-dd", systemLocale);
 
         // Used for formatting *non-user* dates for SQL. e.g. publication dates...
         TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
-        UTC_SQL_DATE_TIME_HH_MM_SS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-                                                          App.getSystemLocale());
+        UTC_SQL_DATE_TIME_HH_MM_SS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", systemLocale);
         UTC_SQL_DATE_TIME_HH_MM_SS.setTimeZone(TZ_UTC);
 
-        UTC_SQL_DATE_TIME_HH_MM = new SimpleDateFormat("yyyy-MM-dd HH:mm",
-                                                       App.getSystemLocale());
+        UTC_SQL_DATE_TIME_HH_MM = new SimpleDateFormat("yyyy-MM-dd HH:mm", systemLocale);
         UTC_SQL_DATE_TIME_HH_MM.setTimeZone(TZ_UTC);
 
-        UTC_SQL_DATE_YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd", App.getSystemLocale());
+        UTC_SQL_DATE_YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd", systemLocale);
         UTC_SQL_DATE_YYYY_MM_DD.setTimeZone(TZ_UTC);
 
-        UTC_SQL_DATE_YYYY_MM = new SimpleDateFormat("yyyy-MM", App.getSystemLocale());
+        UTC_SQL_DATE_YYYY_MM = new SimpleDateFormat("yyyy-MM", systemLocale);
         UTC_SQL_DATE_YYYY_MM.setTimeZone(TZ_UTC);
-
     }
 
     private DateUtils() {
@@ -140,7 +142,7 @@ public final class DateUtils {
         addParseDateFormat("dd-MM-yyyy HH:mm", locale, false);
         addParseDateFormat("dd-MM-yyyy", locale, false);
 
-        // SQL date formats, numerical
+        // SQL date formats, locale agnostic.
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_TIME_HH_MM_SS);
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_TIME_HH_MM);
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_YYYY_MM_DD);
@@ -234,8 +236,8 @@ public final class DateUtils {
         if (PARSE_DATE_FORMATS.isEmpty()) {
             // check the device language
             boolean userIsEnglishSpeaking =
-                    Objects.equals(Locale.ENGLISH.getISO3Language(),
-                                   App.getSystemLocale().getISO3Language());
+                    Objects.equals("eng", App.getSystemLocale().getISO3Language());
+
             createParseDateFormats(App.getSystemLocale(), userIsEnglishSpeaking);
         }
 
@@ -272,6 +274,7 @@ public final class DateUtils {
             throws ParseException {
         df.setLenient(lenient);
         Date parsedDate = df.parse(dateString);
+        // Make sure there is no overflow into the next day due to the user Timezone
         if (parsedDate != null) {
             parsedDate.setHours(0);
             parsedDate.setMinutes(0);
@@ -302,7 +305,7 @@ public final class DateUtils {
                 }
                 // failed to parse
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
-                    Logger.warnWithStackTrace(DateUtils.class, "failed: " + dateString);
+                    Logger.debugWithStackTrace(DateUtils.class, "dateString=" + dateString);
                 }
                 return dateString;
 
@@ -319,7 +322,7 @@ public final class DateUtils {
             default:
                 // failed to parse
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
-                    Logger.warnWithStackTrace(DateUtils.class, "failed: " + dateString);
+                    Logger.debugWithStackTrace(DateUtils.class, "dateString=" + dateString);
                 }
                 return dateString;
         }
@@ -334,8 +337,8 @@ public final class DateUtils {
     @NonNull
     public static String toPrettyDateTime(@NonNull final Locale locale,
                                           @NonNull final Date date) {
-        return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,
-                                              locale).format(date);
+        return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale)
+                         .format(date);
     }
 
     /**
@@ -365,8 +368,8 @@ public final class DateUtils {
      */
     @NonNull
     public static String utcSqlDateTimeForToday() {
-        return UTC_SQL_DATE_TIME_HH_MM_SS.format(
-                Calendar.getInstance(App.getSystemLocale()).getTime());
+        Calendar calendar = Calendar.getInstance(App.getSystemLocale());
+        return UTC_SQL_DATE_TIME_HH_MM_SS.format(calendar.getTime());
     }
 
     /**

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,13 +55,13 @@ import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup.RowKind;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistMappedCursorRow;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistSupportProvider;
 import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BooklistMappedCursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.ColumnMapper;
+import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
@@ -69,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
 
 /**
@@ -92,7 +92,6 @@ public class BooklistAdapter
 
     /** The padding indent (in pixels) added for each level: padding = (level-1) * mLevelIndent. */
     private final int mLevelIndent;
-
     /** Database Access. */
     @NonNull
     private final DAO mDb;
@@ -119,12 +118,10 @@ public class BooklistAdapter
                            @NonNull final BooklistStyle style,
                            @NonNull final DAO db,
                            @Nullable final Cursor cursor) {
-
         mInflater = inflater;
+        mStyle = style;
         mDb = db;
         mCursor = cursor;
-        mStyle = style;
-
         mLevelIndent = mInflater.getContext().getResources()
                                 .getDimensionPixelSize(R.dimen.booklist_level_indent);
     }
@@ -160,15 +157,14 @@ public class BooklistAdapter
     @Override
     public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                             final int viewType) {
-
         //noinspection ConstantConditions
-        BooklistMappedCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+        CursorMapper row = ((BooklistSupportProvider) mCursor).getCursorMapper();
 
         // The view depends on the viewType + level.
         View view = createView(parent, viewType, row.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
 
         // do holder type dependent init.
-        return createHolder(viewType, view, row);
+        return createHolder(viewType, view);
     }
 
     @Override
@@ -183,31 +179,19 @@ public class BooklistAdapter
         // position the data we need to bind.
         //noinspection ConstantConditions
         mCursor.moveToPosition(position);
-        BooklistMappedCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+        CursorMapper row = ((BooklistSupportProvider) mCursor).getCursorMapper();
         // actual binding depends on the type of row (i.e. holder), so let the holder do it.
         holder.onBindViewHolder(row, mStyle);
     }
 
     @Override
     public int getItemViewType(final int position) {
-        //TEST: At least on Android 2.3.4 we see attempts to get item types for cached items
-        // beyond the end of empty cursors. This implies a cleanup ordering issue, but has
-        // not been confirmed. This code attempts to gather more details of how this error occurs.
-        // This DOES NOT fix the error; just gathers more debug info
-        //
         if (mCursor == null) {
             return 0;
-        } else if (mCursor.isClosed()) {
-            throw new IllegalStateException(
-                    "Attempt to get type of item on closed cursor (" + mCursor + ")");
-        } else if (position >= mCursor.getCount()) {
-            throw new IllegalStateException(
-                    "Attempt to get type of item beyond end of cursor (" + mCursor + ")");
-        } else {
-            mCursor.moveToPosition(position);
-            BooklistMappedCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
-            return row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND);
         }
+        mCursor.moveToPosition(position);
+        CursorMapper row = ((BooklistSupportProvider) mCursor).getCursorMapper();
+        return row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND);
     }
 
     @Override
@@ -288,7 +272,6 @@ public class BooklistAdapter
      */
     private void scaleTextViews(final float scale,
                                 @NonNull final View root) {
-
         // text gets scaled
         if (root instanceof TextView) {
             TextView textView = (TextView) root;
@@ -317,8 +300,7 @@ public class BooklistAdapter
      * @return the holder
      */
     private RowViewHolder createHolder(final int viewType,
-                                       @NonNull final View itemView,
-                                       @NonNull final BooklistMappedCursorRow row) {
+                                       @NonNull final View itemView) {
 
         // a BookHolder is based on multiple columns, the holder itself will sort them out.
         if (viewType == RowKind.BOOK) {
@@ -328,7 +310,8 @@ public class BooklistAdapter
         // Except for CheckableStringHolder which uses an additional fixed column,
         // all other rows are based on a single column
         String columnName = RowKind.get(viewType).getDisplayDomain().name;
-        int columnIndex = row.getColumnIndex(columnName);
+        //noinspection ConstantConditions
+        int columnIndex = mCursor.getColumnIndex(columnName);
         if (columnIndex < 0) {
             throw new ColumnNotPresentException(columnName);
         }
@@ -420,18 +403,18 @@ public class BooklistAdapter
     }
 
     /**
-     * See {@link BooksOnBookshelfModel#TMP_USE_BOB_EXTRAS_TASK}.
-     * <p>
      * Background task to get 'extra' details for a book row.
      * Doing this in a background task keeps the booklist cursor simple and small.
      * Used by {@link BookHolder}.
+     * <p>
+     * See {@link BooklistStyle#extrasByTask()}
      */
     private static class GetBookExtrasTask
             extends AsyncTask<Void, Void, Boolean> {
 
-        /** Format string (not allowed to cache the context, so get in constructor). */
+        /** Format string. */
         @NonNull
-        private final String mA_bracket_b_bracket;
+        private final String mX_bracket_Y_bracket;
 
         /** The listener for the tasks result. */
         @NonNull
@@ -475,7 +458,7 @@ public class BooklistAdapter
             mTaskListener = new WeakReference<>(taskListener);
             mExtraFields = extraFields;
 
-            mA_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
+            mX_bracket_Y_bracket = context.getString(R.string.a_bracket_b_bracket);
         }
 
         @Override
@@ -489,7 +472,7 @@ public class BooklistAdapter
                     return false;
                 }
 
-                ColumnMapper mapper = new ColumnMapper(cursor);
+                CursorMapper mapper = new CursorMapper(cursor);
 
                 String tmp;
                 if ((mExtraFields & BooklistStyle.EXTRAS_AUTHOR) != 0) {
@@ -528,21 +511,9 @@ public class BooklistAdapter
                     }
                 }
 
-                if ((mExtraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
-                    tmp = mapper.getString(DBDefinitions.KEY_PUBLISHER);
-                    String pubDate = mapper.getString(DBDefinitions.KEY_DATE_PUBLISHED);
-                    // over optimisation ?
-                    if (pubDate.length() == 4) {
-                        // 4 digits is just the year.
-                        tmp = String.format(mA_bracket_b_bracket, tmp, pubDate);
-                    } else if (pubDate.length() > 4) {
-                        // parse/format the date
-                        tmp = String.format(mA_bracket_b_bracket, tmp,
-                                            DateUtils.toPrettyDate(mLocale, pubDate));
-                    }
-                    if (!tmp.isEmpty()) {
-                        mResults.putString(DBDefinitions.KEY_PUBLISHER, tmp);
-                    }
+                tmp = getPublisherAndPubDateText(mapper);
+                if (tmp != null && !tmp.isEmpty()) {
+                    mResults.putString(DBDefinitions.KEY_PUBLISHER, tmp);
                 }
 
             } catch (@NonNull final NumberFormatException e) {
@@ -550,6 +521,38 @@ public class BooklistAdapter
                 return false;
             }
             return true;
+        }
+
+        @Nullable
+        String getPublisherAndPubDateText(@NonNull final CursorMapper mapper) {
+            String tmp = null;
+            if ((mExtraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
+                tmp = mapper.getString(DBDefinitions.KEY_PUBLISHER);
+            }
+            String tmpPubDate = null;
+            if ((mExtraFields & BooklistStyle.EXTRAS_PUB_DATE) != 0) {
+                tmpPubDate = mapper.getString(DBDefinitions.KEY_DATE_PUBLISHED);
+            }
+            // show combined Publisher and Pub. Date
+            if ((tmp != null) && (tmpPubDate != null)) {
+                if (tmpPubDate.length() == 4) {
+                    // 4 digits is just the year.
+                    tmp = String.format(mX_bracket_Y_bracket, tmp, tmpPubDate);
+                } else if (tmpPubDate.length() > 4) {
+                    // parse/format the date
+                    tmp = String.format(mX_bracket_Y_bracket, tmp,
+                                        DateUtils.toPrettyDate(mLocale, tmpPubDate));
+                }
+            } else if (tmpPubDate != null) {
+                // there was no publisher, just use the date
+                if (tmpPubDate.length() == 4) {
+                    tmp = tmpPubDate;
+                } else if (tmpPubDate.length() > 4) {
+                    tmp = DateUtils.toPrettyDate(mLocale, tmpPubDate);
+                }
+            }
+
+            return tmp;
         }
 
         @Override
@@ -606,7 +609,7 @@ public class BooklistAdapter
          * @param style   to use
          */
         @CallSuper
-        void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
+        void onBindViewHolder(@NonNull final CursorMapper rowData,
                               @NonNull final BooklistStyle style) {
             absolutePosition = rowData.getInt(DBDefinitions.KEY_BL_ABSOLUTE_POSITION);
         }
@@ -659,9 +662,14 @@ public class BooklistAdapter
         @NonNull
         private final String mLocationLabel;
 
+        @NonNull
+        private final Locale mLocale;
+
         /** Format string. */
         @NonNull
         private final String mName_colon_value;
+        @NonNull
+        private final String mX_bracket_Y_bracket;
 
         private final GetBookExtrasTask.GetBookExtrasTaskFinishedListener mTaskListener =
                 new GetBookExtrasTask.GetBookExtrasTaskFinishedListener() {
@@ -669,9 +677,12 @@ public class BooklistAdapter
                     public void onGetBookExtrasTaskFinished(@NonNull final Bundle results) {
                         showOrHide(authorView,
                                    results.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
-                        showOrHide(publisherView, results.getString(DBDefinitions.KEY_PUBLISHER));
-                        showOrHide(isbnView, results.getString(DBDefinitions.KEY_ISBN));
-                        showOrHide(formatView, results.getString(DBDefinitions.KEY_FORMAT));
+                        showOrHide(publisherView,
+                                   results.getString(DBDefinitions.KEY_PUBLISHER));
+                        showOrHide(isbnView,
+                                   results.getString(DBDefinitions.KEY_ISBN));
+                        showOrHide(formatView,
+                                   results.getString(DBDefinitions.KEY_FORMAT));
                         showOrHide(locationView, mLocationLabel,
                                    results.getString(DBDefinitions.KEY_LOCATION));
                         showOrHide(bookshelvesView, mShelvesLabel,
@@ -695,8 +706,11 @@ public class BooklistAdapter
             Context context = itemView.getContext();
             // fetch once and re-use later.
             mName_colon_value = context.getString(R.string.name_colon_value);
+            mX_bracket_Y_bracket = context.getString(R.string.a_bracket_b_bracket);
             mShelvesLabel = context.getString(R.string.lbl_bookshelves);
             mLocationLabel = context.getString(R.string.lbl_location);
+
+            mLocale = LocaleUtils.from(context);
 
             // always visible
             titleView = itemView.findViewById(R.id.title);
@@ -718,6 +732,7 @@ public class BooklistAdapter
             seriesNumView = itemView.findViewById(R.id.series_num);
             seriesNumLongView = itemView.findViewById(R.id.series_num_long);
 
+            // Lookup all the 'extras' fields
             authorView = itemView.findViewById(R.id.author);
             publisherView = itemView.findViewById(R.id.publisher);
             isbnView = itemView.findViewById(R.id.isbn);
@@ -725,7 +740,7 @@ public class BooklistAdapter
             locationView = itemView.findViewById(R.id.location);
             bookshelvesView = itemView.findViewById(R.id.shelves);
 
-            // initially all
+            // initially all the 'extras' fields are assumed not to be in use.
             authorView.setVisibility(View.GONE);
             publisherView.setVisibility(View.GONE);
             isbnView.setVisibility(View.GONE);
@@ -735,7 +750,7 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
+        public void onBindViewHolder(@NonNull final CursorMapper rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
@@ -770,7 +785,8 @@ public class BooklistAdapter
                 }
             }
 
-            if (App.isUsed(DBDefinitions.KEY_SERIES_TITLE) && rowData.hasSeriesNumber()) {
+            if (App.isUsed(DBDefinitions.KEY_SERIES_TITLE)
+                && rowData.contains(DBDefinitions.KEY_BOOK_NUM_IN_SERIES)) {
 
                 String number = rowData.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
                 if (!number.isEmpty()) {
@@ -793,7 +809,7 @@ public class BooklistAdapter
                 seriesNumLongView.setVisibility(View.GONE);
             }
 
-            if (BooksOnBookshelfModel.TMP_USE_BOB_EXTRAS_TASK) {
+            if (style.extrasByTask()) {
                 int extraFields = style.getExtraFieldsStatus();
                 // If there are extras to get, start a background task.
                 if ((extraFields & BooklistStyle.EXTRAS_BY_TASK) != 0) {
@@ -816,11 +832,52 @@ public class BooklistAdapter
                 showOrHide(style, rowData, DBDefinitions.KEY_BOOKSHELF_CSV, bookshelvesView);
 
                 showOrHide(style, rowData, DBDefinitions.KEY_AUTHOR_FORMATTED, authorView);
-                showOrHide(style, rowData, DBDefinitions.KEY_PUBLISHER, publisherView);
                 showOrHide(style, rowData, DBDefinitions.KEY_ISBN, isbnView);
                 showOrHide(style, rowData, DBDefinitions.KEY_FORMAT, formatView);
                 showOrHide(style, rowData, DBDefinitions.KEY_LOCATION, locationView);
+
+                if (style.isUsed(DBDefinitions.KEY_PUBLISHER)
+                    || style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
+                    showOrHide(publisherView, getPublisherAndPubDateText(style, rowData));
+                }
             }
+        }
+
+        /**
+         * Temporarily duplication.
+         * {@link GetBookExtrasTask#getPublisherAndPubDateText}
+         */
+        @Nullable
+        String getPublisherAndPubDateText(@NonNull final BooklistStyle style,
+                                          @NonNull final CursorMapper mapper) {
+            String tmp = null;
+            if (style.isUsed(DBDefinitions.KEY_PUBLISHER)) {
+                tmp = mapper.getString(DBDefinitions.KEY_PUBLISHER);
+            }
+            String tmpPubDate = null;
+            if (style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
+                tmpPubDate = mapper.getString(DBDefinitions.KEY_DATE_PUBLISHED);
+            }
+            // show combined Publisher and Pub. Date
+            if ((tmp != null) && (tmpPubDate != null)) {
+                if (tmpPubDate.length() == 4) {
+                    // 4 digits is just the year.
+                    tmp = String.format(mX_bracket_Y_bracket, tmp, tmpPubDate);
+                } else if (tmpPubDate.length() > 4) {
+                    // parse/format the date
+                    tmp = String.format(mX_bracket_Y_bracket, tmp,
+                                        DateUtils.toPrettyDate(mLocale, tmpPubDate));
+                }
+            } else if (tmpPubDate != null) {
+                // there was no publisher, just use the date
+                if (tmpPubDate.length() == 4) {
+                    tmp = tmpPubDate;
+                } else if (tmpPubDate.length() > 4) {
+                    tmp = DateUtils.toPrettyDate(mLocale, tmpPubDate);
+                }
+            }
+
+            return tmp;
         }
 
         /**
@@ -851,7 +908,7 @@ public class BooklistAdapter
         }
 
         void showOrHide(@NonNull final BooklistStyle style,
-                        @NonNull final BooklistMappedCursorRow rowData,
+                        @NonNull final CursorMapper rowData,
                         @NonNull final String key,
                         @NonNull final TextView view) {
             if (style.isUsed(key)) {
@@ -912,7 +969,7 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
+        public void onBindViewHolder(@NonNull final CursorMapper rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
@@ -995,7 +1052,7 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
+        public void onBindViewHolder(@NonNull final CursorMapper rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
@@ -1035,7 +1092,7 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
+        public void onBindViewHolder(@NonNull final CursorMapper rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
@@ -1067,7 +1124,7 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
+        public void onBindViewHolder(@NonNull final CursorMapper rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
@@ -1100,7 +1157,7 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
+        public void onBindViewHolder(@NonNull final CursorMapper rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
@@ -1147,7 +1204,7 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
+        public void onBindViewHolder(@NonNull final CursorMapper rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 

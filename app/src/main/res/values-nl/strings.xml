@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes „…”  - Regex to find wrong ones: (“|‘|’|«|») -->
 <resources>
@@ -16,12 +44,10 @@
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
     <string name="X_menu_delete_series">Verwijderen serie…</string>
     <string name="X_menu_delete_toc_entry">Verwijder titels uit bloemlezing</string>
-    <string name="X_menu_edit_author">Bewerken auteur…</string>
-    <string name="X_menu_edit_series">Serie bewerken…</string>
+    <string name="title_edit_author">Auteur bewerken</string>
+    <string name="title_edit_series">Serie bewerken</string>
     <string name="X_menu_search_books">Zoek boeken</string>
     <string name="X_results_found">Gevonden resultaten</string>
-    <string name="X_search_title">Zoekresultaten</string>
-    <string name="X_select_bookshelves">Selecteer Boekenplanken</string>
     <string name="X_size">Grootte</string>
     <string name="X_tip_booklist_global_properties">U kunt dit scherm gebruiken om de standaardkenmerken van alle stijlen van de boekenlijst in te stellen. De meeste eigenschappen kunnen worden overschreven door afzonderlijke stijlen, maar de standaardwaarden worden hier gedefinieerd. U kunt de manier wijzigen waarop lijsten worden weergegeven bij het opstarten en een aantal andere voorkeuren aanpassen die indien mogelijk op al uw stijlen worden toegepast.</string>
     <string name="X_unsaved_edits_title">Niet opgeslagen veranderingen</string>
@@ -415,7 +441,7 @@
     <string name="pt_bob_sort_author_name">Auteur namen sorteren</string>
     <string name="pt_bob_text_size">Grootte van boekenlijst tekst</string>
     <string name="pt_bob_thumbnails_cache_resized">Cache herschaalde miniaturen</string>
-    <string name="pt_bob_thumbnails_show">Toon Miniaturen</string>
+    <string name="pt_bob_show_thumbnails">Toon Miniaturen</string>
     <string name="pt_collect_series_info_from_toc">Verzamel Serie-info van de inhouds tabel</string>
     <string name="pt_cover_scale_factor">Miniaturen grootte in lijsten</string>
     <string name="pt_reformat_titles_on_insert">Tijdens toevoegen</string>
@@ -437,8 +463,8 @@
     <string name="pt_ui_theme">Thema</string>
     <string name="pv_bob_books_under_multiple_each_1s">Onder elke %1$s</string>
     <string name="pv_bob_books_under_multiple_primary_1s_only">Alleen onder primaire %1$s</string>
-    <string name="pv_bob_format_author_name_family_first">Achternaam eerst bvb. „Reve, Gerard”</string>
-    <string name="pv_bob_format_author_name_given_first">Voornaam eerst bvb. „Gerard Reve”</string>
+    <string name="pv_bob_author_name_family_first">Achternaam eerst bvb. „Reve, Gerard”</string>
+    <string name="pv_bob_author_name_given_first">Voornaam eerst bvb. „Gerard Reve”</string>
     <string name="pv_reformat_titles_prefixes">de|De|een|Een|het|Het</string>
     <string name="rebuild_fts">FTS opnieuw opbouwen\n(Experimenteel!)</string>
     <string name="retry">Opnieuw\\nproberen</string>

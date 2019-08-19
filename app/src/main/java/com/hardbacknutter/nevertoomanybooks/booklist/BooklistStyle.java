@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,9 +122,7 @@ public class BooklistStyle
                 }
             };
 
-    /**
-     * Extra book data to show at lowest level.
-     */
+    /** Extra book data to show at lowest level. (the bit numbers are not stored anywhere) */
     public static final int EXTRAS_BOOKSHELVES = 1;
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_LOCATION = 1 << 1;
@@ -132,14 +131,18 @@ public class BooklistStyle
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_PUBLISHER = 1 << 3;
     /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_AUTHOR = 1 << 4;
+    public static final int EXTRAS_PUB_DATE = 1 << 4;
     /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_ISBN = 1 << 5;
+    public static final int EXTRAS_AUTHOR = 1 << 5;
+    /** Extra book data to show at lowest level. */
+    public static final int EXTRAS_ISBN = 1 << 6;
+
 
     /** Mask for the extras that are fetched using {@link BooklistAdapter}.GetBookExtrasTask}. */
-    public static final int EXTRAS_BY_TASK =
-            EXTRAS_BOOKSHELVES | EXTRAS_LOCATION | EXTRAS_FORMAT
-            | EXTRAS_PUBLISHER | EXTRAS_AUTHOR | EXTRAS_ISBN;
+    public static final int EXTRAS_BY_TASK = EXTRAS_BOOKSHELVES
+                                             | EXTRAS_LOCATION | EXTRAS_FORMAT
+                                             | EXTRAS_PUBLISHER | EXTRAS_PUB_DATE
+                                             | EXTRAS_AUTHOR | EXTRAS_ISBN;
 
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_THUMBNAIL = 0x100;
@@ -252,20 +255,21 @@ public class BooklistStyle
     private transient PBitmask mShowHeaderInfo;
     /** Sorting. */
     private transient PBoolean mSortAuthorGivenNameFirst;
+
     /** Show a thumbnail on each book row in the list. */
     private transient PBoolean mExtraShowThumbnails;
-
     /** Extra info to show on each book row in the list. */
     private transient PBoolean mExtraShowBookshelves;
     private transient PBoolean mExtraShowLocation;
     private transient PBoolean mExtraShowAuthor;
     private transient PBoolean mExtraShowPublisher;
+    private transient PBoolean mExtraShowPubDate;
     private transient PBoolean mExtraShowIsbn;
     private transient PBoolean mExtraShowFormat;
+    /** Fetch the extras using ot task or not. */
+    private transient PBoolean mExtrasByTask;
 
-    /**
-     * All groups in this style.
-     */
+    /** All groups in this style. */
     private transient PStyleGroups mStyleGroups;
 
     /**
@@ -379,8 +383,11 @@ public class BooklistStyle
         mExtraShowLocation.set(in);
         mExtraShowAuthor.set(in);
         mExtraShowPublisher.set(in);
+        mExtraShowPubDate.set(in);
         mExtraShowIsbn.set(in);
         mExtraShowFormat.set(in);
+
+        mExtrasByTask.set(in);
 
         mSortAuthorGivenNameFirst.set(in);
 
@@ -443,14 +450,18 @@ public class BooklistStyle
                                        ImageUtils.SCALE_MEDIUM);
 
         // all extra details for book-rows.
-        mExtraShowThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show, mUuid, isUserDefined(),
+        mExtraShowThumbnails = new PBoolean(Prefs.pk_bob_show_thumbnails, mUuid, isUserDefined(),
                                             true);
         mExtraShowBookshelves = new PBoolean(Prefs.pk_bob_show_bookshelves, mUuid, isUserDefined());
         mExtraShowLocation = new PBoolean(Prefs.pk_bob_show_location, mUuid, isUserDefined());
         mExtraShowAuthor = new PBoolean(Prefs.pk_bob_show_author, mUuid, isUserDefined());
         mExtraShowPublisher = new PBoolean(Prefs.pk_bob_show_publisher, mUuid, isUserDefined());
+        mExtraShowPubDate = new PBoolean(Prefs.pk_bob_show_pub_date, mUuid, isUserDefined());
         mExtraShowIsbn = new PBoolean(Prefs.pk_bob_show_isbn, mUuid, isUserDefined());
         mExtraShowFormat = new PBoolean(Prefs.pk_bob_show_format, mUuid, isUserDefined());
+
+        mExtrasByTask = new PBoolean(Prefs.pk_bob_use_task_for_extras, mUuid, isUserDefined(),
+                                     true);
 
         // all filters
         mFilters = new LinkedHashMap<>();
@@ -519,8 +530,11 @@ public class BooklistStyle
         mExtraShowLocation.writeToParcel(dest);
         mExtraShowAuthor.writeToParcel(dest);
         mExtraShowPublisher.writeToParcel(dest);
+        mExtraShowPubDate.writeToParcel(dest);
         mExtraShowIsbn.writeToParcel(dest);
         mExtraShowFormat.writeToParcel(dest);
+
+        mExtrasByTask.writeToParcel(dest);
 
         mSortAuthorGivenNameFirst.writeToParcel(dest);
 
@@ -633,10 +647,13 @@ public class BooklistStyle
         map.put(mExtraShowThumbnails.getKey(), mExtraShowThumbnails);
         map.put(mExtraShowBookshelves.getKey(), mExtraShowBookshelves);
         map.put(mExtraShowLocation.getKey(), mExtraShowLocation);
+        map.put(mExtraShowAuthor.getKey(), mExtraShowAuthor);
         map.put(mExtraShowPublisher.getKey(), mExtraShowPublisher);
+        map.put(mExtraShowPubDate.getKey(), mExtraShowPubDate);
         map.put(mExtraShowIsbn.getKey(), mExtraShowIsbn);
         map.put(mExtraShowFormat.getKey(), mExtraShowFormat);
-        map.put(mExtraShowAuthor.getKey(), mExtraShowAuthor);
+
+        map.put(mExtrasByTask.getKey(), mExtrasByTask);
 
         // sorting
         map.put(mSortAuthorGivenNameFirst.getKey(), mSortAuthorGivenNameFirst);
@@ -687,6 +704,21 @@ public class BooklistStyle
         }
     }
 
+    /**
+     * Whether the user prefers the book details (extras) to be fetched in the background,
+     * or immediately.
+     *
+     * @return {@code true} when a background task should be used.
+     */
+    public boolean extrasByTask() {
+        return mExtrasByTask.isTrue();
+    }
+
+    /**
+     * Whether the user prefers the Author names sorted by Given names, or by Family name first.
+     *
+     * @return {@code true} when Given names should come first
+     */
     boolean sortAuthorByGiven() {
         return mSortAuthorGivenNameFirst.isTrue();
     }
@@ -777,6 +809,10 @@ public class BooklistStyle
 
         if (mExtraShowPublisher.isTrue()) {
             extras |= EXTRAS_PUBLISHER;
+        }
+
+        if (mExtraShowPubDate.isTrue()) {
+            extras |= EXTRAS_PUB_DATE;
         }
 
         if (mExtraShowIsbn.isTrue()) {
@@ -892,14 +928,14 @@ public class BooklistStyle
      * @return the group at the passed index.
      */
     @NonNull
-    public BooklistGroup getGroupAt(final int index) {
+    BooklistGroup getGroupAt(final int index) {
         return mStyleGroups.getGroups().get(index);
     }
 
     /**
      * @return the group kind at the passed index.
      */
-    public int getGroupKindAt(final int index) {
+    int getGroupKindAt(final int index) {
         return mStyleGroups.getGroupKindAt(index);
     }
 
@@ -1160,10 +1196,12 @@ public class BooklistStyle
                + "\nmSortAuthorGivenNameFirst=" + mSortAuthorGivenNameFirst
                + "\nmExtraShowThumbnails=" + mExtraShowThumbnails
                + "\nmThumbnailScale=" + mThumbnailScale
+               + "\nmExtrasByTask=" + mExtrasByTask
                + "\nmExtraShowBookshelves=" + mExtraShowBookshelves
                + "\nmExtraShowLocation=" + mExtraShowLocation
                + "\nmExtraShowAuthor=" + mExtraShowAuthor
                + "\nmExtraShowPublisher=" + mExtraShowPublisher
+               + "\nmExtraShowPubDate=" + mExtraShowPubDate
                + "\nmExtraShowIsbn=" + mExtraShowIsbn
                + "\nmExtraShowFormat=" + mExtraShowFormat
                + "\nmStyleGroups=" + mStyleGroups
@@ -1193,6 +1231,9 @@ public class BooklistStyle
 
             case DBDefinitions.KEY_PUBLISHER:
                 return App.isUsed(key) && mExtraShowPublisher.isTrue();
+
+            case DBDefinitions.KEY_DATE_PUBLISHED:
+                return App.isUsed(key) && mExtraShowPubDate.isTrue();
 
             default:
                 return false;

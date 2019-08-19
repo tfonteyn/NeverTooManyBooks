@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
 import android.database.Cursor;
 import android.database.SQLException;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
@@ -38,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
  * Class to store an index using a table name and a list of domain definitions.
@@ -151,7 +152,7 @@ public class IndexDefinition {
             sql.append(" UNIQUE");
         }
         sql.append(" INDEX ").append(mName).append(" ON ").append(mTable.getName())
-           .append('(').append(Csv.join(",", mDomains)).append(')');
+           .append('(').append(TextUtils.join(",", mDomains)).append(')');
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_DDL) {
             Logger.debugExit(this, "getSqlCreateStatement", sql.toString());

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +27,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Collection;
-
 /**
  * CSV utilities.
+ * <p>
+ * The call to {@link #join(CharSequence, Iterable)} can be replaced by {@link TextUtils#join}
+ * One could argue that for consistency you should use this class throughout.
  */
 public final class Csv {
 
@@ -42,7 +46,7 @@ public final class Csv {
     /**
      * Create a CSV list String from the passed collection.
      * A {@code null} element is morphed into "".
-     * This can be avoided by using {@link #join(CharSequence, Collection, Formatter)} and
+     * This can be avoided by using {@link #join(CharSequence, Iterable, Formatter)} and
      * providing a {@link Formatter}.
      *
      * @param delimiter  e.g. "," or ", " etc...
@@ -52,11 +56,9 @@ public final class Csv {
      */
     @NonNull
     public static <E> String join(@NonNull final CharSequence delimiter,
-                                  @NonNull final Collection<E> collection) {
-        if (collection.isEmpty()) {
-            return "";
-        }
-        return join(delimiter, collection, true, null, null);
+                                  @NonNull final Iterable<E> collection) {
+        return TextUtils.join(delimiter, collection);
+//        return join(delimiter, collection, true, null, null);
     }
 
     /**
@@ -72,11 +74,8 @@ public final class Csv {
      */
     @NonNull
     public static <E> String join(@NonNull final CharSequence delimiter,
-                                  @NonNull final Collection<E> collection,
+                                  @NonNull final Iterable<E> collection,
                                   @Nullable final Formatter<E> formatter) {
-        if (collection.isEmpty()) {
-            return "";
-        }
         return join(delimiter, collection, true, null, formatter);
     }
 
@@ -87,23 +86,24 @@ public final class Csv {
      * (but no exceptions thrown).
      * This can be avoided by providing a {@link Formatter}.
      *
-     * @param delimiter  e.g. "," or ", " etc...
-     * @param collection collection
-     * @param prefix     (optional) prefix that will be added to each element.
-     *                   Caller is responsible to add spaces if desired.
-     * @param formatter  (optional) formatter to use on each element, or {@code null} for none.
+     * @param delimiter    e.g. "," or ", " etc...
+     * @param collection   collection
+     * @param allowEmpties Flag to allow null/empty values to be allowed or skipped.
+     * @param prefix       (optional) prefix that will be added to each element.
+     *                     Caller is responsible to add spaces if desired.
+     * @param formatter    (optional) formatter to use on each element, or {@code null} for none.
      *
      * @return csv string, can be empty, never {@code null}.
      */
     @NonNull
     public static <E> String join(@NonNull final CharSequence delimiter,
-                                  @NonNull final Collection<E> collection,
+                                  @NonNull final Iterable<E> collection,
                                   final boolean allowEmpties,
                                   @Nullable final String prefix,
                                   @Nullable final Formatter<E> formatter) {
-        if (collection.isEmpty()) {
-            return "";
-        }
+//        if (collection.isEmpty()) {
+//            return "";
+//        }
 
         StringBuilder result = new StringBuilder();
         boolean first = true;

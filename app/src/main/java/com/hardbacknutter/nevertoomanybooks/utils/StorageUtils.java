@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,37 +93,20 @@ public final class StorageUtils {
      * Our root directory to be created on the 'external storage' aka Shared Storage.
      * IMPORTANT: this must stay in sync with res/xml/provider_paths.xml
      */
-    private static final String DIRECTORY_NAME = "NeverTooManyBooks";
-    //private static final String DIRECTORY_NAME = "bookCatalogue";
+    private static final String EXT_ROOT_DIR = "NeverTooManyBooks";
+    //private static final String EXT_ROOT_DIR = "bookCatalogue";
 
-    /** root external storage aka Shared Storage. */
-    private static final String SHARED_STORAGE_PATH =
-            Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;
-    /**
-     * permanent location for cover files.
-     * For now hardcoded, but the intention is to allow user-defined.
-     */
-    private static final String COVER_FILE_PATH = SHARED_STORAGE_PATH + File.separator + "covers";
-    /** permanent location for log files. */
-    private static final String LOG_FILE_PATH = SHARED_STORAGE_PATH + File.separator + "log";
-    /** serious errors are written to this file. */
-    private static final String ERROR_LOG_FILE = "error.log";
     /**
      * Filenames *STARTING* with this prefix are considered purgeable.
      */
     private static final String[] PURGEABLE_FILE_PREFIXES = new String[]{
-            "DbUpgrade", "DbExport", ERROR_LOG_FILE, "tmp"};
+            "DbUpgrade", "DbExport", Logger.ERROR_LOG_FILE, "tmp"};
     /**
      * Loop all mount points for our directory and collect a list of all CSV files.
      */
     private static final Pattern MOUNT_POINT_PATH = Pattern.compile("^\\s*[^\\s]+\\s+([^\\s]+)");
 
     private StorageUtils() {
-    }
-
-    public static String getErrorLog()
-            throws SecurityException {
-        return LOG_FILE_PATH + File.separator + ERROR_LOG_FILE;
     }
 
     /**
@@ -154,28 +138,29 @@ public final class StorageUtils {
         }
 
         // need root first (duh)
-        if (!createDir(SHARED_STORAGE_PATH)) {
+        if (!createDir(getSharedStoragePath())) {
             return R.string.error_storage_not_writable;
         }
         // then log dir!
-        if (!createDir(LOG_FILE_PATH)) {
+        if (!createDir(getLogStoragePath())) {
             return R.string.error_storage_not_writable;
         }
 
         // from here on, we have a log file and if we could create the log directory,
         // this one should never fail... flw
-        if (!createDir(COVER_FILE_PATH)) {
-            Logger.warn(StorageUtils.class, "Failed to create covers directory");
+        if (!createDir(getCoverStoragePath())) {
+            Logger.warn(StorageUtils.class, "Failed to create covers directory="
+                                            + getCoverStoragePath());
         }
 
         // A .nomedia file will be created which will stop the thumbnails showing up
         // in the gallery (thanks Brandon)
         try {
             //noinspection ResultOfMethodCallIgnored
-            new File(SHARED_STORAGE_PATH + File.separator
+            new File(getSharedStoragePath() + File.separator
                      + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
             //noinspection ResultOfMethodCallIgnored
-            new File(COVER_FILE_PATH + File.separator
+            new File(getCoverStoragePath() + File.separator
                      + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
 
             return 0;
@@ -185,23 +170,40 @@ public final class StorageUtils {
         }
     }
 
-    private static File getTemp() {
-        return App.getAppContext().getExternalCacheDir();
-    }
-
-    public static File getCoverStorage() {
-        return new File(COVER_FILE_PATH);
-    }
-
-    public static File getLogStorage() {
-        return new File(LOG_FILE_PATH);
+    /**
+     * Root external storage aka Shared Storage.
+     *
+     * @return the Shared Storage root Directory object
+     */
+    private static String getSharedStoragePath() {
+        return Environment.getExternalStorageDirectory() + File.separator + EXT_ROOT_DIR;
     }
 
     /**
      * @return the Shared Storage root Directory object
      */
     public static File getSharedStorage() {
-        return new File(SHARED_STORAGE_PATH);
+        return new File(getSharedStoragePath());
+    }
+
+    private static String getCoverStoragePath() {
+        return getSharedStoragePath() + File.separator + "covers";
+    }
+
+    public static File getCoverStorage() {
+        return new File(getCoverStoragePath());
+    }
+
+    public static String getLogStoragePath() {
+        return getSharedStoragePath() + File.separator + "log";
+    }
+
+    public static File getLogStorage() {
+        return new File(getLogStoragePath());
+    }
+
+    private static File getTempStorage() {
+        return App.getAppContext().getExternalCacheDir();
     }
 
     /**
@@ -213,7 +215,7 @@ public final class StorageUtils {
      * @return the file
      */
     public static File getFile(@NonNull final String fileName) {
-        return new File(SHARED_STORAGE_PATH + File.separator + fileName);
+        return new File(getSharedStoragePath() + File.separator + fileName);
     }
 
     /**
@@ -221,7 +223,7 @@ public final class StorageUtils {
      * Is also used as the standard file name for images downloaded from the internet.
      */
     public static File getTempCoverFile() {
-        return new File(getTemp() + File.separator + "tmp.jpg");
+        return new File(getTempStorage() + File.separator + "tmp.jpg");
     }
 
     /**
@@ -232,7 +234,7 @@ public final class StorageUtils {
      */
     public static File getTempCoverFile(@NonNull final String name,
                                         @Nullable final String suffix) {
-        return new File(getTemp() + File.separator
+        return new File(getTempStorage() + File.separator
                         + "tmp" + name + (suffix != null ? suffix : "")
                         + ".jpg");
     }
@@ -251,7 +253,7 @@ public final class StorageUtils {
      */
     @NonNull
     public static File getRawCoverFile(@NonNull final String filename) {
-        return new File(COVER_FILE_PATH + File.separator + filename);
+        return new File(getCoverStoragePath() + File.separator + filename);
     }
 
     /**
@@ -263,12 +265,12 @@ public final class StorageUtils {
      */
     @NonNull
     public static File getCoverFile(@NonNull final String uuid) {
-        final File jpg = new File(COVER_FILE_PATH + File.separator + uuid + ".jpg");
+        final File jpg = new File(getCoverStoragePath() + File.separator + uuid + ".jpg");
         if (jpg.exists()) {
             return jpg;
         }
         // could be a png
-        final File png = new File(COVER_FILE_PATH + File.separator + uuid + ".png");
+        final File png = new File(getCoverStoragePath() + File.separator + uuid + ".png");
         if (png.exists()) {
             return png;
         }
@@ -290,7 +292,7 @@ public final class StorageUtils {
             totalSize += purgeDir(getLogStorage(), reallyDelete);
             totalSize += purgeDir(getCoverStorage(), reallyDelete);
             totalSize += purgeDir(getSharedStorage(), reallyDelete);
-            totalSize += purgeDir(getTemp(), reallyDelete);
+            totalSize += purgeDir(getTempStorage(), reallyDelete);
 
         } catch (@NonNull final SecurityException e) {
             Logger.error(StorageUtils.class, e);
@@ -300,16 +302,11 @@ public final class StorageUtils {
 
     private static long purgeDir(@NonNull final File dir,
                                  final boolean reallyDelete) {
-        long size = 0;
+        long totalSize = 0;
         for (String name : dir.list()) {
-            size += purgeFile(name, reallyDelete);
+            totalSize += purgeFile(name, reallyDelete);
         }
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            Logger.debug(StorageUtils.class, "purgeDir",
-                         "dir=" + dir,
-                         "size=" + size);
-        }
-        return size;
+        return totalSize;
     }
 
     private static long purgeFile(@NonNull final String name,
@@ -334,7 +331,7 @@ public final class StorageUtils {
      */
     public static void purgeTempStorage() {
         try {
-            File dir = getTemp();
+            File dir = getTempStorage();
             if (dir.exists() && dir.isDirectory()) {
                 File[] files = dir.listFiles();
                 if (files != null) {
@@ -350,7 +347,7 @@ public final class StorageUtils {
 
     /**
      * Find all possible CSV files in all accessible filesystems which
-     * have a {@link #DIRECTORY_NAME} directory.
+     * have a {@link #EXT_ROOT_DIR} directory.
      * <p>
      * ENHANCE: Allow for other files? Backups? || fl.endsWith(".csv.bak"));
      *
@@ -365,7 +362,7 @@ public final class StorageUtils {
 
     /**
      * Find all files in all accessible filesystems which match the given filter
-     * and have a {@link #DIRECTORY_NAME} directory.
+     * and have a {@link #EXT_ROOT_DIR} directory.
      *
      * @return list of csv files
      */
@@ -394,7 +391,7 @@ public final class StorageUtils {
                 if (matcher.find()) {
                     // See if it has our directory
                     final File dir =
-                            new File(matcher.group(1) + File.separator + DIRECTORY_NAME);
+                            new File(matcher.group(1) + File.separator + EXT_ROOT_DIR);
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                         debugInfo.append("       matched ")
                                  .append(dir.getAbsolutePath())
@@ -420,7 +417,7 @@ public final class StorageUtils {
         try {
             final String loc1 = System.getenv("EXTERNAL_STORAGE");
             if (loc1 != null) {
-                final File dir = new File(loc1 + File.separator + DIRECTORY_NAME);
+                final File dir = new File(loc1 + File.separator + EXT_ROOT_DIR);
                 dirs.add(dir);
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                     debugInfo.append("EXTERNAL_STORAGE added ").append(
@@ -434,7 +431,7 @@ public final class StorageUtils {
 
             final String loc2 = System.getenv("SECONDARY_STORAGE");
             if (loc2 != null && !loc2.equals(loc1)) {
-                final File dir = new File(loc2 + File.separator + DIRECTORY_NAME);
+                final File dir = new File(loc2 + File.separator + EXT_ROOT_DIR);
                 dirs.add(dir);
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                     debugInfo.append("SECONDARY_STORAGE added ").append(
@@ -514,24 +511,27 @@ public final class StorageUtils {
     }
 
     /**
-     * Given a InputStream, save it to a file.
+     * Given a InputStream, write it to a file.
+     * We first write to a temporary file, so an existing 'out' file is not destroyed
+     * if the stream somehow fails.
      *
      * @param is  InputStream to read
-     * @param out File to save
+     * @param out File to write to
      *
-     * @return number of bytes read; -1 on failure but could be 0 on "non-success"
+     * @return number of bytes read; -1 on failure but could be 0 on if the stream was empty.
      */
     public static int saveInputStreamToFile(@Nullable final InputStream is,
                                             @NonNull final File out) {
         Objects.requireNonNull(is);
 
-        File temp = null;
+        File tmpFile = null;
         try {
-            // Get a temp file to avoid overwriting output unless copy works
-            temp = File.createTempFile("tmp_is_", ".tmp", getTemp());
-            OutputStream tempFos = new FileOutputStream(temp);
+            // Use the getTempStorage() location, which is on the same physical storage
+            // as the destination (SharedStorage)
+            tmpFile = File.createTempFile("tmp_is_", ".tmp", getTempStorage());
+            OutputStream tempFos = new FileOutputStream(tmpFile);
             // Copy from input to temp file
-            byte[] buffer = new byte[65536];
+            byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
             int total = 0;
             int len;
             while ((len = is.read(buffer)) >= 0) {
@@ -540,7 +540,7 @@ public final class StorageUtils {
             }
             tempFos.close();
             // All OK, so rename to real output file
-            renameFile(temp, out);
+            renameFile(tmpFile, out);
             return total;
 
         } catch (@NonNull final ProtocolException e) {
@@ -552,7 +552,7 @@ public final class StorageUtils {
         } catch (@NonNull final IOException e) {
             Logger.error(StorageUtils.class, e);
         } finally {
-            deleteFile(temp);
+            deleteFile(tmpFile);
         }
         return -1;
     }
@@ -603,27 +603,55 @@ public final class StorageUtils {
     }
 
     /**
-     * Create a copy of the databases into the Shared Storage location.
+     * Rename the source file to the destFilename; keeping 'copies' of the old file.
+     *
+     * @param source       file to rename
+     * @param destFilename name to use
+     * @param copies       #copies of the previous one to keep
      */
-    public static void exportDatabaseFiles() {
-        exportFile(DBHelper.getDatabasePath(), "DbExport.db");
-        exportFile(CoversDAO.CoversDbHelper.getDatabasePath(), "DbExport-covers.db");
+    public static void renameFileWithBackup(@NonNull final File source,
+                                            @NonNull final String destFilename,
+                                            final int copies) {
+        // remove to oldest copy
+        File previous = getFile(destFilename + "." + copies);
+        deleteFile(previous);
+
+        // now bump each copy up one index.
+        for (int i = copies - 1; i > 0; i--) {
+            File current = getFile(destFilename + "." + i);
+            renameFile(current, previous);
+            previous = current;
+        }
+
+        // Give the previous file an index.
+        File destination = getFile(destFilename);
+        renameFile(destination, previous);
+        // and write the new copy.
+        renameFile(source, destination);
     }
 
     /**
-     * @param sourcePath      absolute path to file to export
+     * Create a copy of the databases into the Shared Storage location.
+     */
+    public static void exportDatabaseFiles(@NonNull final Context context) {
+        exportFile(DBHelper.getDatabasePath(context), "DbExport.db");
+        exportFile(CoversDAO.CoversDbHelper.getDatabasePath(context), "DbExport-covers.db");
+    }
+
+    /**
+     * @param source          file to export
      * @param destinationPath destination file name, will be stored in our directory
      *                        in Shared Storage
      */
-    public static void exportFile(@NonNull final String sourcePath,
+    public static void exportFile(@NonNull final File source,
                                   @NonNull final String destinationPath) {
         try {
             // rename the previously copied file
-            StorageUtils.renameFile(getFile(destinationPath),
-                                    getFile(destinationPath + ".bak"));
+            renameFile(getFile(destinationPath),
+                       getFile(destinationPath + ".bak"));
             // and create a new copy. Note that the source is a fully qualified name,
             // so NOT using getFile()
-            copyFile(new File(sourcePath), getFile(destinationPath));
+            copyFile(source, getFile(destinationPath));
 
         } catch (@NonNull final IOException e) {
             Logger.error(StorageUtils.class, e);
@@ -638,7 +666,7 @@ public final class StorageUtils {
             throws IOException {
         try (InputStream is = new FileInputStream(source)) {
             copyFile(is, FILE_COPY_BUFFER_SIZE, destination);
-        } catch (FileNotFoundException ignore) {
+        } catch (@NonNull final FileNotFoundException ignore) {
         }
     }
 

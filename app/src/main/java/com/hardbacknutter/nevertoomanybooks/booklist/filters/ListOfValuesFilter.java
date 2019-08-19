@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +59,11 @@ public class ListOfValuesFilter<T>
         mDomain = domain;
 
         mCriteria = new StringList<>(new StringList.Factory<T>() {
+            @Override
+            public char getListSeparator() {
+                return ',';
+            }
+
             @NonNull
             @Override
             public T decode(@NonNull final String element) {
@@ -66,10 +72,10 @@ public class ListOfValuesFilter<T>
 
             @NonNull
             @Override
-            public String encode(@NonNull final T element) {
-                return element.toString();
+            public String encode(@NonNull final T obj) {
+                return obj.toString();
             }
-        }).encode(',', list);
+        }).encodeList(list);
     }
 
     @Override

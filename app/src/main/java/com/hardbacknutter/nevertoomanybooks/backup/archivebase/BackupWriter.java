@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,13 +56,17 @@ public interface BackupWriter
             throws IOException;
 
     /**
-     * @return the containing archive.
+     * Get the containing archive.
+     *
+     * @return the container
      */
     @NonNull
     BackupContainer getContainer();
 
     /**
      * Write the info block to the archive.
+     *
+     * @param bytes to store in the archive
      *
      * @throws IOException on failure
      */
@@ -71,6 +76,8 @@ public interface BackupWriter
     /**
      * Write a books csv file to the archive.
      *
+     * @param file to store in the archive
+     *
      * @throws IOException on failure
      */
     void putBooks(@NonNull File file)
@@ -78,6 +85,8 @@ public interface BackupWriter
 
     /**
      * Write a xml file with the exported tables to the archive.
+     *
+     * @param file to store in the archive
      *
      * @throws IOException on failure
      */
@@ -88,7 +97,7 @@ public interface BackupWriter
      * Write a generic file to the archive.
      *
      * @param name of the entry in the archive
-     * @param file actual file to store in the archive
+     * @param file to store in the archive
      *
      * @throws IOException on failure
      */
@@ -99,6 +108,8 @@ public interface BackupWriter
     /**
      * Write a collection of Booklist Styles.
      *
+     * @param bytes to store in the archive
+     *
      * @throws IOException on failure
      */
     void putBooklistStyles(@NonNull byte[] bytes)
@@ -106,6 +117,8 @@ public interface BackupWriter
 
     /**
      * Store a SharedPreferences.
+     *
+     * @param bytes to store in the archive
      *
      * @throws IOException on failure
      */

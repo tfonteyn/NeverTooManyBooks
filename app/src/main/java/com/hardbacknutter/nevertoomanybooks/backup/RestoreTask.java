@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -47,6 +49,8 @@ public class RestoreTask
         extends TaskBase<ImportOptions> {
 
     @NonNull
+    private final File mFile;
+    @NonNull
     private final ImportOptions mSettings;
 
     /**
@@ -56,12 +60,14 @@ public class RestoreTask
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public RestoreTask(@NonNull final ImportOptions /* in/out */ settings,
+    public RestoreTask(@NonNull final File file,
+                       @NonNull final ImportOptions /* in/out */ settings,
                        @NonNull final TaskListener<ImportOptions> taskListener) {
         super(R.id.TASK_ID_READ_FROM_ARCHIVE, taskListener);
+        mFile = file;
         mSettings = settings;
 
-        if (((mSettings.what & ImportOptions.MASK) == 0) || (mSettings.file == null)) {
+        if (((mSettings.what & ImportOptions.MASK) == 0) || (mFile == null)) {
             throw new IllegalArgumentException("Options must be specified");
         }
     }
@@ -73,25 +79,18 @@ public class RestoreTask
         Thread.currentThread().setName("RestoreTask");
 
         Context userContext = App.getFakeUserContext();
-        //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.getReader(userContext, mSettings.file)) {
+        try (BackupReader reader = BackupManager.getReader(userContext, mFile)) {
 
-            reader.restore(mSettings, new ProgressListener() {
+            reader.restore(mSettings, new ProgressListenerBase() {
 
                 private int mAbsPosition;
-                private int mMaxPosition;
-
-                @Override
-                public void setMax(final int maxPosition) {
-                    mMaxPosition = maxPosition;
-                }
 
                 @Override
                 public void onProgressStep(final int delta,
                                            @Nullable final Object message) {
                     mAbsPosition += delta;
                     Object[] values = {message};
-                    publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
+                    publishProgress(new TaskProgressMessage(mTaskId, getMax(),
                                                             mAbsPosition, values));
                 }
 
@@ -100,7 +99,7 @@ public class RestoreTask
                                        @Nullable final Object message) {
                     mAbsPosition = absPosition;
                     Object[] values = {message};
-                    publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
+                    publishProgress(new TaskProgressMessage(mTaskId, getMax(),
                                                             mAbsPosition, values));
                 }
 

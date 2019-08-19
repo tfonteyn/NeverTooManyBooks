@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -33,20 +35,30 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.ColumnMapper;
+import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
+import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
+import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * Class to hold author data.
+ *
+ * <b>Note:</b> "type" is a column of {@link DBDefinitions#TBL_BOOK_AUTHOR}
+ * So this class does not strictly represent an Author, but a "BookAuthor"
+ * When the type is disregarded, it is a real Author representation.
  */
 public class Author
         implements Parcelable, ItemWithFixableId, Entity {
@@ -65,8 +77,54 @@ public class Author
                 }
             };
 
-    /** String encoding use. */
-    private static final char FIELD_SEPARATOR = ',';
+    /*
+     * {@link DBDefinitions#DOM_BOOK_AUTHOR_TYPE_BITMASK}.
+     * NEWKIND: author type
+     * Never change the bit value!
+     */
+    /** Generic Author; the default. Can be considered equal to TYPE_PRIMARY. */
+    public static final int TYPE_GENERIC = 0b0000_0000_0000_0000;
+    /** primary author. */
+    public static final int TYPE_PRIMARY = 0b0000_0000_0000_0001;
+    /** secondary author aka 'collaborator'. */
+    public static final int TYPE_SECONDARY = 0b0000_0000_0000_0010;
+    /** 'other' author. */
+    public static final int TYPE_OTHER = TYPE_PRIMARY | TYPE_SECONDARY;
+
+    /** translator. */
+    public static final int TYPE_TRANSLATOR = 0b0000_0000_0001_0000;
+    /** foreword/afterword/introduction etc. */
+    public static final int TYPE_INTRODUCTION = 0b0000_0000_0010_0000;
+    /** editor (e.g. of an anthology). */
+    public static final int TYPE_EDITOR = 0b0000_0000_0100_0000;
+
+    /** cover artist. */
+    public static final int TYPE_COVER_ARTIST = 0b0000_0001_0000_0000;
+    /** cover colorist. */
+    public static final int TYPE_COVER_COLORIST = 0b0000_0010_0000_0000;
+
+    /**
+     * Internal art work; could be illustrations, or the pages of a comic.
+     * Internal primary artist.
+     */
+    public static final int TYPE_ARTIST_PRIMARY = 0b0001_0000_0000_0000;
+    /** internal secondary artist. */
+    public static final int TYPE_ARTIST_SECONDARY = 0b0010_0000_0000_0000;
+    /** 'other' artist. */
+    public static final int TYPE_ARTIST_OTHER = TYPE_ARTIST_PRIMARY | TYPE_ARTIST_SECONDARY;
+
+    /** internal colorist. */
+    public static final int TYPE_COLORIST = 0b1000_0000_0000_0000;
+
+    /** String encoding use: separator between family name and given-names. */
+    public static final char NAME_SEPARATOR = ',';
+    /** All valid bits for the type. */
+    private static final int TYPE_MASK = TYPE_GENERIC
+                                         | TYPE_PRIMARY | TYPE_SECONDARY
+                                         | TYPE_TRANSLATOR | TYPE_INTRODUCTION | TYPE_EDITOR
+                                         | TYPE_COVER_ARTIST | TYPE_COVER_COLORIST
+                                         | TYPE_ARTIST_PRIMARY | TYPE_ARTIST_SECONDARY
+                                         | TYPE_COLORIST;
 
     /**
      * ENHANCE: author middle name; needs internationalisation ?
@@ -77,6 +135,7 @@ public class Author
      * Rip Von Ronkel
      */
     private static final Pattern FAMILY_NAME_PREFIX = Pattern.compile("[LlDd]e|[Vv][oa]n");
+
     /**
      * ENHANCE: author name suffixes; needs internationalisation ? probably not.
      * <p>
@@ -102,62 +161,32 @@ public class Author
     private static final Pattern FAMILY_NAME_SUFFIX =
             Pattern.compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior|II|III");
 
-    /**
-     * {@link DBDefinitions#DOM_AUTHOR_TYPE_BITMASK}.
-     * <p>
-     * 0%0000_0000_0000_0000 = a generic author
-     * <p>
-     * Type of writer
-     * 0%0000_0000_0000_0001 = primary author
-     * 0%0000_0000_0000_0010 = secondary author aka 'collaborator'
-     * 0%0000_0000_0000_0011 = 'other' author
-     * <p>
-     * Non-main body writer
-     * 0%0000_0000_0001_0000 = translator
-     * 0%0000_0000_0010_0000 = foreword/afterword/introduction etc.
-     * 0%0000_0000_0100_0000 = editor (e.g. of an anthology)
-     * <p>
-     * Cover
-     * 0%0000_0001_0000_0000 = cover artist
-     * 0%0000_0010_0000_0000 = cover colorist
-     * <p>
-     * Internal art work; could be illustrations, or the pages of a comic.
-     * 0%0001_0000_0000_0000 = internal primary artist
-     * 0%0010_0000_0000_0000 = internal secondary artist
-     * 0%0011_0000_0000_0000 = internal 'other' artist
-     * <p>
-     * 0%1000_0000_0000_0000 = internal colorist
+    @SuppressLint("UseSparseArrays")
+    private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
+
+    /*
+     * NEWKIND: author type.
      *
-     * <p>
-     * NEWKIND: author type
-     * Never change the bit value!
+     * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
      */
-    public static final int TYPE_GENERIC = 0;
+    static {
+        TYPES.put(TYPE_PRIMARY, R.string.lbl_author_primary);
+        TYPES.put(TYPE_SECONDARY, R.string.lbl_author_secondary);
+        TYPES.put(TYPE_PRIMARY | TYPE_SECONDARY, R.string.lbl_author_other);
 
-    public static final int TYPE_PRIMARY = 1;
-    public static final int TYPE_SECONDARY = 1 << 1;
+        TYPES.put(TYPE_TRANSLATOR, R.string.lbl_author_translator);
+        TYPES.put(TYPE_INTRODUCTION, R.string.lbl_author_introduction);
+        TYPES.put(TYPE_EDITOR, R.string.lbl_author_editor);
 
-    public static final int TYPE_TRANSLATOR = 1 << 4;
-    public static final int TYPE_INTRODUCTION = 1 << 5;
-    public static final int TYPE_EDITOR = 1 << 6;
+        TYPES.put(TYPE_COVER_ARTIST, R.string.lbl_artist_cover);
+        TYPES.put(TYPE_COVER_COLORIST, R.string.lbl_artist_cover_colorist);
 
-    public static final int TYPE_COVER_ARTIST = 1 << 8;
-    public static final int TYPE_COVER_COLORIST = 1 << 9;
+        TYPES.put(TYPE_ARTIST_PRIMARY, R.string.lbl_artist_primary);
+        TYPES.put(TYPE_ARTIST_SECONDARY, R.string.lbl_artist_secondary);
+        TYPES.put(TYPE_ARTIST_PRIMARY | TYPE_ARTIST_SECONDARY, R.string.lbl_artist_other);
 
-    public static final int TYPE_ARTIST_PRIMARY = 1 << 12;
-    public static final int TYPE_ARTIST_SECONDARY = 1 << 13;
-
-    public static final int TYPE_COLORIST = 1 << 15;
-
-    /** All valid bits for the type. */
-    private static final int TYPE_MASK = TYPE_GENERIC
-                                         | TYPE_PRIMARY | TYPE_SECONDARY
-                                         | TYPE_TRANSLATOR | TYPE_INTRODUCTION | TYPE_EDITOR
-                                         | TYPE_COVER_ARTIST | TYPE_COVER_COLORIST
-                                         | TYPE_ARTIST_PRIMARY | TYPE_ARTIST_SECONDARY
-                                         | TYPE_COLORIST;
-    /** Bitmask. */
-    private int mType = 0x00;
+        TYPES.put(TYPE_COLORIST, R.string.lbl_artist_colorist);
+    }
 
     /** Row ID. */
     private long mId;
@@ -169,6 +198,12 @@ public class Author
     private String mGivenNames;
     /** whether we have all we want from this Author. */
     private boolean mIsComplete;
+
+    /** Bitmask. */
+    private int mType = TYPE_GENERIC;
+
+    /** cached locale. */
+    private Locale mLocale;
 
     /**
      * Constructor.
@@ -183,7 +218,7 @@ public class Author
     }
 
     /**
-     * Constructor without ID.
+     * Constructor.
      *
      * @param familyName Family name
      * @param givenNames Given names
@@ -205,12 +240,14 @@ public class Author
      * @param mapper for the cursor.
      */
     public Author(final long id,
-                  @NonNull final ColumnMapper mapper) {
+                  @NonNull final CursorMapper mapper) {
         mId = id;
         mFamilyName = mapper.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
         mGivenNames = mapper.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
         mIsComplete = mapper.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
-        mType = mapper.getInt(DBDefinitions.KEY_AUTHOR_TYPE);
+        if (mapper.contains(DBDefinitions.KEY_AUTHOR_TYPE)) {
+            mType = mapper.getInt(DBDefinitions.KEY_AUTHOR_TYPE);
+        }
     }
 
     /**
@@ -230,13 +267,15 @@ public class Author
 
     /**
      * Parse a string into a family/given name pair.
-     * The name can be in either "family, given" or "given family" format.
+     * If the string contains a comma (and the part after it is not a recognised suffix)
+     * then the string is assumed to be in the format of "family, given-names"
+     * All other formats are decoded as complete as possible.
      * <p>
-     * Special rules, see {@link #FAMILY_NAME_PREFIX} and {@link #FAMILY_NAME_SUFFIX}
-     * <p>
-     * Not covered:
-     * - multiple, and not concatenated, family names.
-     * - more then 1 un-encoded comma.
+     * Recognised pre/suffixes: see {@link #FAMILY_NAME_PREFIX} and {@link #FAMILY_NAME_SUFFIX}
+     * <ul>Not covered:
+     * <li>multiple, and not concatenated, family names.</li>
+     * <li>more then 1 un-encoded comma.</li>
+     * </ul>
      *
      * @param name a String containing the name
      *
@@ -244,7 +283,7 @@ public class Author
      */
     @NonNull
     public static Author fromString(@NonNull String name) {
-        List<String> tmp = new StringList<String>().decode(name, true, FIELD_SEPARATOR);
+        List<String> tmp = new StringList<String>().decodeList(name, NAME_SEPARATOR, true);
         if (tmp.size() > 1) {
             Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(tmp.get(1));
             if (!matchSuffix.find()) {
@@ -263,6 +302,8 @@ public class Author
                 return new Author(names[0], "");
             case 2:
                 return new Author(names[1], names[0]);
+            default:
+                break;
         }
 
         // we have 3 or more parts, check the family name for suffixes and prefixes
@@ -312,6 +353,36 @@ public class Author
 
     public void setType(final int type) {
         mType = type & TYPE_MASK;
+    }
+
+    /**
+     * Convenience method to set the Type.
+     *
+     * @param type list of bits
+     */
+    public void setType(@NonNull final ArrayList<Integer> type) {
+        int bitmask = 0;
+        for (Integer bit : type) {
+            bitmask += bit;
+        }
+        mType = bitmask;
+    }
+
+    /**
+     * Gets a complete list of Types each reflecting the Author being that type or not.
+     *
+     * @return the list
+     */
+    @NonNull
+    public ArrayList<CheckListItem<Integer>> getEditableTypeList() {
+
+        ArrayList<CheckListItem<Integer>> list = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : TYPES.entrySet()) {
+            Integer key = entry.getKey();
+            boolean selected = (key & mType) != 0;
+            list.add(new BitmaskItem(key, entry.getValue(), selected));
+        }
+        return list;
     }
 
     @Override
@@ -398,6 +469,7 @@ public class Author
         mFamilyName = source.mFamilyName;
         mGivenNames = source.mGivenNames;
         mIsComplete = source.mIsComplete;
+        mType = source.mType;
     }
 
     /**
@@ -411,7 +483,10 @@ public class Author
     @Override
     @NonNull
     public Locale getLocale() {
-        return LocaleUtils.getPreferredLocale();
+        if (mLocale == null) {
+            mLocale = LocaleUtils.getPreferredLocale();
+        }
+        return mLocale;
     }
 
     @Override
@@ -423,22 +498,12 @@ public class Author
     }
 
     /**
-     * Support for encoding to a text file.
-     *
-     * @return the object encoded as a String.
-     * <p>
-     * "familyName, givenName"
-     */
-    public String stringEncoded() {
-        // Always use givenNames even if blank because we need to KNOW they are blank.
-        // There is a slim chance that family name may contain spaces (e.g. 'Anonymous Anarchists').
-        return StringList.escapeListItem(mFamilyName, FIELD_SEPARATOR)
-               + FIELD_SEPARATOR + ' '
-               + StringList.escapeListItem(mGivenNames, FIELD_SEPARATOR);
-    }
-
-    /**
-     * Each author is defined exactly by a unique ID.
+     * An Author with a given set of Family and Given-names is defined by a unique id.<br>
+     * The other fields are not significant in a list of Authors.
+     * <ul>
+     * <li>The 'isComplete' is a user setting.</li>
+     * <li>The 'type' is on a per book basis.</li>
+     * </ul>
      */
     @SuppressWarnings("SameReturnValue")
     @Override
@@ -446,21 +511,25 @@ public class Author
         return true;
     }
 
+    /**
+     * Equality: <strong>id, family and given-names</strong>.
+     *
+     * @return hash
+     */
     @Override
     public int hashCode() {
         return Objects.hash(mId, mFamilyName, mGivenNames);
     }
 
     /**
-     * Equality.
+     * Equality: <strong>id, family and given-names</strong>.
      * <p>
      * <li>it's the same Object</li>
      * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     * AND all other fields (except type) are equal</li>
+     * AND family/given-names are equal</li>
      * <p>
      * <strong>Compare is CASE SENSITIVE</strong>:
      * This allows correcting case mistakes even with identical id.<br>
-     * <strong>Author type is not included</strong>: should be or'd together.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {
@@ -475,10 +544,8 @@ public class Author
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
-        // one or both are 'new' or their ID's are the same.
         return Objects.equals(mFamilyName, that.mFamilyName)
-               && Objects.equals(mGivenNames, that.mGivenNames)
-               && (mIsComplete == that.mIsComplete);
+               && Objects.equals(mGivenNames, that.mGivenNames);
     }
 
     @Override
@@ -489,7 +556,8 @@ public class Author
                + ", mFamilyName=`" + mFamilyName + '`'
                + ", mGivenNames=`" + mGivenNames + '`'
                + ", mIsComplete=" + mIsComplete
-               + ", mType=0%" + Integer.toBinaryString(mType)
+               + ", mType=0b" + Integer.toBinaryString(mType)
+               + ", mLocale=" + mLocale
                + '}';
     }
 }

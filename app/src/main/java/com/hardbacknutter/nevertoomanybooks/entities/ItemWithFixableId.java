@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,13 +43,15 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 /**
  * An entity (item) in the database which is capable of finding itself in the database
  * without using its id.
+ * <p>
+ * TODO: it seems the "isUniqueById" and the "uniqueHashCode" (formerly a unique 'name' was used)
+ * is overly complicated.
  */
 public interface ItemWithFixableId {
 
     /**
      * Passed a list of Objects, remove duplicates based on the
-     * {@link ItemWithFixableId#stringEncoded} result.
-     * (case insensitive + trimmed)
+     * {@link ItemWithFixableId#uniqueHashCode()} result.
      * <p>
      * ENHANCE: Add {@link Author} aliases table to allow further pruning
      * (e.g. Joe Haldeman == Joe W Haldeman).
@@ -66,35 +69,35 @@ public interface ItemWithFixableId {
                                                            @NonNull final List<T> list) {
         // weeding out duplicate ID's
         Set<Long> ids = new HashSet<>();
-        // weeding out duplicate uniqueNames.
-        Set<String> names = new HashSet<>();
+        // weeding out duplicate unique hash codes.
+        Set<Integer> hashCodes = new HashSet<>();
         // will be set to true if we modify the list.
         boolean modified = false;
 
         Iterator<T> it = list.iterator();
         while (it.hasNext()) {
             T item = it.next();
+
             // try to find the item.
             long itemId = item.fixId(context, db);
+            Integer uniqueHashCode = item.uniqueHashCode();
 
-            String uniqueName = item.stringEncoded().trim().toUpperCase(item.getLocale());
-
-            // Series special case: same name + different number.
-            // This means different series positions will have the same id+name but will have
-            // different numbers; so ItemWithFixableId 'isUniqueById()' returns 'false'.
-            if (ids.contains(itemId) && !item.isUniqueById() && !names.contains(uniqueName)) {
-                // unique item in the list: id+name matched, but other fields might be different.
+            if (ids.contains(itemId)
+                && !item.isUniqueById() && !hashCodes.contains(uniqueHashCode)) {
+                // The base object IS unique, but other "list-significant" fields are different.
                 ids.add(itemId);
-                names.add(uniqueName);
+                hashCodes.add(uniqueHashCode);
 
-            } else if (names.contains(uniqueName) || (itemId != 0 && ids.contains(itemId))) {
+            } else if (hashCodes.contains(uniqueHashCode)
+                       || (itemId != 0 && ids.contains(itemId))) {
+                // Fully unique item already in the list, so remove.
                 it.remove();
                 modified = true;
 
             } else {
-                // unique item in the list.
+                // Fully unique item and new to the list, add it.
                 ids.add(itemId);
-                names.add(uniqueName);
+                hashCodes.add(uniqueHashCode);
             }
         }
 
@@ -149,13 +152,31 @@ public interface ItemWithFixableId {
                @NonNull final Locale locale);
 
     /**
-     * @return a unique name for this object, representing all it's data (except id).
-     */
-    String stringEncoded();
-
-    /**
      * @return {@code true} if comparing ONLY by id ensures uniqueness.
      */
     boolean isUniqueById();
 
+    /**
+     * The {@link Object#hashCode} and {@link Object#equals} our object define,
+     * look at the fields which define the object itself (e.g. Author: Family & given name).
+     * It does not include user-defined attributes, or linked-table attributes.
+     * Examples:
+     * - the isComplete flag in Authors and Series.
+     * - the number of a book in a Series.
+     * <p>
+     * In contrast, this method <strong>MUST</strong> return a hash code
+     * covering <strong>ALL FIELDS</strong>.
+     * <p>
+     * By default, this method assumes {@link #isUniqueById()} to return true and hence
+     * returns the normal {@link Object#hashCode()}.
+     * I.o.w. implement this method when the your object's isUniqueById() returns {@code false}.
+     *
+     * @return hash
+     */
+    default int uniqueHashCode() {
+        if (!isUniqueById()) {
+            throw new IllegalStateException("uniqueHashCode must be implemented");
+        }
+        return hashCode();
+    }
 }

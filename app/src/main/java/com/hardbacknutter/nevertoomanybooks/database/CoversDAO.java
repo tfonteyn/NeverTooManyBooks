@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -78,7 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public final class CoversDAO
         implements AutoCloseable {
 
-    /** Compresses images to 70%. */
+    /** Compresses images to 80%. */
     private static final int IMAGE_QUALITY_PERCENTAGE = 80;
 
     /** DB name. */
@@ -309,7 +311,7 @@ public final class CoversDAO
             Logger.error(this, e, "Failed to open covers db");
             if (!StorageUtils.renameFile(StorageUtils.getFile(COVERS_DATABASE_NAME),
                                          StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"))) {
-                Logger.warn(this, "Failed to rename dead covers database: ");
+                Logger.warn(this, "Failed to rename dead covers database");
             }
 
             // retry...
@@ -429,9 +431,8 @@ public final class CoversDAO
             return sCoversDbHelper;
         }
 
-        public static String getDatabasePath() {
-            // *always* use the app context!
-            return App.getAppContext().getDatabasePath(COVERS_DATABASE_NAME).getAbsolutePath();
+        public static File getDatabasePath(@NonNull final Context context) {
+            return context.getDatabasePath(COVERS_DATABASE_NAME);
         }
 
         /**

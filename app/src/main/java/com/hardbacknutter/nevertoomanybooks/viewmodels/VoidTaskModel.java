@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,20 +25,12 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
-
-import androidx.annotation.NonNull;
+package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 /**
- * When a method receives an argument that is 'valid', but of the wrong type.
- * Often used in 'default:' in a switch as well.
+ * See parent class doc.
  */
-public class IllegalTypeException
-        extends IllegalStateException {
+public class VoidTaskModel
+        extends TaskModel<Void> {
 
-    private static final long serialVersionUID = -6589992995979719380L;
-
-    public IllegalTypeException(@NonNull final String message) {
-        super(message);
-    }
 }

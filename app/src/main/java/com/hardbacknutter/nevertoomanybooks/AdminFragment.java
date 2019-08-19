@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,7 +160,7 @@ public class AdminFragment
                 break;
 
             default:
-                Logger.warnWithStackTrace(this, "Unknown taskId=" + message.taskId);
+                Logger.warnWithStackTrace(this, "taskId=" + message.taskId);
                 break;
         }
     }
@@ -168,10 +169,6 @@ public class AdminFragment
      * Export all data to a CSV file.
      */
     private void exportToCSV() {
-        File file = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
-        ExportOptions settings = new ExportOptions(file);
-        settings.what = ExportOptions.BOOK_CSV;
-
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog == null) {
@@ -179,7 +176,8 @@ public class AdminFragment
                     R.string.progress_msg_backing_up, false, 0);
             mProgressDialog.show(fm, TAG);
             //noinspection ConstantConditions
-            ExportCSVTask task = new ExportCSVTask(getContext(), settings,
+            ExportCSVTask task = new ExportCSVTask(getContext(),
+                                                   new ExportOptions(ExportOptions.BOOK_CSV),
                                                    mModel.getTaskListener());
             mModel.setTask(task);
             task.execute();
@@ -219,8 +217,7 @@ public class AdminFragment
      * @param file the CSV file to read
      */
     private void importFromCSV(@NonNull final File file) {
-        ImportOptions settings = new ImportOptions(file);
-        settings.what = ImportOptions.BOOK_CSV;
+        ImportOptions settings = new ImportOptions(ImportOptions.BOOK_CSV);
 
         View content = getLayoutInflater().inflate(R.layout.dialog_import_options, null);
         content.findViewById(R.id.cbx_group).setVisibility(View.GONE);
@@ -246,7 +243,7 @@ public class AdminFragment
                                 R.string.progress_msg_importing, false, 0);
                         mProgressDialog.show(fm, TAG);
 
-                        ImportCSVTask task = new ImportCSVTask(getContext(), settings,
+                        ImportCSVTask task = new ImportCSVTask(getContext(), file, settings,
                                                                mModel.getTaskListener());
                         mModel.setTask(task);
                         task.execute();
@@ -406,7 +403,8 @@ public class AdminFragment
         /* Copy database for tech support */
         root.findViewById(R.id.lbl_copy_database)
             .setOnClickListener(v -> {
-                StorageUtils.exportDatabaseFiles();
+                //noinspection ConstantConditions
+                StorageUtils.exportDatabaseFiles(getContext());
                 UserMessage.show(v, R.string.progress_end_backup_success);
             });
     }

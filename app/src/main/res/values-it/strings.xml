@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’) -->
 <resources>
@@ -16,12 +44,10 @@
     <string name="X_lbl_select_fields_to_update">Seleziona i campi da aggiornare</string>
     <string name="X_menu_delete_series">Cancella serie…</string>
     <string name="X_menu_delete_toc_entry">Cancella titolo dall\'antologia</string>
-    <string name="X_menu_edit_author">Modifica autore…</string>
-    <string name="X_menu_edit_series">Modifica serie…</string>
+    <string name="title_edit_author">Modifica autore</string>
+    <string name="title_edit_series">Modifica serie</string>
     <string name="X_menu_search_books">Cerca libri</string>
     <string name="X_results_found">Risultati trovati</string>
-    <string name="X_search_title">Risultati ricerca</string>
-    <string name="X_select_bookshelves">Seleziona librerie</string>
     <string name="X_size">Dimensioni</string>
     <string name="X_tip_booklist_global_properties">È possibile utilizzare questa schermata per impostare le caratteristiche predefinite di tutti gli stili dell\'elenco libri. La maggior parte delle proprietà può essere sovrascritta dai singoli stili, ma i valori predefiniti sono definiti qui. Puoi cambiare la modalità di visualizzazione degli elenchi all\'avvio e regolare una varietà di altre preferenze che verranno applicate a tutti i tuoi stili quando possibile.</string>
     <string name="X_unsaved_edits_title">Modifiche non salvate</string>
@@ -414,7 +440,7 @@
     <string name="pt_bob_sort_author_name">Ordina i nomi degli autori</string>
     <string name="pt_bob_text_size">Dimensione degli elementi dell\'elenco libri</string>
     <string name="pt_bob_thumbnails_cache_resized">Memorizza le miniature ridimensionate</string>
-    <string name="pt_bob_thumbnails_show">Mostra miniature</string>
+    <string name="pt_bob_show_thumbnails">Mostra miniature</string>
     <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie da TOC</string>
     <string name="pt_cover_scale_factor">Dimensione miniature in elenchi</string>
     <string name="pt_reformat_titles_on_insert">Quando si aggiunge</string>
@@ -436,8 +462,8 @@
     <string name="pt_ui_theme">Tema</string>
     <string name="pv_bob_books_under_multiple_each_1s">Sotto ciascuno %1$s</string>
     <string name="pv_bob_books_under_multiple_primary_1s_only">Solo sotto %1$s primario</string>
-    <string name="pv_bob_format_author_name_family_first">Prima il cognome, ad es. «Alighieri, Dante»</string>
-    <string name="pv_bob_format_author_name_given_first">Prima il nome, ad es. «Dante Alighieri»</string>
+    <string name="pv_bob_author_name_family_first">Prima il cognome, ad es. «Alighieri, Dante»</string>
+    <string name="pv_bob_author_name_given_first">Prima il nome, ad es. «Dante Alighieri»</string>
     <string name="pv_reformat_titles_prefixes">il|lo|la|l\'|i||gli|le|un\'|uno|una|un</string>
     <string name="rebuild_fts">Ricrea FTS\n(sperimentale!)</string>
     <string name="retry">Riprova</string>

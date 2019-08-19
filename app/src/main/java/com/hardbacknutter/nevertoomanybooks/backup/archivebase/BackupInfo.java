@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,25 +68,15 @@ public class BackupInfo
      * version of archiver used to write this archive.
      */
     private static final String INFO_ARCHIVER_VERSION = "ArchVersion";
-    /**
-     * version of archiver needed to read this archive.
-     * <p>
-     * Obsolete since v200: now always set to the same as the writer.
-     * No support for reading new archives by older versions.
-     * It would basically mean writing out 2 (or more) copies of the same data
-     * for each piece of data where the format changed.
-     */
-    private static final String INFO_ARCHIVER_COMPATIBLE = "CompatArchiver";
-
-
     private static final String INFO_CREATION_DATE = "CreateDate";
-    private static final String INFO_NUMBER_OF_BOOKS = "NumBooks";
-    private static final String INFO_NUMBER_OF_COVERS = "NumCovers";
+
     private static final String INFO_APP_PACKAGE = "AppPackage";
     private static final String INFO_APP_VERSION_NAME = "AppVersionName";
     private static final String INFO_APP_VERSION_CODE = "AppVersionCode";
     private static final String INFO_SDK = "SDK";
 
+    private static final String INFO_NUMBER_OF_BOOKS = "NumBooks";
+    private static final String INFO_NUMBER_OF_COVERS = "NumCovers";
     private static final String INFO_HAS_BOOKS = "HasBooks";
     private static final String INFO_HAS_COVERS = "HasCovers";
     private static final String INFO_HAS_DATABASE = "HasDatabase";
@@ -131,25 +122,26 @@ public class BackupInfo
      * Static method to create an INFO block based on the current environment.
      *
      * @param container The container being used (we want the version)
-     * @param values    information to populate the info block
      *
      * @return a new BackupInfo object
      */
     @NonNull
     static BackupInfo newInstance(@NonNull final BackupContainer container,
-                                  @NonNull final InfoUserValues values) {
+                                  final int bookCount,
+                                  final int coverCount,
+                                  final boolean hasStyles,
+                                  final boolean hasPrefs) {
         Bundle infoBundle = new Bundle();
-        if (values.bookCount > 0) {
-            infoBundle.putInt(INFO_NUMBER_OF_BOOKS, values.bookCount);
+        if (bookCount > 0) {
+            infoBundle.putInt(INFO_NUMBER_OF_BOOKS, bookCount);
         }
-        if (values.coverCount > 0) {
-            infoBundle.putInt(INFO_NUMBER_OF_COVERS, values.coverCount);
+        if (coverCount > 0) {
+            infoBundle.putInt(INFO_NUMBER_OF_COVERS, coverCount);
         }
-        infoBundle.putBoolean(INFO_HAS_PREFERENCES, values.hasPrefs);
-        infoBundle.putBoolean(INFO_HAS_BOOKLIST_STYLES, values.hasStyles);
+        infoBundle.putBoolean(INFO_HAS_PREFERENCES, hasPrefs);
+        infoBundle.putBoolean(INFO_HAS_BOOKLIST_STYLES, hasStyles);
 
         infoBundle.putInt(INFO_ARCHIVER_VERSION, container.getVersion());
-        infoBundle.putInt(INFO_ARCHIVER_COMPATIBLE, container.getVersion());
 
         infoBundle.putInt(INFO_SDK, Build.VERSION.SDK_INT);
         infoBundle.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
@@ -194,11 +186,6 @@ public class BackupInfo
 
     public int getArchVersion() {
         return mBundle.getInt(INFO_ARCHIVER_VERSION);
-    }
-
-    @SuppressWarnings("unused")
-    public int getCompatArchiver() {
-        return mBundle.getInt(INFO_ARCHIVER_COMPATIBLE);
     }
 
     @SuppressWarnings("unused")
@@ -329,17 +316,5 @@ public class BackupInfo
         }
         // extremely simple check: we assume that if one field is present, the rest will be there.
         return mBundle.containsKey(INFO_ARCHIVER_VERSION);
-    }
-
-    /**
-     * A set of variables to use when creating a new info block.
-     * This is cleaner then adding new arguments to the actual {@link #newInstance} method.
-     */
-    static class InfoUserValues {
-
-        int bookCount;
-        int coverCount;
-        boolean hasPrefs;
-        boolean hasStyles;
     }
 }

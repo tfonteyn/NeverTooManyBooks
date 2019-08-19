@@ -1,5 +1,33 @@
 apply plugin: 'com.android.application'
 
+/*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 //if (project.hasProperty("NeverTooManyBooks.signing")
 //        && new File(project.property("NeverTooManyBooks.signing")).exists()) {
 //    apply from: project.property("NeverTooManyBooks.signing")
@@ -76,12 +104,12 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
-    implementation 'androidx.drawerlayout:drawerlayout:1.1.0-alpha02'
+    implementation 'androidx.drawerlayout:drawerlayout:1.1.0-alpha03'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha03'
     implementation 'androidx.core:core:1.2.0-alpha03'
     implementation 'androidx.fragment:fragment:1.2.0-alpha02'
     implementation 'androidx.preference:preference:1.1.0-rc01'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta02'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta03'
     // com.google.android.material.tabs.TabLayout does not support ViewPager2 (yet?)
     implementation 'androidx.viewpager:viewpager:1.0.0'
 //    implementation 'androidx.viewpager2:viewpager2:1.0.0-beta03'

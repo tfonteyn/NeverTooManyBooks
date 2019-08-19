@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,9 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
  * <p>
  * The AsyncTask implementations as used, store only a WeakReference to the listener which is good.
  * We don't want them to store a strong reference, as that could/would lead to memory leaks.
- * <p>
- * This does mean that the creator of the AsyncTask must:
- * <ul>
+ * <ul>This does mean that the creator of the AsyncTask must:
  * <li>implemented the interface on the caller itself, and pass the caller; i.e. 'this'</li>
  * <li>or create an instance variable in the caller of the listener type, and pass that</li>
  * </ul>

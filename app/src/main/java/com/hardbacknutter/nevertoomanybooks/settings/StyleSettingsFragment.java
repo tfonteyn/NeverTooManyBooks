@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +32,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
  * Settings editor for a Style.
@@ -179,7 +180,7 @@ public class StyleSettingsFragment
             if (labels.isEmpty()) {
                 preference.setSummary(getString(R.string.none));
             } else {
-                preference.setSummary(Csv.join(", ", labels));
+                preference.setSummary(TextUtils.join(", ", labels));
             }
         }
 
@@ -191,7 +192,7 @@ public class StyleSettingsFragment
             if (labels.isEmpty()) {
                 preference.setSummary(getString(R.string.none));
             } else {
-                preference.setSummary(Csv.join(", ", labels));
+                preference.setSummary(TextUtils.join(", ", labels));
             }
         }
 
@@ -222,6 +223,8 @@ public class StyleSettingsFragment
 
     /**
      * Get the list of in-use extra-field names in a human readable format.
+     * This is used to set the summary of the PreferenceScreen.
+     *
      * @return list of labels, can be empty, but never {@code null}
      */
     @NonNull
@@ -231,7 +234,7 @@ public class StyleSettingsFragment
 
         List<String> labels = new ArrayList<>();
         if ((extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
-            labels.add(getString(R.string.pt_bob_thumbnails_show));
+            labels.add(getString(R.string.pt_bob_show_thumbnails));
         }
         if ((extraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
             labels.add(getString(R.string.lbl_bookshelves));
@@ -244,6 +247,9 @@ public class StyleSettingsFragment
         }
         if ((extraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
             labels.add(getString(R.string.lbl_publisher));
+        }
+        if ((extraFields & BooklistStyle.EXTRAS_PUB_DATE) != 0) {
+            labels.add(getString(R.string.lbl_date_published));
         }
         if ((extraFields & BooklistStyle.EXTRAS_ISBN) != 0) {
             labels.add(getString(R.string.lbl_isbn));

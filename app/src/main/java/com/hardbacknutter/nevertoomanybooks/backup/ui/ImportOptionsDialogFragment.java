@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,17 +39,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.backup.BackupManager;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupReader;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class ImportOptionsDialogFragment
@@ -56,8 +52,11 @@ public class ImportOptionsDialogFragment
 
     /** Fragment manager tag. */
     public static final String TAG = "ImportOptionsDialogFragment";
+    private static final String BKEY_ARCHIVE_HAS_VALID_DATES = TAG + ":validDates";
+    private static final String BKEY_OPTIONS = TAG + ":options";
 
     private ImportOptions mOptions;
+    private boolean mArchiveHasValidDates;
 
     private WeakReference<OptionsListener> mListener;
 
@@ -69,10 +68,12 @@ public class ImportOptionsDialogFragment
      * @return Created fragment
      */
     @NonNull
-    public static ImportOptionsDialogFragment newInstance(@NonNull final ImportOptions options) {
+    public static ImportOptionsDialogFragment newInstance(@NonNull final ImportOptions options,
+                                                          final boolean archiveHasValidDates) {
         ImportOptionsDialogFragment frag = new ImportOptionsDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_OPTIONS, options);
+        args.putParcelable(BKEY_OPTIONS, options);
+        args.putBoolean(BKEY_ARCHIVE_HAS_VALID_DATES, archiveHasValidDates);
         frag.setArguments(args);
         return frag;
     }
@@ -82,7 +83,8 @@ public class ImportOptionsDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mOptions = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_OPTIONS);
+        mOptions = args.getParcelable(BKEY_OPTIONS);
+        mArchiveHasValidDates = args.getBoolean(BKEY_ARCHIVE_HAS_VALID_DATES);
     }
 
     @NonNull
@@ -93,7 +95,7 @@ public class ImportOptionsDialogFragment
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View root = layoutInflater.inflate(R.layout.dialog_import_options, null);
 
-        if (!archiveHasValidDates()) {
+        if (!mArchiveHasValidDates) {
             View radioNewAndUpdatedBooks = root.findViewById(R.id.radioNewAndUpdatedBooks);
             radioNewAndUpdatedBooks.setEnabled(false);
             TextView blurb = root.findViewById(R.id.radioNewAndUpdatedBooksInfo);
@@ -125,7 +127,7 @@ public class ImportOptionsDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_OPTIONS, mOptions);
+        outState.putParcelable(BKEY_OPTIONS, mOptions);
     }
 
     public void setListener(@NonNull final OptionsListener listener) {
@@ -150,23 +152,6 @@ public class ImportOptionsDialogFragment
         if (radioNewAndUpdatedBooks.isChecked()) {
             mOptions.what |= ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED;
         }
-    }
-
-    /**
-     * read the info block and check if we have valid dates.
-     */
-    private boolean archiveHasValidDates() {
-        boolean hasValidDates;
-        //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.getReader(getContext(), mOptions.file)) {
-            BackupInfo info = reader.getInfo();
-            reader.close();
-            hasValidDates = info.getAppVersionCode() >= 152;
-        } catch (@NonNull final IOException e) {
-            Logger.error(this, e);
-            hasValidDates = false;
-        }
-        return hasValidDates;
     }
 
     @Override

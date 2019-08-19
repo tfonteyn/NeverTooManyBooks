@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +40,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -101,6 +103,10 @@ class KbNlHandler
                 mBuilder.setLength(0);
                 inText = true;
                 break;
+
+            default:
+                Logger.warnWithStackTrace(this, "qName=" + qName);
+                break;
         }
     }
 
@@ -132,6 +138,10 @@ class KbNlHandler
                     mCurrentData.add(mBuilder.toString().trim());
                 }
                 inText = false;
+                break;
+
+            default:
+                Logger.warnWithStackTrace(this, "qName=" + qName);
                 break;
         }
     }
@@ -246,6 +256,10 @@ class KbNlHandler
 
             case "ISBN":
                 processIsbn(currentData);
+                break;
+
+            default:
+                Logger.warnWithStackTrace(this, "currentLabel=" + currentLabel);
                 break;
         }
     }

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,18 +45,15 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.ColumnMapper;
+import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * Class to hold book-related series data.
  * <p>
- * <b>Note:</b>
- * A Series as defined in the database is just id+title (and isComplete)
- * <p>
- * The number is of course related to the book itself.
- * So this class does not represent a Series, but a "BookInSeries"
+ * <b>Note:</b> the Series "number" is a column of {@link DBDefinitions#TBL_BOOK_SERIES}
+ * So this class does not strictly represent a Series, but a "BookInSeries"
+ * When the number is disregarded, it is a real Series representation.
  */
 public class Series
         implements Parcelable, ItemWithFixableId, Entity, ItemWithTitle {
@@ -94,7 +92,11 @@ public class Series
     private static final Pattern REMOVE_LEADING_ZEROS_PATTERN =
             Pattern.compile("^[0-9]+$");
 
-    /** Parse a string into title + number. Used by the constructor. */
+    /**
+     * Parse a string into title + number. Used by the constructor.
+     * Format: "The title (number)"
+     * where '(' and ')' are fixed, and the 'number' is alpha numeric.
+     */
     private static final Pattern CONSTRUCT_FROM_STRING_PATTERN =
             Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
 
@@ -106,6 +108,9 @@ public class Series
     /** number (alphanumeric) of a book in this series. */
     @NonNull
     private String mNumber;
+
+    /** cached locale. */
+    private Locale mLocale;
 
     /**
      * Constructor.
@@ -138,7 +143,7 @@ public class Series
      * @param mapper for the cursor.
      */
     public Series(final long id,
-                  @NonNull final ColumnMapper mapper) {
+                  @NonNull final CursorMapper mapper) {
         mId = id;
         mTitle = mapper.getString(DBDefinitions.KEY_SERIES_TITLE);
         mIsComplete = mapper.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
@@ -166,6 +171,7 @@ public class Series
 
     /**
      * Constructor that will attempt to parse a single string into a Series title and number.
+     * The format is expected to be "title" or "title (nr)"
      *
      * @param fromString string to decode
      *
@@ -258,8 +264,7 @@ public class Series
                             toDelete.add(series);
                         }
                         //else {
-                        // Nothing to do: this is a different series number
-                        // keep both
+                        // Nothing to do: this is a different series number, keep both
                         //}
                     }
                 }
@@ -387,7 +392,10 @@ public class Series
     @NonNull
     @Override
     public Locale getLocale() {
-        return LocaleUtils.getPreferredLocale();
+        if (mLocale == null) {
+            mLocale = LocaleUtils.getPreferredLocale();
+        }
+        return mLocale;
     }
 
     @Override
@@ -399,30 +407,9 @@ public class Series
     }
 
     /**
-     * Support for encoding to a text file.
-     *
-     * @return the object encoded as a String.
-     * <p>
-     * "title (number)"
-     * or
-     * "title"
-     */
-    @NonNull
-    public String stringEncoded() {
-        String numberStr;
-        if (!mNumber.isEmpty()) {
-            // for display reasons, start the number part with a space !
-            // the surrounding () are NOT escaped as they are part of the format.
-            numberStr = " (" + StringList.escapeListItem(mNumber, '(') + ')';
-        } else {
-            numberStr = "";
-        }
-        return StringList.escapeListItem(mTitle, '(') + numberStr;
-    }
-
-    /**
-     * Each number in a series ('Elric(1)', 'Elric(2)' etc) will have the same
-     * ID, so they are not unique by ID.
+     * A Series with a given Title is <strong>NOT</strong> defined by a unique id.
+     * In a list of Series, the number of a book in a Series ('Elric(1)', 'Elric(2)' etc)
+     * can be different, while the Series itself will have the same ID, so it's not unique by ID.
      */
     @SuppressWarnings("SameReturnValue")
     @Override
@@ -430,17 +417,32 @@ public class Series
         return false;
     }
 
+    /**
+     * Uniqueness in a {@code List<Series>} includes the number.
+     *
+     * @return hash
+     */
+    @Override
+    public int uniqueHashCode() {
+        return Objects.hash(mId, mTitle, mNumber);
+    }
+
+    /**
+     * Equality: <strong>id, title</strong>.
+     *
+     * @return hash
+     */
     @Override
     public int hashCode() {
         return Objects.hash(mId, mTitle);
     }
 
     /**
-     * Equality.
+     * Equality: <strong>id, title</strong>.
      * <p>
      * <li>it's the same Object</li>
      * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     * AND all other fields are equal</li>
+     * AND title are equal</li>
      * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */
@@ -457,11 +459,7 @@ public class Series
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
-        // one or both are 'new' or their ID's are the same.
-        return Objects.equals(mTitle, that.mTitle)
-               && (mIsComplete == that.mIsComplete)
-               && Objects.equals(mNumber, that.mNumber);
-
+        return Objects.equals(mTitle, that.mTitle);
     }
 
     @Override
@@ -472,6 +470,7 @@ public class Series
                + ", mTitle=`" + mTitle + '`'
                + ", mIsComplete=" + mIsComplete
                + ", mNumber=`" + mNumber + '`'
+               + ", mLocale=" + mLocale
                + '}';
     }
 

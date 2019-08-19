@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,9 +69,15 @@ public final class Logger {
     private static final DateFormat DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", App.getSystemLocale());
 
+    /** serious errors are written to this file. */
+    public static final String ERROR_LOG_FILE = "error.log";
+
     private Logger() {
     }
 
+    /**
+     * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
+     */
     public static void error(@NonNull final Object tag,
                              @NonNull final Throwable e,
                              @Nullable final Object... params) {
@@ -83,24 +90,6 @@ public final class Logger {
         writeToLog(ERROR, msg, e);
         if (BuildConfig.DEBUG /* always */) {
             Log.e(tag(tag), Tracker.State.Running.toString() + '|' + msg, e);
-        }
-    }
-
-    /**
-     * WARN message. Send to the logfile (always) and the console (when in DEBUG mode).
-     * <p>
-     * Use sparingly, writing to the log is expensive.
-     * <p>
-     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
-     * No stacktrace!
-     */
-    public static void warn(@NonNull final Object object,
-                            @NonNull final String methodName,
-                            @NonNull final Object... params) {
-        String msg = methodName + '|' + concat(params);
-        writeToLog(WARN, msg, null);
-        if (BuildConfig.DEBUG /* always */) {
-            Log.w(tag(object), Tracker.State.Running.toString() + '|' + msg);
         }
     }
 
@@ -119,6 +108,24 @@ public final class Logger {
         writeToLog(WARN, msg, e);
         if (BuildConfig.DEBUG /* always */) {
             Log.w(tag(object), Tracker.State.Running.toString() + '|' + msg, e);
+        }
+    }
+
+    /**
+     * WARN message. Send to the logfile (always) and the console (when in DEBUG mode).
+     * <p>
+     * Use sparingly, writing to the log is expensive.
+     * <p>
+     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
+     * No stacktrace!
+     */
+    public static void warn(@NonNull final Object object,
+                            @NonNull final String methodName,
+                            @NonNull final Object... params) {
+        String msg = methodName + '|' + concat(params);
+        writeToLog(WARN, msg, null);
+        if (BuildConfig.DEBUG /* always */) {
+            Log.w(tag(object), Tracker.State.Running.toString() + '|' + msg);
         }
     }
 
@@ -220,7 +227,7 @@ public final class Logger {
                                    @NonNull final String message,
                                    @Nullable final Throwable e) {
         //noinspection ImplicitDefaultCharsetUsage
-        try (FileWriter fw = new FileWriter(StorageUtils.getErrorLog(), true);
+        try (FileWriter fw = new FileWriter(getErrorLog(), true);
              BufferedWriter out = new BufferedWriter(fw)) {
             String exMsg;
             if (e != null) {
@@ -240,9 +247,9 @@ public final class Logger {
      */
     public static void clearLog() {
         try {
-            File logFile = new File(StorageUtils.getErrorLog());
+            File logFile = new File(getErrorLog());
             if (logFile.exists() && logFile.length() > 0) {
-                File backup = new File(StorageUtils.getErrorLog() + ".bak");
+                File backup = new File(getErrorLog() + ".bak");
                 StorageUtils.renameFile(logFile, backup);
             }
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
@@ -292,5 +299,10 @@ public final class Logger {
             sb.append('\n');
         }
         return sb.toString();
+    }
+
+    private static String getErrorLog()
+            throws SecurityException {
+        return StorageUtils.getLogStoragePath() + File.separator + ERROR_LOG_FILE;
     }
 }

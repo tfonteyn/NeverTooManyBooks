@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,35 +55,44 @@ public class BackupTask
 
     private final String mBackupDate = DateUtils.utcSqlDateTimeForToday();
 
-    @NonNull
-    private final ExportOptions mSettings;
+    /** We write to a temp file. */
     @NonNull
     private final File mTmpFile;
+    /** What to write. */
+    @NonNull
+    private final ExportOptions mSettings;
+    /** Once writing was all done & a success, rename the temp file to the actual on. */
+    @NonNull
+    private File mOutputFile;
+
 
     /**
      * Constructor.
      *
+     * @param file         File to write to
      * @param settings     the export settings
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public BackupTask(@NonNull final ExportOptions /* in/out */ settings,
+    public BackupTask(@NonNull final File file,
+                      @NonNull final ExportOptions /* in/out */ settings,
                       @NonNull final TaskListener<ExportOptions> taskListener) {
         super(R.id.TASK_ID_WRITE_TO_ARCHIVE, taskListener);
+        mOutputFile = file;
         mSettings = settings;
         // sanity checks
-        if ((mSettings.file == null) || ((mSettings.what & ExportOptions.MASK) == 0)) {
+        if ((mOutputFile == null) || ((mSettings.what & ExportOptions.MASK) == 0)) {
             throw new IllegalArgumentException("Options must be specified: " + mSettings);
         }
 
         // Ensure the file key extension is what we want
-        if (!BackupManager.isArchive(mSettings.file)) {
-            mSettings.file = new File(mSettings.file.getAbsoluteFile()
-                                      + BackupManager.ARCHIVE_EXTENSION);
+        if (!BackupManager.isArchive(mOutputFile)) {
+            mOutputFile = new File(mOutputFile.getAbsoluteFile()
+                                   + BackupManager.ARCHIVE_EXTENSION);
         }
 
         // we write to a temp file, and will rename it upon success (or delete on failure).
-        mTmpFile = new File(mSettings.file.getAbsolutePath() + ".tmp");
+        mTmpFile = new File(mOutputFile.getAbsolutePath() + ".tmp");
     }
 
     @UiThread
@@ -106,22 +116,16 @@ public class BackupTask
         Context userContext = App.getFakeUserContext();
         try (BackupWriter writer = BackupManager.getWriter(userContext, mTmpFile)) {
 
-            writer.backup(mSettings, new ProgressListener() {
+            writer.backup(mSettings, new ProgressListenerBase() {
 
                 private int mAbsPosition;
-                private int mMaxPosition;
-
-                @Override
-                public void setMax(final int maxPosition) {
-                    mMaxPosition = maxPosition;
-                }
 
                 @Override
                 public void onProgressStep(final int delta,
                                            @Nullable final Object message) {
                     mAbsPosition += delta;
                     Object[] values = {message};
-                    publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
+                    publishProgress(new TaskProgressMessage(mTaskId, getMax(),
                                                             mAbsPosition, values));
                 }
 
@@ -130,7 +134,7 @@ public class BackupTask
                                        @Nullable final Object message) {
                     mAbsPosition = absPosition;
                     Object[] values = {message};
-                    publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
+                    publishProgress(new TaskProgressMessage(mTaskId, getMax(),
                                                             mAbsPosition, values));
                 }
 
@@ -144,10 +148,9 @@ public class BackupTask
                 return mSettings;
             }
 
-            // success
-            StorageUtils.deleteFile(mSettings.file);
-            //noinspection ConstantConditions
-            StorageUtils.renameFile(mTmpFile, mSettings.file);
+            // success, delete any existing one for paranoia's sake.
+            StorageUtils.deleteFile(mOutputFile);
+            StorageUtils.renameFile(mTmpFile, mOutputFile);
 
             SharedPreferences.Editor ed = PreferenceManager
                                                   .getDefaultSharedPreferences(App.getAppContext())
@@ -156,7 +159,7 @@ public class BackupTask
             if ((mSettings.what & ExportOptions.EXPORT_SINCE) == 0) {
                 ed.putString(BackupManager.PREF_LAST_BACKUP_DATE, mBackupDate);
             }
-            ed.putString(BackupManager.PREF_LAST_BACKUP_FILE, mSettings.file.getAbsolutePath());
+            ed.putString(BackupManager.PREF_LAST_BACKUP_FILE, mOutputFile.getAbsolutePath());
             ed.apply();
 
         } catch (@NonNull final IOException e) {

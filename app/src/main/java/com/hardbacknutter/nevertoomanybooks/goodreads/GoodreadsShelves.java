@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,14 +35,14 @@ import java.util.Map;
 public class GoodreadsShelves {
 
     @NonNull
-    private final Map<String, GoodreadsShelf> mList;
+    private final Map<String, GoodreadsShelf> mMap;
 
-    public GoodreadsShelves(@NonNull final Map<String, GoodreadsShelf> list) {
-        mList = list;
+    public GoodreadsShelves(@NonNull final Map<String, GoodreadsShelf> map) {
+        mMap = map;
     }
 
     public boolean isExclusive(@Nullable final String name) {
-        GoodreadsShelf shelf = mList.get(name);
+        GoodreadsShelf shelf = mMap.get(name);
         return shelf != null && shelf.isExclusive();
     }
 }

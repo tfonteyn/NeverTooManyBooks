@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <!-- Define entities that can be used inside of other string (not possible with standard Android
  resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
@@ -689,7 +717,10 @@
     <string name="title_edit_style">Edit style</string>
     <!-- Screen title. -->
     <string name="title_clone_style">Clone style</string>
-
+    <!-- Screen. -->
+    <string name="title_edit_book_authors">Edit Book Authors</string>
+    <!-- Screen. -->
+    <string name="title_edit_book_series">Edit Book Series</string>
 
     <!-- Dialog title; prompts user to register at a website. -->
     <string name="title_registration">Registration</string>
@@ -715,11 +746,10 @@
     <string name="title_edit_bookshelf">Edit Bookshelf</string>
     <!-- Dialog title. -->
     <string name="title_import_book_data">Import Books</string>
-
-    <!-- Screen/Dialog title. -->
-    <string name="title_edit_book_series">Edit Book Series</string>
-    <!-- Screen/Dialog title. -->
-    <string name="title_edit_book_authors">Edit Book Authors</string>
+    <!-- Dialog title. -->
+    <string name="title_edit_author">Edit Author</string>
+    <!-- Dialog title. -->
+    <string name="title_edit_series">Edit Series</string>
 
     <!-- Chooser title. -->
     <string name="title_send_mail">Send email…</string>
@@ -812,7 +842,7 @@
     <!-- ListPreference - Scale text. -->
     <string name="pt_bob_text_size">Size of book list text</string>
     <!-- SwitchPreference - Show thumbnail image for each book -->
-    <string name="pt_bob_thumbnails_show">Show Thumbnails</string>
+    <string name="pt_bob_show_thumbnails">Show Thumbnails</string>
     <!-- ListPreference - Scale thumbnails in the list view. -->
     <string name="pt_cover_scale_factor">Thumbnails size in lists</string>
     <!-- SwitchPreference - Sorting Author by family (default) or given name.
@@ -863,10 +893,10 @@
     <string name="pv_bob_books_under_multiple_each_1s">Under each %1$s</string>
 
     <!-- SwitchPreference -->
-    <string name="pv_bob_format_author_name_given_first">
+    <string name="pv_bob_author_name_given_first">
         Given name first e.g. “Phillis Wheatley”
     </string>
-    <string name="pv_bob_format_author_name_family_first">
+    <string name="pv_bob_author_name_family_first">
         Family name first e.g. “Wheatley, Phillis”
     </string>
 
@@ -1224,8 +1254,6 @@
         You can add some using the text area and button at the top of this screen.
     </string>
 
-    <string name="X_menu_edit_author">Edit Author…</string>
-    <string name="X_menu_edit_series">Edit Series…</string>
     <string name="X_menu_delete_series">Delete Series…</string>
     <string name="X_menu_search_books">Search Books</string>
     <string name="X_menu_delete_toc_entry">Delete Title from TOC</string>
@@ -1244,8 +1272,6 @@
     <string name="X_gr_auth_check">Goodreads authorization check</string>
 
     <string name="X_anthology_titles">Anthology Titles</string>
-    <string name="X_select_bookshelves">Select Bookshelves</string>
-    <string name="X_search_title">Search Results</string>
     <string name="X_results_found">Results Found</string>
     <string name="X_unsaved_edits_title">Unsaved Changes</string>
     <string name="X_use_default_setting">Use default values</string>
@@ -1270,6 +1296,23 @@
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
     <string name="and_others">et. al.</string>
+
+    <string name="lbl_author_primary">Primary</string>
+    <string name="lbl_author_secondary">Secondary</string>
+    <string name="lbl_author_other">Other</string>
+    <string name="lbl_author_translator">Translator</string>
+    <string name="lbl_author_introduction">Fore/Afterword</string>
+    <string name="lbl_author_editor">Editor</string>
+    <string name="lbl_artist_cover">Cover artist</string>
+    <string name="lbl_artist_cover_colorist">Cover colorist</string>
+    <string name="lbl_artist_primary">Primary artist</string>
+    <string name="lbl_artist_secondary">Secondary artist</string>
+    <string name="lbl_artist_other">Other artist</string>
+    <string name="lbl_artist_colorist">Colorist</string>
+
+    <string name="pt_bob_show_details_uses_task">Fetch the Extra Book Details</string>
+    <string name="pt_bob_show_details_uses_task_on">using a background task</string>
+    <string name="pt_bob_show_details_uses_task_off">immediately</string>
 
 
 </resources>

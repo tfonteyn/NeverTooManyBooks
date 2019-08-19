@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -33,6 +35,8 @@ import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+
+import java.io.File;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -91,14 +95,14 @@ public final class DBHelper
 
     /**
      * RELEASE: Update database version.
-     *
+     * <p>
      * db100 == app200 == 6.0.0 beta01, 2019-08-14 release to github.
      * db82 == app179 == 5.2.2 == "Book Catalogue" version from which we forked.
      */
     public static final int DATABASE_VERSION = 100;
 
     /** NEVER change this name. */
-    private static final String DATABASE_NAME = "book_catalogue";
+    private static final String DATABASE_NAME = "nevertoomanybooks.db";
 
     /**
      * Indexes which have not been added to the TBL definitions yet.
@@ -116,7 +120,6 @@ public final class DBHelper
             + " (" + DOM_TITLE + DAO.COLLATION + ')',
             };
 
-
     /** Readers/Writer lock for this database. */
     private static Synchronizer sSynchronizer;
 
@@ -126,15 +129,17 @@ public final class DBHelper
     /**
      * Constructor.
      *
+     * @param context      the Application Context (as a param, to allow testing)
      * @param factory      the cursor factor
      * @param synchronizer needed in onCreate/onUpgrade
      */
-    private DBHelper(@SuppressWarnings("SameParameterValue")
+    private DBHelper(@NonNull final Context context,
+                     @SuppressWarnings("SameParameterValue")
                      @NonNull final SQLiteDatabase.CursorFactory factory,
                      @SuppressWarnings("SameParameterValue")
                      @NonNull final Synchronizer synchronizer) {
-        // ALWAYS use the app context here!
-        super(App.getAppContext(), DATABASE_NAME, factory, DATABASE_VERSION);
+
+        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
         sSynchronizer = synchronizer;
     }
 
@@ -149,7 +154,8 @@ public final class DBHelper
                                        @SuppressWarnings("SameParameterValue")
                                        @NonNull final Synchronizer synchronizer) {
         if (sInstance == null) {
-            sInstance = new DBHelper(factory, synchronizer);
+            // ALWAYS use the app context here!
+            sInstance = new DBHelper(App.getAppContext(), factory, synchronizer);
         }
         return sInstance;
     }
@@ -157,8 +163,8 @@ public final class DBHelper
     /**
      * @return the physical path of the database file.
      */
-    public static String getDatabasePath() {
-        return App.getAppContext().getDatabasePath(DATABASE_NAME).getAbsolutePath();
+    public static File getDatabasePath(@NonNull final Context context) {
+        return context.getDatabasePath(DATABASE_NAME);
     }
 
     /**
@@ -190,6 +196,19 @@ public final class DBHelper
                 stmt.executeInsert();
             }
         }
+    }
+
+    @Override
+    public void onConfigure(@NonNull final SQLiteDatabase db) {
+        // Turn ON foreign key support so that CASCADE etc. works.
+        //db.execSQL("PRAGMA foreign_keys = ON");
+        db.setForeignKeyConstraintsEnabled(true);
+
+        // Turn OFF recursive triggers;
+        db.execSQL("PRAGMA recursive_triggers = OFF");
+
+        // for debug
+        //sSyncedDb.execSQL("PRAGMA temp_store = FILE");
     }
 
     @SuppressWarnings("unused")
@@ -285,7 +304,8 @@ public final class DBHelper
         }
 
         if (oldVersion != newVersion) {
-            StorageUtils.exportFile(db.getPath(), "DbUpgrade-" + oldVersion + '-' + newVersion);
+            StorageUtils.exportFile(new File(db.getPath()),
+                                    "DbUpgrade-" + oldVersion + '-' + newVersion);
         }
 
         int curVersion = oldVersion;

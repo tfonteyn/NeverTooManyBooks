@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -228,7 +229,7 @@ public class UpdateFieldsFromInternetTask
 
     private void currentCopyIfBlank(@NonNull final Map<String, FieldUsage> fieldUsages,
                                     @NonNull final FieldUsage usage) {
-        // Handle special cases first, 'default:' for the rest
+        // Handle special cases first, 'default' for the rest
         switch (usage.fieldId) {
             // - If it's a thumbnail, then see if it's missing or empty.
             case UniqueId.BKEY_IMAGE:
@@ -408,6 +409,7 @@ public class UpdateFieldsFromInternetTask
                 if (usage.fieldId.equals(UniqueId.BKEY_IMAGE)) {
                     boolean copyThumb = false;
                     switch (usage.usage) {
+
                         case CopyIfBlank:
                             File file = StorageUtils.getCoverFile(mCurrentUuid);
                             copyThumb = !file.exists() || file.length() == 0;
@@ -417,8 +419,13 @@ public class UpdateFieldsFromInternetTask
                             copyThumb = true;
                             break;
 
-                        default:
+                        case Skip:
+                            // nothing to do
+                            break;
+
+                        case Append:
                             // not applicable
+                            break;
                     }
 
                     File downloadedFile = StorageUtils.getTempCoverFile();
@@ -431,6 +438,7 @@ public class UpdateFieldsFromInternetTask
 
                 } else {
                     switch (usage.usage) {
+
                         case CopyIfBlank:
                             copyIfBlank(usage.fieldId, newBookData);
                             break;
@@ -441,6 +449,10 @@ public class UpdateFieldsFromInternetTask
 
                         case Overwrite:
                             // Nothing to do; just use the new data
+                            break;
+
+                        case Skip:
+                            // nothing to do
                             break;
                     }
                 }

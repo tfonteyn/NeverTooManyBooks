@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.cursors;
+package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -34,14 +35,13 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -52,9 +52,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * <p>
  * Provides methods access the 'level' texts and perform some common tasks on the 'current' row.
  */
-public class BooklistMappedCursorRow
-        extends MappedCursorRow {
+public class BooklistMappedCursorRow {
 
+    /** Associated cursor object. */
+    @NonNull
+    private final Cursor mCursor;
     /** Style to use while using this cursor. */
     @NonNull
     private final BooklistStyle mStyle;
@@ -66,6 +68,9 @@ public class BooklistMappedCursorRow
      * FIXME: If a user adds more then 10 groups to a style, we'll crash...
      */
     private final int[] mLevelCol = {-2, -2, -2, -2, -2, -2, -2, -2, -2, -2};
+    /** The mapper helper. */
+    @NonNull
+    private final CursorMapper mMapper;
 
     /**
      * Constructor.
@@ -75,38 +80,14 @@ public class BooklistMappedCursorRow
      */
     public BooklistMappedCursorRow(@NonNull final Cursor cursor,
                                    @NonNull final BooklistStyle style) {
-        super(cursor
-
-             );
-
+        mCursor = cursor;
+        mMapper = new CursorMapper(mCursor);
         mStyle = style;
     }
 
-    /**
-     * @return {@code true} if the list can display a series number.
-     */
-    public boolean hasSeriesNumber() {
-        return getColumnIndex(DBDefinitions.KEY_BOOK_NUM_IN_SERIES) >= 0;
-    }
-
-    /**
-     * Convenience method to check if the cursor has a valid Author ID.
-     *
-     * @return {@code true} if the list can display an Author.
-     */
-    public boolean hasAuthorId() {
-        return getColumnIndex(DBDefinitions.KEY_FK_AUTHOR) >= 0
-               && getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
-    }
-
-    /**
-     * Convenience method to check if the cursor has a valid Series ID.
-     *
-     * @return {@code true} if the list can display a Series.
-     */
-    public boolean hasSeriesId() {
-        return getColumnIndex(DBDefinitions.KEY_FK_SERIES) >= 0
-               && getLong(DBDefinitions.KEY_FK_SERIES) > 0;
+    @NonNull
+    public CursorMapper getCursorMapper() {
+        return mMapper;
     }
 
     /**
@@ -116,7 +97,7 @@ public class BooklistMappedCursorRow
      *
      * @return level-text array
      */
-    @Nullable
+    @NonNull
     public String[] getLevelText(@NonNull final Context context) {
         return new String[]{getLevelText(context, 1),
                             getLevelText(context, 2)};
@@ -147,7 +128,7 @@ public class BooklistMappedCursorRow
         int index = level - 1;
         if (mLevelCol[index] < 0) {
             final String name = mStyle.getGroupAt(index).getDisplayDomain().name;
-            mLevelCol[index] = getColumnIndex(name);
+            mLevelCol[index] = mCursor.getColumnIndex(name);
             if (mLevelCol[index] < 0) {
                 throw new ColumnNotPresentException(name);
             }
@@ -161,27 +142,28 @@ public class BooklistMappedCursorRow
         // at android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)
         // at android.database.AbstractWindowedCursor.checkPosition(AbstractWindowedCursor.java:136)
         // at android.database.AbstractWindowedCursor.getString(AbstractWindowedCursor.java:50)
-        // at com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor.getString(BooklistPseudoCursor.java:340)
-        // at com.hardbacknutter.nevertoomanybooks.database.cursors.MappedCursorRow.getString(MappedCursorRow.java:57)
-        // at com.hardbacknutter.nevertoomanybooks.database.cursors.BooklistMappedCursorRow.getLevelText(BooklistMappedCursorRow.java:170)
-        // at com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf.setHeaderText(BooksOnBookshelf.java:1687)
-        // at com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf.access$400(BooksOnBookshelf.java:103)
-        // at com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf$4.onScrolled(BooksOnBookshelf.java:489)
+        // at com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor
+        // .getString(BooklistPseudoCursor.java:340)
+        // at com.hardbacknutter.nevertoomanybooks.database.cursors
+        // .BooklistMappedCursorRow.getLevelText(BooklistMappedCursorRow.java:170)
+        // at com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf
+        // .setHeaderText(BooksOnBookshelf.java:1687)
+        // at com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf
+        // .access$400(BooksOnBookshelf.java:103)
+        // at com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf$4
+        // .onScrolled(BooksOnBookshelf.java:489)
 
         int columnIndex = mLevelCol[index];
         try {
             //boom
-            String text = getString(columnIndex);
+            String text = mCursor.getString(columnIndex);
 
             return formatRowGroup(context, level, text);
 
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
-            Logger.warnWithStackTrace(this,
-                                      "columnIndex=" + columnIndex,
-                                      "level=" + level,
-                                      "index=" + index,
-                                      "getCount=" + getCount(),
-                                      "getPosition=" + getPosition());
+            Logger.error(this, e, "level=" + level,
+                         "columnIndex=" + columnIndex,
+                         this.toString());
             return null;
         }
     }
@@ -227,8 +209,7 @@ public class BooklistMappedCursorRow
                     case "1":
                         return context.getString(R.string.lbl_read);
                     default:
-                        Logger.warn(this, "formatRowGroup",
-                                    "Unknown read status=" + source);
+                        Logger.warnWithStackTrace(this, "source=" + source);
                         break;
                 }
                 return source;
@@ -265,7 +246,21 @@ public class BooklistMappedCursorRow
                 }
                 break;
 
+            default:
+                Logger.warnWithStackTrace(this, "kind=" + mStyle.getGroupKindAt(index));
+                break;
         }
         return source;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "BooklistMappedCursorRow{"
+               + "mCursor=" + mCursor
+               + ", mStyle=" + mStyle
+               + ", mLevelCol=" + Arrays.toString(mLevelCol)
+               + ", mMapper=" + mMapper
+               + '}';
     }
 }

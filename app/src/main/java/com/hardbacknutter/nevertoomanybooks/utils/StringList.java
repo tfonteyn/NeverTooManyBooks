@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,58 +33,37 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-
 /**
- * Provides a number of static methods to manipulate string lists.
- * <p>
- * Can also be instantiated to allow the use of generic elements in the lists.
- * Contains some pre-defined static method for specific types; e.g. {@link Author} etc...
- *
- * @param <E> the type of the elements stored in the string
+ * @param <T> the type of the elements stored in the string
  */
-public class StringList<E> {
-
-    /** the default delimiter to use when concatenating elements. */
-    private static final char MULTI_STRING_SEPARATOR = '|';
-    /** pre-configured  coder/decoder for Bookshelf elements. */
-    @Nullable
-    private static StringList<Bookshelf> sBookshelfUtils;
-    /** pre-configured  coder/decoder for Author elements. */
-    @Nullable
-    private static StringList<Author> sAuthorUtils;
-    /** pre-configured  coder/decoder for Series elements. */
-    @Nullable
-    private static StringList<Series> sSeriesUtils;
-    /** pre-configured  coder/decoder for TocEntry elements. */
-    @Nullable
-    private static StringList<TocEntry> sTocUtils;
+public class StringList<T> {
 
     @NonNull
-    private final Factory<E> mFactory;
+    private final Factory<T> mFactory;
 
     /**
      * Constructor.
      * <p>
      * The elements need to be able to be cast to a String for decoding,
      * and have a .toString() method for encoding.
+     * <p>
+     * When initialised with type {@code String},
+     * provides a dummy Factory useful for giving access to the list encoder/decoder methods.
      */
     public StringList() {
-        mFactory = new Factory<E>() {
+        mFactory = new Factory<T>() {
+
             @NonNull
             @Override
-            public E decode(@NonNull final String element) {
+            public T decode(@NonNull final String element) {
                 //noinspection unchecked
-                return (E) element;
+                return (T) element;
             }
 
             @NonNull
             @Override
-            public String encode(@NonNull final E element) {
-                return element.toString();
+            public String encode(@NonNull final T obj) {
+                return obj.toString();
             }
         };
     }
@@ -93,184 +73,51 @@ public class StringList<E> {
      *
      * @param factory that can encode/decode strings to objects and vice versa.
      */
-    public StringList(@NonNull final Factory<E> factory) {
+    public StringList(@NonNull final Factory<T> factory) {
         mFactory = factory;
     }
 
     /**
-     * @return StringList with Bookshelf factory.
-     */
-    @NonNull
-    public static StringList<Bookshelf> getBookshelfCoder() {
-        if (sBookshelfUtils == null) {
-            sBookshelfUtils = new StringList<>(new Factory<Bookshelf>() {
-                @Override
-                @NonNull
-                public Bookshelf decode(@NonNull final String element) {
-                    return Bookshelf.fromString(element);
-                }
-
-                @NonNull
-                @Override
-                public String encode(@NonNull final Bookshelf element) {
-                    return element.stringEncoded();
-                }
-            });
-        }
-        return sBookshelfUtils;
-    }
-
-    /**
-     * @return StringList with Author factory.
-     */
-    @NonNull
-    public static StringList<Author> getAuthorCoder() {
-        if (sAuthorUtils == null) {
-            sAuthorUtils = new StringList<>(new Factory<Author>() {
-                @Override
-                @NonNull
-                public Author decode(@NonNull final String element) {
-                    return Author.fromString(element);
-                }
-
-                @NonNull
-                @Override
-                public String encode(@NonNull final Author element) {
-                    return element.stringEncoded();
-                }
-            });
-        }
-        return sAuthorUtils;
-    }
-
-    /**
-     * @return StringList with Series factory.
-     */
-    @NonNull
-    public static StringList<Series> getSeriesCoder() {
-        if (sSeriesUtils == null) {
-            sSeriesUtils = new StringList<>(new Factory<Series>() {
-                @Override
-                @NonNull
-                public Series decode(@NonNull final String element) {
-                    return Series.fromString(element);
-                }
-
-                @NonNull
-                @Override
-                public String encode(@NonNull final Series element) {
-                    return element.stringEncoded();
-                }
-            });
-        }
-        return sSeriesUtils;
-    }
-
-    /**
-     * @return StringList with TocEntry factory.
-     */
-    @NonNull
-    public static StringList<TocEntry> getTocCoder() {
-        if (sTocUtils == null) {
-            sTocUtils = new StringList<>(new Factory<TocEntry>() {
-                @Override
-                @NonNull
-                public TocEntry decode(@NonNull final String element) {
-                    return TocEntry.fromString(element);
-                }
-
-                @NonNull
-                @Override
-                public String encode(@NonNull final TocEntry element) {
-                    return element.stringEncoded();
-                }
-            });
-        }
-        return sTocUtils;
-    }
-
-    /**
-     * Convert a string by 'escaping' all instances of:
-     * {@link #MULTI_STRING_SEPARATOR}, '\', \'r', '\n', '\t' and any additional 'escapeChars'.
-     * The escape char is '\'.
-     *
-     * @param source      String to escape
-     * @param escapeChars additional characters to escape. Case sensitive!
-     *
-     * @return Converted string(trimmed)
-     */
-    @NonNull
-    public static String escapeListItem(@NonNull final String source,
-                                        final char... escapeChars) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < source.length(); i++) {
-            char c = source.charAt(i);
-            switch (c) {
-                case MULTI_STRING_SEPARATOR:
-                    sb.append("\\" + MULTI_STRING_SEPARATOR);
-                    break;
-
-                case '\\':
-                    sb.append("\\\\");
-                    break;
-
-                case '\r':
-                    sb.append("\\r");
-                    break;
-
-                case '\n':
-                    sb.append("\\n");
-                    break;
-
-                case '\t':
-                    sb.append("\\t");
-                    break;
-
-                default:
-                    for (char e : escapeChars) {
-                        if (c == e) {
-                            sb.append('\\');
-                            // break from for (char e : escapeChars)
-                            break;
-                        }
-                    }
-                    sb.append(c);
-                    break;
-            }
-        }
-        return sb.toString().trim();
-    }
-
-    /**
-     * Decode a string list separated by '|' and encoded by {@link #escapeListItem}.
+     * Decode a string list according to {@link Factory} rules.
      *
      * @param stringList String representing the list
-     * @param allowBlank Flag to allow adding empty (non-null) strings
      *
-     * @return Array of strings resulting from list
+     * @return Array of objects resulting from list
      */
     @NonNull
-    public ArrayList<E> decode(@Nullable final String stringList,
-                               final boolean allowBlank) {
-        return decode(stringList, allowBlank, MULTI_STRING_SEPARATOR);
+    public ArrayList<T> decodeList(@Nullable final String stringList) {
+        return decodeList(stringList, mFactory.getListSeparator(), false);
+    }
+
+    /**
+     * Decode a list of elements (fields) in a single list objects.
+     *
+     * @param stringList String representing the list of elements
+     *
+     * @return Array of objects resulting from list
+     */
+    @NonNull
+    public ArrayList<T> decodeElementList(@Nullable final String stringList) {
+        return decodeList(stringList, mFactory.getFieldSeparator(), false);
     }
 
     /**
      * Decode a string list separated by 'delimiter' and
-     * encoded by {@link #escapeListItem}.
+     * encoded by {@link Factory#escapeListItem}.
+     * i.e. this method allows overriding the default list separator char.
      *
      * @param stringList String representing the list
-     * @param allowBlank Flag to allow adding empty (non-null) strings
      * @param delimiter  delimiter to use
+     * @param allowBlank Flag to allow adding empty (non-null) strings
      *
-     * @return Array of strings resulting from list
+     * @return Array of objects resulting from list
      */
     @NonNull
-    public ArrayList<E> decode(@Nullable final String stringList,
-                               final boolean allowBlank,
-                               final char delimiter) {
+    public ArrayList<T> decodeList(@Nullable final String stringList,
+                                   final char delimiter,
+                                   final boolean allowBlank) {
         StringBuilder sb = new StringBuilder();
-        ArrayList<E> list = new ArrayList<>();
+        ArrayList<T> list = new ArrayList<>();
         if (stringList == null) {
             return list;
         }
@@ -297,7 +144,6 @@ public class StringList<E> {
                         break;
 
                     default:
-                        // covers MULTI_STRING_SEPARATOR
                         sb.append(c);
                         break;
                 }
@@ -333,38 +179,130 @@ public class StringList<E> {
     }
 
     /**
-     * Encode using the standard multi-string delimiter, '|'.
+     * Encode a list of elements.
      *
-     * @param list to convert
+     * @param list to encode
      *
-     * @return Converted string
+     * @return Encoded string
      */
     @NonNull
-    public String encode(@NonNull final Collection<E> list) {
-        return encode(MULTI_STRING_SEPARATOR, list);
+    public String encodeList(@NonNull final Collection<T> list) {
+        return Csv.join(String.valueOf(mFactory.getListSeparator()), list, mFactory::encode);
     }
 
     /**
-     * This is used to build text lists separated by 'delimiter'.
+     * Encode a single element.
      *
-     * @param delimiter delimiter to use.
-     * @param list      to convert
+     * @param element to encode
      *
-     * @return Converted string
+     * @return Encoded string
      */
     @NonNull
-    public String encode(final char delimiter,
-                         @NonNull final Collection<E> list) {
-
-        return Csv.join(String.valueOf(delimiter), list, mFactory::encode);
+    public String encodeElement(@NonNull final T element) {
+        return mFactory.encode(element);
     }
 
     public interface Factory<E> {
 
+        /**
+         * Decode a single element.
+         *
+         * @param element to decode
+         *
+         * @return the object
+         */
         @NonNull
         E decode(@NonNull String element);
 
+        /**
+         * Encode an object to a String representation.
+         *
+         * @param obj Object to encode
+         *
+         * @return string
+         */
         @NonNull
-        String encode(@NonNull E element);
+        String encode(@NonNull E obj);
+
+        /**
+         * the separator character used between list elements.
+         * Some objects might need to override this default.
+         *
+         * @return the char
+         */
+        default char getListSeparator() {
+            return '|';
+        }
+
+        /**
+         * the separator character used between fields in a single element.
+         * Some objects might need to override this default.
+         *
+         * @return the char
+         */
+        default char getFieldSeparator() {
+            return '*';
+        }
+
+        /**
+         * Convert a string by 'escaping' all instances of:
+         * {@link #getListSeparator()}, '\', \'r', '\n', '\t' and any additional 'escapeChars'.
+         * The escape char is '\'.
+         *
+         * @param source      String to escape
+         * @param escapeChars additional characters to escape. Case sensitive.
+         *
+         * @return Converted string(trimmed)
+         */
+        default String escapeListItem(@NonNull final String source,
+                                      final char... escapeChars) {
+
+            char listSeparator = getListSeparator();
+            char fieldSeparator = getFieldSeparator();
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < source.length(); i++) {
+                char c = source.charAt(i);
+                switch (c) {
+                    case '\\':
+                        sb.append("\\\\");
+                        break;
+
+                    case '\r':
+                        sb.append("\\r");
+                        break;
+
+                    case '\n':
+                        sb.append("\\n");
+                        break;
+
+                    case '\t':
+                        sb.append("\\t");
+                        break;
+
+                    default:
+                        if (c == listSeparator) {
+                            sb.append("\\").append(listSeparator);
+                            break;
+                        }
+                        if (c == fieldSeparator) {
+                            sb.append("\\").append(fieldSeparator);
+                            break;
+                        }
+                        for (char e : escapeChars) {
+                            if (c == e) {
+                                sb.append('\\');
+                                // break from for (char e : escapeChars)
+                                break;
+                            }
+
+                        }
+                        sb.append(c);
+                        break;
+                }
+            }
+            return sb.toString().trim();
+        }
+
     }
 }

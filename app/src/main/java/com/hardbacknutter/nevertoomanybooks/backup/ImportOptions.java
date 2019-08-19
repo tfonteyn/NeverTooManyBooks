@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +45,7 @@ public class ImportOptions
     /*
      * options as to *what* should be exported.
      */
+    public static final int NOTHING = 0;
     public static final int BOOK_CSV = 1;
     public static final int PREFERENCES = 1 << 1;
     public static final int BOOK_LIST_STYLES = 1 << 2;
@@ -54,11 +56,6 @@ public class ImportOptions
     //public static final int IMPORT_7 = 1 << 7;
     // pointless to implement. Just here for mirroring export flags
     //public static final int DATABASE = 1 << 8;
-
-    /** Options value to indicate all things should be exported. */
-    public static final int ALL = BOOK_CSV | COVERS | BOOK_LIST_STYLES | PREFERENCES;
-    public static final int NOTHING = 0;
-
     /**
      * 0: all books
      * 1: only new books and books with more recent update_date fields should be imported.
@@ -75,6 +72,8 @@ public class ImportOptions
             return new ImportOptions[size];
         }
     };
+    /** Options value to indicate all things should be exported. */
+    private static final int ALL = BOOK_CSV | COVERS | BOOK_LIST_STYLES | PREFERENCES;
     /**
      * all defined flags.
      */
@@ -82,7 +81,7 @@ public class ImportOptions
     /**
      * Bitmask.
      */
-    public int what;
+    public int what = ALL;
     /**
      * File to import from.
      */
@@ -95,8 +94,8 @@ public class ImportOptions
     public ImportOptions() {
     }
 
-    public ImportOptions(@NonNull final File file) {
-        this.file = file;
+    public ImportOptions(final int what) {
+        this.what = what;
     }
 
     /**
@@ -141,7 +140,7 @@ public class ImportOptions
     public String toString() {
         return "ImportOptions{"
                + "file=`" + file + '`'
-               + ", what=0%" + Integer.toBinaryString(what)
+               + ", what=0b" + Integer.toBinaryString(what)
                + ", results=" + results
                + '}';
     }

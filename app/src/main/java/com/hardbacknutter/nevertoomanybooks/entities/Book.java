@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +38,6 @@ import android.os.Parcelable;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
@@ -60,8 +60,9 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.BitmaskDataAcc
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.BooleanDataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.DataAccessor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.dialogs.CheckListItem;
-import com.hardbacknutter.nevertoomanybooks.dialogs.CheckListItemBase;
+import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
+import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
+import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItemBase;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -103,13 +104,11 @@ public class Book
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
-
-    private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
-
     /** mapping the edition bit to a resource string for displaying. Ordered. */
     @SuppressLint("UseSparseArrays")
     public static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
 
+    private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
     /**
      * {@link DBDefinitions#DOM_BOOK_EDITION_BITMASK}.
      * <p>
@@ -133,11 +132,10 @@ public class Book
     /** It's a bookclub edition. boooo.... */
     private static final int EDITION_BOOK_CLUB = 1 << 7;
 
-
     /*
      * NEWKIND: edition.
      *
-     * This is a LinkedHashMap, so the order below is the oder they will show up on the screen.
+     * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
      */
     static {
         EDITIONS.put(EDITION_FIRST, R.string.lbl_edition_first_edition);
@@ -461,19 +459,20 @@ public class Book
         ArrayList<CheckListItem<Integer>> list = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : EDITIONS.entrySet()) {
             Integer key = entry.getKey();
-            list.add(new EditionCheckListItem(
-                    key, entry.getValue(),
-                    (key & getLong(DBDefinitions.KEY_EDITION_BITMASK)) != 0));
+            boolean selected = (key & getLong(DBDefinitions.KEY_EDITION_BITMASK)) != 0;
+            list.add(new BitmaskItem(key, entry.getValue(), selected));
         }
         return list;
     }
 
     /**
      * Convenience method to set the Edition.
+     *
+     * @param editions List of integers, each representing a single bit==edition
      */
-    public void putEditions(@NonNull final ArrayList<Integer> result) {
+    public void putEditions(@NonNull final ArrayList<Integer> editions) {
         int bitmask = 0;
-        for (Integer bit : result) {
+        for (Integer bit : editions) {
             bitmask += bit;
         }
         putLong(DBDefinitions.KEY_EDITION_BITMASK, bitmask);
@@ -683,71 +682,6 @@ public class Book
         } else {
             // if not, take the long road.
             return db.getLoaneeByBookId(getId());
-        }
-    }
-
-    /**
-     * Used to edit the Editions of this Book.
-     */
-    public static class EditionCheckListItem
-            extends CheckListItemBase<Integer>
-            implements Parcelable {
-
-        /** {@link Parcelable}. */
-        public static final Creator<EditionCheckListItem> CREATOR =
-                new Creator<EditionCheckListItem>() {
-                    @Override
-                    public EditionCheckListItem createFromParcel(@NonNull final Parcel source) {
-                        return new EditionCheckListItem(source);
-                    }
-
-                    @Override
-                    public EditionCheckListItem[] newArray(final int size) {
-                        return new EditionCheckListItem[size];
-                    }
-                };
-        @StringRes
-        private final int mLabelId;
-
-        /**
-         * Constructor.
-         *
-         * @param bitMask  the item to encapsulate
-         * @param labelId  resource id for the label to display
-         * @param selected the current status
-         */
-        EditionCheckListItem(@NonNull final Integer bitMask,
-                             @StringRes final int labelId,
-                             final boolean selected) {
-            super(bitMask, selected);
-            mLabelId = labelId;
-        }
-
-        /**
-         * {@link Parcelable} Constructor.
-         *
-         * @param in Parcel to construct the object from
-         */
-        private EditionCheckListItem(@NonNull final Parcel in) {
-            super(in);
-            mLabelId = in.readInt();
-            item = in.readInt();
-        }
-
-        @Override
-        public void writeToParcel(@NonNull final Parcel dest,
-                                  final int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeInt(mLabelId);
-            dest.writeInt(item);
-        }
-
-        /**
-         * @return the label to display
-         */
-        @Override
-        public String getLabel(@NonNull final Context context) {
-            return context.getString(mLabelId);
         }
     }
 

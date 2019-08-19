@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,10 +66,34 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
- * Implementation of Importer that reads a CSV file.
+ * Implementation of {@link Importer} that reads a CSV file.
+ * <p>
+ * A CSV file which was not written by this app, should be careful about encoding the following
+ * characters:
+ * <ul>The obvious:
+ * <li>"</li>
+ * <li>'</li>
+ * <li>\\</li>
+ * <li>\r</li>
+ * <li>\n</li>
+ * <li>\t</li>
+ * </ul>
+ * <ul>These should be <strong>escaped</strong> when used in names, titles etc.
+ * <li>,</li>
+ * <li>|</li>
+ * <li>*</li>
+ * <li>(</li>
+ * <li>)</li>
+ * </ul>
+ * <ul>These are used <strong>unescaped</strong>:
+ * <li>',' is allowed/used in an Author name: "family, given-names",<br>
+ * * and as a list separator in a list of Bookshelf names.</li>
+ * <li>'|' is used as an element separator for fields that take more then one value.</li>
+ * <li>'*' is used in few places where an element itself can consist of multiple parts.</li>
+ * <li>'(' and ')' are used to add numbers or dates (between the brackets) to items.</li>
+ * </ul>
  */
 public class CsvImporter
         implements Importer {
@@ -84,6 +109,10 @@ public class CsvImporter
     /** as used in older versions, or from arbitrarily constructed CSV files. */
     private static final String OLD_STYLE_AUTHOR_NAME = "author_name";
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
+
+    /** Present in pre-v200 CSV files. Obsolete, not used. */
+    private static final String LEGACY_BOOKSHELF_ID = "bookshelf_id";
+    /** When present in pre-v200 CSV files, we should use it as the bookshelf name. */
     private static final String LEGACY_BOOKSHELF_TEXT_COLUMN = "bookshelf_text";
 
     /** Database Access. */
@@ -129,11 +158,11 @@ public class CsvImporter
                            @NonNull final ProgressListener listener)
             throws IOException, ImportException {
 
-        final List<String> importedList = new ArrayList<>();
-
-        final BufferedReader in = new BufferedReader(
+        BufferedReader in = new BufferedReader(
                 new InputStreamReader(importStream, StandardCharsets.UTF_8), BUFFER_SIZE);
 
+        // We read the whole file/list into memory.
+        List<String> importedList = new ArrayList<>();
         String line;
         while ((line = in.readLine()) != null) {
             importedList.add(line);
@@ -142,7 +171,10 @@ public class CsvImporter
             return mResults;
         }
 
-        listener.setMax(importedList.size() - 1);
+        // not perfect, but good enough
+        if (listener.getMax() < importedList.size()) {
+            listener.setMax(importedList.size() - 1);
+        }
 
         final Book book = new Book();
         // first line in import are the column names
@@ -207,6 +239,7 @@ public class CsvImporter
         int row = 1;
         int txRowCount = 0;
         long lastUpdate = 0;
+        int delta = 0;
 
         // Iterate through each imported row
         SyncLock txLock = null;
@@ -239,29 +272,17 @@ public class CsvImporter
 
                 // check title
                 requireNonBlankOrThrow(book, row, DBDefinitions.KEY_TITLE);
-                final String title = book.getString(DBDefinitions.KEY_TITLE);
 
-                // Lookup ID's etc, but do not write to db! Storing the book data does all that
-
-
-                // check any of the pre-tested Author variations columns.
+                // check any of the Author variations columns.
                 handleAuthors(context, mDb, book);
                 // check the dedicated Series column, or check if the title contains a series part.
                 handleSeries(context, mDb, book);
+                // check any of the Bookshelf variations columns.
+                handleBookshelves(context, mDb, book);
 
                 // optional
                 if (book.containsKey(CsvExporter.CSV_COLUMN_TOC)) {
                     handleAnthology(context, mDb, book);
-                }
-
-                // v5 has columns
-                // "bookshelf_id" == DBDefinitions.KEY_FK_BOOKSHELF
-                // => ignore, we don't / can't use it anyhow.
-                // "bookshelf" == DBDefinitions.KEY_BOOKSHELF
-                // I suspect "bookshelf_text" is from older versions and obsolete now (Classic ?)
-                if (book.containsKey(DBDefinitions.KEY_BOOKSHELF)
-                    && !book.containsKey(LEGACY_BOOKSHELF_TEXT_COLUMN)) {
-                    handleBookshelves(book);
                 }
 
                 // ready to update/insert into the database
@@ -288,14 +309,16 @@ public class CsvImporter
                     Logger.error(this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 }
 
+                // limit the amount of progress updates, otherwise this will cause a slowdown.
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
                     String msg = String.format(mProgress_msg_n_created_m_updated,
                                                mResults.booksCreated, mResults.booksUpdated);
-                    listener.onProgress(row, title + "\n(" + msg + ')');
+                    listener.onProgressStep(delta, msg);
+                    delta = 0;
                     lastUpdate = now;
                 }
-
+                delta++;
                 row++;
             } // end while
         } finally {
@@ -405,82 +428,30 @@ public class CsvImporter
     }
 
     /**
+     * Process the bookshelves.
      * Database access is strictly limited to fetching ID's.
-     * <p>
-     * Get the list of bookshelves.
      */
-    private void handleBookshelves(@NonNull final Book book) {
-        String encodedList = book.getString(DBDefinitions.KEY_BOOKSHELF);
-        ArrayList<Bookshelf> list = StringList.getBookshelfCoder()
-                                              .decode(encodedList, false,
-                                                      Bookshelf.MULTI_SHELF_SEPARATOR);
-        book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
+    private void handleBookshelves(@NonNull final Context context,
+                                   @NonNull final DAO db,
+                                   @NonNull final Book book) {
+        String encodedList = null;
+        if (book.containsKey(DBDefinitions.KEY_BOOKSHELF)) {
+            encodedList = book.getString(DBDefinitions.KEY_BOOKSHELF);
+
+        } else if (book.containsKey(LEGACY_BOOKSHELF_TEXT_COLUMN)) {
+            encodedList = book.getString(LEGACY_BOOKSHELF_TEXT_COLUMN);
+        }
+
+        ArrayList<Bookshelf> list = CsvCoder.getBookshelfCoder().decodeList(encodedList);
+        if (!list.isEmpty()) {
+            // fix the ID's
+            ItemWithFixableId.pruneList(context, db, list);
+            book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
+        }
 
         book.remove(DBDefinitions.KEY_BOOKSHELF);
         book.remove(LEGACY_BOOKSHELF_TEXT_COLUMN);
-        book.remove("bookshelf_id");
-    }
-
-    /**
-     * Database access is strictly limited to fetching ID's.
-     * <p>
-     * Ignore the actual value of the DBDefinitions.KEY_TOC_BITMASK! it will be
-     * 'reset' to mirror what we actually have when storing the book data
-     *
-     * @param context Current context
-     * @param db      Database Access
-     * @param book    the book
-     */
-    private void handleAnthology(@NonNull final Context context,
-                                 @NonNull final DAO db,
-                                 @NonNull final Book book) {
-
-        String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
-        if (!encodedList.isEmpty()) {
-            ArrayList<TocEntry> list = StringList.getTocCoder().decode(encodedList, false);
-            if (!list.isEmpty()) {
-                // fix the ID's
-                ItemWithFixableId.pruneList(context, db, list);
-                book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
-            }
-        }
-
-        // remove the unneeded string encoded set
-        book.remove(CsvExporter.CSV_COLUMN_TOC);
-    }
-
-    /**
-     * Database access is strictly limited to fetching ID's.
-     * <p>
-     * Get the list of series from whatever source is available.
-     *
-     * @param context Current context
-     * @param db      Database Access
-     * @param book    the book
-     */
-    private void handleSeries(@NonNull final Context context,
-                              @NonNull final DAO db,
-                              @NonNull final Book book) {
-        String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
-        if (encodedList.isEmpty()) {
-            // Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
-            if (book.containsKey(DBDefinitions.KEY_SERIES_TITLE)) {
-                encodedList = book.getString(DBDefinitions.KEY_SERIES_TITLE);
-                if (!encodedList.isEmpty()) {
-                    String seriesNum = book.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
-                    encodedList += '(' + seriesNum + ')';
-                } else {
-                    encodedList = null;
-                }
-            }
-        }
-
-        // Handle the series
-        final ArrayList<Series> list = StringList.getSeriesCoder().decode(encodedList, false);
-        Series.pruneSeriesList(list);
-        ItemWithFixableId.pruneList(context, db, list);
-        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
-        book.remove(CsvExporter.CSV_COLUMN_SERIES);
+        book.remove(LEGACY_BOOKSHELF_ID);
     }
 
     /**
@@ -527,10 +498,72 @@ public class CsvImporter
         }
 
         // Now build the array for authors
-        final ArrayList<Author> list = StringList.getAuthorCoder().decode(encodedList, false);
+        ArrayList<Author> list = CsvCoder.getAuthorCoder().decodeList(encodedList);
         ItemWithFixableId.pruneList(context, db, list);
         book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
+    }
+
+    /**
+     * Database access is strictly limited to fetching ID's.
+     * <p>
+     * Get the list of series from whatever source is available.
+     *
+     * @param context Current context
+     * @param db      Database Access
+     * @param book    the book
+     */
+    private void handleSeries(@NonNull final Context context,
+                              @NonNull final DAO db,
+                              @NonNull final Book book) {
+        String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
+        if (encodedList.isEmpty()) {
+            // Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
+            if (book.containsKey(DBDefinitions.KEY_SERIES_TITLE)) {
+                encodedList = book.getString(DBDefinitions.KEY_SERIES_TITLE);
+                if (!encodedList.isEmpty()) {
+                    String seriesNum = book.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
+                    encodedList += '(' + seriesNum + ')';
+                } else {
+                    encodedList = null;
+                }
+            }
+        }
+
+        // Handle the series
+        ArrayList<Series> list = CsvCoder.getSeriesCoder().decodeList(encodedList);
+        Series.pruneSeriesList(list);
+        ItemWithFixableId.pruneList(context, db, list);
+        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
+        book.remove(CsvExporter.CSV_COLUMN_SERIES);
+    }
+
+    /**
+     * Database access is strictly limited to fetching ID's.
+     * <p>
+     * Ignore the actual value of the DBDefinitions.KEY_TOC_BITMASK! it will be
+     * 'reset' to mirror what we actually have when storing the book data
+     *
+     * @param context Current context
+     * @param db      Database Access
+     * @param book    the book
+     */
+    private void handleAnthology(@NonNull final Context context,
+                                 @NonNull final DAO db,
+                                 @NonNull final Book book) {
+
+        String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
+        if (!encodedList.isEmpty()) {
+            ArrayList<TocEntry> list = CsvCoder.getTocCoder().decodeList(encodedList);
+            if (!list.isEmpty()) {
+                // fix the ID's
+                ItemWithFixableId.pruneList(context, db, list);
+                book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
+            }
+        }
+
+        // remove the unneeded string encoded set
+        book.remove(CsvExporter.CSV_COLUMN_TOC);
     }
 
     /**
@@ -633,7 +666,6 @@ public class CsvImporter
                             sb = new StringBuilder();
                             break;
                         default:
-                            // Just append the char
                             sb.append(c);
                             break;
                     }
@@ -669,6 +701,11 @@ public class CsvImporter
 
     /**
      * Require a column to be present. First one found; remainders are not needed.
+     *
+     * @param book  to check
+     * @param names columns which are required
+     *
+     * @throws ImportException if the required column is missing
      */
     private void requireColumnOrThrow(@NonNull final Book book,
                                       @NonNull final String... names)
@@ -683,6 +720,12 @@ public class CsvImporter
                                   TextUtils.join(",", names));
     }
 
+    /**
+     * @param book to check
+     * @param name column which is required
+     *
+     * @throws ImportException if the required column is blank
+     */
     private void requireNonBlankOrThrow(@NonNull final Book book,
                                         final int row,
                                         @SuppressWarnings("SameParameterValue")
@@ -694,6 +737,13 @@ public class CsvImporter
         throw new ImportException(R.string.error_column_is_blank, name, row);
     }
 
+    /***
+     *
+     * @param book  to check
+     * @param names columns which are required
+     *
+     * @throws ImportException if no suitable column is present
+     */
     @SuppressWarnings("unused")
     private void requireAnyNonBlankOrThrow(@NonNull final Book book,
                                            final int row,

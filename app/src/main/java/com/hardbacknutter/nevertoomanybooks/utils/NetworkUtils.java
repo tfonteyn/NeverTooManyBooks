@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,6 +112,8 @@ public final class NetworkUtils {
                 case ConnectivityManager.TYPE_MOBILE:
                     con.hasMobile |= networkInfo.isConnected();
                     break;
+                default:
+                    break;
             }
         }
 
@@ -170,9 +173,9 @@ public final class NetworkUtils {
 
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Logger.warn(NetworkUtils.class, "isAlive",
-                            "Site unreachable: " + host + ':' + port + '\n'
-                            + e.getLocalizedMessage());
+                Logger.debug(NetworkUtils.class, "isAlive",
+                             "Site unreachable: " + host + ':' + port + '\n'
+                             + e.getLocalizedMessage());
             }
             return false;
         }
@@ -180,28 +183,25 @@ public final class NetworkUtils {
 
     public static class Connectivity {
 
-        boolean hasEthernet = false;
-        boolean hasWifi = false;
-        boolean hasBluetooth = false;
-        boolean hasMobile = false;
+        boolean hasEthernet;
+        boolean hasWifi;
+        boolean hasBluetooth;
+        boolean hasMobile;
 
         boolean has(@NonNull final Type type) {
             switch (type) {
                 case any:
                     return hasEthernet || hasWifi || hasBluetooth || hasMobile;
-
                 case wifi:
                     return hasEthernet || hasWifi;
-
                 case ethernet:
                     return hasEthernet;
                 case bluetooth:
                     return hasBluetooth;
                 case mobile:
                     return hasMobile;
-                default:
-                    return false;
             }
+            return false;
         }
 
         @Override

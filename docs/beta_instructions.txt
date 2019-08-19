@@ -1,11 +1,8 @@
-
-As requested, I have attached the APK file for the beta.
-
 The suggested procedure for testing is as follows:
 
-1. Backup! If already installed, run the currently installed version, and in the Administration activity, click 'Export Books'. When that is complete, click 'Backup Database'.
+1. Backup! If already installed, run the currently installed version, and in the Admin activity, click 'Backup to Archive'.
 
-2. Connect your phone to your computer as a disk drive and copy the entire 'bookCatalogue' directory from the sdcard in your phone to a very safe place. Make two copies in different locations, just to be safe. This is your backup in case of disasters and will be the only way you can revert back to the current release version (3.8.x). Future beta and release versions should upgrade from the beta without drama.
+2. Connect your phone to your computer as a disk drive and copy the entire 'neverTooManyBooks' directory from the sdcard in your phone to a very safe place. Make two copies in different locations, just to be safe. This is your backup in case of disasters and will be the only way you can revert back to the current release version (3.8.x). Future beta and release versions should upgrade from the beta without drama.
 
 3. Check that the backup you made has an 'export.csv' file with the correct date (it should match the date you ran 'export books'). If this is not true, or steps 1 & 2 were not completed successfully, DO NOT PROCEED. It is very important you backup successfully before running the beta.
 
@@ -33,15 +30,15 @@ P.S. If you know other people who want to try the beta, please do not forward th
 
 P.P.S. If you you wish to revert back from the beta to the current version, you need to perform the following steps:
 
-1. Uninstall Book Catalogue in the usual way: phone settings->'Applications'->'Manage Applications'->'Book Catalogue'->'Uninstall'
+1. Uninstall NeverTooManyBooks in the usual way: phone settings->'Applications'->'Manage Applications'->'NeverTooManyBooks'->'Uninstall'
 
-2. Delete files from the bookCatalogue directory ON YOUR PHONE
+2. Delete files from the neverTooManyBooks directory ON YOUR PHONE
 
-3. Copy the entire backup bookCatalogue directory from your PC back to your phone
+3. Copy the entire backup neverTooManyBooks directory from your PC back to your phone
 
-4. Download Book Catalogue from the Android Market
+4. Download NeverTooManyBooks from the Android Market
 
-5. Start Book Catalogue
+5. Start NeverTooManyBooks
 
 6. Go to the Administration activity and select 'Import Books'.
 

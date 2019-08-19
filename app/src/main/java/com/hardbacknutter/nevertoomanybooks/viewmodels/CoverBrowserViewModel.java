@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -355,7 +356,7 @@ public class CoverBrowserViewModel
          * ENHANCE: use {@link SearchEngine#isAvailable()}.
          * <p>
          * We loop on ImageSize first, and then for each ImageSize we loop again on Site.<br>
-         * The for() loop will break/return <strong><as soon as a cover file is found./strong>
+         * The for() loop will break/return <strong>as soon as a cover file is found.</strong>
          * The first Site which has an image is accepted.
          * <p>
          * ENHANCE: allow the user to prioritize the Site order on the fly.
@@ -591,7 +592,7 @@ public class CoverBrowserViewModel
                                              SearchEngine.ImageSize.MEDIUM,
                                              SearchEngine.ImageSize.LARGE);
 
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
                 // tad annoying... java.io.InterruptedIOException: thread interrupted
                 // can be thrown, but for some reason javac does not think so.
             }
@@ -672,7 +673,7 @@ public class CoverBrowserViewModel
                                              SearchEngine.ImageSize.MEDIUM,
                                              SearchEngine.ImageSize.SMALL);
 
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
                 // tad annoying... java.io.InterruptedIOException: thread interrupted
                 // can be thrown, but for some reason javac does not think so.
             }

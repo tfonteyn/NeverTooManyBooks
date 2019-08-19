@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.MappedCursorRow;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
@@ -72,8 +72,6 @@ public class CsvExporter
     static final String CSV_COLUMN_AUTHORS = "author_details";
 
     private static final int BUFFER_SIZE = 32768;
-    /** pattern we look for to rename/keep older copies. */
-    private static final String EXPORT_CSV_FILES_PATTERN = "export.%s.csv";
 
     /** backup copies to keep. */
     private static final int COPIES = 5;
@@ -132,8 +130,7 @@ public class CsvExporter
      * Constructor.
      *
      * @param context  Current context
-     * @param settings {@link ExportOptions#file} is not used, as we must support writing
-     *                 to a stream. {@link ExportOptions#EXPORT_SINCE} and
+     * @param settings {@link ExportOptions#EXPORT_SINCE} and
      *                 {@link ExportOptions#dateFrom} are respected.
      *                 Other flags are ignored, as this method only
      *                 handles {@link ExportOptions#BOOK_CSV} anyhow.
@@ -148,22 +145,22 @@ public class CsvExporter
     /**
      * At the end of a successful export, rename the temp file to {@link #EXPORT_FILE_NAME}.
      *
-     * @param tempFile to rename
+     * @param tmpFile to rename
      */
-    static void renameFiles(@NonNull final File tempFile) {
-        File fLast = StorageUtils.getFile(String.format(EXPORT_CSV_FILES_PATTERN, COPIES));
-        StorageUtils.deleteFile(fLast);
-
-        for (int i = COPIES - 1; i > 0; i--) {
-            final File fCurr = StorageUtils.getFile(String.format(EXPORT_CSV_FILES_PATTERN, i));
-            StorageUtils.renameFile(fCurr, fLast);
-            fLast = fCurr;
-        }
-        final File export = StorageUtils.getFile(EXPORT_FILE_NAME);
-        StorageUtils.renameFile(export, fLast);
-        StorageUtils.renameFile(tempFile, export);
+    void onSuccess(@NonNull final File tmpFile) {
+        StorageUtils.renameFileWithBackup(tmpFile, EXPORT_FILE_NAME, COPIES);
     }
 
+    /**
+     * @param outputStream      Stream for writing data
+     * @param listener          Progress and cancellation interface
+     * @param includeCoverCount If set, the progress count will be doubled to (presumably)
+     *                          cover the fact that each book has a cover.
+     *
+     * @return total number of books exported, or 0 upon cancellation
+     *
+     * @throws IOException on failures
+     */
     @Override
     @WorkerThread
     public int doBooks(@NonNull final OutputStream outputStream,
@@ -180,10 +177,9 @@ public class CsvExporter
 
         try (DAO db = new DAO();
              BookCursor bookCursor = db.fetchBooksForExport(mSettings.dateFrom);
-             BufferedWriter out = new BufferedWriter(
-                     new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), BUFFER_SIZE)) {
+             OutputStreamWriter osw = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+             BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE)) {
 
-            final MappedCursorRow cursorRow = bookCursor.getCursorRow();
             int progressMaxCount = bookCursor.getCount();
 
             if (listener.isCancelled()) {
@@ -198,12 +194,16 @@ public class CsvExporter
 
             out.write(EXPORT_FIELD_HEADERS);
 
-            while (bookCursor.moveToNext() && !listener.isCancelled()) {
+            while (bookCursor.moveToNext()) {
+                if (listener.isCancelled()) {
+                    return 0;
+                }
+
                 numberOfBooksExported++;
                 long bookId = bookCursor.getId();
 
-                String authorStringList = StringList.getAuthorCoder()
-                                                    .encode(db.getAuthorsByBookId(bookId));
+                String authorStringList = CsvCoder.getAuthorCoder()
+                                                  .encodeList(db.getAuthorsByBookId(bookId));
 
                 // Sanity check: ensure author is non-blank. This HAPPENS.
                 // Probably due to constraint failures.
@@ -211,7 +211,7 @@ public class CsvExporter
                     authorStringList = mUnknownString + ", " + mUnknownString;
                 }
 
-                String title = cursorRow.getString(DBDefinitions.KEY_TITLE);
+                String title = bookCursor.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank. This has not happened yet, but we
                 // know if does for author, so completeness suggests making sure all 'required'
                 // fields are non-blank.
@@ -221,50 +221,51 @@ public class CsvExporter
 
                 row.setLength(0);
                 row.append(format(bookId))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_BOOK_UUID)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_BOOK_UUID)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
                    .append(format(authorStringList))
                    .append(format(title))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_ISBN)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_PUBLISHER)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
-                   .append(format(cursorRow.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_ISBN)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_PUBLISHER)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
+                   .append(format(bookCursor.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
 
-                   .append(format(cursorRow.getDouble(DBDefinitions.KEY_RATING)))
-                   .append(format(StringList.getBookshelfCoder()
-                                            .encode(db.getBookshelvesByBookId(bookId))))
-                   .append(format(cursorRow.getInt(DBDefinitions.KEY_READ)))
-                   .append(format(StringList.getSeriesCoder()
-                                            .encode(db.getSeriesByBookId(bookId))))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_PAGES)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_NOTES)))
+                   .append(format(bookCursor.getDouble(DBDefinitions.KEY_RATING)))
+                   .append(format(CsvCoder.getBookshelfCoder()
+                                          .encodeList(db.getBookshelvesByBookId(bookId))))
+                   .append(format(bookCursor.getInt(DBDefinitions.KEY_READ)))
+                   .append(format(CsvCoder.getSeriesCoder()
+                                          .encodeList(db.getSeriesByBookId(bookId))))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_PAGES)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_NOTES)))
 
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_PRICE_PAID)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_PRICE_LISTED)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_PRICE_PAID)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
 
-                   .append(format(cursorRow.getLong(DBDefinitions.KEY_TOC_BITMASK)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_LOCATION)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_READ_START)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_READ_END)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_FORMAT)))
-                   .append(format(cursorRow.getInt(DBDefinitions.KEY_SIGNED)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_LOANEE)))
-                   .append(format(StringList.getTocCoder()
-                                            .encode(db.getTocEntryByBook(bookId))))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_DESCRIPTION)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_GENRE)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_LANGUAGE)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_ADDED)))
+                   .append(format(bookCursor.getLong(DBDefinitions.KEY_TOC_BITMASK)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_LOCATION)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_READ_START)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_READ_END)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_FORMAT)))
+                   .append(format(bookCursor.getInt(DBDefinitions.KEY_SIGNED)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_LOANEE)))
+                   .append(format(CsvCoder.getTocCoder()
+                                          .encodeList(db.getTocEntryByBook(bookId))))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_DESCRIPTION)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_GENRE)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_LANGUAGE)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_DATE_ADDED)))
 
-                   .append(format(cursorRow.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
-                   .append(format(cursorRow.getLong(DBDefinitions.KEY_ISFDB_ID)))
-                   .append(format(cursorRow.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE)));
+                   .append(format(bookCursor.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
+                   .append(format(bookCursor.getLong(DBDefinitions.KEY_ISFDB_ID)))
+                   .append(format(bookCursor.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)))
+                   .append(format(
+                           bookCursor.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE)));
 
                 // replace the comma at the end of the line with a '\n'
                 row.replace(row.length() - 1, row.length(), "\n");

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +34,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.util.Linkify;
 import android.view.MotionEvent;
@@ -72,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -82,9 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * This is the class that manages data and views for an Activity; access to the data that
  * each view represents should be handled via this class (and its related classes) where
  * possible.
- * <p>
- * Features provides are:
- * <ul>
+ * <ul>Features provides are:
  * <li> handling of visibility via preferences</li>
  * <li> handling of 'group' visibility via the 'group' property of a field.</li>
  * <li> understanding of kinds of views (setting a Checkbox (Checkable) value to 'true' will work
@@ -107,9 +106,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * <p>
  * The use of a formatter typically results in all values being converted to strings so
  * they should be avoided for most non-string data.
- * <p>
- * Data flows to and from a view as follows:
- * <ul>
+ * <ul>Data flows to and from a view as follows:
  * <li>IN  ( no formatter ):
  * <br>(DataManager/Bundle) -> transform (in accessor) -> View</li>
  * <li>IN  (with formatter):
@@ -137,7 +134,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * The add() method of Fields returns a new {@link Field} object which exposes the 'View' member;
  * this can be used to perform view-specific tasks like setting onClick() handlers.</li>
  * </ol>
- * TODO: Rationalize the use of this collection with the {@link DataManager}.
+ * TODO: Integrate the use of this collection with the {@link DataManager}.
  */
 public class Fields {
 
@@ -972,9 +969,7 @@ public class Fields {
      * <p>
      * Supports {@link FieldFormatter#format} only.
      * Output is <strong>strictly</strong> {@code Boolean}.
-     * <p>
-     * {@link Checkable} covers more then just a Checkbox:
-     * <ul>
+     * <ul>{@link Checkable} covers more then just a Checkbox:
      * <li>CheckBox, RadioButton, Switch</li>
      * <li>ToggleButton extend CompoundButton</li>
      * <li>CheckedTextView extends TextView</li>
@@ -1380,7 +1375,7 @@ public class Fields {
                     list.add(context.getString(entry.getValue()));
                 }
             }
-            return Csv.join(", ", list, null);
+            return TextUtils.join(", ", list);
         }
 
         // theoretically we should support the extract method as this formatter is used on

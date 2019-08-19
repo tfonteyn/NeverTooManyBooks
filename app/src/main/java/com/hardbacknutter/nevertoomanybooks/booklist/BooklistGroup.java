@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -274,6 +275,8 @@ public class BooklistGroup
      * <p>
      * Custom serialization support. The signature of this method should never be changed.
      *
+     * @throws IOException            on failure
+     * @throws ClassNotFoundException on failure
      * @see Serializable
      */
     private void readObject(@NonNull final ObjectInputStream is)
@@ -406,6 +409,8 @@ public class BooklistGroup
          * <p>
          * Custom serialization support. The signature of this method should never be changed.
          *
+         * @throws ClassNotFoundException on failure
+         * @throws IOException            on failure
          * @see Serializable
          */
         private void readObject(@NonNull final ObjectInputStream is)
@@ -470,6 +475,8 @@ public class BooklistGroup
 
         /**
          * Get the global default for this preference.
+         *
+         * @param context Current context
          *
          * @return {@code true} if we want "given-names last-name" formatted authors.
          */
@@ -546,8 +553,8 @@ public class BooklistGroup
                 pGivenNameFirst.setIcon(R.drawable.ic_title);
                 pGivenNameFirst.setKey(Prefs.pk_bob_format_author_name);
                 pGivenNameFirst.setDefaultValue(false);
-                pGivenNameFirst.setSummaryOn(R.string.pv_bob_format_author_name_given_first);
-                pGivenNameFirst.setSummaryOff(R.string.pv_bob_format_author_name_family_first);
+                pGivenNameFirst.setSummaryOn(R.string.pv_bob_author_name_given_first);
+                pGivenNameFirst.setSummaryOff(R.string.pv_bob_author_name_family_first);
                 category.addPreference(pGivenNameFirst);
             }
         }
@@ -568,6 +575,8 @@ public class BooklistGroup
          * <p>
          * Custom serialization support. The signature of this method should never be changed.
          *
+         * @throws ClassNotFoundException on failure
+         * @throws IOException            on failure
          * @see Serializable
          */
         private void readObject(@NonNull final ObjectInputStream is)
@@ -847,8 +856,8 @@ public class BooklistGroup
         /**
          * Compound key of this RowKind ({@link BooklistGroup}).
          * <p>
-         * The name will be of the form 'prefix/<n>' where 'prefix' is the prefix specific
-         * to the RowKind, and <n> the id of the row, e.g. 's/18' for Series with id=18
+         * The name will be of the form 'prefix/id' where 'prefix' is the prefix specific
+         * to the RowKind, and 'id' the id of the row, e.g. 's/18' for Series with id=18
          */
         @NonNull
         CompoundKey getCompoundKey() {

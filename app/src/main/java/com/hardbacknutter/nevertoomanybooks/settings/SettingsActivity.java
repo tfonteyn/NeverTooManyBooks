@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -37,16 +40,22 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
+import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Hosting activity for Preference editing.
  */
 public class SettingsActivity
         extends BaseActivity
-        implements PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
+        implements PreferenceFragmentCompat.OnPreferenceStartScreenCallback,
+                   SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     protected int getLayoutId() {
@@ -143,4 +152,37 @@ public class SettingsActivity
         return true;
     }
 
+    /**
+     * Apply preference changes.
+     */
+    @Override
+    @CallSuper
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
+                                          @NonNull final String key) {
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+            Logger.debugEnter(this, "BaseActivity.onSharedPreferenceChanged",
+                              "key=" + key);
+        }
+
+        // Trigger a recreate of this activity, if the setting has changed.
+        switch (key) {
+            case Prefs.pk_ui_theme:
+                if (App.isThemeChanged(this)) {
+                    recreate();
+                    App.setIsRecreating();
+                }
+                break;
+
+            case Prefs.pk_ui_language:
+                if (LocaleUtils.isChanged(this)) {
+                    recreate();
+                    App.setIsRecreating();
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
 }

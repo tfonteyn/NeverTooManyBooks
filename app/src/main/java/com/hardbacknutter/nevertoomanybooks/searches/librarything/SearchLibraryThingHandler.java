@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +41,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -48,12 +50,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * Search LibraryThing for an ISBN using the Web API.
  * <p>
  * Another good example: (response not shown here)
- * http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork&isbn=058603806X&apikey=x
+ * http://www.librarything.com/services/rest/1.1/?
+ * method=librarything.ck.getwork&isbn=058603806X&apikey=x
  * <p>
  * A typical (and thorough) LibraryThing ISBN response looks like:
  *
  * <pre>
- *     http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork&isbn=031285966X&apikey=x
+ *     http://www.librarything.com/services/rest/1.1/?
+ *     method=librarything.ck.getwork&isbn=031285966X&apikey=x
  *     {@code
  *  <response stat="ok">
  *    <ltml xmlns="http://www.librarything.com/" version="1.1">
@@ -660,7 +664,6 @@ class SearchLibraryThingHandler
 
         } else if (localName.equalsIgnoreCase(XML_FACT)) {
             switch (mFieldType) {
-
                 case Title:
                     addIfNotPresent(mBookData, DBDefinitions.KEY_TITLE, mBuilder.toString());
                     break;
@@ -681,6 +684,10 @@ class SearchLibraryThingHandler
                                                 matcher.group(1));
                         }
                     }
+                    break;
+
+                default:
+                    Logger.warnWithStackTrace(this, "mFieldType=" + mFieldType);
                     break;
             }
         }

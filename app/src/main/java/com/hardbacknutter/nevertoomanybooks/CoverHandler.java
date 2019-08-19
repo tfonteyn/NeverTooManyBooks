@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -409,11 +410,11 @@ public class CoverHandler {
             mGotCameraImage = true;
 
         } else {
-            if (BuildConfig.DEBUG  /* WARN */) {
-                Logger.warn(this, "addCoverFromCamera",
-                            "camera image empty", "onActivityResult",
-                            "requestCode=" + requestCode,
-                            "resultCode=" + resultCode);
+            if (BuildConfig.DEBUG  /* always */) {
+                Logger.debug(this, "addCoverFromCamera",
+                             "camera image empty", "onActivityResult",
+                             "requestCode=" + requestCode,
+                             "resultCode=" + resultCode);
             }
         }
     }
@@ -684,19 +685,19 @@ public class CoverHandler {
                         ImageUtils.setImageView(mCoverView, getCoverFile(),
                                                 mMaxWidth, mMaxHeight, true);
                     } else {
-                        if (BuildConfig.DEBUG /* WARN */) {
-                            Logger.warn(this, "onActivityResult",
-                                        "RESULT_OK, but no image file?",
-                                        "requestCode=" + requestCode,
-                                        "resultCode=" + resultCode);
+                        if (BuildConfig.DEBUG /* always */) {
+                            Logger.debug(this, "onActivityResult",
+                                         "RESULT_OK, but no image file?",
+                                         "requestCode=" + requestCode,
+                                         "resultCode=" + resultCode);
                         }
                     }
                 } else {
-                    if (BuildConfig.DEBUG /* WARN */) {
-                        Logger.warn(this, "onActivityResult",
-                                    "FAILED",
-                                    "requestCode=" + requestCode,
-                                    "resultCode=" + resultCode);
+                    if (BuildConfig.DEBUG /* always */) {
+                        Logger.debug(this, "onActivityResult",
+                                     "FAILED",
+                                     "requestCode=" + requestCode,
+                                     "resultCode=" + resultCode);
                     }
                     StorageUtils.deleteFile(getCroppedTempCoverFile());
                 }

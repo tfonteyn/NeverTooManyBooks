@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
-import com.hardbacknutter.nevertoomanybooks.utils.IllegalTypeException;
 
 /**
  * Manages the setup of search engines/sites.
@@ -66,11 +66,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.IllegalTypeException;
  */
 public final class SearchSites {
 
+    /** search source to use. */
+    static final int AMAZON = 1 << 1;
     /** tag. */
     private static final String TAG = "SearchSites";
     public static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
-    /** search source to use. */
-    static final int AMAZON = 1 << 1;
     /** search source to use. */
     private static final int GOOGLE_BOOKS = 1;
     /** search source to use. */
@@ -228,7 +228,7 @@ public final class SearchSites {
                 return "KBNL";
 
             default:
-                throw new IllegalTypeException(UNEXPECTED_SEARCH_SOURCE_ERROR + id);
+                throw new IllegalStateException(UNEXPECTED_SEARCH_SOURCE_ERROR + id);
         }
     }
 
@@ -262,7 +262,7 @@ public final class SearchSites {
                 return new KbNlManager();
 
             default:
-                throw new IllegalTypeException(UNEXPECTED_SEARCH_SOURCE_ERROR + id);
+                throw new IllegalStateException(UNEXPECTED_SEARCH_SOURCE_ERROR + id);
         }
     }
 

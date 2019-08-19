@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +34,14 @@ import androidx.annotation.Nullable;
  * Replaces all (5!) old backup related listeners.
  */
 public interface ProgressListener {
+
+    /**
+     * Get the max position. Useful if a routine wants to adjust the max only if the
+     * new value it intents to use if larger then the current max.
+     *
+     * @return max position
+     */
+    int getMax();
 
     /**
      * Set the max value (can be estimated) for the progress counter.

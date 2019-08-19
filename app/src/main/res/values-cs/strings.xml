@@ -1,4 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes „…“ - Regex to find wrong ones: (”|‘|’|«|») -->
 <resources>
@@ -16,12 +44,10 @@
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
     <string name="X_menu_delete_series">Smazat série…</string>
     <string name="X_menu_delete_toc_entry">Odstranit tento titul z antologií</string>
-    <string name="X_menu_edit_author">Upravit autory…</string>
-    <string name="X_menu_edit_series">Upravit série…</string>
+    <string name="title_edit_author">Upravit autory</string>
+    <string name="title_edit_series">Upravit série</string>
     <string name="X_menu_search_books">Hledat knihy</string>
     <string name="X_results_found">Nalezené výsledky</string>
-    <string name="X_search_title">Výsledky vyhledávání</string>
-    <string name="X_select_bookshelves">Vyberte si regály</string>
     <string name="X_size">Velikost</string>
     <string name="X_tip_booklist_global_properties">Na této obrazovce můžete nastavit výchozí charakteristiky všech stylů seznamu knih. Většina vlastností může být potlačena jednotlivými styly, ale zde jsou definovány výchozí hodnoty. Můžete změnit způsob zobrazení seznamů při spuštění a upravit řadu dalších preferencí, které budou použity na všechny vaše styly, pokud to bude možné.</string>
     <string name="X_unsaved_edits_title">Změny nejsou uloženy</string>
@@ -412,7 +438,7 @@
     <string name="pt_bob_sort_author_name">Seřadit podle jména autora</string>
     <string name="pt_bob_text_size">Velikost položek na seznamu knih</string>
     <string name="pt_bob_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
-    <string name="pt_bob_thumbnails_show">Zobrazit náhledy</string>
+    <string name="pt_bob_show_thumbnails">Zobrazit náhledy</string>
     <string name="pt_collect_series_info_from_toc">Sbírejte informace o sériích z obsahu</string>
     <string name="pt_cover_scale_factor">Velikost miniatur v seznamech</string>
     <string name="pt_reformat_titles_on_insert">Při přidávání</string>
@@ -432,8 +458,8 @@
     <string name="pt_ui_theme">Téma</string>
     <string name="pv_bob_books_under_multiple_each_1s">Pod každým %1$s</string>
     <string name="pv_bob_books_under_multiple_primary_1s_only">Pouze pod primárním %1$s</string>
-    <string name="pv_bob_format_author_name_family_first">Zobrazovat nejprve příjmení, tj. „Čapek, Karel“</string>
-    <string name="pv_bob_format_author_name_given_first">Zobrazovat nejprve křestní jméno, tj. „Karel Čapek“</string>
+    <string name="pv_bob_author_name_family_first">Zobrazovat nejprve příjmení, tj. „Čapek, Karel“</string>
+    <string name="pv_bob_author_name_given_first">Zobrazovat nejprve křestní jméno, tj. „Karel Čapek“</string>
     <string name="rebuild_fts">Obnovit FTS\n(neotestovaná funkce!)</string>
     <string name="retry">Opakovat</string>
     <string name="style_builtin_acquired_date">Získáno</string>

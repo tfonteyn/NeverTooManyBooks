@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,43 +43,64 @@ import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils.Deserializa
 public interface ReaderEntity {
 
     /**
-     * @return the original "file name" (archive entry name) of the object.
+     * Get the original "file name" (archive entry name) of the object.
+     *
+     * @return name
      */
     @NonNull
     String getName();
 
     /**
-     * @return the type of this entity.
+     * Get the type of this entity.
+     *
+     * @return Type
      */
     @NonNull
-    BackupEntityType getType();
+    Type getType();
 
     /**
-     * @return the Modified date from archive entry.
+     * Get the Modified date from archive entry.
+     *
+     * @return Date
      */
     @NonNull
     Date getDateModified();
 
-
     /**
-     * @return the stream to read the entity.
+     * Get the stream to read the entity.
+     *
+     * @return the InputStream
+     *
+     * @throws IOException on failure
      */
     @NonNull
-    InputStream getStream();
-
-    /** Save the data to a directory, using the original file name. */
-    void saveToDirectory(@NonNull File dir)
+    InputStream getInputStream()
             throws IOException;
 
     /**
-     * @return the data as a Serializable object.
+     * Save the data to a directory, using the original file name.
+     *
+     * @param name of the directory to save to.
+     *
+     * @throws IOException on failure
+     */
+    void saveToDirectory(@NonNull File name)
+            throws IOException;
+
+    /**
+     * Get the data as a Serializable object.
+     *
+     * @return the object
+     *
+     * @throws IOException              on failure
+     * @throws DeserializationException on failure
      */
     @NonNull
     <T extends Serializable> T getSerializable()
             throws IOException, DeserializationException;
 
     /** Supported entity types. */
-    enum BackupEntityType {
+    enum Type {
         Books,
         Info,
         Database,

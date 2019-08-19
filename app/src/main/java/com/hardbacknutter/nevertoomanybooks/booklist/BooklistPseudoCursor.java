@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,16 +34,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BooklistCursor;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BooklistMappedCursorRow;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
+ * TODO: https://developer.android.com/topic/libraries/architecture/paging.html
+ * <p>
  * Philip Warner: Yet Another Rabbit Burrow ("YARB" -- did I invent a new acronym?).
  * What led to this?
  * <p>
@@ -127,7 +129,7 @@ public class BooklistPseudoCursor
     }
 
     /**
-     * Get a MappedCursorRow for this cursor. Constructs one if necessary.
+     * Get a BooklistMappedCursorRow for this cursor. Constructs one if necessary.
      *
      * @return BooklistMappedCursorRow
      */
@@ -379,13 +381,15 @@ public class BooklistPseudoCursor
 //            }
         }
 
-        Logger.debug(this, "onMove",
-                     "ImageUtils.cacheChecks=" + ImageUtils.cacheChecks,
-                     "ImageUtils.cacheTicks=" + (ImageUtils.cacheTicks.get() / 1_000_000),
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+            Logger.debug(this, "onMove",
+                         "ImageUtils.cacheChecks=" + ImageUtils.cacheChecks,
+                         "ImageUtils.cacheTicks=" + (ImageUtils.cacheTicks.get() / 1_000_000),
 
-                     "ImageUtils.fileChecks=" + ImageUtils.fileChecks,
-                     "ImageUtils.fileTicks=" + (ImageUtils.fileTicks.get() / 1_000_000)
-                    );
+                         "ImageUtils.fileChecks=" + ImageUtils.fileChecks,
+                         "ImageUtils.fileTicks=" + (ImageUtils.fileTicks.get() / 1_000_000)
+                        );
+        }
         return true;
     }
 
@@ -396,6 +400,10 @@ public class BooklistPseudoCursor
                + ", mBuilder=" + mBuilder
                + ", mActiveCursor=" + mActiveCursor
                + ", mCursors=" + mCursors
+               + ", mPseudoCount=" + mPseudoCount
+               + ", mMruList=" + Arrays.toString(mMruList)
+               + ", mMruListPos=" + mMruListPos
+               + ", mCursorRow=" + mCursorRow
                + ", " + super.toString()
                + '}';
     }

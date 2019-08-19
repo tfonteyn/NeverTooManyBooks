@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,11 +39,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
+import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.backup.BackupManager;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
 import com.hardbacknutter.nevertoomanybooks.backup.RestoreTask;
+import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupReader;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
@@ -91,9 +96,9 @@ public class RestoreActivity
             UserMessage.show(mListView, R.string.warning_select_an_existing_file);
             return;
         }
+        mOptionsModel.setFile(file);
 
-        final ImportOptions options = new ImportOptions();
-        options.file = file;
+        ImportOptions options = new ImportOptions();
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_import_from_archive)
@@ -103,21 +108,17 @@ public class RestoreActivity
                     // ask user what options they want
                     FragmentManager fm = getSupportFragmentManager();
                     if (fm.findFragmentByTag(ImportOptionsDialogFragment.TAG) == null) {
-                        ImportOptionsDialogFragment.newInstance(options)
+                        ImportOptionsDialogFragment.newInstance(options, archiveHasValidDates(file))
                                                    .show(fm, ImportOptionsDialogFragment.TAG);
                     }
                 })
-                .setPositiveButton(android.R.string.ok, (d, which) -> {
-                    // User wants to import all.
-                    options.what = ImportOptions.ALL;
-                    onOptionsSet(options);
-                })
+                .setPositiveButton(android.R.string.ok, (d, which) -> onOptionsSet(options))
                 .create()
                 .show();
     }
 
-    private void onTaskFinishedMessage(final TaskListener
-                                                     .TaskFinishedMessage<ImportOptions> message) {
+    private void onTaskFinishedMessage(
+            @NonNull final TaskListener.TaskFinishedMessage<ImportOptions> message) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
@@ -178,7 +179,7 @@ public class RestoreActivity
                 break;
 
             default:
-                Logger.warnWithStackTrace(this, "Unknown taskId=" + message.taskId);
+                Logger.warnWithStackTrace(this, "taskId=" + message.taskId);
                 break;
         }
     }
@@ -206,10 +207,32 @@ public class RestoreActivity
                     R.string.progress_msg_importing, false, 0);
             mProgressDialog.show(fm, TAG);
 
-            RestoreTask task = new RestoreTask(options, mOptionsModel.getTaskListener());
+            //noinspection ConstantConditions
+            RestoreTask task = new RestoreTask(mOptionsModel.getFile(), options,
+                                               mOptionsModel.getTaskListener());
             mOptionsModel.setTask(task);
             task.execute();
         }
         mProgressDialog.setTask(mOptionsModel.getTask());
+    }
+
+    /**
+     * read the info block and check if we have valid dates.
+     *
+     * @param file to check
+     *
+     * @return {@code true} if the archive has (or is supposed to have) valid dates
+     */
+    public boolean archiveHasValidDates(@NonNull final File file) {
+        boolean hasValidDates;
+        try (BackupReader reader = BackupManager.getReader(this, file)) {
+            BackupInfo info = reader.getInfo();
+            reader.close();
+            hasValidDates = info.getAppVersionCode() >= 152;
+        } catch (@NonNull final IOException e) {
+            Logger.error(this, e);
+            hasValidDates = false;
+        }
+        return hasValidDates;
     }
 }

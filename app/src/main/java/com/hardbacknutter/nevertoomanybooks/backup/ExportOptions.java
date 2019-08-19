@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +35,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
-import java.io.File;
 import java.util.Date;
 import java.util.Objects;
 
@@ -46,6 +46,7 @@ public class ExportOptions
     /**
      * options as to *what* should be exported.
      */
+    public static final int NOTHING = 0;
     public static final int BOOK_CSV = 1;
     public static final int PREFERENCES = 1 << 1;
     public static final int BOOK_LIST_STYLES = 1 << 2;
@@ -55,15 +56,6 @@ public class ExportOptions
     //public static final int IMPORT_6 = 1 << 6;
     //public static final int IMPORT_7 = 1 << 7;
     //public static final int DATABASE = 1 << 8;
-
-    /**
-     * Options value to indicate all things should be exported.
-     * Note that XML_TABLES is NOT included as it's considered special interest.
-     */
-    public static final int ALL = BOOK_CSV
-                                  | PREFERENCES
-                                  | BOOK_LIST_STYLES
-                                  | COVERS;
 
     /**
      * Options to indicate new books or books with more recent update_date
@@ -76,14 +68,15 @@ public class ExportOptions
     public static final int EXPORT_SINCE = 1 << 16;
 
     /**
-     * Nothing to backup.
-     */
-    public static final int NOTHING = 0;
-
-    /**
      * all defined flags.
      */
-    public static final int MASK = ALL | EXPORT_SINCE | XML_TABLES;
+    @SuppressWarnings("WeakerAccess")
+    public static final int MASK = BOOK_CSV
+                                   | PREFERENCES
+                                   | BOOK_LIST_STYLES
+                                   | COVERS
+                                   | XML_TABLES
+                                   | EXPORT_SINCE;
     public static final Creator<ExportOptions> CREATOR = new Creator<ExportOptions>() {
         @Override
         public ExportOptions createFromParcel(@NonNull final Parcel source) {
@@ -95,29 +88,34 @@ public class ExportOptions
             return new ExportOptions[size];
         }
     };
-    /** file to export to. */
-    @Nullable
-    public File file;
     /**
-     * bitmask for the options.
+     * Options value to indicate all things should be exported.
+     * Note that XML_TABLES is NOT included as it's considered special interest.
      */
-    public int what = NOTHING;
-    /**
-     * EXPORT_SINCE.
-     */
+    private static final int ALL = BOOK_CSV
+                                   | PREFERENCES
+                                   | BOOK_LIST_STYLES
+                                   | COVERS;
+    /** bitmask for the options. */
+    public int what = ALL;
+
+    /** EXPORT_SINCE. */
     @Nullable
     public Date dateFrom;
 
+    /**
+     * Constructor.
+     */
     public ExportOptions() {
     }
 
     /**
      * Constructor.
      *
-     * @param file to export to
+     * @param what to export
      */
-    public ExportOptions(@NonNull final File file) {
-        this.file = file;
+    public ExportOptions(final int what) {
+        this.what = what;
     }
 
     /**
@@ -127,9 +125,7 @@ public class ExportOptions
      */
     private ExportOptions(@NonNull final Parcel in) {
         what = in.readInt();
-        if (in.readInt() != 0) {
-            file = new File(in.readString());
-        }
+        // has date?
         if (in.readInt() != 0) {
             dateFrom = new Date(in.readLong());
         }
@@ -149,16 +145,6 @@ public class ExportOptions
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeInt(what);
-
-        if (file != null) {
-            // has file
-            dest.writeInt(1);
-            dest.writeString(file.getPath());
-        } else {
-            // no file
-            dest.writeInt(0);
-        }
-
         if (dateFrom != null) {
             // has date
             dest.writeInt(1);
@@ -183,8 +169,7 @@ public class ExportOptions
     @NonNull
     public String toString() {
         return "ExportOptions{"
-               + "file=`" + file + '`'
-               + ", what=0%" + Integer.toBinaryString(what)
+               + ", what=0b" + Integer.toBinaryString(what)
                + ", dateFrom=" + dateFrom
                + '}';
     }

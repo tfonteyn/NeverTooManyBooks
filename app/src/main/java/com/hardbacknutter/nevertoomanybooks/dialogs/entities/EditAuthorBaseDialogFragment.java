@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,12 +83,10 @@ public abstract class EditAuthorBaseDialogFragment
             mFamilyName = mAuthor.getFamilyName();
             mGivenNames = mAuthor.getGivenNames();
             mIsComplete = mAuthor.isComplete();
-            mType = mAuthor.getType();
         } else {
             mFamilyName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
             mGivenNames = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
             mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
-            mType = savedInstanceState.getInt(DBDefinitions.KEY_AUTHOR_TYPE);
         }
     }
 
@@ -124,7 +123,7 @@ public abstract class EditAuthorBaseDialogFragment
         return new AlertDialog.Builder(context)
                        .setIcon(R.drawable.ic_edit)
                        .setView(root)
-                       .setTitle(R.string.title_edit_book_authors)
+                       .setTitle(R.string.title_edit_author)
                        .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                        .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
                            mFamilyName = mFamilyNameView.getText().toString().trim();
@@ -156,7 +155,6 @@ public abstract class EditAuthorBaseDialogFragment
         outState.putString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
         outState.putString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
         outState.putBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
-        outState.putInt(DBDefinitions.KEY_AUTHOR_TYPE, mType);
     }
 
     /**

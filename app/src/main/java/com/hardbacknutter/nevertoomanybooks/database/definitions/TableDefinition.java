@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +26,8 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertoomanybooks.database.definitions;
+
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -708,7 +711,7 @@ public class TableDefinition
      */
     @NonNull
     public String getInsertInto(@NonNull final DomainDefinition... domains) {
-        return "INSERT INTO " + mName + " (" + Csv.join(",", Arrays.asList(domains)) + ')';
+        return "INSERT INTO " + mName + " (" + TextUtils.join(",", Arrays.asList(domains)) + ')';
     }
 
     /**
@@ -762,7 +765,7 @@ public class TableDefinition
         // add the primary key if not already added / needed.
         if (!hasPrimaryKey && !mPrimaryKey.isEmpty()) {
             sql.append("\n,PRIMARY KEY (")
-               .append(Csv.join(",", mPrimaryKey))
+               .append(TextUtils.join(",", mPrimaryKey))
                .append(')');
         }
 
@@ -870,22 +873,26 @@ public class TableDefinition
                 case FTS3:
                 case FTS4:
                     return " Virtual";
+                case Standard:
+                    return "";
                 case Temporary:
                     return " Temporary";
-                default:
-                    return "";
             }
+            return "";
         }
 
         String getUsingModifier() {
             switch (this) {
+                case Standard:
+                    return "";
+                case Temporary:
+                    return "";
                 case FTS3:
                     return " USING fts3";
                 case FTS4:
                     return " USING fts4";
-                default:
-                    return "";
             }
+            return "";
         }
     }
 
@@ -1013,9 +1020,9 @@ public class TableDefinition
                 return "FOREIGN KEY (" + mDomains.get(0)
                        + ") REFERENCES " + mParent + '(' + mParentKey + ')';
             } else {
-                return "FOREIGN KEY (" + Csv.join(",", mDomains)
+                return "FOREIGN KEY (" + TextUtils.join(",", mDomains)
                        + ") REFERENCES " + mParent
-                       + '(' + Csv.join(",", mParent.getPrimaryKey()) + ')';
+                       + '(' + TextUtils.join(",", mParent.getPrimaryKey()) + ')';
             }
         }
 

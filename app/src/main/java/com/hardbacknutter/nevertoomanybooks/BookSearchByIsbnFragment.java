@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -383,6 +384,7 @@ public class BookSearchByIsbnFragment
                         }
                         break;
                 }
+                break;
             }
 
             case UniqueId.REQ_BOOK_EDIT:
@@ -392,6 +394,7 @@ public class BookSearchByIsbnFragment
                     // go scan next book until the user cancels scanning.
                     startScannerActivity();
                 }
+                break;
 
             default:
                 super.onActivityResult(requestCode, resultCode, data);

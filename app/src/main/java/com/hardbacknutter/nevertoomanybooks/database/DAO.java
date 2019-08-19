@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +36,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.AutoCompleteTextView;
 
@@ -67,8 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.ColumnMapper;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.MappedCursorRow;
+import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.TrackedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -102,10 +103,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_TYPE_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_AUTHOR_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
@@ -226,7 +227,6 @@ public class DAO
      */
     public static final String COLLATION = " Collate LOCALIZED ";
     private static final String ERROR_FAILED_CREATING_BOOK_FROM = "Failed creating book from\n";
-    private static final int PREPARED_CACHE_SIZE = 20;
 
     /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
@@ -291,9 +291,9 @@ public class DAO
     /** See {@link #encodeString(String)}. */
     private static final Pattern ENCODE_STRING = Pattern.compile("'", Pattern.LITERAL);
     private static final Pattern ENCODE_ORDERBY_PATTERN = Pattern.compile("\\W");
-    /** the actual SQLiteOpenHelper. */
+    /** Actual SQLiteOpenHelper. */
     private static DBHelper sDbHelper;
-    /** the synchronized wrapper around the real database. */
+    /** Synchronization wrapper around the real database. */
     private static SynchronizedDb sSyncedDb;
 
     // curiosity... check when the JDK loads this class.
@@ -313,28 +313,15 @@ public class DAO
      * this class is not fully thread safe (in contrast to the covers dba which is).
      */
     public DAO() {
-        // initialise static if not done yet
+        // the SQLiteOpenHelper
         if (sDbHelper == null) {
             sDbHelper = DBHelper.getInstance(CURSOR_FACTORY, SYNCHRONIZER);
         }
 
-        // initialise static if not done yet
+        // Get the DB wrapper
         if (sSyncedDb == null) {
-            // Get the DB wrapper
             sSyncedDb = new SynchronizedDb(sDbHelper, SYNCHRONIZER);
-
-            // Turn ON foreign key support so that CASCADE works.
-            sSyncedDb.execSQL("PRAGMA foreign_keys = ON");
-
-            // Turn OFF recursive triggers;
-            sSyncedDb.execSQL("PRAGMA recursive_triggers = OFF");
-
-            sSyncedDb.getUnderlyingDatabase()
-                     .setMaxSqlCacheSize(PREPARED_CACHE_SIZE);
         }
-
-        // for debug
-        //sSyncedDb.execSQL("PRAGMA temp_store = FILE");
 
         // statements are instance based/managed
         mStatements = new SqlStatementManager(sSyncedDb);
@@ -798,7 +785,7 @@ public class DAO
                 return list;
             }
 
-            ColumnMapper mapper = new ColumnMapper(cursor);
+            CursorMapper mapper = new CursorMapper(cursor);
 
             while (cursor.moveToNext()) {
                 TocEntry tocEntry = new TocEntry(mapper.getLong(DOM_PK_ID.name),
@@ -834,7 +821,6 @@ public class DAO
             stmt.bindString(3, author.getGivenNames());
             stmt.bindString(4, encodeOrderByColumn(author.getGivenNames(), locale));
             stmt.bindLong(5, author.isComplete() ? 1 : 0);
-            stmt.bindLong(6, author.getType());
             long iId = stmt.executeInsert();
             if (iId > 0) {
                 author.setId(iId);
@@ -857,7 +843,6 @@ public class DAO
         cv.put(DOM_AUTHOR_GIVEN_NAMES.name, author.getGivenNames());
         cv.put(DOM_AUTHOR_GIVEN_NAMES_OB.name, encodeOrderByColumn(author.getGivenNames(), locale));
         cv.put(DOM_AUTHOR_IS_COMPLETE.name, author.isComplete());
-        cv.put(DOM_AUTHOR_TYPE_BITMASK.name, author.getType());
 
         return sSyncedDb.update(TBL_AUTHORS.getName(), cv,
                                 DOM_PK_ID + "=?",
@@ -904,7 +889,7 @@ public class DAO
     public Author getAuthor(final long id) {
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.AUTHOR_BY_ID,
                                                 new String[]{String.valueOf(id)})) {
-            ColumnMapper mapper = new ColumnMapper(cursor);
+            CursorMapper mapper = new CursorMapper(cursor);
             if (cursor.moveToFirst()) {
                 return new Author(id, mapper);
             } else {
@@ -1206,6 +1191,10 @@ public class DAO
                             book.remove(domain.name);
                         }
                         break;
+
+                    default:
+                        Logger.warnWithStackTrace(this, "type=" + domain.getType());
+                        break;
                 }
             }
         }
@@ -1340,7 +1329,7 @@ public class DAO
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.debug(this, "preprocessLegacyAuthor",
                                  "KEY_AUTHOR_FORMATTED",
-                                 "inserting author: " + author.stringEncoded());
+                                 "inserting author: " + author);
                 }
                 insertAuthor(author, book.getLocale());
             }
@@ -1360,7 +1349,7 @@ public class DAO
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.debug(this, "preprocessLegacyAuthor",
                                  "KEY_AUTHOR_FAMILY_NAME",
-                                 "inserting author: " + author.stringEncoded());
+                                 "inserting author: " + author);
                 }
                 insertAuthor(author, book.getLocale());
             }
@@ -1420,7 +1409,7 @@ public class DAO
      */
     @NonNull
     public String getBookUuid(final long bookId)
-            throws SQLiteDoneException {
+            throws SQLiteDoneException, IllegalArgumentException {
         // sanity check
         if (bookId == 0) {
             throw new IllegalArgumentException("cannot get uuid for id==0");
@@ -1770,9 +1759,10 @@ public class DAO
      * All of these will first delete all entries in the Book-[tableX] table for this bookId,
      * and then insert the new rows.
      *
-     * @param bookId of the book
-     * @param book   A collection with the columns to be set. May contain extra data.
-     *               The id should be disregarded in favour of the parameter 'bookId'.
+     * @param context Current context
+     * @param bookId  of the book
+     * @param book    A collection with the columns to be set. May contain extra data.
+     *                The id should be disregarded in favour of the parameter 'bookId'.
      */
     private void insertBookDependents(@NonNull final Context context,
                                       final long bookId,
@@ -1870,9 +1860,10 @@ public class DAO
      * Note that {@link DBDefinitions#DOM_BOOK_SERIES_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
-     * @param bookId of the book
-     * @param book   A collection with the columns to be set. May contain extra data.
-     *               The id should be disregarded in favour of the parameter 'bookId'.
+     * @param context Current context
+     * @param bookId  of the book
+     * @param book    A collection with the columns to be set. May contain extra data.
+     *                The id should be disregarded in favour of the parameter 'bookId'.
      */
     private void insertBookSeries(@NonNull final Context context,
                                   final long bookId,
@@ -1906,7 +1897,7 @@ public class DAO
                 if (series.fixId(context, this) == 0) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSERT_BOOK_LINKS) {
                         Logger.debug(this, "insertBookSeries",
-                                     "inserting series: " + series.stringEncoded());
+                                     "inserting series: " + series);
                     }
 
                     insertSeries(context, series, series.getLocale());
@@ -1951,9 +1942,10 @@ public class DAO
     /**
      * Insert a List of TocEntry's for the given book.
      *
-     * @param bookId of the book
-     * @param book   A collection with the columns to be set. May contain extra data.
-     *               The id should be disregarded in favour of the parameter 'bookId'.
+     * @param context Current context
+     * @param bookId  of the book
+     * @param book    A collection with the columns to be set. May contain extra data.
+     *                The id should be disregarded in favour of the parameter 'bookId'.
      */
     private void updateOrInsertTOC(@NonNull final Context context,
                                    final long bookId,
@@ -1999,7 +1991,7 @@ public class DAO
             if (author.fixId(context, this) == 0) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
                     Logger.debug(this, "updateOrInsertTOC",
-                                 "inserting author: " + author.stringEncoded());
+                                 "inserting author: " + author);
                 }
                 // this basically will only happen if a multi-author anthology is added,
                 // with an entry by an Author from whom we have no Books.
@@ -2014,7 +2006,7 @@ public class DAO
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
                     Logger.debug(this, "updateOrInsertTOC",
-                                 "inserting tocEntry: " + tocEntry.stringEncoded());
+                                 "inserting tocEntry: " + tocEntry);
                 }
                 // Be cautious; other threads may use the cached stmt, and set parameters.
                 synchronized (insertTocStmt) {
@@ -2130,7 +2122,7 @@ public class DAO
                 if (author.fixId(this) == 0) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSERT_BOOK_LINKS) {
                         Logger.debug(this, "insertBookAuthors",
-                                     "inserting author: " + author.stringEncoded());
+                                     "inserting author: " + author);
                     }
                     insertAuthor(author, book.getLocale());
                 }
@@ -2146,6 +2138,7 @@ public class DAO
                     stmt.bindLong(1, bookId);
                     stmt.bindLong(2, author.getId());
                     stmt.bindLong(3, position);
+                    stmt.bindLong(4, author.getType());
                     stmt.executeInsert();
                 }
             }
@@ -2181,9 +2174,10 @@ public class DAO
      * Note that {@link DBDefinitions#DOM_BOOK_SERIES_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
-     * @param bookId of the book
-     * @param book   A collection with the columns to be set. May contain extra data.
-     *               The id should be disregarded in favour of the parameter 'bookId'.
+     * @param context Current context
+     * @param bookId  of the book
+     * @param book    A collection with the columns to be set. May contain extra data.
+     *                The id should be disregarded in favour of the parameter 'bookId'.
      */
     private void insertBookBookshelf(@NonNull final Context context,
                                      final long bookId,
@@ -2216,7 +2210,7 @@ public class DAO
             if (bookshelf.fixId(context, this) == 0) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSERT_BOOK_LINKS) {
                     Logger.debug(this, "insertBookBookshelf",
-                                 "inserting bookshelf: " + bookshelf.stringEncoded());
+                                 "inserting bookshelf: " + bookshelf);
                 }
                 long styleId = bookshelf.getStyle(this).getId();
                 insertBookshelf(bookshelf, styleId);
@@ -2257,31 +2251,24 @@ public class DAO
      * <p>
      * In other words: replace the id for books that are not already linked with the new one
      *
-     * @param table  the link-table between books and author or series
-     * @param domain name of the column to use, again author or series
+     * @param table  TBL_BOOK_AUTHORS or TBL_BOOK_SERIES
+     * @param fk     DOM_FK_AUTHOR or DOM_FK_SERIES
      * @param fromId the id to replace
-     * @param toId   the id to use
+     * @param toId   the new id to use
      */
     private void globalReplaceId(@NonNull final TableDefinition table,
-                                 @NonNull final DomainDefinition domain,
+                                 @NonNull final DomainDefinition fk,
                                  final long fromId,
                                  final long toId) {
-        /*
-        sql = "Update " + tableName + " Set " + objectIdField + " = " + newId
-        + " Where " + objectIdField + " = " + oldId
-        + " and Not Exists(Select NULL From " + tableName + " ba Where "
-        + "                 ba." + KEY_BOOK + " = " + tableName + "." + KEY_BOOK
-        + "                 and ba." + objectIdField + " = " + newId + ")";
-         */
-        SynchronizedStatement stmt = sSyncedDb.compileStatement(
-                "UPDATE " + table + " SET " + domain + "=? WHERE " + domain + "=?"
-                + " AND NOT EXISTS"
 
+        SynchronizedStatement stmt = sSyncedDb.compileStatement(
+                "UPDATE " + table + " SET " + fk + "=? WHERE " + fk + "=?"
+                + " AND NOT EXISTS"
                 + " (SELECT NULL FROM " + table.ref() + " WHERE "
                 // left: the aliased table, right the actual table
                 + table.dot(DOM_FK_BOOK) + '=' + table + '.' + DOM_FK_BOOK
                 // left: the aliased table
-                + " AND " + table.dot(domain) + "=?)");
+                + " AND " + table.dot(fk) + "=?)");
 
         stmt.bindLong(1, toId);
         stmt.bindLong(2, fromId);
@@ -2298,13 +2285,15 @@ public class DAO
      * <p>
      * throws exceptions, caller must handle
      *
-     * @param table         : TBL_BOOK_AUTHORS or TBL_BOOK_SERIES
-     * @param domain        : DOM_FK_AUTHOR or DOM_FK_SERIES
-     * @param positionField : DOM_BOOK_AUTHOR_POSITION or DOM_BOOK_SERIES_POSITION
+     * @param table     TBL_BOOK_AUTHORS or TBL_BOOK_SERIES
+     * @param fk        DOM_FK_AUTHOR or DOM_FK_SERIES
+     * @param posDomain DOM_BOOK_AUTHOR_POSITION or DOM_BOOK_SERIES_POSITION
+     * @param fromId    the id to replace
+     * @param toId      the new id to use
      */
     private void globalReplacePositionedBookItem(@NonNull final TableDefinition table,
-                                                 @NonNull final DomainDefinition domain,
-                                                 @NonNull final DomainDefinition positionField,
+                                                 @NonNull final DomainDefinition fk,
+                                                 @NonNull final DomainDefinition posDomain,
                                                  final long fromId,
                                                  final long toId) {
 
@@ -2312,59 +2301,47 @@ public class DAO
             throw new TransactionException(ERROR_NEEDS_TRANSACTION);
         }
 
-        SynchronizedStatement delStmt = null;
-        SynchronizedStatement replacementIdPosStmt = null;
-        SynchronizedStatement checkMinStmt = null;
-        SynchronizedStatement moveStmt = null;
+        // Get the position of the already-existing 'new/replacement' object
+        SynchronizedStatement replacementIdPosStmt = sSyncedDb.compileStatement(
+                "SELECT " + posDomain + " FROM " + table
+                + " WHERE " + DOM_FK_BOOK + "=? AND " + fk + "=?");
 
-        // Re-position remaining items up one place to ensure positions remain correct
-        /*
-        sql = "select * from " + tableName + " Where " + objectIdField + " = " + oldId
-        + " And Exists(Select NULL From " + tableName + " ba Where "
-        + "                 ba." + KEY_BOOK + " = " + tableName + "." + KEY_BOOK
-        + "                 and ba." + objectIdField + " = " + newId + ")";
-         */
-        String sql = "SELECT " + DOM_FK_BOOK + ',' + positionField
-                     + " FROM " + table + " WHERE " + domain + "=?"
+        // Delete a specific object record
+        SynchronizedStatement delStmt = sSyncedDb.compileStatement(
+                "DELETE FROM " + table
+                + " WHERE " + DOM_FK_BOOK + "=? AND " + fk + "=?");
+
+        // Move a single entry to a new position
+        SynchronizedStatement moveStmt = sSyncedDb.compileStatement(
+                "UPDATE " + table + " SET " + posDomain + "=?"
+                + " WHERE " + DOM_FK_BOOK + "=? AND " + posDomain + "=?");
+
+        // Sanity check to deal with bad data
+        SynchronizedStatement checkMinStmt = sSyncedDb.compileStatement(
+                "SELECT MIN(" + posDomain + ") FROM " + table
+                + " WHERE " + DOM_FK_BOOK + "=?");
+
+        // Delete the rows that would have caused duplicates. Be cautious by using the
+        // EXISTS statement again; it's not necessary, but we do it to reduce the risk of data
+        // loss if one of the prior statements failed silently.
+        //
+        // We also move remaining items up one place to ensure positions remain correct
+        //
+        String sql = "SELECT " + DOM_FK_BOOK + ',' + posDomain + " FROM " + table
+                     + " WHERE " + fk + "=?"
                      + " AND EXISTS"
-
                      + " (SELECT NULL FROM " + table.ref() + " WHERE "
                      // left: the aliased table, right the actual table
                      + table.dot(DOM_FK_BOOK) + '=' + table + '.' + DOM_FK_BOOK
                      // left: the aliased table
-                     + " AND " + table.dot(domain) + "=?)";
+                     + " AND " + table.dot(fk) + "=?)";
 
+        //noinspection TryFinallyCanBeTryWithResources
         try (Cursor cursor = sSyncedDb.rawQuery(sql, new String[]{String.valueOf(fromId),
                                                                   String.valueOf(toId)})) {
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
-                Logger.debug(this, "globalReplacePositionedBookItem",
-                             "Re-position, total count=" + cursor.getCount());
-            }
-
             // Get the column indexes we need
-            final int bookCol = cursor.getColumnIndexOrThrow(DOM_FK_BOOK.name);
-            final int posCol = cursor.getColumnIndexOrThrow(positionField.name);
-
-            // Delete a specific object record
-            delStmt = sSyncedDb.compileStatement(
-                    "DELETE FROM " + table
-                    + " WHERE " + domain + "=? AND " + DOM_FK_BOOK + "=?");
-
-            // Get the position of the already-existing 'new/replacement' object
-            replacementIdPosStmt = sSyncedDb.compileStatement(
-                    "SELECT " + positionField + " FROM " + table
-                    + " WHERE " + DOM_FK_BOOK + "=? AND " + domain + "=?");
-
-            // Move a single entry to a new position
-            moveStmt = sSyncedDb.compileStatement(
-                    "UPDATE " + table + " SET " + positionField + "=?"
-                    + " WHERE " + DOM_FK_BOOK + "=? AND " + positionField + "=?");
-
-            // Sanity check to deal with legacy bad data
-            checkMinStmt = sSyncedDb.compileStatement(
-                    "SELECT min(" + positionField + ") FROM " + table
-                    + " WHERE " + DOM_FK_BOOK + "=?");
+            int bookCol = cursor.getColumnIndexOrThrow(DOM_FK_BOOK.name);
+            int posCol = cursor.getColumnIndexOrThrow(posDomain.name);
 
             // Loop through all instances of the old object appearing
             while (cursor.moveToNext()) {
@@ -2376,15 +2353,17 @@ public class DAO
                 replacementIdPosStmt.bindLong(1, bookId);
                 replacementIdPosStmt.bindLong(2, toId);
                 long replacementIdPos = replacementIdPosStmt.simpleQueryForLong();
+
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
                     Logger.debug(this, "globalReplacePositionedBookItem",
-                                 "id=" + bookId,
-                                 "to=" + toId,
+                                 "bookId=" + bookId,
+                                 "toId=" + toId,
                                  "replacementIdPos=" + replacementIdPos);
                 }
+
                 // Delete the old record
-                delStmt.bindLong(1, fromId);
-                delStmt.bindLong(2, toId);
+                delStmt.bindLong(1, bookId);
+                delStmt.bindLong(2, fromId);
                 delStmt.executeUpdateDelete();
 
                 // If the deleted object was more prominent than the new object,
@@ -2392,7 +2371,7 @@ public class DAO
                 if (replacementIdPos > pos) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
                         Logger.debug(this, "globalReplacePositionedBookItem",
-                                     "id=" + bookId,
+                                     "bookId=" + bookId,
                                      "pos=" + pos,
                                      "replacementIdPos=" + replacementIdPos);
                     }
@@ -2413,8 +2392,8 @@ public class DAO
                 if (minPos > 1) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
                         Logger.debug(this, "globalReplacePositionedBookItem",
-                                     "id=" + bookId,
-                                     "pos to 1, minPos=" + minPos);
+                                     "bookId=" + bookId,
+                                     "minPos=" + minPos);
                     }
                     moveStmt.bindLong(1, 1);
                     moveStmt.bindLong(2, bookId);
@@ -2423,18 +2402,10 @@ public class DAO
                 }
             }
         } finally {
-            if (delStmt != null) {
-                delStmt.close();
-            }
-            if (moveStmt != null) {
-                moveStmt.close();
-            }
-            if (checkMinStmt != null) {
-                checkMinStmt.close();
-            }
-            if (replacementIdPosStmt != null) {
-                replacementIdPosStmt.close();
-            }
+            delStmt.close();
+            moveStmt.close();
+            checkMinStmt.close();
+            replacementIdPosStmt.close();
         }
     }
 
@@ -2451,7 +2422,7 @@ public class DAO
             if (cursor.getCount() == 0) {
                 return list;
             }
-            ColumnMapper mapper = new ColumnMapper(cursor);
+            CursorMapper mapper = new CursorMapper(cursor);
 
             while (cursor.moveToNext()) {
                 Author author = new Author(mapper.getLong(DOM_FK_AUTHOR.name), mapper);
@@ -2564,7 +2535,7 @@ public class DAO
         ArrayList<Author> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.AUTHORS_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
-            ColumnMapper mapper = new ColumnMapper(cursor);
+            CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Author(mapper.getLong(DOM_PK_ID.name), mapper));
             }
@@ -2587,7 +2558,7 @@ public class DAO
             if (cursor.getCount() == 0) {
                 return list;
             }
-            ColumnMapper mapper = new ColumnMapper(cursor);
+            CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Series(mapper.getLong(DOM_PK_ID.name), mapper));
             }
@@ -2671,7 +2642,7 @@ public class DAO
 
         } else {
             whereClause = TBL_BOOKS.dot(DOM_PK_ID)
-                          + " IN (" + Csv.join(",", bookIds) + ')'
+                          + " IN (" + TextUtils.join(",", bookIds) + ')'
                           + " AND (" + TBL_BOOKS.dot(DOM_PK_ID)
                           + ">=" + fromBookIdOnwards + ')';
         }
@@ -2857,7 +2828,7 @@ public class DAO
 
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_NAME,
                                                 new String[]{name})) {
-            ColumnMapper mapper = new ColumnMapper(cursor);
+            CursorMapper mapper = new CursorMapper(cursor);
             if (cursor.moveToFirst()) {
                 return new Bookshelf(mapper.getLong(DOM_PK_ID.name), mapper);
             }
@@ -2874,7 +2845,7 @@ public class DAO
     public Bookshelf getBookshelf(final long id) {
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_ID,
                                                 new String[]{String.valueOf(id)})) {
-            ColumnMapper mapper = new ColumnMapper(cursor);
+            CursorMapper mapper = new CursorMapper(cursor);
             if (cursor.moveToFirst()) {
                 return new Bookshelf(mapper.getLong(DOM_PK_ID.name), mapper);
             }
@@ -2934,7 +2905,7 @@ public class DAO
         ArrayList<Bookshelf> list = new ArrayList<>();
 
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.BOOKSHELVES_ORDERED, null)) {
-            ColumnMapper mapper = new ColumnMapper(cursor);
+            CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(mapper.getLong(DOM_PK_ID.name), mapper));
             }
@@ -2953,7 +2924,7 @@ public class DAO
         ArrayList<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOKSHELVES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
-            ColumnMapper mapper = new ColumnMapper(cursor);
+            CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(mapper.getLong(DOM_PK_ID.name), mapper));
             }
@@ -2976,7 +2947,7 @@ public class DAO
             if (cursor.getCount() == 0) {
                 return list;
             }
-            ColumnMapper mapper = new ColumnMapper(cursor);
+            CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
                 long id = mapper.getLong(DOM_PK_ID.name);
                 String uuid = mapper.getString(DOM_UUID.name);
@@ -3301,7 +3272,9 @@ public class DAO
     /**
      * Creates a new series in the database.
      *
-     * @param series object to insert. Will be updated with the id.
+     * @param context      Current context
+     * @param series       object to insert. Will be updated with the id.
+     * @param seriesLocale the Locale for this series
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
@@ -3330,7 +3303,9 @@ public class DAO
     }
 
     /**
-     * @param series to update
+     * @param context      Current context
+     * @param series       to update
+     * @param seriesLocale the Locale for this series
      *
      * @return rows affected, should be 1 for success
      */
@@ -3352,7 +3327,9 @@ public class DAO
     /**
      * Add or update the passed Series, depending whether series.id == 0.
      *
-     * @param series object to insert or update. Will be updated with the id.
+     * @param context      Current context
+     * @param series       object to insert or update. Will be updated with the id.
+     * @param seriesLocale the Locale for this series
      *
      * @return {@code true} for success.
      */
@@ -3410,7 +3387,7 @@ public class DAO
     public Series getSeries(final long id) {
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.SERIES_BY_ID,
                                                 new String[]{String.valueOf(id)})) {
-            ColumnMapper mapper = new ColumnMapper(cursor);
+            CursorMapper mapper = new CursorMapper(cursor);
             if (cursor.moveToFirst()) {
                 return new Series(id, mapper);
             }
@@ -3421,7 +3398,9 @@ public class DAO
     /**
      * Find a Series, and return its ID. The incoming object is not modified.
      *
-     * @param series to find
+     * @param context      Current context
+     * @param series       to find
+     * @param seriesLocale the Locale for this series
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
@@ -3469,6 +3448,8 @@ public class DAO
     }
 
     /**
+     * @param context Current context
+     *
      * @return {@code true} for success.
      */
     public boolean globalReplaceSeries(@NonNull final Context context,
@@ -3518,7 +3499,8 @@ public class DAO
     }
 
     /**
-     * @param series id
+     * @param context Current context
+     * @param series  id
      *
      * @return number of books in series
      */
@@ -3830,16 +3812,15 @@ public class DAO
         int colTOCEntryInfo = -2;
 
         // Process each book
-        final MappedCursorRow cursorRow = bookCursor.getCursorRow();
         while (bookCursor.moveToNext()) {
             // Reset authors/series/title
             authorText.setLength(0);
             seriesText.setLength(0);
             titleText.setLength(0);
             // Get list of authors
-            try (Cursor authors = sSyncedDb.rawQuery(SqlFTS.GET_AUTHORS_BY_BOOK_ID,
-                                                     new String[]{String.valueOf(
-                                                             cursorRow.getLong(DOM_PK_ID.name))})) {
+            try (Cursor authors = sSyncedDb.rawQuery(
+                    SqlFTS.GET_AUTHORS_BY_BOOK_ID,
+                    new String[]{String.valueOf(bookCursor.getLong(DOM_PK_ID.name))})) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = authors.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
@@ -3857,9 +3838,9 @@ public class DAO
             }
 
             // Get list of series
-            try (Cursor series = sSyncedDb.rawQuery(SqlFTS.GET_SERIES_BY_BOOK_ID,
-                                                    new String[]{String.valueOf(
-                                                            cursorRow.getLong(DOM_PK_ID.name))})) {
+            try (Cursor series = sSyncedDb.rawQuery(
+                    SqlFTS.GET_SERIES_BY_BOOK_ID,
+                    new String[]{String.valueOf(bookCursor.getLong(DOM_PK_ID.name))})) {
                 // Get column indexes, if not already got
                 if (colSeriesInfo < 0) {
                     colSeriesInfo = series.getColumnIndexOrThrow(SqlFTS.DOM_SERIES_INFO);
@@ -3871,12 +3852,10 @@ public class DAO
                 }
             }
 
-
             // Get list of anthology data (author and title)
-            try (Cursor tocEntries = sSyncedDb.rawQuery(SqlFTS.GET_TOC_ENTRIES_BY_BOOK_ID,
-                                                        new String[]{String.valueOf(
-                                                                cursorRow.getLong(
-                                                                        DOM_PK_ID.name))})) {
+            try (Cursor tocEntries = sSyncedDb.rawQuery(
+                    SqlFTS.GET_TOC_ENTRIES_BY_BOOK_ID,
+                    new String[]{String.valueOf(bookCursor.getLong(DOM_PK_ID.name))})) {
                 // Get column indexes, if not already got
                 if (colTOCEntryAuthorInfo < 0) {
                     colTOCEntryAuthorInfo =
@@ -3900,17 +3879,17 @@ public class DAO
                 // Set the parameters and call
                 bindStringOrNull(stmt, 1, authorText.toString());
                 // Titles should only contain title, not SERIES
-                bindStringOrNull(stmt, 2, cursorRow.getString(DOM_TITLE.name) + "; " + titleText);
+                bindStringOrNull(stmt, 2, bookCursor.getString(DOM_TITLE.name) + "; " + titleText);
                 // We could add a 'series' column, or just add it as part of the description
                 bindStringOrNull(stmt, 3,
-                                 cursorRow.getString(DOM_BOOK_DESCRIPTION.name) + seriesText);
-                bindStringOrNull(stmt, 4, cursorRow.getString(DOM_BOOK_NOTES.name));
-                bindStringOrNull(stmt, 5, cursorRow.getString(DOM_BOOK_PUBLISHER.name));
-                bindStringOrNull(stmt, 6, cursorRow.getString(DOM_BOOK_GENRE.name));
-                bindStringOrNull(stmt, 7, cursorRow.getString(DOM_BOOK_LOCATION.name));
-                bindStringOrNull(stmt, 8, cursorRow.getString(DOM_BOOK_ISBN.name));
+                                 bookCursor.getString(DOM_BOOK_DESCRIPTION.name) + seriesText);
+                bindStringOrNull(stmt, 4, bookCursor.getString(DOM_BOOK_NOTES.name));
+                bindStringOrNull(stmt, 5, bookCursor.getString(DOM_BOOK_PUBLISHER.name));
+                bindStringOrNull(stmt, 6, bookCursor.getString(DOM_BOOK_GENRE.name));
+                bindStringOrNull(stmt, 7, bookCursor.getString(DOM_BOOK_LOCATION.name));
+                bindStringOrNull(stmt, 8, bookCursor.getString(DOM_BOOK_ISBN.name));
                 // DOM_PK_DOCID
-                stmt.bindLong(9, cursorRow.getLong(DOM_PK_ID.name));
+                stmt.bindLong(9, bookCursor.getLong(DOM_PK_ID.name));
 
                 stmt.execute();
             }
@@ -4020,11 +3999,8 @@ public class DAO
 
             try (SynchronizedStatement insert = sSyncedDb.compileStatement(
                     "INSERT INTO " + ftsTemp.getName() + SqlFTS.INSERT_BODY);
-                 BookCursor books = (BookCursor)
-                                            sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                                                                          SqlSelectFullTable.BOOKS,
-                                                                          null,
-                                                                          "")) {
+                 BookCursor books = (BookCursor) sSyncedDb.rawQueryWithFactory(
+                         BOOKS_CURSOR_FACTORY, SqlSelectFullTable.BOOKS, null, "")) {
                 ftsSendBooks(books, insert);
             }
 
@@ -4100,7 +4076,7 @@ public class DAO
     }
 
     /**
-     * 2 forms of usage:
+     * 2 forms of usage.
      * <p>
      * Books linked authors and series
      * PREFIX + ALL_BOOKS [+ where-clause] + SUFFIX
@@ -4118,21 +4094,19 @@ public class DAO
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_TYPE_BITMASK)
                 + ','
                 + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN
                 + " AS " + DOM_AUTHOR_FORMATTED
                 + ','
                 + SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
                 + " AS " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST
+
                 + ',' + "a." + DOM_FK_AUTHOR + " AS " + DOM_FK_AUTHOR
 
                 // use a dummy series for books not in a series
                 // (i.e. don't use null's)
-                + ',' + "COALESCE(s." + DOM_FK_SERIES + ", 0) AS "
-                + DOM_FK_SERIES
-                + ',' + "COALESCE(s." + DOM_SERIES_TITLE + ", '') AS "
-                + DOM_SERIES_TITLE
+                + ',' + "COALESCE(s." + DOM_FK_SERIES + ", 0) AS " + DOM_FK_SERIES
+                + ',' + "COALESCE(s." + DOM_SERIES_TITLE + ", '') AS " + DOM_SERIES_TITLE
                 + ',' + "COALESCE(s." + DOM_BOOK_NUM_IN_SERIES
                 + ", '') AS " + DOM_BOOK_NUM_IN_SERIES;
 
@@ -4191,10 +4165,11 @@ public class DAO
                 + " AS " + DOM_FK_SERIES
 
                 // Find the first (i.e. primary) Series number
-                + ',' + "(SELECT " + DOM_BOOK_NUM_IN_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
+                + ','
+                + "(SELECT " + DOM_BOOK_NUM_IN_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
                 + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
-                + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC LIMIT 1)"
-                + " AS " + DOM_BOOK_NUM_IN_SERIES
+                + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC LIMIT 1"
+                + ") AS " + DOM_BOOK_NUM_IN_SERIES
 
                 // Get the total series count
                 + ','
@@ -4207,10 +4182,10 @@ public class DAO
                 + "(SELECT " + DOM_FK_AUTHOR + " FROM " + TBL_BOOK_AUTHOR.ref()
                 + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
                 + " ORDER BY " + DOM_BOOK_AUTHOR_POSITION
-                + ',' + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR) + " LIMIT 1)"
-                + " AS " + DOM_FK_AUTHOR
+                + ',' + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR) + " LIMIT 1"
+                + ") AS " + DOM_FK_AUTHOR
 
-//                // Get the total author count. TODO: does not seem to get used any longer.
+//                // Get the total author count. No longer needed, but leaving for future use.
 //                + ','
 //                + "(SELECT COUNT(*) FROM " + TBL_BOOK_AUTHOR.ref()
 //                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
@@ -4223,7 +4198,7 @@ public class DAO
          */
         private static final String ALL_BOOKS =
                 "SELECT DISTINCT " + BOOK
-                // use an empty loanee (i.e. don't use null's)
+                // use an empty loanee (i.e. don't use null's) if there is no loanee
                 + ',' + "COALESCE(" + DOM_LOANEE + ", '') AS " + DOM_LOANEE
 
                 + " FROM " + TBL_BOOKS.ref() + " LEFT OUTER JOIN "
@@ -4240,7 +4215,6 @@ public class DAO
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_TYPE_BITMASK)
                 + ','
                 + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN
                 + " AS " + DOM_AUTHOR_FORMATTED
@@ -4326,9 +4300,10 @@ public class DAO
                 + " ELSE " + (TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
                               + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME))
                 + " END";
+
         public static final String EXP_PRIMARY_SERIES_COUNT_AS_BOOLEAN =
                 "CASE"
-                + " WHEN COALESCE(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1)==1"
+                + " WHEN COALESCE(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1)=1"
                 + " THEN 1 ELSE 0"
                 + " END";
         /**
@@ -4535,10 +4510,10 @@ public class DAO
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES_OB)
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_TYPE_BITMASK)
                 + ',' + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS "
                 + DOM_AUTHOR_FORMATTED
                 + ',' + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION)
+                + ',' + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_TYPE_BITMASK)
                 + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
                 + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + "=?"
                 + " ORDER BY "
@@ -4575,7 +4550,6 @@ public class DAO
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_TYPE_BITMASK)
 
                 + " FROM " + TBL_TOC_ENTRIES.ref()
                 + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
@@ -4898,8 +4872,7 @@ public class DAO
                 + ',' + DOM_AUTHOR_GIVEN_NAMES
                 + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
                 + ',' + DOM_AUTHOR_IS_COMPLETE
-                + ',' + DOM_AUTHOR_TYPE_BITMASK
-                + ") VALUES (?,?,?,?,?,?)";
+                + ") VALUES (?,?,?,?,?)";
 
         static final String SERIES =
                 "INSERT INTO " + TBL_SERIES
@@ -4935,7 +4908,8 @@ public class DAO
                 + '(' + DOM_FK_BOOK
                 + ',' + DOM_FK_AUTHOR
                 + ',' + DOM_BOOK_AUTHOR_POSITION
-                + ") VALUES(?,?,?)";
+                + ',' + DOM_BOOK_AUTHOR_TYPE_BITMASK
+                + ") VALUES(?,?,?,?)";
 
         static final String BOOK_SERIES =
                 "INSERT INTO " + TBL_BOOK_SERIES

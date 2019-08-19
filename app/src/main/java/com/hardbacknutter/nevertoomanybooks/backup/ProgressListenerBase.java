@@ -25,28 +25,21 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
+package com.hardbacknutter.nevertoomanybooks.backup;
 
-import androidx.annotation.NonNull;
+public abstract class ProgressListenerBase
+        implements ProgressListener {
 
-import java.util.Collection;
+    private int mMaxPosition;
 
-/**
- * A Set or a List is always represented by a {@code Set<String>} in the SharedPreferences
- * due to limitations of {@link androidx.preference.ListPreference}
- * and {@link androidx.preference.MultiSelectListPreference}
- * <p>
- * This call allows by-passing the real type for write-through.
- * Used in importing from a backup.
- */
-public interface PCollection<E> {
+    @Override
+    public int getMax() {
+        return mMaxPosition;
+    }
 
-    /**
-     * This call allows by-passing the real type for write-through.
-     * It's up to the implementation on how the values will be stored.
-     */
-    void set(@NonNull Iterable values);
+    @Override
+    public void setMax(final int maxPosition) {
+        mMaxPosition = maxPosition;
+    }
 
-    @NonNull
-    Collection<E> get();
 }

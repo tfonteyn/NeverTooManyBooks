@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.AnyThread;
@@ -59,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BooklistMappedCursorRow;
+import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.TrackedCursor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -69,22 +71,14 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
  * First attempt to split of into a model for BoB.
- * <p>
- * URGENT: experimental... {@link #initBookList}. TMP_USE_BOB_EXTRAS_TASK=false;
- * When set to false, "extra" field bookshelves (if selected) will not be populated.
  */
 public class BooksOnBookshelfModel
         extends ViewModel {
 
     private static final String TAG = "BooksOnBookshelf";
-
-    /** see class doc. */
-    public static final boolean TMP_USE_BOB_EXTRAS_TASK = false;
-
     /** Preference name - Saved position of last top row. */
     public static final String PREF_BOB_TOP_ROW = TAG + ".TopRow";
     /** Preference name - Saved position of last top row offset from view top. */
@@ -137,14 +131,6 @@ public class BooksOnBookshelfModel
     private int mTopRowOffset;
     /** Preferred booklist state in next rebuild. */
     private int mRebuildState;
-    /** Current displayed list cursor. */
-    @Nullable
-    private BooklistPseudoCursor mListCursor;
-    /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
-    private int mTotalBooks;
-    /** Total number of unique books in current list. */
-    private int mUniqueBooks;
-
     /**
      * Listener for {@link GetBookListTask} results.
      */
@@ -170,21 +156,28 @@ public class BooksOnBookshelfModel
                         mUniqueBooks = message.result.resultUniqueBooks;
 
                         // do not copy the result.resultListCursor, as it might be null
-                        // in which case we will use the old value in mListCursor
+                        // in which case we will use the old value
                     }
 
                     // always call back, even if there is no new list.
                     mBuilderResult.setValue(message.result);
                 }
             };
+    /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
+    private int mTotalBooks;
+    /** Total number of unique books in current list. */
+    private int mUniqueBooks;
+    /** Current displayed list cursor. */
+    @Nullable
+    private BooklistPseudoCursor mCursor;
 
     @Override
     protected void onCleared() {
 
-        if (mListCursor != null) {
-            mListCursor.getBuilder().close();
-            mListCursor.close();
-            mListCursor = null;
+        if (mCursor != null) {
+            mCursor.getBuilder().close();
+            mCursor.close();
+            mCursor = null;
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
@@ -407,9 +400,9 @@ public class BooksOnBookshelfModel
 
         BooklistBuilder blb;
 
-        if (mListCursor != null && !isFullRebuild) {
+        if (mCursor != null && !isFullRebuild) {
             // use the current builder to re-query the underlying data
-            blb = mListCursor.getBuilder();
+            blb = mCursor.getBuilder();
 
         } else {
             BooklistStyle style = mCurrentBookshelf.getStyle(mDb);
@@ -445,7 +438,13 @@ public class BooksOnBookshelfModel
                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),
                               false);
 
-            if (!TMP_USE_BOB_EXTRAS_TASK) {
+            /*
+             * URGENT: experimental... {@link BooklistStyle#extrasByTask()}.
+             * When set to false, "extra" field bookshelves (if selected) will not be populated.
+             * Depending on the device speed, and user habit BOTH methods can be advantageous.
+             * ==> now a preference <strong>per style</strong>
+             */
+            if (!style.extrasByTask()) {
                 //ENHANCE:  see DAO#fetchBookExtrasById ... this needs work.
 //                if (style.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
 //                    blb.requireDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
@@ -466,6 +465,12 @@ public class BooksOnBookshelfModel
                 if (style.isUsed(DBDefinitions.KEY_PUBLISHER)) {
                     blb.requireDomain(DBDefinitions.DOM_BOOK_PUBLISHER,
                                       DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_PUBLISHER),
+                                      false);
+                }
+                if (style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
+                    blb.requireDomain(DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
+                                      DBDefinitions.TBL_BOOKS.dot(DBDefinitions.
+                                                                          DOM_BOOK_DATE_PUBLISHED),
                                       false);
                 }
                 if (style.isUsed(DBDefinitions.KEY_ISBN)) {
@@ -505,7 +510,7 @@ public class BooksOnBookshelfModel
         }
 
         new GetBookListTask(blb, isFullRebuild,
-                            mListCursor, mCurrentPositionedBookId, mRebuildState,
+                            mCursor, mCurrentPositionedBookId, mRebuildState,
                             mOnGetBookListTaskListener)
                 .execute();
     }
@@ -529,17 +534,22 @@ public class BooksOnBookshelfModel
 
     @Nullable
     public BooklistPseudoCursor getListCursor() {
-        return mListCursor;
+        return mCursor;
     }
 
     public void setListCursor(@NonNull final BooklistPseudoCursor listCursor) {
-        mListCursor = listCursor;
+        mCursor = listCursor;
+    }
+
+    /** Convenience method. */
+    @Nullable
+    public BooklistBuilder getBuilder() {
+        return mCursor != null ? mCursor.getBuilder() : null;
     }
 
     /**
      * Check if, and which type of, rebuild is needed.
-     * Returns:
-     * <ul>
+     * <ul>Returns:
      * <li>{@code null} if no rebuild is requested</li>
      * <li>{@code true} if we need a full rebuild.</li>
      * <li>{@code false} if we need a partial rebuild.</li>
@@ -573,16 +583,16 @@ public class BooksOnBookshelfModel
     /**
      * Check if this book is lend out, or not.
      *
-     * @param row cursor row with book data
+     * @param mapper cursor row with book data
      *
      * @return {@code true} if this book is available for lending.
      */
-    public boolean isAvailable(@NonNull final BooklistMappedCursorRow row) {
+    public boolean isAvailable(@NonNull final CursorMapper mapper) {
         String loanee;
-        if (row.contains(DBDefinitions.KEY_LOANEE)) {
-            loanee = row.getString(DBDefinitions.KEY_LOANEE);
+        if (mapper.contains(DBDefinitions.KEY_LOANEE)) {
+            loanee = mapper.getString(DBDefinitions.KEY_LOANEE);
         } else {
-            loanee = mDb.getLoaneeByBookId(row.getLong(DBDefinitions.KEY_FK_BOOK));
+            loanee = mDb.getLoaneeByBookId(mapper.getLong(DBDefinitions.KEY_FK_BOOK));
         }
         return (loanee == null) || loanee.isEmpty();
     }
@@ -590,20 +600,23 @@ public class BooksOnBookshelfModel
     /**
      * Return the 'human readable' version of the name (e.g. 'Isaac Asimov').
      *
-     * @param row cursor row with book data
+     * @param mapper cursor row with book data
      *
      * @return formatted Author name
      */
     @Nullable
-    public String getAuthorFromRow(@NonNull final BooklistMappedCursorRow row) {
-        if (row.hasAuthorId()) {
-            Author author = mDb.getAuthor(row.getLong(DBDefinitions.KEY_FK_AUTHOR));
+    public String getAuthorFromRow(@NonNull final CursorMapper mapper) {
+        if (mapper.contains(DBDefinitions.KEY_FK_AUTHOR)
+            && mapper.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0) {
+            Author author = mDb.getAuthor(mapper.getLong(DBDefinitions.KEY_FK_AUTHOR));
             if (author != null) {
                 return author.getLabel();
             }
 
-        } else if (row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND) == BooklistGroup.RowKind.BOOK) {
-            List<Author> authors = mDb.getAuthorsByBookId(row.getLong(DBDefinitions.KEY_FK_BOOK));
+        } else if (mapper.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)
+                   == BooklistGroup.RowKind.BOOK) {
+            List<Author> authors = mDb.getAuthorsByBookId(
+                    mapper.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!authors.isEmpty()) {
                 return authors.get(0).getLabel();
             }
@@ -614,20 +627,22 @@ public class BooksOnBookshelfModel
     /**
      * Get the Series name.
      *
-     * @param row cursor row with book data
+     * @param mapper cursor row with book data
      *
      * @return the unformatted Series name (i.e. without the number)
      */
     @Nullable
-    public String getSeriesFromRow(@NonNull final BooklistMappedCursorRow row) {
-        if (row.hasSeriesId()) {
-            Series series = mDb.getSeries(row.getLong(DBDefinitions.KEY_FK_SERIES));
+    public String getSeriesFromRow(@NonNull final CursorMapper mapper) {
+        if (mapper.contains(DBDefinitions.KEY_FK_SERIES)
+            && mapper.getLong(DBDefinitions.KEY_FK_SERIES) > 0) {
+            Series series = mDb.getSeries(mapper.getLong(DBDefinitions.KEY_FK_SERIES));
             if (series != null) {
                 return series.getTitle();
             }
-        } else if (row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND) == BooklistGroup.RowKind.BOOK) {
+        } else if (mapper.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)
+                   == BooklistGroup.RowKind.BOOK) {
             ArrayList<Series> series = mDb.getSeriesByBookId(
-                    row.getLong(DBDefinitions.KEY_FK_BOOK));
+                    mapper.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!series.isEmpty()) {
                 return series.get(0).getTitle();
             }
@@ -644,7 +659,7 @@ public class BooksOnBookshelfModel
     @NonNull
     public ArrayList<Long> getCurrentBookIdList() {
         //noinspection ConstantConditions
-        return mListCursor.getBuilder().getCurrentBookIdList();
+        return mCursor.getBuilder().getCurrentBookIdList();
     }
 
     public void restoreCurrentBookshelf(@NonNull final Context context) {
@@ -702,8 +717,8 @@ public class BooksOnBookshelfModel
     }
 
     public String debugBuilderTables() {
-        if (mListCursor != null) {
-            return mListCursor.getBuilder().debugInfoForTables();
+        if (mCursor != null) {
+            return mCursor.getBuilder().debugInfoForTables();
         } else {
             return "no cursor";
         }
@@ -792,7 +807,7 @@ public class BooksOnBookshelfModel
             if (ftsKeywords != null && !ftsKeywords.isEmpty()) {
                 list.add(ftsKeywords);
             }
-            return Csv.join(",", list);
+            return TextUtils.join(",", list);
         }
 
         public void setKeywords(@Nullable final String keywords) {

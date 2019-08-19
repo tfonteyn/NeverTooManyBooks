@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,18 +41,14 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 
 /**
- * Cursor implementation for book-related queries providing a {@link MappedCursorRow}.
+ * Cursor implementation for book-related queries.
  */
 public class BookCursor
         extends TrackedCursor
         implements Closeable {
 
-    /** column position for the id column. */
-    private int mIdCol = -2;
-
-    /** Cached CursorRow for this cursor. */
     @Nullable
-    private MappedCursorRow mCursorRow;
+    private CursorMapper mMapper;
 
     /**
      * Constructor.
@@ -69,18 +66,16 @@ public class BookCursor
     }
 
     /**
-     * Local implementation for when there is no CursorRow.
+     * Convenience method.
      *
      * @return the row ID
      */
     public final long getId() {
-        if (mIdCol < 0) {
-            mIdCol = getColumnIndex(DBDefinitions.KEY_PK_ID);
-            if (mIdCol < 0) {
-                throw new ColumnNotPresentException(DBDefinitions.KEY_PK_ID);
-            }
+        int col = getColumnIndex(DBDefinitions.KEY_PK_ID);
+        if (col < 0) {
+            throw new ColumnNotPresentException(DBDefinitions.KEY_PK_ID);
         }
-        return getLong(mIdCol);
+        return getLong(col);
     }
 
     /**
@@ -89,18 +84,47 @@ public class BookCursor
      * @return the row object
      */
     @NonNull
-    public MappedCursorRow getCursorRow() {
-        if (mCursorRow == null) {
-            mCursorRow = new MappedCursorRow(this
-            );
+    private CursorMapper getCursorMapper() {
+        if (mMapper == null) {
+            mMapper = new CursorMapper(this);
         }
-        return mCursorRow;
+        return mMapper;
     }
 
     @Override
     @CallSuper
     public void close() {
         super.close();
-        mCursorRow = null;
+        mMapper = null;
+    }
+
+    public boolean contains(@NonNull final String key) {
+        return getCursorMapper().contains(key);
+    }
+
+    @NonNull
+    public String getString(@NonNull final String key)
+            throws ColumnNotPresentException {
+        return getCursorMapper().getString(key);
+    }
+
+    public boolean getBoolean(@NonNull final String key)
+            throws ColumnNotPresentException {
+        return getCursorMapper().getBoolean(key);
+    }
+
+    public int getInt(@NonNull final String key)
+            throws ColumnNotPresentException {
+        return getCursorMapper().getInt(key);
+    }
+
+    public long getLong(@NonNull final String key)
+            throws ColumnNotPresentException {
+        return getCursorMapper().getLong(key);
+    }
+
+    public double getDouble(@NonNull final String key)
+            throws ColumnNotPresentException {
+        return getCursorMapper().getDouble(key);
     }
 }

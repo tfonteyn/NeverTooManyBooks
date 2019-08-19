@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +51,7 @@ public class IsfdbGetBookTask
     private final WeakReference<IsfdbResultsListener> mTaskListener;
 
     private final long mIsfdbId;
+    /** whether the TOC should get parsed for Series information. */
     private final boolean mAddSeriesFromToc;
     @Nullable
     private final List<Editions.Edition> mEditions;
@@ -57,8 +59,9 @@ public class IsfdbGetBookTask
     /**
      * Constructor. Initiate a single book lookup by edition.
      *
-     * @param editions     List of ISFDB native ID's
-     * @param taskListener where to send the results to
+     * @param editions         List of ISFDB native ID's
+     * @param addSeriesFromToc whether the TOC should get parsed for Series information
+     * @param taskListener     where to send the results to
      */
     @UiThread
     public IsfdbGetBookTask(@NonNull final List<Editions.Edition> editions,
@@ -74,8 +77,9 @@ public class IsfdbGetBookTask
     /**
      * Constructor. Initiate a single book lookup by id.
      *
-     * @param isfdbId      Single ISFDB native ID's
-     * @param taskListener where to send the results to
+     * @param isfdbId          Single ISFDB native ID's
+     * @param addSeriesFromToc whether the TOC should get parsed for Series information
+     * @param taskListener     where to send the results to
      */
     @UiThread
     public IsfdbGetBookTask(final long isfdbId,
@@ -108,9 +112,7 @@ public class IsfdbGetBookTask
             }
 
         } catch (@NonNull final SocketTimeoutException e) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Logger.warn(this, "doInBackground", e.getLocalizedMessage());
-            }
+            Logger.warn(this, "doInBackground", e.getLocalizedMessage());
         }
 
         return null;

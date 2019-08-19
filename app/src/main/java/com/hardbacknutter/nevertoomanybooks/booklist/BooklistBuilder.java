@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.Joiner;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
@@ -64,9 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.IllegalTypeException;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
@@ -337,8 +335,6 @@ public class BooklistBuilder
         } else {
             Logger.warnWithStackTrace(this, "requireDomain",
                                       "Domain already added: `" + domain.name + '`');
-
-//            throw new IllegalStateException("Domain already added: `" + domain.name + '`');
         }
 
         return this;
@@ -604,7 +600,7 @@ public class BooklistBuilder
                     String sql = baseBuild.getSql(tgt);
 
                     //experimental, so debug it
-                    if (!BooksOnBookshelfModel.TMP_USE_BOB_EXTRAS_TASK) {
+                    if (BuildConfig.DEBUG && !mStyle.extrasByTask()) {
                         Logger.debug(this, "", "sql=" + sql);
                     }
 
@@ -1708,14 +1704,14 @@ public class BooklistBuilder
      * Simple equality: two builders are equal if their ID's are the same.
      */
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
+    public boolean equals(@Nullable final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        BooklistBuilder that = (BooklistBuilder) o;
+        BooklistBuilder that = (BooklistBuilder) obj;
         return mBooklistBuilderId == that.mBooklistBuilderId;
     }
 
@@ -1849,14 +1845,11 @@ public class BooklistBuilder
 
         /**
          * Build the 'join' statement based on the groups and extra criteria.
-         * <p>
-         * Always joined are:
-         * <ul>
+         * <ul>Always joined are:
          * <li>{@link DBDefinitions#TBL_BOOK_AUTHOR}<br>{@link DBDefinitions#TBL_AUTHORS}</li>
          * <li>{@link DBDefinitions#TBL_BOOK_SERIES}<br>{@link DBDefinitions#TBL_SERIES}</li>
          * </ul>
-         * Optionally joined with:
-         * <ul>
+         * <ul>Optionally joined with:
          * <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF}<br>{@link DBDefinitions#TBL_BOOKSHELF}</li>
          * <li>{@link DBDefinitions#TBL_BOOK_LOANEE}</li>
          * </ul>
@@ -2333,8 +2326,7 @@ public class BooklistBuilder
                 if (Objects.equals(sourceExpression, expression)) {
                     // same expression, we do NOT want to add it. This is fine.
                     if (BuildConfig.DEBUG /* always */) {
-                        Logger.warnWithStackTrace(this,
-                                                  "duplicate domain/expression",
+                        Logger.warnWithStackTrace(this, "duplicate domain/expression",
                                                   "domain.name=" + domain.name);
                     }
                     return;
@@ -2408,11 +2400,6 @@ public class BooklistBuilder
                     addDomain(DOM_AUTHOR_IS_COMPLETE,
                               TBL_AUTHORS.dot(DOM_AUTHOR_IS_COMPLETE),
                               SummaryBuilder.FLAG_GROUPED);
-
-                    // we don't get the type for now. Leaving this comment as reference.
-//                    addDomain(DOM_AUTHOR_TYPE_BITMASK,
-//                              TBL_AUTHORS.dot(DOM_AUTHOR_TYPE_BITMASK),
-//                              SummaryBuilder.FLAG_GROUPED);
 
                     break;
 
@@ -2691,11 +2678,10 @@ public class BooklistBuilder
                 // NEWKIND: RowKind.ROW_KIND_x
 
                 case BooklistGroup.RowKind.BOOK:
-                    // nothing to do.
                     break;
 
                 default:
-                    throw new IllegalTypeException(String.valueOf(booklistGroup.getKind()));
+                    throw new IllegalStateException(String.valueOf(booklistGroup.getKind()));
             }
         }
 

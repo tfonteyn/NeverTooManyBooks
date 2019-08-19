@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Locale;
@@ -42,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.backup.ProgressListenerBase;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -53,7 +55,7 @@ public class ImportCSVTask
         extends TaskBase<Integer> {
 
     @NonNull
-    private final ImportOptions mSettings;
+    private final File mFile;
     @NonNull
     private final Importer mImporter;
 
@@ -66,10 +68,11 @@ public class ImportCSVTask
      */
     @UiThread
     public ImportCSVTask(@NonNull final Context context,
+                         @NonNull final File file,
                          @NonNull final ImportOptions settings,
                          @NonNull final TaskListener<Integer> taskListener) {
         super(R.id.TASK_ID_CSV_IMPORT, taskListener);
-        mSettings = settings;
+        mFile = file;
         mImporter = new CsvImporter(context, settings);
     }
 
@@ -82,24 +85,16 @@ public class ImportCSVTask
         Context userContext = App.getFakeUserContext();
         Locale userLocale = LocaleUtils.getPreferredLocale();
 
-        try (FileInputStream is = new FileInputStream(mSettings.file)) {
-            //noinspection ConstantConditions
+        try (FileInputStream is = new FileInputStream(mFile)) {
             mImporter.doBooks(userContext, userLocale,
-                              is, new LocalCoverFinder(mSettings.file.getParent()),
-                              new ProgressListener() {
-
-                                  private int mMaxPosition;
-
-                                  @Override
-                                  public void setMax(final int maxPosition) {
-                                      mMaxPosition = maxPosition;
-                                  }
+                              is, new LocalCoverFinder(mFile.getParent()),
+                              new ProgressListenerBase() {
 
                                   @Override
                                   public void onProgress(final int absPosition,
                                                          @Nullable final Object message) {
                                       Object[] values = {message};
-                                      publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
+                                      publishProgress(new TaskProgressMessage(mTaskId, getMax(),
                                                                               absPosition, values));
                                   }
 

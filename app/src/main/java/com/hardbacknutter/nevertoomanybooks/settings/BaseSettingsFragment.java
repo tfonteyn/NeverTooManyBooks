@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -43,7 +45,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
  * Base settings page.
@@ -88,19 +89,17 @@ abstract class BaseSettingsFragment
                 int index = msp.findIndexOfValue(s);
                 if (index == -1) {
                     // This re-surfaces sometimes after a careless dev. change.
-                    Logger.warnWithStackTrace(this, "getSummary",
-                                              "MultiSelectListPreference:"
-                                              + "\n s=" + s
-                                              + "\n key=" + msp.getKey()
-                                              + "\n entries="
-                                              + Csv.join(",",
-                                                         Arrays.asList(msp.getEntries()))
-                                              + "\n entryValues="
-                                              + Csv.join(",", Arrays.asList(
-                                                      msp.getEntryValues()))
-                                              + "\n values=" + msp.getValues()
-
-                                             );
+                    Logger.warnWithStackTrace(
+                            this, "MultiSelectListPreference:"
+                                  + "\n s=" + s
+                                  + "\n key=" + msp.getKey()
+                                  + "\n entries="
+                                  + TextUtils.join(",",
+                                                   Arrays.asList(msp.getEntries()))
+                                  + "\n entryValues="
+                                  + TextUtils.join(",",
+                                                   Arrays.asList(msp.getEntryValues()))
+                                  + "\n values=" + msp.getValues());
                 } else {
                     text.append(msp.getEntries()[index]).append('\n');
                 }

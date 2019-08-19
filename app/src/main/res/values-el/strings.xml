@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’) -->
 <resources>
@@ -16,12 +44,10 @@
     <string name="X_lbl_select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
     <string name="X_menu_delete_series">Διαγραφή σειράς…</string>
     <string name="X_menu_delete_toc_entry">Διαγραφή τίτλου από Ανθολογία</string>
-    <string name="X_menu_edit_author">Επεξεργασία Συγγραφέα…</string>
-    <string name="X_menu_edit_series">Επεξεργασία Σειράς…</string>
+    <string name="title_edit_author">Επεξεργασία Συγγραφέα</string>
+    <string name="title_edit_series">Επεξεργασία Σειράς</string>
     <string name="X_menu_search_books">Αναζήτηση βιβλίων</string>
     <string name="X_results_found">Αποτελέσματα βρέθηκαν</string>
-    <string name="X_search_title">Αποτελέσματα αναζήτησης</string>
-    <string name="X_select_bookshelves">Επιλέξτε ράφια</string>
     <string name="X_size">Μέγεθος</string>
     <string name="X_tip_booklist_global_properties">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των μορφών λίστας βιβλίων. Οι περισσότερες ιδιότητες μπορούν να αντικατασταθούν από μεμονωμένα στυλ, αλλά οι προεπιλεγμένες τιμές ορίζονται εδώ. Μπορείτε να αλλάξετε τον τρόπο εμφάνισης των λιστών κατά την εκκίνηση και να προσαρμόσετε διάφορες άλλες προτιμήσεις που θα εφαρμοστούν σε όλα τα στυλ σας, όταν είναι δυνατόν.</string>
     <string name="X_unsaved_edits_title">Μη αποθηκευμένες αλλαγές</string>
@@ -414,7 +440,7 @@
     <string name="pt_bob_sort_author_name">Ταξινόμηση δημιουργών</string>
     <string name="pt_bob_text_size">Μέγεθος αντικειμένων λίστας βιβλίων</string>
     <string name="pt_bob_thumbnails_cache_resized">Η μνήμη cache επέστρεψε τις μικρογραφίες</string>
-    <string name="pt_bob_thumbnails_show">Εμφάνιση μικρογραφιών</string>
+    <string name="pt_bob_show_thumbnails">Εμφάνιση μικρογραφιών</string>
     <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
     <string name="pt_cover_scale_factor">Μικρογραφεί μέγεθος σε λίστες</string>
     <string name="pt_reformat_titles_on_insert">Κατά την προσθήκη</string>
@@ -436,8 +462,8 @@
     <string name="pt_ui_theme">Θέμα</string>
     <string name="pv_bob_books_under_multiple_each_1s">Κάτω από κάθε %1$s</string>
     <string name="pv_bob_books_under_multiple_primary_1s_only">Κάτω από κύρια %1$s μόνο</string>
-    <string name="pv_bob_format_author_name_family_first">Επώνυμο πρώτα πχ «Παλαμάς, Κωστής»</string>
-    <string name="pv_bob_format_author_name_given_first">Μικρό όνομα πρώτα πχ «Κωστής  Παλαμάς»</string>
+    <string name="pv_bob_author_name_family_first">Επώνυμο πρώτα πχ «Παλαμάς, Κωστής»</string>
+    <string name="pv_bob_author_name_given_first">Μικρό όνομα πρώτα πχ «Κωστής  Παλαμάς»</string>
     <string name="pv_reformat_titles_prefixes">ο|η|το|οι|οι|τα|ένας|μια|ένα</string>
     <string name="rebuild_fts">Ανακατασκευή FTS\n(alpha μονο!)</string>
     <string name="retry">Επανάληψη</string>

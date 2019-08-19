@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,31 +33,21 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * Given a Cursor, this class constructs a map with the column indexes as used with that Cursor.
- * This is a caching variation of the {@link Cursor#getColumnIndex(String)} method.
- * The latter does a search for the column each time.
+ * A handy wrapper allowing to fetch columns by name.
  * <p>
- * Avoids the need to repeat writing code to get column indexes for named columns.
+ * <b>Note:</b> converts {@code null} Strings to an empty String.
  * <p>
- * If a given domain is not present in the Cursor, a {@link ColumnNotPresentException}
- * will be thrown at the time of fetching the value.
- * <p>
- * Tip: when using a ColumnMapper as a parameter to a constructor, e.g.
- * {@link com.hardbacknutter.nevertoomanybooks.entities.Bookshelf#Bookshelf(long, ColumnMapper)}
+ * Tip: when using a CursorMapper as a parameter to a constructor, e.g.
+ * {@link com.hardbacknutter.nevertoomanybooks.entities.Bookshelf#Bookshelf(long, CursorMapper)}
  * always pass the id additionally/separately. This gives the calling code a change to use
  * for example the foreign key id.
  */
-public class ColumnMapper {
+public class CursorMapper {
 
-    /** the cache with the column ID's. */
-    private final Map<String, Integer> mColumnIndexes = new HashMap<>();
     /** the mapped cursor. */
     private final Cursor mCursor;
 
@@ -67,13 +58,8 @@ public class ColumnMapper {
      *
      * @param cursor to read from
      */
-    public ColumnMapper(@NonNull final Cursor cursor)
-            throws IllegalArgumentException {
+    public CursorMapper(@NonNull final Cursor cursor) {
         mCursor = cursor;
-
-        for (String columnName : mCursor.getColumnNames()) {
-            mColumnIndexes.put(columnName, mCursor.getColumnIndex(columnName));
-        }
     }
 
     /**
@@ -82,7 +68,19 @@ public class ColumnMapper {
      * @return {@code true} if this mapper contains the specified domain.
      */
     public boolean contains(@NonNull final String domainName) {
-        return mColumnIndexes.containsKey(domainName);
+        return mCursor.getColumnIndex(domainName) > -1;
+    }
+
+    /**
+     * Direct access to the cursor.
+     *
+     * @param columnIndex to get
+     *
+     * @return a string from underlying cursor
+     */
+    @Nullable
+    public String getString(final int columnIndex) {
+        return mCursor.getString(columnIndex);
     }
 
     /**
@@ -97,14 +95,14 @@ public class ColumnMapper {
     public String getString(@NonNull final String domainName)
             throws ColumnNotPresentException {
 
-        Integer index = mColumnIndexes.get(domainName);
-        if ((index == null) || (index == -1)) {
+        int col = mCursor.getColumnIndex(domainName);
+        if (col == -1) {
             throw new ColumnNotPresentException(domainName);
         }
-        if (mCursor.isNull(index)) {
+        if (mCursor.isNull(col)) {
             return "";
         }
-        return mCursor.getString(index);
+        return mCursor.getString(col);
     }
 
     /**
@@ -129,14 +127,14 @@ public class ColumnMapper {
     public int getInt(@NonNull final String domainName)
             throws ColumnNotPresentException {
 
-        Integer index = mColumnIndexes.get(domainName);
-        if ((index == null) || (index == -1)) {
+        int col = mCursor.getColumnIndex(domainName);
+        if (col == -1) {
             throw new ColumnNotPresentException(domainName);
         }
-//        if (mCursor.isNull(index)) {
+//        if (mCursor.isNull(col)) {
 //            return null; // 0
 //        }
-        return mCursor.getInt(index);
+        return mCursor.getInt(col);
     }
 
     /**
@@ -149,14 +147,14 @@ public class ColumnMapper {
     public long getLong(@NonNull final String domainName)
             throws ColumnNotPresentException {
 
-        Integer index = mColumnIndexes.get(domainName);
-        if ((index == null) || (index == -1)) {
+        int col = mCursor.getColumnIndex(domainName);
+        if (col == -1) {
             throw new ColumnNotPresentException(domainName);
         }
-//        if (mCursor.isNull(index)) {
+//        if (mCursor.isNull(col)) {
 //            return null; // 0
 //        }
-        return mCursor.getLong(index);
+        return mCursor.getLong(col);
     }
 
     /**
@@ -169,33 +167,14 @@ public class ColumnMapper {
     public double getDouble(@NonNull final String domainName)
             throws ColumnNotPresentException {
 
-        Integer index = mColumnIndexes.get(domainName);
-        if ((index == null) || (index == -1)) {
+        int col = mCursor.getColumnIndex(domainName);
+        if (col == -1) {
             throw new ColumnNotPresentException(domainName);
         }
-//        if (mCursor.isNull(index)) {
+//        if (mCursor.isNull(col)) {
 //            return null; // 0
 //        }
-        return mCursor.getDouble(index);
-    }
-
-    /**
-     * @param domainName to get
-     *
-     * @return the byte[] value of the column.
-     *
-     * @throws ColumnNotPresentException if the column was not present.
-     */
-    @SuppressWarnings("unused")
-    @Nullable
-    public byte[] getBlob(@NonNull final String domainName)
-            throws ColumnNotPresentException {
-
-        Integer index = mColumnIndexes.get(domainName);
-        if ((index == null) || (index == -1)) {
-            throw new ColumnNotPresentException(domainName);
-        }
-        return mCursor.getBlob(index);
+        return mCursor.getDouble(col);
     }
 
     /**
@@ -206,23 +185,24 @@ public class ColumnMapper {
     public Bundle getAll() {
         Bundle bundle = new Bundle();
 
-        for (Map.Entry<String, Integer> col : mColumnIndexes.entrySet()) {
-            if (!col.getValue().equals(-1)) {
-                switch (mCursor.getType(col.getValue())) {
+        for (String columnName : mCursor.getColumnNames()) {
+            int col = mCursor.getColumnIndex(columnName);
+            if (col != -1) {
+                switch (mCursor.getType(col)) {
                     case Cursor.FIELD_TYPE_INTEGER:
-                        bundle.putInt(col.getKey(), mCursor.getInt(col.getValue()));
+                        bundle.putInt(columnName, mCursor.getInt(col));
                         break;
 
                     case Cursor.FIELD_TYPE_STRING:
-                        bundle.putString(col.getKey(), mCursor.getString(col.getValue()));
+                        bundle.putString(columnName, mCursor.getString(col));
                         break;
 
                     case Cursor.FIELD_TYPE_FLOAT:
-                        bundle.putFloat(col.getKey(), mCursor.getFloat(col.getValue()));
+                        bundle.putFloat(columnName, mCursor.getFloat(col));
                         break;
 
                     case Cursor.FIELD_TYPE_BLOB:
-                        bundle.putByteArray(col.getKey(), mCursor.getBlob(col.getValue()));
+                        bundle.putByteArray(columnName, mCursor.getBlob(col));
                         break;
 
                     case Cursor.FIELD_TYPE_NULL:
@@ -230,7 +210,8 @@ public class ColumnMapper {
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(this, "Unknown type", "key=" + col.getKey());
+                        Logger.warnWithStackTrace(this, "columnName=" + columnName,
+                                                  "type=" + mCursor.getType(col));
                         break;
                 }
             }

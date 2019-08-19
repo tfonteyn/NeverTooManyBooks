@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2012 Philip Warner.
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without Philip Warner's original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.HttpStatusException;
@@ -71,6 +73,7 @@ abstract class AbstractBase {
     private static final int CONNECT_TIMEOUT = 30_000;
     // read-timeout. Default is 10_000
     private static final int READ_TIMEOUT = 60_000;
+    private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 
     /** The parsed downloaded web page. */
     Document mDoc;
@@ -165,7 +168,9 @@ abstract class AbstractBase {
 
     @NonNull
     String cleanUpName(@NonNull final String s) {
-        return CLEANUP_TITLE_PATTERN.matcher(s.trim().replace("\n", " "))
+        String tmp = CR_PATTERN.matcher(s.trim())
+                               .replaceAll(Matcher.quoteReplacement(" "));
+        return CLEANUP_TITLE_PATTERN.matcher(tmp)
                                     .replaceAll("")
                                     .trim();
     }

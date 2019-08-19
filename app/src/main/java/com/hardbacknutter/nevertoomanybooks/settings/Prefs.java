@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -52,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
@@ -91,26 +92,18 @@ public final class Prefs {
     public static final String pk_images_crop_whole_image = "Image.Cropper.FrameIsWholeImage";
     public static final String pk_images_cropper_layer_type = "Image.ViewLayerType";
 
-    public static final String pk_bob_open_book_read_only =
-            "BooksOnBookshelf.OpenBookReadOnly";
-    public static final String pk_bob_list_state =
-            "BookList.ListRebuildState";
-    public static final String pk_bob_list_generation =
-            "BookList.CompatibilityMode";
+    public static final String pk_bob_open_book_read_only = "BooksOnBookshelf.OpenBookReadOnly";
+    public static final String pk_bob_list_state = "BookList.ListRebuildState";
+    public static final String pk_bob_list_generation = "BookList.CompatibilityMode";
 
-    public static final String pk_bob_style_name =
-            "BookList.Style.Name";
-    public static final String pk_bob_groups =
-            "BookList.Style.Groups";
-    public static final String pk_bob_preferred_style =
-            "BookList.Style.Preferred";
-    /** MultiSelectListPreference. */
-    public static final String pk_bob_header =
-            "BookList.Style.Show.HeaderInfo";
-    public static final String pk_bob_text_size =
-            "BookList.Style.Scaling";
-    public static final String pk_bob_cover_size =
-            "BookList.Style.Scaling.Thumbnails";
+    public static final String pk_bob_use_task_for_extras = "BookList.UseTaskFor.BookDetails";
+
+    public static final String pk_bob_style_name = "BookList.Style.Name";
+    public static final String pk_bob_groups = "BookList.Style.Groups";
+    public static final String pk_bob_preferred_style = "BookList.Style.Preferred";
+    public static final String pk_bob_text_size = "BookList.Style.Scaling";
+    public static final String pk_bob_cover_size = "BookList.Style.Scaling.Thumbnails";
+
     public static final String pk_bob_books_under_multiple_authors =
             "BookList.Style.Group.Authors.ShowAll";
     public static final String pk_bob_books_under_multiple_series =
@@ -120,8 +113,10 @@ public final class Prefs {
     public static final String pk_bob_sort_author_name =
             "BookList.Style.Sort.Author.GivenFirst";
 
+    /** MultiSelectListPreference. */
+    public static final String pk_bob_header = "BookList.Style.Show.HeaderInfo";
     /** Show the cover image for each book. */
-    public static final String pk_bob_thumbnails_show = "BookList.Style.Show.Thumbnails";
+    public static final String pk_bob_show_thumbnails = "BookList.Style.Show.Thumbnails";
     /** Show list of bookshelves for each book. */
     public static final String pk_bob_show_bookshelves = "BookList.Style.Show.Bookshelves";
     /** Show location for each book. */
@@ -130,6 +125,8 @@ public final class Prefs {
     public static final String pk_bob_show_author = "BookList.Style.Show.Author";
     /** Show publisher for each book. */
     public static final String pk_bob_show_publisher = "BookList.Style.Show.Publisher";
+    /** Show publication date for each book. */
+    public static final String pk_bob_show_pub_date = "BookList.Style.Show.Publication.Date";
     /** Show ISBN for each book. */
     public static final String pk_bob_show_isbn = "BookList.Style.Show.ISBN";
     /** Show format for each book. */
@@ -281,7 +278,8 @@ public final class Prefs {
                             case 3:
                                 bobState = BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED;
                                 break;
-
+                            default:
+                                break;
                         }
                         ed.putString(pk_bob_list_state, String.valueOf(bobState));
                         break;
@@ -333,6 +331,8 @@ public final class Prefs {
                             case 3:
                                 scanner = ScannerManager.SCANNER_ZXING;
                                 break;
+                            default:
+                                break;
                         }
                         ed.putString(entry.getKey(), String.valueOf(scanner));
                         break;
@@ -369,7 +369,7 @@ public final class Prefs {
                         break;
 
                     case "BookList.ShowThumbnails":
-                        ed.putBoolean(pk_bob_thumbnails_show, (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_show_thumbnails, (Boolean) oldValue);
                         break;
 
                     case "BookList.LargeThumbnails":
@@ -461,7 +461,7 @@ public final class Prefs {
                             uuidSet.add(BooklistStyles.getStyle(context, styleName).getUuid());
                         }
                         ed.putString(BooklistStyles.PREF_BL_PREFERRED_STYLES,
-                                     Csv.join(",", uuidSet));
+                                     TextUtils.join(",", uuidSet));
                         break;
 
                     // skip obsolete keys
@@ -528,7 +528,7 @@ public final class Prefs {
                             }
 
                         } else if (!entry.getKey().startsWith("state_current_group")) {
-                            Logger.warn(Prefs.class, "migratePreV200preferences",
+                            Logger.info(Prefs.class, "migratePreV200preferences",
                                         "unknown key=" + entry.getKey(),
                                         "value=" + oldValue);
                         }
@@ -537,7 +537,7 @@ public final class Prefs {
 
             } catch (@NonNull final RuntimeException e) {
                 // to bad... skip that key, not fatal, use default.
-                Logger.warnWithStackTrace(Prefs.class, e, "key=" + entry.getKey());
+                Logger.error(Prefs.class, e, "key=" + entry.getKey());
             }
         }
         ed.apply();

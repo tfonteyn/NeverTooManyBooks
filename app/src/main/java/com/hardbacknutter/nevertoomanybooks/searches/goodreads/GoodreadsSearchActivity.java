@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.MappedCursorRow;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -264,12 +264,12 @@ public class GoodreadsSearchActivity
 
             mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
             if (mBookId > 0) {
-                try (BookCursor cursor = mDb.fetchBookById(mBookId)) {
-                    if (cursor.moveToFirst()) {
-                        MappedCursorRow row = cursor.getCursorRow();
-                        mAuthorText = row.getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
-                        mTitleText = row.getString(DBDefinitions.KEY_TITLE);
-                        mIsbnText = row.getString(DBDefinitions.KEY_ISBN);
+                try (BookCursor bookCursor = mDb.fetchBookById(mBookId)) {
+                    if (bookCursor.moveToFirst()) {
+                        mAuthorText = bookCursor.getString(
+                                DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+                        mTitleText = bookCursor.getString(DBDefinitions.KEY_TITLE);
+                        mIsbnText = bookCursor.getString(DBDefinitions.KEY_ISBN);
                     } else {
                         mBookNoLongerExists.setValue(true);
                     }

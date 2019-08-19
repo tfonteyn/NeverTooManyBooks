@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
- * Languages:
+ * Languages.
  * <ul>
  * <li>ISO 639-1: two-letter codes, one per language</li>
  * <li>ISO 639-2: three-letter codes, for the same languages as 639-1</li>
@@ -528,7 +529,7 @@ public final class LocaleUtils {
 //                return "ro";
 //            case "srp":
 //                // Serbian (Latin)
-//                // TODO is google expecting Cyrillic?
+//                // is google expecting Cyrillic?
 //                return "sr";
 //            case "slk":
 //                // Slovak
@@ -577,11 +578,6 @@ public final class LocaleUtils {
         createLanguageMappingCache(Locale.ENGLISH);
     }
 
-    /** Convenience method to get the language SharedPreferences file. */
-    private static SharedPreferences getLanguageCache() {
-        return App.getAppContext().getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
-    }
-
     /**
      * Generate language mappings for a given locale.
      */
@@ -599,6 +595,11 @@ public final class LocaleUtils {
         // signal this locale was done
         ed.putBoolean(myLocale.getISO3Language(), true);
         ed.apply();
+    }
+
+    /** Convenience method to get the language SharedPreferences file. */
+    private static SharedPreferences getLanguageCache() {
+        return App.getAppContext().getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }
 
     public static String toDebugString(@NonNull final Context context) {
