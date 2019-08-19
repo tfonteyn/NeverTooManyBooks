@@ -7,9 +7,10 @@
  * In August 2018, this project was forked from:
  * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and
+ * not at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -218,8 +219,7 @@ public final class DBDefinitions {
     static final DomainDefinition DOM_AUTHOR_GIVEN_NAMES_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final DomainDefinition DOM_AUTHOR_IS_COMPLETE;
-    /** {@link #TBL_AUTHORS}. */
-    public static final DomainDefinition DOM_AUTHOR_TYPE_BITMASK;
+
     /** "FamilyName, GivenName". */
     public static final DomainDefinition DOM_AUTHOR_FORMATTED;
     /** "GivenName FamilyName". */
@@ -228,7 +228,6 @@ public final class DBDefinitions {
     public static final String KEY_AUTHOR_FAMILY_NAME = "family_name";
     public static final String KEY_AUTHOR_GIVEN_NAMES = "given_names";
     public static final String KEY_AUTHOR_IS_COMPLETE = "author_complete";
-    public static final String KEY_AUTHOR_TYPE = "author_type";
     public static final String KEY_AUTHOR_FORMATTED = "author_formatted";
     public static final String KEY_AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
 
@@ -256,10 +255,6 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_AUTHOR_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN, true)
                         .setDefault(0);
 
-        DOM_AUTHOR_TYPE_BITMASK =
-                new DomainDefinition(KEY_AUTHOR_TYPE, ColumnInfo.TYPE_INTEGER, true)
-                        .setDefault(0);
-
         DOM_AUTHOR_FORMATTED =
                 new DomainDefinition(KEY_AUTHOR_FORMATTED, ColumnInfo.TYPE_TEXT, true);
 
@@ -267,12 +262,12 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_AUTHOR_FORMATTED_GIVEN_FIRST, ColumnInfo.TYPE_TEXT, true);
     }
 
-    /** {@link #TBL_SERIES). */
+    /** {@link #TBL_SERIES}. */
     public static final DomainDefinition DOM_SERIES_TITLE;
     public static final DomainDefinition DOM_SERIES_TITLE_OB;
     /** {@link #TBL_SERIES}. */
     public static final DomainDefinition DOM_SERIES_IS_COMPLETE;
-    /** {@link #TBL_SERIES). */
+    /** {@link #TBL_SERIES}. */
     public static final DomainDefinition DOM_SERIES_FORMATTED;
 
     public static final String KEY_SERIES_TITLE = "series_name";
@@ -455,7 +450,7 @@ public final class DBDefinitions {
     }
 
     /**
-     *  We don't store the ASIN (yet) but plumbing has started. ENHANCE: use/store the ASIN
+     * We don't store the ASIN (yet) but plumbing has started. ENHANCE: use/store the ASIN
      */
     public static final DomainDefinition DOM_ASIN;
 
@@ -499,7 +494,7 @@ public final class DBDefinitions {
                         .setDefault("'0000-00-00'");
     }
 
-    /** {@link #TBL_BOOKSHELF). */
+    /** {@link #TBL_BOOKSHELF}. */
     public static final DomainDefinition DOM_BOOKSHELF;
     /** Virtual: build from "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ",', ')". */
     public static final DomainDefinition DOM_BOOKSHELF_CSV;
@@ -546,7 +541,21 @@ public final class DBDefinitions {
     }
 
     /** {@link #TBL_BOOK_AUTHOR}. */
+    public static final DomainDefinition DOM_BOOK_AUTHOR_TYPE_BITMASK;
+    /** {@link #TBL_BOOK_AUTHOR}. */
     public static final DomainDefinition DOM_BOOK_AUTHOR_POSITION;
+
+    public static final String KEY_AUTHOR_TYPE = "author_type";
+    public static final String KEY_AUTHOR_POSITION = "author_position";
+
+    static {
+        DOM_BOOK_AUTHOR_TYPE_BITMASK =
+                new DomainDefinition(KEY_AUTHOR_TYPE, ColumnInfo.TYPE_INTEGER, true)
+                        .setDefault(0);
+        DOM_BOOK_AUTHOR_POSITION =
+                new DomainDefinition(KEY_AUTHOR_POSITION, ColumnInfo.TYPE_INTEGER, true);
+    }
+
 
     /**
      * {@link #TBL_BOOK_SERIES}.
@@ -559,9 +568,6 @@ public final class DBDefinitions {
     static final DomainDefinition DOM_BOOK_TOC_ENTRY_POSITION;
 
     static {
-        DOM_BOOK_AUTHOR_POSITION =
-                new DomainDefinition("author_position", ColumnInfo.TYPE_INTEGER, true);
-
         DOM_BOOK_SERIES_POSITION =
                 new DomainDefinition("series_position", ColumnInfo.TYPE_INTEGER, true);
 
@@ -794,8 +800,7 @@ public final class DBDefinitions {
                                DOM_AUTHOR_FAMILY_NAME_OB,
                                DOM_AUTHOR_GIVEN_NAMES,
                                DOM_AUTHOR_GIVEN_NAMES_OB,
-                               DOM_AUTHOR_IS_COMPLETE,
-                               DOM_AUTHOR_TYPE_BITMASK)
+                               DOM_AUTHOR_IS_COMPLETE)
                    .setPrimaryKey(DOM_PK_ID)
                    .addIndex(DOM_AUTHOR_FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)
                    .addIndex(DOM_AUTHOR_FAMILY_NAME, false, DOM_AUTHOR_FAMILY_NAME)
@@ -895,7 +900,8 @@ public final class DBDefinitions {
 
         TBL_BOOK_AUTHOR.addDomains(DOM_FK_BOOK,
                                    DOM_FK_AUTHOR,
-                                   DOM_BOOK_AUTHOR_POSITION)
+                                   DOM_BOOK_AUTHOR_POSITION,
+                                   DOM_BOOK_AUTHOR_TYPE_BITMASK)
                        .setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_AUTHOR_POSITION)
                        .addReference(TBL_BOOKS, DOM_FK_BOOK)
                        .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
@@ -987,23 +993,23 @@ public final class DBDefinitions {
          *
          * This is an EXAMPLE only. The structure will depend on {@link BooklistBuilder}.
          *
-         * _id	level	kind book_count	root_key	                book	format	                book_uuid	                        selected	read	title
-         * 1	1	    13	            fmt/Hardcover                       Hardcover	            1d872e0edbda2c86758d8fc889351716	0	        0
-         * 2	2	    0	 1		    fmt/Hardcover	            1617	Hardcover	            fc78e8ee6918e54547c2561986ccbec2	0	        0	Accelerando
-         * 3	2	    0	 1		    fmt/Hardcover	            1564	Hardcover	            47f6f13fd98594afcdca1ce71df9f23c	0	        0	Bad Ronald
+         * _id  level   kind book_count root_key                   book     book_uuid                           title
+         * 1	1	    13	            fmt/Hardcover                       1d872e0edbda2c86758d8fc889351716
+         * 2	2	    0	 1		    fmt/Hardcover	            1617	fc78e8ee6918e54547c2561986ccbec2	Accelerando
+         * 3	2	    0	 1		    fmt/Hardcover	            1564	47f6f13fd98594afcdca1ce71df9f23c	Bad Ronald
          * ... snip...
-         * 21	2	    0	 1		    fmt/Hardcover	            1531	Hardcover	            3ac5caf178d9c61cbf8810d6233d0a2c	0	        0	Shadow Captain
-         * 22	2	    0	 1		    fmt/Hardcover	            1334	Hardcover	            9a37fe8a709e2d9ba8c8d0301c4c0903	0	        0	Tales from the Perilous Realm
-         * 23	2	    0	 1		    fmt/Hardcover	            1616	Hardcover	            61891a4d06bf821a7f270769671c13d9	0	        0	Toast
-         * 24	2	    0	 1		    fmt/Hardcover	            1332	Hardcover	            ab291216c5d0d6612b8e5e6d4484ffd5	0	        0	Unfinished Tales of Numenor and Middle-Earth
-         * 25	1	    13	            fmt/Hardcover - Traycase		    Hardcover - Traycase	ae199f646b992c321f3b8ff04d0387ce	0	        0
-         * 26	2	    0	 1	    	fmt/Hardcover - Traycase	1505	Hardcover - Traycase	228bff45e6d9cb025c2f73911ef6e4c4	0	        0	Night Lamp
-         * 27	2	    0	 1	    	fmt/Hardcover - Traycase	1561	Hardcover - Traycase	e6db432cb841ea0cb82901e6b3e7c0b3	0	        0	Ports Of Call
-         * 28	1	    13	            fmt/Paperback		                Paperback	            a5df7be3d84070e0152494bbbfe99eb6	0	        0
+         * 21	2	    0	 1		    fmt/Hardcover	            1531	3ac5caf178d9c61cbf8810d6233d0a2c	Shadow Captain
+         * 22	2	    0	 1		    fmt/Hardcover	            1334	9a37fe8a709e2d9ba8c8d0301c4c0903	Tales from the Perilous Realm
+         * 23	2	    0	 1		    fmt/Hardcover	            1616	61891a4d06bf821a7f270769671c13d9	Toast
+         * 24	2	    0	 1		    fmt/Hardcover	            1332	ab291216c5d0d6612b8e5e6d4484ffd5	Unfinished Tales of Numenor and Middle-Earth
+         * 25	1	    13	            fmt/Hardcover - Traycase		    ae199f646b992c321f3b8ff04d0387ce
+         * 26	2	    0	 1	    	fmt/Hardcover - Traycase	1505	228bff45e6d9cb025c2f73911ef6e4c4	Night Lamp
+         * 27	2	    0	 1	    	fmt/Hardcover - Traycase	1561	e6db432cb841ea0cb82901e6b3e7c0b3	Ports Of Call
+         * 28	1	    13	            fmt/Paperback		                a5df7be3d84070e0152494bbbfe99eb6
          * ...snip...
-         * 32	2	    0	 1	    	fmt/Paperback	            1589	Paperback	            649dfb4b92a05e15e66821e2933f1930	0	        0	Wild Thyme and Violets and Other Unpublished Stories
-         * 33	1	    13		        fmt/Paperback - Trade		        Paperback - Trade	    07b91229ccb1de81de8f0fe7cdbefb83	0       	0
-         * 34	2	    0	 1	    	fmt/Paperback - Trade	    1251	Paperback - Trade	    74034e297d73785aee87c26d3050a8cb	0	        0	Annals of Klepsis
+         * 32	2	    0	 1	    	fmt/Paperback	            1589	649dfb4b92a05e15e66821e2933f1930	Wild Thyme and Violets and Other Unpublished Stories
+         * 33	1	    13		        fmt/Paperback - Trade		        07b91229ccb1de81de8f0fe7cdbefb83
+         * 34	2	    0	 1	    	fmt/Paperback - Trade	    1251	74034e297d73785aee87c26d3050a8cb	Annals of Klepsis
          *
          * This table should always be created without column constraints applied,
          * with the exception of the "_id" primary key autoincrement
@@ -1103,10 +1109,7 @@ public final class DBDefinitions {
                                  DOM_BOOK_PUBLISHER,
                                  DOM_BOOK_GENRE,
                                  DOM_BOOK_LOCATION
-        );
-    }
-
-    private DBDefinitions() {
+                                );
     }
 
     /*
@@ -1125,5 +1128,8 @@ public final class DBDefinitions {
                 }
             }
         }
+    }
+
+    private DBDefinitions() {
     }
 }
