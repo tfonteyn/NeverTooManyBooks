@@ -247,7 +247,7 @@ public class BooklistMappedCursorRow {
                 break;
 
             default:
-                Logger.warnWithStackTrace(this, "kind=" + mStyle.getGroupKindAt(index));
+                // no special formatting needed.
                 break;
         }
         return source;

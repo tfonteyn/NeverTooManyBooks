@@ -101,7 +101,7 @@ public class CoverBrowserFragment
     private CoverBrowserViewModel mModel;
     /** Populated by {@link #setSwitcherImage} AND savedInstanceState. */
     @Nullable
-    private CoverBrowserViewModel.FileInfo mSwitcherImage;
+    private CoverBrowserViewModel.FileInfo mSwitcherImageFileInfo;
 
     /**
      * WARNING: LibraryThing is in fact the only site searched for alternative editions!
@@ -136,6 +136,13 @@ public class CoverBrowserFragment
 
         Objects.requireNonNull(getTargetFragment());
 
+        mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
+        mModel.init(requireArguments());
+
+        mModel.getEditions().observe(this, this::initGallery);
+        mModel.getGalleryImage().observe(this, this::setGalleryImage);
+        mModel.getSwitcherImage().observe(this, this::setSwitcherImage);
+
         if (savedInstanceState != null) {
             ArrayList<String> editions = savedInstanceState.getStringArrayList(BKEY_EDITION_LIST);
             if (editions != null) {
@@ -143,15 +150,8 @@ public class CoverBrowserFragment
                 mAlternativeEditions.clear();
                 mAlternativeEditions.addAll(editions);
             }
-            mSwitcherImage = savedInstanceState.getParcelable(BKEY_SWITCHER_FILE);
+            mSwitcherImageFileInfo = savedInstanceState.getParcelable(BKEY_SWITCHER_FILE);
         }
-
-        mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
-        mModel.init(requireArguments());
-
-        mModel.getEditions().observe(this, this::initGallery);
-        mModel.getGalleryImage().observe(this, this::setGalleryImage);
-        mModel.getSwitcherImage().observe(this, this::setSwitcherImage);
     }
 
     @NonNull
@@ -232,8 +232,8 @@ public class CoverBrowserFragment
         if (!mAlternativeEditions.isEmpty()) {
             outState.putStringArrayList(BKEY_EDITION_LIST, mAlternativeEditions);
         }
-        if (mSwitcherImage != null) {
-            outState.putParcelable(BKEY_SWITCHER_FILE, mSwitcherImage);
+        if (mSwitcherImageFileInfo != null) {
+            outState.putParcelable(BKEY_SWITCHER_FILE, mSwitcherImageFileInfo);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
@@ -251,8 +251,8 @@ public class CoverBrowserFragment
 
         } else {
             initGallery(mAlternativeEditions);
-            if (mSwitcherImage != null) {
-                setSwitcherImage(mSwitcherImage);
+            if (mSwitcherImageFileInfo != null) {
+                setSwitcherImage(mSwitcherImageFileInfo);
             }
         }
 
@@ -334,7 +334,7 @@ public class CoverBrowserFragment
      * @param fileInfo the file we got.
      */
     private void setSwitcherImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
-        mSwitcherImage = fileInfo;
+        mSwitcherImageFileInfo = fileInfo;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
             Logger.debug(this, "setSwitcherImage", "fileInfo=" + fileInfo);

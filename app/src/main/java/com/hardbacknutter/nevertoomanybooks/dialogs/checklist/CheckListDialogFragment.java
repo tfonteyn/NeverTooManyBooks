@@ -109,11 +109,10 @@ public class CheckListDialogFragment<T>
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = requireArguments();
-        mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
+        mDestinationFieldId = requireArguments().getInt(UniqueId.BKEY_FIELD_ID);
 
-        args = savedInstanceState == null ? args : savedInstanceState;
-        mList = Objects.requireNonNull(args.getParcelableArrayList(BKEY_CHECK_LIST));
+        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
+        mList = Objects.requireNonNull(currentArgs.getParcelableArrayList(BKEY_CHECK_LIST));
     }
 
     @NonNull
@@ -155,13 +154,14 @@ public class CheckListDialogFragment<T>
                         })
                         .create();
 
-        //noinspection ConstantConditions
-        @StringRes
-        int titleId = getArguments().getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
-        if (titleId != 0) {
-            dialog.setTitle(titleId);
+        Bundle args = getArguments();
+        if (args != null) {
+            @StringRes
+            int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
+            if (titleId != 0) {
+                dialog.setTitle(titleId);
+            }
         }
-
         return dialog;
     }
 

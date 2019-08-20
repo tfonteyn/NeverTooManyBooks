@@ -454,7 +454,7 @@ public class BooklistBuilder
         // We can not use triggers to fill in headings in API < 8 since
         // SQLite 3.5.9 (2008-05-14) is broken.
         // Allow for the user preferences to override in case another build is broken.
-        // 2019-01-20: v200 is targeting API 21, which would be SqLite 3.8 (2013-08-26)
+        // 2019-01-20: v200 is targeting API 23, which would be SqLite 3.8
         //ENHANCE: time to remove sqlite pre-trigger use logic ?
         final CompatibilityMode listMode = CompatibilityMode.get();
 
@@ -2701,7 +2701,9 @@ public class BooklistBuilder
         }
 
         /**
-         * @return the collection of columns used to sort the output.
+         * Get the list of columns used to sort the output.
+         *
+         * @return the list
          */
         @NonNull
         ArrayList<SortedDomainInfo> getSortedColumns() {

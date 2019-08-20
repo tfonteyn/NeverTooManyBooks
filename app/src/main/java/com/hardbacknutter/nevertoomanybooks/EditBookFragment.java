@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,17 +104,7 @@ public class EditBookFragment
         return view;
     }
 
-    /**
-     * the only thing on this level is the TAB we're on.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(REQUEST_BKEY_TAB, mViewPager.getCurrentItem());
-    }
+
 
     /**
      * Add the menu items which are common to all child fragments.
@@ -160,10 +151,10 @@ public class EditBookFragment
         super.onActivityCreated(savedInstanceState);
 
         // any specific tab desired as 'selected' ?
-        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
+        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : getArguments();
         int tabWanted;
-        if (args != null) {
-            tabWanted = args.getInt(REQUEST_BKEY_TAB, TAB_EDIT);
+        if (currentArgs != null) {
+            tabWanted = currentArgs.getInt(REQUEST_BKEY_TAB, TAB_EDIT);
         } else {
             tabWanted = TAB_EDIT;
         }
@@ -322,6 +313,18 @@ public class EditBookFragment
         Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, book.getId());
         mActivity.setResult(Activity.RESULT_OK, data);
         mActivity.finish();
+    }
+
+    /**
+     * the only thing on this level is the TAB we're on.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(REQUEST_BKEY_TAB, mViewPager.getCurrentItem());
     }
 
     private static class ViewPagerAdapter

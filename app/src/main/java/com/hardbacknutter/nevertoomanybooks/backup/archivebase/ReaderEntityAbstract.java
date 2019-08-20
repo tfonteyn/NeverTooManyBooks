@@ -91,9 +91,7 @@ public abstract class ReaderEntityAbstract
             throws IOException, DeserializationException {
         // Turn the input into a byte array
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-
         final byte[] buffer = new byte[BUFFER_SIZE];
-
         while (true) {
             int cnt = getInputStream().read(buffer);
             if (cnt <= 0) {

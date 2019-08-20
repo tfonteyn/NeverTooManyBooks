@@ -88,8 +88,8 @@ public class ExportOptionsDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mOptions = args.getParcelable(BKEY_OPTIONS);
+        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
+        mOptions = currentArgs.getParcelable(BKEY_OPTIONS);
     }
 
     @NonNull

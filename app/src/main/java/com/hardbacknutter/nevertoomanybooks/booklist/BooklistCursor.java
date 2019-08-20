@@ -103,7 +103,7 @@ public class BooklistCursor
                + "mBuilder=" + mBuilder
                + ", mCursorRow.getId()="
                + (mCursorRow != null ? mCursorRow.getCursorMapper().getLong(DBDefinitions.KEY_PK_ID)
-                                     : "null")
+                                     : null)
                + '}';
     }
 }

@@ -238,6 +238,8 @@ public abstract class EditBookBaseFragment<T>
     }
 
     /**
+     * Setup a date picker with the passed field.
+     *
      * @param field         {@link Field} to edit
      * @param dialogTitleId title of the dialog box.
      * @param todayIfNone   if true, and if the field was empty, pre-populate with today's date
@@ -260,6 +262,8 @@ public abstract class EditBookBaseFragment<T>
     }
 
     /**
+     * Setup a checklist picker with the passed field.
+     *
      * @param field         {@link Field} to edit
      * @param dialogTitleId title of the dialog box.
      * @param listGetter    {@link CheckListDialogFragment.CheckListEditorListGetter}

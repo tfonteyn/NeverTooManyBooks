@@ -28,10 +28,12 @@
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -100,11 +102,8 @@ public class BookBaseFragmentModel
 
     /**
      * Pseudo constructor.
-     * <p>
-     * If we already have been initialized, return silently.
-     * Otherwise use the passed data to construct a Book.
      *
-     * @param args Bundle with arguments
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@Nullable final Bundle args) {
 
@@ -121,8 +120,7 @@ public class BookBaseFragmentModel
                 } else {
                     // otherwise, check if we have an id, e.g. user clicked on a book in a list.
                     long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
-                    // If the id is valid, load from database.
-                    // or if it's 0, create a new 'empty' book.
+                    // Either load from database or create a new 'empty' book.
                     mBook = new Book(bookId, mDb);
                 }
             } else {

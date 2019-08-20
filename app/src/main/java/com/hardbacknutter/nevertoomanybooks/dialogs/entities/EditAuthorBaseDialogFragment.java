@@ -77,8 +77,8 @@ public abstract class EditAuthorBaseDialogFragment
         mDb = new DAO();
 
         Bundle args = requireArguments();
-
         mAuthor = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR));
+
         if (savedInstanceState == null) {
             mFamilyName = mAuthor.getFamilyName();
             mGivenNames = mAuthor.getGivenNames();

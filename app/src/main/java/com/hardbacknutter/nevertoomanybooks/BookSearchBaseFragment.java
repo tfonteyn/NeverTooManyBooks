@@ -194,9 +194,7 @@ public abstract class BookSearchBaseFragment
         super.onActivityCreated(savedInstanceState);
 
         mBookSearchBaseModel = new ViewModelProvider(this).get(BookSearchBaseModel.class);
-
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mBookSearchBaseModel.init(args);
+        mBookSearchBaseModel.init(requireArguments(), savedInstanceState);
 
         //noinspection ConstantConditions
         SearchSites.alertRegistrationBeneficial(getContext(), "search",

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,14 +110,13 @@ public class ProgressDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = requireArguments();
-        mIsIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
+        mIsIndeterminate = requireArguments().getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
 
-        args = savedInstanceState == null ? args : savedInstanceState;
+        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
         // initial/current message.
-        mMessage = args.getString(BKEY_CURRENT_MESSAGE);
-        mMax = args.getInt(BKEY_MAX);
-        mCurrent = args.getInt(BKEY_CURRENT_VALUE);
+        mMessage = currentArgs.getString(BKEY_CURRENT_MESSAGE);
+        mMax = currentArgs.getInt(BKEY_MAX);
+        mCurrent = currentArgs.getInt(BKEY_CURRENT_VALUE);
     }
 
     @NonNull
@@ -152,14 +152,15 @@ public class ProgressDialogFragment
         // Cancel by 'back' press only.
         dialog.setCanceledOnTouchOutside(false);
 
-        //noinspection ConstantConditions
-        @StringRes
-        int titleId = getArguments().getInt(UniqueId.BKEY_DIALOG_TITLE,
-                                            R.string.progress_msg_please_wait);
-        if (titleId != 0) {
-            dialog.setTitle(titleId);
+        Bundle args = getArguments();
+        if (args != null) {
+            @StringRes
+            int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE,
+                                      R.string.progress_msg_please_wait);
+            if (titleId != 0) {
+                dialog.setTitle(titleId);
+            }
         }
-
         return dialog;
     }
 

@@ -31,7 +31,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -150,7 +149,7 @@ public class StyleSettingsFragment
      */
     @Override
     void prepareResult() {
-        Intent data = new Intent().putExtra(UniqueId.BKEY_STYLE, (Parcelable) mStyle);
+        Intent data = new Intent().putExtra(UniqueId.BKEY_STYLE, mStyle);
         //noinspection ConstantConditions
         getActivity().setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE, data);
 
@@ -201,7 +200,7 @@ public class StyleSettingsFragment
         if (preference != null) {
             //noinspection ConstantConditions
             preference.setSummary(mStyle.getGroupLabels(getContext()));
-            preference.getIntent().putExtra(UniqueId.BKEY_STYLE, (Parcelable) mStyle);
+            preference.getIntent().putExtra(UniqueId.BKEY_STYLE, mStyle);
             preference.setOnPreferenceClickListener(p -> {
                 startActivityForResult(p.getIntent(), UniqueId.REQ_EDIT_STYLE_GROUPS);
                 return true;

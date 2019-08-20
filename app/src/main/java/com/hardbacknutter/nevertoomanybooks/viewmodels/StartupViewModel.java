@@ -229,6 +229,11 @@ public class StartupViewModel
         }
     }
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param context Current context
+     */
     public void init(@NonNull final Context context) {
         mDoPeriodicAction = decreaseStartupCounters(context);
     }

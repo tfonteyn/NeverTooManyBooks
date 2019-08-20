@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,17 +39,14 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
@@ -404,28 +402,7 @@ public final class UpgradeDatabase {
         // insert the builtin style ID's so foreign key rules are possible.
         DBHelper.prepareStylesTable(db);
 
-        // convert user styles from serialized storage to SharedPreference xml.
-        try (Cursor stylesCursor = db.rawQuery("SELECT " + DOM_PK_ID + ",style"
-                                               + " FROM " + TBL_BOOKLIST_STYLES,
-                                               null)) {
-            while (stylesCursor.moveToNext()) {
-                long id = stylesCursor.getLong(0);
-                byte[] blob = stylesCursor.getBlob(1);
-                BooklistStyle style;
-                try {
-                    // de-serializing will in effect write out the preference file.
-                    style = SerializationUtils.deserializeObject(blob);
-                    // update db with the newly created prefs file name.
-                    db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES
-                               + " SET " + DOM_UUID + "='" + style.getUuid() + '\''
-                               + " WHERE " + DOM_PK_ID + '=' + id);
-
-                } catch (@NonNull final SerializationUtils.DeserializationException e) {
-                    Logger.error(UpgradeDatabase.class, e, "BooklistStyle id=" + id);
-                }
-            }
-        }
-        // drop the serialized field.
+        // drop the serialized field; this will remove legacy blob styles.
         recreateAndReloadTable(syncedDb, TBL_BOOKLIST_STYLES,
                 /* remove field */ "style");
 

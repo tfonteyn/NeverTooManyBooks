@@ -162,16 +162,15 @@ public class PartialDatePickerDialogFragment
             mMonthNames[i] = String.format("%tb", mCalendarForCalculations);
         }
 
-        Bundle args = requireArguments();
-        mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
+        mDestinationFieldId = requireArguments().getInt(UniqueId.BKEY_FIELD_ID);
 
-        args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        if (args.containsKey(BKEY_DATE)) {
-            setDate(args.getString(BKEY_DATE));
+        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
+        if (currentArgs.containsKey(BKEY_DATE)) {
+            setDate(currentArgs.getString(BKEY_DATE));
         } else {
-            mYear = args.getInt(BKEY_YEAR);
-            mMonth = args.getInt(BKEY_MONTH);
-            mDay = args.getInt(BKEY_DAY);
+            mYear = currentArgs.getInt(BKEY_YEAR);
+            mMonth = currentArgs.getInt(BKEY_MONTH);
+            mDay = currentArgs.getInt(BKEY_DAY);
         }
 
         // can't have a null year. The user can/should use the "clear" button if needed.
@@ -188,11 +187,13 @@ public class PartialDatePickerDialogFragment
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         //noinspection ConstantConditions
         AlertDialog dialog = new PartialDatePickerDialog(getContext(), layoutInflater);
-        //noinspection ConstantConditions
-        @StringRes
-        int titleId = getArguments().getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
-        if (titleId != 0) {
-            dialog.setTitle(titleId);
+        Bundle args = getArguments();
+        if (args != null) {
+            @StringRes
+            int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
+            if (titleId != 0) {
+                dialog.setTitle(titleId);
+            }
         }
         return dialog;
     }

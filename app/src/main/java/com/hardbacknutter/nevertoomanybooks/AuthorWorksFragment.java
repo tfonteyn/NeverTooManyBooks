@@ -104,8 +104,7 @@ public class AuthorWorksFragment
         mModel = new ViewModelProvider(getActivity()).get(AuthorWorksModel.class);
         mModel.init(requireArguments());
 
-        String title = mModel.getAuthor().getLabel() + " [" + mModel.getTocEntries().size() + ']';
-        getActivity().setTitle(title);
+        getActivity().setTitle(mModel.getScreenTitle());
 
         //noinspection ConstantConditions
         RecyclerView listView = getView().findViewById(android.R.id.list);

@@ -36,8 +36,12 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.TaskModel;
 
 /**
  * See parent class doc.
+ *
+ * <b>Note:</b> a ViewModel must be "public" despite Android Studio proposing "package-private"
+ * The catch: it will work in the emulator, but fail on a real device.
  */
-class ExportOptionsTaskModel
+@SuppressWarnings("WeakerAccess")
+public class ExportOptionsTaskModel
         extends TaskModel<ExportOptions> {
 
     @Nullable

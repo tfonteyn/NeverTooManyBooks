@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
@@ -41,8 +40,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
@@ -145,45 +142,4 @@ abstract class BaseSettingsFragment
      * THEY STILL MUST CALL IT THEMSELVES!
      */
     abstract void prepareResult();
-
-    /**
-     * Copy all preferences from source to destination.
-     */
-    @SuppressWarnings("unused")
-    protected void copyPrefs(@NonNull final String source,
-                             @NonNull final String destination,
-                             final boolean clearSource) {
-        Context context = getPreferenceManager().getContext();
-        SharedPreferences sourcePrefs =
-                context.getSharedPreferences(source, Context.MODE_PRIVATE);
-        SharedPreferences destinationPrefs =
-                context.getSharedPreferences(destination, Context.MODE_PRIVATE);
-
-        SharedPreferences.Editor ed = destinationPrefs.edit();
-        Map<String, ?> all = sourcePrefs.getAll();
-        for (Map.Entry<String, ?> entry : all.entrySet()) {
-
-            if (entry.getValue() instanceof Boolean) {
-                ed.putBoolean(entry.getKey(), (Boolean) entry.getValue());
-            } else if (entry.getValue() instanceof Float) {
-                ed.putFloat(entry.getKey(), (Float) entry.getValue());
-            } else if (entry.getValue() instanceof Integer) {
-                ed.putInt(entry.getKey(), (Integer) entry.getValue());
-            } else if (entry.getValue() instanceof Long) {
-                ed.putLong(entry.getKey(), (Long) entry.getValue());
-            } else if (entry.getValue() instanceof String) {
-                ed.putString(entry.getKey(), (String) entry.getValue());
-            } else if (entry.getValue() instanceof Set) {
-                //noinspection unchecked
-                ed.putStringSet(entry.getKey(), (Set<String>) entry.getValue());
-            } else {
-                Logger.warnWithStackTrace(this, entry.getValue().getClass().getCanonicalName());
-            }
-        }
-        ed.apply();
-        if (clearSource) {
-            // API: 24 -> context.deleteSharedPreferences(source);
-            sourcePrefs.edit().clear().apply();
-        }
-    }
 }

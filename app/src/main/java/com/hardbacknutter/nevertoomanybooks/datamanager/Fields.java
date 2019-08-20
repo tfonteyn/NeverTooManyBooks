@@ -57,7 +57,6 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.button.MaterialButton;
 
 import java.io.File;
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Currency;
@@ -500,11 +499,8 @@ public class Fields {
 
     /**
      * added to the Fields collection with (2018-11-11) a simple call to setDirty(true).
-     * <p>
-     * Serializable: because it's a member of a serializable class (and lint...)
      */
-    public interface AfterFieldChangeListener
-            extends Serializable {
+    public interface AfterFieldChangeListener {
 
         void afterFieldChange(@NonNull Field field,
                               @Nullable String newValue);
@@ -540,11 +536,8 @@ public class Fields {
     /**
      * Interface for all cross-validators; these are applied after all field-level validators
      * have succeeded.
-     * <p>
-     * Serializable: because it's a member of a serializable class (and lint...)
      */
-    public interface FieldCrossValidator
-            extends Serializable {
+    public interface FieldCrossValidator {
 
         /**
          * @param fields The Fields object containing the Field being validated

@@ -40,9 +40,6 @@ import androidx.annotation.StringRes;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -79,8 +76,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * Individual {@link BooklistGroup} objects are added to a {@link BooklistStyle} in order
  * to describe the resulting list style.
  * <p>
+ * 2019-08-19: legacy style related code removed.
+ * <p>
  * 2019-08-04: due to the move to a new package/directory structure, it is no longer
- * possible to import legacy (binary) styles. TODO: remove code or fix it
+ * possible to import legacy (binary) styles.
  * <p>
  * 2018-12-20: the implementation no longer stores serialized blobs, neither in the database nor
  * in backup archives (but can still read them from archives/database upgrades).<br>
@@ -106,7 +105,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * Need to at least modify {@link BooklistAdapter} #createHolder
  */
 public class BooklistStyle
-        implements Serializable, Parcelable, Entity {
+        implements Parcelable, Entity {
 
     /** {@link Parcelable}. */
     public static final Creator<BooklistStyle> CREATOR =
@@ -137,7 +136,6 @@ public class BooklistStyle
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_ISBN = 1 << 6;
 
-
     /** Mask for the extras that are fetched using {@link BooklistAdapter}.GetBookExtrasTask}. */
     public static final int EXTRAS_BY_TASK = EXTRAS_BOOKSHELVES
                                              | EXTRAS_LOCATION | EXTRAS_FORMAT
@@ -150,7 +148,6 @@ public class BooklistStyle
     /**
      * the amount of details to show in the header.
      */
-    @SuppressWarnings("WeakerAccess")
     public static final Integer SUMMARY_HIDE = 0;
     /** the amount of details to show in the header. */
     public static final Integer SUMMARY_SHOW_COUNT = 1;
@@ -179,8 +176,6 @@ public class BooklistStyle
      */
     private static final String PREF_STYLE_UUID = "BookList.Style.uuid";
 
-    /** serialization id for the plain class data. */
-    private static final long serialVersionUID = 6615877148246388549L;
     /**
      * Row id of database row from which this object comes.
      * A '0' is for an as yet unsaved user-style.
@@ -208,26 +203,7 @@ public class BooklistStyle
      * Used for user-defined styles.
      * encapsulated value always {@code null} for a builtin style.
      */
-    private transient PString mDisplayName;
-
-    /**
-     * Legacy field needs to be kept for backward serialization compatibility,
-     * replaced by {@link #mDisplayName}.
-     * Do not rename.
-     */
-    @SuppressWarnings("unused")
-    private String mName;
-
-    /**
-     * Legacy field needs to be kept for backward serialization compatibility,
-     * replaced by {@link #mStyleGroups}.
-     * <p>
-     * Will be converted to the new one during de-serialization, and then null'd
-     * Note to self: a 'List' will NOT be deserialize'd, must be the original ArrayList
-     * Do not rename.
-     */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private ArrayList<BooklistGroup> mGroups;
+    private PString mName;
 
     /**
      * Flag indicating this style was in the 'preferred' set when it was added to
@@ -236,59 +212,59 @@ public class BooklistStyle
      * But all preferred (user *and* builtin) styles also stored as a single set
      * in the app-preferences.
      */
-    private transient PBoolean mIsPreferred;
+    private PBoolean mIsPreferred;
 
     /**
      * Relative size of list text/images.
      * ==1 being 'normal' size
      */
-    private transient PInteger mScaleFontSize;
+    private PInteger mScaleFontSize;
 
     /** Use normal or large thumbnails. */
-    private transient PInteger mThumbnailScale;
+    private PInteger mThumbnailScale;
 
     /**
      * Show list header info.
      * <p>
      * Ideally this would use a simple int, but {@link MultiSelectListPreference} insists on a Set.
      */
-    private transient PBitmask mShowHeaderInfo;
+    private PBitmask mShowHeaderInfo;
     /** Sorting. */
-    private transient PBoolean mSortAuthorGivenNameFirst;
+    private PBoolean mSortAuthorGivenNameFirst;
 
     /** Show a thumbnail on each book row in the list. */
-    private transient PBoolean mExtraShowThumbnails;
+    private PBoolean mExtraShowThumbnails;
     /** Extra info to show on each book row in the list. */
-    private transient PBoolean mExtraShowBookshelves;
-    private transient PBoolean mExtraShowLocation;
-    private transient PBoolean mExtraShowAuthor;
-    private transient PBoolean mExtraShowPublisher;
-    private transient PBoolean mExtraShowPubDate;
-    private transient PBoolean mExtraShowIsbn;
-    private transient PBoolean mExtraShowFormat;
+    private PBoolean mExtraShowBookshelves;
+    private PBoolean mExtraShowLocation;
+    private PBoolean mExtraShowAuthor;
+    private PBoolean mExtraShowPublisher;
+    private PBoolean mExtraShowPubDate;
+    private PBoolean mExtraShowIsbn;
+    private PBoolean mExtraShowFormat;
     /** Fetch the extras using ot task or not. */
-    private transient PBoolean mExtrasByTask;
+    private PBoolean mExtrasByTask;
 
     /** All groups in this style. */
-    private transient PStyleGroups mStyleGroups;
+    private PStyleGroups mStyleGroups;
 
     /**
      * All filters.
      * <p>
      * The key in the Map is the actual preference key.
      */
-    private transient Map<String, Filter> mFilters;
+    private Map<String, Filter> mFilters;
 
     @SuppressWarnings("FieldNotUsedInToString")
-    private transient BooleanFilter mFilterRead;
+    private BooleanFilter mFilterRead;
     @SuppressWarnings("FieldNotUsedInToString")
-    private transient BooleanFilter mFilterSigned;
+    private BooleanFilter mFilterSigned;
     @SuppressWarnings("FieldNotUsedInToString")
-    private transient BooleanFilter mFilterAnthology;
+    private BooleanFilter mFilterAnthology;
     @SuppressWarnings("FieldNotUsedInToString")
-    private transient BooleanFilter mFilterLoaned;
+    private BooleanFilter mFilterLoaned;
     @SuppressWarnings("FieldNotUsedInToString")
-    private transient BitmaskFilter mFilterEdition;
+    private BitmaskFilter mFilterEdition;
 
     /**
      * Constructor for system-defined styles.
@@ -317,6 +293,8 @@ public class BooklistStyle
      * <p>
      * Only used when styles are loaded from storage.
      * Real new styles are created by cloning an existing style.
+     *
+     * @param uuid the UUID of the style
      */
     public BooklistStyle(final long id,
                          @NonNull final String uuid) {
@@ -358,8 +336,7 @@ public class BooklistStyle
         // only init the prefs once we have a valid uuid
         initPrefs();
 
-        mDisplayName.set(in);
-        mName = mDisplayName.get();
+        mName.set(in);
 
         // create new clone ?
         if (isNew) {
@@ -431,7 +408,7 @@ public class BooklistStyle
      */
     private void initPrefs() {
 
-        mDisplayName = new PString(Prefs.pk_bob_style_name, mUuid, isUserDefined());
+        mName = new PString(Prefs.pk_bob_style_name, mUuid, isUserDefined());
 
         mStyleGroups = new PStyleGroups(mUuid, isUserDefined());
 
@@ -516,7 +493,7 @@ public class BooklistStyle
         dest.writeInt(mNameResId);
         dest.writeString(mUuid);
 
-        mDisplayName.writeToParcel(dest);
+        mName.writeToParcel(dest);
 
         mIsPreferred.writeToParcel(dest);
         mScaleFontSize.writeToParcel(dest);
@@ -575,7 +552,7 @@ public class BooklistStyle
         if (mNameResId != 0) {
             return context.getString(mNameResId);
         } else {
-            return mDisplayName.get();
+            return mName.get();
         }
     }
 
@@ -585,8 +562,7 @@ public class BooklistStyle
      * @param name to set
      */
     private void setName(@NonNull final String name) {
-        mName = name;
-        mDisplayName.set(name);
+        mName.set(name);
     }
 
     /**
@@ -632,7 +608,7 @@ public class BooklistStyle
         @SuppressLint("UseSparseArrays")
         Map<String, PPref> map = new HashMap<>();
         // essential property for user-defined styles 'name'
-        map.put(mDisplayName.getKey(), mDisplayName);
+        map.put(mName.getKey(), mName);
 
         // is a preferred style
         map.put(mIsPreferred.getKey(), mIsPreferred);
@@ -984,116 +960,6 @@ public class BooklistStyle
     }
 
     /**
-     * Pre-v200 Legacy support for reading serialized styles from archives and database upgrade.
-     * <p>
-     * Custom serialization support. The signature of this method should never be changed.
-     *
-     * @see Serializable
-     */
-    private void readObject(@NonNull final ObjectInputStream is)
-            throws IOException, ClassNotFoundException {
-        // pre-v200 we did not have a UUID, create one so the prefs file will be written.
-        mUuid = createUniqueName();
-        initPrefs();
-
-        is.defaultReadObject();
-
-        Object object = is.readObject();
-        long version = 0;
-        if (object instanceof Long) {
-            // It's the version
-            version = (Long) object;
-            // Get the next object
-            object = is.readObject();
-        } // else it's a pre-version object, just use it
-
-        SharedPreferences.Editor ed = getPrefs().edit();
-
-        mExtraShowThumbnails.set(ed, (Boolean) object);
-
-        Boolean legacyThumbnailScale = (Boolean) is.readObject();
-        // Boolean: null=='use-defaults', false='normal', true='large'
-        if (legacyThumbnailScale == null) {
-            mThumbnailScale.set(ed, ImageUtils.SCALE_SMALL);
-        } else {
-            mThumbnailScale.set(ed, legacyThumbnailScale ? ImageUtils.SCALE_MEDIUM
-                                                         : ImageUtils.SCALE_SMALL);
-        }
-
-        mExtraShowBookshelves.set(ed, (Boolean) is.readObject());
-        mExtraShowLocation.set(ed, (Boolean) is.readObject());
-        mExtraShowPublisher.set(ed, (Boolean) is.readObject());
-        mExtraShowAuthor.set(ed, (Boolean) is.readObject());
-
-        // public static final int FILTER_READ = 1; => true
-        // public static final int FILTER_UNREAD = 2; => false
-        // public static final int FILTER_READ_AND_UNREAD = 3; => not set
-        Integer legacyExtraReadUnreadAll = (Integer) is.readObject();
-        switch (legacyExtraReadUnreadAll) {
-            case 1:
-                legacyExtraReadUnreadAll = BooleanFilter.P_TRUE;
-                break;
-            case 2:
-                legacyExtraReadUnreadAll = BooleanFilter.P_FALSE;
-                break;
-            default:
-                legacyExtraReadUnreadAll = BooleanFilter.P_NOT_USED;
-                break;
-        }
-        mFilterRead.set(ed, legacyExtraReadUnreadAll);
-
-        // v1 'condensed' was a Boolean.
-        Boolean legacyCondensed = (Boolean) is.readObject();
-        // Boolean: null=='use-defaults', false='normal', true='condensed'
-        if (legacyCondensed == null) {
-            mScaleFontSize.set(ed, TEXT_SCALE_MEDIUM);
-        } else {
-            mScaleFontSize.set(ed, legacyCondensed ? TEXT_SCALE_SMALL : TEXT_SCALE_MEDIUM);
-        }
-
-        // v2
-        if (version > 1) {
-            mName = (String) is.readObject();
-            mDisplayName.set(ed, mName);
-        }
-
-        // v3 Added mShowHeaderInfo as a Boolean
-        if (version == 3) {
-            Boolean isSet = (Boolean) is.readObject();
-            if (isSet != null) {
-                mShowHeaderInfo.set(ed, isSet ? SUMMARY_SHOW_ALL : SUMMARY_HIDE);
-            }
-        }
-
-        // v4 Changed mShowHeaderInfo from Boolean to Integer
-        if (version > 3) {
-            Integer i = (Integer) is.readObject();
-            if (i != null) {
-                // incoming has extra unused bits, strip those off.
-                mShowHeaderInfo.set(ed, i & SUMMARY_SHOW_ALL);
-            }
-        }
-
-        // During migration, simply set all custom styles to being 'preferred'
-        // This is a lazy solution but good enough.
-        mIsPreferred.set(true);
-
-        // base class de-serialized the groups to legacy format, convert them to current format.
-        String list = null;
-        for (BooklistGroup group : mGroups) {
-            group.setUuid(mUuid);
-            // add the group (kind)
-            list = mStyleGroups.add(ed, list, group);
-            // add the group preferences.
-            updatePreferences(ed, group.getPreferences());
-        }
-        // null out the now redundant member variable.
-        mGroups = null;
-        // finally write out the preference file. Note that the database is not updated yet.
-        ed.apply();
-    }
-
-    /**
      * Construct a clone of this object with id==0, and a new uuid.
      * <p>
      * TODO: have a think... don't use Parceling, but simply copy the prefs + db entry.
@@ -1188,8 +1054,7 @@ public class BooklistStyle
                + "id=" + mId
                + "\nuuid=`" + mUuid + '`'
                + "\nmNameResId=" + mNameResId
-               + "\nmDisplayName=" + mDisplayName
-               + "\nmName=`" + mName + '`'
+               + "\nmName=" + mName
                + "\nmIsPreferred=" + mIsPreferred
                + "\nmScaleFontSize=" + mScaleFontSize
                + "\nmShowHeaderInfo=" + mShowHeaderInfo
@@ -1244,6 +1109,8 @@ public class BooklistStyle
      * Wrapper that gets the showAuthorGivenNameFirst flag from the Author group if we have it,
      * or from the global defaults.
      *
+     * @param context Current context
+     *
      * @return {@code true} if we want "given-names last-name" formatted authors.
      */
     public boolean showAuthorGivenNameFirst(@NonNull final Context context) {
@@ -1269,6 +1136,9 @@ public class BooklistStyle
 
         /**
          * Constructor.
+         *
+         * @param uuid          the UUID of the style
+         * @param isUserDefined Flag to indicate this is a user style or a builtin style
          */
         PStyleGroups(@NonNull final String uuid,
                      final boolean isUserDefined) {

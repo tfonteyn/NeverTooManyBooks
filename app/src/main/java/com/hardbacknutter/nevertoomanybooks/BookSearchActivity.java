@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +35,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
 
 /**
@@ -53,14 +52,15 @@ public class BookSearchActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = getIntent().getExtras();
-        Objects.requireNonNull(args);
-        String tag = args.getString(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG);
+        String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
+        if (tag == null) {
+            tag = BookSearchByIsbnFragment.TAG;
+        }
 
         FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(tag) == null) {
             Fragment frag = createFragment(tag);
-            frag.setArguments(args);
+            frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()
               .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
               .replace(R.id.main_fragment, frag, tag)

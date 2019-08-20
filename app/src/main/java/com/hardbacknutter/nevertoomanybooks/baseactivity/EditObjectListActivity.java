@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,16 +39,16 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
@@ -67,29 +68,19 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     @NonNull
     private final String mBKey;
 
-    /** Database Access. */
-    protected DAO mDb;
-
     /** the rows. */
     protected ArrayList<T> mList;
 
-    /** flag indicating global changes were made. Used in setResult. */
-    protected boolean mGlobalReplacementsMade;
-
-    /** AutoCompleteTextView adapter. */
-    protected ArrayAdapter<String> mAutoCompleteAdapter;
     /** Main screen name field. */
     protected AutoCompleteTextView mAutoCompleteTextView;
-
+    /** AutoCompleteTextView adapter. */
+    protected ArrayAdapter<String> mAutoCompleteAdapter;
     /** The adapter for the list. */
     protected RecyclerViewAdapterBase mListAdapter;
-    /** Row ID... mainly used (if list is from a book) to know if the object is new. */
-    protected long mRowId;
-    /** Displayed for user reference only. */
-    @Nullable
-    private String mBookTitle;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
+
+    protected EditObjectListModel mModel;
 
     /**
      * Constructor.
@@ -104,15 +95,13 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DAO();
+        mModel = new ViewModelProvider(this).get(EditObjectListModel.class);
+        mModel.init(Objects.requireNonNull(getIntent().getExtras()));
 
-        // Look for id and title
-        Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
-        if (args != null) {
-            mRowId = args.getLong(DBDefinitions.KEY_PK_ID);
-            mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
-
-            mList = args.getParcelableArrayList(mBKey);
+        Bundle currentArgs = savedInstanceState != null ? savedInstanceState
+                                                        : getIntent().getExtras();
+        if (currentArgs != null) {
+            mList = currentArgs.getParcelableArrayList(mBKey);
         }
 
         // The View for the list.
@@ -131,10 +120,11 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         mItemTouchHelper.attachToRecyclerView(listView);
 
         TextView titleView = findViewById(R.id.title);
-        if (mBookTitle == null || mBookTitle.isEmpty()) {
+        String bookTitle = mModel.getBookTitle();
+        if (bookTitle == null || bookTitle.isEmpty()) {
             titleView.setVisibility(View.GONE);
         } else {
-            titleView.setText(mBookTitle);
+            titleView.setText(bookTitle);
         }
 
         findViewById(R.id.btn_add).setOnClickListener(this::onAdd);
@@ -143,13 +133,12 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     @Override
     public void onBackPressed() {
 
-        Intent data = new Intent()
-                              .putExtra(mBKey, mList)
-                              .putExtra(UniqueId.BKEY_GLOBAL_CHANGES_MADE, mGlobalReplacementsMade);
+        Intent data = new Intent().putExtra(mBKey, mList)
+                                  .putExtra(UniqueId.BKEY_GLOBAL_CHANGES_MADE,
+                                            mModel.globalReplacementsMade());
 
         String name = mAutoCompleteTextView.getText().toString().trim();
         if (!name.isEmpty()) {
-
             // if the user had enter a (partial) new name, check if it's ok to leave
             StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
                 // runs when user clicks 'exit anyway'. The list itself IS saved.
@@ -182,15 +171,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      */
     protected abstract void onAdd(@NonNull View target);
 
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
-    }
-
     /**
      * Ensure that the list is saved.
      */
@@ -198,9 +178,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     @CallSuper
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-
         outState.putParcelableArrayList(mBKey, mList);
-        outState.putLong(DBDefinitions.KEY_PK_ID, mRowId);
-        outState.putString(DBDefinitions.KEY_TITLE, mBookTitle);
     }
 }

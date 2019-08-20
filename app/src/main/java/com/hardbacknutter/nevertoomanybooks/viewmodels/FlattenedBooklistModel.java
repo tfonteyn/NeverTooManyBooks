@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +27,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import com.hardbacknutter.nevertoomanybooks.BookFragment;
@@ -63,7 +66,7 @@ public class FlattenedBooklistModel
     /**
      * Pseudo constructor.
      *
-     * @param args   Bundle with arguments
+     * @param args   {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      * @param bookId The book this model will represent.
      */
     public void init(@Nullable final Bundle args,
@@ -109,7 +112,6 @@ public class FlattenedBooklistModel
                 mFlattenedBooklist.close();
                 mFlattenedBooklist.deleteData();
                 mFlattenedBooklist = null;
-                return;
             }
         }
     }

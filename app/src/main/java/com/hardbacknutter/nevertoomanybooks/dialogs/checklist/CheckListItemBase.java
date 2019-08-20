@@ -104,5 +104,5 @@ public abstract class CheckListItemBase<T>
     }
 
     @Override
-    public abstract String getLabel(@NonNull final Context context);
+    public abstract String getLabel(@NonNull Context context);
 }

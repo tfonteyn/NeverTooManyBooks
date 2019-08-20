@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,13 +126,13 @@ public class FTSSearchActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if (extras != null) {
-                readArgs(extras);
-            }
-        } else {
-            readArgs(savedInstanceState);
+
+        Bundle currentArgs = savedInstanceState != null ? savedInstanceState
+                                                        : getIntent().getExtras();
+        if (currentArgs != null) {
+            mAuthorSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_AUTHOR);
+            mTitleSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_TITLE);
+            mKeywordsSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_TEXT);
         }
 
         mAuthorView = findViewById(R.id.author);
@@ -210,12 +211,6 @@ public class FTSSearchActivity
     protected void onResume() {
         super.onResume();
         userIsActive(true);
-    }
-
-    private void readArgs(@NonNull final Bundle args) {
-        mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-        mTitleSearchText = args.getString(UniqueId.BKEY_SEARCH_TITLE);
-        mKeywordsSearchText = args.getString(UniqueId.BKEY_SEARCH_TEXT);
     }
 
     @Override

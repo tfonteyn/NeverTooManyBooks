@@ -93,6 +93,9 @@ public class Bookshelf
 
     /**
      * Constructor without ID.
+     *
+     * @param name      for the Bookshelf
+     * @param styleUuid the style to apply to this shelf
      */
     public Bookshelf(@NonNull final String name,
                      @NonNull final String styleUuid) {
@@ -103,6 +106,9 @@ public class Bookshelf
 
     /**
      * Constructor without ID.
+     *
+     * @param name  for the Bookshelf
+     * @param style the style to apply to this shelf
      */
     public Bookshelf(@NonNull final String name,
                      @NonNull final BooklistStyle style) {
@@ -114,6 +120,9 @@ public class Bookshelf
 
     /**
      * Full Constructor.
+     *
+     * @param name  for the Bookshelf
+     * @param style the style to apply to this shelf
      */
     private Bookshelf(final long id,
                       @NonNull final String name,
@@ -155,9 +164,11 @@ public class Bookshelf
     /**
      * Get the named bookshelf with fallback to Default/AllBooks as needed.
      *
-     * @param name   of bookshelf to get
-     * @param useAll set to {@code true} to return the AllBooks shelf, instead the default
-     *               if the desired shelf was not found.
+     * @param context Current context
+     * @param db      the database
+     * @param name    of bookshelf to get
+     * @param useAll  set to {@code true} to return the AllBooks shelf, instead the default
+     *                if the desired shelf was not found.
      *
      * @return the bookshelf.
      */
@@ -184,8 +195,10 @@ public class Bookshelf
     /**
      * Get the preferred bookshelf with fallback to Default/AllBooks as needed.
      *
-     * @param useAll set to {@code true} to return the AllBooks shelf, instead the default
-     *               if the desired shelf was not found.
+     * @param context Current context
+     * @param db      the database
+     * @param useAll  set to {@code true} to return the AllBooks shelf, instead the default
+     *                if the desired shelf was not found.
      *
      * @return the bookshelf.
      */
@@ -377,7 +390,7 @@ public class Bookshelf
                + ", mName=`" + mName + '`'
                + ", mLocale=" + mLocale
                + ", mStyleUuid=" + mStyleUuid
-               + ", mCachedStyle=" + (mCachedStyle == null ? "null" : mCachedStyle.getUuid())
+               + ", mCachedStyle=" + (mCachedStyle != null ? mCachedStyle.getUuid() : null)
                + '}';
     }
 }

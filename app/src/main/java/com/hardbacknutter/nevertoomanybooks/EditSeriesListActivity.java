@@ -91,7 +91,7 @@ public class EditSeriesListActivity
 
         mAutoCompleteAdapter = new ArrayAdapter<>(this,
                                                   android.R.layout.simple_dropdown_item_1line,
-                                                  mDb.getAllSeriesNames());
+                                                  mModel.getDb().getAllSeriesNames());
 
         mAutoCompleteTextView = findViewById(R.id.series);
         mAutoCompleteTextView.setAdapter(mAutoCompleteAdapter);
@@ -118,13 +118,11 @@ public class EditSeriesListActivity
         newSeries.setNumber(mSeriesNumberView.getText().toString().trim());
 
         // see if it already exists
-        newSeries.fixId(this, mDb);
+        newSeries.fixId(this, mModel.getDb());
         // and check it's not already in the list.
-        for (Series series : mList) {
-            if (series.equals(newSeries)) {
-                UserMessage.show(mAutoCompleteTextView, R.string.warning_series_already_in_list);
-                return;
-            }
+        if (mList.contains(newSeries)) {
+            UserMessage.show(mAutoCompleteTextView, R.string.warning_series_already_in_list);
+            return;
         }
         // add the new one to the list. It is NOT saved at this point!
         mList.add(newSeries);
@@ -151,7 +149,7 @@ public class EditSeriesListActivity
                 // so just update it and we're done here.
                 series.setNumber(newNumber);
                 Series.pruneSeriesList(mList);
-                ItemWithFixableId.pruneList(this, mDb, mList);
+                ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -163,15 +161,14 @@ public class EditSeriesListActivity
         newSeries.setNumber(newNumber);
 
         //See if the old one is used by any other books.
-        long nrOfReferences = mDb.countBooksInSeries(this, series);
-        boolean usedByOthers = nrOfReferences > (mRowId == 0 ? 0 : 1);
+        long nrOfReferences = mModel.getDb().countBooksInSeries(this, series);
 
         // if it's not, then we can simply re-use the old object.
-        if (!usedByOthers) {
+        if (mModel.isSingleUsage(nrOfReferences)) {
             // Use the original mSeries, but update its fields
             series.copyFrom(newSeries);
             Series.pruneSeriesList(mList);
-            ItemWithFixableId.pruneList(this, mDb, mList);
+            ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -188,18 +185,19 @@ public class EditSeriesListActivity
                 .setIcon(R.drawable.ic_info_outline)
                 .setNegativeButton(allBooks, (d, which) -> {
                     Locale userLocale = LocaleUtils.getPreferredLocale();
-                    mGlobalReplacementsMade = mDb.globalReplaceSeries(this,
-                                                                      series, newSeries,
-                                                                      userLocale);
+                    mModel.setGlobalReplacementsMade(mModel.getDb().globalReplace(this,
+                                                                                  series,
+                                                                                  newSeries,
+                                                                                  userLocale));
                     series.copyFrom(newSeries);
                     Series.pruneSeriesList(mList);
-                    ItemWithFixableId.pruneList(this, mDb, mList);
+                    ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .setPositiveButton(R.string.btn_this_book, (d, which) -> {
                     series.copyFrom(newSeries);
                     Series.pruneSeriesList(mList);
-                    ItemWithFixableId.pruneList(this, mDb, mList);
+                    ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .create()
@@ -252,8 +250,8 @@ public class EditSeriesListActivity
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             Bundle args = requireArguments();
-
             mSeries = args.getParcelable(DBDefinitions.KEY_SERIES_TITLE);
+
             if (savedInstanceState == null) {
                 //noinspection ConstantConditions
                 mSeriesName = mSeries.getTitle();

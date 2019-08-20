@@ -25,56 +25,74 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.viewmodels;
+package com.hardbacknutter.nevertoomanybooks.baseactivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.BookSearchByIsbnFragment;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
-public class BookSearchByScanModel
+public class EditObjectListModel
         extends ViewModel {
 
-    /** Only start the scanner automatically upon the very first start of the fragment. */
-    private boolean mFirstStart = true;
-    /** flag indicating we're running in SCAN mode. */
-    private boolean mScanMode;
-    /** flag indicating the scanner is already started. */
-    private boolean mScannerStarted;
+    /** Database Access. */
+    protected DAO mDb;
+
+    /** Row ID... mainly used (if list is from a book) to know if the object is new. */
+    private long mRowId;
+    /** Displayed for user reference only. */
+    @Nullable
+    private String mBookTitle;
+
+    /** flag indicating global changes were made. Used in setResult. */
+    private boolean mGlobalReplacementsMade;
+
+    @Override
+    protected void onCleared() {
+        if (mDb != null) {
+            mDb.close();
+        }
+    }
 
     /**
      * Pseudo constructor.
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@Nullable final Bundle args) {
-        // Have we been started in UI or in scan mode.
-        if (args != null) {
-            mScanMode = args.getBoolean(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE);
+    public void init(@NonNull final Bundle args) {
+        if (mDb == null) {
+            mDb = new DAO();
+
+            // Look for id and title
+            mRowId = args.getLong(DBDefinitions.KEY_PK_ID);
+            mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
         }
     }
 
-    public boolean isFirstStart() {
-        return mFirstStart;
+    public DAO getDb() {
+        return mDb;
     }
 
-    public void setFirstStart(final boolean firstStart) {
-        mFirstStart = firstStart;
+    public boolean isSingleUsage(final long nrOfReferences) {
+        return nrOfReferences <= (mRowId == 0 ? 0 : 1);
     }
 
-    public boolean isScanMode() {
-        return mScanMode;
+    @Nullable
+    public String getBookTitle() {
+        return mBookTitle;
     }
 
-    public boolean isScannerStarted() {
-        return mScannerStarted;
+    public boolean globalReplacementsMade() {
+        return mGlobalReplacementsMade;
     }
 
-    public void setScannerStarted(final boolean scannerStarted) {
-        mScannerStarted = scannerStarted;
+    public void setGlobalReplacementsMade(final boolean changed) {
+        mGlobalReplacementsMade = changed;
     }
 }

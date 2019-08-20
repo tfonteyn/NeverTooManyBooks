@@ -194,6 +194,48 @@ public final class Prefs {
     }
 
     /**
+     * Copy all preferences from source to destination.
+     */
+    @SuppressWarnings("unused")
+    protected static void copyPrefs(@NonNull final Context context,
+                                    @NonNull final String source,
+                                    @NonNull final String destination,
+                                    final boolean clearSource) {
+        SharedPreferences sourcePrefs =
+                context.getSharedPreferences(source, Context.MODE_PRIVATE);
+        SharedPreferences destinationPrefs =
+                context.getSharedPreferences(destination, Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor ed = destinationPrefs.edit();
+        Map<String, ?> all = sourcePrefs.getAll();
+        for (Map.Entry<String, ?> entry : all.entrySet()) {
+
+            if (entry.getValue() instanceof Boolean) {
+                ed.putBoolean(entry.getKey(), (Boolean) entry.getValue());
+            } else if (entry.getValue() instanceof Float) {
+                ed.putFloat(entry.getKey(), (Float) entry.getValue());
+            } else if (entry.getValue() instanceof Integer) {
+                ed.putInt(entry.getKey(), (Integer) entry.getValue());
+            } else if (entry.getValue() instanceof Long) {
+                ed.putLong(entry.getKey(), (Long) entry.getValue());
+            } else if (entry.getValue() instanceof String) {
+                ed.putString(entry.getKey(), (String) entry.getValue());
+            } else if (entry.getValue() instanceof Set) {
+                //noinspection unchecked
+                ed.putStringSet(entry.getKey(), (Set<String>) entry.getValue());
+            } else {
+                Logger.warnWithStackTrace(Prefs.class,
+                                          entry.getValue().getClass().getCanonicalName());
+            }
+        }
+        ed.apply();
+        if (clearSource) {
+            // API: 24 -> context.deleteSharedPreferences(source);
+            sourcePrefs.edit().clear().apply();
+        }
+    }
+
+    /**
      * DEBUG method.
      */
     public static void dumpPreferences(@NonNull final Context context,

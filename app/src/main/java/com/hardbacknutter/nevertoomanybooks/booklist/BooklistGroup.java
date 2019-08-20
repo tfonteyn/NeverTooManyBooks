@@ -41,10 +41,8 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,6 +50,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
@@ -71,9 +70,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
  * <b>Note:</b> the way preferences are implemented means that all groups will add their
  * properties to the persisted state of a style. Not just the groups which are active/present
  * for that state. This is fine, as they won't get used unless activated.
+ * <p>
+ * Parcelable: needed by {@link  BooklistStyle}
  */
 public class BooklistGroup
-        implements Serializable, Parcelable {
+        implements Parcelable {
 
     /** {@link Parcelable}. */
     public static final Creator<BooklistGroup> CREATOR =
@@ -89,25 +90,19 @@ public class BooklistGroup
                 }
             };
 
-    /** pre-v200 legacy support. DO NOT CHANGE. */
-    private static final long serialVersionUID = 1012206875683862714L;
     /** Flag indicating the style is user-defined -> our prefs must be persisted. */
     final boolean mIsUserDefinedStyle;
-    /**
-     * the kind of row/group we represent, see {@link RowKind}.
-     * <p>
-     * Do not rename or move this variable, deserialization will break.
-     */
-    private final int kind;
     /** The name of the Preference file (comes from the style that contains this group. */
     @NonNull
-    String mUuid;
+    final String mUuid;
+    /** The kind of row/group we represent, see {@link RowKind}. */
+    private final int mKind;
     /**
      * The domains represented by this group.
      * Set at runtime by builder based on current group and outer groups
      */
     @Nullable
-    private transient ArrayList<DomainDefinition> mDomains;
+    private ArrayList<DomainDefinition> mDomains;
 
     /**
      * Constructor.
@@ -119,7 +114,7 @@ public class BooklistGroup
     private BooklistGroup(@IntRange(from = 0, to = RowKind.ROW_KIND_MAX) final int kind,
                           @NonNull final String uuid,
                           final boolean isUserDefinedStyle) {
-        this.kind = kind;
+        this.mKind = kind;
         mUuid = uuid;
         mIsUserDefinedStyle = isUserDefinedStyle;
         initPrefs();
@@ -131,7 +126,7 @@ public class BooklistGroup
      * @param in Parcel to construct the object from
      */
     private BooklistGroup(@NonNull final Parcel in) {
-        kind = in.readInt();
+        mKind = in.readInt();
         //noinspection ConstantConditions
         mUuid = in.readString();
         mIsUserDefinedStyle = in.readInt() != 0;
@@ -192,49 +187,29 @@ public class BooklistGroup
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(kind);
+        dest.writeInt(mKind);
         dest.writeString(mUuid);
         dest.writeInt(mIsUserDefinedStyle ? 1 : 0);
         dest.writeList(mDomains);
         // now the prefs for this class (none on this level for now)
     }
 
-    @NonNull
-    public String getUuid() {
-        return mUuid;
-    }
-
-    /**
-     * Limited use for de-serialisation from a pre-v200 archive support.
-     * Once the groups are processed, the UUID needs to be set manually
-     * during de-serialization of the Style itself.
-     *
-     * @param uuid to set (from the Style)
-     */
-    public void setUuid(@NonNull final String uuid) {
-        mUuid = uuid;
-    }
-
-    public boolean isUserDefinedStyle() {
-        return mIsUserDefinedStyle;
-    }
-
     public int getKind() {
-        return kind;
+        return mKind;
     }
 
     public String getName(@NonNull final Context context) {
-        return RowKind.get(kind).getName(context);
+        return RowKind.get(mKind).getName(context);
     }
 
     @NonNull
-    public DomainDefinition getDisplayDomain() {
-        return RowKind.get(kind).getDisplayDomain();
+    DomainDefinition getDisplayDomain() {
+        return RowKind.get(mKind).getDisplayDomain();
     }
 
     @NonNull
     CompoundKey getCompoundKey() {
-        return RowKind.get(kind).getCompoundKey();
+        return RowKind.get(mKind).getCompoundKey();
     }
 
     @Nullable
@@ -253,7 +228,9 @@ public class BooklistGroup
     }
 
     /**
-     * @return the Preference objects that this group will contribute to a Style.
+     * Get the Preference objects that this group will contribute to a Style.
+     *
+     * @return a map with the prefs
      */
     public Map<String, PPref> getPreferences() {
         return new LinkedHashMap<>();
@@ -271,32 +248,12 @@ public class BooklistGroup
     }
 
     /**
-     * Pre-v200 Legacy support for reading serialized styles from archives and database upgrade.
-     * <p>
-     * Custom serialization support. The signature of this method should never be changed.
-     *
-     * @throws IOException            on failure
-     * @throws ClassNotFoundException on failure
-     * @see Serializable
-     */
-    private void readObject(@NonNull final ObjectInputStream is)
-            throws IOException, ClassNotFoundException {
-        //use a temporary empty uuid so storage is memory only for the groups.
-        // we'll set the real uuid at the end of the import and convert them.
-        mUuid = "";
-        initPrefs();
-        is.defaultReadObject();
-    }
-
-    /**
-     * Do not rename or move this class, deserialization will break.
-     * <p>
      * Specialized BooklistGroup representing a Series group. Includes extra attributes based
      * on preferences.
      */
     public static class BooklistSeriesGroup
             extends BooklistGroup
-            implements Serializable, Parcelable {
+            implements Parcelable {
 
         /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
@@ -313,16 +270,14 @@ public class BooklistGroup
                     }
                 };
 
-        /** pre-v200 legacy support. DO NOT CHANGE. */
-        private static final long serialVersionUID = 9023218506278704155L;
-
         /** Show book under each series it appears in. */
-        private transient PBoolean mAllSeries;
+        private PBoolean mAllSeries;
 
         /**
          * Constructor.
          *
-         * @param uuid of the style
+         * @param uuid               the UUID of the style
+         * @param isUserDefinedStyle Flag to indicate this is a user style or a builtin style
          */
         BooklistSeriesGroup(@NonNull final String uuid,
                             final boolean isUserDefinedStyle) {
@@ -403,32 +358,15 @@ public class BooklistGroup
         boolean showAll() {
             return mAllSeries.isTrue();
         }
-
-        /**
-         * Pre-v200 Legacy support for reading serialized styles from archives and database upgrade.
-         * <p>
-         * Custom serialization support. The signature of this method should never be changed.
-         *
-         * @throws ClassNotFoundException on failure
-         * @throws IOException            on failure
-         * @see Serializable
-         */
-        private void readObject(@NonNull final ObjectInputStream is)
-                throws IOException, ClassNotFoundException {
-            super.readObject(is);
-            mAllSeries.set((Boolean) is.readObject());
-        }
     }
 
     /**
-     * Do not rename or move this class, deserialization will break.
-     * <p>
      * Specialized BooklistGroup representing an Author group. Includes extra attributes based
      * on preferences.
      */
     public static class BooklistAuthorGroup
             extends BooklistGroup
-            implements Serializable, Parcelable {
+            implements Parcelable {
 
         /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
@@ -445,17 +383,16 @@ public class BooklistGroup
                     }
                 };
 
-        /** pre-v200 legacy support. DO NOT CHANGE. */
-        private static final long serialVersionUID = -1984868877792780113L;
         /** Support for 'Show All Authors of Book' property. */
-        private transient PBoolean mAllAuthors;
+        private PBoolean mAllAuthors;
         /** Support for 'Show Given Name First' property. Default: false. */
-        private transient PBoolean mGivenNameFirst;
+        private PBoolean mGivenNameFirst;
 
         /**
          * Constructor.
          *
-         * @param uuid of the style
+         * @param uuid               the UUID of the style
+         * @param isUserDefinedStyle Flag to indicate this is a user style or a builtin style
          */
         BooklistAuthorGroup(@NonNull final String uuid,
                             final boolean isUserDefinedStyle) {
@@ -568,23 +505,6 @@ public class BooklistGroup
          */
         boolean showAuthorGivenNameFirst() {
             return mGivenNameFirst.isTrue();
-        }
-
-        /**
-         * Pre-v200 Legacy support for reading serialized styles from archives and database upgrade.
-         * <p>
-         * Custom serialization support. The signature of this method should never be changed.
-         *
-         * @throws ClassNotFoundException on failure
-         * @throws IOException            on failure
-         * @see Serializable
-         */
-        private void readObject(@NonNull final ObjectInputStream is)
-                throws IOException, ClassNotFoundException {
-            super.readObject(is);
-
-            mAllAuthors.set((Boolean) is.readObject());
-            mGivenNameFirst.set((Boolean) is.readObject());
         }
     }
 
@@ -759,25 +679,26 @@ public class BooklistGroup
 
             // NEWKIND: ROW_KIND_x
 
-            // Developer sanity check (for() loop starting at 1)
-            if (BOOK != 0) {
-                throw new IllegalStateException("BOOK was " + BOOK);
-            }
-
-            // Developer sanity check
-            Set<String> prefixes = new HashSet<>();
-            for (int kind = 0; kind <= ROW_KIND_MAX; kind++) {
-                if (!ALL_KINDS.containsKey(kind)) {
-                    throw new IllegalStateException("Missing kind " + kind);
+            if (BuildConfig.DEBUG /* always */) {
+                // Developer sanity check (for() loop starting at 1)
+                if (BOOK != 0) {
+                    throw new IllegalStateException("BOOK was " + BOOK);
                 }
 
-                //noinspection ConstantConditions
-                String prefix = ALL_KINDS.get(kind).mCompoundKey.prefix;
-                if (!prefixes.add(prefix)) {
-                    throw new IllegalStateException("Duplicate prefix " + prefix);
+                // Developer sanity check
+                Set<String> prefixes = new HashSet<>();
+                for (int kind = 0; kind <= ROW_KIND_MAX; kind++) {
+                    if (!ALL_KINDS.containsKey(kind)) {
+                        throw new IllegalStateException("Missing kind " + kind);
+                    }
+
+                    //noinspection ConstantConditions
+                    String prefix = ALL_KINDS.get(kind).mCompoundKey.prefix;
+                    if (!prefixes.add(prefix)) {
+                        throw new IllegalStateException("Duplicate prefix " + prefix);
+                    }
                 }
             }
-
         }
 
         @IntRange(from = 0, to = RowKind.ROW_KIND_MAX)
@@ -874,8 +795,9 @@ public class BooklistGroup
         public String toString() {
             return "RowKind{"
                    + "name=" + App.getAppContext().getString(mLabelId)
-                   + "mKind=" + mKind
-                   + "=" + mDisplayDomain
+                   + ", mKind=" + mKind
+                   + ", mDisplayDomain=" + mDisplayDomain
+                   + ", mCompoundKey=" + mCompoundKey
                    + '}';
         }
     }
@@ -959,6 +881,15 @@ public class BooklistGroup
                                   final int flags) {
             dest.writeString(prefix);
             dest.writeTypedArray(domains, flags);
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "CompoundKey{"
+                   + "prefix='" + prefix + '\''
+                   + ", domains=" + Arrays.toString(domains)
+                   + '}';
         }
     }
 }

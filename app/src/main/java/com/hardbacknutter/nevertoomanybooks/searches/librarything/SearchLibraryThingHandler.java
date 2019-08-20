@@ -41,7 +41,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -669,6 +668,7 @@ class SearchLibraryThingHandler
                     break;
 
                 case Series:
+                case PubSeries:
                     mSeries.add(Series.fromString(mBuilder.toString()));
                     break;
 
@@ -686,8 +686,25 @@ class SearchLibraryThingHandler
                     }
                     break;
 
-                default:
-                    Logger.warnWithStackTrace(this, "mFieldType=" + mFieldType);
+                case OriginalLanguage:
+                    //ENHANCE
+                    break;
+                case OriginalTitle:
+                    //ENHANCE
+                    break;
+                case AltTitle:
+                    //ENHANCE
+                    break;
+
+                case Places:
+                    // not supported
+                    break;
+                case Characters:
+                    // not supported
+                    break;
+                case Other:
+                    break;
+                case None:
                     break;
             }
         }

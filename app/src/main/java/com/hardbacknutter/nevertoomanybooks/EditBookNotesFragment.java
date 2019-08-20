@@ -79,9 +79,9 @@ public class EditBookNotesFragment
             // when user sets 'read', also set the read-end date to today (unless set before)
             Checkable cb = (Checkable) v;
             if (cb.isChecked()) {
-                Field read_end = fields.getField(R.id.read_end);
-                if (read_end.isEmpty()) {
-                    read_end.setValue(DateUtils.localSqlDateForToday());
+                Field readEndView = fields.getField(R.id.read_end);
+                if (readEndView.isEmpty()) {
+                    readEndView.setValue(DateUtils.localSqlDateForToday());
                 }
             }
         });
@@ -118,23 +118,17 @@ public class EditBookNotesFragment
                       .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_read_end, true);
 
-        fields.addCrossValidator(new Fields.FieldCrossValidator() {
-            private static final long serialVersionUID = -3288341939109142352L;
-
-            public void validate(@NonNull final Fields fields,
-                                 @NonNull final Bundle values)
-                    throws ValidatorException {
-                String start = values.getString(DBDefinitions.KEY_READ_START);
-                if (start == null || start.isEmpty()) {
-                    return;
-                }
-                String end = values.getString(DBDefinitions.KEY_READ_END);
-                if (end == null || end.isEmpty()) {
-                    return;
-                }
-                if (start.compareToIgnoreCase(end) > 0) {
-                    throw new ValidatorException(R.string.vldt_read_start_after_end);
-                }
+        fields.addCrossValidator((fields1, values) -> {
+            String start = values.getString(DBDefinitions.KEY_READ_START);
+            if (start == null || start.isEmpty()) {
+                return;
+            }
+            String end = values.getString(DBDefinitions.KEY_READ_END);
+            if (end == null || end.isEmpty()) {
+                return;
+            }
+            if (start.compareToIgnoreCase(end) > 0) {
+                throw new ValidatorException(R.string.vldt_read_start_after_end);
             }
         });
     }

@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  *
  * <b>Note:</b> In the format definition, the " * {json}" suffix is optional and can be missing.
  */
-class CsvCoder {
+final class CsvCoder {
 
     /**
      * Find the publication year in a string like "some title (1978-04-22)".
@@ -342,5 +342,8 @@ class CsvCoder {
             });
         }
         return sBookshelfUtils;
+    }
+
+    private CsvCoder() {
     }
 }

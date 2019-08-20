@@ -87,6 +87,11 @@ public class BRBaseModel
                 }
             };
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param context Current context
+     */
     public void init(@NonNull final Context context) {
         if (mRootDirFiles != null) {
             // got files?, then just repopulate

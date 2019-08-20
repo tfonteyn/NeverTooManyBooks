@@ -93,9 +93,7 @@ public class SearchAdminActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
-        int requestedTab = args == null ? SHOW_ALL_TABS
-                                        : args.getInt(REQUEST_BKEY_TAB, SHOW_ALL_TABS);
+        int requestedTab = getIntent().getIntExtra(REQUEST_BKEY_TAB, SHOW_ALL_TABS);
 
         mViewPager = findViewById(R.id.tab_fragment);
         TabLayout tabLayout = findViewById(R.id.tab_panel);

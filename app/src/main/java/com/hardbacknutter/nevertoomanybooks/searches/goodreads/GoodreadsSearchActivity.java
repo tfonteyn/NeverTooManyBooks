@@ -39,6 +39,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -48,6 +49,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -124,8 +126,7 @@ public class GoodreadsSearchActivity
         setTitle(getString(R.string.progress_msg_searching_site, getString(R.string.goodreads)));
 
         mModel = new ViewModelProvider(this).get(GrSearchViewModel.class);
-        Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
-        mModel.init(args);
+        mModel.init(Objects.requireNonNull(getIntent().getExtras()), savedInstanceState);
         mModel.getWorks().observe(this, this::onSearchResult);
         mModel.getBookNoLongerExists().observe(this, this::onBookNoLongerExists);
 
@@ -135,15 +136,7 @@ public class GoodreadsSearchActivity
         mTitleView = findViewById(R.id.title);
         mDetailsGroup = findViewById(R.id.original_details);
 
-        if (savedInstanceState == null) {
-            // If we have a book, fill in criteria AND try a search
-            if (mModel.getBookId() > 0) {
-                updateViews();
-                doSearch();
-            }
-        } else {
-            updateViews();
-        }
+        updateViews();
 
         mListView = findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -154,6 +147,13 @@ public class GoodreadsSearchActivity
         mListView.setAdapter(mWorksAdapter);
 
         findViewById(R.id.btn_search).setOnClickListener(v -> doSearch());
+
+        if (savedInstanceState == null) {
+            // On first start of the activity only: if we have a book, start a search
+            if (mModel.getBookId() > 0) {
+                doSearch();
+            }
+        }
     }
 
     private void onBookNoLongerExists(final Boolean flag) {
@@ -184,7 +184,6 @@ public class GoodreadsSearchActivity
     @Override
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong(DBDefinitions.KEY_PK_ID, mModel.getBookId());
         outState.putString(UniqueId.BKEY_SEARCH_TEXT, mModel.getSearchText());
     }
 
@@ -251,33 +250,30 @@ public class GoodreadsSearchActivity
         /**
          * Pseudo constructor.
          *
-         * @param args Bundle with arguments
+         * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
          */
-        public void init(@Nullable final Bundle args) {
+        public void init(@NonNull final Bundle args,
+                         @Nullable final Bundle savedInstanceState) {
             if (mDb == null) {
                 mDb = new DAO();
-            }
 
-            if (args == null) {
-                return;
-            }
-
-            mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
-            if (mBookId > 0) {
-                try (BookCursor bookCursor = mDb.fetchBookById(mBookId)) {
-                    if (bookCursor.moveToFirst()) {
-                        mAuthorText = bookCursor.getString(
-                                DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
-                        mTitleText = bookCursor.getString(DBDefinitions.KEY_TITLE);
-                        mIsbnText = bookCursor.getString(DBDefinitions.KEY_ISBN);
-                    } else {
-                        mBookNoLongerExists.setValue(true);
+                mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
+                if (mBookId > 0) {
+                    try (BookCursor bookCursor = mDb.fetchBookById(mBookId)) {
+                        if (bookCursor.moveToFirst()) {
+                            mAuthorText = bookCursor.getString(
+                                    DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+                            mTitleText = bookCursor.getString(DBDefinitions.KEY_TITLE);
+                            mIsbnText = bookCursor.getString(DBDefinitions.KEY_ISBN);
+                        } else {
+                            mBookNoLongerExists.setValue(true);
+                        }
                     }
+                    mSearchText = mAuthorText + ' ' + mTitleText + ' ' + mIsbnText + ' ';
                 }
-                mSearchText = mAuthorText + ' ' + mTitleText + ' ' + mIsbnText + ' ';
             }
-
-            mSearchText = args.getString(UniqueId.BKEY_SEARCH_TEXT, mSearchText);
+            Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
+            mSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_TEXT, mSearchText);
         }
 
         public long getBookId() {

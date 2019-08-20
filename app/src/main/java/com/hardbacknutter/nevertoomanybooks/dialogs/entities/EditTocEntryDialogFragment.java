@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,11 +112,11 @@ public class EditTocEntryDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mTocEntry = args.getParcelable(BKEY_TOC_ENTRY);
-        mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
-
         mDb = new DAO();
+
+        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
+        mTocEntry = currentArgs.getParcelable(BKEY_TOC_ENTRY);
+        mHasMultipleAuthors = currentArgs.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
     }
 
     @NonNull
@@ -159,8 +160,8 @@ public class EditTocEntryDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
         outState.putParcelable(BKEY_TOC_ENTRY, mTocEntry);
+        outState.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
     }
 
     @Override

@@ -273,8 +273,7 @@ public class BookFragment
         super.onActivityCreated(savedInstanceState);
 
         mFlattenedBooklistModel = new ViewModelProvider(this).get(FlattenedBooklistModel.class);
-        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
-        mFlattenedBooklistModel.init(args, mBookModel.getBook().getId());
+        mFlattenedBooklistModel.init(getArguments(), mBookModel.getBook().getId());
 
         // ENHANCE: could probably be replaced by a ViewPager
         // enable the listener for flings

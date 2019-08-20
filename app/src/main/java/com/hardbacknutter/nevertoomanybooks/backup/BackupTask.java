@@ -53,8 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public class BackupTask
         extends TaskBase<ExportOptions> {
 
-    private final String mBackupDate = DateUtils.utcSqlDateTimeForToday();
-
     /** We write to a temp file. */
     @NonNull
     private final File mTmpFile;
@@ -157,7 +155,8 @@ public class BackupTask
                                                   .edit();
             // if the backup was a full one (not a 'since') remember that.
             if ((mSettings.what & ExportOptions.EXPORT_SINCE) == 0) {
-                ed.putString(BackupManager.PREF_LAST_BACKUP_DATE, mBackupDate);
+                ed.putString(BackupManager.PREF_LAST_BACKUP_DATE,
+                             DateUtils.utcSqlDateTimeForToday());
             }
             ed.putString(BackupManager.PREF_LAST_BACKUP_FILE, mOutputFile.getAbsolutePath());
             ed.apply();

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,10 +27,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -68,25 +71,22 @@ public class AuthorWorksModel
 
     /**
      * Pseudo constructor.
-     * If we already have been initialized and the incoming bookId has not changed, return silently.
      *
-     * @param args Bundle with arguments
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
+
         if (mDb == null) {
             mDb = new DAO();
-        }
-        if (mAuthor == null || authorId != mAuthor.getId()) {
-            mAuthor = mDb.getAuthor(authorId);
-            if (mAuthor != null) {
-                mWithTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC,
-                                                  mWithTocEntries);
-                mWithBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, mWithBooks);
-                mTocEntries = mDb.getTocEntryByAuthor(mAuthor, mWithTocEntries, mWithBooks);
-            } else {
-                throw new IllegalArgumentException("author was NULL for id=" + authorId);
+
+            long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
+            if (authorId == 0) {
+                throw new IllegalArgumentException("authorId=0");
             }
+            mAuthor = Objects.requireNonNull(mDb.getAuthor(authorId));
+            mWithTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC, mWithTocEntries);
+            mWithBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, mWithBooks);
+            mTocEntries = mDb.getTocEntryByAuthor(mAuthor, mWithTocEntries, mWithBooks);
         }
     }
 
@@ -138,5 +138,9 @@ public class AuthorWorksModel
 
     public boolean isAtLeastOneBookDeleted() {
         return mAtLeastOneBookDeleted;
+    }
+
+    public String getScreenTitle() {
+        return getAuthor().getLabel() + " [" + getTocEntries().size() + ']';
     }
 }

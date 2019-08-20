@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,15 +59,12 @@ public class DefaultFieldValidator
      * @param dataManager     The DataManager object containing the Datum being validated
      * @param datum           The Datum to validate
      * @param crossValidating Options indicating if this is the cross-validation pass.
-     *
-     * @throws ValidatorException on error
      */
     @Override
     @CallSuper
     public void validate(@NonNull final DataManager dataManager,
                          @NonNull final Datum datum,
-                         final boolean crossValidating)
-            throws ValidatorException {
+                         final boolean crossValidating) {
 
         if (crossValidating) {
             return;

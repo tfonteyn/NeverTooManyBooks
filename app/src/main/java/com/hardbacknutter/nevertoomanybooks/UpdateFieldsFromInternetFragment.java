@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -309,17 +310,18 @@ public class UpdateFieldsFromInternetFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
-        if (args != null) {
+        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : getArguments();
+        if (currentArgs != null) {
             //noinspection unchecked
-            mBookIds = (ArrayList<Long>) args.getSerializable(UniqueId.BKEY_ID_LIST);
+            mBookIds = (ArrayList<Long>) currentArgs.getSerializable(UniqueId.BKEY_ID_LIST);
 
             // optional
-            mSearchSites = args.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
+            mSearchSites = currentArgs.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
+
             // used for display only; any/all can be null
-            mAuthorFormatted = args.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
-            mTitle = args.getString(DBDefinitions.KEY_TITLE);
-            mSeries = args.getString(DBDefinitions.KEY_SERIES_TITLE);
+            mAuthorFormatted = currentArgs.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+            mTitle = currentArgs.getString(DBDefinitions.KEY_TITLE);
+            mSeries = currentArgs.getString(DBDefinitions.KEY_SERIES_TITLE);
         }
 
         //noinspection ConstantConditions
@@ -377,10 +379,11 @@ public class UpdateFieldsFromInternetFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(REQUEST_BKEY_SEARCH_SITES, mSearchSites);
         outState.putSerializable(UniqueId.BKEY_ID_LIST, mBookIds);
+        outState.putInt(REQUEST_BKEY_SEARCH_SITES, mSearchSites);
         outState.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, mAuthorFormatted);
         outState.putString(DBDefinitions.KEY_TITLE, mTitle);
+        outState.putString(DBDefinitions.KEY_SERIES_TITLE, mSeries);
     }
 
     @Override

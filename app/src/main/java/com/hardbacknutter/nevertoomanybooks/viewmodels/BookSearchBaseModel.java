@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +32,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -79,20 +81,22 @@ public class BookSearchBaseModel
     /**
      * Pseudo constructor.
      *
-     * @param args Bundle with arguments
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final Bundle args,
+                     @Nullable final Bundle savedInstanceState) {
         if (mDb == null) {
             mDb = new DAO();
-
-            // optional, use all if not defined
-            mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
-
-            mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
-            mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
-            mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
-            mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
         }
+
+        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
+
+        mSearchSites = currentArgs.getInt(UniqueId.BKEY_SEARCH_SITES, mSearchSites);
+        mIsbnSearchText = currentArgs.getString(DBDefinitions.KEY_ISBN, mIsbnSearchText);
+        mAuthorSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
+        mTitleSearchText = currentArgs.getString(DBDefinitions.KEY_TITLE, mTitleSearchText);
+        mPublisherSearchText = currentArgs.getString(DBDefinitions.KEY_PUBLISHER,
+                                                     mPublisherSearchText);
     }
 
     /**

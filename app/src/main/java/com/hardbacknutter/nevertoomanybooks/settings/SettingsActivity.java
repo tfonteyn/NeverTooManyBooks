@@ -67,12 +67,8 @@ public class SettingsActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.lbl_settings);
 
-        String tag;
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            tag = extras.getString(UniqueId.BKEY_FRAGMENT_TAG, GlobalSettingsFragment.TAG);
-        } else {
+        String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
+        if (tag == null) {
             tag = GlobalSettingsFragment.TAG;
         }
 

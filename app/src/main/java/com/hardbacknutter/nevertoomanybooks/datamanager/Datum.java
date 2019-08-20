@@ -199,7 +199,9 @@ public class Datum {
         }
     }
 
-    /** @return the key. */
+    /**
+     * @return the key.
+     */
     @NonNull
     public String getKey() {
         return mKey;

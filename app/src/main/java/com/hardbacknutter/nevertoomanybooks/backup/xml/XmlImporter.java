@@ -446,7 +446,10 @@ public class XmlImporter
                     // No support for list/set inside a list/set (no point)
                     case XmlTags.XML_SERIALIZABLE:
                         // serializable is indeed just added as a string...
+                        currentStringList.add(context.getBody());
                         // this 'case' is only here for completeness sake.
+                        break;
+
                     case XmlTags.XML_STRING:
                         // body strings use CDATA
                         currentStringList.add(context.getBody());

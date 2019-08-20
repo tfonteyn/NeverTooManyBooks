@@ -39,6 +39,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
@@ -131,6 +132,10 @@ public class BooksOnBookshelfModel
     private int mTopRowOffset;
     /** Preferred booklist state in next rebuild. */
     private int mRebuildState;
+    /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
+    private int mTotalBooks;
+    /** Total number of unique books in current list. */
+    private int mUniqueBooks;
     /**
      * Listener for {@link GetBookListTask} results.
      */
@@ -163,10 +168,6 @@ public class BooksOnBookshelfModel
                     mBuilderResult.setValue(message.result);
                 }
             };
-    /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
-    private int mTotalBooks;
-    /** Total number of unique books in current list. */
-    private int mUniqueBooks;
     /** Current displayed list cursor. */
     @Nullable
     private BooklistPseudoCursor mCursor;
@@ -193,29 +194,32 @@ public class BooksOnBookshelfModel
     /**
      * Pseudo constructor.
      *
-     * @param context            Current context
-     * @param extras             Bundle with arguments from activity startup
-     * @param savedInstanceState Bundle with arguments from activity waking up
+     * @param context Current context
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Context context,
-                     @Nullable final Bundle extras,
+                     @Nullable final Bundle args,
                      @Nullable final Bundle savedInstanceState) {
 
         if (mDb == null) {
             mDb = new DAO();
+
+            if (args != null) {
+                mSearchCriteria.from(args, true);
+            }
         }
 
-        Bundle args = savedInstanceState != null ? savedInstanceState : extras;
+        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
 
-        if (args == null) {
+        if (currentArgs == null) {
             // Get preferred booklist state to use from preferences;
             // always do this here in init, as the prefs might have changed anytime.
             mRebuildState = BooklistBuilder.getPreferredListRebuildState();
 
         } else {
             // Unless set by the caller, preserve state when rebuilding/recreating etc
-            mRebuildState = args.getInt(BKEY_LIST_STATE,
-                                        BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED);
+            mRebuildState = currentArgs.getInt(BKEY_LIST_STATE,
+                                               BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED);
         }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -225,11 +229,6 @@ public class BooksOnBookshelfModel
 
         // Debug; makes list structures vary across calls to ensure code is correct...
         mCurrentPositionedBookId = -1;
-
-        // search criteria (if any) can only come from the intent, not from savedInstanceState
-        if (extras != null) {
-            mSearchCriteria.from(extras, true);
-        }
     }
 
     /**
@@ -469,8 +468,8 @@ public class BooksOnBookshelfModel
                 }
                 if (style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
                     blb.requireDomain(DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
-                                      DBDefinitions.TBL_BOOKS.dot(DBDefinitions.
-                                                                          DOM_BOOK_DATE_PUBLISHED),
+                                      DBDefinitions.TBL_BOOKS.dot(
+                                              DBDefinitions.DOM_BOOK_DATE_PUBLISHED),
                                       false);
                 }
                 if (style.isUsed(DBDefinitions.KEY_ISBN)) {

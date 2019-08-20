@@ -239,12 +239,7 @@ public abstract class BackupReaderAbstract
                         break;
 
                     case BooklistStylesPreV200:
-                        // pre-v200 format
-                        if (incStyles) {
-                            progressListener.onProgressStep(1, mProcessBooklistStyles);
-                            restorePreV200Style(entity);
-                            entitiesRead |= ImportOptions.BOOK_LIST_STYLES;
-                        }
+                        // pre-v200 format was a serialized binary. No longer supported.
                         break;
 
                     case Unknown:
@@ -313,29 +308,5 @@ public abstract class BackupReaderAbstract
         cover.saveToDirectory(StorageUtils.getCoverStorage());
         //noinspection ResultOfMethodCallIgnored
         currentCover.setLastModified(covDate.getTime());
-    }
-
-    /**
-     * Restore a serialized (pre-v200 archive) booklist style.
-     *
-     * @param entity to restore
-     *
-     * @throws IOException on failure
-     */
-    private void restorePreV200Style(@NonNull final ReaderEntity entity)
-            throws IOException {
-
-        Logger.info(this, "restorePreV200Style", "Skipping");
-//        try {
-//            // deserialization will take care of writing the v200+ SharedPreference file
-//            BooklistStyle style = entity.getSerializable();
-//            style.save(mDb);
-//
-//            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-//                Logger.debug(this, "restorePreV200Style", style);
-//            }
-//        } catch (@NonNull final DeserializationException e) {
-//            Logger.error(this, e, "Unable to restore style");
-//        }
     }
 }

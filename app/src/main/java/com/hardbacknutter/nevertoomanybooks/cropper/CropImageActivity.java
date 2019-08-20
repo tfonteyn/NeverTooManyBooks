@@ -1,4 +1,32 @@
 /*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  * Copyright (C) 2007 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -268,6 +296,7 @@ public class CropImageActivity
         if (msgId != 0) {
             UserMessage.show(mImageView, msgId);
         }
+
         Bundle args = getIntent().getExtras();
         if (args != null) {
             if (args.getString(BKEY_CIRCLE_CROP) != null) {
@@ -456,9 +485,9 @@ public class CropImageActivity
         }
 
         // Return the cropped image directly or save it to the specified URI.
-        Bundle extras = getIntent().getExtras();
-        if (extras != null && (extras.getParcelable(BKEY_DATA) != null
-                               || extras.getBoolean(BKEY_RETURN_DATA))) {
+        Bundle args = getIntent().getExtras();
+        if (args != null && (args.getParcelable(BKEY_DATA) != null
+                             || args.getBoolean(BKEY_RETURN_DATA))) {
 
             Bundle resultExtras = new Bundle();
             resultExtras.putParcelable(BKEY_DATA, croppedImage);

@@ -946,9 +946,9 @@ public class DAO
     /**
      * @return {@code true} for success.
      */
-    public boolean globalReplaceAuthor(@NonNull final Author from,
-                                       @NonNull final Author to,
-                                       @NonNull final Locale locale) {
+    public boolean globalReplace(@NonNull final Author from,
+                                 @NonNull final Author to,
+                                 @NonNull final Locale locale) {
 
         // process the destination Author
         if (!updateOrInsertAuthor(to, locale)) {
@@ -3452,10 +3452,10 @@ public class DAO
      *
      * @return {@code true} for success.
      */
-    public boolean globalReplaceSeries(@NonNull final Context context,
-                                       @NonNull final Series from,
-                                       @NonNull final Series to,
-                                       @NonNull final Locale locale) {
+    public boolean globalReplace(@NonNull final Context context,
+                                 @NonNull final Series from,
+                                 @NonNull final Series to,
+                                 @NonNull final Locale locale) {
 
         // process the destination Series.
         if (!updateOrInsertSeries(context, to, locale)) {

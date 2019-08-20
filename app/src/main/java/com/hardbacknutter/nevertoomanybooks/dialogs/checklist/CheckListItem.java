@@ -33,7 +33,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 /**
- * TODO: this is overkill
+ * TODO: this is overkill.
  *
  * @param <T> - type of item in the checklist
  */

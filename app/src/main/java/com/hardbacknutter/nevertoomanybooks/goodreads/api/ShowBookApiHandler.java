@@ -93,7 +93,7 @@ public abstract class ShowBookApiHandler
     };
     @NonNull
     private final String mEBookString;
-    /** Transient global data for current work in search results. */
+    /** Global data for the <b>current work</b> in search results. */
     private Bundle mBookData;
     private final XmlHandler mHandleText = context -> {
         final String name = (String) context.getUserArg();

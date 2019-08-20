@@ -265,8 +265,7 @@ public abstract class BookBaseFragment
         // Activity scope!
         //noinspection ConstantConditions
         mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
-        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
-        mBookModel.init(args);
+        mBookModel.init(getArguments());
         mBookModel.getUserMessage().observe(this, this::showUserMessage);
         mBookModel.getNeedsGoodreads().observe(this, this::needsGoodreads);
 

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +85,8 @@ public class EditAuthorListActivity
         mAutoCompleteAdapter =
                 new ArrayAdapter<>(this,
                                    android.R.layout.simple_dropdown_item_1line,
-                                   mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                                   mModel.getDb()
+                                         .getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
 
         mAutoCompleteTextView = findViewById(R.id.author);
         mAutoCompleteTextView.setAdapter(mAutoCompleteAdapter);
@@ -107,13 +109,11 @@ public class EditAuthorListActivity
 
         Author newAuthor = Author.fromString(name);
         // see if it already exists
-        newAuthor.fixId(this, mDb);
+        newAuthor.fixId(this, mModel.getDb());
         // and check it's not already in the list.
-        for (Author author : mList) {
-            if (author.equals(newAuthor)) {
-                UserMessage.show(mAutoCompleteTextView, R.string.warning_author_already_in_list);
-                return;
-            }
+        if (mList.contains(newAuthor)) {
+            UserMessage.show(mAutoCompleteTextView, R.string.warning_author_already_in_list);
+            return;
         }
         // add the new one to the list. It is NOT saved at this point!
         mList.add(newAuthor);
@@ -133,12 +133,11 @@ public class EditAuthorListActivity
                                 @NonNull final Author newAuthorData) {
 
         // See if the old one is used by any other books.
-        long nrOfReferences = mDb.countBooksByAuthor(author)
-                              + mDb.countTocEntryByAuthor(author);
-        boolean usedByOthers = nrOfReferences > (mRowId == 0 ? 0 : 1);
+        long nrOfReferences = mModel.getDb().countBooksByAuthor(author)
+                              + mModel.getDb().countTocEntryByAuthor(author);
 
         // if it's not, then we can simply re-use the old object.
-        if (!usedByOthers) {
+        if (mModel.isSingleUsage(nrOfReferences)) {
             /*
              * Use the original author, but update its fields
              *
@@ -147,7 +146,7 @@ public class EditAuthorListActivity
              * TODO: simplify / don't orphan?
              */
             author.copyFrom(newAuthorData);
-            ItemWithFixableId.pruneList(this, mDb, mList);
+            ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -184,13 +183,13 @@ public class EditAuthorListActivity
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
                          (d, which) -> {
                              author.copyFrom(newAuthorData);
-                             ItemWithFixableId.pruneList(this, mDb, mList);
+                             ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
                              mListAdapter.notifyDataSetChanged();
                          });
 
         /*
          * Choosing 'all books':
-         * globalReplaceAuthor:
+         * globalReplace:
          * - Find/update or insert the new Author.
          * - update the TOC of all books so they use the new author id.
          * - update TBL_BOOK_AUTHORS for all books to use the new author id
@@ -213,9 +212,10 @@ public class EditAuthorListActivity
          */
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, (d, which) -> {
             Locale userLocale = LocaleUtils.getPreferredLocale();
-            mGlobalReplacementsMade = mDb.globalReplaceAuthor(author, newAuthorData, userLocale);
+            mModel.setGlobalReplacementsMade(
+                    mModel.getDb().globalReplace(author, newAuthorData, userLocale));
             author.copyFrom(newAuthorData);
-            ItemWithFixableId.pruneList(this, mDb, mList);
+            ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
             mListAdapter.notifyDataSetChanged();
         });
 

@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -82,17 +84,15 @@ public class CoverBrowserViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args Bundle
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        if (mBaseIsbn != null) {
-            return;
+        if (mBaseIsbn == null) {
+            mBaseIsbn = Objects.requireNonNull(args.getString(DBDefinitions.KEY_ISBN));
+            int initialSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES,
+                                                 SearchSites.SEARCH_ALL);
+            mFileManager = new FileManager(initialSearchSites);
         }
-
-        mBaseIsbn = Objects.requireNonNull(args.getString(DBDefinitions.KEY_ISBN));
-        int initialSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
-        // Create an object to manage the downloaded files
-        mFileManager = new FileManager(initialSearchSites);
     }
 
     @Override

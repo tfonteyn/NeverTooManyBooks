@@ -791,11 +791,15 @@ public final class StorageUtils {
 
     /**
      * Compare two files based on date. Used for sorting file list by date.
+     *
+     * <a href="https://docs.oracle.com/javase/10/docs/api/java/util/Comparator.html">
+     * https://docs.oracle.com/javase/10/docs/api/java/util/Comparator.html</a>
+     * Note: It is generally a good idea for comparators to also implement java.io.Serializable
      */
     static class FileDateComparator
             implements Comparator<File>, Serializable {
 
-        private static final long serialVersionUID = 6004008051110452600L;
+        private static final long serialVersionUID = -1173177810355471106L;
         /** Ascending is >= 0, Descending is < 0. */
         private final int mDirection;
 

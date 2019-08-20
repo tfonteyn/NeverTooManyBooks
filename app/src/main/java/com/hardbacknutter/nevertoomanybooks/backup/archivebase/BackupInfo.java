@@ -30,8 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,22 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 /**
  * Class to encapsulate the INFO block from an archive.
  */
-public class BackupInfo
-        implements Parcelable {
+public class BackupInfo {
 
-    /** {@link Parcelable}. */
-    public static final Creator<BackupInfo> CREATOR =
-            new Creator<BackupInfo>() {
-                @Override
-                public BackupInfo createFromParcel(@NonNull final Parcel source) {
-                    return new BackupInfo(source);
-                }
-
-                @Override
-                public BackupInfo[] newArray(final int size) {
-                    return new BackupInfo[size];
-                }
-            };
     /**
      * version of archiver used to write this archive.
      */
@@ -81,7 +65,8 @@ public class BackupInfo
     private static final String INFO_HAS_COVERS = "HasCovers";
     private static final String INFO_HAS_DATABASE = "HasDatabase";
     private static final String INFO_HAS_PREFERENCES = "HasSettings";
-    private static final String INFO_HAS_BOOKLIST_STYLES = "HasBooklistStyles";
+    /** Note the '2'. Legacy serialized styles are ignored. */
+    private static final String INFO_HAS_BOOKLIST_STYLES = "HasBooklistStyles2";
 
     /**
      * Stores the database version.
@@ -106,16 +91,6 @@ public class BackupInfo
      */
     private BackupInfo(@NonNull final Bundle bundle) {
         mBundle = bundle;
-    }
-
-    /**
-     * {@link Parcelable} Constructor.
-     *
-     * @param in Parcel to construct the object from
-     */
-    private BackupInfo(@NonNull final Parcel in) {
-        //noinspection ConstantConditions
-        mBundle = in.readBundle(getClass().getClassLoader());
     }
 
     /**
@@ -155,18 +130,6 @@ public class BackupInfo
             infoBundle.putInt(INFO_APP_VERSION_CODE, packageInfo.versionCode);
         }
         return new BackupInfo(infoBundle);
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeBundle(mBundle);
     }
 
     /**
@@ -222,7 +185,6 @@ public class BackupInfo
                 return mBundle.getInt(INFO_DATABASE_VERSION, 0);
         }
     }
-
 
     @SuppressWarnings("unused")
     public int getSdk() {
