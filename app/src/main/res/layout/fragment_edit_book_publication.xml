@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -183,22 +211,11 @@
             app:layout_constraintTop_toBottomOf="@id/pages"
             />
 
-        <EditText
-            android:id="@+id/price_listed"
-            style="@style/priceTextEntry"
-            app:layout_constraintEnd_toStartOf="@id/price_listed_currency"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
-            tools:ignore="Autofill"
-            tools:text="14.99"
-            />
-
         <AutoCompleteTextView
             android:id="@+id/price_listed_currency"
             style="@style/EditText.Currency"
-            app:layout_constraintBaseline_toBaselineOf="@id/price_listed"
-            app:layout_constraintEnd_toStartOf="@id/btn_price_listed_currency"
-            app:layout_constraintStart_toEndOf="@id/price_listed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
             tools:ignore="Autofill,LabelFor"
             />
 
@@ -207,9 +224,18 @@
             style="@style/DropDownMenu"
             android:contentDescription="@string/lbl_price_listed"
             app:layout_constraintBottom_toBottomOf="@id/price_listed_currency"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/price_listed_currency"
-            app:layout_constraintTop_toTopOf="@id/price_listed_currency"
+            />
+
+        <EditText
+            android:id="@+id/price_listed"
+            style="@style/priceTextEntry"
+            android:layout_width="0dp"
+            app:layout_constraintBaseline_toBaselineOf="@id/price_listed_currency"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_price_listed_currency"
+            tools:ignore="Autofill"
+            tools:text="14.99"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
