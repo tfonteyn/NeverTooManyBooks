@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KbNlHandlerTest {
 
@@ -94,7 +95,7 @@ class KbNlHandlerTest {
 
         List<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
-        assertTrue(!authors.isEmpty());
+        assertFalse(authors.isEmpty());
         Author expectedAuthor;
         expectedAuthor = Author.fromString("Silvio Camboni");
         assertEquals(expectedAuthor, authors.get(0));
@@ -107,7 +108,7 @@ class KbNlHandlerTest {
 
         List<Series> series = mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         assertNotNull(series);
-        assertTrue(!series.isEmpty());
+        assertFalse(series.isEmpty());
         Series expectedSeries;
         expectedSeries = new Series("De buitengewone reis");
         expectedSeries.setNumber("1");
@@ -134,7 +135,7 @@ class KbNlHandlerTest {
 
         List<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
-        assertTrue(!authors.isEmpty());
+        assertFalse(authors.isEmpty());
         Author expectedAuthor;
         expectedAuthor = Author.fromString("Isaak Judovič Ozimov");
         assertEquals(expectedAuthor, authors.get(0));
@@ -143,7 +144,7 @@ class KbNlHandlerTest {
 
         List<Series> series = mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         assertNotNull(series);
-        assertTrue(!series.isEmpty());
+        assertFalse(series.isEmpty());
         Series expectedSeries;
         expectedSeries = new Series("Foundation-trilogie");
         expectedSeries.setNumber("1");

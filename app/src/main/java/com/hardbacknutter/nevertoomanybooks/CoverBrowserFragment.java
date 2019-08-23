@@ -417,9 +417,9 @@ public class CoverBrowserFragment
 
             // Get the image file; try the sizes in order as specified here.
             holder.fileInfo = mModel.getFileManager().getFile(isbn,
-                                                              SearchEngine.ImageSize.SMALL,
-                                                              SearchEngine.ImageSize.MEDIUM,
-                                                              SearchEngine.ImageSize.LARGE);
+                                                              SearchEngine.ImageSize.Small,
+                                                              SearchEngine.ImageSize.Medium,
+                                                              SearchEngine.ImageSize.Large);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(this, "onBindViewHolder",
@@ -459,7 +459,7 @@ public class CoverBrowserFragment
                 // check if we actually have a preview in the gallery
                 if (holder.fileInfo.hasFileSpec()) {
                     //noinspection ConstantConditions
-                    if (holder.fileInfo.size.equals(SearchEngine.ImageSize.LARGE)) {
+                    if (holder.fileInfo.size.equals(SearchEngine.ImageSize.Large)) {
                         // no need to search, just load it.
                         ImageUtils.setImageView(holder.imageView,
                                                 new File(holder.fileInfo.fileSpec),

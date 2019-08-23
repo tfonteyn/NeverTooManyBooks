@@ -29,6 +29,7 @@
 
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’) -->
+<!--suppress LongLine -->
 <resources>
     <string name="X_about_help_tap_here">Пожалуйста, нажмите здесь, чтобы получить справочную информацию в интернете</string>
     <string name="X_anthology_titles">Названия антологий</string>

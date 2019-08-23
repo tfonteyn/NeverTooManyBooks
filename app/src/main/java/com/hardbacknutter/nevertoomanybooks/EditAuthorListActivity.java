@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,14 +43,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -109,7 +110,7 @@ public class EditAuthorListActivity
 
         Author newAuthor = Author.fromString(name);
         // see if it already exists
-        newAuthor.fixId(this, mModel.getDb());
+        newAuthor.fixId(mModel.getDb());
         // and check it's not already in the list.
         if (mList.contains(newAuthor)) {
             UserMessage.show(mAutoCompleteTextView, R.string.warning_author_already_in_list);
@@ -145,8 +146,8 @@ public class EditAuthorListActivity
              * The 'old' author will be orphaned.
              * TODO: simplify / don't orphan?
              */
-            author.copyFrom(newAuthorData);
-            ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
+            author.copyFrom(newAuthorData, true);
+            ItemWithFixableId.pruneList(mModel.getDb(), mList);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -154,39 +155,14 @@ public class EditAuthorListActivity
         // When we get here, we know the names are genuinely different and the old author
         // is used in more than one place. Ask the user if they want to make the changes globally.
         String allBooks = getString(R.string.bookshelf_all_books);
-
+        String message = getString(R.string.confirm_apply_author_changed,
+                                   author.getSortName(),
+                                   newAuthorData.getSortName(), allBooks);
         AlertDialog dialog = new AlertDialog.Builder(this)
                                      .setTitle(R.string.title_scope_of_change)
                                      .setIconAttribute(android.R.attr.alertDialogIcon)
-                                     .setMessage(getString(R.string.confirm_apply_author_changed,
-                                                           author.getSortName(),
-                                                           newAuthorData.getSortName(), allBooks))
+                                     .setMessage(message)
                                      .create();
-
-        /*
-         * choosing 'this book':
-         * Copy the data fields (name,..) from the holder to the 'old' author.
-         * and remove any duplicates.
-         *
-         * When the actual book is saved, {@link DAO#updateBook} will call
-         * {@link DAO#insertBookDependents} which when updating TBL_BOOK_AUTHORS
-         * will first try and find the author based on name.
-         * If its names differ -> new Author -> inserts the new author.
-         * Result: *this* book now uses the modified/new author,
-         * while all others keep using the original one.
-         *
-         * TODO: speculate if it would not be easier to:
-         * - fixup(newAuthor) and  if id == 0 insert newAuthor
-         * - remove old author from book
-         * - add new author to book
-         */
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
-                         (d, which) -> {
-                             author.copyFrom(newAuthorData);
-                             ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
-                             mListAdapter.notifyDataSetChanged();
-                         });
-
         /*
          * Choosing 'all books':
          * globalReplace:
@@ -211,20 +187,72 @@ public class EditAuthorListActivity
          * TODO: speculate if this can be simplified.
          */
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, (d, which) -> {
-            Locale userLocale = LocaleUtils.getPreferredLocale();
-            mModel.setGlobalReplacementsMade(
-                    mModel.getDb().globalReplace(author, newAuthorData, userLocale));
-            author.copyFrom(newAuthorData);
-            ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
+            mModel.setGlobalReplacementsMade(mModel.getDb().globalReplace(author,
+                                                                          newAuthorData
+                                                                         ));
+            author.copyFrom(newAuthorData, false);
+            ItemWithFixableId.pruneList(mModel.getDb(), mList);
             mListAdapter.notifyDataSetChanged();
         });
+
+        /*
+         * choosing 'this book':
+         * Copy the data fields (name,..) from the holder to the 'old' author.
+         * and remove any duplicates.
+         *
+         * When the actual book is saved, {@link DAO#updateBook} will call
+         * {@link DAO#insertBookDependents} which when updating TBL_BOOK_AUTHORS
+         * will first try and find the author based on name.
+         * If its names differ -> new Author -> inserts the new author.
+         * Result: *this* book now uses the modified/new author,
+         * while all others keep using the original one.
+         *
+         * TODO: speculate if it would not be easier to:
+         * - fixup(newAuthor) and  if id == 0 insert newAuthor
+         * - remove old author from book
+         * - add new author to book
+         */
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
+                         (d, which) -> {
+                             author.copyFrom(newAuthorData, true);
+                             ItemWithFixableId.pruneList(mModel.getDb(), mList);
+                             mListAdapter.notifyDataSetChanged();
+                         });
 
         dialog.show();
     }
 
     /**
+     * Holder pattern for each row.
+     */
+    private static class Holder
+            extends RecyclerViewViewHolderBase {
+
+        @NonNull
+        final TextView authorView;
+        @NonNull
+        final TextView authorSortView;
+        @NonNull
+        final TextView authorTypeView;
+
+        Holder(@NonNull final View itemView) {
+            super(itemView);
+
+            authorView = itemView.findViewById(R.id.row_author);
+            authorSortView = itemView.findViewById(R.id.row_author_sort);
+            authorTypeView = itemView.findViewById(R.id.row_author_type);
+
+            if (!App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
+                authorTypeView.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    /**
      * Edit an Author from the list.
      * It could exist (i.e. have an id) or could be a previously added/new one (id==0).
+     * <p>
+     * Must be a public static class to be properly recreated from instance state.
      */
     public static class EditBookAuthorDialogFragment
             extends EditAuthorBaseDialogFragment {
@@ -267,27 +295,10 @@ public class EditAuthorListActivity
         }
     }
 
-    /**
-     * Holder pattern for each row.
-     */
-    private static class Holder
-            extends RecyclerViewViewHolderBase {
-
-        @NonNull
-        final TextView authorView;
-        @NonNull
-        final TextView authorSortView;
-
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-
-            authorView = itemView.findViewById(R.id.row_author);
-            authorSortView = itemView.findViewById(R.id.row_author_sort);
-        }
-    }
-
     protected class AuthorListAdapter
             extends RecyclerViewAdapterBase<Author, Holder> {
+
+        private final boolean mAuthorTypeIsUsed;
 
         /**
          * Constructor.
@@ -300,6 +311,8 @@ public class EditAuthorListActivity
                           @NonNull final ArrayList<Author> items,
                           @NonNull final StartDragListener dragStartListener) {
             super(inflater, items, dragStartListener);
+
+            mAuthorTypeIsUsed = App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE);
         }
 
         @NonNull
@@ -326,6 +339,19 @@ public class EditAuthorListActivity
             } else {
                 holder.authorSortView.setVisibility(View.VISIBLE);
                 holder.authorSortView.setText(author.getSortName());
+            }
+
+            if (mAuthorTypeIsUsed) {
+                int type = author.getType();
+                if (type != Author.TYPE_GENERIC) {
+                    List<String> list = Csv.bitmaskToList(getContext(),
+                                                          Author.TYPES, author.getType());
+                    String text = getString(R.string.brackets, TextUtils.join(", ", list));
+                    holder.authorTypeView.setText(text);
+                    holder.authorTypeView.setVisibility(View.VISIBLE);
+                } else {
+                    holder.authorTypeView.setVisibility(View.GONE);
+                }
             }
 
             // click -> edit

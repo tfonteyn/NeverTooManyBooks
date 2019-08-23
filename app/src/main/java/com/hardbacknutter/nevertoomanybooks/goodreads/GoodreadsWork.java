@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +43,31 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 /**
  * Class to store the 'work' data returned via a Goodreads search.
  * It also creates a background task to find images and waits for completion.
+ *
+ * <pre>{@code
+ * <work>
+ *  <id type="integer">6872395</id>
+ *  <books_count type="integer">3</books_count>
+ *  <best_book_id type="integer">6677280</best_book_id>
+ *  <reviews_count type="integer">28</reviews_count>
+ *  <ratings_sum type="integer">54</ratings_sum>
+ *  <ratings_count type="integer">15</ratings_count>
+ *  <text_reviews_count type="integer">3</text_reviews_count>
+ *  <original_publication_year type="integer">2009</original_publication_year>
+ *  <original_publication_month type="integer">6</original_publication_month>
+ *  <original_publication_day type="integer">1</original_publication_day>
+ *  <original_title>
+ *      Les pirates de Barataria, Tome 1 : Nouvelle Orléans
+ *  </original_title>
+ *  <original_language_id type="integer" nil="true"/>
+ *  <media_type>book</media_type>
+ *  <rating_dist>5:3|4:3|3:9|2:0|1:0|total:15</rating_dist>
+ *  <desc_user_id type="integer">36471395</desc_user_id>
+ *  <default_chaptering_book_id type="integer" nil="true"/>
+ *  <default_description_language_code nil="true"/>
+ *  <work_uri>kca://work/amzn1.gr.work.v1.Idamy7-vz0aK5n9u5hM9cA</work_uri>
+ * </work>
+ * }</pre>
  */
 public class GoodreadsWork {
 
@@ -51,6 +77,7 @@ public class GoodreadsWork {
     public String title;
     public Long authorId;
     public String authorName;
+    public String authorRole;
 
     public Long pubDay;
     public Long pubMonth;

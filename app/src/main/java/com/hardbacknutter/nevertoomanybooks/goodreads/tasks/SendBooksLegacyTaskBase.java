@@ -187,10 +187,6 @@ abstract class SendBooksLegacyTaskBase
                 return false;
 
             case credentialsError:
-                setException(exportException);
-                queueManager.updateTask(this);
-                return false;
-
             case error:
                 setException(exportException);
                 queueManager.updateTask(this);
@@ -291,7 +287,8 @@ abstract class SendBooksLegacyTaskBase
                     author = author + ' ' + context.getString(R.string.and_others);
                 }
             } else {
-                author = context.getString(R.string.unknown).toUpperCase();
+                author = context.getString(R.string.unknown)
+                                .toUpperCase(LocaleUtils.getPreferredLocale());
             }
 
             String title = db.getBookTitle(mBookId);

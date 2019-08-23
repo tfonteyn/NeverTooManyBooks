@@ -214,16 +214,13 @@ public class OpenLibraryManager
             sizeParam = "L";
         } else {
             switch (size) {
-                case SMALL:
+                case Small:
                     sizeParam = "S";
                     break;
-                case MEDIUM:
+                case Medium:
                     sizeParam = "M";
                     break;
-                case LARGE:
-                    sizeParam = "L";
-                    break;
-
+                case Large:
                 default:
                     sizeParam = "L";
                     break;

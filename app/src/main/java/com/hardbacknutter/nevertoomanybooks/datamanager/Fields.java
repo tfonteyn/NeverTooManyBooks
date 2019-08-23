@@ -72,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -1335,17 +1335,24 @@ public class Fields {
         public String extract(@NonNull final Field field,
                               @NonNull final String source) {
             // we need to transform a localised language name to its ISO equivalent.
-            return LocaleUtils.getISO3Language(source);
+            return LocaleUtils.getIso3fromDisplayName(source);
         }
     }
 
     /**
-     * Field Formatter for a bitmask based Book Editions field.
+     * Field Formatter for a bitmask based field.
+     * Formats the checked items as a CSV String.
      * <p>
      * Does not support {@link FieldFormatter#extract}.
      */
-    public static class BookEditionsFormatter
+    public static class BitMaskFormatter
             implements FieldFormatter {
+
+        private final Map<Integer, Integer> mMap;
+
+        public BitMaskFormatter(final Map<Integer, Integer> editions) {
+            mMap = editions;
+        }
 
         @NonNull
         @Override
@@ -1362,13 +1369,7 @@ public class Fields {
                 return source;
             }
             Context context = field.getView().getContext();
-            List<String> list = new ArrayList<>();
-            for (Map.Entry<Integer, Integer> entry : Book.EDITIONS.entrySet()) {
-                if ((entry.getKey() & bitmask) != 0) {
-                    list.add(context.getString(entry.getValue()));
-                }
-            }
-            return TextUtils.join(", ", list);
+            return TextUtils.join(", ", Csv.bitmaskToList(context, mMap, bitmask));
         }
 
         // theoretically we should support the extract method as this formatter is used on
@@ -1694,7 +1695,7 @@ public class Fields {
         }
 
         /**
-         * Set to {@code true} if a "0" content should be treated as "".
+         * Set to {@code true} if a "0" content should be treated as an 'empty field'.
          * Used for (not) displaying boolean and integer fields.
          *
          * @param zeroIsEmpty flag
@@ -1804,7 +1805,7 @@ public class Fields {
         }
 
         /**
-         * Convenience method to check if the value is considered 'empty'
+         * Convenience method to check if the value is considered 'empty'.
          *
          * @return {@code true} if this field is empty.
          */

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +37,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -135,12 +135,12 @@ public final class StandardDialogs {
                                        @NonNull final List<Author> authorList,
                                        @NonNull final Runnable onConfirm) {
 
-        Locale userLocale = LocaleUtils.getPreferredLocale();
         // Format the list of authors nicely
         StringBuilder authors = new StringBuilder();
         if (authorList.isEmpty()) {
             authors.append('<')
-                   .append(context.getString(R.string.unknown).toUpperCase(userLocale))
+                   .append(context.getString(R.string.unknown)
+                                  .toUpperCase(LocaleUtils.getPreferredLocale()))
                    .append('>');
         } else {
             // "a1, a2 and a3"

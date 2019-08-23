@@ -54,17 +54,19 @@ public interface ItemWithTitle {
      * Suggestions welcome.
      */
     @VisibleForTesting
-    Map<Locale, String> mLSTitlePrefix = new HashMap<>();
+    Map<Locale, String> LOCALE_PREFIX_MAP = new HashMap<>();
 
     /**
      * Get the locale of the actual item; e.g. a book written in Spanish should
      * return an Spanish Locale even if for example the user runs the app in German,
      * and the device in Danish.
      *
-     * @return the item Locale
+     * @param fallbackLocale Locale to use if the item does not have a Locale of its own.
+     *
+     * @return the item Locale, or the fallbackLocale.
      */
     @NonNull
-    Locale getLocale();
+    Locale getLocale(@NonNull Locale fallbackLocale);
 
     @NonNull
     String getTitle();
@@ -72,37 +74,37 @@ public interface ItemWithTitle {
     /**
      * Move "The, A, An" etc... to the end of the string.
      *
-     * @param userContext Current context, should be an actual user context,
-     *                    and not the ApplicationContext.
+     * @param userContext    Current context, should be an actual user context,
+     *                       and not the ApplicationContext.
+     * @param fallbackLocale Locale to use if the item has none set
      *
      * @return formatted title
      */
-    default String preprocessTitle(@NonNull final Context userContext) {
-        // Getting the string from the resources is very slow.
-        // So we cache it for every Locale.
-        String orderPatter = mLSTitlePrefix.get(getLocale());
+    default String preprocessTitle(@NonNull final Context userContext,
+                                   @NonNull final Locale fallbackLocale) {
+
+        Locale locale = getLocale(fallbackLocale);
+
+        // Getting the string is slow, so we cache it for every Locale.
+        String orderPatter = LOCALE_PREFIX_MAP.get(locale);
         if (orderPatter == null) {
             // the resources bundle in the language that the book (item) is written in.
-            Resources localeResources = LocaleUtils.getLocalizedResources(userContext, getLocale());
+            Resources localeResources = LocaleUtils.getLocalizedResources(userContext, locale);
             orderPatter = localeResources.getString(R.string.pv_reformat_titles_prefixes);
-            mLSTitlePrefix.put(getLocale(), orderPatter);
+            LOCALE_PREFIX_MAP.put(locale, orderPatter);
         }
 
         StringBuilder newTitle = new StringBuilder();
         String[] titleWords = getTitle().split(" ");
-        try {
-            if (titleWords[0].matches(orderPatter)) {
-                for (int i = 1; i < titleWords.length; i++) {
-                    if (i != 1) {
-                        newTitle.append(' ');
-                    }
-                    newTitle.append(titleWords[i]);
+        if (titleWords[0].matches(orderPatter)) {
+            for (int i = 1; i < titleWords.length; i++) {
+                if (i != 1) {
+                    newTitle.append(' ');
                 }
-                newTitle.append(", ").append(titleWords[0]);
-                return newTitle.toString();
+                newTitle.append(titleWords[i]);
             }
-        } catch (@NonNull final RuntimeException ignore) {
-            //do nothing. Title stays the same
+            newTitle.append(", ").append(titleWords[0]);
+            return newTitle.toString();
         }
         return getTitle();
     }
@@ -110,21 +112,23 @@ public interface ItemWithTitle {
     /**
      * Move "The, A, An" etc... to the end of the string.
      *
-     * @param userContext Current context, should be an actual user context,
-     *                    and not the ApplicationContext.
-     * @param isInsert    should be {@code true} for an insert, {@code false} for an update
+     * @param userContext    Current context, should be an actual user context,
+     *                       and not the ApplicationContext.
+     * @param isInsert       should be {@code true} for an insert, {@code false} for an update
+     * @param fallbackLocale Locale to use if the item has none set
      *
      * @return formatted title
      */
     default String preprocessTitle(@NonNull final Context userContext,
-                                   final boolean isInsert) {
+                                   final boolean isInsert,
+                                   @NonNull final Locale fallbackLocale) {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(userContext);
         boolean whenInserting = prefs.getBoolean(Prefs.pk_reformat_titles_on_insert, true);
         boolean whenUpdating = prefs.getBoolean(Prefs.pk_reformat_titles_on_update, true);
 
         if ((isInsert && whenInserting) || (!isInsert && whenUpdating)) {
-            return preprocessTitle(userContext);
+            return preprocessTitle(userContext, fallbackLocale);
         } else {
             return getTitle();
         }

@@ -38,7 +38,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -58,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -207,7 +205,7 @@ public class UpdateFieldsFromInternetTask
 
         Map<String, FieldUsage> fieldUsages = new LinkedHashMap<>();
         for (FieldUsage usage : requestedFields.values()) {
-            switch (usage.usage) {
+            switch (usage.getUsage()) {
                 case Append:
                 case Overwrite:
                     // Append + Overwrite: we always need to get the data
@@ -408,8 +406,7 @@ public class UpdateFieldsFromInternetTask
                 // Handle thumbnail specially
                 if (usage.fieldId.equals(UniqueId.BKEY_IMAGE)) {
                     boolean copyThumb = false;
-                    switch (usage.usage) {
-
+                    switch (usage.getUsage()) {
                         case CopyIfBlank:
                             File file = StorageUtils.getCoverFile(mCurrentUuid);
                             copyThumb = !file.exists() || file.length() == 0;
@@ -437,8 +434,7 @@ public class UpdateFieldsFromInternetTask
                     }
 
                 } else {
-                    switch (usage.usage) {
-
+                    switch (usage.getUsage()) {
                         case CopyIfBlank:
                             copyIfBlank(usage.fieldId, newBookData);
                             break;
@@ -473,8 +469,7 @@ public class UpdateFieldsFromInternetTask
             }
 
             Context userContext = App.getFakeUserContext();
-            Locale userLocale = LocaleUtils.getPreferredLocale();
-            mDb.updateBook(userContext, userLocale, mCurrentBookId, new Book(newBookData), 0);
+            mDb.updateBook(userContext, mCurrentBookId, new Book(newBookData), 0);
         }
     }
 

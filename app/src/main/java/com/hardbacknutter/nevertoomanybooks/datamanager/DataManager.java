@@ -296,7 +296,9 @@ public class DataManager {
         datum.putDouble(mRawData, value);
     }
 
-    /** @return a float value. */
+    /**
+     * @return a float value.
+     */
     @SuppressWarnings("unused")
     public float getFloat(@NonNull final String key) {
         return mDatumMap.getOrNew(key).getFloat(mRawData);

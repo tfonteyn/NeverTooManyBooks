@@ -1077,14 +1077,17 @@ public class GoodreadsManager
                 case sent:
                     return R.string.done;
                 case noIsbn:
+
                     return R.string.gr_explain_no_isbn;
                 case notFound:
+
                     return R.string.warning_no_matching_book_found;
-                case ioError:
-                    return R.string.error_unexpected_error;
+
                 case credentialsError:
                     return R.string.gr_auth_error;
+
                 case error:
+                case ioError:
                     return R.string.error_unexpected_error;
             }
             return R.string.error_unexpected_error;

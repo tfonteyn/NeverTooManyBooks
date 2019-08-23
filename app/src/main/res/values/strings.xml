@@ -36,6 +36,7 @@
     See top of each file for the "quotes" comment.
 -->
 <!-- Quotes “…” - Regex to find wrong ones: („|‘|’|«|») -->
+<!--suppress LongLine -->
 <resources>
 
     <!-- ####################################################################################### -->
@@ -971,8 +972,9 @@
     <!-- Book editions flags NEWKIND: edition. -->
     <string name="lbl_edition_first_edition">First Edition</string>
     <string name="lbl_edition_first_impression">First impression</string>
-    <string name="lbl_edition_book_club">Bookclub edition</string>
     <string name="lbl_edition_limited">Limited</string>
+    <string name="lbl_edition_slipcase">Slipcase</string>
+    <string name="lbl_edition_book_club">Bookclub edition</string>
 
     <!-- Update Fields from internet - short string, used in the option menu -->
     <string name="lbl_update_fields">Update Fields</string>
@@ -1297,6 +1299,7 @@
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
     <string name="and_others">et. al.</string>
 
+    <string name="lbl_author_type">Author type</string>
     <string name="lbl_author_primary">Primary</string>
     <string name="lbl_author_secondary">Secondary</string>
     <string name="lbl_author_other">Other</string>
@@ -1309,10 +1312,10 @@
     <string name="lbl_artist_secondary">Secondary artist</string>
     <string name="lbl_artist_other">Other artist</string>
     <string name="lbl_artist_colorist">Colorist</string>
+    <string name="lbl_author_contributor">Contributor</string>
 
     <string name="pt_bob_show_details_uses_task">Fetch the Extra Book Details</string>
     <string name="pt_bob_show_details_uses_task_on">using a background task</string>
     <string name="pt_bob_show_details_uses_task_off">immediately</string>
-
 
 </resources>

@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -116,9 +115,8 @@ public class EditSeriesListActivity
 
         Series newSeries = new Series(name);
         newSeries.setNumber(mSeriesNumberView.getText().toString().trim());
-
         // see if it already exists
-        newSeries.fixId(this, mModel.getDb());
+        newSeries.fixId(mModel.getDb(), this, mModel.getBookLocale());
         // and check it's not already in the list.
         if (mList.contains(newSeries)) {
             UserMessage.show(mAutoCompleteTextView, R.string.warning_series_already_in_list);
@@ -141,6 +139,8 @@ public class EditSeriesListActivity
                                 final boolean isComplete,
                                 @NonNull final String newNumber) {
 
+        final Locale bookLocale = mModel.getBookLocale();
+
         // anything actually changed ?
         if (series.getTitle().equals(newName) && series.isComplete() == isComplete) {
             if (!series.getNumber().equals(newNumber)) {
@@ -148,8 +148,8 @@ public class EditSeriesListActivity
                 // Number is not part of the Series table, but of the book_series table.
                 // so just update it and we're done here.
                 series.setNumber(newNumber);
-                Series.pruneSeriesList(mList);
-                ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
+                Series.pruneSeriesList(mList, bookLocale);
+                ItemWithFixableId.pruneList(mModel.getDb(), mList, this, bookLocale);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -161,14 +161,14 @@ public class EditSeriesListActivity
         newSeries.setNumber(newNumber);
 
         //See if the old one is used by any other books.
-        long nrOfReferences = mModel.getDb().countBooksInSeries(this, series);
+        long nrOfReferences = mModel.getDb().countBooksInSeries(this, series, bookLocale);
 
         // if it's not, then we can simply re-use the old object.
         if (mModel.isSingleUsage(nrOfReferences)) {
             // Use the original mSeries, but update its fields
-            series.copyFrom(newSeries);
-            Series.pruneSeriesList(mList);
-            ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
+            series.copyFrom(newSeries, true);
+            Series.pruneSeriesList(mList, bookLocale);
+            ItemWithFixableId.pruneList(mModel.getDb(), mList, this, bookLocale);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -184,20 +184,17 @@ public class EditSeriesListActivity
                 .setTitle(R.string.title_scope_of_change)
                 .setIcon(R.drawable.ic_info_outline)
                 .setNegativeButton(allBooks, (d, which) -> {
-                    Locale userLocale = LocaleUtils.getPreferredLocale();
-                    mModel.setGlobalReplacementsMade(mModel.getDb().globalReplace(this,
-                                                                                  series,
-                                                                                  newSeries,
-                                                                                  userLocale));
-                    series.copyFrom(newSeries);
-                    Series.pruneSeriesList(mList);
-                    ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
+                    mModel.setGlobalReplacementsMade(
+                            mModel.getDb().globalReplace(this, series, newSeries, bookLocale));
+                    series.copyFrom(newSeries, false);
+                    Series.pruneSeriesList(mList, bookLocale);
+                    ItemWithFixableId.pruneList(mModel.getDb(), mList, this, bookLocale);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .setPositiveButton(R.string.btn_this_book, (d, which) -> {
-                    series.copyFrom(newSeries);
-                    Series.pruneSeriesList(mList);
-                    ItemWithFixableId.pruneList(this, mModel.getDb(), mList);
+                    series.copyFrom(newSeries, true);
+                    Series.pruneSeriesList(mList, bookLocale);
+                    ItemWithFixableId.pruneList(mModel.getDb(), mList, this, bookLocale);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .create()

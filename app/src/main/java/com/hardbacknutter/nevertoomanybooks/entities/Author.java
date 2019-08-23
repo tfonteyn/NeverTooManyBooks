@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -48,9 +49,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
@@ -97,6 +98,9 @@ public class Author
     public static final int TYPE_INTRODUCTION = 0b0000_0000_0010_0000;
     /** editor (e.g. of an anthology). */
     public static final int TYPE_EDITOR = 0b0000_0000_0100_0000;
+    /** generic collaborator. */
+    public static final int TYPE_CONTRIBUTOR = 0b0000_0000_1000_0000;
+
 
     /** cover artist. */
     public static final int TYPE_COVER_ARTIST = 0b0000_0001_0000_0000;
@@ -118,14 +122,16 @@ public class Author
 
     /** String encoding use: separator between family name and given-names. */
     public static final char NAME_SEPARATOR = ',';
+    @SuppressLint("UseSparseArrays")
+    public static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
     /** All valid bits for the type. */
     private static final int TYPE_MASK = TYPE_GENERIC
                                          | TYPE_PRIMARY | TYPE_SECONDARY
-                                         | TYPE_TRANSLATOR | TYPE_INTRODUCTION | TYPE_EDITOR
+                                         | TYPE_TRANSLATOR | TYPE_INTRODUCTION
+                                         | TYPE_EDITOR | TYPE_CONTRIBUTOR
                                          | TYPE_COVER_ARTIST | TYPE_COVER_COLORIST
                                          | TYPE_ARTIST_PRIMARY | TYPE_ARTIST_SECONDARY
                                          | TYPE_COLORIST;
-
     /**
      * ENHANCE: author middle name; needs internationalisation ?
      * <p>
@@ -135,7 +141,6 @@ public class Author
      * Rip Von Ronkel
      */
     private static final Pattern FAMILY_NAME_PREFIX = Pattern.compile("[LlDd]e|[Vv][oa]n");
-
     /**
      * ENHANCE: author name suffixes; needs internationalisation ? probably not.
      * <p>
@@ -160,9 +165,13 @@ public class Author
      */
     private static final Pattern FAMILY_NAME_SUFFIX =
             Pattern.compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior|II|III");
-
-    @SuppressLint("UseSparseArrays")
-    private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
+    /**
+     * A very crude text to bit mapper.
+     * <p>
+     * Current (2019-08-21) strings have been seen on Goodreads.
+     * No doubt many more are missing. Maybe some day see if we can pull a full list from GR?
+     */
+    private static final Map<String, Integer> TYPES_MAPPER = new HashMap<>();
 
     /*
      * NEWKIND: author type.
@@ -177,6 +186,7 @@ public class Author
         TYPES.put(TYPE_TRANSLATOR, R.string.lbl_author_translator);
         TYPES.put(TYPE_INTRODUCTION, R.string.lbl_author_introduction);
         TYPES.put(TYPE_EDITOR, R.string.lbl_author_editor);
+        TYPES.put(TYPE_CONTRIBUTOR, R.string.lbl_author_contributor);
 
         TYPES.put(TYPE_COVER_ARTIST, R.string.lbl_artist_cover);
         TYPES.put(TYPE_COVER_COLORIST, R.string.lbl_artist_cover_colorist);
@@ -186,6 +196,34 @@ public class Author
         TYPES.put(TYPE_ARTIST_PRIMARY | TYPE_ARTIST_SECONDARY, R.string.lbl_artist_other);
 
         TYPES.put(TYPE_COLORIST, R.string.lbl_artist_colorist);
+    }
+
+    static {
+        // English
+        TYPES_MAPPER.put("Illustrator", TYPE_ARTIST_PRIMARY);
+        TYPES_MAPPER.put("Illustrations", TYPE_ARTIST_PRIMARY);
+        TYPES_MAPPER.put("Colorist", TYPE_COLORIST);
+        TYPES_MAPPER.put("Editor", TYPE_EDITOR);
+        TYPES_MAPPER.put("Contributor", TYPE_CONTRIBUTOR);
+        TYPES_MAPPER.put("Translator", TYPE_TRANSLATOR);
+
+        // French, unless listed above
+        TYPES_MAPPER.put("Text", TYPE_PRIMARY);
+        TYPES_MAPPER.put("Scénario", TYPE_PRIMARY);
+        TYPES_MAPPER.put("Dessins", TYPE_ARTIST_PRIMARY);
+        TYPES_MAPPER.put("Dessin", TYPE_ARTIST_PRIMARY);
+        TYPES_MAPPER.put("Avec la contribution de", TYPE_CONTRIBUTOR);
+        TYPES_MAPPER.put("Contribution", TYPE_CONTRIBUTOR);
+        TYPES_MAPPER.put("Couleurs", TYPE_COLORIST);
+
+        // Dutch, unless listed above
+        TYPES_MAPPER.put("Scenario", TYPE_PRIMARY);
+        TYPES_MAPPER.put("Tekeningen", TYPE_ARTIST_PRIMARY);
+        TYPES_MAPPER.put("Inkleuring", TYPE_COLORIST);
+
+        // Italian, unless listed above
+        TYPES_MAPPER.put("Testi", TYPE_PRIMARY);
+        TYPES_MAPPER.put("Disegni", TYPE_ARTIST_PRIMARY);
     }
 
     /** Row ID. */
@@ -201,9 +239,6 @@ public class Author
 
     /** Bitmask. */
     private int mType = TYPE_GENERIC;
-
-    /** cached locale. */
-    private Locale mLocale;
 
     /**
      * Constructor.
@@ -355,6 +390,20 @@ public class Author
         mType = type & TYPE_MASK;
     }
 
+    public void setType(@NonNull final String type) {
+        if (type.isEmpty()) {
+            mType = TYPE_GENERIC;
+        } else {
+            Integer mapped = TYPES_MAPPER.get(type);
+            if (mapped != null) {
+                mType = mapped;
+            } else {
+                // unknown, log it for future enhancement.
+                Logger.warn(this, "setType", "type=`" + type + "`");
+            }
+        }
+    }
+
     /**
      * Convenience method to set the Type.
      *
@@ -461,39 +510,50 @@ public class Author
     }
 
     /**
-     * Replace local details from another author.
+     * TEST: Replace local details from another author.
      *
-     * @param source Author to copy from
+     * @param source            Author to copy from
+     * @param includeBookFields Flag to force copying the Book related fields as well
      */
-    public void copyFrom(@NonNull final Author source) {
+    public void copyFrom(@NonNull final Author source,
+                         final boolean includeBookFields) {
         mFamilyName = source.mFamilyName;
         mGivenNames = source.mGivenNames;
         mIsComplete = source.mIsComplete;
-        mType = source.mType;
+        if (includeBookFields) {
+            mType = source.mType;
+        }
     }
 
     /**
-     * Stopgap.... makes the code elsewhere clean.
-     * <p>
      * ENHANCE: The locale of the Author should be based on the main language the author writes in.
-     * Not implemented for now. So we cheat.
+     * For now, we always use the fallback which <strong>should be the USER Locale</strong>
      *
      * @return the locale of the Author
      */
     @Override
     @NonNull
-    public Locale getLocale() {
-        if (mLocale == null) {
-            mLocale = LocaleUtils.getPreferredLocale();
-        }
-        return mLocale;
+    public Locale getLocale(@NonNull final Locale fallbackLocale) {
+        return fallbackLocale;
+    }
+
+    /**
+     * Convenience method for {@link ItemWithFixableId#fixId(DAO, Context, Locale)} to satisfy lint.
+     *
+     * @param db Database Access
+     *
+     * @return item id
+     */
+    public long fixId(@NonNull final DAO db) {
+        mId = db.getAuthorId(this);
+        return mId;
     }
 
     @Override
-    public long fixId(@NonNull final Context context,
-                      @NonNull final DAO db,
-                      @NonNull final Locale authorLocale) {
-        mId = db.getAuthorId(this, authorLocale);
+    public long fixId(@NonNull final DAO db,
+                      @NonNull final Context context,
+                      @NonNull final Locale locale) {
+        mId = db.getAuthorId(this);
         return mId;
     }
 
@@ -557,7 +617,6 @@ public class Author
                + ", mGivenNames=`" + mGivenNames + '`'
                + ", mIsComplete=" + mIsComplete
                + ", mType=0b" + Integer.toBinaryString(mType)
-               + ", mLocale=" + mLocale
                + '}';
     }
 }

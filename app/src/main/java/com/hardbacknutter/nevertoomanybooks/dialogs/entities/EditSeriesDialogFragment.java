@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +41,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
@@ -148,9 +150,9 @@ public class EditSeriesDialogFragment
                            }
                            mSeries.setTitle(mName);
                            mSeries.setComplete(mIsComplete);
-
-                           mDb.updateOrInsertSeries(getContext(), mSeries,
-                                                    LocaleUtils.getPreferredLocale());
+                           // There is no book involved here, so use the users Locale instead
+                           Locale bookLocale = LocaleUtils.getPreferredLocale();
+                           mDb.updateOrInsertSeries(getContext(), mSeries, bookLocale);
 
                            Bundle data = new Bundle();
                            data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());

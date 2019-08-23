@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 /**
@@ -102,7 +103,7 @@ public class EditBookNotesFragment
         initValuePicker(field, R.string.lbl_location, R.id.btn_location, mBookModel.getLocations());
 
         field = fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
-                      .setFormatter(new Fields.BookEditionsFormatter());
+                      .setFormatter(new Fields.BitMaskFormatter(Book.EDITIONS));
         initCheckListEditor(field, R.string.lbl_edition,
                             () -> mBookModel.getBook().getEditableEditionList());
 

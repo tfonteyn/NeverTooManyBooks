@@ -37,7 +37,6 @@ import androidx.annotation.WorkerThread;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -83,13 +82,11 @@ public class ImportCSVTask
         Thread.currentThread().setName("ImportCSVTask");
 
         Context userContext = App.getFakeUserContext();
-        Locale userLocale = LocaleUtils.getPreferredLocale();
 
         try (FileInputStream is = new FileInputStream(mFile)) {
-            mImporter.doBooks(userContext, userLocale,
-                              is, new LocalCoverFinder(mFile.getParent()),
+            mImporter.doBooks(userContext, LocaleUtils.getPreferredLocale(), is,
+                              new LocalCoverFinder(mFile.getParent()),
                               new ProgressListenerBase() {
-
                                   @Override
                                   public void onProgress(final int absPosition,
                                                          @Nullable final Object message) {
@@ -105,14 +102,9 @@ public class ImportCSVTask
                               }
                              );
 
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
+        } catch (@NonNull final IOException | ImportException e) {
             Logger.error(this, e);
             mException = e;
-
-        } catch (@NonNull final ImportException e) {
-            Logger.error(this, e);
-            mException = e;
-
         } finally {
             try {
                 mImporter.close();

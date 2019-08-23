@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,19 +34,30 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Value class giving resulting series info after parsing a book title.
+ * Value class to split a "bookTitle (seriesTitleAndNumber)" into its components.
  */
 public class ParsedBookTitle {
 
     /**
-     * Parse series title/numbers embedded in a book title.
-     * group 1: title
-     * group 4: number
+     * Parse "bookTitle (seriesTitleAndNumber)" into "bookTitle" and "seriesTitleAndNumber".
+     * <p>
+     * group 1: bookTitle
+     * group 4: seriesTitleAndNumber
+     * We want a title that does not START with a bracket!
      */
-    private static final Pattern SERIES_FROM_BOOK_TITLE_PATTERN =
+    private static final Pattern BOOK_SERIES_PATTERN =
+            Pattern.compile("([^(]+.*)\\s\\((.*)\\).*",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /**
+     * Parse "seriesTitle,nr" or "seriesTitle nr" into "seriesTitle" and "nr"
+     * <p>
+     * group 1: seriesTitle
+     * group 4: nr
+     */
+    private static final Pattern SERIES_AND_NUMBER_PATTERN =
             Pattern.compile("(.*?)(,|\\s)\\s*"
-                            + Series.NUMBER_PREFIX_REGEXP
-                            + Series.NUMBER_REGEXP,
+                            + Series.NUMBER_PREFIX_REGEXP + Series.NUMBER_REGEXP,
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     @NonNull
     private final String mBookTitle;
@@ -65,7 +77,7 @@ public class ParsedBookTitle {
         mBookTitle = bookTitle;
         mSeriesTitle = seriesTitle;
 
-        Matcher matcher = SERIES_FROM_BOOK_TITLE_PATTERN.matcher(mSeriesTitle);
+        Matcher matcher = SERIES_AND_NUMBER_PATTERN.matcher(mSeriesTitle);
         if (matcher.find()) {
             mSeriesTitle = matcher.group(1);
             mSeriesNumber = Series.cleanupSeriesNumber(matcher.group(4));
@@ -74,39 +86,36 @@ public class ParsedBookTitle {
 
     /**
      * Try to extract a title/series/number from a book title.
-     * FIXME: the only format supported is "bookTitle (seriesTitleAndNumber)"
      *
      * @param fullTitle Book title to parse
      *
      * @return structure with parsed details of the title, or {@code null}.
      */
     @Nullable
-    public static ParsedBookTitle parseBrackets(@Nullable final String fullTitle) {
+    public static ParsedBookTitle parse(@Nullable final String fullTitle) {
         if (fullTitle == null || fullTitle.isEmpty()) {
             return null;
         }
 
-        int openBracket = fullTitle.lastIndexOf('(');
-        // We want a title that does not START with a bracket!
-        if (openBracket >= 1) {
-            int closeBracket = fullTitle.lastIndexOf(')');
-            if (closeBracket > -1 && openBracket < closeBracket) {
-                String bookTitle = fullTitle.substring(0, openBracket - 1).trim();
-                String seriesTitle = fullTitle.substring(openBracket + 1, closeBracket);
-
-                return new ParsedBookTitle(bookTitle, seriesTitle);
-            }
+        Matcher matcher = BOOK_SERIES_PATTERN.matcher(fullTitle);
+        if (matcher.find()) {
+            String bookTitle = matcher.group(1);
+            String seriesTitle = matcher.group(2);
+            return new ParsedBookTitle(bookTitle, seriesTitle);
         }
         return null;
     }
 
+    /**
+     * @return book title
+     */
     @NonNull
     public String getBookTitle() {
         return mBookTitle;
     }
 
     /**
-     * @return series title, can be empty, never {@code null}
+     * @return series title
      */
     @NonNull
     public String getSeriesTitle() {

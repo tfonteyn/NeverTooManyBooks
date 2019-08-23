@@ -56,9 +56,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public class IsfdbBook
         extends AbstractBase {
@@ -491,10 +491,10 @@ public class IsfdbBook
 
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
                     tmpString = li.childNode(2).toString().trim();
-                    LocaleUtils.splitPrice(tmpString,
-                                           DBDefinitions.KEY_PRICE_LISTED,
-                                           DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                                           bookData);
+                    CurrencyUtils.splitPrice(tmpString,
+                                             DBDefinitions.KEY_PRICE_LISTED,
+                                             DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                                             bookData);
 
                 } else if ("Pages:".equalsIgnoreCase(fieldName)) {
                     tmpString = li.childNode(2).toString().trim();
@@ -582,8 +582,8 @@ public class IsfdbBook
 
         // ISFDB does not offer the books language on the main page (although they store
         // it in their database).
-        //ENHANCE: they are adding language to the data.. revisit.
-        // Default to a localised 'English" as ISFDB is after all (I presume) 95% english
+        //ENHANCE: the site is adding language to the data.. revisit.
+        // For now, default to a localised 'English" as ISFDB is after all (I presume) 95% english
         bookData.putString(DBDefinitions.KEY_LANGUAGE, Locale.ENGLISH.getISO3Language());
 
         // the table of content
@@ -634,7 +634,7 @@ public class IsfdbBook
      * <p>
      * Except for Amazon:
      *
-     * <li> <abbr class="template" title="Amazon Standard Identification Number">ASIN</abbr>:  B003ODIWEG
+     * <li><abbr class="template" ... >ASIN</abbr>:  B003ODIWEG
      * (<a href="https://www.amazon.com.au/dp/B003ODIWEG" target="_blank">AU</a>
      * <a href="https://www.amazon.com.br/dp/B003ODIWEG" target="_blank">BR</a>
      * <a href="https://www.amazon.ca/dp/B003ODIWEG" target="_blank">CA</a>
@@ -647,8 +647,10 @@ public class IsfdbBook
      * <a href="https://www.amazon.co.jp/dp/B003ODIWEG" target="_blank">JP</a>
      * <a href="https://www.amazon.com.mx/dp/B003ODIWEG" target="_blank">MX</a>
      * <a href="https://www.amazon.nl/dp/B003ODIWEG" target="_blank">NL</a>
-     * <a href="https://www.amazon.co.uk/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-21" target="_blank">UK</a>
-     * <a href="https://www.amazon.com/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325" target="_blank">US</a>)
+     * <a href="https://www.amazon.co.uk/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-21"
+     *          target="_blank">UK</a>
+     * <a href="https://www.amazon.com/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-20&amp;
+     *          linkCode=as2&amp;camp=1789&amp;creative=9325" target="_blank">US</a>)
      *
      * @param elements LI elements
      * @param bookData bundle to store the findings.

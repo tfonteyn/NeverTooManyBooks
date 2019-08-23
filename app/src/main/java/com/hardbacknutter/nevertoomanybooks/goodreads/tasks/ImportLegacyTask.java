@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
@@ -179,11 +178,10 @@ class ImportLegacyTask
     public boolean run(@NonNull final QueueManager queueManager,
                        @NonNull final Context context) {
 
-        Locale userLocale = LocaleUtils.getPreferredLocale();
 
         try (DAO db = new DAO()) {
             // Load the Goodreads reviews
-            boolean ok = processReviews(context, userLocale, queueManager, db);
+            boolean ok = processReviews(context, db, queueManager);
             // If it's a sync job, then start the 'send' part and save last syn date
             if (mIsSync) {
                 GoodreadsManager.setLastSyncDate(mStartDate);
@@ -201,17 +199,16 @@ class ImportLegacyTask
     /**
      * Repeatedly request review pages until we are done.
      *
-     * @param context    Current context
-     * @param userLocale the user Locale
+     * @param context Current context
+     * @param db      the database
      *
      * @return {@code true} if all went well
      *
      * @throws CredentialsException with GoodReads
      */
     private boolean processReviews(@NonNull final Context context,
-                                   @NonNull final Locale userLocale,
-                                   @NonNull final QueueManager queueManager,
-                                   @NonNull final DAO db)
+                                   @NonNull final DAO db,
+                                   @NonNull final QueueManager queueManager)
             throws CredentialsException {
 
         GoodreadsManager gr = new GoodreadsManager();
@@ -225,7 +222,7 @@ class ImportLegacyTask
             // In case of a restart, reset position to first in page
             mPosition = BOOKS_PER_PAGE * (currPage - 1);
 
-            Bundle books;
+            Bundle results;
 
             // Call the API, return {@code false} if failed.
             try {
@@ -235,7 +232,7 @@ class ImportLegacyTask
                 if (mStartDate == null) {
                     runDate = new Date();
                 }
-                books = api.get(currPage, BOOKS_PER_PAGE);
+                results = api.get(currPage, BOOKS_PER_PAGE);
                 // If we succeeded, and this is the first time, save the date
                 if (mStartDate == null) {
                     mStartDate = runDate;
@@ -246,7 +243,7 @@ class ImportLegacyTask
             }
 
             // Get the total, and if first call, save the object again so the UI can update.
-            mTotalBooks = (int) books.getLong(ListReviewsApiHandler.ReviewField.TOTAL);
+            mTotalBooks = (int) results.getLong(ListReviewsApiHandler.ReviewField.TOTAL);
             if (mFirstCall) {
                 // So the details get updated
                 queueManager.updateTask(this);
@@ -255,7 +252,7 @@ class ImportLegacyTask
 
             // Get the reviews array and process it
             ArrayList<Bundle> reviews =
-                    books.getParcelableArrayList(ListReviewsApiHandler.ReviewField.REVIEWS);
+                    results.getParcelableArrayList(ListReviewsApiHandler.ReviewField.REVIEWS);
 
             if (reviews == null || reviews.isEmpty()) {
                 break;
@@ -275,7 +272,7 @@ class ImportLegacyTask
                 }
 
                 // Processing may involve a SLOW thumbnail download...don't run in TX!
-                processReview(context, userLocale, db, review);
+                processReview(context, db, review);
                 //SyncLock tx = db.startTransaction(true);
                 //try {
                 //    processReview(db, review);
@@ -302,10 +299,9 @@ class ImportLegacyTask
      * Process one review (book).
      *
      * @param context    Current context
-     * @param userLocale the user Locale
+     * @param db         the database
      */
     private void processReview(@NonNull final Context context,
-                               @NonNull final Locale userLocale,
                                @NonNull final DAO db,
                                @NonNull final Bundle review) {
 
@@ -335,11 +331,11 @@ class ImportLegacyTask
                     if (isAborting()) {
                         break;
                     }
-                    updateBook(context, userLocale, db, cursor, review);
+                    updateBook(context, db, cursor, review);
                 } while (cursor.moveToNext());
             } else {
                 // Create the book
-                insertBook(context, userLocale, db, review);
+                insertBook(context, db, review);
             }
         } finally {
             if (cursor != null) {
@@ -368,15 +364,17 @@ class ImportLegacyTask
             List<Bookshelf> bookshelves = db.getBookshelves();
             mBookshelfLookup = new HashMap<>(bookshelves.size());
             for (Bookshelf bookshelf : bookshelves) {
-                mBookshelfLookup.put(
-                        GoodreadsShelf.canonicalizeName(bookshelf.getName()),
-                        bookshelf.getName());
+                mBookshelfLookup.put(GoodreadsShelf.canonicalizeName(bookshelf.getName()),
+                                     bookshelf.getName());
             }
         }
 
         String lcGrShelfName = grShelfName.toLowerCase(LocaleUtils.getPreferredLocale());
-        return mBookshelfLookup.containsKey(lcGrShelfName) ? mBookshelfLookup.get(lcGrShelfName)
-                                                           : grShelfName;
+        if (mBookshelfLookup.containsKey(lcGrShelfName)) {
+            return mBookshelfLookup.get(lcGrShelfName);
+        } else {
+            return grShelfName;
+        }
     }
 
     /**
@@ -395,10 +393,9 @@ class ImportLegacyTask
      * Update the book using the GR data.
      *
      * @param context    Current context
-     * @param userLocale the user Locale
+     * @param db         the database
      */
     private void updateBook(@NonNull final Context context,
-                            @NonNull final Locale userLocale,
                             @NonNull final DAO db,
                             @NonNull final BookCursor bookCursor,
                             @NonNull final Bundle review) {
@@ -417,7 +414,7 @@ class ImportLegacyTask
         // We build a new book bundle each time since it will build on the existing
         // data for the given book (taken from the cursor), not just replace it.
         Book book = new Book(buildBundle(db, bookCursor, review));
-        db.updateBook(context, userLocale, bookCursor.getLong(DBDefinitions.KEY_PK_ID), book,
+        db.updateBook(context, bookCursor.getLong(DBDefinitions.KEY_PK_ID), book,
                       DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
     }
 
@@ -425,15 +422,14 @@ class ImportLegacyTask
      * Create a new book.
      *
      * @param context    Current context
-     * @param userLocale the user Locale
+     * @param db         the database
      */
     private void insertBook(@NonNull final Context context,
-                            @NonNull final Locale userLocale,
                             @NonNull final DAO db,
                             @NonNull final Bundle review) {
 
         Book book = new Book(buildBundle(db, null, review));
-        long id = db.insertBook(context, userLocale, book);
+        long id = db.insertBook(context, book);
 
         if (id > 0) {
             if (book.getBoolean(UniqueId.BKEY_IMAGE)) {
@@ -450,11 +446,18 @@ class ImportLegacyTask
     /**
      * Build a book bundle based on the Goodreads 'review' data. Some data is just copied
      * while other data is processed (e.g. dates) and other are combined (authors & series).
+     *
+     * @param db the database
+     *
+     * @return bookData bundle
      */
     @NonNull
     private Bundle buildBundle(@NonNull final DAO db,
                                @Nullable final BookCursor bookCursorRow,
                                @NonNull final Bundle review) {
+
+        // The ListReviewsApi does not return the book language
+        Locale bookLocale = LocaleUtils.getPreferredLocale();
 
         Bundle bookData = new Bundle();
 
@@ -551,14 +554,14 @@ class ImportLegacyTask
          */
         if (bookData.containsKey(DBDefinitions.KEY_TITLE)) {
             String bookTitle = bookData.getString(DBDefinitions.KEY_TITLE);
-            ParsedBookTitle parsedBookTitle = ParsedBookTitle.parseBrackets(bookTitle);
+            ParsedBookTitle parsedBookTitle = ParsedBookTitle.parse(bookTitle);
             if (parsedBookTitle != null && !parsedBookTitle.getSeriesTitle().isEmpty()) {
                 ArrayList<Series> seriesList;
                 if (bookCursorRow == null) {
                     seriesList = new ArrayList<>();
                 } else {
-                    seriesList = db.getSeriesByBookId(
-                            bookCursorRow.getLong(DBDefinitions.KEY_PK_ID));
+                    seriesList =
+                            db.getSeriesByBookId(bookCursorRow.getLong(DBDefinitions.KEY_PK_ID));
                 }
 
                 Series newSeries = new Series(parsedBookTitle.getSeriesTitle());
@@ -566,7 +569,7 @@ class ImportLegacyTask
                 seriesList.add(newSeries);
                 bookData.putString(DBDefinitions.KEY_TITLE, parsedBookTitle.getBookTitle());
 
-                Series.pruneSeriesList(seriesList);
+                Series.pruneSeriesList(seriesList, bookLocale);
                 bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
             }
         }
@@ -593,8 +596,8 @@ class ImportLegacyTask
             // --- end 2019-02-04 ---
 
             for (Bundle shelfBundle : grShelves) {
-                String bsName = translateBookshelf(db, shelfBundle.getString(
-                        ListReviewsApiHandler.ReviewField.SHELF));
+                String bsName = shelfBundle.getString(ListReviewsApiHandler.ReviewField.SHELF);
+                bsName = translateBookshelf(db, bsName);
 
                 if (bsName != null && !bsName.isEmpty()) {
                     bsList.add(new Bookshelf(bsName, BooklistStyles.getDefaultStyle(db)));
@@ -602,8 +605,7 @@ class ImportLegacyTask
             }
             //TEST see above
             //--- begin 2019-02-04 ---
-            Context userContext = App.getFakeUserContext();
-            ItemWithFixableId.pruneList(userContext, db, bsList);
+            ItemWithFixableId.pruneList(db, bsList);
             //--- end 2019-02-04 ---
 
             bookData.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
@@ -722,8 +724,10 @@ class ImportLegacyTask
      * Copy a non-blank string to the book bundle.
      */
     private void addStringIfNonBlank(@NonNull final Bundle source,
-                                     @NonNull final String sourceKey,
+                                     @SuppressWarnings("SameParameterValue") @NonNull
+                                     final String sourceKey,
                                      @NonNull final Bundle bookData,
+                                     @SuppressWarnings("SameParameterValue")
                                      @NonNull final String destKey) {
 
         if (source.containsKey(sourceKey)) {
@@ -739,6 +743,7 @@ class ImportLegacyTask
      */
     private void addLongIfPresent(@NonNull final Bundle source,
                                   @NonNull final Bundle bookData,
+                                  @SuppressWarnings("SameParameterValue")
                                   @NonNull final String key) {
 
         if (source.containsKey(key)) {
@@ -750,6 +755,7 @@ class ImportLegacyTask
     /**
      * Copy a Long value to the book bundle.
      */
+    @SuppressWarnings("unused")
     private void addLongIfPresent(@NonNull final Bundle source,
                                   @NonNull final String sourceKey,
                                   @NonNull final Bundle bookData,

@@ -30,14 +30,15 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
 /**
@@ -50,6 +51,21 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 public interface ItemWithFixableId {
 
     /**
+     * Convenience method for {@link #pruneList(DAO, List, Context, Locale)}.
+     * Should be used when the items in the list don't use a Locale.
+     *
+     * @param db   Database Access
+     * @param list List to clean up
+     * @param <T>  ItemWithFixableId object
+     *
+     * @return {@code true} if the list was modified.
+     */
+    static <T extends ItemWithFixableId> boolean pruneList(@NonNull final DAO db,
+                                                           @NonNull final List<T> list) {
+        return pruneList(db, list, null, null);
+    }
+
+    /**
      * Passed a list of Objects, remove duplicates based on the
      * {@link ItemWithFixableId#uniqueHashCode()} result.
      * <p>
@@ -58,15 +74,22 @@ public interface ItemWithFixableId {
      * ENHANCE: Add {@link Series} aliases table to allow further pruning
      * (e.g. 'Amber Series' <==> 'Amber').
      *
-     * @param db   Database Access
-     * @param list List to clean up
-     * @param <T>  ItemWithFixableId object
+     * <b>Note:</b> the context and the fallbackLocale must both be null, or both be non-null.
+     *
+     * @param db             Database Access
+     * @param list           List to clean up
+     * @param context        Current context, can be set to {@code null}
+     *                       if <strong>the item does not support locales</strong>
+     * @param fallbackLocale Locale to use if the item has none set, can be set to {@code null}
+     *                       if <strong>the item does not support locales</strong>
+     * @param <T>            ItemWithFixableId object
      *
      * @return {@code true} if the list was modified.
      */
-    static <T extends ItemWithFixableId> boolean pruneList(@NonNull final Context context,
-                                                           @NonNull final DAO db,
-                                                           @NonNull final List<T> list) {
+    static <T extends ItemWithFixableId> boolean pruneList(@NonNull final DAO db,
+                                                           @NonNull final List<T> list,
+                                                           @Nullable final Context context,
+                                                           @Nullable final Locale fallbackLocale) {
         // weeding out duplicate ID's
         Set<Long> ids = new HashSet<>();
         // weeding out duplicate unique hash codes.
@@ -79,9 +102,15 @@ public interface ItemWithFixableId {
             T item = it.next();
 
             // try to find the item.
-            long itemId = item.fixId(context, db);
-            Integer uniqueHashCode = item.uniqueHashCode();
+            long itemId;
+            if (fallbackLocale != null) {
+                Objects.requireNonNull(context);
+                itemId = item.fixId(db, context, item.getLocale(fallbackLocale));
+            } else {
+                itemId = item.fixId(db);
+            }
 
+            Integer uniqueHashCode = item.uniqueHashCode();
             if (ids.contains(itemId)
                 && !item.isUniqueById() && !hashCodes.contains(uniqueHashCode)) {
                 // The base object IS unique, but other "list-significant" fields are different.
@@ -105,35 +134,21 @@ public interface ItemWithFixableId {
     }
 
     /**
+     * Get the id of this item.
+     *
+     * @return the id, or 0 for a "new" item
+     */
+    long getId();
+
+    /**
+     * Get the locale of this item.
+     *
+     * @param fallbackLocale Locale to use if the item has none set
+     *
      * @return the item Locale
      */
     @NonNull
-    Locale getLocale();
-
-    /**
-     * Convenience method for {@link #fixId(Context, DAO, Locale)}.
-     *
-     * @param db Database Access
-     *
-     * @return the item id (also set on the item).
-     */
-    default long fixId(@NonNull DAO db) {
-        Context userContext = App.getFakeUserContext();
-        return fixId(userContext, db, getLocale());
-    }
-
-    /**
-     * Convenience method for {@link #fixId(Context, DAO, Locale)}.
-     *
-     * @param context Current context
-     * @param db      Database Access
-     *
-     * @return the item id (also set on the item).
-     */
-    default long fixId(@NonNull final Context context,
-                       @NonNull final DAO db) {
-        return fixId(context, db, getLocale());
-    }
+    Locale getLocale(@NonNull Locale fallbackLocale);
 
     /**
      * Tries to find the item in the database using all or some of its fields (except the id).
@@ -141,17 +156,31 @@ public interface ItemWithFixableId {
      * <p>
      * If the item has 'sub' items, then it should call those as well.
      *
-     * @param context Current context
      * @param db      Database Access
-     * @param locale  Locale that will override the items Locale
+     * @param context Current context
+     * @param locale  Locale to use
      *
      * @return the item id (also set on the item).
      */
-    long fixId(@NonNull final Context context,
-               @NonNull final DAO db,
-               @NonNull final Locale locale);
+    long fixId(@NonNull DAO db,
+               @NonNull Context context,
+               @NonNull Locale locale);
 
     /**
+     * Convenience method for items that don't need the locale.
+     * Allows code to omit an unneeded Locale lookup just to call fixId.
+     *
+     * @param db Database Access
+     *
+     * @return the item id (also set on the item).
+     */
+    default long fixId(@NonNull DAO db) {
+        throw new IllegalStateException("not implemented");
+    }
+
+    /**
+     * Get the flag as used in {@link #pruneList}.
+     *
      * @return {@code true} if comparing ONLY by id ensures uniqueness.
      */
     boolean isUniqueById();

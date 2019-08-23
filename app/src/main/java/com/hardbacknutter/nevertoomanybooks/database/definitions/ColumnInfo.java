@@ -138,23 +138,22 @@ public class ColumnInfo {
             switch (columnType.toLowerCase(App.getSystemLocale())) {
                 case TYPE_INTEGER:
                 case "int":
+                case TYPE_BOOLEAN:
                     return StorageClass.Integer;
+
                 case TYPE_TEXT:
                 case "char":
+                case TYPE_DATE:
+                case TYPE_DATETIME:
                     return StorageClass.Text;
+
                 case TYPE_REAL:
                 case "float":
                 case "double":
                     return StorageClass.Real;
+
                 case TYPE_BLOB:
                     return StorageClass.Blob;
-
-                case TYPE_BOOLEAN:
-                    return StorageClass.Integer;
-
-                case TYPE_DATE:
-                case TYPE_DATETIME:
-                    return StorageClass.Text;
 
                 default:
                     // note that "" (empty) type is treated as TEXT.

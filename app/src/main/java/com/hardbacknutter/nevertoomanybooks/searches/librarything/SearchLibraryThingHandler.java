@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * method=librarything.ck.getwork&isbn=058603806X&apikey=x
  * <p>
  * A typical (and thorough) LibraryThing ISBN response looks like:
+ * ('person' tag removed')
  *
  * <pre>
  *     http://www.librarything.com/services/rest/1.1/?
@@ -72,10 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *          <versionList>
  *            <version id="3207634" archived="0" lang="eng">
  *              <date timestamp="1294088287">Mon, 03 Jan 2011 15:58:07 -0500</date>
- *              <person id="580486">
- *                <name>JSmith5528</name>
- *                <url>http://www.librarything.com/profile/JSmith5528</url>
- *              </person>
  *              <factList>
  *                <fact>
  *                  ![CDATA[ <b>Trullion: Alastor ...blah blah ]]>
@@ -94,10 +91,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *          <versionList>
  *            <version id="3207632" archived="0" lang="eng">
  *              <date timestamp="1294088250">Mon, 03 Jan 2011 15:57:30 -0500</date>
- *              <person id="580486">
- *                <name>JSmith5528</name>
- *                <url>http://www.librarything.com/profile/JSmith5528</url>
- *              </person>
  *              <factList>
  *                <fact>
  *                  ![CDATA[ <b>Trullion: Alastor 2262</b></br>Glinnes moved after ...blah blah ]]>
@@ -116,10 +109,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *          <versionList>
  *            <version id="3207629" archived="0" lang="eng">
  *              <date timestamp="1294087991">Mon, 03 Jan 2011 15:53:11 -0500</date>
- *              <person id="580486">
- *                <name>JSmith5528</name>
- *                <url>http://www.librarything.com/profile/JSmith5528</url>
- *              </person>
  *              <factList>
  *                <fact>
  *                  ![CDATA[ Contains the following novels: <i></br>Trullion: ...blah blah ]]>
@@ -132,13 +121,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *          <versionList>
  *            <version id="2139252" archived="0" lang="eng">
  *              <date timestamp="1264492371">Tue, 26 Jan 2010 02:52:51 -0500</date>
- *              <person id="849103">
- *                <name>LamontCranston</name>
- *                <url>http://www.librarything.com/profile/LamontCranston</url>
- *              </person>
  *              <factList>
  *                <fact>
- *                  thisrecording.com 100 Greatest Science Fiction or Fantasy ...blah blah
+ *                  100 Greatest Science Fiction or Fantasy ...blah blah
  *                </fact>
  *              </factList>
  *            </version>
@@ -148,10 +133,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *          <versionList>
  *            <version id="788105" archived="0" lang="eng">
  *              <date timestamp="1228946925">Wed, 10 Dec 2008 17:08:45 -0500</date>
- *              <person id="178587">
- *                <name>snellius</name>
- *                <url>http://www.librarything.com/profile/snellius</url>
- *              </person>
  *              <factList>
  *                <fact>1978 (omnibus)</fact>
  *              </factList>
@@ -162,10 +143,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *          <versionList>
  *            <version id="788102" archived="0" lang="eng">
  *              <date timestamp="1228946925">Wed, 10 Dec 2008 17:08:45 -0500</date>
- *              <person id="178587">
- *                <name>snellius</name>
- *                <url>http://www.librarything.com/profile/snellius</url>
- *              </person>
  *              <factList>
  *                <fact>Alastor (4|Omnibus)</fact>
  *              </factList>
@@ -197,15 +174,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *            <versionList>
  *              <version id="3324305" archived="0" lang="eng">
  *                <date timestamp="1296476301">Mon, 31 Jan 2011 07:18:21 -0500</date>
- *                <person id="325052">
- *                    <name>Cecrow</name>
- *                    <url>http://www.librarything.com/profile/Cecrow</url>
- *                </person>
  *                <factList>
  *                  <fact>1001 Books You Must Read Before You Die (2006/2008/2010 Edition)</fact>
  *                  <fact>Astounding/Analog Science Fiction and Fact All-Time Poll ...</fact>
  *                  <fact>Astounding/Analog Science Fiction and Fact All-Time Poll ...</fact>
- *                  <fact>Harenberg Buch der 1000 B�cher (1. Ausgabe)</fact>
  *                  <fact>501 Must-Read Books (Science Fiction)</fact>
  *                </factList>
  *              </version>
@@ -215,10 +187,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *            <versionList>
  *              <version id="3120269" archived="0" lang="eng">
  *                <date timestamp="1292202792">Sun, 12 Dec 2010 20:13:12 -0500</date>
- *                <person id="656066">
- *                  <name>Scottneumann</name>
- *                  <url>http://www.librarything.com/profile/Scottneumann</url>
- *                </person>
  *                <factList>
  *                  <fact>Robots (1988 | tt0174170)</fact>
  *                  <fact>I, Robot (2004 | tt0343818)</fact>
@@ -231,10 +199,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *            <versionList>
  *              <version id="2971007" archived="0" lang="eng">
  *                <date timestamp="1289497446">Thu, 11 Nov 2010 12:44:06 -0500</date>
- *                <person id="3929">
- *                  <name>sonyagreen</name>
- *                  <url>http://www.librarything.com/profile/sonyagreen</url>
- *                </person>
  *                <factList>
  *                  <fact>Voyager Classics</fact>
  *                </factList>
@@ -245,10 +209,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *            <versionList>
  *              <version id="2756634" archived="0" lang="eng">
  *                <date timestamp="1281897478">Sun, 15 Aug 2010 14:37:58 -0400</date>
- *                <person id="203279">
- *                  <name>jseger9000</name>
- *                  <url>http://www.librarything.com/profile/jseger9000</url>
- *                </person>
  *                <factList>
  *                  <fact>&lt;![CDATA[ Contents:&lt;br&gt;&lt;br&gt;Introduction&lt;br
  *                    &gt;Robbie&lt;br&gt;Runaround&lt;br&gt;Reason&lt;br&gt;Catch That Rabbit&lt;
@@ -263,10 +223,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *            <versionList>
  *              <version id="2742329" archived="0" lang="eng">
  *                <date timestamp="1281338643">Mon, 09 Aug 2010 03:24:03 -0400</date>
- *                <person id="1162290">
- *                  <name>larry.auld</name>
- *                  <url>http://www.librarything.com/profile/larry.auld</url>
- *                </person>
  *                <factList>
  *                  <fact>Isaac Asimov's Robot Series (0.1)</fact>
  *                  <fact>Robot/Foundation</fact>
@@ -279,10 +235,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *            <versionList>
  *              <version id="2554955" archived="0" lang="eng">
  *                <date timestamp="1275746736">Sat, 05 Jun 2010 10:05:36 -0400</date>
- *                <person id="125174">
- *                  <name>paulhurtley</name>
- *                  <url>http://www.librarything.com/profile/paulhurtley</url>
- *                </person>
  *                <factList>
  *                  <fact>1950 (Collection)</fact>
  *                  <fact>1944 (Catch that Rabbit)</fact>
@@ -302,10 +254,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *            <versionList>
  *              <version id="2503597" archived="0" lang="eng">
  *                <date timestamp="1274377341">Thu, 20 May 2010 13:42:21 -0400</date>
- *                <person id="1797">
- *                  <name>lorax</name>
- *                  <url>http://www.librarything.com/profile/lorax</url>
- *                </person>
  *                <factList>
  *                  <fact>&lt;![CDATA[ The Three Laws of Robotics
  *                    1. A robot may not injure a human being, or, through inaction, allow a human
@@ -323,10 +271,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *            <versionList>
  *              <version id="2503596" archived="0" lang="eng">
  *                <date timestamp="1274377341">Thu, 20 May 2010 13:42:21 -0400</date>
- *                <person id="1797">
- *                  <name>lorax</name>
- *                  <url>http://www.librarything.com/profile/lorax</url>
- *                </person>
  *                <factList>
  *                  <fact>
  *                      &lt;![CDATA[ To John W. Campbell, Jr., who god-fathered the robots]]&gt;
@@ -339,10 +283,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *          <versionList>
  *            <version id="2503594" archived="0" lang="eng">
  *              <date timestamp="1274377340">Thu, 20 May 2010 13:42:20 -0400</date>
- *              <person id="1797">
- *                <name>lorax</name>
- *                <url>http://www.librarything.com/profile/lorax</url>
- *              </person>
  *              <factList>
  *                <fact>&lt;![CDATA[ Robbie:&lt;br&gt;"Well," said Mrs. Weston, at last,
  *                "I guess he can stay with us until he rusts." ]]&gt;</fact>
@@ -350,19 +290,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *                "here I come." ]]&gt;</fact>
  *                <fact>&lt;![CDATA[ Reason"&lt;br&gt;He grinned � and went into the ship.
  *                Muller would be here for several weeks � ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ Catch That Rabbit:&lt;br&gt;****&lt;br&gt;**** too
- *                spoilerish! ]]&gt;</fact>
  *                <fact>&lt;![CDATA[ Liar:&lt;br&gt;"Liar!" ]]&gt;</fact>
  *                <fact>&lt;![CDATA[ Little Lost Robot:&lt;br&gt;"� His very superiority caught
  *                him.  Good-by General" ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ Escape:&lt;br&gt;To which Bogert added absently, "Strictly
- *                according to the contract, too." ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ Evidence:&lt;br&gt;Stephen Byerley chuckled.  "I must reply
- *                that that is a somewhat farfetched idea."&lt;br&gt;The door closed behind her.
- *                ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ The Evitable Conflict:&lt;br&gt;And the fire behind the
- *                quartz went out and only a curl of smoke was left to indicate its place. ]]&gt;
- *                </fact>
  *                <fact>&lt;![CDATA[ &lt;i&gt;She died last month at the age of eighty-two.
  *                &lt;/i&gt; ]]&gt;</fact>
  *              </factList>
@@ -373,10 +303,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *          <versionList>
  *            <version id="2503593" archived="0" lang="eng">
  *              <date timestamp="1274377340">Thu, 20 May 2010 13:42:20 -0400</date>
- *              <person id="1797">
- *                <name>lorax</name>
- *                <url>http://www.librarything.com/profile/lorax</url>
- *              </person>
  *              <factList>
  *                <fact>&lt;![CDATA[ Robbie:&lt;br&gt;"Ninety-eight � ninety-nine � &lt;
  *                i&gt;one hundred&lt;/i&gt;." ]]&gt;</fact>
@@ -388,16 +314,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *                their minds. ]]&gt;</fact>
  *                <fact>&lt;![CDATA[ Catch That Rabbit:&lt;br&gt;The vacation was longer than
  *                two weeks. ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ Liar!&lt;br&gt;Alfred Lanning lit his cigar carefully,
- *                but the tips of his fingers were trembling slightly. ]]&gt;</fact>
  *                <fact>&lt;![CDATA[ Little Lost Robot:&lt;br&gt;When I did see Susan Calvin again,
  *                it was at the door of her office. ]]&gt;</fact>
  *                <fact>&lt;![CDATA[ Escape!:&lt;br&gt;When Susan Calvin returned from Hyper Base,
  *                Alfred Lanning was waiting for her. ]]&gt;</fact>
  *                <fact>&lt;![CDATA[ Evidence:&lt;br&gt;Francis Quinn was a politician of the new
  *                school. ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ The Evitable Conflict:&lt;br&gt;The Coordinator, in his
- *                private study, had that medieval curiosity, a fireplace. ]]&gt;</fact>
  *                <fact>&lt;![CDATA[ &lt;i&gt;I looked at my notes and I didn't like them.&lt;
  *                /i&gt; (Introduction) ]]&gt;</fact>
  *              </factList>
@@ -408,10 +330,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *          <versionList>
  *            <version id="2503590" archived="0" lang="eng">
  *              <date timestamp="1274377338">Thu, 20 May 2010 13:42:18 -0400</date>
- *              <person id="1797">
- *                <name>lorax</name>
- *                <url>http://www.librarything.com/profile/lorax</url>
- *              </person>
  *              <factList>
  *                <fact>I, Robot</fact>
  *              </factList>
@@ -422,10 +340,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *          <versionList>
  *            <version id="2503589" archived="0" lang="eng">
  *              <date timestamp="1274377337">Thu, 20 May 2010 13:42:17 -0400</date>
- *              <person id="1797">
- *                <name>lorax</name>
- *                <url>http://www.librarything.com/profile/lorax</url>
- *              </person>
  *              <factList>
  *                <fact>Susan Calvin</fact>
  *                <fact>Cutie (QT1)</fact>
@@ -438,10 +352,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  *          <versionList>
  *            <version id="2503588" archived="0" lang="eng">
  *              <date timestamp="1274377336">Thu, 20 May 2010 13:42:16 -0400</date>
- *              <person id="1797">
- *                <name>lorax</name>
- *                <url>http://www.librarything.com/profile/lorax</url>
- *              </person>
  *              <factList>
  *                <fact>Mercury</fact>
  *                <fact>New York, New York, USA</fact>
@@ -687,23 +597,16 @@ class SearchLibraryThingHandler
                     break;
 
                 case OriginalLanguage:
-                    //ENHANCE
-                    break;
                 case OriginalTitle:
-                    //ENHANCE
-                    break;
                 case AltTitle:
                     //ENHANCE
                     break;
 
                 case Places:
-                    // not supported
-                    break;
                 case Characters:
                     // not supported
                     break;
                 case Other:
-                    break;
                 case None:
                     break;
             }

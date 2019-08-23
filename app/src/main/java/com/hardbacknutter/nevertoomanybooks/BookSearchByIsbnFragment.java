@@ -103,7 +103,7 @@ public class BookSearchByIsbnFragment
 
     /** all digits allowed in ASIN strings. */
     private static final String ASIN_DIGITS =
-            "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
+            "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     /** all digits in ISBN strings. */
     private static final String ISBN_DIGITS = "0123456789xX";
     /** listener/acceptor for all ISBN digits. */
@@ -111,7 +111,7 @@ public class BookSearchByIsbnFragment
             DigitsKeyListener.getInstance(ISBN_DIGITS);
     /** filter to remove all ASIN digits from ISBN strings (leave xX!). */
     private static final Pattern ISBN_PATTERN =
-            Pattern.compile("[qwertyuiopasdfghjklzcvbnmQWERTYUIOPASDFGHJKLZCVBNM]");
+            Pattern.compile("[abcdefghijklmnopqrstuvwyzABCDEFGHIJKLMNOPQRSTUVWYZ]");
 
     /**
      * Flag to indicate the Activity should not 'finish()' because an alert is being displayed.

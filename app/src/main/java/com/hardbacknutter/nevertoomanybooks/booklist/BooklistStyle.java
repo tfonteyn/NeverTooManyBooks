@@ -730,12 +730,11 @@ public class BooklistStyle
      */
     public float getScaleFactor() {
         switch (mScaleFontSize.get()) {
+            case TEXT_SCALE_LARGE:
+                return 1.2f;
             case TEXT_SCALE_SMALL:
                 return 0.8f;
             case TEXT_SCALE_MEDIUM:
-                return 1.0f;
-            case TEXT_SCALE_LARGE:
-                return 1.2f;
             default:
                 return 1.0f;
         }

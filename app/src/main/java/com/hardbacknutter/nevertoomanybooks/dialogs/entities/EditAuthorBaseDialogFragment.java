@@ -60,15 +60,21 @@ public abstract class EditAuthorBaseDialogFragment
 
     /** Database Access. */
     protected DAO mDb;
+
     WeakReference<BookChangedListener> mBookChangedListener;
+
     private AutoCompleteTextView mFamilyNameView;
     private AutoCompleteTextView mGivenNamesView;
     private Checkable mIsCompleteView;
+
+    /** The author we're editing. */
     private Author mAuthor;
+    /** Current edit. */
     private String mFamilyName;
+    /** Current edit. */
     private String mGivenNames;
+    /** Current edit. */
     private boolean mIsComplete;
-    private int mType;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

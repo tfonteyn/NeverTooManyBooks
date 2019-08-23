@@ -368,6 +368,7 @@ class SearchGoogleBooksEntryHandler
                 // the language field can be empty, so check before storing it
                 String iso = mBuilder.toString();
                 if (!iso.isEmpty()) {
+                    // the language is a proper iso code, just store.
                     addIfNotPresent(DBDefinitions.KEY_LANGUAGE, iso);
                 }
                 break;

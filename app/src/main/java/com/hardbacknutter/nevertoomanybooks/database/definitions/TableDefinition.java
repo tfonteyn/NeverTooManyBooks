@@ -884,9 +884,9 @@ public class TableDefinition
         String getUsingModifier() {
             switch (this) {
                 case Standard:
-                    return "";
                 case Temporary:
                     return "";
+
                 case FTS3:
                     return " USING fts3";
                 case FTS4:

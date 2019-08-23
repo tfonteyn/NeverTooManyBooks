@@ -37,8 +37,6 @@ ENHANCE: XML Exporter / Importer
 
 TODO: go over ViewModel usage and related onSaveInstanceState. Remove the latter when appropriate.
 
-FIXME: rewrite the GoogleBooks xml handlers by merging them.
-
 Issues checked: 834 down to 677 (inc)
 
 New fields:

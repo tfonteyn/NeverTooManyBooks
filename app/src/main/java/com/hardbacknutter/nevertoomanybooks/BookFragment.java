@@ -125,6 +125,95 @@ public class BookFragment
     private AppCompatActivity mActivity;
 
     @Override
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
+        mActivity = (AppCompatActivity) context;
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (LendBookDialogFragment.TAG.equals(childFragment.getTag())) {
+            ((LendBookDialogFragment) childFragment).setListener(mBookChangedListener);
+        }
+    }
+
+
+    @Override
+    @Nullable
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_book_details, container, false);
+        mNestedScrollView = view.findViewById(R.id.topScroller);
+
+        mTocLabelView = view.findViewById(R.id.lbl_toc);
+        mTocView = view.findViewById(R.id.toc);
+
+        mTocButton = view.findViewById(R.id.toc_button);
+        // show/hide the TOC as the user flips the switch.
+        mTocButton.setOnClickListener(v -> {
+            // note that the button is explicitly (re)set.
+            // If user clicks to fast it gets out of sync.
+            if (mTocView.getVisibility() == View.VISIBLE) {
+                // force a scroll; a manual scroll is no longer possible after the TOC closes.
+                mNestedScrollView.fullScroll(View.FOCUS_UP);
+                mTocView.setVisibility(View.GONE);
+                mTocButton.setChecked(false);
+
+            } else {
+                mTocView.setVisibility(View.VISIBLE);
+                mTocButton.setChecked(true);
+            }
+        });
+
+        return view;
+    }
+
+    /**
+     * Has no specific Arguments or savedInstanceState.
+     * <ul>All storage interaction is done via:
+     * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
+     * </ul>
+     * {@inheritDoc}
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    @CallSuper
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        // parent takes care of initialising the Fields.
+        super.onActivityCreated(savedInstanceState);
+
+        mFlattenedBooklistModel = new ViewModelProvider(this).get(FlattenedBooklistModel.class);
+        mFlattenedBooklistModel.init(getArguments(), mBookModel.getBook().getId());
+
+        // ENHANCE: could probably be replaced by a ViewPager
+        // enable the listener for flings
+        mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
+        mOnTouchListener = (v, event) -> mGestureDetector.onTouchEvent(event);
+
+        if (savedInstanceState == null) {
+            TipManager.display(getLayoutInflater(), R.string.tip_view_only_help, null);
+        }
+    }
+
+    @CallSuper
+    @Override
+    public void onResume() {
+        Tracker.enterOnResume(this);
+        // returning here from somewhere else (e.g. from editing the book) and have an ID...reload!
+        long bookId = mBookModel.getBook().getId();
+        if (bookId != 0) {
+            mBookModel.reload(bookId);
+        }
+        // the parent will kick of the process that triggers onLoadFieldsFromBook.
+        super.onResume();
+
+        ((BookDetailsActivity) mActivity).registerOnTouchListener(mOnTouchListener);
+
+        Tracker.exitOnResume(this);
+    }
+
+    @Override
     protected void initFields() {
         super.initFields();
         Fields fields = getFields();
@@ -177,7 +266,7 @@ public class BookFragment
         fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID)
               .setFormatter(new Fields.PriceFormatter());
         fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
-              .setFormatter(new Fields.BookEditionsFormatter())
+              .setFormatter(new Fields.BitMaskFormatter(Book.EDITIONS))
               .setZeroIsEmpty(true);
         fields.add(R.id.location, DBDefinitions.KEY_LOCATION);
         fields.add(R.id.rating, DBDefinitions.KEY_RATING);
@@ -214,7 +303,7 @@ public class BookFragment
         Book book = mBookModel.getBook();
 
         // pass the CURRENT currency code to the price formatter
-        //URGENT: this defeats the ease of use of the formatter... populate manually or something...
+        //FIXME: this defeats the ease of use of the formatter... populate manually or something...
         //noinspection ConstantConditions
         ((Fields.PriceFormatter) getField(R.id.price_listed).getFormatter())
                 .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
@@ -258,48 +347,80 @@ public class BookFragment
         }
     }
 
-    /**
-     * Has no specific Arguments or savedInstanceState.
-     * <ul>All storage interaction is done via:
-     * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
-     * </ul>
-     * {@inheritDoc}
-     */
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        // parent takes care of initialising the Fields.
-        super.onActivityCreated(savedInstanceState);
+    public void onPause() {
+        ((BookDetailsActivity) mActivity).unregisterOnTouchListener(mOnTouchListener);
 
-        mFlattenedBooklistModel = new ViewModelProvider(this).get(FlattenedBooklistModel.class);
-        mFlattenedBooklistModel.init(getArguments(), mBookModel.getBook().getId());
+        //  set the current visible book id as the result data.
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID,
+                                            mBookModel.getBook().getId());
+        mActivity.setResult(Activity.RESULT_OK, data);
 
-        // ENHANCE: could probably be replaced by a ViewPager
-        // enable the listener for flings
-        mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
-        mOnTouchListener = (v, event) -> mGestureDetector.onTouchEvent(event);
-
-        if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_view_only_help, null);
-        }
+        super.onPause();
     }
 
-    @CallSuper
     @Override
-    public void onResume() {
-        Tracker.enterOnResume(this);
-        // returning here from somewhere else (e.g. from editing the book) and have an ID...reload!
-        long bookId = mBookModel.getBook().getId();
-        if (bookId != 0) {
-            mBookModel.reload(bookId);
+    @CallSuper
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
+            .setIcon(R.drawable.ic_edit)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
+            .setIcon(R.drawable.ic_delete);
+        menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
+            .setIcon(R.drawable.ic_content_copy);
+
+        // Only one of these two is made visible.
+        menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
+        menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
+
+        menu.add(R.id.MENU_UPDATE_FROM_INTERNET, R.id.MENU_UPDATE_FROM_INTERNET,
+                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields)
+            .setIcon(R.drawable.ic_cloud_download);
+
+        if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
+            // Only one of these two is made visible.
+            menu.add(R.id.MENU_BOOK_LOAN_ADD, R.id.MENU_BOOK_LOAN_ADD,
+                     MenuHandler.ORDER_LENDING, R.string.menu_loan_lend_book);
+            menu.add(R.id.MENU_BOOK_LOAN_DELETE, R.id.MENU_BOOK_LOAN_DELETE,
+                     MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book);
         }
-        // the parent will kick of the process that triggers onLoadFieldsFromBook.
-        super.onResume();
 
-        ((BookDetailsActivity) mActivity).registerOnTouchListener(mOnTouchListener);
+        menu.add(Menu.NONE, R.id.MENU_SHARE, MenuHandler.ORDER_SHARE, R.string.menu_share_this)
+            .setIcon(R.drawable.ic_share);
 
-        Tracker.exitOnResume(this);
+        menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS,
+                 MenuHandler.ORDER_SEND_TO_GOODREADS, R.string.gr_menu_send_to_goodreads)
+            .setIcon(R.drawable.ic_goodreads2);
+
+        MenuHandler.addViewBookSubMenu(menu);
+        MenuHandler.addAmazonSearchSubMenu(menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        Book book = mBookModel.getBook();
+
+        boolean isExistingBook = mBookModel.isExistingBook();
+        boolean isRead = book.getBoolean(Book.IS_READ);
+
+        menu.setGroupVisible(R.id.MENU_BOOK_READ, isExistingBook && !isRead);
+        menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, isExistingBook && isRead);
+
+        if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
+            boolean isAvailable = mBookModel.isAvailable();
+            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_ADD, isExistingBook && isAvailable);
+            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_DELETE, isExistingBook && !isAvailable);
+        }
+
+        MenuHandler.prepareViewBookSubMenu(menu, book);
+        MenuHandler.prepareAmazonSearchSubMenu(menu, book);
+
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -380,126 +501,6 @@ public class BookFragment
                 // MENU_BOOK_UPDATE_FROM_INTERNET handled in super
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (LendBookDialogFragment.TAG.equals(childFragment.getTag())) {
-            ((LendBookDialogFragment) childFragment).setListener(mBookChangedListener);
-        }
-    }
-
-    @Override
-    public void onAttach(@NonNull final Context context) {
-        super.onAttach(context);
-        mActivity = (AppCompatActivity) context;
-    }
-
-    @Override
-    @Nullable
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_book_details, container, false);
-        mNestedScrollView = view.findViewById(R.id.topScroller);
-
-        mTocLabelView = view.findViewById(R.id.lbl_toc);
-        mTocView = view.findViewById(R.id.toc);
-
-        mTocButton = view.findViewById(R.id.toc_button);
-        // show/hide the TOC as the user flips the switch.
-        mTocButton.setOnClickListener(v -> {
-            // note that the button is explicitly (re)set.
-            // If user clicks to fast it gets out of sync.
-            if (mTocView.getVisibility() == View.VISIBLE) {
-                // force a scroll; a manual scroll is no longer possible after the TOC closes.
-                mNestedScrollView.fullScroll(View.FOCUS_UP);
-                mTocView.setVisibility(View.GONE);
-                mTocButton.setChecked(false);
-
-            } else {
-                mTocView.setVisibility(View.VISIBLE);
-                mTocButton.setChecked(true);
-            }
-        });
-
-        return view;
-    }
-
-    @Override
-    @CallSuper
-    public void onPause() {
-        ((BookDetailsActivity) mActivity).unregisterOnTouchListener(mOnTouchListener);
-
-        //  set the current visible book id as the result data.
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID,
-                                            mBookModel.getBook().getId());
-        mActivity.setResult(Activity.RESULT_OK, data);
-
-        super.onPause();
-    }
-
-    @Override
-    @CallSuper
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-            .setIcon(R.drawable.ic_edit)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-            .setIcon(R.drawable.ic_delete);
-        menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
-            .setIcon(R.drawable.ic_content_copy);
-
-        // Only one of these two is made visible.
-        menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
-        menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
-
-        menu.add(R.id.MENU_UPDATE_FROM_INTERNET, R.id.MENU_UPDATE_FROM_INTERNET,
-                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields)
-            .setIcon(R.drawable.ic_cloud_download);
-
-        if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
-            // Only one of these two is made visible.
-            menu.add(R.id.MENU_BOOK_LOAN_ADD, R.id.MENU_BOOK_LOAN_ADD,
-                     MenuHandler.ORDER_LENDING, R.string.menu_loan_lend_book);
-            menu.add(R.id.MENU_BOOK_LOAN_DELETE, R.id.MENU_BOOK_LOAN_DELETE,
-                     MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book);
-        }
-
-        menu.add(Menu.NONE, R.id.MENU_SHARE, MenuHandler.ORDER_SHARE, R.string.menu_share_this)
-            .setIcon(R.drawable.ic_share);
-
-        menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS,
-                 MenuHandler.ORDER_SEND_TO_GOODREADS, R.string.gr_menu_send_to_goodreads)
-            .setIcon(R.drawable.ic_goodreads2);
-
-        MenuHandler.addViewBookSubMenu(menu);
-        MenuHandler.addAmazonSearchSubMenu(menu);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        Book book = mBookModel.getBook();
-
-        boolean isExistingBook = mBookModel.isExistingBook();
-        boolean isRead = book.getBoolean(Book.IS_READ);
-
-        menu.setGroupVisible(R.id.MENU_BOOK_READ, isExistingBook && !isRead);
-        menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, isExistingBook && isRead);
-
-        if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
-            boolean isAvailable = mBookModel.isAvailable();
-            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_ADD, isExistingBook && isAvailable);
-            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_DELETE, isExistingBook && !isAvailable);
-        }
-
-        MenuHandler.prepareViewBookSubMenu(menu, book);
-        MenuHandler.prepareAmazonSearchSubMenu(menu, book);
-
-        super.onPrepareOptionsMenu(menu);
     }
 
     /**

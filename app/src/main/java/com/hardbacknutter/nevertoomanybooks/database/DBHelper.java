@@ -34,7 +34,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
 import java.io.File;
 
@@ -295,7 +294,7 @@ public final class DBHelper
                               "Upgrading database: " + db.getPath());
         }
         if (oldVersion < 82) {
-            throw new UpgradeException(R.string.error_database_upgrade_failed);
+            throw new UpgradeException();
         }
 
         StartupActivity startup = StartupActivity.getActiveActivity();
@@ -314,6 +313,7 @@ public final class DBHelper
         // db82 == app179 == 5.2.2 == last official version.
         if (curVersion < newVersion && curVersion == 82) {
             // db100 == app200 == 6.0.0;
+            //noinspection UnusedAssignment
             curVersion = 100;
             UpgradeDatabase.toDb100(db, syncedDb);
         }
@@ -597,12 +597,7 @@ public final class DBHelper
 
         private static final long serialVersionUID = -6910121313418068318L;
 
-        @StringRes
-        final int messageId;
-
-        @SuppressWarnings("SameParameterValue")
-        UpgradeException(final int messageId) {
-            this.messageId = messageId;
+        UpgradeException() {
         }
     }
 }

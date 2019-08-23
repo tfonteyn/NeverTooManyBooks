@@ -60,16 +60,16 @@ public class SearchBooksApiHandler
     private static final String URL = GoodreadsManager.BASE_URL + "/search/index.xml";
 
     /** List of GoodreadsWork objects that result from a search. */
-    @Nullable
-    private List<GoodreadsWork> mWorks;
+    @NonNull
+    private final List<GoodreadsWork> mWorks = new ArrayList<>();
     /** Global data for the <b>current work</b> in search results. */
     @Nullable
     private GoodreadsWork mCurrentWork;
     /**
      * At the START of a "work" tag, we create a new work.
      */
-    private final XmlHandler mHandleWorkStart = context ->
-                                                        mCurrentWork = new GoodreadsWork();
+    private final XmlHandler mHandleWorkStart =
+            context -> mCurrentWork = new GoodreadsWork();
     /**
      * At the END of a "work" tag, we add it to list and reset the pointer.
      */
@@ -77,9 +77,8 @@ public class SearchBooksApiHandler
         mWorks.add(mCurrentWork);
         mCurrentWork = null;
     };
-    private final XmlHandler mHandleWorkId = context ->
-                                                     mCurrentWork.workId = Long.parseLong(
-                                                             context.getBody());
+    private final XmlHandler mHandleWorkId =
+            context -> mCurrentWork.workId = Long.parseLong(context.getBody());
 
     private final XmlHandler mHandlePubDay = context -> {
         try {
@@ -109,7 +108,8 @@ public class SearchBooksApiHandler
             context -> mCurrentWork.authorId = Long.parseLong(context.getBody());
     private final XmlHandler mHandleAuthorName =
             context -> mCurrentWork.authorName = context.getBody();
-
+    private final XmlHandler mHandleAuthorRole =
+            context -> mCurrentWork.authorRole = context.getBody();
     private final XmlHandler mHandleImageUrl =
             context -> mCurrentWork.imageUrl = context.getBody();
     private final XmlHandler mHandleSmallImageUrl =
@@ -174,11 +174,10 @@ public class SearchBooksApiHandler
         parameters.put("key", mManager.getDevKey());
 
         // where the handlers will add data
-        mWorks = new ArrayList<>();
+        mWorks.clear();
 
         DefaultHandler handler = new XmlResponseParser(mRootFilter);
-        //URGENT: gr docs state this should be a GET
-        executePost(URL, parameters, false, handler);
+        executeGet(URL, parameters, false, handler);
 
         // Return parsed results.
         return mWorks;
@@ -344,6 +343,8 @@ public class SearchBooksApiHandler
      * </GoodreadsResponse>
      *  }
      *  </pre>
+     *
+     *  <b>Note:</b> the response does not contain the language code (checked with a french book).
      */
     private void buildFilters() {
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_SEARCH,
@@ -399,6 +400,10 @@ public class SearchBooksApiHandler
                               XmlTags.XML_RESULT, XmlTags.XML_WORK,
                               XmlTags.XML_BEST_BOOK, XmlTags.XML_AUTHOR, XmlTags.XML_NAME)
                  .setEndAction(mHandleAuthorName);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_SEARCH,
+                              XmlTags.XML_RESULT, XmlTags.XML_WORK,
+                              XmlTags.XML_BEST_BOOK, XmlTags.XML_AUTHOR, XmlTags.XML_ROLE)
+                 .setEndAction(mHandleAuthorRole);
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_SEARCH,
                               XmlTags.XML_RESULT, XmlTags.XML_WORK,

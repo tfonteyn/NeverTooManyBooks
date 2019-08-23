@@ -400,6 +400,10 @@ public class SynchronizedStatement
                + '}';
     }
 
+    /**
+     * DEBUG: if we see the warn in the logs, we know we have an issue to fix.
+     */
+    @SuppressWarnings("FinalizeDeclaration")
     @Override
     @CallSuper
     protected void finalize()

@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Represents a Bookshelf.
@@ -75,7 +74,9 @@ public class Bookshelf
     public static final int DEFAULT_ID = 1;
     /** the virtual 'All Books'. */
     private static final int ALL_BOOKS = -1;
+    /** Bookshelf id. */
     private long mId;
+    /** Bookshelf name. */
     @NonNull
     private String mName;
     /**
@@ -87,9 +88,6 @@ public class Bookshelf
 
     /** the style gets cached. It only gets reloaded when the mStyleUuid != cached one. */
     private BooklistStyle mCachedStyle;
-
-    /** cached locale. */
-    private Locale mLocale;
 
     /**
      * Constructor without ID.
@@ -121,6 +119,7 @@ public class Bookshelf
     /**
      * Full Constructor.
      *
+     * @param id    the Bookshelf id
      * @param name  for the Bookshelf
      * @param style the style to apply to this shelf
      */
@@ -137,6 +136,7 @@ public class Bookshelf
     /**
      * Full constructor.
      *
+     * @param id     the Bookshelf id
      * @param mapper a cursor mapper.
      */
     public Bookshelf(final long id,
@@ -213,6 +213,8 @@ public class Bookshelf
 
     /**
      * Set this bookshelf as the current/preferred.
+     *
+     * @param context Current context
      */
     public void setAsPreferred(@NonNull final Context context) {
         PreferenceManager.getDefaultSharedPreferences(context)
@@ -324,16 +326,19 @@ public class Bookshelf
 
     @NonNull
     @Override
-    public Locale getLocale() {
-        if (mLocale == null) {
-            mLocale = LocaleUtils.getPreferredLocale();
-        }
-        return mLocale;
+    public Locale getLocale(@NonNull final Locale fallbackLocale) {
+        return fallbackLocale;
     }
 
     @Override
-    public long fixId(@NonNull final Context context,
-                      @NonNull final DAO db,
+    public long fixId(@NonNull final DAO db) {
+        mId = db.getBookshelfId(this);
+        return mId;
+    }
+
+    @Override
+    public long fixId(@NonNull final DAO db,
+                      @NonNull final Context context,
                       @NonNull final Locale locale) {
         mId = db.getBookshelfId(this);
         return mId;
@@ -388,7 +393,6 @@ public class Bookshelf
         return "Bookshelf{"
                + "mId=" + mId
                + ", mName=`" + mName + '`'
-               + ", mLocale=" + mLocale
                + ", mStyleUuid=" + mStyleUuid
                + ", mCachedStyle=" + (mCachedStyle != null ? mCachedStyle.getUuid() : null)
                + '}';

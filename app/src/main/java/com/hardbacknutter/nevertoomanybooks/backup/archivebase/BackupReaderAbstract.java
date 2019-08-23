@@ -36,7 +36,6 @@ import androidx.annotation.NonNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -98,7 +97,6 @@ public abstract class BackupReaderAbstract
             throws IOException, ImportException {
 
         Context userContext = App.getFakeUserContext();
-        Locale userLocale = LocaleUtils.getPreferredLocale();
 
         mSettings = settings;
 
@@ -180,7 +178,9 @@ public abstract class BackupReaderAbstract
                         if (incBooks) {
                             // a CSV file with all book data
                             try (Importer importer = new CsvImporter(userContext, mSettings)) {
-                                mSettings.results = importer.doBooks(userContext, userLocale,
+                                mSettings.results = importer.doBooks(userContext,
+                                                                     LocaleUtils
+                                                                             .getPreferredLocale(),
                                                                      entity.getInputStream(), null,
                                                                      progressListener);
                             }

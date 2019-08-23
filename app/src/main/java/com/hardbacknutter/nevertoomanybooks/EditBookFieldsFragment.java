@@ -111,6 +111,8 @@ public class EditBookFieldsFragment
             Intent intent = new Intent(getContext(), EditAuthorListActivity.class)
                                     .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
                                     .putExtra(DBDefinitions.KEY_TITLE, title)
+                                    .putExtra(DBDefinitions.KEY_LANGUAGE,
+                                              book.getString(DBDefinitions.KEY_LANGUAGE))
                                     .putExtra(UniqueId.BKEY_AUTHOR_ARRAY, authors);
             startActivityForResult(intent, REQ_EDIT_AUTHORS);
         });
@@ -125,6 +127,8 @@ public class EditBookFieldsFragment
             Intent intent = new Intent(getContext(), EditSeriesListActivity.class)
                                     .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
                                     .putExtra(DBDefinitions.KEY_TITLE, title)
+                                    .putExtra(DBDefinitions.KEY_LANGUAGE,
+                                              book.getString(DBDefinitions.KEY_LANGUAGE))
                                     .putExtra(UniqueId.BKEY_SERIES_ARRAY, series);
             startActivityForResult(intent, REQ_EDIT_SERIES);
         });
@@ -278,9 +282,8 @@ public class EditBookFieldsFragment
 
     private void populateAuthorListField(@NonNull final Book book) {
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        //noinspection ConstantConditions
         if (!list.isEmpty()
-            && ItemWithFixableId.pruneList(getContext(), mBookModel.getDb(), list)) {
+            && ItemWithFixableId.pruneList(mBookModel.getDb(), list)) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
@@ -296,9 +299,9 @@ public class EditBookFieldsFragment
 
     private void populateSeriesListField(@NonNull final Book book) {
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-        //noinspection ConstantConditions
         if (!list.isEmpty()
-            && ItemWithFixableId.pruneList(getContext(), mBookModel.getDb(), list)) {
+            && ItemWithFixableId
+                       .pruneList(mBookModel.getDb(), list, getContext(), book.getLocale())) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         }

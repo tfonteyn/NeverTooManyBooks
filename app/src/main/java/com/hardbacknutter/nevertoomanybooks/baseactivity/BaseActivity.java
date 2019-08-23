@@ -266,7 +266,7 @@ public abstract class BaseActivity
      * <p>
      * The current (2nd) incarnation of restart-logic is still rather broken
      * as it does not deal with back-stack.
-     * URGENT:  if (getThemeFromThisContext != App.getTheme) then recreate() ...
+     * FIXME:  if (getThemeFromThisContext != App.getTheme) then recreate() ...
      * <p>
      * https://www.hidroh.com/2015/02/25/support-multiple-themes-android-app-part-2/
      */

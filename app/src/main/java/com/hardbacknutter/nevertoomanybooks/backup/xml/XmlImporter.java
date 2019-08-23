@@ -446,10 +446,7 @@ public class XmlImporter
                     // No support for list/set inside a list/set (no point)
                     case XmlTags.XML_SERIALIZABLE:
                         // serializable is indeed just added as a string...
-                        currentStringList.add(context.getBody());
                         // this 'case' is only here for completeness sake.
-                        break;
-
                     case XmlTags.XML_STRING:
                         // body strings use CDATA
                         currentStringList.add(context.getBody());
@@ -718,14 +715,11 @@ public class XmlImporter
     static class InfoReader
             implements EntityReader<String> {
 
-        private final BackupInfo mInfo;
-
         @NonNull
         private final Bundle mBundle;
 
         InfoReader(@NonNull final BackupInfo info) {
-            mInfo = info;
-            mBundle = mInfo.getBundle();
+            mBundle = info.getBundle();
         }
 
         @Override

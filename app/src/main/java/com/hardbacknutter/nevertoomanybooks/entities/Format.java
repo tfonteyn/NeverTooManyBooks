@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,11 +32,11 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * System wide book format representation.
@@ -73,35 +74,17 @@ public final class Format {
 
     }
 
-    @NonNull
-    private final Context mContext;
-    @NonNull
-    private final Locale mLocale;
-
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     */
-    public Format(@NonNull final Context context) {
-        mContext = context;
-        Locale locale = context.getResources().getConfiguration().locale;
-        if (locale != null) {
-            mLocale = locale;
-        } else {
-            mLocale = Locale.ENGLISH;
-        }
-    }
-
     /**
      * Try to map website terminology to our own localised.
      *
-     * @param source string to map
+     * @param context Current context
+     * @param source  string to map
      *
      * @return localized equivalent, or the source if no mapping exists.
      */
-    public String map(@NonNull final String source) {
-        Integer resId = MAPPER.get(source.toLowerCase(mLocale));
-        return resId != null ? mContext.getString(resId) : source;
+    public static String map(final Context context,
+                             @NonNull final String source) {
+        Integer resId = MAPPER.get(source.toLowerCase(LocaleUtils.getPreferredLocale()));
+        return resId != null ? context.getString(resId) : source;
     }
 }

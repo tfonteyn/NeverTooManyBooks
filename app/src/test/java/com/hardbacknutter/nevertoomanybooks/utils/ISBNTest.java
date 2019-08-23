@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ISBNTest {
 
     private final String[][] validFinals = {
+            {"2723481220", "9782723481229"},
             {"1-886778-17-5", "978-1-886778-17-7"},
             {"1886778175", "9781886778177"},
             {"0-684-18818-X", "978-0-684-18818-8"},
@@ -49,6 +51,7 @@ class ISBNTest {
 
     // same as above, but one digit changed so the checksum fails.
     private final String[][] invalidFinals = {
+            {"2733481220", "9782733481229"},
             {"2-886778-17-5", "978-2-886778-17-7"},
             {"2886778175", "9782886778177"},
             {"0-684-28818-X", "978-0-684-28818-8"},

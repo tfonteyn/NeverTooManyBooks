@@ -31,6 +31,7 @@
 <!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’)
      Single Apos: ’
 -->
+<!--suppress LongLine -->
 <resources>
     <string name="X_about_help_tap_here">Veuillez cliquer ici pour accéder à l’aide en ligne.</string>
     <string name="X_anthology_titles">Titres de l’anthologie</string>

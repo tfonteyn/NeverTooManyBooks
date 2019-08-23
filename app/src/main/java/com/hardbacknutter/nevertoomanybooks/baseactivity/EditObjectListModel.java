@@ -35,8 +35,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public class EditObjectListModel
         extends ViewModel {
@@ -49,6 +52,9 @@ public class EditObjectListModel
     /** Displayed for user reference only. */
     @Nullable
     private String mBookTitle;
+    /** If set, used for the series default locale. */
+    @Nullable
+    private Locale mBookLocale;
 
     /** flag indicating global changes were made. Used in setResult. */
     private boolean mGlobalReplacementsMade;
@@ -72,6 +78,10 @@ public class EditObjectListModel
             // Look for id and title
             mRowId = args.getLong(DBDefinitions.KEY_PK_ID);
             mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
+            String bookLang = args.getString(DBDefinitions.KEY_LANGUAGE);
+            if (bookLang != null && !bookLang.isEmpty()) {
+                mBookLocale = new Locale(bookLang);
+            }
         }
     }
 
@@ -86,6 +96,14 @@ public class EditObjectListModel
     @Nullable
     public String getBookTitle() {
         return mBookTitle;
+    }
+
+    @NonNull
+    public Locale getBookLocale() {
+        if (mBookLocale == null) {
+            return LocaleUtils.getPreferredLocale();
+        }
+        return mBookLocale;
     }
 
     public boolean globalReplacementsMade() {

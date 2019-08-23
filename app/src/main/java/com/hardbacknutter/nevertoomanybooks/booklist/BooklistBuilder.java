@@ -193,13 +193,19 @@ public class BooklistBuilder
 
     /** Internal ID. */
     private final int mBooklistBuilderId;
+
     /** Collection of 'extra' domains requested by caller. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Map<String, ExtraDomainDetails> mExtraDomains = new HashMap<>();
+
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Map<String, TableDefinition> mExtraJoins = new HashMap<>();
 
     /** Style to use in building the list. */
+    @SuppressWarnings("FieldNotUsedInToString")
+
     @NonNull
     private final BooklistStyle mStyle;
 
@@ -739,40 +745,40 @@ public class BooklistBuilder
         // On first-time builds, get the Preferences-based list
         switch (preferredState) {
             case PREF_LIST_REBUILD_ALWAYS_COLLAPSED:
-                String sqlc = mNavTable.getInsertInto(DOM_BL_REAL_ROW_ID,
-                                                      DOM_BL_NODE_LEVEL,
-                                                      DOM_BL_ROOT_KEY,
-                                                      DOM_BL_NODE_VISIBLE,
-                                                      DOM_BL_NODE_EXPANDED)
-                              + " SELECT " + mListTable.dot(DOM_PK_ID)
-                              + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
-                              + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
-                              + ',' + '\n'
-                              + "CASE WHEN " + DOM_BL_NODE_LEVEL + "=1"
-                              + " THEN 1 ELSE 0"
-                              + " END"
-                              + ",0"
-                              + " FROM " + mListTable.ref()
-                              + " ORDER BY " + sortExpression;
-                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sqlc)) {
+                String sqlCollapse = mNavTable.getInsertInto(DOM_BL_REAL_ROW_ID,
+                                                             DOM_BL_NODE_LEVEL,
+                                                             DOM_BL_ROOT_KEY,
+                                                             DOM_BL_NODE_VISIBLE,
+                                                             DOM_BL_NODE_EXPANDED)
+                                     + " SELECT " + mListTable.dot(DOM_PK_ID)
+                                     + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
+                                     + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
+                                     + ',' + '\n'
+                                     + "CASE WHEN " + DOM_BL_NODE_LEVEL + "=1"
+                                     + " THEN 1 ELSE 0"
+                                     + " END"
+                                     + ",0"
+                                     + " FROM " + mListTable.ref()
+                                     + " ORDER BY " + sortExpression;
+                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sqlCollapse)) {
                     stmt.executeInsert();
                 }
                 break;
 
             case PREF_LIST_REBUILD_ALWAYS_EXPANDED:
-                String sqle = mNavTable.getInsertInto(DOM_BL_REAL_ROW_ID,
-                                                      DOM_BL_NODE_LEVEL,
-                                                      DOM_BL_ROOT_KEY,
-                                                      DOM_BL_NODE_VISIBLE,
-                                                      DOM_BL_NODE_EXPANDED)
-                              + " SELECT " + mListTable.dot(DOM_PK_ID)
-                              + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
-                              + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
-                              + ",1"
-                              + ",1"
-                              + " FROM " + mListTable.ref()
-                              + " ORDER BY " + sortExpression;
-                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sqle)) {
+                String sqlExpand = mNavTable.getInsertInto(DOM_BL_REAL_ROW_ID,
+                                                           DOM_BL_NODE_LEVEL,
+                                                           DOM_BL_ROOT_KEY,
+                                                           DOM_BL_NODE_VISIBLE,
+                                                           DOM_BL_NODE_EXPANDED)
+                                   + " SELECT " + mListTable.dot(DOM_PK_ID)
+                                   + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
+                                   + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
+                                   + ",1"
+                                   + ",1"
+                                   + " FROM " + mListTable.ref()
+                                   + " ORDER BY " + sortExpression;
+                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sqlExpand)) {
                     stmt.executeInsert();
                 }
                 break;
@@ -1721,9 +1727,16 @@ public class BooklistBuilder
         return "BooklistBuilder{"
                + "mBooklistBuilderId=" + mBooklistBuilderId
                + ", mCloseWasCalled=" + mCloseWasCalled
+               + ", mRebuildStmts=" + mRebuildStmts
+               + ", mFilters=" + mFilters
+               + ", mFilterOnBookshelfId=" + mFilterOnBookshelfId
                + '}';
     }
 
+    /**
+     * DEBUG: if we see the warn in the logs, we know we have an issue to fix.
+     */
+    @SuppressWarnings("FinalizeDeclaration")
     @Override
     @CallSuper
     protected void finalize()
@@ -2534,10 +2547,9 @@ public class BooklistBuilder
                               | sortDescendingMask);
                     break;
 
-
-                //URGENT: check with original code what this quote really means.
-                // It was on most, but not all date rows:
                 // ----------------------------------
+                // Check with original code what this quote really means.
+                // It was on most, but not all date rows:
                 // TODO: Handle 'DESCENDING'. Requires the navigator construction to use
                 // max/min for non-grouped domains that appear in sub-levels based on desc/asc.
                 // We don't use DESCENDING sort yet because the 'header' ends up below

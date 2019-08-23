@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 public abstract class BRBaseActivity
         extends BaseActivity {
 
-    /** FIXME: this is duplication from the model. */
     private final ArrayList<BRBaseActivity.FileDetails> mFileDetails = new ArrayList<>();
     protected ProgressDialogFragment mProgressDialog;
     RecyclerView mListView;

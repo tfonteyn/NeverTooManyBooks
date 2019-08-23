@@ -329,22 +329,19 @@ public final class Prefs {
                     case "App.BooklistGenerationMode":
                         int compatMode = (Integer) oldValue;
                         switch (compatMode) {
-                            case 4:
+                            case 1:
                                 compatMode = BooklistBuilder.CompatibilityMode
-                                                     .PREF_MODE_DEFAULT;
-                                break;
-                            case 3:
-                                compatMode = BooklistBuilder.CompatibilityMode
-                                                     .PREF_MODE_NESTED_TRIGGERS;
+                                                     .PREF_MODE_OLD_STYLE;
                                 break;
                             case 2:
                                 compatMode = BooklistBuilder.CompatibilityMode
                                                      .PREF_MODE_FLAT_TRIGGERS;
                                 break;
-                            case 1:
+                            case 3:
                                 compatMode = BooklistBuilder.CompatibilityMode
-                                                     .PREF_MODE_OLD_STYLE;
+                                                     .PREF_MODE_NESTED_TRIGGERS;
                                 break;
+                            case 4:
                             default:
                                 compatMode = BooklistBuilder.CompatibilityMode
                                                      .PREF_MODE_DEFAULT;
@@ -354,9 +351,6 @@ public final class Prefs {
                         break;
 
                     case "SoundManager.BeepIfScannedIsbnInvalid":
-                        ed.putBoolean(entry.getKey(), (Boolean) oldValue);
-                        break;
-
                     case "SoundManager.BeepIfScannedIsbnValid":
                         ed.putBoolean(entry.getKey(), (Boolean) oldValue);
                         break;

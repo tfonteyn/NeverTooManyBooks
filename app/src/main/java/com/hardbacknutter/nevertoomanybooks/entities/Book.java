@@ -129,6 +129,8 @@ public class Book
     private static final int EDITION_FIRST_IMPRESSION = 1 << 1;
     /** This edition had a limited run. (Numbered or not). */
     private static final int EDITION_LIMITED = 1 << 2;
+    /** This edition comes in a slipcase. */
+    private static final int EDITION_SLIPCASE = 1 << 3;
     /** It's a bookclub edition. boooo.... */
     private static final int EDITION_BOOK_CLUB = 1 << 7;
 
@@ -141,6 +143,7 @@ public class Book
         EDITIONS.put(EDITION_FIRST, R.string.lbl_edition_first_edition);
         EDITIONS.put(EDITION_FIRST_IMPRESSION, R.string.lbl_edition_first_impression);
         EDITIONS.put(EDITION_LIMITED, R.string.lbl_edition_limited);
+        EDITIONS.put(EDITION_SLIPCASE, R.string.lbl_edition_slipcase);
 
         EDITIONS.put(EDITION_BOOK_CLUB, R.string.lbl_edition_book_club);
     }
@@ -524,7 +527,9 @@ public class Book
     }
 
     /**
-     * @return name of the first series in the list of series for this book, or {@code null} if none
+     * Get the name of the first series in the list of series for this book.
+     *
+     * @return name, or {@code null} if none found
      */
     @Nullable
     public String getPrimarySeries() {
@@ -553,17 +558,6 @@ public class Book
         }
     }
 
-    /**
-     * Validate the locale (based on the Book's language) and reset the language if needed.
-     *
-     * @return the locale, or the users preferred locale if no language was set.
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public Locale updateLocale() {
-        return getLocale(true);
-    }
-
     @Override
     @NonNull
     public String getTitle() {
@@ -571,13 +565,30 @@ public class Book
     }
 
     /**
-     * Get the Book's locale (based on its language).
+     * Validate the locale (based on the Book's language) and reset the language if needed.
+     */
+    public void updateLocale() {
+        getLocale(true);
+    }
+
+    /**
+     * Convenience method.
      *
      * @return the locale, or the users preferred locale if no language was set.
      */
     @NonNull
-    @Override
     public Locale getLocale() {
+        return getLocale(false);
+    }
+
+    /**
+     * Get the Book's locale (based on its language).
+     *
+     * @return the locale, or the fallbackLocale if no language was set.
+     */
+    @NonNull
+    @Override
+    public Locale getLocale(@NonNull final Locale fallbackLocale) {
         return getLocale(false);
     }
 
@@ -587,22 +598,35 @@ public class Book
      * @param updateLanguage {@code true} to update the language field with the ISO code
      *                       if needed. {@code false} to leave it unchanged.
      *
-     * @return the locale, or the users preferred locale if no language was set.
+     * @return the locale.
      */
     @NonNull
     private Locale getLocale(final boolean updateLanguage) {
+        // fallback if we can't determine the books Locale
+        Locale userLocale = LocaleUtils.getPreferredLocale();
+
         Locale bookLocale = null;
         if (containsKey(DBDefinitions.KEY_LANGUAGE)) {
             String lang = getString(DBDefinitions.KEY_LANGUAGE);
             int len = lang.length();
             // try to convert to iso3 if needed.
             if (len != 2 && len != 3) {
-                lang = LocaleUtils.getISO3Language(lang);
+                lang = LocaleUtils.getIso3fromDisplayName(lang);
             }
+
+            // some languages have two iso3 codes; convert if needed.
+            lang = LocaleUtils.normaliseIso3(lang);
+
             // we now have an ISO code, or an invalid language.
             bookLocale = new Locale(lang);
+            // so test it
             if (!LocaleUtils.isValid(bookLocale)) {
-                bookLocale = LocaleUtils.getPreferredLocale();
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.warn(this, "getLocale", "invalid locale",
+                                "lang=" + lang);
+                }
+                // invalid, use fallback.
+                bookLocale = userLocale;
             } else if (updateLanguage) {
                 putString(DBDefinitions.KEY_LANGUAGE, lang);
             }
@@ -619,7 +643,8 @@ public class Book
                                            "id=" + getId(),
                                            "title=" + get(DBDefinitions.KEY_TITLE));
             }
-            return LocaleUtils.getPreferredLocale();
+            // none, use fallback.
+            return userLocale;
         }
     }
 
@@ -633,7 +658,7 @@ public class Book
                                   @NonNull final DAO db) {
         ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         for (Series series : list) {
-            db.refreshSeries(context, series);
+            db.refreshSeries(context, series, getLocale());
         }
         putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
     }

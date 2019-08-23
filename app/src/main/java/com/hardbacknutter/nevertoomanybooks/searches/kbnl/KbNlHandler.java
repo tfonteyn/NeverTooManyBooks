@@ -105,7 +105,6 @@ class KbNlHandler
                 break;
 
             default:
-                Logger.warnWithStackTrace(this, "qName=" + qName);
                 break;
         }
     }
@@ -141,7 +140,6 @@ class KbNlHandler
                 break;
 
             default:
-                Logger.warnWithStackTrace(this, "qName=" + qName);
                 break;
         }
     }
@@ -212,7 +210,7 @@ class KbNlHandler
                 break;
             case "Collaborator":
             case "Medewerker":
-                processAuthor(currentData, Author.TYPE_SECONDARY);
+                processAuthor(currentData, Author.TYPE_CONTRIBUTOR);
                 break;
             case "Artist":
             case "Kunstenaar":

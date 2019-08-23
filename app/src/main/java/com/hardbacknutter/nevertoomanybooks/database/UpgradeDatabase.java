@@ -331,8 +331,9 @@ public final class UpgradeDatabase {
      * Create and populate the 'order by' column.
      * This method is used/meant for use during upgrades.
      * <p>
-     * Note this is a lazy approach using the system Locale, as compared to the DAO code where
-     * we take the book's language/locale into account! The overhead here would be huge.
+     * Note this is a lazy approach using the users preferred Locale,
+     * as compared to the DAO code where we take the book's language/locale into account.
+     * The overhead here would be huge.
      * If the user has any specific book issue, a simple update of the book will fix it.
      */
     private static void addOrderByColumn(@NonNull final SQLiteDatabase db,

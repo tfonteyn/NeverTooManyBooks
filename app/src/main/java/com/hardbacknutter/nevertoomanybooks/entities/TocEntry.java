@@ -41,7 +41,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Class to represent a single title within an TOC(Anthology).
@@ -81,8 +80,6 @@ public class TocEntry
     private Type mType;
     /** in-memory use only. Number of books this TocEntry appears in. */
     private int mBookCount;
-    /** cached locale. */
-    private Locale mLocale;
 
     /**
      * Constructor.
@@ -254,32 +251,24 @@ public class TocEntry
     }
 
     /**
-     * Stopgap.... makes the code elsewhere clean.
-     * <p>
-     * ENHANCE: The locale of the TocEntry
-     * should be based on either a specific language setting for
-     * the TocEntry itself, or on the locale of the <strong>primary</strong> book or
-     * the Author.
-     * None of those is implemented for now. So we cheat.
+     * ENHANCE: The locale of the TocEntry should be based on either a specific language
+     * setting for the TocEntry itself, or on the locale of the <strong>primary</strong> book.
+     * For now, we always use the passed fallback which <strong>should be the BOOK Locale</strong>
      *
      * @return the locale of the TocEntry
      */
     @NonNull
     @Override
-    public Locale getLocale() {
-        if (mLocale == null) {
-            mLocale = LocaleUtils.getPreferredLocale();
-        }
-        return mLocale;
+    public Locale getLocale(@NonNull final Locale bookLocale) {
+        return bookLocale;
     }
 
     @Override
-    public long fixId(@NonNull final Context context,
-                      @NonNull final DAO db,
-                      @NonNull final Locale tocLocale) {
-        // let the Author use its own Locale.
-        mAuthor.fixId(context, db);
-        mId = db.getTocEntryId(context, this, tocLocale);
+    public long fixId(@NonNull final DAO db,
+                      @NonNull final Context context,
+                      @NonNull final Locale bookLocale) {
+        mAuthor.fixId(db);
+        mId = db.getTocEntryId(context, this, bookLocale);
         return mId;
     }
 
@@ -339,7 +328,6 @@ public class TocEntry
                + ", mTitle=`" + mTitle + '`'
                + ", mFirstPublicationDate=`" + mFirstPublicationDate + '`'
                + ", mType=`" + mType + '`'
-               + ", mLocale=" + mLocale
                + ", mBookCount=`" + mBookCount + '`'
                + '}';
     }
@@ -437,11 +425,8 @@ public class TocEntry
 
                 case multipleAuthorsCollection:
                     return MULTIPLE_WORKS | MULTIPLE_AUTHORS;
-
-                //noinspection UnnecessaryDefault
-                default:
-                    return SINGLE_AUTHOR_SINGLE_WORK;
             }
+            return SINGLE_AUTHOR_SINGLE_WORK;
         }
 
         /**

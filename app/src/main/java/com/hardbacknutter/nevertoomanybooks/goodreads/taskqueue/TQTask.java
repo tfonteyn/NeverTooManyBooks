@@ -97,7 +97,7 @@ public abstract class TQTask
         TaskHolder holder = (TaskHolder) view.getTag(R.id.TAG_GR_TASK_HOLDER);
         TasksCursor tasksCursor = (TasksCursor) cursor;
 
-        Locale locale = LocaleUtils.from(context);
+        Locale locale = LocaleUtils.getPreferredLocale();
 
         // Update task info binding
         holder.description.setText(getDescription(context));

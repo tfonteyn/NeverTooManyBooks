@@ -665,6 +665,16 @@ public class BooklistAdapter
         @NonNull
         private final Locale mLocale;
 
+        private final boolean mPublisherIsUsed;
+        private final boolean mPubDateIsUsed;
+        private final boolean mReadIsUsed;
+        private final boolean mSeriesIsUsed;
+        private final boolean mLoaneeIsUsed;
+        private final boolean mCoverIsUsed;
+        private final int mExtraFieldsUsed;
+
+        private final int mMaxCoverSize;
+
         /** Format string. */
         @NonNull
         private final String mName_colon_value;
@@ -712,40 +722,48 @@ public class BooklistAdapter
 
             mLocale = LocaleUtils.from(context);
 
+            mPublisherIsUsed = style.isUsed(DBDefinitions.KEY_PUBLISHER);
+            mPubDateIsUsed = style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED);
+            mReadIsUsed = App.isUsed(DBDefinitions.KEY_READ);
+            mSeriesIsUsed = App.isUsed(DBDefinitions.KEY_SERIES_TITLE);
+            mLoaneeIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
+            mCoverIsUsed = style.isUsed(UniqueId.BKEY_IMAGE);
+            mExtraFieldsUsed = style.getExtraFieldsStatus();
+
+            mMaxCoverSize = ImageUtils.getMaxImageSize(style.getThumbnailScaleFactor());
             // always visible
             titleView = itemView.findViewById(R.id.title);
 
             // visibility is independent from actual data, so set here.
             readView = itemView.findViewById(R.id.read);
-            readView.setVisibility(App.isUsed(DBDefinitions.KEY_READ) ? View.VISIBLE : View.GONE);
+            readView.setVisibility(mReadIsUsed ? View.VISIBLE : View.GONE);
 
             // visibility is independent from actual data, so set here.
             onLoanView = itemView.findViewById(R.id.on_loan);
-            onLoanView.setVisibility(App.isUsed(DBDefinitions.KEY_LOANEE) ? View.VISIBLE
-                                                                          : View.GONE);
+            onLoanView.setVisibility(mLoaneeIsUsed ? View.VISIBLE : View.GONE);
 
             // visibility is independent from actual data, so set here.
             coverView = itemView.findViewById(R.id.coverImage);
-            coverView.setVisibility(style.isUsed(UniqueId.BKEY_IMAGE) ? View.VISIBLE : View.GONE);
+            coverView.setVisibility(mCoverIsUsed ? View.VISIBLE : View.GONE);
 
             // visibility depends on actual data
             seriesNumView = itemView.findViewById(R.id.series_num);
+            seriesNumView.setVisibility(mSeriesIsUsed ? View.VISIBLE : View.GONE);
             seriesNumLongView = itemView.findViewById(R.id.series_num_long);
+            seriesNumLongView.setVisibility(mSeriesIsUsed ? View.VISIBLE : View.GONE);
 
-            // Lookup all the 'extras' fields
+            // Lookup all the 'extras' fields and hide them all by default.
             authorView = itemView.findViewById(R.id.author);
-            publisherView = itemView.findViewById(R.id.publisher);
-            isbnView = itemView.findViewById(R.id.isbn);
-            formatView = itemView.findViewById(R.id.format);
-            locationView = itemView.findViewById(R.id.location);
-            bookshelvesView = itemView.findViewById(R.id.shelves);
-
-            // initially all the 'extras' fields are assumed not to be in use.
             authorView.setVisibility(View.GONE);
+            publisherView = itemView.findViewById(R.id.publisher);
             publisherView.setVisibility(View.GONE);
+            isbnView = itemView.findViewById(R.id.isbn);
             isbnView.setVisibility(View.GONE);
+            formatView = itemView.findViewById(R.id.format);
             formatView.setVisibility(View.GONE);
+            locationView = itemView.findViewById(R.id.location);
             locationView.setVisibility(View.GONE);
+            bookshelvesView = itemView.findViewById(R.id.shelves);
             bookshelvesView.setVisibility(View.GONE);
         }
 
@@ -754,26 +772,23 @@ public class BooklistAdapter
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
-            int maxSize = ImageUtils.getMaxImageSize(style.getThumbnailScaleFactor());
-
             titleView.setText(rowData.getString(DBDefinitions.KEY_TITLE));
 
-            if (App.isUsed(DBDefinitions.KEY_READ)) {
+            if (mReadIsUsed) {
                 readView.setChecked(rowData.getInt(DBDefinitions.KEY_READ) != 0);
             }
 
-            if (App.isUsed(DBDefinitions.KEY_LOANEE)
-                && rowData.contains(DBDefinitions.KEY_LOANEE_AS_BOOLEAN)) {
+            if (mLoaneeIsUsed && rowData.contains(DBDefinitions.KEY_LOANEE_AS_BOOLEAN)) {
                 onLoanView.setChecked(!rowData.getBoolean(DBDefinitions.KEY_LOANEE_AS_BOOLEAN));
             }
 
-            if (style.isUsed(UniqueId.BKEY_IMAGE)) {
+            if (mCoverIsUsed) {
                 // store the uuid for use in the onClick
                 coverView.setTag(R.id.TAG_UUID, rowData.getString(DBDefinitions.KEY_BOOK_UUID));
 
                 String uuid = rowData.getString(DBDefinitions.KEY_BOOK_UUID);
-                boolean isSet = ImageUtils.setImageView(coverView, uuid, maxSize, maxSize);
-
+                boolean isSet = ImageUtils.setImageView(coverView, uuid,
+                                                        mMaxCoverSize, mMaxCoverSize);
                 if (isSet) {
                     //Allow zooming by clicking on the image
                     coverView.setOnClickListener(v -> {
@@ -785,9 +800,7 @@ public class BooklistAdapter
                 }
             }
 
-            if (App.isUsed(DBDefinitions.KEY_SERIES_TITLE)
-                && rowData.contains(DBDefinitions.KEY_BOOK_NUM_IN_SERIES)) {
-
+            if (mSeriesIsUsed) {
                 String number = rowData.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
                 if (!number.isEmpty()) {
                     // Display it in one of the views, based on the size of the text.
@@ -804,15 +817,11 @@ public class BooklistAdapter
                     seriesNumView.setVisibility(View.GONE);
                     seriesNumLongView.setVisibility(View.GONE);
                 }
-            } else {
-                seriesNumView.setVisibility(View.GONE);
-                seriesNumLongView.setVisibility(View.GONE);
             }
 
             if (style.extrasByTask()) {
-                int extraFields = style.getExtraFieldsStatus();
                 // If there are extras to get, start a background task.
-                if ((extraFields & BooklistStyle.EXTRAS_BY_TASK) != 0) {
+                if ((mExtraFieldsUsed & BooklistStyle.EXTRAS_BY_TASK) != 0) {
                     // Fill in the extras field as blank initially.
                     authorView.setText("");
                     bookshelvesView.setText("");
@@ -825,7 +834,7 @@ public class BooklistAdapter
                     // Queue the task.
                     new GetBookExtrasTask(itemView.getContext(), mDb,
                                           rowData.getLong(DBDefinitions.KEY_FK_BOOK),
-                                          mTaskListener, extraFields)
+                                          mTaskListener, mExtraFieldsUsed)
                             .execute();
                 }
             } else {
@@ -836,8 +845,7 @@ public class BooklistAdapter
                 showOrHide(style, rowData, DBDefinitions.KEY_FORMAT, formatView);
                 showOrHide(style, rowData, DBDefinitions.KEY_LOCATION, locationView);
 
-                if (style.isUsed(DBDefinitions.KEY_PUBLISHER)
-                    || style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
+                if (mPublisherIsUsed || mPubDateIsUsed) {
                     showOrHide(publisherView, getPublisherAndPubDateText(style, rowData));
                 }
             }

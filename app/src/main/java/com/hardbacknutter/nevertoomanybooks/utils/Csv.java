@@ -27,10 +27,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * CSV utilities.
@@ -149,6 +154,29 @@ public final class Csv {
             sb.append(delimiter).append(element);
         }
         return sb.toString();
+    }
+
+
+    /**
+     * Not strictly a Csv method, but closely related as it's usually (always?) followed
+     * by sending the list to a join method here.
+     *
+     * @param context Current context
+     * @param map     Map with bits mapped to resource ids
+     * @param bitmask to turn into strings
+     *
+     * @return list of Strings with the names for each bit.
+     */
+    public static List<String> bitmaskToList(@NonNull final Context context,
+                                             @NonNull final Map<Integer, Integer> map,
+                                             final int bitmask) {
+        List<String> list = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            if ((entry.getKey() & bitmask) != 0) {
+                list.add(context.getString(entry.getValue()));
+            }
+        }
+        return list;
     }
 
     public interface Formatter<E> {

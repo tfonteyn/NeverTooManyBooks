@@ -504,7 +504,7 @@ class SearchAmazonHandler
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
                 // the language is a 'DisplayName'
                 addIfNotPresent(mBookData, DBDefinitions.KEY_LANGUAGE,
-                                LocaleUtils.getISO3Language(mBuilder.toString()));
+                                LocaleUtils.getIso3fromDisplayName(mBuilder.toString()));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {
                 mCurrencyAmount = mBuilder.toString();

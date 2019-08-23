@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -212,11 +213,7 @@ public class SearchTask
             Logger.warn(this, "runTask", e.getLocalizedMessage());
             setFinalError(R.string.error_network_timeout);
 
-        } catch (@NonNull final MalformedURLException e) {
-            Logger.warn(this, "runTask", e.getLocalizedMessage());
-            setFinalError(R.string.error_search_configuration);
-
-        } catch (@NonNull final UnknownHostException e) {
+        } catch (@NonNull final MalformedURLException | UnknownHostException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());
             setFinalError(R.string.error_search_configuration);
 
@@ -236,7 +233,7 @@ public class SearchTask
     private void checkForSeriesNameInTitle() {
         String bookTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
         if (bookTitle != null) {
-            ParsedBookTitle parsedBookTitle = ParsedBookTitle.parseBrackets(bookTitle);
+            ParsedBookTitle parsedBookTitle = ParsedBookTitle.parse(bookTitle);
             if (parsedBookTitle != null && !parsedBookTitle.getSeriesTitle().isEmpty()) {
                 ArrayList<Series> seriesList =
                         mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
@@ -245,7 +242,12 @@ public class SearchTask
                 }
                 Series newSeries = new Series(parsedBookTitle.getSeriesTitle());
                 newSeries.setNumber(parsedBookTitle.getSeriesNumber());
-                seriesList.add(newSeries);
+
+                // add to the TOP of the list. This is based on translated books/comics
+                // on Goodreads where the series is in the original language, but the
+                // series name embedded in the title is in the same language as the title.
+                seriesList.add(0, newSeries);
+
                 // store Series back
                 mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
                 // and store cleaned book title back

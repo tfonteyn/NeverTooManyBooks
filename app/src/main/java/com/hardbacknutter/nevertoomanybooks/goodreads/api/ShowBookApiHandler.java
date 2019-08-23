@@ -190,16 +190,24 @@ public abstract class ShowBookApiHandler
     /** Current author being processed. */
     @Nullable
     private String mCurrAuthorName;
+    @Nullable
+    private String mCurrAuthorRole;
     private final XmlHandler mHandleAuthorEnd = context -> {
         if (mCurrAuthorName != null && !mCurrAuthorName.isEmpty()) {
             if (mAuthors == null) {
                 mAuthors = new ArrayList<>();
             }
-            mAuthors.add(Author.fromString(mCurrAuthorName));
+            Author author = Author.fromString(mCurrAuthorName);
+            if (mCurrAuthorRole != null && !mCurrAuthorRole.isEmpty()) {
+                author.setType(mCurrAuthorRole);
+            }
+            mAuthors.add(author);
             mCurrAuthorName = null;
+            mCurrAuthorRole = null;
         }
     };
     private final XmlHandler mHandleAuthorName = context -> mCurrAuthorName = context.getBody();
+    private final XmlHandler mHandleAuthorRole = context -> mCurrAuthorRole = context.getBody();
     /** Current series being processed. */
     @Nullable
     private String mCurrSeriesName;
@@ -322,8 +330,12 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(DBDefinitions.KEY_LANGUAGE)) {
             String source = mBookData.getString(DBDefinitions.KEY_LANGUAGE);
             if (source != null && !source.isEmpty()) {
-                mBookData.putString(DBDefinitions.KEY_LANGUAGE,
-                                    LocaleUtils.getISO3LanguageFromISO2(source));
+                // Goodreads sometimes uses the 2-char code with region code (e.g. "en_GB")
+                source = LocaleUtils.getIso3FromIso2(source);
+                // Goodreads sometimes uses the alternative 3-char code for specific languages.
+                source = LocaleUtils.normaliseIso3(source);
+                // store the iso3
+                mBookData.putString(DBDefinitions.KEY_LANGUAGE, source);
             }
         }
 
@@ -331,7 +343,7 @@ public abstract class ShowBookApiHandler
         // Example: "<title>The Anome (Durdane, #1)</title>"
         if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
             String thisTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
-            ParsedBookTitle parsedBookTitle = ParsedBookTitle.parseBrackets(thisTitle);
+            ParsedBookTitle parsedBookTitle = ParsedBookTitle.parse(thisTitle);
             if (parsedBookTitle != null && !parsedBookTitle.getSeriesTitle().isEmpty()) {
                 if (mSeries == null) {
                     mSeries = new ArrayList<>();
@@ -712,6 +724,10 @@ public abstract class ShowBookApiHandler
                               XmlTags.XML_AUTHORS,
                               XmlTags.XML_AUTHOR, XmlTags.XML_NAME)
                  .setEndAction(mHandleAuthorName);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_AUTHORS,
+                              XmlTags.XML_AUTHOR, XmlTags.XML_ROLE)
+                 .setEndAction(mHandleAuthorRole);
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_POPULAR_SHELVES,

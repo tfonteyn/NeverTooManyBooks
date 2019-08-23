@@ -36,6 +36,7 @@ import androidx.preference.PreferenceManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.googlebooks.GoogleBooksManager;
@@ -121,9 +122,12 @@ public final class SearchSites {
         SEARCH_ORDER_DEFAULTS.add(Site.newSite(LIBRARY_THING, priority++, 3));
         SEARCH_ORDER_DEFAULTS.add(Site.newSite(ISFDB, priority++, 4));
 
-        // Dutch. Disabled by default.
+        // Dutch.
         Site kbnl = Site.newSite(KBNL, priority++, 5);
-        kbnl.setEnabled(false);
+        // Disabled by default if the device is not running in Dutch.
+        if (!"nld".equals(App.getSystemLocale().getISO3Language())) {
+            kbnl.setEnabled(false);
+        }
         SEARCH_ORDER_DEFAULTS.add(kbnl);
 
         // The proxy site has been broken since around April 2019.

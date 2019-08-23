@@ -51,7 +51,7 @@ public class FieldUsage {
     private final int mNameStringId;
     /** how to use this field. */
     @NonNull
-    public Usage usage;
+    private Usage mUsage;
 
     /**
      * Constructor.
@@ -67,16 +67,25 @@ public class FieldUsage {
                       @NonNull final String fieldId) {
         this.fieldId = fieldId;
         mNameStringId = nameStringId;
-        this.usage = usage;
+        mUsage = usage;
         mAllowAppend = allowAppend;
     }
 
     public boolean isWanted() {
-        return usage != Usage.Skip;
+        return mUsage != Usage.Skip;
     }
 
     public boolean canAppend() {
         return mAllowAppend;
+    }
+
+    @NonNull
+    public Usage getUsage() {
+        return mUsage;
+    }
+
+    public void setUsage(@NonNull final Usage usage) {
+        mUsage = usage;
     }
 
     @NonNull
@@ -86,7 +95,7 @@ public class FieldUsage {
 
     @NonNull
     public String getUsageInfo(@NonNull final Context context) {
-        return context.getString(usage.getStringId());
+        return context.getString(mUsage.getStringId());
     }
 
     /**
@@ -96,7 +105,7 @@ public class FieldUsage {
      * else       : Skip -> CopyIfBlank -> Overwrite -> Skip
      */
     public void nextState() {
-        usage = usage.nextState(mAllowAppend);
+        mUsage = mUsage.nextState(mAllowAppend);
     }
 
     public enum Usage {

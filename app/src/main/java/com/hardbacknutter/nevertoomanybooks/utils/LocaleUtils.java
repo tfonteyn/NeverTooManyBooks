@@ -31,18 +31,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import androidx.preference.PreferenceManager;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.MissingResourceException;
-import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -62,66 +57,10 @@ public final class LocaleUtils {
 
     /** The SharedPreferences name where we'll maintain our language to ISO mappings. */
     private static final String LANGUAGE_MAP = "language2iso3";
-    /**
-     * A Map to translate currency symbols to their official ISO code.
-     * <p>
-     * ENHANCE: surely this can be done more intelligently ?
-     */
-    private static final Map<String, String> CURRENCY_MAP = new HashMap<>();
-    /**
-     * Prices are split into currency and actual amount.
-     * Split on first digit, but leave it in the second part.
-     */
-    private static final Pattern SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN = Pattern.compile("(?=\\d)");
+
+    private static Locale mCachedPreferredLocale;
 
     private LocaleUtils() {
-    }
-
-    /**
-     * Populate CURRENCY_MAP.
-     *
-     * <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language>
-     * https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language</a>
-     */
-    @UiThread
-    private static void createCurrencyMap() {
-        // allow re-creating
-        CURRENCY_MAP.clear();
-
-        // key in map should always be lowercase
-        CURRENCY_MAP.put("", "");
-        CURRENCY_MAP.put("€", "EUR");
-
-        // English
-        CURRENCY_MAP.put("a$", "AUD"); // Australian Dollar
-        CURRENCY_MAP.put("nz$", "NZD"); // New Zealand Dollar
-        CURRENCY_MAP.put("£", "GBP"); // British Pound
-        CURRENCY_MAP.put("$", "USD"); // Trump Disney's
-
-        CURRENCY_MAP.put("c$", "CAD"); // Canadian Dollar
-        CURRENCY_MAP.put("ir£", "IEP"); // Irish Punt
-        CURRENCY_MAP.put("s$", "SGD"); // Singapore dollar
-
-        // supported locales (including pre-euro)
-        CURRENCY_MAP.put("br", "RUB"); // Russian Rouble
-        CURRENCY_MAP.put("zł", "PLN"); // Polish Zloty
-        CURRENCY_MAP.put("kč", "CZK "); // Czech Koruna
-        CURRENCY_MAP.put("kc", "CZK "); // Czech Koruna
-        CURRENCY_MAP.put("dm", "DEM"); //german marks
-        CURRENCY_MAP.put("ƒ", "NLG"); // Dutch Guilder
-        CURRENCY_MAP.put("fr", "BEF"); // Belgian Franc
-        CURRENCY_MAP.put("fr.", "BEF"); // Belgian Franc
-        CURRENCY_MAP.put("f", "FRF"); // French Franc
-        CURRENCY_MAP.put("ff", "FRF"); // French Franc
-        CURRENCY_MAP.put("pta", "ESP"); // Spanish Peseta
-        CURRENCY_MAP.put("L", "ITL"); // Italian Lira
-        CURRENCY_MAP.put("Δρ", "GRD"); // Greek Drachma
-        CURRENCY_MAP.put("₺", "TRY "); // Turkish Lira
-
-        // some others as seen on ISFDB site
-        CURRENCY_MAP.put("r$", "BRL"); // Brazilian Real
-        CURRENCY_MAP.put("kr", "DKK"); // Denmark Krone
-        CURRENCY_MAP.put("Ft", "HUF"); // Hungarian Forint
     }
 
     /**
@@ -153,22 +92,24 @@ public final class LocaleUtils {
             return;
         }
 
-        Locale userLocale = getPreferredLocale();
+        // null it first, so the getPreferredLocale call will re-reset it.
+        mCachedPreferredLocale = null;
+        mCachedPreferredLocale = getPreferredLocale();
 
         // Apply the user-preferred Locale globally.... but this does not override already
         // loaded resources. So.. this is for FUTURE use when new resources get initialised.
-        Locale.setDefault(userLocale);
+        Locale.setDefault(mCachedPreferredLocale);
 
         // Apply to the resources as passed in.
         // create a delta-configuration; i.e. only to be used to modify the added items.
         Configuration deltaOnlyConfig = new Configuration();
-        deltaOnlyConfig.setLocale(userLocale);
+        deltaOnlyConfig.setLocale(mCachedPreferredLocale);
 
         Resources resources = context.getResources();
         resources.updateConfiguration(deltaOnlyConfig, resources.getDisplayMetrics());
 
         // see if we need to add mappings for the new/current locale
-        createLanguageMappingCache(userLocale);
+        createLanguageMappingCache(getLanguageCache(), mCachedPreferredLocale);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.debugExit(LocaleUtils.class, "applyPreferred",
@@ -206,13 +147,17 @@ public final class LocaleUtils {
     public static Locale getPreferredLocale() {
         String lang = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                                        .getString(Prefs.pk_ui_language, null);
-        // the string "system" is also hardcoded in the preference string-array and
-        // in the default setting in the preference screen.
-        if (lang == null || lang.isEmpty() || "system".equalsIgnoreCase(lang)) {
-            return App.getSystemLocale();
-        } else {
-            return from(lang);
+
+        if (mCachedPreferredLocale == null) {
+            // the string "system" is also hardcoded in the preference string-array and
+            // in the default setting in the preference screen.
+            if (lang == null || lang.isEmpty() || "system".equalsIgnoreCase(lang)) {
+                mCachedPreferredLocale = App.getSystemLocale();
+            } else {
+                mCachedPreferredLocale = from(lang);
+            }
         }
+        return mCachedPreferredLocale;
     }
 
     /**
@@ -257,7 +202,35 @@ public final class LocaleUtils {
     }
 
     /**
-     * Try to convert a DisplayName to an ISO code.
+     * Load a Resources set for the specified Locale.
+     * This is an expensive lookup; we do not cache the Resources here,
+     * but it's advisable to cache the strings (map of locale/string for example) being looked up.
+     *
+     * @param context       Current context
+     * @param desiredLocale the desired Locale, e.g. the locale of a book,series,toc,...
+     *
+     * @return the Resources
+     */
+    @NonNull
+    public static Resources getLocalizedResources(@NonNull final Context context,
+                                                  @NonNull final Locale desiredLocale) {
+        Configuration current = context.getResources().getConfiguration();
+        Configuration configuration = new Configuration(current);
+        String lang = desiredLocale.getLanguage();
+        if (lang.length() == 2) {
+            configuration.setLocale(desiredLocale);
+        } else {
+            // any 3-char code needs to be converted to 2-char be able to find the resource.
+            configuration.setLocale(new Locale(mapIso3toIso2(lang)));
+        }
+
+        Context localizedContext = context.createConfigurationContext(configuration);
+        return localizedContext.getResources();
+    }
+
+
+    /**
+     * Try to convert a Language DisplayName to an ISO3 code.
      * At installation (or upgrade to v200) we generated the users System Locale + Locale.ENGLISH
      * Each time the user switches language, we generate an additional set.
      * That probably covers a lot if not all.
@@ -267,7 +240,7 @@ public final class LocaleUtils {
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public static String getISO3Language(@NonNull final String displayName) {
+    public static String getIso3fromDisplayName(@NonNull final String displayName) {
         String iso = getLanguageCache().getString(displayName, null);
         if (iso != null) {
             return iso;
@@ -278,44 +251,27 @@ public final class LocaleUtils {
     /**
      * Try to convert a "language-country" code to an ISO code.
      *
-     * @param source a standard ISO string like "en" or "en-GB" or "en-GB*"
+     * @param iso2 a standard ISO string like "en" or "en-GB" or "en-GB*"
      *
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public static String getISO3LanguageFromISO2(@NonNull final String source) {
+    public static String getIso3FromIso2(@NonNull final String iso2) {
         // shortcut for English "en", "en-GB", etc
-        if ("en".equals(source) || source.startsWith("en-")) {
+        if ("en".equals(iso2) || iso2.startsWith("en-")) {
             return "eng";
         } else {
             try {
-                Locale bl = new Locale(source.split("-")[0]);
+                Locale bl = new Locale(iso2.split("-")[0]);
                 return bl.getISO3Language();
             } catch (@NonNull final MissingResourceException ignore) {
-                return source;
+                return iso2;
             }
         }
     }
 
     /**
-     * Convert the passed string with a (hopefully valid) currency unit, into the ISO code
-     * for that currency.
-     *
-     * @param currency to convert
-     *
-     * @return ISO code.
-     */
-    @Nullable
-    private static String currencyToISO(@NonNull final String currency) {
-        if (CURRENCY_MAP.isEmpty()) {
-            createCurrencyMap();
-        }
-        String key = currency.trim().toLowerCase(App.getSystemLocale());
-        return CURRENCY_MAP.get(key);
-    }
-
-    /**
-     * Translate the Language ISO code to the display name.
+     * Try to convert a Language ISO code to the display name.
      *
      * @param iso the ISO code
      *
@@ -333,7 +289,7 @@ public final class LocaleUtils {
     }
 
     /**
-     * Translate the Language ISO code to the display name.
+     * Try to convert a Language ISO code to the display name.
      *
      * @param locale to use for the output language
      * @param iso    the ISO code
@@ -351,218 +307,161 @@ public final class LocaleUtils {
         return iso;
     }
 
-    /**
-     * Load a Resources set for the specified Locale.
-     * ENHANCE: should we cache these ?
-     *
-     * @param context       Current context
-     * @param desiredLocale the desired Locale, e.g. the locale of a book,series,toc,...
-     *
-     * @return the Resources
-     */
-    @NonNull
-    public static Resources getLocalizedResources(@NonNull final Context context,
-                                                  @NonNull final Locale desiredLocale) {
-        Configuration current = context.getResources().getConfiguration();
-        Configuration configuration = new Configuration(current);
-        String lang = desiredLocale.getLanguage();
-        //FIXME: resources want 2-chars, locale 3-chars... is there a better way ?
-        if (lang.length() == 2) {
-            configuration.setLocale(desiredLocale);
-        } else {
-            // any 3-character code needs to be converted to be able to find the resource.
-            configuration.setLocale(new Locale(mapLanguageCode(lang)));
-        }
-
-        Context localizedContext = context.createConfigurationContext(configuration);
-        return localizedContext.getResources();
-    }
+//    Overkill... use the switch structure instead.
+//    @Nullable
+//    private static Map<String, String> LANG3_TO_LANG2_MAP;
+//
+//    private static String mapIso3toIso2viaMap(@NonNull final String iso3) {
+//        if (LANG3_TO_LANG2_MAP == null) {
+//            String[] languages = Locale.getISOLanguages();
+//            LANG3_TO_LANG2_MAP = new HashMap<>(languages.length);
+//            for (String language : languages) {
+//                Locale locale = new Locale(language);
+//                LANG3_TO_LANG2_MAP.put(locale.getISO3Language(), language);
+//            }
+//        }
+//        String iso2 = LANG3_TO_LANG2_MAP.get(iso3);
+//        return iso2 != null ? iso2 : iso3;
+//    }
 
     /**
      * Map an ISO 639-2 (3-char) language code to an ISO 639-1 (2-char) language code.
      * <p>
      * There is one entry here for each language supported.
-     * NEWKIND: if a new resource language is added, enable the mapping here.
+     * NEWKIND: if a new resource language is added, add a mapping here.
      *
-     * @param iso3LanguageCode ISO 639-2 (3-char) language code
+     * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      *
      * @return ISO 639-1 (2-char) language code
      */
-    private static String mapLanguageCode(@NonNull final String iso3LanguageCode) {
+    private static String mapIso3toIso2(@NonNull final String iso3) {
+        if (iso3.length() < 3) {
+            return iso3;
+        }
 
-        switch (iso3LanguageCode) {
+        switch (iso3) {
+            // English
             case "eng":
-                // English
                 return "en";
+            // Czech
+            case "cze":
             case "ces":
-                // Czech
                 return "cs";
+            // German
+            case "ger":
             case "deu":
-                // German
                 return "de";
+            // Greek
+            case "gre":
             case "ell":
-                // Greek
                 return "el";
+            // Spanish
             case "spa":
-                // Spanish
                 return "es";
+            // French
+            case "fre":
             case "fra":
-                // French
                 return "fr";
+            // Italian
             case "ita":
-                // Italian
                 return "it";
+            // Dutch
+            case "dut":
             case "nld":
-                // Dutch
                 return "nl";
+            // Polish
             case "pol":
-                // Polish
                 return "pl";
+            // Russian
             case "rus":
-                // Russian
                 return "ru";
+            // Turkish
             case "tur":
-                // Turkish
                 return "tr";
+
             default:
-                // English
+                // anything else is not supported, and (FLW) should never happen.
                 return "en";
-//
-//            case "afr":
-//                // Afrikaans
-//                return "af";
-//            case "sqi":
-//                // Albanian
-//                return "sq";
-//            case "ara":
-//                // Arabic
-//                return "ar";
-//            case "aze":
-//                // Azeri
-//                return "az";
-//            case "eus":
-//                // Basque
-//                return "eu";
-//            case "bel":
-//                // Belarusian
-//                return "be";
-//            case "ben":
-//                // Bengali
-//                return "bn";
-//            case "bul":
-//                // Bulgarian
-//                return "bg";
-//            case "cat":
-//                // Catalan
-//                return "ca";
-//            case "chi_sim":
-//                // Chinese (Simplified)
-//                return "zh-CN";
-//            case "chi_tra":
-//                // Chinese (Traditional)
-//                return "zh-TW";
-//            case "hrv":
-//                // Croatian
-//                return "hr";
-//            case "dan":
-//                // Danish
-//                return "da";
-//            case "est":
-//                // Estonian
-//                return "et";
-//            case "fin":
-//                // Finnish
-//                return "fi";
-//            case "glg":
-//                // Galician
-//                return "gl";
-//            case "heb":
-//                // Hebrew
-//                return "he";
-//            case "hin":
-//                // Hindi
-//                return "hi";
-//            case "hun":
-//                // Hungarian
-//                return "hu";
-//            case "isl":
-//                // Icelandic
-//                return "is";
-//            case "ind":
-//                // Indonesian
-//                return "id";
-//            case "jpn":
-//                // Japanese
-//                return "ja";
-//            case "kan":
-//                // Kannada
-//                return "kn";
-//            case "kor":
-//                // Korean
-//                return "ko";
-//            case "lav":
-//                // Latvian
-//                return "lv";
-//            case "lit":
-//                // Lithuanian
-//                return "lt";
-//            case "mkd":
-//                // Macedonian
-//                return "mk";
-//            case "msa":
-//                // Malay
-//                return "ms";
-//            case "mal":
-//                // Malayalam
-//                return "ml";
-//            case "mlt":
-//                // Maltese
-//                return "mt";
-//            case "nor":
-//                // Norwegian
-//                return "no";
-//            case "por":
-//                // Portuguese
-//                return "pt";
-//            case "ron":
-//                // Romanian
-//                return "ro";
-//            case "srp":
-//                // Serbian (Latin)
-//                // is google expecting Cyrillic?
-//                return "sr";
-//            case "slk":
-//                // Slovak
-//                return "sk";
-//            case "slv":
-//                // Slovenian
-//                return "sl";
-//            case "swa":
-//                // Swahili
-//                return "sw";
-//            case "swe":
-//                // Swedish
-//                return "sv";
-//            case "tgl":
-//                // Tagalog
-//                return "tl";
-//            case "tam":
-//                // Tamil
-//                return "ta";
-//            case "tel":
-//                // Telugu
-//                return "te";
-//            case "tha":
-//                // Thai
-//                return "th";
-//            case "ukr":
-//                // Ukrainian
-//                return "uk";
-//            case "vie":
-//                // Vietnamese
-//                return "vi";
-//            default:
-//                return iso3LanguageCode;
+        }
+    }
+
+    /**
+     * Convert the 3-char bibliographic code to the Java used terminology code.
+     * <p>
+     * Goodreads uses the bibliographic code while Java uses the terminology code.
+     * For example, in Java french is "fra" but GR uses "fre".
+     *
+     * <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php">
+     * https://www.loc.gov/standards/iso639-2/php/code_list.php</a>
+     * <p>
+     * This is the entire set correct as on 2019-08-22.
+     */
+    @NonNull
+    public static String normaliseIso3(@NonNull final String lang) {
+        switch (lang) {
+            // Albanian
+            case "alb":
+                return "sqi";
+            // Armenian
+            case "arm":
+                return "hye";
+            // Basque
+            case "baq":
+                return "eus";
+            // Burmese
+            case "bur":
+                return "mya";
+            // Chinese
+            case "chi":
+                return "zho";
+            // Czech
+            case "cze":
+                return "ces";
+            // Dutch
+            case "dut":
+                return "nld";
+            // French
+            case "fre":
+                return "fra";
+            // Georgian
+            case "geo":
+                return "kat";
+            // German
+            case "ger":
+                return "deu";
+            // Greek
+            case "gre":
+                return "ell";
+            // Icelandic
+            case "ice":
+                return "isl";
+            // Macedonian
+            case "mac":
+                return "mkd";
+            // Maori
+            case "mao":
+                return "mri";
+            // Malay
+            case "may":
+                return "msa";
+            // Persian
+            case "per":
+                return "fas";
+            // Romanian
+            case "rum":
+                return "ron";
+            // Slovak
+            case "slo":
+                return "slk";
+            // Tibetan
+            case "tib":
+                return "bod";
+            // Welsh
+            case "wel":
+                return "cym";
+
+            default:
+                return lang;
         }
     }
 
@@ -570,24 +469,26 @@ public final class LocaleUtils {
      * generate initial language2iso mappings.
      */
     public static void createLanguageMappingCache() {
-        // the system default
-        createLanguageMappingCache(App.getSystemLocale());
+        SharedPreferences prefs = getLanguageCache();
+
         // the one the user has configured our app into using
-        createLanguageMappingCache(Locale.getDefault());
+        createLanguageMappingCache(prefs, Locale.getDefault());
+
+        // the system default
+        createLanguageMappingCache(prefs, App.getSystemLocale());
         // and English for compatibility with lots of websites.
-        createLanguageMappingCache(Locale.ENGLISH);
+        createLanguageMappingCache(prefs, Locale.ENGLISH);
     }
 
     /**
      * Generate language mappings for a given locale.
      */
-    private static void createLanguageMappingCache(@NonNull final Locale myLocale) {
-        SharedPreferences prefs = getLanguageCache();
+    private static void createLanguageMappingCache(@NonNull final SharedPreferences prefs,
+                                                   @NonNull final Locale myLocale) {
         // just return if already done for this locale.
         if (prefs.getBoolean(myLocale.getISO3Language(), false)) {
             return;
         }
-
         SharedPreferences.Editor ed = prefs.edit();
         for (Locale loc : Locale.getAvailableLocales()) {
             ed.putString(loc.getDisplayLanguage(myLocale), loc.getISO3Language());
@@ -621,64 +522,5 @@ public final class LocaleUtils {
 
                + "\nApp.isInNeedOfRecreating() : " + App.isInNeedOfRecreating()
                + "\nApp.isRecreating()         : " + App.isRecreating();
-    }
-
-    /**
-     * Takes a combined price field, and returns the value/currency in the Bundle.
-     *
-     * <b>Note:</b>
-     * The UK (GBP) pre-decimal had Shilling/Pence as subdivisions of the pound.
-     * UK Shilling was written as "1/-", for example:
-     * three shillings and six pence => 3/6
-     * We don't convert this, but return that value as-is.
-     * It's used on the ISFDB web site.
-     * <a href="https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal">
-     * https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal</a>
-     *
-     * @param priceWithCurrency price, e.g. "Bf459", "$9.99", ...
-     * @param keyPrice          bundle key for the value
-     * @param keyCurrency       bundle key for the currency
-     * @param destination       bundle to add the two keys to.
-     */
-    public static void splitPrice(@NonNull final String priceWithCurrency,
-                                  @NonNull final String keyPrice,
-                                  @NonNull final String keyCurrency,
-                                  @NonNull final Bundle destination) {
-        String[] data = SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN.split(priceWithCurrency, 2);
-        if (data.length > 1) {
-            String currencyCode = currencyToISO(data[0]);
-            if (currencyCode != null && currencyCode.length() == 3) {
-                try {
-                    java.util.Currency currency = java.util.Currency.getInstance(currencyCode);
-
-                    int decDigits = currency.getDefaultFractionDigits();
-                    // format with 'digits' decimal places
-                    Float price = Float.parseFloat(data[1]);
-                    String priceStr = String.format("%." + decDigits + 'f', price);
-
-                    destination.putString(keyPrice, priceStr);
-                    // re-get the code just in case it used a recognised but non-standard string
-                    destination.putString(keyCurrency, currency.getCurrencyCode());
-                    return;
-
-                } catch (@NonNull final NumberFormatException e) {
-                    // accept the 'broken' price data[1]
-                    destination.putString(keyPrice, data[1]);
-                    destination.putString(keyCurrency, currencyCode);
-                    return;
-
-                } catch (@NonNull final IllegalArgumentException e) {
-                    // Currency.getInstance sanity catch....
-                    if (BuildConfig.DEBUG /* always */) {
-                        Logger.error(LocaleUtils.class, e, "splitPrice",
-                                     "data[0]=" + data[0], "data[1]=" + data[1]);
-                    }
-                }
-            }
-        }
-
-        // fall back to the input
-        destination.putString(keyPrice, priceWithCurrency);
-        destination.putString(keyCurrency, "");
     }
 }

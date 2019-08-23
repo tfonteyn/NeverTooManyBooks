@@ -225,7 +225,7 @@ public class UpdateFieldsFromInternetFragment
                                  @NonNull final String relatedFieldId) {
         FieldUsage field = mFieldUsages.get(fieldId);
         if (field != null && field.isWanted()) {
-            mFieldUsages.put(relatedFieldId, new FieldUsage(0, field.usage,
+            mFieldUsages.put(relatedFieldId, new FieldUsage(0, field.getUsage(),
                                                             field.canAppend(), relatedFieldId));
         }
     }
@@ -461,7 +461,7 @@ public class UpdateFieldsFromInternetFragment
         final FieldUsage covers = mFieldUsages.get(UniqueId.BKEY_IMAGE);
 
         //noinspection ConstantConditions
-        if (covers.usage.equals(Overwrite)) {
+        if (covers.getUsage().equals(Overwrite)) {
             // check if the user really wants to overwrite all covers
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
@@ -470,12 +470,12 @@ public class UpdateFieldsFromInternetFragment
                     .setMessage(R.string.confirm_overwrite_thumbnail)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                     .setNeutralButton(R.string.no, (d, which) -> {
-                        covers.usage = CopyIfBlank;
+                        covers.setUsage(CopyIfBlank);
                         mFieldUsages.put(UniqueId.BKEY_IMAGE, covers);
                         startUpdate();
                     })
                     .setPositiveButton(R.string.yes, (d, which) -> {
-                        covers.usage = Overwrite;
+                        covers.setUsage(Overwrite);
                         mFieldUsages.put(UniqueId.BKEY_IMAGE, covers);
                         startUpdate();
                     })

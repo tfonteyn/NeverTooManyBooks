@@ -40,7 +40,6 @@ import androidx.lifecycle.ViewModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -51,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -177,9 +175,8 @@ public class BookBaseFragmentModel
 
     @NonNull
     public Book saveBook(@NonNull final Context context) {
-        Locale userLocale = LocaleUtils.getPreferredLocale();
         if (mBook.getId() == 0) {
-            long id = mDb.insertBook(context, userLocale, mBook);
+            long id = mDb.insertBook(context, mBook);
             if (id > 0) {
                 // if we got a cover while searching the internet, make it permanent
                 if (mBook.getBoolean(UniqueId.BKEY_IMAGE)) {
@@ -192,9 +189,8 @@ public class BookBaseFragmentModel
                 }
             }
         } else {
-            mDb.updateBook(context, userLocale, mBook.getId(), mBook, 0);
+            mDb.updateBook(context, mBook.getId(), mBook, 0);
         }
-
         return mBook;
     }
 

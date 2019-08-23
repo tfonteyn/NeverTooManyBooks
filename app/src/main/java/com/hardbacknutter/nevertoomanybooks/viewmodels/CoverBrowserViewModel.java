@@ -588,9 +588,9 @@ public class CoverBrowserViewModel
                 return mFileManager.download(mIsbn, null,
                                              // try to get a picture in this order of size.
                                              // Stops at first one found.
-                                             SearchEngine.ImageSize.SMALL,
-                                             SearchEngine.ImageSize.MEDIUM,
-                                             SearchEngine.ImageSize.LARGE);
+                                             SearchEngine.ImageSize.Small,
+                                             SearchEngine.ImageSize.Medium,
+                                             SearchEngine.ImageSize.Large);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
                 // tad annoying... java.io.InterruptedIOException: thread interrupted
@@ -669,9 +669,9 @@ public class CoverBrowserViewModel
                                              mFileInfo.site,
                                              // try to get a picture in this order of size.
                                              // Stops at first one found.
-                                             SearchEngine.ImageSize.LARGE,
-                                             SearchEngine.ImageSize.MEDIUM,
-                                             SearchEngine.ImageSize.SMALL);
+                                             SearchEngine.ImageSize.Large,
+                                             SearchEngine.ImageSize.Medium,
+                                             SearchEngine.ImageSize.Small);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
                 // tad annoying... java.io.InterruptedIOException: thread interrupted

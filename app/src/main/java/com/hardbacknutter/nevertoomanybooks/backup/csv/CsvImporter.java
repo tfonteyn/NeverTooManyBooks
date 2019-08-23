@@ -274,11 +274,11 @@ public class CsvImporter
                 requireNonBlankOrThrow(book, row, DBDefinitions.KEY_TITLE);
 
                 // check any of the Author variations columns.
-                handleAuthors(context, mDb, book);
+                handleAuthors(mDb, book);
                 // check the dedicated Series column, or check if the title contains a series part.
                 handleSeries(context, mDb, book);
                 // check any of the Bookshelf variations columns.
-                handleBookshelves(context, mDb, book);
+                handleBookshelves(mDb, book);
 
                 // optional
                 if (book.containsKey(CsvExporter.CSV_COLUMN_TOC)) {
@@ -290,7 +290,7 @@ public class CsvImporter
                     // Save the original ID from the file for use in checking for images
                     long bookIdFromFile = bids.bookId;
                     // go!
-                    bids.bookId = importBook(context, userLocale, book, bids, updateOnlyIfNewer);
+                    bids.bookId = importBook(context, book, bids, updateOnlyIfNewer);
 
                     // When importing a file that has an ID or UUID, try to import a cover.
                     if (coverFinder != null) {
@@ -301,11 +301,7 @@ public class CsvImporter
                                                               mDb.getBookUuid(bids.bookId));
                         }
                     }
-                } catch (@NonNull final IOException e) {
-                    Logger.error(this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
-                } catch (@NonNull final SQLiteDoneException e) {
-                    Logger.error(this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
-                } catch (@NonNull final RuntimeException e) {
+                } catch (@NonNull final IOException | SQLiteDoneException e) {
                     Logger.error(this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 }
 
@@ -356,12 +352,9 @@ public class CsvImporter
      * insert or update a single book.
      *
      * @param context    Current context
-     * @param userLocale the users preferred Locale
-     *
      * @return the imported book id
      */
     private long importBook(@NonNull final Context context,
-                            @NonNull final Locale userLocale,
                             @NonNull final Book book,
                             @NonNull final BookIds bids,
                             final boolean updateOnlyIfNewer) {
@@ -371,7 +364,7 @@ public class CsvImporter
         // Always import empty ID's...even if they are duplicates.
         // Would be nice to import a cover, but without ID/UUID that is not possible
         if (!hasUuid && !bids.hasNumericId) {
-            return mDb.insertBook(context, userLocale, book);
+            return mDb.insertBook(context, book);
         }
 
         // we have a UUID or ID. We'll check if we already have the book.
@@ -397,7 +390,7 @@ public class CsvImporter
 
         if (exists) {
             if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bids.bookId)) {
-                int rowsAffected = mDb.updateBook(context, userLocale, bids.bookId, book,
+                int rowsAffected = mDb.updateBook(context, bids.bookId, book,
                                                   DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
                 if (rowsAffected == 1) {
                     mResults.booksUpdated++;
@@ -406,7 +399,7 @@ public class CsvImporter
                 }
             }
         } else {
-            bids.bookId = mDb.insertBook(context, userLocale, bids.bookId, book);
+            bids.bookId = mDb.insertBook(context, bids.bookId, book);
             if (bids.bookId != -1) {
                 mResults.booksCreated++;
             } else {
@@ -431,8 +424,7 @@ public class CsvImporter
      * Process the bookshelves.
      * Database access is strictly limited to fetching ID's.
      */
-    private void handleBookshelves(@NonNull final Context context,
-                                   @NonNull final DAO db,
+    private void handleBookshelves(@NonNull final DAO db,
                                    @NonNull final Book book) {
         String encodedList = null;
         if (book.containsKey(DBDefinitions.KEY_BOOKSHELF)) {
@@ -445,7 +437,7 @@ public class CsvImporter
         ArrayList<Bookshelf> list = CsvCoder.getBookshelfCoder().decodeList(encodedList);
         if (!list.isEmpty()) {
             // fix the ID's
-            ItemWithFixableId.pruneList(context, db, list);
+            ItemWithFixableId.pruneList(db, list);
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
         }
 
@@ -459,12 +451,10 @@ public class CsvImporter
      * <p>
      * Get the list of authors from whatever source is available.
      *
-     * @param context Current context
-     * @param db      Database Access
-     * @param book    the book
+     * @param db   Database Access
+     * @param book the book
      */
-    private void handleAuthors(@NonNull final Context context,
-                               @NonNull final DAO db,
+    private void handleAuthors(@NonNull final DAO db,
                                @NonNull final Book book) {
         // preferred & used in latest versions
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_AUTHORS);
@@ -499,7 +489,7 @@ public class CsvImporter
 
         // Now build the array for authors
         ArrayList<Author> list = CsvCoder.getAuthorCoder().decodeList(encodedList);
-        ItemWithFixableId.pruneList(context, db, list);
+        ItemWithFixableId.pruneList(db, list);
         book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
     }
@@ -532,8 +522,8 @@ public class CsvImporter
 
         // Handle the series
         ArrayList<Series> list = CsvCoder.getSeriesCoder().decodeList(encodedList);
-        Series.pruneSeriesList(list);
-        ItemWithFixableId.pruneList(context, db, list);
+        Series.pruneSeriesList(list, book.getLocale());
+        ItemWithFixableId.pruneList(db, list, context, book.getLocale());
         book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_SERIES);
     }
@@ -557,7 +547,7 @@ public class CsvImporter
             ArrayList<TocEntry> list = CsvCoder.getTocCoder().decodeList(encodedList);
             if (!list.isEmpty()) {
                 // fix the ID's
-                ItemWithFixableId.pruneList(context, db, list);
+                ItemWithFixableId.pruneList(db, list, context, book.getLocale());
                 book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
             }
         }

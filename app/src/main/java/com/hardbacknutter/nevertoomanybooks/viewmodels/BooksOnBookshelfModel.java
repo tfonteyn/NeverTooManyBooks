@@ -107,8 +107,8 @@ public class BooksOnBookshelfModel
     /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
     private TaskListener<Integer> mOnGoodreadsTaskListener;
     /**
-     * Flag (potentially) set in {@link BooksOnBookshelf#onActivityResult}.
-     * Indicates if list rebuild is needed in {@link BooksOnBookshelf#onResume}.
+     * Flag (potentially) set in {@link BooksOnBookshelf} #onActivityResult.
+     * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
      * {@code null} means no rebuild at all, otherwise full or partial rebuild.
      */
     @Nullable
@@ -640,8 +640,8 @@ public class BooksOnBookshelfModel
             }
         } else if (mapper.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)
                    == BooklistGroup.RowKind.BOOK) {
-            ArrayList<Series> series = mDb.getSeriesByBookId(
-                    mapper.getLong(DBDefinitions.KEY_FK_BOOK));
+            ArrayList<Series> series =
+                    mDb.getSeriesByBookId(mapper.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!series.isEmpty()) {
                 return series.get(0).getTitle();
             }

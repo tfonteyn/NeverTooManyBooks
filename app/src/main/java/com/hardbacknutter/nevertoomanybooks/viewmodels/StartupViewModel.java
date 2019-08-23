@@ -72,7 +72,7 @@ public class StartupViewModel
 
     static {
         if (BuildConfig.DEBUG /* always */) {
-            PROMPT_WAIT_BACKUP = 50;
+            PROMPT_WAIT_BACKUP = 5;
         } else {
             PROMPT_WAIT_BACKUP = 5;
         }

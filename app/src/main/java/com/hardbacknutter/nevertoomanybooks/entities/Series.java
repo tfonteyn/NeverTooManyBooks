@@ -46,7 +46,6 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Class to hold book-related series data.
@@ -108,9 +107,6 @@ public class Series
     /** number (alphanumeric) of a book in this series. */
     @NonNull
     private String mNumber;
-
-    /** cached locale. */
-    private Locale mLocale;
 
     /**
      * Constructor.
@@ -226,14 +222,16 @@ public class Series
      * bill <-- delete
      * bill(1)
      *
-     * @param list to check
+     * @param list       to check
+     * @param bookLocale Locale to use if the item does not have a Locale of its own.
      */
-    public static void pruneSeriesList(@NonNull final List<Series> list) {
+    public static void pruneSeriesList(@NonNull final List<Series> list,
+                                       @NonNull final Locale bookLocale) {
         List<Series> toDelete = new ArrayList<>();
         Map<String, Series> index = new HashMap<>();
 
         for (Series series : list) {
-            Locale locale = series.getLocale();
+            Locale locale = series.getLocale(bookLocale);
 
             final String title = series.getTitle().trim().toLowerCase(locale);
             final boolean emptyNum = series.getNumber().trim().isEmpty();
@@ -369,40 +367,38 @@ public class Series
     }
 
     /**
-     * Replace local details from another series.
+     * TEST: Replace local details from another series.
      *
-     * @param source Series to copy from
+     * @param source            Series to copy from
+     * @param includeBookFields Flag to force copying the Book related fields as well
      */
-    public void copyFrom(@NonNull final Series source) {
+    public void copyFrom(@NonNull final Series source,
+                         final boolean includeBookFields) {
         mTitle = source.mTitle;
         mIsComplete = source.mIsComplete;
-        mNumber = source.mNumber;
+        if (includeBookFields) {
+            mNumber = source.mNumber;
+        }
     }
 
     /**
-     * Stopgap.... makes the code elsewhere clean.
-     * <p>
-     * ENHANCE: The locale of the Series
-     * should be based on either a specific language setting for
-     * the Series itself, or on the locale of the primary book.
-     * Neither is implemented for now. So we cheat.
+     * ENHANCE: The locale of the Series should be based on either a specific language
+     * setting for the Series itself, or on the locale of the <strong>primary</strong> book.
+     * For now, we always use the passed fallback which <strong>should be the BOOK Locale</strong>
      *
-     * @return the locale of the Series
+     * @return the locale of the TocEntry
      */
     @NonNull
     @Override
-    public Locale getLocale() {
-        if (mLocale == null) {
-            mLocale = LocaleUtils.getPreferredLocale();
-        }
-        return mLocale;
+    public Locale getLocale(@NonNull final Locale bookLocale) {
+        return bookLocale;
     }
 
     @Override
-    public long fixId(@NonNull final Context context,
-                      @NonNull final DAO db,
-                      @NonNull final Locale seriesLocale) {
-        mId = db.getSeriesId(context, this, seriesLocale);
+    public long fixId(@NonNull final DAO db,
+                      @NonNull final Context context,
+                      @NonNull final Locale bookLocale) {
+        mId = db.getSeriesId(context, this, bookLocale);
         return mId;
     }
 
@@ -470,7 +466,6 @@ public class Series
                + ", mTitle=`" + mTitle + '`'
                + ", mIsComplete=" + mIsComplete
                + ", mNumber=`" + mNumber + '`'
-               + ", mLocale=" + mLocale
                + '}';
     }
 

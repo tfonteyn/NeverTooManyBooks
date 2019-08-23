@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
@@ -394,9 +395,10 @@ public class AuthorWorksFragment
                                        final int position) {
             // make sure it's still in range.
             int index = MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
-            // first character only, don't care about Locale...
             return new String[]{mModel.getTocEntries().get(index)
-                                      .getTitle().substring(0, 1).toUpperCase()};
+                                      .getTitle()
+                                      .substring(0, 1)
+                                        .toUpperCase(LocaleUtils.getPreferredLocale())};
         }
     }
 }

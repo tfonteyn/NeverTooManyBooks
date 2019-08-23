@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,6 +143,18 @@ public class ListReviewsApiHandler
     }
 
     /**
+     * Get the reviews.
+     *
+     * {@code
+     * Bundle results = get(page,perPage);
+     * mTotalBooks = (int) results.getLong(ListReviewsApiHandler.ReviewField.TOTAL);
+     *
+     * ArrayList<Bundle> reviews = results.getParcelableArrayList(
+     *                                 ListReviewsApiHandler.ReviewField.REVIEWS);
+     * }
+     *
+     * @return A bundle containing an ArrayList of Bundles, one for each review.
+     *
      * @throws CredentialsException  with GoodReads
      * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
      * @throws IOException           on other failures
@@ -406,6 +419,8 @@ public class ListReviewsApiHandler
                 .longBody(XmlTags.XML_ID, DBDefinitions.KEY_FK_AUTHOR)
                 //                      <name><![CDATA[Jack Vance]]></name>
                 .stringBody(XmlTags.XML_NAME, ReviewField.AUTHOR_NAME_GF)
+                //                      <role>Illustrator</role>
+                .stringBody(XmlTags.XML_ROLE, ReviewField.AUTHOR_ROLE)
                 //                      ...
                 //                  </author>
                 //              </authors>
@@ -482,6 +497,7 @@ public class ListReviewsApiHandler
         public static final String REVIEWS = "__reviews";
         public static final String AUTHORS = "__authors";
         public static final String AUTHOR_NAME_GF = "__author_name";
+        public static final String AUTHOR_ROLE = "__author_role";
 
         public static final String SHELF = "__shelf";
         public static final String SHELVES = "__shelves";
