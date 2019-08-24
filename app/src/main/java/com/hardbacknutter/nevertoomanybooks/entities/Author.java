@@ -140,7 +140,9 @@ public class Author
      * A. E. Van Vogt
      * Rip Von Ronkel
      */
-    private static final Pattern FAMILY_NAME_PREFIX = Pattern.compile("[LlDd]e|[Vv][oa]n");
+    private static final Pattern FAMILY_NAME_PREFIX =
+            Pattern.compile("(le|de|van|von)",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     /**
      * ENHANCE: author name suffixes; needs internationalisation ? probably not.
      * <p>
@@ -164,7 +166,9 @@ public class Author
      * "Dr. Asimov" -> titles... pre or suffixed
      */
     private static final Pattern FAMILY_NAME_SUFFIX =
-            Pattern.compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior|II|III");
+            Pattern.compile("jr\\.|jr|junior|sr\\.|sr|senior|II|III",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
     /**
      * A very crude text to bit mapper.
      * <p>

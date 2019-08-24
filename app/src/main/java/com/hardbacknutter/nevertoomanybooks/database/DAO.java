@@ -290,6 +290,7 @@ public class DAO
     private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to update FTS";
     /** See {@link #encodeString(String)}. */
     private static final Pattern ENCODE_STRING = Pattern.compile("'", Pattern.LITERAL);
+    /** any non-word character. */
     private static final Pattern ENCODE_ORDERBY_PATTERN = Pattern.compile("\\W");
     /** Actual SQLiteOpenHelper. */
     private static DBHelper sDbHelper;
@@ -3620,11 +3621,9 @@ public class DAO
     @NonNull
     public BookCursor fetchBooksByGoodreadsBookId(final long grBookId) {
         String sql = getAllBooksSql(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_ID) + "=?");
-        return (BookCursor)
-                       sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                                                     sql,
-                                                     new String[]{String.valueOf(grBookId)},
-                                                     "");
+        return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY, sql,
+                                                          new String[]{String.valueOf(grBookId)},
+                                                          "");
     }
 
     /**
@@ -3650,11 +3649,9 @@ public class DAO
         // the order by is used to be able to restart an export.
         sql += " ORDER BY " + DOM_PK_ID;
 
-        return (BookCursor)
-                       sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                                                     sql,
-                                                     new String[]{String.valueOf(startId)},
-                                                     "");
+        return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY, sql,
+                                                          new String[]{String.valueOf(startId)},
+                                                          "");
     }
 
     /**

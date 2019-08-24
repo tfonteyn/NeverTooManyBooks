@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ParsedBookTitleTest {
 
     @Test
-    void parse01Test() {
+    void parse01() {
         ParsedBookTitle pbt = ParsedBookTitle.parse(
                 "This is the book title (Series title, 1)");
         assertNotNull(pbt);
@@ -45,7 +45,7 @@ class ParsedBookTitleTest {
     }
 
     @Test
-    void parse02Test() {
+    void parse02() {
         ParsedBookTitle pbt = ParsedBookTitle.parse(
                 "This is the book title (Series title nr 1)");
         assertNotNull(pbt);
@@ -55,7 +55,7 @@ class ParsedBookTitleTest {
     }
 
     @Test
-    void parse03Test() {
+    void parse03() {
         ParsedBookTitle pbt = ParsedBookTitle.parse(
                 "This is the book title (Series title Tome 1)");
         assertNotNull(pbt);
@@ -65,7 +65,7 @@ class ParsedBookTitleTest {
     }
 
     @Test
-    void parse04Test() {
+    void parse04() {
         // roman numeral
         ParsedBookTitle pbt = ParsedBookTitle.parse(
                 "This is the book title (Series title Tome IV)");
@@ -74,4 +74,15 @@ class ParsedBookTitleTest {
         assertEquals("Series title", pbt.getSeriesTitle());
         assertEquals("IV", pbt.getSeriesNumber());
     }
+
+    @Test
+    void parse05() {
+        // seen on Goodreads
+        ParsedBookTitle pbt = ParsedBookTitle.parse("The Anome (Durdane, #1)");
+        assertNotNull(pbt);
+        assertEquals("The Anome", pbt.getBookTitle());
+        assertEquals("Durdane", pbt.getSeriesTitle());
+        assertEquals("1", pbt.getSeriesNumber());
+    }
+
 }

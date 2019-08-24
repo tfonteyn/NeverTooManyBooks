@@ -85,8 +85,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
  * {@link CropImageViewTouchBase} We get 'unsupported feature' crashes if the option
  * to always use GL is turned on.
  * See:
- * http://developer.android.com/guide/topics/graphics/hardware-accel.html
- * http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath
+ * <a href="http://developer.android.com/guide/topics/graphics/hardware-accel.html>
+ *     http://developer.android.com/guide/topics/graphics/hardware-accel.html</a>
+ * <a href="http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath">
+ *     http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath</a>
  * so for API: level > 11, we turn it off manually.
  * <p>
  * 2018-11-30: making this a configuration option.

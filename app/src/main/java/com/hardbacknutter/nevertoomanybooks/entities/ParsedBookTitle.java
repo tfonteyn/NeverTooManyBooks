@@ -31,34 +31,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Value class to split a "bookTitle (seriesTitleAndNumber)" into its components.
  */
 public class ParsedBookTitle {
 
-    /**
-     * Parse "bookTitle (seriesTitleAndNumber)" into "bookTitle" and "seriesTitleAndNumber".
-     * <p>
-     * group 1: bookTitle
-     * group 4: seriesTitleAndNumber
-     * We want a title that does not START with a bracket!
-     */
-    private static final Pattern BOOK_SERIES_PATTERN =
-            Pattern.compile("([^(]+.*)\\s\\((.*)\\).*",
-                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-
-    /**
-     * Parse "seriesTitle,nr" or "seriesTitle nr" into "seriesTitle" and "nr"
-     * <p>
-     * group 1: seriesTitle
-     * group 4: nr
-     */
-    private static final Pattern SERIES_AND_NUMBER_PATTERN =
-            Pattern.compile("(.*?)(,|\\s)\\s*"
-                            + Series.NUMBER_PREFIX_REGEXP + Series.NUMBER_REGEXP,
-                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     @NonNull
     private final String mBookTitle;
     @NonNull
@@ -67,7 +45,7 @@ public class ParsedBookTitle {
     private String mSeriesNumber = "";
 
     /**
-     * Constructor.
+     * Constructor. Stores the two titles, and tries to separate the series number
      *
      * @param bookTitle   The cleaned up book title. No further processing is done.
      * @param seriesTitle Series title string to process.
@@ -77,10 +55,10 @@ public class ParsedBookTitle {
         mBookTitle = bookTitle;
         mSeriesTitle = seriesTitle;
 
-        Matcher matcher = SERIES_AND_NUMBER_PATTERN.matcher(mSeriesTitle);
+        Matcher matcher = Series.TITLE_NUMBER_PATTERN.matcher(mSeriesTitle);
         if (matcher.find()) {
-            mSeriesTitle = matcher.group(1);
-            mSeriesNumber = Series.cleanupSeriesNumber(matcher.group(4));
+            mSeriesTitle = matcher.group(Series.TITLE_GROUP);
+            mSeriesNumber = matcher.group(Series.NUMBER_GROUP);
         }
     }
 
@@ -97,11 +75,11 @@ public class ParsedBookTitle {
             return null;
         }
 
-        Matcher matcher = BOOK_SERIES_PATTERN.matcher(fullTitle);
+        Matcher matcher = Series.BOOK_SERIES_PATTERN.matcher(fullTitle);
         if (matcher.find()) {
             String bookTitle = matcher.group(1);
-            String seriesTitle = matcher.group(2);
-            return new ParsedBookTitle(bookTitle, seriesTitle);
+            String seriesTitleWithNumber = matcher.group(2);
+            return new ParsedBookTitle(bookTitle, seriesTitleWithNumber);
         }
         return null;
     }

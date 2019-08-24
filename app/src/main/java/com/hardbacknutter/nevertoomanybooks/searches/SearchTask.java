@@ -40,6 +40,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -47,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.ParsedBookTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
@@ -231,17 +231,20 @@ public class SearchTask
      * Look for a title; if present try to get a series name from it and clean the title.
      */
     private void checkForSeriesNameInTitle() {
-        String bookTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
-        if (bookTitle != null) {
-            ParsedBookTitle parsedBookTitle = ParsedBookTitle.parse(bookTitle);
-            if (parsedBookTitle != null && !parsedBookTitle.getSeriesTitle().isEmpty()) {
+        String fullTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
+        if (fullTitle != null) {
+            //TEST: new regex logic
+            Matcher matcher = Series.BOOK_SERIES_PATTERN.matcher(fullTitle);
+            if (matcher.find()) {
+                String bookTitle = matcher.group(1);
+                String seriesTitleWithNumber = matcher.group(2);
+
                 ArrayList<Series> seriesList =
                         mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
                 if (seriesList == null) {
                     seriesList = new ArrayList<>();
                 }
-                Series newSeries = new Series(parsedBookTitle.getSeriesTitle());
-                newSeries.setNumber(parsedBookTitle.getSeriesNumber());
+                Series newSeries = Series.fromString(seriesTitleWithNumber);
 
                 // add to the TOP of the list. This is based on translated books/comics
                 // on Goodreads where the series is in the original language, but the
@@ -251,7 +254,7 @@ public class SearchTask
                 // store Series back
                 mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
                 // and store cleaned book title back
-                mBookData.putString(DBDefinitions.KEY_TITLE, parsedBookTitle.getBookTitle());
+                mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
             }
         }
     }

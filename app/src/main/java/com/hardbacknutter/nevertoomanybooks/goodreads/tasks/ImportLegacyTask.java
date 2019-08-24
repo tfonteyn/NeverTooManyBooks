@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -59,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
-import com.hardbacknutter.nevertoomanybooks.entities.ParsedBookTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ListReviewsApiHandler;
@@ -453,7 +453,7 @@ class ImportLegacyTask
      */
     @NonNull
     private Bundle buildBundle(@NonNull final DAO db,
-                               @Nullable final BookCursor bookCursorRow,
+                               @Nullable final BookCursor bookCursor,
                                @NonNull final Bundle review) {
 
         // The ListReviewsApi does not return the book language
@@ -533,12 +533,12 @@ class ImportLegacyTask
             return bookData;
         }
         ArrayList<Author> authors;
-        if (bookCursorRow == null) {
+        if (bookCursor == null) {
             // It's a new book. Start a clean list.
             authors = new ArrayList<>();
         } else {
-            // it's an update. Get current authors.
-            authors = db.getAuthorsByBookId(bookCursorRow.getLong(DBDefinitions.KEY_PK_ID));
+            // it's an update. Get current Authors.
+            authors = db.getAuthorsByBookId(bookCursor.getLong(DBDefinitions.KEY_PK_ID));
         }
 
         for (Bundle grAuthor : grAuthors) {
@@ -553,21 +553,25 @@ class ImportLegacyTask
          * Cleanup the title by splitting off the Series (if present).
          */
         if (bookData.containsKey(DBDefinitions.KEY_TITLE)) {
-            String bookTitle = bookData.getString(DBDefinitions.KEY_TITLE);
-            ParsedBookTitle parsedBookTitle = ParsedBookTitle.parse(bookTitle);
-            if (parsedBookTitle != null && !parsedBookTitle.getSeriesTitle().isEmpty()) {
+            String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
+
+            Matcher matcher = Series.BOOK_SERIES_PATTERN.matcher(fullTitle);
+            if (matcher.find()) {
+                String bookTitle = matcher.group(1);
+                String seriesTitleWithNumber = matcher.group(2);
+
                 ArrayList<Series> seriesList;
-                if (bookCursorRow == null) {
+                if (bookCursor == null) {
+                    // It's a new book. Start a clean list.
                     seriesList = new ArrayList<>();
                 } else {
-                    seriesList =
-                            db.getSeriesByBookId(bookCursorRow.getLong(DBDefinitions.KEY_PK_ID));
+                    // it's an update. Get current Series.
+                    seriesList = db.getSeriesByBookId(bookCursor.getLong(DBDefinitions.KEY_PK_ID));
                 }
 
-                Series newSeries = new Series(parsedBookTitle.getSeriesTitle());
-                newSeries.setNumber(parsedBookTitle.getSeriesNumber());
+                Series newSeries = Series.fromString(seriesTitleWithNumber);
                 seriesList.add(newSeries);
-                bookData.putString(DBDefinitions.KEY_TITLE, parsedBookTitle.getBookTitle());
+                bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
 
                 Series.pruneSeriesList(seriesList, bookLocale);
                 bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
@@ -588,10 +592,12 @@ class ImportLegacyTask
             //ArrayList<Bookshelf> bsList = new ArrayList<>();
             //--- begin 2019-02-04 ----
             ArrayList<Bookshelf> bsList;
-            if (bookCursorRow == null) {
+            if (bookCursor == null) {
+                // It's a new book. Start a clean list.
                 bsList = new ArrayList<>();
             } else {
-                bsList = db.getBookshelvesByBookId(bookCursorRow.getLong(DBDefinitions.KEY_PK_ID));
+                // it's an update. Get current Bookshelves.
+                bsList = db.getBookshelvesByBookId(bookCursor.getLong(DBDefinitions.KEY_PK_ID));
             }
             // --- end 2019-02-04 ---
 
@@ -614,7 +620,7 @@ class ImportLegacyTask
         /*
          * New books only: use the Goodreads added date + get the thumbnail
          */
-        if (bookCursorRow == null) {
+        if (bookCursor == null) {
             // Use the GR added date for new books
             addStringIfNonBlank(review, ReviewField.ADDED,
                                 bookData, DBDefinitions.KEY_DATE_ADDED);

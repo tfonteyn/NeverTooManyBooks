@@ -35,6 +35,7 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -42,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.ParsedBookTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
@@ -190,6 +190,7 @@ public abstract class ShowBookApiHandler
     /** Current author being processed. */
     @Nullable
     private String mCurrAuthorName;
+    private final XmlHandler mHandleAuthorName = context -> mCurrAuthorName = context.getBody();
     @Nullable
     private String mCurrAuthorRole;
     private final XmlHandler mHandleAuthorEnd = context -> {
@@ -206,7 +207,6 @@ public abstract class ShowBookApiHandler
             mCurrAuthorRole = null;
         }
     };
-    private final XmlHandler mHandleAuthorName = context -> mCurrAuthorName = context.getBody();
     private final XmlHandler mHandleAuthorRole = context -> mCurrAuthorRole = context.getBody();
     /** Current series being processed. */
     @Nullable
@@ -220,13 +220,11 @@ public abstract class ShowBookApiHandler
             if (mSeries == null) {
                 mSeries = new ArrayList<>();
             }
-            if (mCurrSeriesPosition == null) {
-                mSeries.add(new Series(mCurrSeriesName));
+            if (mCurrSeriesPosition != null) {
+                mSeries.add(Series.fromString(mCurrSeriesName,
+                                              String.valueOf(mCurrSeriesPosition)));
             } else {
-                Series newSeries = new Series(mCurrSeriesName);
-                newSeries.setNumber(
-                        Series.cleanupSeriesNumber(String.valueOf(mCurrSeriesPosition)));
-                mSeries.add(newSeries);
+                mSeries.add(Series.fromString(mCurrSeriesName));
             }
             mCurrSeriesName = null;
             mCurrSeriesPosition = null;
@@ -342,25 +340,30 @@ public abstract class ShowBookApiHandler
         // Cleanup the title by removing series name, if present
         // Example: "<title>The Anome (Durdane, #1)</title>"
         if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
-            String thisTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
-            ParsedBookTitle parsedBookTitle = ParsedBookTitle.parse(thisTitle);
-            if (parsedBookTitle != null && !parsedBookTitle.getSeriesTitle().isEmpty()) {
+            String fullTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
+
+            //TEST: new regex logic
+            Matcher matcher = Series.BOOK_SERIES_PATTERN.matcher(fullTitle);
+            if (matcher.find()) {
+                String bookTitle = matcher.group(1);
+                String seriesTitleWithNumber = matcher.group(2);
+
                 if (mSeries == null) {
                     mSeries = new ArrayList<>();
                 }
-                Series newSeries = new Series(parsedBookTitle.getSeriesTitle());
-                newSeries.setNumber(parsedBookTitle.getSeriesNumber());
+                Series newSeries = Series.fromString(seriesTitleWithNumber);
                 mSeries.add(newSeries);
                 // It's tempting to replace KEY_TITLE with ORIG_TITLE, but that does
                 // bad things to translations (it uses the original language)
-                mBookData.putString(DBDefinitions.KEY_TITLE, parsedBookTitle.getBookTitle());
+                mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
 //                if (mBookData.containsKey(ShowBookFieldName.ORIG_TITLE)) {
 //                    mBookData.putString(DBDefinitions.KEY_TITLE,
 //                                        mBookData.getString(ShowBookFieldName.ORIG_TITLE));
 //                } else {
-//                    mBookData.putString(DBDefinitions.KEY_TITLE, parsedBookTitle.getBookTitle());
+//                    mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
 //                }
             }
+
         } else if (mBookData.containsKey(ShowBookFieldName.ORIG_TITLE)) {
             // if we did not get a title at all, but there is an original title, use that.
             mBookData.putString(DBDefinitions.KEY_TITLE,

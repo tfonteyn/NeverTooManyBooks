@@ -70,34 +70,70 @@ public class Series
                     return new Series[size];
                 }
             };
-
     /**
-     * The possible prefixes to a number as seen in the wild.
+     * Parse "bookTitle (seriesTitleAndNumber)" into "bookTitle" and "seriesTitleAndNumber".
      * <p>
-     * TODO: make this user controlled ? Add more languages here?
-     * or use //Resources res = LocaleUtils.getLocalizedResources(mContext, series.getLocale());
+     * We want a title that does not START with a bracket!
      */
-    static final String NUMBER_PREFIX_REGEXP =
-            "(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|deel|dl.|)";
-    /** The numeric part of the number. Supports roman numerals as well. */
-    static final String NUMBER_REGEXP = "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
-
-    /** Remove extraneous text from series number. */
-    private static final Pattern NUMBER_CLEANUP_PATTERN =
-            Pattern.compile("^\\s*" + NUMBER_PREFIX_REGEXP + NUMBER_REGEXP,
+    public static final Pattern BOOK_SERIES_PATTERN =
+            Pattern.compile("([^(]+.*)\\s\\((.*)\\).*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    /** Remove any leading zeros from series number. */
-    private static final Pattern REMOVE_LEADING_ZEROS_PATTERN =
-            Pattern.compile("^[0-9]+$");
+    /** {@link #TITLE_NUMBER_REGEXP}. */
+    static final int TITLE_GROUP = 1;
+    /** {@link #TITLE_NUMBER_REGEXP}. */
+    static final int NUMBER_GROUP = 4;
+
+    private static final String NUMBER_REGEXP =
+            // The possible prefixes to a number as seen in the wild.
+            "(,|#|,\\s*#|"
+            + /* */ "number|num|num.|no|no.|nr|nr.|"
+            + /* */ "book|bk|bk.|"
+            + /* */ "volume|vol|vol.|"
+            + /* */ "tome|"
+            + /* */ "part|pt.|"
+            + /* */ "deel|dl.|)"
+            // remove whitespace
+            + "\\s*"
+            // The actual number; numeric/roman numerals and optional alpha numeric suffix.
+            + "([0-9.\\-]+\\S*?|[ivxlcm.\\-]+\\S*?)";
 
     /**
-     * Parse a string into title + number. Used by the constructor.
-     * Format: "The title (number)"
-     * where '(' and ')' are fixed, and the 'number' is alpha numeric.
+     * Parse a string into title + number. Used by {@link #fromString(String)}.
+     * Format: see unit test for this class.
+     * group(1) : name
+     * group(4) : number
      */
-    private static final Pattern CONSTRUCT_FROM_STRING_PATTERN =
-            Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
+    private static final String TITLE_NUMBER_REGEXP =
+            // remove whitespace at the start
+            "^\\s*"
+            // the title group(1)
+            + "(.*?)"
+            // remove delimiter
+            // '('  ','  '#'  (each surrounded by whitespace) or a single whitespace
+            + "(\\s*[(,#]\\s*|\\s)"
+            // the number group(4)
+            + NUMBER_REGEXP
+            // remove potential whitespace and ')'
+            + "(\\s*\\)|)"
+            // remove whitespace to the end
+            + "\\s*$";
+
+    static final Pattern TITLE_NUMBER_PATTERN =
+            Pattern.compile(TITLE_NUMBER_REGEXP, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /**
+     * Remove extraneous text from series number. Used by {@link #fromString(String, String)}.
+     */
+    private static final Pattern NUMBER_CLEANUP_PATTERN =
+            Pattern.compile("^\\s*" + NUMBER_REGEXP + "\\s*$",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /** {@link #NUMBER_CLEANUP_PATTERN}. */
+    private static final int NUMBER_CLEANUP_GROUP = 2;
+
+    /** Remove any leading zeros from series number. */
+    private static final Pattern PURE_NUMERICAL_PATTERN = Pattern.compile("^[0-9]+$");
 
     private long mId;
     @NonNull
@@ -167,48 +203,56 @@ public class Series
 
     /**
      * Constructor that will attempt to parse a single string into a Series title and number.
-     * The format is expected to be "title" or "title (nr)"
      *
-     * @param fromString string to decode
+     * @param fullTitle string to decode
      *
      * @return the series
      */
     @NonNull
-    public static Series fromString(@NonNull final String fromString) {
-        Matcher matcher = CONSTRUCT_FROM_STRING_PATTERN.matcher(fromString);
+    public static Series fromString(@NonNull final String fullTitle) {
+        Matcher matcher = TITLE_NUMBER_PATTERN.matcher(fullTitle);
         if (matcher.find()) {
-            Series newSeries = new Series(matcher.group(1).trim());
-            newSeries.setNumber(cleanupSeriesNumber(matcher.group(2)));
+            Series newSeries = new Series(matcher.group(TITLE_GROUP));
+            String number = matcher.group(NUMBER_GROUP);
+            // If it's purely numeric, remove any leading zeros.
+            if (PURE_NUMERICAL_PATTERN.matcher(number).find()) {
+                number = String.valueOf(Long.parseLong(number));
+            }
+            newSeries.setNumber(number);
             return newSeries;
+
         } else {
-            return new Series(fromString.trim());
+            // no number part found
+            return new Series(fullTitle.trim());
         }
     }
 
     /**
-     * Try to cleanup a series number by removing superfluous text.
+     * Constructor that will attempt to parse a number.
      *
-     * @param numberToClean to cleanup
+     * @param title         for the series; used as is.
+     * @param numberToClean for the Series; will get cleaned up.
      *
-     * @return the series number (alphanumeric), can be empty, but never {@code null}
+     * @return the series
      */
     @NonNull
-    public static String cleanupSeriesNumber(@Nullable final String numberToClean) {
-        if (numberToClean == null || numberToClean.trim().isEmpty()) {
-            return "";
-        }
+    public static Series fromString(@NonNull final String title,
+                                    @NonNull final String numberToClean) {
+        Series newSeries = new Series(title.trim());
+        if (!numberToClean.isEmpty()) {
+            Matcher matcher = NUMBER_CLEANUP_PATTERN.matcher(numberToClean.trim());
+            if (matcher.find()) {
+                String number = matcher.group(NUMBER_CLEANUP_GROUP);
 
-        String number = numberToClean.trim();
-
-        Matcher matcher = NUMBER_CLEANUP_PATTERN.matcher(number);
-        if (matcher.find()) {
-            number = matcher.group(2);
-            if (REMOVE_LEADING_ZEROS_PATTERN.matcher(number).find()) {
-                return String.valueOf(Long.parseLong(number));
+                // If it's purely numeric, remove any leading zeros.
+                if (PURE_NUMERICAL_PATTERN.matcher(number).find()) {
+                    number = String.valueOf(Long.parseLong(number));
+                }
+                newSeries.setNumber(number);
             }
         }
 
-        return number;
+        return newSeries;
     }
 
     /**

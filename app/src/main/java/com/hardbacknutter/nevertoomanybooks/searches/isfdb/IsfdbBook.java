@@ -890,21 +890,23 @@ public class IsfdbBook
 
                 } else if (addSeriesFromToc && mSeries.isEmpty()
                            && href.contains(IsfdbManager.URL_PE_CGI)) {
-                    String seriesName = a.text();
-                    String seriesNum = "";
-                    // check for the number; series don't always have a number
-                    int start = liAsString.indexOf('[');
-                    int end = liAsString.indexOf(']');
-                    if (start > 1 && end > start) {
-                        String tmp = liAsString.substring(start, end);
-                        String[] data = DOT_PATTERN.split(tmp);
-                        // check if there really was a series number
-                        if (data.length > 1) {
-                            seriesNum = Series.cleanupSeriesNumber(data[1]);
-                        }
-                    }
-                    Series newSeries = new Series(seriesName);
-                    newSeries.setNumber(seriesNum);
+                    String series = a.text();
+//                    String seriesNum = "";
+//                    // check for the number; series don't always have a number
+//                    int start = liAsString.indexOf('[');
+//                    int end = liAsString.indexOf(']');
+//                    if (start > 1 && end > start) {
+//                        String tmp = liAsString.substring(start, end);
+//                        String[] data = DOT_PATTERN.split(tmp);
+//                        // check if there really was a series number
+//                        if (data.length > 1) {
+//                            seriesNum = Series.cleanupSeriesNumber(data[1]);
+//                        }
+//                    }
+//                    Series newSeries = new Series(series);
+//                    newSeries.setNumber(seriesNum);
+
+                    Series newSeries = Series.fromString(series);
                     mSeries.add(newSeries);
                 }
             }

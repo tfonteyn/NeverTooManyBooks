@@ -59,9 +59,11 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class TarBackupReader
         extends BackupReaderAbstract {
 
+    private static final Pattern LEGACY_STYLES_PATTERN =
+            Pattern.compile('^' + "style.blob." + "[0-9]*$",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     @NonNull
     private final TarBackupContainer mContainer;
-
     /** The INFO data read from the start of the archive. */
     @Nullable
     private BackupInfo mInfo;
@@ -178,8 +180,7 @@ public class TarBackupReader
             return Type.Database;
 
             // pre-v200
-        } else if (Pattern.compile('^' + "style.blob." + "[0-9]*$",
-                                   Pattern.CASE_INSENSITIVE).matcher(name).find()) {
+        } else if (LEGACY_STYLES_PATTERN.matcher(name).find()) {
             return Type.BooklistStylesPreV200;
 
             // pre-v200

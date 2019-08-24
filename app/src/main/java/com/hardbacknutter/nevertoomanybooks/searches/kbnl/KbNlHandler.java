@@ -321,12 +321,11 @@ class KbNlHandler
      * }</pre>
      */
     private void processSeries(@NonNull final List<String> currentData) {
-        Series series = new Series(currentData.get(0));
         if (currentData.size() > 2) {
-            String number = Series.cleanupSeriesNumber(currentData.get(2));
-            series.setNumber(number);
+            mSeries.add(Series.fromString(currentData.get(0), currentData.get(2)));
+        } else {
+            mSeries.add(Series.fromString(currentData.get(0)));
         }
-        mSeries.add(series);
     }
 
     /**
@@ -339,12 +338,10 @@ class KbNlHandler
      * }</pre>
      */
     private void processSeriesNumber(@NonNull final List<String> currentData) {
-        String number = Series.cleanupSeriesNumber(currentData.get(0));
         String title = mBookData.getString(DBDefinitions.KEY_TITLE);
         // should never happen, but paranoia...
         if (title != null) {
-            Series series = new Series(title);
-            series.setNumber(number);
+            Series series = Series.fromString(title, currentData.get(0));
             mSeries.add(series);
         }
     }

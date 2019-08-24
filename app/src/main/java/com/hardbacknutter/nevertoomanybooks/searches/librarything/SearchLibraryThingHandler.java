@@ -414,8 +414,8 @@ class SearchLibraryThingHandler
     private static final String XML_FIELD_42_ALT_TITLES = "alternativetitles";
     private static final String XML_FIELD_23_SERIES = "series";
     private static final String XML_FIELD_40_PUB_SERIES = "publisherseries";
-    private static final String XML_FIELD_02_PLACES = "placesmentioned";
-    private static final String XML_FIELD_03_CHARACTERS = "characternames";
+    //    private static final String XML_FIELD_02_PLACES = "placesmentioned";
+//    private static final String XML_FIELD_03_CHARACTERS = "characternames";
     private static final String XML_FIELD_14_DESCRIPTION = "description";
     private static final String XML_FIELD_16_ORIG_PUB_DATE = "originalpublicationdate";
     private static final String XML_FIELD_58_ORIG_LANG = "originallanguage";
@@ -522,10 +522,6 @@ class SearchLibraryThingHandler
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_40_PUB_SERIES)) {
                     mFieldType = FieldTypes.PubSeries;
 
-                } else if (fieldName.equalsIgnoreCase(XML_FIELD_02_PLACES)) {
-                    mFieldType = FieldTypes.Places;
-                } else if (fieldName.equalsIgnoreCase(XML_FIELD_03_CHARACTERS)) {
-                    mFieldType = FieldTypes.Characters;
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_14_DESCRIPTION)) {
                     mFieldType = FieldTypes.Description;
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_16_ORIG_PUB_DATE)) {
@@ -602,10 +598,6 @@ class SearchLibraryThingHandler
                     //ENHANCE
                     break;
 
-                case Places:
-                case Characters:
-                    // not supported
-                    break;
                 case Other:
                 case None:
                     break;
@@ -632,7 +624,7 @@ class SearchLibraryThingHandler
     private enum FieldTypes {
         None, Other,
         Title, Series, PubSeries,
-        Places, Characters, Description,
+        Description,
         OriginalPubDate, OriginalLanguage, OriginalTitle,
         AltTitle,
     }

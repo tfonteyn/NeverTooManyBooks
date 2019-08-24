@@ -111,7 +111,8 @@ public class BookSearchByIsbnFragment
             DigitsKeyListener.getInstance(ISBN_DIGITS);
     /** filter to remove all ASIN digits from ISBN strings (leave xX!). */
     private static final Pattern ISBN_PATTERN =
-            Pattern.compile("[abcdefghijklmnopqrstuvwyzABCDEFGHIJKLMNOPQRSTUVWYZ]");
+            Pattern.compile("[abcdefghijklmnopqrstuvwyz]",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
      * Flag to indicate the Activity should not 'finish()' because an alert is being displayed.

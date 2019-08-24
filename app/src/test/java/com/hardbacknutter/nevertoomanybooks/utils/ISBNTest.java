@@ -39,6 +39,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ISBNTest {
 
+    /**
+     * Valid ISBN 10,13 digits
+     */
     private final String[][] validFinals = {
             {"2723481220", "9782723481229"},
             {"1-886778-17-5", "978-1-886778-17-7"},
@@ -49,7 +52,10 @@ class ISBNTest {
             {"068418818X", "9780684188188"},
             };
 
-    // same as above, but one digit changed so the checksum fails.
+    /**
+     * same as above, but one digit changed so the checksum fails.
+     * This array must have the same length as the one above.
+     */
     private final String[][] invalidFinals = {
             {"2733481220", "9782733481229"},
             {"2-886778-17-5", "978-2-886778-17-7"},

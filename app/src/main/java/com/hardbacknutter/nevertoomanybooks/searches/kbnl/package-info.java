@@ -51,7 +51,8 @@
  * <p>
  * <p>
  * Full:
- * http://opc4imgbase.kb.nl/psi_help/?DB=1&LNG=NE&COOKIE=&MENUIKT=1016,4,2001,1004,1009,5200,5040,4050,4014,53,1007,2,3003#search%20results
+ * http://opc4imgbase.kb.nl/psi_help/?DB=1&LNG=NE&COOKIE=
+ * &MENUIKT=1016,4,2001,1004,1009,5200,5040,4050,4014,53,1007,2,3003#search%20results
  * <p>
  * Simple:
  * <p>
