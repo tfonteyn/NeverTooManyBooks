@@ -58,6 +58,7 @@ import com.google.android.material.button.MaterialButton;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Date;
@@ -1219,9 +1220,7 @@ public class Fields {
         private String mCurrencyCode;
 
         /**
-         * Can't/shouldn't pass the code into the constructor as it may change.
-         * So must call this before displaying.
-         * TODO: this defeats the ease of use of the formatter... populate manually or something...
+         * Set the currency code.
          *
          * @param currencyCode to use (if any)
          */
@@ -1261,12 +1260,12 @@ public class Fields {
 
         private String jdkFormat(@NonNull final Field field,
                                  @NonNull final String source) {
+            Locale locale = field.getLocale();
             Float price = Float.parseFloat(source);
-            Currency currency = java.util.Currency.getInstance(mCurrencyCode);
+            Currency currency = Currency.getInstance(mCurrencyCode);
             // the result is rather dire... most currency 'symbol' are shown as 3-char codes
             // e.g. 'EUR','US$',...
-            java.text.NumberFormat currencyFormatter =
-                    java.text.NumberFormat.getCurrencyInstance(field.getLocale());
+            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
             currencyFormatter.setCurrency(currency);
             return currencyFormatter.format(price);
         }
@@ -1311,6 +1310,23 @@ public class Fields {
         }
     }
 
+//    /**
+//     * Formatter for list fields that should be displayed as a CSV string.
+//     * <p>
+//     * Uses the context from the Field.
+//     * <p>
+//     * Does not support {@link FieldFormatter#extract}.
+//     */
+//    public static class CsvFormatter
+//        implements FieldFormatter {
+//
+//        @NonNull
+//        @Override
+//        public String format(@NonNull final Field field,
+//                             @Nullable final String source) {
+//            return null;
+//        }
+//    }
     /**
      * Formatter for language fields.
      * <p>
@@ -1614,16 +1630,6 @@ public class Fields {
                    + ", mFieldValidator=" + mFieldValidator
                    + ", mFieldDataAccessor=" + mFieldDataAccessor
                    + '}';
-        }
-
-        /**
-         * For specialized access.
-         *
-         * @return the field formatter.
-         */
-        @Nullable
-        public FieldFormatter getFormatter() {
-            return formatter;
         }
 
         /**

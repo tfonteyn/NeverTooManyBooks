@@ -236,6 +236,13 @@ public class EditBookTocFragment
                 }
             };
 
+    private final SimpleAdapterDataObserver mAdapterDataObserver = new SimpleAdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            mBookModel.setDirty(true);
+        }
+    };
+
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -368,12 +375,7 @@ public class EditBookTocFragment
 
         mListAdapter = new TocListEditAdapter(getLayoutInflater(), mList,
                                               vh -> mItemTouchHelper.startDrag(vh));
-        mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                mBookModel.setDirty(true);
-            }
-        });
+        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mListView.setAdapter(mListAdapter);
 
         SimpleItemTouchHelperCallback sitHelperCallback =

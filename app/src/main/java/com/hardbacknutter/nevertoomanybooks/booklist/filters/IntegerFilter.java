@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,13 +39,13 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 
 /**
  * Not directly used for now.
- * Split of from {@link BooleanFilter} making the later a subclass of this one.
+ * Split of from {@link BooleanFilter} making the latter a subclass of this one.
  */
 public class IntegerFilter
         extends PInteger
         implements Filter<Integer> {
 
-    public static final Integer P_NOT_USED = -1;
+    private static final Integer P_NOT_USED = -1;
 
     @StringRes
     private final int mLabelId;

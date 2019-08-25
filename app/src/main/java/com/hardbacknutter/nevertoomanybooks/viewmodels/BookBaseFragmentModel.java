@@ -202,6 +202,9 @@ public class BookBaseFragmentModel
         return loanee == null || getLoanee().isEmpty();
     }
 
+    /**
+     * @return the one who shall not be mentioned.
+     */
     @Nullable
     public String getLoanee() {
         return mBook.getLoanee(mDb);

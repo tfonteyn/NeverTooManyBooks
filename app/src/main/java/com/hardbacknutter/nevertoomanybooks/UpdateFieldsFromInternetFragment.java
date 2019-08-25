@@ -44,9 +44,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -110,7 +108,7 @@ public class UpdateFieldsFromInternetFragment
                                   .putExtra(UniqueId.BKEY_ID_LIST, mBookIds);
 
             Activity activity = getActivity();
-            if (isSingleBook()) {
+            if (!isSingleBook()) {
                 // task cancelled does not mean that nothing was done.
                 // Books *will* be updated until the cancelling happened
                 //noinspection ConstantConditions
@@ -124,13 +122,89 @@ public class UpdateFieldsFromInternetFragment
         }
     };
     /** display reminder only. */
-    private String mAuthorFormatted;
-    /** display reminder only. */
     private String mTitle;
-    /** display reminder only. */
-    private String mSeries;
 
     private TaskManager mTaskManager;
+
+    @Override
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
+        mTaskManager = ((BaseActivityWithTasks) context).getTaskManager();
+    }
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Mandatory
+        setHasOptionsMenu(true);
+
+        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : getArguments();
+        if (currentArgs != null) {
+            //noinspection unchecked
+            mBookIds = (ArrayList<Long>) currentArgs.getSerializable(UniqueId.BKEY_ID_LIST);
+
+            // optional
+            mSearchSites = currentArgs.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
+            // optional activity title
+            mTitle = currentArgs.getString(UniqueId.BKEY_DIALOG_TITLE);
+        }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_update_from_internet, container, false);
+        mFieldListView = view.findViewById(R.id.manage_fields_scrollview);
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        Activity activity = getActivity();
+        if (mTitle != null) {
+            //noinspection ConstantConditions
+            activity.setTitle(mTitle);
+        } else {
+            //noinspection ConstantConditions
+            activity.setTitle(R.string.lbl_select_fields);
+        }
+
+        // FAB lives in Activity layout.
+        FloatingActionButton fab = activity.findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_cloud_download);
+        fab.setVisibility(View.VISIBLE);
+        fab.setOnClickListener(v -> handleConfirm());
+
+        initFields();
+        populateFields();
+
+        //noinspection ConstantConditions
+        SearchSites.alertRegistrationBeneficial(getContext(), "update_from_internet", mSearchSites);
+
+        if (savedInstanceState == null) {
+            TipManager.display(getLayoutInflater(), R.string.tip_update_fields_from_internet, null);
+        }
+
+        // Check general network connectivity. If none, WARN the user.
+        if (!NetworkUtils.isNetworkAvailable()) {
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.error_no_internet_connection);
+        }
+    }
+
+    @Override
+    @CallSuper
+    public void onResume() {
+        super.onResume();
+        if (mUpdateSenderId != 0) {
+            UpdateFieldsFromInternetTask.MESSAGE_SWITCH
+                    .addListener(mUpdateSenderId, true, mManagedTaskListener);
+        }
+    }
 
     /** syntax sugar. */
     private boolean isSingleBook() {
@@ -284,106 +358,11 @@ public class UpdateFieldsFromInternetFragment
     }
 
     @Override
-    public void onAttach(@NonNull final Context context) {
-        super.onAttach(context);
-        mTaskManager = ((BaseActivityWithTasks) context).getTaskManager();
-    }
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Mandatory
-        setHasOptionsMenu(true);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_update_from_internet, container, false);
-        mFieldListView = view.findViewById(R.id.manage_fields_scrollview);
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : getArguments();
-        if (currentArgs != null) {
-            //noinspection unchecked
-            mBookIds = (ArrayList<Long>) currentArgs.getSerializable(UniqueId.BKEY_ID_LIST);
-
-            // optional
-            mSearchSites = currentArgs.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
-
-            // used for display only; any/all can be null
-            mAuthorFormatted = currentArgs.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
-            mTitle = currentArgs.getString(DBDefinitions.KEY_TITLE);
-            mSeries = currentArgs.getString(DBDefinitions.KEY_SERIES_TITLE);
-        }
-
-        //noinspection ConstantConditions
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            if (isSingleBook()) {
-                // a book
-                actionBar.setTitle(mTitle);
-                actionBar.setSubtitle(mAuthorFormatted);
-            } else if (mAuthorFormatted != null && !mAuthorFormatted.isEmpty()) {
-                // an Author
-                actionBar.setTitle(mAuthorFormatted);
-            } else if (mSeries != null && !mSeries.isEmpty()) {
-                // a Series
-                actionBar.setTitle(mSeries);
-            } else {
-                // cover anything else.
-                actionBar.setTitle(R.string.lbl_select_fields);
-            }
-        }
-
-        // FAB lives in Activity layout.
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_cloud_download);
-        fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(v -> handleConfirm());
-
-        initFields();
-        populateFields();
-
-        //noinspection ConstantConditions
-        SearchSites.alertRegistrationBeneficial(getContext(), "update_from_internet", mSearchSites);
-
-        if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_update_fields_from_internet, null);
-        }
-
-        // Check general network connectivity. If none, WARN the user.
-        if (!NetworkUtils.isNetworkAvailable()) {
-            //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_no_internet_connection);
-        }
-    }
-
-    @Override
-    @CallSuper
-    public void onResume() {
-        super.onResume();
-        if (mUpdateSenderId != 0) {
-            UpdateFieldsFromInternetTask.MESSAGE_SWITCH
-                    .addListener(mUpdateSenderId, true, mManagedTaskListener);
-        }
-    }
-
-    @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(UniqueId.BKEY_ID_LIST, mBookIds);
         outState.putInt(REQUEST_BKEY_SEARCH_SITES, mSearchSites);
-        outState.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, mAuthorFormatted);
-        outState.putString(DBDefinitions.KEY_TITLE, mTitle);
-        outState.putString(DBDefinitions.KEY_SERIES_TITLE, mSeries);
+        outState.putString(UniqueId.BKEY_DIALOG_TITLE, mTitle);
     }
 
     @Override

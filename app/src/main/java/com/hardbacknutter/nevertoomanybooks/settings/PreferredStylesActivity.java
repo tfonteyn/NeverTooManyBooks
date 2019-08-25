@@ -89,6 +89,15 @@ public class PreferredStylesActivity
     private ItemTouchHelper mItemTouchHelper;
     /** The ViewModel. */
     private PreferredStylesViewModel mModel;
+    private final SimpleAdapterDataObserver mAdapterDataObserver = new SimpleAdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            // we save the order after each change.
+            mModel.saveMenuOrder();
+            // and make sure the results flags up we changed something.
+            setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES);
+        }
+    };
 
     @Override
     protected int getLayoutId() {
@@ -112,15 +121,7 @@ public class PreferredStylesActivity
         // setup the adapter
         mListAdapter = new BooklistStylesAdapter(getLayoutInflater(), mModel.getList(),
                                                  vh -> mItemTouchHelper.startDrag(vh));
-        mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                // we save the order after each change.
-                mModel.saveMenuOrder();
-                // and make sure the results flags up we changed something.
-                setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES);
-            }
-        });
+        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mListView.setAdapter(mListAdapter);
 
         SimpleItemTouchHelperCallback sitHelperCallback =

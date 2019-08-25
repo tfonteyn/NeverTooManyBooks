@@ -67,6 +67,12 @@ public class SearchOrderFragment
     private ItemTouchHelper mItemTouchHelper;
 
     private SearchAdminActivity mActivity;
+    private final SimpleAdapterDataObserver mAdapterDataObserver = new SimpleAdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            mActivity.setDirty(true);
+        }
+    };
 
     @Override
     public void onAttach(@NonNull final Context context) {
@@ -102,12 +108,7 @@ public class SearchOrderFragment
                 getLayoutInflater(), mList, viewHolder -> mItemTouchHelper.startDrag(viewHolder));
         // any change done in the adapter will set the data 'dirty'
         // if changing the list externally, make sure to always notify the adapter.
-        mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                mActivity.setDirty(true);
-            }
-        });
+        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mListView.setAdapter(mListAdapter);
 
         SimpleItemTouchHelperCallback sitHelperCallback =

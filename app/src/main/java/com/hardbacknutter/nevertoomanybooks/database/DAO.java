@@ -2552,6 +2552,24 @@ public class DAO
     }
 
     /**
+     * Get a list of book ID's for the given Publisher.
+     *
+     * @param publisher name of the Publisher
+     *
+     * @return id-of-book list
+     */
+    public ArrayList<Long> getBookIdsByPublisher(@NonNull final String publisher) {
+        ArrayList<Long> list = new ArrayList<>();
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOK_IDS_BY_PUBLISHER,
+                                                new String[]{publisher})) {
+            while (cursor.moveToNext()) {
+                list.add(cursor.getLong(0));
+            }
+        }
+        return list;
+    }
+
+    /**
      * Get a list of the authors for a book.
      *
      * @param bookId of the book
@@ -4634,6 +4652,13 @@ public class DAO
                 + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_SERIES)
                 + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_SERIES) + "=?";
 
+        /**
+         * All Books (id only!) for a given Publisher.
+         */
+        private static final String BOOK_IDS_BY_PUBLISHER =
+                "SELECT " + TBL_BOOKS.dotAs(DOM_PK_ID)
+                + " FROM " + TBL_BOOKS.ref()
+                + " WHERE " + TBL_BOOKS.dot(DOM_BOOK_PUBLISHER) + "=?";
 
         /**
          * All TocEntry's for an Author.

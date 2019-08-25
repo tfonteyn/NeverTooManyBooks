@@ -62,11 +62,11 @@ public class BooklistCursor
      * @param sync      Synchronizer object
      * @param builder   BooklistBuilder used to make the query on which this cursor is based.
      */
-    public BooklistCursor(@NonNull final SQLiteCursorDriver driver,
-                          @NonNull final String editTable,
-                          @NonNull final SQLiteQuery query,
-                          @NonNull final Synchronizer sync,
-                          @NonNull final BooklistBuilder builder) {
+    BooklistCursor(@NonNull final SQLiteCursorDriver driver,
+                   @NonNull final String editTable,
+                   @NonNull final SQLiteQuery query,
+                   @NonNull final Synchronizer sync,
+                   @NonNull final BooklistBuilder builder) {
         super(driver, editTable, query, sync);
         mBuilder = builder;
     }

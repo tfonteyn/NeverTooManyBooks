@@ -664,12 +664,14 @@ public class SynchronizedDb {
      * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
      * <p>
      * FIXME: Generalize code to allow for arbitrary changes to choice of collation.
+     *
+     * This method is supposed to return {@code false} in normal circumstances.
      */
     private boolean collationIsCaseSensitive() {
         String dropTable = "DROP TABLE IF EXISTS collation_cs_check";
         // Drop and create table
         mSqlDb.execSQL(dropTable);
-        mSqlDb.execSQL("CREATE TABLE collation_cs_check (t text, i integer)");
+        mSqlDb.execSQL("CREATE TEMPORARY TABLE collation_cs_check (t text, i integer)");
         try {
             // Row that *should* be returned first assuming 'a' <=> 'A'
             mSqlDb.execSQL("INSERT INTO collation_cs_check VALUES('a', 1)");

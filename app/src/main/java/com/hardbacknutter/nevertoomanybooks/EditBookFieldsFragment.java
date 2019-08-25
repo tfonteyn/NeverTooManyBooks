@@ -176,7 +176,7 @@ public class EditBookFieldsFragment
                     }
 
                     boolean wasDirty = mBookModel.isDirty();
-                    populateAuthorListField(book);
+                    populateAuthorListField();
                     mBookModel.setDirty(wasDirty);
 
                 }
@@ -192,7 +192,6 @@ public class EditBookFieldsFragment
                             list = new ArrayList<>(0);
                         }
                         book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
-//                        populateSeriesListField();
                         mBookModel.setDirty(true);
 
                     } else {
@@ -203,7 +202,7 @@ public class EditBookFieldsFragment
                     }
 
                     boolean wasDirty = mBookModel.isDirty();
-                    populateSeriesListField(book);
+                    populateSeriesListField();
                     mBookModel.setDirty(wasDirty);
 
                 }
@@ -244,11 +243,9 @@ public class EditBookFieldsFragment
     protected void onLoadFieldsFromBook() {
         super.onLoadFieldsFromBook();
 
-        Book book = mBookModel.getBook();
-
-        populateAuthorListField(book);
-        populateSeriesListField(book);
-        populateBookshelvesField(book);
+        populateAuthorListField();
+        populateSeriesListField();
+        populateBookshelvesField();
 
         // hide unwanted fields
         showOrHideFields(false);
@@ -280,7 +277,9 @@ public class EditBookFieldsFragment
         }
     }
 
-    private void populateAuthorListField(@NonNull final Book book) {
+    private void populateAuthorListField() {
+        Book book = mBookModel.getBook();
+
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (!list.isEmpty()
             && ItemWithFixableId.pruneList(mBookModel.getDb(), list)) {
@@ -297,7 +296,9 @@ public class EditBookFieldsFragment
         getField(R.id.author).setValue(name);
     }
 
-    private void populateSeriesListField(@NonNull final Book book) {
+    private void populateSeriesListField() {
+        Book book = mBookModel.getBook();
+
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (!list.isEmpty()
             && ItemWithFixableId
@@ -313,7 +314,9 @@ public class EditBookFieldsFragment
     /**
      * The bookshelves field is a single csv String.
      */
-    private void populateBookshelvesField(@NonNull final Book book) {
+    private void populateBookshelvesField() {
+        Book book = mBookModel.getBook();
+
         ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         getField(R.id.bookshelves).setValue(Csv.join(", ", list, Bookshelf::getName));
     }

@@ -520,7 +520,9 @@ public final class BooklistStyles {
     }
 
     /**
-     * @return the uuid's of the preferred styles from user preferences.
+     * Get the uuid's of the preferred styles from user preferences.
+     *
+     * @return set of uuid's
      */
     @NonNull
     private static Set<String> getPreferredStyleMenuOrder() {

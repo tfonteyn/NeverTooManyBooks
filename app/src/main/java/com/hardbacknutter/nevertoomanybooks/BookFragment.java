@@ -242,8 +242,9 @@ public class BookFragment
               .setFormatter(dateFormatter);
         fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
               .setFormatter(dateFormatter);
-        fields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED)
-              .setFormatter(new Fields.PriceFormatter());
+
+        // defined, but handled manually
+        fields.add(R.id.price_listed, "", DBDefinitions.KEY_PRICE_LISTED);
 
         // defined, but handled manually
         fields.add(R.id.author, "", DBDefinitions.KEY_FK_AUTHOR);
@@ -263,8 +264,7 @@ public class BookFragment
         // Personal fields
         fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
               .setFormatter(dateFormatter);
-        fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID)
-              .setFormatter(new Fields.PriceFormatter());
+
         fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
               .setFormatter(new Fields.BitMaskFormatter(Book.EDITIONS))
               .setZeroIsEmpty(true);
@@ -286,6 +286,9 @@ public class BookFragment
               .setZeroIsEmpty(true);
 
         // defined, but handled manually
+        fields.add(R.id.price_paid, "", DBDefinitions.KEY_PRICE_PAID);
+
+        // defined, but handled manually
         fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
 
         // defined, but handled manually
@@ -300,30 +303,21 @@ public class BookFragment
      */
     @Override
     protected void onLoadFieldsFromBook() {
-        Book book = mBookModel.getBook();
-
-        // pass the CURRENT currency code to the price formatter
-        //FIXME: this defeats the ease of use of the formatter... populate manually or something...
-        //noinspection ConstantConditions
-        ((Fields.PriceFormatter) getField(R.id.price_listed).getFormatter())
-                .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
-        //noinspection ConstantConditions
-        ((Fields.PriceFormatter) getField(R.id.price_paid).getFormatter())
-                .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
-
         super.onLoadFieldsFromBook();
 
-        populateAuthorListField(book);
-        populateSeriesListField(book);
-        populateBookshelvesField(book);
-        populateLoanedToField(mBookModel.getLoanee());
+        populateAuthorListField();
+        populateSeriesListField();
+        populateBookshelvesField();
+        populatePriceFields();
 
         // handle non-text fields
-        populateToc(book);
+        populateLoanedToField(mBookModel.getLoanee());
+        populateToc();
 
         // hide unwanted and empty fields
         showOrHideFields(true);
     }
+
 
     @Override
     public void onActivityResult(final int requestCode,
@@ -526,7 +520,9 @@ public class BookFragment
     /**
      * The author field is a single csv String.
      */
-    private void populateAuthorListField(@NonNull final Book book) {
+    private void populateAuthorListField() {
+        Book book = mBookModel.getBook();
+
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         getField(R.id.author).setValue(Csv.join(", ", list, Author::getLabel));
     }
@@ -535,7 +531,9 @@ public class BookFragment
      * The series field is a single String with line-breaks between multiple series.
      * Each line will be prefixed with a "• "
      */
-    private void populateSeriesListField(@NonNull final Book book) {
+    private void populateSeriesListField() {
+        Book book = mBookModel.getBook();
+
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         getField(R.id.series).setValue(Csv.join("\n", list, false, "• ", Series::getLabel));
     }
@@ -543,20 +541,45 @@ public class BookFragment
     /**
      * The bookshelves field is a single csv String.
      */
-    private void populateBookshelvesField(@NonNull final Book book) {
+    private void populateBookshelvesField() {
+        Book book = mBookModel.getBook();
+
         ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         getField(R.id.bookshelves).setValue(Csv.join(", ", list, Bookshelf::getName));
+    }
+
+    /**
+     * We need to use the <strong>current</strong> currency code, so we cannot define (easily)
+     * the formatter in {@link #initFields()}.
+     * <p>
+     * Using a formatter object is a little overkill, but this leaves future changes easier.
+     */
+    private void populatePriceFields() {
+        Book book = mBookModel.getBook();
+
+        Fields.PriceFormatter listedFormatter = new Fields.PriceFormatter();
+        listedFormatter.setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
+        getField(R.id.price_listed).setFormatter(listedFormatter)
+                                   .setValue(book.getString(DBDefinitions.KEY_PRICE_LISTED));
+
+        Fields.PriceFormatter paidFormatter = new Fields.PriceFormatter();
+        paidFormatter.setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
+        getField(R.id.price_paid).setFormatter(paidFormatter)
+                                 .setValue(book.getString(DBDefinitions.KEY_PRICE_LISTED));
     }
 
     /**
      * Inflates 'Loaned' field showing a person the book loaned to.
      * Allows returning the book via a context menu.
      *
+     * <strong>Note:</strong> we pass in the loanee and handle visibility local as this
+     * method can be called from anywhere.
+     *
      * @param loanee the one who shall not be mentioned.
      */
     private void populateLoanedToField(@Nullable final String loanee) {
         Field field = getField(R.id.loaned_to);
-        // handle visibility here as this method can get called from anywhere.
+
         View fieldView = field.getView();
         if (loanee != null && !loanee.isEmpty()) {
             field.setValue(getString(R.string.lbl_loaned_to_name, loanee));
@@ -586,7 +609,8 @@ public class BookFragment
     /**
      * Show or hide the Table Of Content section.
      */
-    private void populateToc(@NonNull final Book book) {
+    private void populateToc() {
+        Book book = mBookModel.getBook();
 
         // we can get called more then once (when user moves sideways to another book),
         // so clear the view before populating it. Actual visibility is handled later.

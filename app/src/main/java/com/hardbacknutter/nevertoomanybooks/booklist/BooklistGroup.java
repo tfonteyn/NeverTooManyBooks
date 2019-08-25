@@ -728,6 +728,8 @@ public class BooklistGroup
         }
 
         /**
+         * Constructor.
+         *
          * @param kind    1 to max. The kind==0 should be created with the no-args constructor.
          * @param domains all underlying domains.
          *                The first element will be used as the displayDomain.

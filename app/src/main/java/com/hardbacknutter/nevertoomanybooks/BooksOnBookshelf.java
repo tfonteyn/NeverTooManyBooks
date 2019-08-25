@@ -1283,8 +1283,6 @@ public class BooksOnBookshelf
                 return true;
             }
 
-            /* ********************************************************************************** */
-
             case R.id.MENU_UPDATE_FROM_INTERNET: {
                 // IMPORTANT: this is from a context click on a row.
                 // We pass the book ID's which are suited for that row.
@@ -1295,28 +1293,31 @@ public class BooksOnBookshelf
                         bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
                         bookIds = new ArrayList<>();
                         bookIds.add(bookId);
-                        intent.putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                        row.getString(DBDefinitions.KEY_AUTHOR_FORMATTED))
-                              .putExtra(DBDefinitions.KEY_TITLE,
+                        intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
                                         row.getString(DBDefinitions.KEY_TITLE));
                         break;
 
                     case BooklistGroup.RowKind.AUTHOR:
                         bookIds = mModel.getDb().getBookIdsByAuthor(
                                 row.getLong(DBDefinitions.KEY_FK_AUTHOR));
-                        intent.putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
+                        intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
                                         row.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
                         break;
 
                     case BooklistGroup.RowKind.SERIES:
                         bookIds = mModel.getDb().getBookIdsBySeries(
                                 row.getLong(DBDefinitions.KEY_FK_SERIES));
-                        intent.putExtra(DBDefinitions.KEY_SERIES_TITLE,
+                        intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
                                         row.getString(DBDefinitions.KEY_SERIES_TITLE));
                         break;
 
+                    case BooklistGroup.RowKind.PUBLISHER:
+                        String publisher = row.getString(DBDefinitions.KEY_PUBLISHER);
+                        bookIds = mModel.getDb().getBookIdsByPublisher(publisher);
+                        intent.putExtra(UniqueId.BKEY_DIALOG_TITLE, publisher);
+                        break;
+
                     default:
-                        //ENHANCE: we could do Publisher etc as well.
                         Logger.warnWithStackTrace(this, "onContextItemSelected",
                                                   "MENU_BOOK_UPDATE_FROM_INTERNET not supported",
                                                   "RowKind="
