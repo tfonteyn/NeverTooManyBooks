@@ -60,6 +60,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class Datum {
 
+    /** log error string. */
+    private static final String ERROR_INVALID_BOOLEAN_S = "Invalid boolean, s=`";
+
     @NonNull
     private final String mKey;
 
@@ -67,6 +70,7 @@ public class Datum {
      * Accessor for this Datum (e.g. the datum might be a bit in a bitmask field,
      * or a composite read-only value.
      */
+    @Nullable
     private DataAccessor mAccessor;
 
     /**
@@ -172,7 +176,7 @@ public class Datum {
             if (emptyIsFalse) {
                 return false;
             } else {
-                throw new NumberFormatException("Invalid boolean, s=`" + s + '`');
+                throw new NumberFormatException(ERROR_INVALID_BOOLEAN_S + s + '`');
             }
         } else {
             switch (s.trim().toLowerCase(App.getSystemLocale())) {
@@ -192,7 +196,7 @@ public class Datum {
                     try {
                         return Integer.parseInt(s) != 0;
                     } catch (@NonNull final NumberFormatException e) {
-                        Logger.error(Datum.class, e, "Invalid boolean, s=`" + s + '`');
+                        Logger.error(Datum.class, e, ERROR_INVALID_BOOLEAN_S + s + '`');
                         throw e;
                     }
             }
@@ -200,6 +204,8 @@ public class Datum {
     }
 
     /**
+     * Get the key for this Datum.
+     *
      * @return the key.
      */
     @NonNull
@@ -208,20 +214,24 @@ public class Datum {
     }
 
     /**
-     * @param rawData Raw data
+     * Check if we have a value set in the source.
+     *
+     * @param source from which to read
      *
      * @return {@code true} if the underlying data contains the specified key.
      */
-    boolean isPresent(@NonNull final Bundle rawData) {
+    boolean isPresent(@NonNull final Bundle source) {
         if (mAccessor == null) {
-            return rawData.containsKey(mKey);
+            return source.containsKey(mKey);
         } else {
-            return mAccessor.isPresent(rawData);
+            return mAccessor.isPresent(source);
         }
     }
 
     /**
      * Set the DataAccessor. Protected against being set twice.
+     *
+     * @param accessor to use
      */
     public void setAccessor(@NonNull final DataAccessor accessor) {
         if (mAccessor != null && accessor != mAccessor) {
@@ -231,231 +241,232 @@ public class Datum {
     }
 
     /**
-     * Retrieve the raw Object from the rawData, translating and using Accessor as necessary.
+     * Retrieve the raw Object from the source, translating and using Accessor as necessary.
      *
-     * @param rawData Raw data bundle
+     * @param source from which to read
      *
      * @return The object data, or {@code null} if not found
      */
     @Nullable
-    public Object get(@NonNull final Bundle rawData) {
+    public Object get(@NonNull final Bundle source) {
         if (mAccessor == null) {
-            return rawData.get(mKey);
+            return source.get(mKey);
         } else {
-            return mAccessor.get(rawData);
+            return mAccessor.get(source);
         }
     }
 
     /**
-     * Retrieve the data from the rawData, translating and using Accessor as necessary.
+     * Retrieve the data from the source, translating and using Accessor as necessary.
      *
-     * @param rawData Raw data
+     * @param source from which to read
      *
      * @return Value of the data, a {@code null} is returned as {@code false}
      */
-    public boolean getBoolean(@NonNull final Bundle rawData) {
+    public boolean getBoolean(@NonNull final Bundle source) {
         Object o;
         if (mAccessor == null) {
-            o = rawData.get(mKey);
+            o = source.get(mKey);
         } else {
-            o = mAccessor.get(rawData);
+            o = mAccessor.get(source);
         }
         return toBoolean(o);
     }
 
     /**
-     * Store the value in the rawData, or using Accessor as necessary.
+     * Store the value in the target, or using Accessor as necessary.
      *
-     * @param rawData Raw data
-     * @param value   The boolean (primitive) value to store
+     * @param target into which to store the value
+     * @param value  to store
      */
-    public void putBoolean(@NonNull final Bundle rawData,
+    public void putBoolean(@NonNull final Bundle target,
                            final boolean value) {
         if (mAccessor == null) {
-            rawData.putBoolean(mKey, value);
+            target.putBoolean(mKey, value);
         } else {
-            mAccessor.put(rawData, value);
+            mAccessor.put(target, value);
         }
     }
 
     /**
-     * Retrieve the data from the rawData, translating and using Accessor as necessary.
+     * Retrieve the data from the source, translating and using Accessor as necessary.
      *
-     * @param rawData Raw data
+     * @param source from which to read
      *
      * @return Value of the data, a {@code null} is returned as 0
      */
-    public int getInt(@NonNull final Bundle rawData) {
+    public int getInt(@NonNull final Bundle source) {
         Object o;
         if (mAccessor == null) {
-            o = rawData.get(mKey);
+            o = source.get(mKey);
         } else {
-            o = mAccessor.get(rawData);
+            o = mAccessor.get(source);
         }
         return (int) toLong(o);
     }
 
     /**
-     * Store the value in the rawData, or using Accessor as necessary.
+     * Store the value in the target, or using Accessor as necessary.
      *
-     * @param rawData Raw data
-     * @param value   The int value to store
+     * @param target into which to store the value
+     * @param value  The int value to store
      */
-    public void putInt(@NonNull final Bundle rawData,
+    public void putInt(@NonNull final Bundle target,
                        final int value) {
         if (mAccessor == null) {
-            rawData.putInt(mKey, value);
+            target.putInt(mKey, value);
         } else {
-            mAccessor.put(rawData, value);
+            mAccessor.put(target, value);
         }
     }
 
     /**
-     * Retrieve the data from the rawData, translating and using Accessor as necessary.
+     * Retrieve the data from the source, translating and using Accessor as necessary.
      *
-     * @param rawData Raw data
+     * @param source from which to read
      *
      * @return Value of the data, a {@code null} is returned as 0
      */
-    public long getLong(@NonNull final Bundle rawData) {
+    public long getLong(@NonNull final Bundle source) {
         Object o;
         if (mAccessor == null) {
-            o = rawData.get(mKey);
+            o = source.get(mKey);
         } else {
-            o = mAccessor.get(rawData);
+            o = mAccessor.get(source);
         }
         return toLong(o);
     }
 
     /**
-     * Store the value in the rawData, or using Accessor as necessary.
+     * Store the value in the target, or using Accessor as necessary.
      *
-     * @param rawData Raw data
-     * @param value   The long value to store
+     * @param target into which to store the value
+     * @param value  The long value to store
      */
-    public void putLong(@NonNull final Bundle rawData,
+    public void putLong(@NonNull final Bundle target,
                         final long value) {
         if (mAccessor == null) {
-            rawData.putLong(mKey, value);
+            target.putLong(mKey, value);
         } else {
-            mAccessor.put(rawData, value);
+            mAccessor.put(target, value);
         }
     }
 
     /**
-     * Retrieve the data from the rawData, translating and using Accessor as necessary.
+     * Retrieve the data from the source, translating and using Accessor as necessary.
      *
-     * @param rawData Raw data
+     * @param source from which to read
      *
      * @return Value of the data, a {@code null} is returned as 0
      */
-    public double getDouble(@NonNull final Bundle rawData) {
+    public double getDouble(@NonNull final Bundle source) {
         Object o;
         if (mAccessor == null) {
-            o = rawData.get(mKey);
+            o = source.get(mKey);
         } else {
-            o = mAccessor.get(rawData);
+            o = mAccessor.get(source);
         }
         return toDouble(o);
     }
 
     /**
-     * Store the value in the rawData, or using Accessor as necessary.
+     * Store the value in the target, or using Accessor as necessary.
      *
-     * @param rawData Raw data
-     * @param value   The double value to store
+     * @param target into which to store the value
+     * @param value  to store
      */
-    void putDouble(@NonNull final Bundle rawData,
+    void putDouble(@NonNull final Bundle target,
                    final double value) {
         if (mAccessor == null) {
-            rawData.putDouble(mKey, value);
+            target.putDouble(mKey, value);
         } else {
-            mAccessor.put(rawData, value);
+            mAccessor.put(target, value);
         }
     }
 
     /**
-     * Retrieve the data from the rawData, translating and using Accessor as necessary.
+     * Retrieve the data from the source, translating and using Accessor as necessary.
      *
-     * @param rawData Raw data
+     * @param source from which to read
      *
      * @return Value of the data, a {@code null} is returned as 0
      */
     @SuppressWarnings("WeakerAccess")
-    public float getFloat(@NonNull final Bundle rawData) {
+    public float getFloat(@NonNull final Bundle source) {
         Object o;
         if (mAccessor == null) {
-            o = rawData.get(mKey);
+            o = source.get(mKey);
         } else {
-            o = mAccessor.get(rawData);
+            o = mAccessor.get(source);
         }
         return (float) toDouble(o);
     }
 
     /**
-     * Store the value in the rawData, or using Accessor as necessary.
+     * Store the value in the target, or using Accessor as necessary.
      *
-     * @param rawData Raw data
+     * @param target into which to store the value
+     * @param value  to store
      */
-    void putFloat(@NonNull final Bundle rawData,
+    void putFloat(@NonNull final Bundle target,
                   final float value) {
         if (mAccessor == null) {
-            rawData.putFloat(mKey, value);
+            target.putFloat(mKey, value);
         } else {
-            mAccessor.put(rawData, value);
+            mAccessor.put(target, value);
         }
     }
 
     /**
-     * Retrieve the data from the rawData, translating and using Accessor as necessary.
+     * Retrieve the data from the source, translating and using Accessor as necessary.
      *
-     * @param rawData Raw data
+     * @param source from which to read
      *
      * @return Value of the data, can be empty, but never {@code null}
      */
     @NonNull
-    public String getString(@NonNull final Bundle rawData) {
+    public String getString(@NonNull final Bundle source) {
         Object o;
         if (mAccessor == null) {
-            o = rawData.get(mKey);
+            o = source.get(mKey);
         } else {
-            o = mAccessor.get(rawData);
+            o = mAccessor.get(source);
         }
         // any null gets turned into ""
         return o == null ? "" : o.toString().trim();
     }
 
     /**
-     * Store the value in the rawData, or using Accessor as necessary.
+     * Store the value in the target, or using Accessor as necessary.
      *
-     * @param rawData Raw data
-     * @param value   the String object to store, will be trimmed before storing.
+     * @param target into which to store the value
+     * @param value  to store
      */
-    public void putString(@NonNull final Bundle rawData,
+    public void putString(@NonNull final Bundle target,
                           @NonNull final String value) {
         if (mAccessor == null) {
-            rawData.putString(mKey, value.trim());
+            target.putString(mKey, value.trim());
         } else {
-            mAccessor.put(rawData, value.trim());
+            mAccessor.put(target, value.trim());
         }
     }
 
     /**
      * Get the {@code ArrayList<Parcelable>} object from the collection.
      *
-     * @param rawData Raw data Bundle
-     * @param <T>     the type of the list elements
+     * @param source from which to read
+     * @param <T>    the type of the list elements
      *
      * @return The list, can be empty but never {@code null}
      */
     @NonNull
     public <T extends Parcelable> ArrayList<T> getParcelableArrayList(
-            @NonNull final Bundle rawData) {
+            @NonNull final Bundle source) {
         Object o;
         if (mAccessor == null) {
-            o = rawData.get(mKey);
+            o = source.get(mKey);
         } else {
-            o = mAccessor.get(rawData);
+            o = mAccessor.get(source);
         }
 
         if (o == null) {
@@ -466,18 +477,18 @@ public class Datum {
     }
 
     /**
-     * Store the value in the rawData, or using Accessor as necessary.
+     * Store the value in the target, or using Accessor as necessary.
      *
-     * @param rawData Raw data Bundle
-     * @param value   The {@code ArrayList<Parcelable>} object to store
-     * @param <T>     the type of the list elements
+     * @param target into which to store the value
+     * @param value  to store
+     * @param <T>    the type of the list elements
      */
-    public <T extends Parcelable> void putParcelableArrayList(@NonNull final Bundle rawData,
+    public <T extends Parcelable> void putParcelableArrayList(@NonNull final Bundle target,
                                                               @NonNull final ArrayList<T> value) {
         if (mAccessor == null) {
-            rawData.putParcelableArrayList(mKey, value);
+            target.putParcelableArrayList(mKey, value);
         } else {
-            mAccessor.put(rawData, value);
+            mAccessor.put(target, value);
         }
     }
 }

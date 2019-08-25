@@ -555,73 +555,66 @@ public class Fields {
      * Interface for view-specific accessors. One of these must be implemented for
      * each view type that is supported.
      */
-    private interface FieldDataAccessor {
+    private interface FieldDataAccessor<T> {
+
+        void setFormatter(@NonNull FieldFormatter formatter);
+
+        @NonNull
+        String format(@Nullable T source);
+
+        @NonNull
+        String extract(@NonNull final String source);
 
         /**
-         * Passed a Field and a Bundle get the value from the Bundle and set the Field.
-         *
-         * @param source Collection to load data from.
-         * @param target Field to update
-         */
-        void setValue(@NonNull Bundle source,
-                      @NonNull Field target);
-
-        /**
-         * Passed a Field and a DataManager get the value from the DataManager and set the Field.
-         *
-         * @param source Collection to load data from.
-         * @param target Field to update
-         */
-        void setValue(@NonNull DataManager source,
-                      @NonNull Field target);
-
-        /**
-         * Passed a Field and a String, use the string to set the Field.
-         *
-         * @param source String value to set.
-         * @param target Field to update
-         */
-        void setValue(@NonNull String source,
-                      @NonNull Field target);
-
-
-        /**
-         * Get the value from the view associated with the Field and store a native version
-         * in the passed collection.
-         *
-         * @param source Field to get the value from
-         * @param target Collection to save value into.
-         */
-        void setValue(@NonNull Field source,
-                      @NonNull Bundle target);
-
-        /**
-         * Get the value from the view associated with the Field and store a native version
-         * in the passed collection.
-         *
-         * @param source Field to get the value from
-         * @param target Collection to save value into.
-         */
-        void setValue(@NonNull Field source,
-                      @NonNull DataManager target);
-
-        /**
-         * Get the value from the view associated with Field and return it as an Object.
-         * <p>
-         * Implementations should indicate (if possible) the correct return type.
-         *
-         * @param source Field to get the value from
+         * Get the value from the view associated with the Field and return it as an Object.
          *
          * @return The most natural value to associate with the View value.
          */
         @NonNull
-        Object getValue(@NonNull Field source);
+        T getValue();
+
+        /**
+         * Use the passed String to set the Field.
+         *
+         * @param source String value to set.
+         */
+        void setValue(@NonNull T source);
+
+        /**
+         * Fetch the value from the passed Bundle, and set the Field.
+         *
+         * @param source Collection to load data from.
+         */
+        void setValue(@NonNull Bundle source);
+
+        /**
+         * Fetch the value from the passed DataManager, and set the Field.
+         *
+         * @param source Collection to load data from.
+         */
+        void setValue(@NonNull DataManager source);
+
+        /**
+         * Get the value from the view associated with the Field
+         * and store a <strong>native typed value</strong> in the passed collection.
+         *
+         * @param target Collection to save value into.
+         */
+        void putValueInto(@NonNull Bundle target);
+
+        /**
+         * Get the value from the view associated with the Field
+         * and store a <strong>native typed value</strong> in the passed collection.
+         *
+         * @param target Collection to save value into.
+         */
+        void putValueInto(@NonNull DataManager target);
     }
 
     /**
      * Interface definition for Field formatter.
      */
-    public interface FieldFormatter {
+    public interface FieldFormatter<T> {
 
         /**
          * Format a string for applying to a View.
@@ -633,7 +626,7 @@ public class Fields {
          */
         @NonNull
         String format(@NonNull Field field,
-                      @Nullable String source);
+                      @Nullable T source);
 
         /**
          * This method is intended to be called from a {@link FieldDataAccessor}.
@@ -667,19 +660,38 @@ public class Fields {
     }
 
     /** Base implementation. */
-    private abstract static class BaseDataAccessor
-            implements FieldDataAccessor {
+    private abstract static class BaseDataAccessor<T>
+            implements FieldDataAccessor<T> {
 
-        @Override
-        public void setValue(@NonNull final Bundle source,
-                             @NonNull final Field target) {
-            setValue(Objects.requireNonNull(source.getString(target.mColumn)), target);
+        @NonNull
+        Field field;
+
+        @Nullable
+        FieldFormatter<T> mFormatter;
+
+        BaseDataAccessor(@NonNull final Field field) {
+            this.field = field;
         }
 
-        @Override
-        public void setValue(@NonNull final DataManager source,
-                             @NonNull final Field target) {
-            setValue(source.getString(target.mColumn), target);
+        public void setFormatter(@NonNull final FieldFormatter formatter) {
+            //noinspection unchecked
+            mFormatter = formatter;
+        }
+
+        /**
+         * Wrapper around {@link FieldFormatter#extract}.
+         *
+         * @param source The value to be back-translated
+         *
+         * @return The extracted value
+         */
+        @NonNull
+        public String extract(@NonNull final String source) {
+            if (mFormatter != null) {
+                return mFormatter.extract(field, source);
+            } else {
+                return source;
+            }
         }
     }
 
@@ -690,33 +702,63 @@ public class Fields {
      * Does not support {@link FieldFormatter}. Output is String.
      */
     public static class StringDataAccessor
-            extends BaseDataAccessor {
+            extends BaseDataAccessor<String> {
 
         @NonNull
         private String mLocalValue = "";
 
-        @Override
-        public void setValue(@NonNull final String source,
-                             @NonNull final Field target) {
-            mLocalValue = source;
+        StringDataAccessor(@NonNull final Field field) {
+            super(field);
+        }
+
+        /**
+         * Format a string for applying to a View.
+         * If the source is {@code null}, implementations should return "" (and log an error)
+         *
+         * @param source Input value
+         *
+         * @return The formatted value.
+         */
+        @NonNull
+        public String format(@Nullable String source) {
+            if (mFormatter != null) {
+                return mFormatter.format(field, source);
+            } else if (source != null) {
+                return source;
+            } else {
+                return "";
+            }
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final Bundle target) {
-            target.putString(source.mColumn, getValue(source));
+        public void putValueInto(@NonNull final Bundle target) {
+            target.putString(field.mColumn, getValue());
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final DataManager target) {
-            target.putString(source.mColumn, getValue(source));
+        public void putValueInto(@NonNull final DataManager target) {
+            target.putString(field.mColumn, getValue());
         }
 
         @NonNull
         @Override
-        public String getValue(@NonNull final Field source) {
+        public String getValue() {
             return mLocalValue.trim();
+        }
+
+        @Override
+        public void setValue(@NonNull final String source) {
+            mLocalValue = source;
+        }
+
+        @Override
+        public void setValue(@NonNull final Bundle source) {
+            setValue(Objects.requireNonNull(source.getString(field.mColumn)));
+        }
+
+        @Override
+        public void setValue(@NonNull final DataManager source) {
+            setValue(source.getString(field.mColumn));
         }
     }
 
@@ -729,43 +771,73 @@ public class Fields {
      * Supports {@link FieldFormatter#format} only. Output is (the original) String.
      */
     public static class TextViewAccessor
-            extends BaseDataAccessor {
+            extends BaseDataAccessor<String> {
 
         private boolean mFormatHtml;
         @NonNull
         private String mRawValue = "";
 
-        @Override
-        public void setValue(@NonNull final String source,
-                             @NonNull final Field target) {
-            mRawValue = source.trim();
-            TextView view = target.getView();
-            if (mFormatHtml) {
-                view.setText(Html.fromHtml(target.format(mRawValue)));
-                view.setFocusable(true);
-                view.setTextIsSelectable(true);
-                view.setAutoLinkMask(Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
+        TextViewAccessor(@NonNull final Field field) {
+            super(field);
+        }
+
+        /**
+         * Format a string for applying to a View.
+         * If the source is {@code null}, implementations should return "" (and log an error)
+         *
+         * @param source Input value
+         *
+         * @return The formatted value.
+         */
+        @NonNull
+        public String format(@Nullable String source) {
+            if (mFormatter != null) {
+                return mFormatter.format(field, source);
+            } else if (source != null) {
+                return source;
             } else {
-                view.setText(target.format(mRawValue));
+                return "";
             }
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final Bundle target) {
-            target.putString(source.mColumn, getValue(source));
+        public void putValueInto(@NonNull final Bundle target) {
+            target.putString(field.mColumn, getValue());
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final DataManager target) {
-            target.putString(source.mColumn, getValue(source));
+        public void putValueInto(@NonNull final DataManager target) {
+            target.putString(field.mColumn, getValue());
         }
 
         @NonNull
         @Override
-        public String getValue(@NonNull final Field source) {
+        public String getValue() {
             return mRawValue;
+        }
+
+        @Override
+        public void setValue(@NonNull final String source) {
+            mRawValue = source.trim();
+            TextView view = field.getView();
+            if (mFormatHtml) {
+                view.setText(Html.fromHtml(format(mRawValue)));
+                view.setFocusable(true);
+                view.setTextIsSelectable(true);
+                view.setAutoLinkMask(Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
+            } else {
+                view.setText(format(mRawValue));
+            }
+        }
+
+        @Override
+        public void setValue(@NonNull final Bundle source) {
+            setValue(Objects.requireNonNull(source.getString(field.mColumn)));
+        }
+
+        @Override
+        public void setValue(@NonNull final DataManager source) {
+            setValue(source.getString(field.mColumn));
         }
 
         /**
@@ -808,12 +880,8 @@ public class Fields {
 
         @Override
         public void afterTextChanged(@NonNull final Editable s) {
-            String value;
-            if (field.formatter == null) {
-                value = s.toString().trim();
-            } else {
-                value = field.formatter.extract(field, s.toString().trim());
-            }
+            // extract the new value from the Widget to native data
+            String value = field.extract(s.toString().trim());
 
             if (BuildConfig.DEBUG) {
                 Logger.debug(this, "afterTextChanged",
@@ -821,6 +889,7 @@ public class Fields {
                              "extract=`" + value + '`'
                             );
             }
+            // set the field with the new data. This will redisplay the data.
             field.setValue(value);
         }
     }
@@ -831,66 +900,95 @@ public class Fields {
      * Supports {@link FieldFormatter}. Output is String.
      */
     public static class EditTextAccessor
-            extends BaseDataAccessor {
+            extends BaseDataAccessor<String> {
 
         @NonNull
         private final TextWatcher mTextWatcher;
 
         EditTextAccessor(@NonNull final EditText view,
                          @NonNull final Field field) {
+            super(field);
             mTextWatcher = new EditTextWatcher(field);
             view.addTextChangedListener(mTextWatcher);
         }
 
         /**
-         * 2018-12-11: now synchronized. There was recursion due to the setText call.
-         * So now disabling the TextWatcher while doing the latter.
+         * Format a string for applying to a View.
+         * If the source is {@code null}, implementations should return "" (and log an error)
          *
-         * @param source String value to set.
-         * @param target Field to update
+         * @param source Input value
+         *
+         * @return The formatted value.
          */
-        @Override
-        public synchronized void setValue(@NonNull final String source,
-                                          @NonNull final Field target) {
-            EditText view = target.getView();
-            view.removeTextChangedListener(mTextWatcher);
-
-            String newVal = target.format(source);
-            // do not use extract, we compare formatted/formatted value
-            String oldVal = view.getText().toString().trim();
-            if (!newVal.equals(oldVal)) {
-                if (view instanceof AutoCompleteTextView) {
-                    // prevent auto-completion to kick in / stop the dropdown from opening.
-                    // this happened if the field had the focus when we'd be populating it.
-                    ((AutoCompleteTextView) view).setText(newVal, false);
-                } else {
-                    view.setText(newVal);
-                }
+        @NonNull
+        public String format(@Nullable String source) {
+            if (mFormatter != null) {
+                return mFormatter.format(field, source);
+            } else if (source != null) {
+                return source;
+            } else {
+                return "";
             }
-            view.addTextChangedListener(mTextWatcher);
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final Bundle target) {
-            target.putString(source.mColumn, getValue(source));
+        public void putValueInto(@NonNull final Bundle target) {
+            target.putString(field.mColumn, getValue());
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final DataManager target) {
-            target.putString(source.mColumn, getValue(source));
+        public void putValueInto(@NonNull final DataManager target) {
+            target.putString(field.mColumn, getValue());
         }
 
         @NonNull
         @Override
-        public String getValue(@NonNull final Field source) {
-            EditText view = source.getView();
-            if (source.formatter == null) {
+        public String getValue() {
+            EditText view = field.getView();
+            if (mFormatter == null) {
                 return view.getText().toString().trim();
             } else {
-                return source.formatter.extract(source, view.getText().toString().trim());
+                return mFormatter.extract(field, view.getText().toString().trim());
             }
+        }
+
+        /**
+         * 2018-12-11: There was recursion due to the setText call.
+         * So now disabling the TextWatcher while doing the latter.
+         *
+         * @param source String value to set.
+         */
+        @Override
+        public void setValue(@NonNull final String source) {
+            EditText view = field.getView();
+            // Se don't want another thread re-enabling the listener before we're done
+            synchronized (mTextWatcher) {
+                view.removeTextChangedListener(mTextWatcher);
+
+                String newVal = format(source);
+                // do not use extract, we compare formatted/formatted value
+                String oldVal = view.getText().toString().trim();
+                if (!newVal.equals(oldVal)) {
+                    if (view instanceof AutoCompleteTextView) {
+                        // prevent auto-completion to kick in / stop the dropdown from opening.
+                        // this happened if the field had the focus when we'd be populating it.
+                        ((AutoCompleteTextView) view).setText(newVal, false);
+                    } else {
+                        view.setText(newVal);
+                    }
+                }
+                view.addTextChangedListener(mTextWatcher);
+            }
+        }
+
+        @Override
+        public void setValue(@NonNull final Bundle source) {
+            setValue(Objects.requireNonNull(source.getString(field.mColumn)));
+        }
+
+        @Override
+        public void setValue(@NonNull final DataManager source) {
+            setValue(source.getString(field.mColumn));
         }
     }
 
@@ -902,13 +1000,55 @@ public class Fields {
      * from the displayed String.
      */
     public static class SpinnerAccessor
-            extends BaseDataAccessor {
+            extends BaseDataAccessor<String> {
+
+        SpinnerAccessor(@NonNull final Field field) {
+            super(field);
+        }
+
+        /**
+         * Format a string for applying to a View.
+         * If the source is {@code null}, implementations should return "" (and log an error)
+         *
+         * @param source Input value
+         *
+         * @return The formatted value.
+         */
+        @NonNull
+        public String format(@Nullable String source) {
+            if (mFormatter != null) {
+                return mFormatter.format(field, source);
+            } else if (source != null) {
+                return source;
+            } else {
+                return "";
+            }
+        }
 
         @Override
-        public void setValue(@Nullable final String source,
-                             @NonNull final Field target) {
-            Spinner spinner = target.getView();
-            String value = target.format(source);
+        public void putValueInto(@NonNull final Bundle target) {
+            target.putString(field.mColumn, getValue());
+        }
+
+        @Override
+        public void putValueInto(@NonNull final DataManager target) {
+            target.putString(field.mColumn, getValue());
+        }
+
+        @Override
+        @NonNull
+        public String getValue() {
+            if (mFormatter == null) {
+                return getSpinnerValue();
+            } else {
+                return mFormatter.extract(field, getSpinnerValue());
+            }
+        }
+
+        @Override
+        public void setValue(@Nullable final String source) {
+            Spinner spinner = field.getView();
+            String value = format(source);
             for (int i = 0; i < spinner.getCount(); i++) {
                 if (spinner.getItemAtPosition(i).equals(value)) {
                     spinner.setSelection(i);
@@ -918,37 +1058,23 @@ public class Fields {
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final Bundle target) {
-            target.putString(source.mColumn, getValue(source));
+        public void setValue(@NonNull final Bundle source) {
+            setValue(Objects.requireNonNull(source.getString(field.mColumn)));
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final DataManager target) {
-            target.putString(source.mColumn, getValue(source));
-        }
-
-        @Override
-        @NonNull
-        public String getValue(@NonNull final Field source) {
-            if (source.formatter == null) {
-                return getSpinnerValue(source);
-            } else {
-                return source.formatter.extract(source, getSpinnerValue(source));
-            }
+        public void setValue(@NonNull final DataManager source) {
+            setValue(source.getString(field.mColumn));
         }
 
         /**
          * Get the raw String value from the Spinner.
          *
-         * @param source Field to read.
-         *
          * @return raw String
          */
         @NonNull
-        private String getSpinnerValue(@NonNull final Field source) {
-            Spinner spinner = source.getView();
+        private String getSpinnerValue() {
+            Spinner spinner = field.getView();
             Object selItem = spinner.getSelectedItem();
             if (selItem != null) {
                 return selItem.toString().trim();
@@ -970,15 +1096,54 @@ public class Fields {
      * </ul>
      */
     public static class CheckableAccessor
-            extends BaseDataAccessor {
+            extends BaseDataAccessor<Boolean> {
+
+        CheckableAccessor(@NonNull final Field field) {
+            super(field);
+        }
+
+        /**
+         * Format a string for applying to a View.
+         * If the source is {@code null}, implementations should return "" (and log an error)
+         *
+         * @param source Input value
+         *
+         * @return The formatted value.
+         */
+        @NonNull
+        public String format(@Nullable Boolean source) {
+            if (mFormatter != null) {
+                return mFormatter.format(field, source);
+            } else if (source != null) {
+                return source.toString();
+            } else {
+                return "";
+            }
+        }
 
         @Override
-        public void setValue(@Nullable final String source,
-                             @NonNull final Field target) {
-            Checkable cb = target.getView();
+        public void putValueInto(@NonNull final Bundle target) {
+            target.putBoolean(field.mColumn, getValue());
+        }
+
+        @Override
+        public void putValueInto(@NonNull final DataManager target) {
+            target.putBoolean(field.mColumn, getValue());
+        }
+
+        @NonNull
+        @Override
+        public Boolean getValue() {
+            Checkable cb = field.getView();
+            return cb.isChecked();
+        }
+
+        @Override
+        public void setValue(@Nullable final Boolean source) {
+            Checkable cb = field.getView();
             if (source != null) {
                 try {
-                    cb.setChecked(Datum.toBoolean(target.format(source), true));
+                    cb.setChecked(Datum.toBoolean(format(source), true));
                 } catch (@NonNull final NumberFormatException e) {
                     cb.setChecked(false);
                 }
@@ -988,22 +1153,13 @@ public class Fields {
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final Bundle target) {
-            target.putBoolean(source.mColumn, getValue(source));
+        public void setValue(@NonNull final Bundle source) {
+            setValue(source.getBoolean(field.mColumn));
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final DataManager target) {
-            target.putBoolean(source.mColumn, getValue(source));
-        }
-
-        @NonNull
-        @Override
-        public Boolean getValue(@NonNull final Field source) {
-            Checkable cb = source.getView();
-            return cb.isChecked();
+        public void setValue(@NonNull final DataManager source) {
+            setValue(source.getBoolean(field.mColumn));
         }
     }
 
@@ -1014,15 +1170,54 @@ public class Fields {
      * Output is <strong>strictly</strong> {@code Float}.
      */
     public static class RatingBarAccessor
-            extends BaseDataAccessor {
+            extends BaseDataAccessor<Float> {
+
+        RatingBarAccessor(@NonNull final Field field) {
+            super(field);
+        }
+
+        /**
+         * Format a string for applying to a View.
+         * If the source is {@code null}, implementations should return "" (and log an error)
+         *
+         * @param source Input value
+         *
+         * @return The formatted value.
+         */
+        @NonNull
+        public String format(@Nullable Float source) {
+            if (mFormatter != null) {
+                return mFormatter.format(field, source);
+            } else if (source != null) {
+                return source.toString();
+            } else {
+                return "";
+            }
+        }
 
         @Override
-        public void setValue(@Nullable final String source,
-                             @NonNull final Field target) {
-            RatingBar bar = target.getView();
+        public void putValueInto(@NonNull final Bundle target) {
+            target.putFloat(field.mColumn, getValue());
+        }
+
+        @Override
+        public void putValueInto(@NonNull final DataManager target) {
+            target.putFloat(field.mColumn, getValue());
+        }
+
+        @NonNull
+        @Override
+        public Float getValue() {
+            RatingBar bar = field.getView();
+            return bar.getRating();
+        }
+
+        @Override
+        public void setValue(@Nullable final Float source) {
+            RatingBar bar = field.getView();
             float rating;
             try {
-                rating = Float.parseFloat(target.format(source));
+                rating = Float.parseFloat(format(source));
             } catch (@NonNull final NumberFormatException ignored) {
                 rating = 0.0f;
             }
@@ -1030,22 +1225,13 @@ public class Fields {
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final Bundle target) {
-            target.putFloat(source.mColumn, getValue(source));
+        public void setValue(@NonNull final Bundle source) {
+            setValue(source.getFloat(field.mColumn));
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final DataManager target) {
-            target.putFloat(source.mColumn, getValue(source));
-        }
-
-        @NonNull
-        @Override
-        public Float getValue(@NonNull final Field source) {
-            RatingBar bar = source.getView();
-            return bar.getRating();
+        public void setValue(@NonNull final DataManager source) {
+            setValue(source.getFloat(field.mColumn));
         }
     }
 
@@ -1054,7 +1240,7 @@ public class Fields {
      * Sets a tag {@link R.id#TAG_UUID} on the view with the UUID.
      */
     public static class ImageViewAccessor
-            extends BaseDataAccessor {
+            extends BaseDataAccessor<String> {
 
         private int mMaxWidth;
         private int mMaxHeight;
@@ -1064,7 +1250,9 @@ public class Fields {
          *
          * @param scale to apply
          */
-        ImageViewAccessor(final int scale) {
+        ImageViewAccessor(@NonNull final Field field,
+                          final int scale) {
+            super(field);
             setScale(scale);
         }
 
@@ -1077,15 +1265,53 @@ public class Fields {
         }
 
         /**
+         * Format a string for applying to a View.
+         * If the source is {@code null}, implementations should return "" (and log an error)
+         *
+         * @param source Input value
+         *
+         * @return The formatted value.
+         */
+        @NonNull
+        public String format(@Nullable String source) {
+            if (mFormatter != null) {
+                return mFormatter.format(field, source);
+            } else if (source != null) {
+                return source;
+            } else {
+                return "";
+            }
+        }
+
+        @Override
+        public void putValueInto(@NonNull final Bundle target) {
+            // not applicable
+        }
+
+        @Override
+        public void putValueInto(@NonNull final DataManager target) {
+            // not applicable
+        }
+
+        /**
+         * Not really used, but returning the uuid makes sense.
+         *
+         * @return the UUID
+         */
+        @NonNull
+        @Override
+        public String getValue() {
+            return (String) field.getView().getTag(R.id.TAG_UUID);
+        }
+
+        /**
          * Populates the view and sets the UUID (incoming value) as a tag on the view.
          *
          * @param source the book UUID
-         * @param target which defines the View details
          */
         @Override
-        public void setValue(@Nullable final String source,
-                             @NonNull final Field target) {
-            ImageView imageView = target.getView();
+        public void setValue(@Nullable final String source) {
+            ImageView imageView = field.getView();
 
             if (source != null) {
                 File imageFile;
@@ -1102,28 +1328,13 @@ public class Fields {
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final Bundle target) {
-            // not applicable
+        public void setValue(@NonNull final Bundle source) {
+            setValue(Objects.requireNonNull(source.getString(field.mColumn)));
         }
 
         @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final DataManager target) {
-            // not applicable
-        }
-
-        /**
-         * Not really used, but returning the uuid makes sense.
-         *
-         * @param source associated with the View object
-         *
-         * @return the UUID
-         */
-        @NonNull
-        @Override
-        public String getValue(@NonNull final Field source) {
-            return (String) source.getView().getTag(R.id.TAG_UUID);
+        public void setValue(@NonNull final DataManager source) {
+            setValue(source.getString(field.mColumn));
         }
     }
 
@@ -1135,7 +1346,7 @@ public class Fields {
      * Uses the context/locale from the field itself.
      */
     public static class DateFieldFormatter
-            implements FieldFormatter {
+            implements FieldFormatter<String> {
 
         /**
          * Display as a human-friendly date, local timezone.
@@ -1174,7 +1385,7 @@ public class Fields {
      * Does not support {@link FieldFormatter#extract}
      */
     public static class BinaryYesNoEmptyFormatter
-            implements FieldFormatter {
+            implements FieldFormatter<String> {
 
         private final String mYes;
         private final String mNo;
@@ -1214,7 +1425,7 @@ public class Fields {
      * Does not support {@link FieldFormatter#extract}
      */
     public static class PriceFormatter
-            implements FieldFormatter {
+            implements FieldFormatter<String> {
 
         @Nullable
         private String mCurrencyCode;
@@ -1290,7 +1501,7 @@ public class Fields {
      * Does not support {@link FieldFormatter#extract}.
      */
     public static class PagesFormatter
-            implements FieldFormatter {
+            implements FieldFormatter<String> {
 
         @NonNull
         @Override
@@ -1327,13 +1538,14 @@ public class Fields {
 //            return null;
 //        }
 //    }
+
     /**
      * Formatter for language fields.
      * <p>
      * Uses the context from the Field to determine the output Locale.
      */
     public static class LanguageFormatter
-            implements FieldFormatter {
+            implements FieldFormatter<String> {
 
         @NonNull
         @Override
@@ -1362,7 +1574,7 @@ public class Fields {
      * Does not support {@link FieldFormatter#extract}.
      */
     public static class BitMaskFormatter
-            implements FieldFormatter {
+            implements FieldFormatter<String> {
 
         private final Map<Integer, Integer> mMap;
 
@@ -1502,13 +1714,12 @@ public class Fields {
         @NonNull
         private final String mColumn;
 
-        /** Accessor to use (automatically defined). */
+        /**
+         * Accessor to use (automatically defined).
+         * Encapsulates the formatter.
+         */
         @NonNull
         private final FieldDataAccessor mFieldDataAccessor;
-
-        /** FieldFormatter to use (can be {@code null}). */
-        @Nullable
-        FieldFormatter formatter;
 
         /** indicates that "0" should be seen as "". Used for boolean/int type fields. */
         private boolean mZeroIsEmpty;
@@ -1559,12 +1770,12 @@ public class Fields {
             if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
                 // this was nasty... a MaterialButton implements Checkable,
                 // but you have to double check (pardon the pun) whether it IS checkable.
-                mFieldDataAccessor = new CheckableAccessor();
+                mFieldDataAccessor = new CheckableAccessor(this);
                 addTouchSignalsDirty(view);
 
             } else if (!((view instanceof MaterialButton)) && (view instanceof Checkable)) {
                 // the opposite, do not accept the MaterialButton here.
-                mFieldDataAccessor = new CheckableAccessor();
+                mFieldDataAccessor = new CheckableAccessor(this);
                 addTouchSignalsDirty(view);
 
             } else if (view instanceof EditText) {
@@ -1572,24 +1783,24 @@ public class Fields {
 
             } else if (view instanceof Button) {
                 // a Button *is* a TextView, but this is cleaner
-                mFieldDataAccessor = new TextViewAccessor();
+                mFieldDataAccessor = new TextViewAccessor(this);
 
             } else if (view instanceof TextView) {
-                mFieldDataAccessor = new TextViewAccessor();
+                mFieldDataAccessor = new TextViewAccessor(this);
 
             } else if (view instanceof ImageView) {
-                mFieldDataAccessor = new ImageViewAccessor(ImageUtils.SCALE_MEDIUM);
+                mFieldDataAccessor = new ImageViewAccessor(this, ImageUtils.SCALE_MEDIUM);
 
             } else if (view instanceof RatingBar) {
-                mFieldDataAccessor = new RatingBarAccessor();
+                mFieldDataAccessor = new RatingBarAccessor(this);
                 addTouchSignalsDirty(view);
 
             } else if (view instanceof Spinner) {
-                mFieldDataAccessor = new SpinnerAccessor();
+                mFieldDataAccessor = new SpinnerAccessor(this);
 
             } else {
                 // field has no layout, store in a dummy String.
-                mFieldDataAccessor = new StringDataAccessor();
+                mFieldDataAccessor = new StringDataAccessor(this);
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.debug(this, "Field",
                                  "Using StringDataAccessor",
@@ -1623,7 +1834,6 @@ public class Fields {
                    //+ ", mFields=" + mFields
                    + ", group='" + group + '\''
                    + ", mColumn='" + mColumn + '\''
-                   + ", formatter=" + formatter
                    + ", mZeroIsEmpty=" + mZeroIsEmpty
                    + ", mIsUsed=" + mIsUsed
                    + ", mDoNoFetch=" + mDoNoFetch
@@ -1639,7 +1849,7 @@ public class Fields {
          */
         @NonNull
         public Field setFormatter(@NonNull final FieldFormatter formatter) {
-            this.formatter = formatter;
+            mFieldDataAccessor.setFormatter(formatter);
             return this;
         }
 
@@ -1701,10 +1911,8 @@ public class Fields {
         }
 
         /**
-         * Set to {@code true} if a "0" content should be treated as an 'empty field'.
+         * To be called if a "0" content should be treated as an 'empty field'.
          * Used for (not) displaying boolean and integer fields.
-         *
-         * @param zeroIsEmpty flag
          *
          * @return field (for chaining)
          */
@@ -1797,7 +2005,7 @@ public class Fields {
          */
         @NonNull
         public Object getValue() {
-            return mFieldDataAccessor.getValue(this);
+            return mFieldDataAccessor.getValue();
         }
 
         /**
@@ -1806,7 +2014,7 @@ public class Fields {
          * @param source New value
          */
         public void setValue(@NonNull final String source) {
-            mFieldDataAccessor.setValue(source, this);
+            mFieldDataAccessor.setValue(source);
             mFields.get().afterFieldChange(this, source);
         }
 
@@ -1824,14 +2032,14 @@ public class Fields {
          * Get the current value of this field and put it into the Bundle collection.
          **/
         void putValueInto(@NonNull final Bundle target) {
-            mFieldDataAccessor.setValue(this, target);
+            mFieldDataAccessor.putValueInto(target);
         }
 
         /**
          * Get the current value of this field and put it into the Bundle collection.
          */
         void putValueInto(@NonNull final DataManager target) {
-            mFieldDataAccessor.setValue(this, target);
+            mFieldDataAccessor.putValueInto(target);
         }
 
         /**
@@ -1840,7 +2048,7 @@ public class Fields {
          */
         void setValueFrom(@NonNull final Bundle source) {
             if (!mColumn.isEmpty() && !mDoNoFetch) {
-                mFieldDataAccessor.setValue(source, this);
+                mFieldDataAccessor.setValue(source);
             }
         }
 
@@ -1850,27 +2058,37 @@ public class Fields {
          */
         public void setValueFrom(@NonNull final DataManager source) {
             if (!mColumn.isEmpty() && !mDoNoFetch) {
-                mFieldDataAccessor.setValue(source, this);
+                mFieldDataAccessor.setValue(source);
             }
         }
 
         /**
-         * Wrapper to call the formatter's format() method if present, or just return the raw value.
+         * Wrapper to {@link FieldDataAccessor#format}.
          *
          * @param source String to format
          *
-         * @return The formatted value. If the source is {@code null},
-         * should return "" (and log an error)
+         * @return The formatted value. Or "" if the source is {@code null}.
          */
         @NonNull
         public String format(@Nullable final String source) {
             if (source == null) {
                 return "";
             }
-            if (formatter == null) {
-                return source;
+            return mFieldDataAccessor.format(source);
+        }
+
+        /**
+         * Wrapper to {@link FieldDataAccessor#extract(String)}.
+         *
+         * @param source String to extract
+         *
+         * @return The extracted value. Or "" if the source is {@code null}.
+         */
+        String extract(@Nullable final String source) {
+            if (source == null) {
+                return "";
             }
-            return formatter.format(this, source);
+            return mFieldDataAccessor.extract(source);
         }
     }
 }
