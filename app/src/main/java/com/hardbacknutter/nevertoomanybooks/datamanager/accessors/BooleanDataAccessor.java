@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,18 +53,18 @@ public class BooleanDataAccessor
 
     @NonNull
     @Override
-    public Boolean get(@NonNull final Bundle rawData) {
-        return Datum.toBoolean(rawData.get(mKey));
+    public Boolean get(@NonNull final Bundle source) {
+        return Datum.toBoolean(source.get(mKey));
     }
 
     @Override
-    public void put(@NonNull final Bundle rawData,
+    public void put(@NonNull final Bundle target,
                     @NonNull final Object value) {
-        rawData.putBoolean(mKey, Datum.toBoolean(value));
+        target.putBoolean(mKey, Datum.toBoolean(value));
     }
 
     @Override
-    public boolean isPresent(@NonNull final Bundle rawData) {
-        return rawData.containsKey(mKey);
+    public boolean isPresent(@NonNull final Bundle source) {
+        return source.containsKey(mKey);
     }
 }

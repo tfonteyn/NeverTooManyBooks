@@ -73,17 +73,10 @@ public class DataManager {
     protected static final DataValidator INTEGER_VALIDATOR = new IntegerValidator(0);
     /** re-usable validator. */
     protected static final DataValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
-//    /** re-usable validator. */
-//    protected static final DataValidator BLANK_OR_INTEGER_VALIDATOR = new OrValidator(
-//            new BlankValidator(),
-//            new IntegerValidator(0));
     /** re-usable validator. */
     protected static final DataValidator BLANK_OR_FLOAT_VALIDATOR = new OrValidator(
             new BlankValidator(),
             new FloatValidator(0f));
-
-    // DataValidator blankOrDateValidator =
-    //     new OrValidator(new BlankValidator(), new DateValidator());
 
     /** A list of cross-validators to apply if all fields pass simple validation. */
     private final List<DataCrossValidator> mCrossValidators = new ArrayList<>();

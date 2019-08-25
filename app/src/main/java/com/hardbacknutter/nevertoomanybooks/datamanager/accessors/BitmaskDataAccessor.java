@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,15 +63,15 @@ public class BitmaskDataAccessor
 
     @NonNull
     @Override
-    public Boolean get(@NonNull final Bundle rawData) {
-        return (Datum.toLong(rawData.get(mKey)) & mBitmask) != 0;
+    public Boolean get(@NonNull final Bundle source) {
+        return (Datum.toLong(source.get(mKey)) & mBitmask) != 0;
     }
 
     @Override
-    public void put(@NonNull final Bundle rawData,
+    public void put(@NonNull final Bundle target,
                     @NonNull final Object value) {
 
-        long bits = Datum.toLong(rawData.get(mKey));
+        long bits = Datum.toLong(target.get(mKey));
 
         if (Datum.toBoolean(value)) {
             // set the bit
@@ -80,11 +81,11 @@ public class BitmaskDataAccessor
             bits &= ~mBitmask;
         }
 
-        rawData.putLong(mKey, bits);
+        target.putLong(mKey, bits);
     }
 
     @Override
-    public boolean isPresent(@NonNull final Bundle rawData) {
-        return rawData.containsKey(mKey);
+    public boolean isPresent(@NonNull final Bundle source) {
+        return source.containsKey(mKey);
     }
 }

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
  * - bitmask access to a single bit (set and get) (2x)
  * - boolean automatic-transformation when loading values from the database (2x)
  */
-public interface DataAccessor<TIN, TOUT> {
+public interface DataAccessor {
 
     /*
     // example code:
@@ -69,26 +70,26 @@ public interface DataAccessor<TIN, TOUT> {
     /**
      * Get the value.
      *
-     * @param rawData the bundle into which the value is stored
+     * @param source the bundle from which the value should be read.
      *
      * @return the raw value, or {@code null} if not present
      */
     @Nullable
-    TOUT get(@NonNull Bundle rawData);
+    Object get(@NonNull Bundle source);
 
     /**
      * Set the specified value.
      *
-     * @param rawData the bundle into which the value should be stored
+     * @param target the bundle into which the value should be stored.
      * @param value   the actual value to set
      */
-    void put(@NonNull Bundle rawData,
-             @NonNull TIN value);
+    void put(@NonNull Bundle target,
+             @NonNull Object value);
 
     /**
      * Check if the key is present.
      */
-    boolean isPresent(@NonNull Bundle rawData);
+    boolean isPresent(@NonNull Bundle source);
 //    boolean isPresent(@NonNull Bundle rawData) {
 //        return rawData.containsKey(mKey);
 //    }

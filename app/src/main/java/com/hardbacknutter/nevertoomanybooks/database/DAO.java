@@ -226,6 +226,7 @@ public class DAO
      * <b>Note:</b> Important to have start/end spaces!
      */
     public static final String COLLATION = " Collate LOCALIZED ";
+    /** log error string. */
     private static final String ERROR_FAILED_CREATING_BOOK_FROM = "Failed creating book from\n";
 
     /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
@@ -285,8 +286,9 @@ public class DAO
     private static final String STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES = "UpdateAuthorOnTocEntry";
     private static final String STMT_UPDATE_GOODREADS_SYNC_DATE = "UpdateGoodreadsSyncDate";
     private static final String STMT_UPDATE_FTS = "UpdateFts";
-    /** error message. */
+    /** log error string. */
     private static final String ERROR_NEEDS_TRANSACTION = "Needs transaction";
+    /** log error string. */
     private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to update FTS";
     /** See {@link #encodeString(String)}. */
     private static final Pattern ENCODE_STRING = Pattern.compile("'", Pattern.LITERAL);

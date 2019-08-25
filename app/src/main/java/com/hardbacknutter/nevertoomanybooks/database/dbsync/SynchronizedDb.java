@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class SynchronizedDb {
 
+    /** log error string. */
     private static final String ERROR_UPDATE_INSIDE_SHARED_TX = "Update inside shared TX";
     private static Boolean sIsCollationCaseSensitive;
     /** Underlying database. */

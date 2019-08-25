@@ -108,6 +108,7 @@ public class CsvImporter
 
     /** as used in older versions, or from arbitrarily constructed CSV files. */
     private static final String OLD_STYLE_AUTHOR_NAME = "author_name";
+    /** log error string. */
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
 
     /** Present in pre-v200 CSV files. Obsolete, not used. */

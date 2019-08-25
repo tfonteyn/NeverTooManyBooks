@@ -71,7 +71,7 @@ abstract class ApiHandlerNative {
     /** timeout for requests to website. */
     private static final int READ_TIMEOUT = 10_000;
 
-    /** error string. */
+    /** log error string. */
     private static final String ERROR_UNEXPECTED_STATUS_CODE_FROM_API =
             "Unexpected status code from API: ";
 
