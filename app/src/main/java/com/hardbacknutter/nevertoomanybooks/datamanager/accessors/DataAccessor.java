@@ -33,7 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
 
 /**
  * Interface implemented for custom data access.
@@ -41,20 +40,11 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
  * Usage:
  * Extends your object from {@link DataManager}.
  * During initialisation, call setAccessor(key, new DataAccessor(dataKey...))
- * The 'key' is the artificial key to define the DataAccessor.
- * The 'dataKey' is the ACTUAL key into the rawData.
+ * The 'key' is the key to define the DataAccessor.
+ * The 'dataKey' is the actual key for the data.
+ * These will often be identical, but will be different for virtual fields.
  * <p>
  * Access your object with {@link DataManager#get(String)}.
- * The dataManager will use that key to get a {@link Datum} (still with that key)
- * The Datum will call the Accessor (this class).
- * This class get can then use the dataKey to access the rawData
- * <p>
- * pro: very nice and clean way to add artificial data (a bit in a bitmask, a composite object, ...)
- * con: lots of layers on layers bring a performance penalty.
- * <p>
- * Currently only used for:
- * - bitmask access to a single bit (set and get) (2x)
- * - boolean automatic-transformation when loading values from the database (2x)
  */
 public interface DataAccessor {
 
@@ -81,16 +71,8 @@ public interface DataAccessor {
      * Set the specified value.
      *
      * @param target the bundle into which the value should be stored.
-     * @param value   the actual value to set
+     * @param value  the actual value to set
      */
     void put(@NonNull Bundle target,
              @NonNull Object value);
-
-    /**
-     * Check if the key is present.
-     */
-    boolean isPresent(@NonNull Bundle source);
-//    boolean isPresent(@NonNull Bundle rawData) {
-//        return rawData.containsKey(mKey);
-//    }
 }

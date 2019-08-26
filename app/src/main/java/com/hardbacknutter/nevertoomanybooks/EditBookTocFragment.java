@@ -267,7 +267,7 @@ public class EditBookTocFragment
         super.initFields();
         Fields fields = getFields();
         Field field;
-        // Anthology is provided as a bitmask, see {@link Book#initValidators()}
+        // Anthology is provided as a bitmask, see {@link Book#initAccessorsAndValidators()}
         fields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
               .getView().setOnClickListener(v -> {
             // enable controls as applicable.
@@ -393,7 +393,6 @@ public class EditBookTocFragment
     @Override
     protected void onSaveFieldsToBook() {
         super.onSaveFieldsToBook();
-        // no special validation done.
         mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
     }
 

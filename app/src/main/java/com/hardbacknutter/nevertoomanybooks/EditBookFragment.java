@@ -105,7 +105,6 @@ public class EditBookFragment
     }
 
 
-
     /**
      * Add the menu items which are common to all child fragments.
      */
@@ -223,19 +222,9 @@ public class EditBookFragment
      * Called when the user clicks 'save'.
      * <p>
      * Save a book into the database, by either updating or created a book.
-     * <p>
-     * It will check if the book already exists (isbn search) if you are creating a book;
-     * if so the user will be prompted to confirm.
-     *
-     * <br>Validation is done in two steps:
-     * <ol>
-     * <li>The data in the fields, done on a per-fragment base in
-     * {@link EditBookBaseFragment#onSaveFieldsToBook()}<br>
-     * Limited to one cross-validation between start/end dates for reading</li>
-     * <li>the book data, done here.<br>
-     * These are *data* checks, e.g. date formats, boolean, ...</li>
-     * </ol>
-     * FIXME: validation is awkward and incomplete.
+     * Validation is done before saving.
+     * Checks if the book already exists (isbn search) when the user is creating a book;
+     * if so we prompt to confirm.
      */
     private void doSave() {
 
@@ -248,9 +237,6 @@ public class EditBookFragment
                 ((DataEditor) frag).saveFields();
             }
         }
-
-        // Reminder: Field validation is done on a per-fragment basis when Field values
-        // are transferred to DataManager (Book) values.
 
         Book book = mBookModel.getBook();
         // Now validate the book data
@@ -265,21 +251,6 @@ public class EditBookFragment
                     .show();
             return;
         }
-
-//        // Ignore validation failures; but we still validate to get the current values updated.
-//        book.validate();
-//
-//        // However, there is some data that we really do require...
-//        if (!book.containsKey(DBDefinitions.KEY_TITLE)
-//                || book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
-//            UserMessage.show(getView(), R.string.warning_required_title);
-//            return;
-//        }
-//
-//        if (book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
-//            UserMessage.show(getView(), R.string.warning_required_author_long);
-//            return;
-//        }
 
         if (book.getId() == 0) {
             String isbn = book.getString(DBDefinitions.KEY_ISBN);

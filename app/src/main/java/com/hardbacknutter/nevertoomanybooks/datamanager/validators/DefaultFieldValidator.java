@@ -31,7 +31,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
 
 /**
  * Validator to apply a default String value to empty fields.
@@ -56,23 +55,17 @@ public class DefaultFieldValidator
      * Gets the current value, and if {@code null} or empty,
      * replaces it with the mDefaultValue value.
      *
-     * @param dataManager     The DataManager object containing the Datum being validated
-     * @param datum           The Datum to validate
-     * @param crossValidating Options indicating if this is the cross-validation pass.
+     * @param dataManager The DataManager object
+     * @param key         key for the data to validate
      */
     @Override
     @CallSuper
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final Datum datum,
-                         final boolean crossValidating) {
+                         @NonNull final String key) {
 
-        if (crossValidating) {
-            return;
-        }
-
-        Object value = dataManager.get(datum);
+        Object value = dataManager.get(key);
         if (value != null && value.toString().trim().isEmpty()) {
-            dataManager.putString(datum, mDefaultValue);
+            dataManager.putString(key, mDefaultValue);
         }
     }
 }

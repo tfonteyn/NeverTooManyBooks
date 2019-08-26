@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
 
 /**
  * 'Meta' Validator to evaluate a list of validators; all validators must be true.
@@ -41,8 +41,7 @@ public class AndValidator
         extends ArrayList<DataValidator>
         implements DataValidator {
 
-
-    private static final long serialVersionUID = 4162885236932269555L;
+    private static final long serialVersionUID = -8002105679237033069L;
 
     /**
      * Constructor.
@@ -55,13 +54,12 @@ public class AndValidator
 
     @Override
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final Datum datum,
-                         final boolean crossValidating)
+                         @NonNull final String key)
             throws ValidatorException {
 
         for (DataValidator validator : this) {
             // Only set the Bundle for the last in the list
-            validator.validate(dataManager, datum, crossValidating);
+            validator.validate(dataManager, key);
         }
     }
 }

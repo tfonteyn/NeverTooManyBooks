@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,27 +30,21 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
 
 /**
- * Interface for all field-level validators. Each field validator is called twice; once
- * with the crossValidating flag set to false, then, if all validations were successful,
- * they are all called a second time with the flag set to true. This is an alternate
- * method of applying cross-validation.
+ * Interface for all field-level validators.
  */
 public interface DataValidator {
 
     /**
      * Validation method. Must throw a ValidatorException if validation fails.
      *
-     * @param dataManager     The DataManager object containing the Datum being validated
-     * @param datum           The Datum to validate
-     * @param crossValidating Options indicating if this is the cross-validation pass.
+     * @param dataManager The DataManager object
+     * @param key         key for the data to validate
      *
      * @throws ValidatorException For any validation failure.
      */
     void validate(@NonNull DataManager dataManager,
-                  @NonNull Datum datum,
-                  boolean crossValidating)
+                  @NonNull String key)
             throws ValidatorException;
 }

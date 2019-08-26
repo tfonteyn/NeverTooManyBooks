@@ -102,7 +102,8 @@ public class EditBookFieldsFragment
                                          coverImageField.getView(),
                                          ImageUtils.SCALE_MEDIUM);
 
-        // defined, but handled manually
+        // defined, but fetched/stored manually
+        // Storing the list back into the book is handled by onCheckListEditorSave
         fields.add(R.id.author, "", DBDefinitions.KEY_FK_AUTHOR)
               .getView().setOnClickListener(v -> {
             String title = fields.getField(R.id.title).getValue().toString();
@@ -117,7 +118,8 @@ public class EditBookFieldsFragment
             startActivityForResult(intent, REQ_EDIT_AUTHORS);
         });
 
-        // defined, but handled manually
+        // defined, but fetched/stored manually
+        // Storing the list back into the book is handled by onCheckListEditorSave
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE)
               .getView().setOnClickListener(v -> {
             // use the current title.
@@ -140,8 +142,8 @@ public class EditBookFieldsFragment
 
         // Personal fields
 
-        // defined, but handled manually (reminder: storing the list back into the book
-        // is handled by onCheckListEditorSave)
+        // defined, but fetched/stored manually
+        // Storing the list back into the book is handled by onCheckListEditorSave
         field = fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
         initCheckListEditor(field, R.string.lbl_bookshelves_long,
                             () -> mBookModel.getEditableBookshelvesList());
@@ -318,6 +320,6 @@ public class EditBookFieldsFragment
         Book book = mBookModel.getBook();
 
         ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-        getField(R.id.bookshelves).setValue(Csv.join(", ", list, Bookshelf::getName));
+        getField(R.id.bookshelves).setValue(Csv.join(", ", list, Bookshelf::getLabel));
     }
 }

@@ -178,6 +178,10 @@ public class CursorMapper {
     }
 
     /**
+     *
+     * See the comments on methods in {@link android.database.CursorWindow}
+     * for info on type conversions which explains our use of getLong/getDouble.
+     *
      * @return a bundle with all the columns present ({@code null} values are dropped).
      */
     @SuppressWarnings("unused")
@@ -189,16 +193,18 @@ public class CursorMapper {
             int col = mCursor.getColumnIndex(columnName);
             if (col != -1) {
                 switch (mCursor.getType(col)) {
-                    case Cursor.FIELD_TYPE_INTEGER:
-                        bundle.putInt(columnName, mCursor.getInt(col));
-                        break;
-
                     case Cursor.FIELD_TYPE_STRING:
                         bundle.putString(columnName, mCursor.getString(col));
                         break;
 
+                    case Cursor.FIELD_TYPE_INTEGER:
+                        // mCursor.getInt is really a (int)mCursor.getLong
+                        bundle.putLong(columnName, mCursor.getLong(col));
+                        break;
+
                     case Cursor.FIELD_TYPE_FLOAT:
-                        bundle.putFloat(columnName, mCursor.getFloat(col));
+                        // mCursor.getFloat is really a (float)mCursor.getDouble
+                        bundle.putDouble(columnName, mCursor.getDouble(col));
                         break;
 
                     case Cursor.FIELD_TYPE_BLOB:

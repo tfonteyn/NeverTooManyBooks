@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +34,7 @@ import java.util.Arrays;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * 'Meta' Validator to evaluate a list of validators; any one being {@code true} is OK.
@@ -42,7 +43,8 @@ public class OrValidator
         extends ArrayList<DataValidator>
         implements DataValidator {
 
-    private static final long serialVersionUID = 550199747728692370L;
+
+    private static final long serialVersionUID = -1917008033194867105L;
 
     /**
      * Constructor.
@@ -55,14 +57,13 @@ public class OrValidator
 
     @Override
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final Datum datum,
-                         final boolean crossValidating)
+                         @NonNull final String key)
             throws ValidatorException {
         ValidatorException lastException = null;
         for (DataValidator validator : this) {
             try {
-                validator.validate(dataManager, datum, crossValidating);
-                // first one 'ok' and we're done.
+                validator.validate(dataManager, key);
+                // as soon as one is reporting 'ok', we're done.
                 return;
             } catch (@NonNull final ValidatorException e) {
                 // Do nothing...try next validator
@@ -73,7 +74,11 @@ public class OrValidator
         if (lastException != null) {
             throw lastException;
         } else {
-            throw new ValidatorException(R.string.vldt_failed_for_x, datum.getKey());
+            // This should never happen (flw)
+            Logger.warnWithStackTrace(this, "validate",
+                                      "no exceptions were thrown in the validator?",
+                                      "key=" + key);
+            throw new ValidatorException(R.string.vldt_failed_for_x, key);
         }
     }
 }

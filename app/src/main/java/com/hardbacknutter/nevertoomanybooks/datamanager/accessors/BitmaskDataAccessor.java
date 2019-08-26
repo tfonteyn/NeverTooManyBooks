@@ -31,7 +31,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
  * A bitmask is read/written to the database as a long.
@@ -39,41 +39,41 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
  * <p>
  * Transform setting/resetting a single bit.
  * A 'get' returns a Boolean
- * A 'set will store it back as a long with the bit set/reset.
+ * A 'set' will store it back as a long with the bit set/reset.
  */
 public class BitmaskDataAccessor
         implements DataAccessor {
 
     /** this is the ACTUAL key into the 'rawData' object. */
-    private final String mKey;
+    private final String mDataKey;
     /** the bit we're handling in this object. */
     private final long mBitmask;
 
     /**
      * Constructor.
      *
-     * @param key     The key for the actual data
+     * @param dataKey The key for the actual data
      * @param bitmask to manage
      */
-    public BitmaskDataAccessor(@NonNull final String key,
+    public BitmaskDataAccessor(@NonNull final String dataKey,
                                final long bitmask) {
-        mKey = key;
+        mDataKey = dataKey;
         mBitmask = bitmask;
     }
 
     @NonNull
     @Override
     public Boolean get(@NonNull final Bundle source) {
-        return (Datum.toLong(source.get(mKey)) & mBitmask) != 0;
+        return (DataManager.toLong(source.get(mDataKey)) & mBitmask) != 0;
     }
 
     @Override
     public void put(@NonNull final Bundle target,
                     @NonNull final Object value) {
 
-        long bits = Datum.toLong(target.get(mKey));
+        long bits = DataManager.toLong(target.get(mDataKey));
 
-        if (Datum.toBoolean(value)) {
+        if (DataManager.toBoolean(value)) {
             // set the bit
             bits |= mBitmask;
         } else {
@@ -81,11 +81,6 @@ public class BitmaskDataAccessor
             bits &= ~mBitmask;
         }
 
-        target.putLong(mKey, bits);
-    }
-
-    @Override
-    public boolean isPresent(@NonNull final Bundle source) {
-        return source.containsKey(mKey);
+        target.putLong(mDataKey, bits);
     }
 }

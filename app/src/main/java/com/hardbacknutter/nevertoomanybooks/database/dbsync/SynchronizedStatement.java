@@ -130,7 +130,6 @@ public class SynchronizedStatement
      * @param index The 1-based index to the parameter to bind
      * @param value The value to bind
      */
-    @SuppressWarnings("unused")
     public void bindDouble(final int index,
                            final double value) {
         mStatement.bindDouble(index, value);
@@ -145,7 +144,6 @@ public class SynchronizedStatement
      * @param index The 1-based index to the parameter to bind
      * @param value The value to bind, CAN be null, in which case {@link #bindNull} will be used.
      */
-    @SuppressWarnings("unused")
     void bindBlob(final int index,
                   @Nullable final byte[] value) {
         if (value == null) {
@@ -172,7 +170,6 @@ public class SynchronizedStatement
      * <p>
      * Clears all existing bindings. Unset bindings are treated as NULL.
      */
-    @SuppressWarnings({"unused", "WeakerAccess"})
     public void clearBindings() {
         mStatement.clearBindings();
     }

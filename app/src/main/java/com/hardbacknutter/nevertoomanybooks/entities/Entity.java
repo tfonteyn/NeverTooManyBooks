@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +31,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+
 /**
  * An item (entity) in a database table always has an id and some user-friendly label
  * aka 'displayName'.
@@ -45,6 +48,10 @@ public interface Entity {
 
     /**
      * Get the label to use.
+     * <p>
+     * TODO: this should be the optional method and call getLabel(App.getFakeUserContext())
+     * but currently we have on the {@link BooklistStyle#getLabel(Context)},
+     * while the non-context variant is used multiple time.
      *
      * @return the label.
      */
@@ -52,6 +59,8 @@ public interface Entity {
 
     /**
      * Optional.
+     * <p>
+     * TODO: and this the mandatory method.
      *
      * @param context Current context
      *

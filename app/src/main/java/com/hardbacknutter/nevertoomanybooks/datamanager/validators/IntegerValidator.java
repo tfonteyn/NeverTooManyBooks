@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +32,6 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
 
 /**
  * Validator to apply a default value and validate as Integer.
@@ -55,16 +55,11 @@ public class IntegerValidator
     @Override
     @CallSuper
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final Datum datum,
-                         final boolean crossValidating)
+                         @NonNull final String key)
             throws ValidatorException {
 
-        if (crossValidating) {
-            return;
-        }
-
         Integer value;
-        Object o = dataManager.get(datum);
+        Object o = dataManager.get(key);
         if (o == null) {
             value = mDefaultValue;
 
@@ -81,10 +76,9 @@ public class IntegerValidator
             try {
                 value = Integer.parseInt(o.toString());
             } catch (@NonNull final NumberFormatException e) {
-                throw new ValidatorException(R.string.vldt_integer_expected_for_x,
-                                             datum.getKey());
+                throw new ValidatorException(R.string.vldt_integer_expected_for_x, key);
             }
         }
-        dataManager.putInt(datum, value);
+        dataManager.putInt(key, value);
     }
 }

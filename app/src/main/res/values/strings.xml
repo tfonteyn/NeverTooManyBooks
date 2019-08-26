@@ -297,17 +297,26 @@
     <!-- ========== ValidatorException error messages ========== -->
     <!-- ####################################################################################### -->
 
+    <!-- Dialog title for validation messages. -->
+    <string name="vldt_failure">Validation failure</string>
+
+    <!-- generic type errors; e.g. the user entered text in a date field. -->
     <string name="vldt_integer_expected_for_x">Expected an integer value for “%1$s”</string>
     <string name="vldt_real_expected_for_x">Expected a real number for “%1$s”</string>
     <string name="vldt_date_expected_for_x">Expected a date for “%1$s”</string>
     <string name="vldt_boolean_expected_for_x">
         Expected a boolean value (0,1,t,f,true,false) for “%1$s”
     </string>
+
+    <!-- Some fields have to be blank or non-blank. -->
     <string name="vldt_non_blank_required_for_x">Non-empty value required for “%1$s”</string>
     <string name="vldt_blank_required_for_x">Empty value required for “%1$s”</string>
+
+    <!-- in theory, this should never be shown unless we have a bug in the validators. -->
     <string name="vldt_failed_for_x">Validation failed for “%1$s”</string>
-    <string name="vldt_failure">Validation failure</string>
-    <string name="vldt_read_start_after_end">The date reading started is after the end date</string>
+
+    <!-- Specific to a check on the "reading started" versus "reading ended" dates. -->
+    <string name="vldt_read_start_after_end">The date reading started, is after the end date</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Progress messages for 'lengthy' actions ========== -->

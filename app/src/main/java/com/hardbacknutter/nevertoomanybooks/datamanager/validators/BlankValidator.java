@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +31,6 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
 
 /**
  * Validator that requires a blank field.
@@ -40,20 +40,15 @@ public class BlankValidator
 
     @Override
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final Datum datum,
-                         final boolean crossValidating)
+                         @NonNull final String key)
             throws ValidatorException {
 
-        if (crossValidating) {
-            return;
-        }
-
-        String s = dataManager.getString(datum).trim();
+        String s = dataManager.getString(key).trim();
         if (s.isEmpty()) {
             // store the trimmed string.
-            dataManager.putString(datum, s);
+            dataManager.putString(key, s);
             return;
         }
-        throw new ValidatorException(R.string.vldt_blank_required_for_x, datum.getKey());
+        throw new ValidatorException(R.string.vldt_blank_required_for_x, key);
     }
 }

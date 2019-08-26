@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.BitmaskDataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.BooleanDataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.DataAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
@@ -152,7 +153,7 @@ public class Book
      * Public Constructor.
      */
     public Book() {
-        initValidatorsAndAccessors();
+        initAccessorsAndValidators();
     }
 
     /**
@@ -166,7 +167,7 @@ public class Book
      */
     public Book(final long bookId,
                 @NonNull final DAO db) {
-        initValidatorsAndAccessors();
+        initAccessorsAndValidators();
         if (bookId > 0) {
             reload(db, bookId);
         }
@@ -181,7 +182,7 @@ public class Book
      * @param bookData Bundle with book data
      */
     public Book(@NonNull final Bundle bookData) {
-        initValidatorsAndAccessors();
+        initAccessorsAndValidators();
         putAll(bookData);
     }
 
@@ -370,7 +371,7 @@ public class Book
     @CallSuper
     public void clear() {
         super.clear();
-        initValidatorsAndAccessors();
+        initAccessorsAndValidators();
     }
 
     /**
@@ -664,17 +665,27 @@ public class Book
     }
 
     /**
-     * Build any special purpose validators/accessors.
+     * Build any special purpose accessors + validators.
      * <p>
      * ENHANCE: add (partial) date validators ? any other validators needed ?
      */
-    private void initValidatorsAndAccessors() {
+    private void initAccessorsAndValidators() {
+
+        // Booleans are stored as Long (0,1)
+        addAccessor(IS_READ, new BooleanDataAccessor(DBDefinitions.KEY_READ));
+        addAccessor(IS_SIGNED, new BooleanDataAccessor(DBDefinitions.KEY_SIGNED));
+
+        // set/reset a single bit in a bitmask.
+        addAccessor(HAS_MULTIPLE_WORKS,
+                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
+                                            TocEntry.Authors.MULTIPLE_WORKS));
+        addAccessor(HAS_MULTIPLE_AUTHORS,
+                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
+                                            TocEntry.Authors.MULTIPLE_AUTHORS));
+
 
         addValidator(DBDefinitions.KEY_TITLE, NON_BLANK_VALIDATOR);
         addValidator(UniqueId.BKEY_AUTHOR_ARRAY, NON_BLANK_VALIDATOR);
-
-        // pages is now a text field.
-        //addValidator(DBDefinitions.KEY_PAGES, BLANK_OR_INTEGER_VALIDATOR);
 
         addValidator(DBDefinitions.KEY_TOC_BITMASK, INTEGER_VALIDATOR);
         addValidator(DBDefinitions.KEY_EDITION_BITMASK, INTEGER_VALIDATOR);
@@ -682,21 +693,19 @@ public class Book
         addValidator(DBDefinitions.KEY_PRICE_LISTED, BLANK_OR_FLOAT_VALIDATOR);
         addValidator(DBDefinitions.KEY_PRICE_PAID, BLANK_OR_FLOAT_VALIDATOR);
 
-
-        // Booleans are stored as Long (0,1)
-        addAccessor(IS_READ, new BooleanDataAccessor(DBDefinitions.KEY_READ));
-
-        // Booleans are stored as Long (0,1)
-        addAccessor(IS_SIGNED, new BooleanDataAccessor(DBDefinitions.KEY_SIGNED));
-
-        // set/reset the single bit TocEntry.Type.MULTIPLE_WORKS in the bitmask.
-        addAccessor(HAS_MULTIPLE_WORKS,
-                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
-                                            TocEntry.Authors.MULTIPLE_WORKS));
-        // set/reset the single bit TocEntry.Type.MULTIPLE_AUTHORS in the bitmask.
-        addAccessor(HAS_MULTIPLE_AUTHORS,
-                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
-                                            TocEntry.Authors.MULTIPLE_AUTHORS));
+        addCrossValidator((book) -> {
+            String start = book.getString(DBDefinitions.KEY_READ_START);
+            if (start.isEmpty()) {
+                return;
+            }
+            String end = book.getString(DBDefinitions.KEY_READ_END);
+            if (end.isEmpty()) {
+                return;
+            }
+            if (start.compareToIgnoreCase(end) > 0) {
+                throw new ValidatorException(R.string.vldt_read_start_after_end);
+            }
+        });
     }
 
     @Nullable

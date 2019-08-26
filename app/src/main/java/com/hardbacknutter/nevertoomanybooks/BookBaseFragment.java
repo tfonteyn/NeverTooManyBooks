@@ -157,7 +157,7 @@ public abstract class BookBaseFragment
     /**
      * Add any {@link Field} we need to {@link Fields}.
      * <p>
-     * Set corresponding validator/formatter (if any)
+     * Set corresponding formatter (if any)
      * Set onClickListener etc...
      * <p>
      * Note this is NOT where we set values.

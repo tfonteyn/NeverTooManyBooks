@@ -37,11 +37,12 @@ import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.DataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
@@ -57,18 +58,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 
 /**
  * Class to manage a version of a set of related data.
- * <p>
- * Not performance tested, but this class and {@link Datum} have an efficiency problem:
- * A Datum is only needed if there is a DataAccessor and/or DataValidator for that
- * particular piece of information.
- * If neither is present, then a Datum is just a pass-through layer.
- * This would be fine if the majority of info fields HAD a DataAccessor and/or DataValidator.
- * But (2019-06-11) right now there are only 4 accessors and 6 validators. The majority of
- * the fields have neither.
+ * <ul>
+ *     <li>mRawData: stores the actual data</li>
+ *     <li>mDataAccessorsMap: accessors which can 'translate' data</li>
+ *     <li>mValidatorsMap: validators applied at 'save' time</li>
+ *     <li>mCrossValidators: cross-validators applied at 'save' time</li>
+ *     <li></li>
+ * </ul>
  */
 public class DataManager {
 
-    // Pre-defined generic validators; if field-specific defaults are needed, create a new one.
     /** re-usable validator. */
     protected static final DataValidator INTEGER_VALIDATOR = new IntegerValidator(0);
     /** re-usable validator. */
@@ -78,26 +77,172 @@ public class DataManager {
             new BlankValidator(),
             new FloatValidator(0f));
 
+    /** log error string. */
+    private static final String ERROR_INVALID_BOOLEAN_S = "Invalid boolean, s=`";
+
+    /** DataValidators. */
+    private final Map<String, DataValidator> mValidatorsMap = new UniqueMap<>();
     /** A list of cross-validators to apply if all fields pass simple validation. */
     private final List<DataCrossValidator> mCrossValidators = new ArrayList<>();
-
-    /** Datum Validators. Key is the same as used for mRawData access. */
-    private final Map<String, DataValidator> mValidatorsMap = new UniqueMap<>();
-
     /** The last validator exception caught by this object. */
     private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
 
     /** Raw data storage. */
     private final Bundle mRawData = new Bundle();
+    /** DataAccessors. */
+    private final Map<String, DataAccessor> mDataAccessorsMap = new UniqueMap<>();
 
-    /** Storage for the {@link Datum} objects; the data-related code. */
-    private final DatumMap mDatumMap = new DatumMap();
+    /**
+     * Translate the passed object to a Long value.
+     *
+     * @param o Object
+     *
+     * @return Resulting value ({@code null} or empty becomes 0)
+     */
+    public static long toLong(@Nullable final Object o) {
+        if (o == null) {
+            return 0;
+        } else if (o instanceof Long) {
+            return (Long) o;
+        } else if (o instanceof Integer) {
+            return ((Integer) o).longValue();
+        } else if (o.toString().trim().isEmpty()) {
+            return 0;
+        } else {
+            try {
+                return Long.parseLong(o.toString());
+            } catch (@NonNull final NumberFormatException e1) {
+                // desperate ?
+                return toBoolean(o) ? 1 : 0;
+            }
+        }
+    }
 
+    /**
+     * Translate the passed object to a double value.
+     *
+     * @param o Object
+     *
+     * @return Resulting value ({@code null} or empty becomes 0)
+     */
+    private static double toDouble(@Nullable final Object o) {
+        if (o == null) {
+            return 0;
+        } else if (o instanceof Double) {
+            return (Double) o;
+        } else if (o instanceof Float) {
+            return ((Float) o).doubleValue();
+        } else if (o.toString().trim().isEmpty()) {
+            return 0;
+        } else {
+            try {
+                return Double.parseDouble(o.toString());
+            } catch (@NonNull final NumberFormatException e1) {
+                // desperate ?
+                return toBoolean(o) ? 1 : 0;
+            }
+        }
+    }
+
+    /**
+     * Translate the passed object to a float value.
+     *
+     * @param o Object
+     *
+     * @return Resulting value ({@code null} or empty becomes 0)
+     */
+    private static float toFloat(@Nullable final Object o) {
+        if (o == null) {
+            return 0;
+        } else if (o instanceof Float) {
+            return (float) o;
+        } else if (o instanceof Double) {
+            return ((Double) o).floatValue();
+        } else if (o.toString().trim().isEmpty()) {
+            return 0;
+        } else {
+            try {
+                return Float.parseFloat(o.toString());
+            } catch (@NonNull final NumberFormatException e1) {
+                // desperate ?
+                return toBoolean(o) ? 1 : 0;
+            }
+        }
+    }
+
+    /**
+     * Translate the passed Object to a boolean value.
+     *
+     * @param o Object
+     *
+     * @return Resulting value
+     *
+     * @throws NumberFormatException if the Object was not boolean compatible.
+     */
+    public static boolean toBoolean(@Nullable final Object o)
+            throws NumberFormatException {
+        if (o == null) {
+            return false;
+        } else if (o instanceof Boolean) {
+            return (Boolean) o;
+        } else if (o instanceof Integer) {
+            return (Integer) o != 0;
+        } else if (o instanceof Long) {
+            return (Long) o != 0;
+        }
+        // lets see if its a String then
+        return toBoolean(o.toString(), true);
+    }
+
+    /**
+     * Translate a String to a boolean value.
+     *
+     * @param s            String to convert
+     * @param emptyIsFalse if {@code true}, {@code null} and empty string
+     *                     are handled as {@code false}
+     *
+     * @return boolean value
+     *
+     * @throws NumberFormatException if the string does not contain a valid boolean.
+     */
+    public static boolean toBoolean(@Nullable final String s,
+                                    final boolean emptyIsFalse)
+            throws NumberFormatException {
+        if (s == null || s.trim().isEmpty()) {
+            if (emptyIsFalse) {
+                return false;
+            } else {
+                throw new NumberFormatException(ERROR_INVALID_BOOLEAN_S + s + '`');
+            }
+        } else {
+            switch (s.trim().toLowerCase(App.getSystemLocale())) {
+                case "1":
+                case "y":
+                case "yes":
+                case "t":
+                case "true":
+                    return true;
+                case "0":
+                case "n":
+                case "no":
+                case "f":
+                case "false":
+                    return false;
+                default:
+                    try {
+                        return Integer.parseInt(s) != 0;
+                    } catch (@NonNull final NumberFormatException e) {
+                        Logger.error(DataManager.class, e, ERROR_INVALID_BOOLEAN_S + s + '`');
+                        throw e;
+                    }
+            }
+        }
+    }
 
     /**
      * Add a validator for the specified key.
      *
-     * @param key       Key for the {@link Datum}
+     * @param key       Key for the data
      * @param validator Validator
      */
     protected void addValidator(@NonNull final String key,
@@ -106,16 +251,25 @@ public class DataManager {
     }
 
     /**
+     * Add a cross validator.
+     *
+     * @param validator Validator
+     */
+    protected void addCrossValidator(@NonNull final DataCrossValidator validator) {
+        mCrossValidators.add(validator);
+    }
+
+    /**
      * Add an {@link DataAccessor} for the specified key.
      * <p>
      * It's up to the Accessor to handle the actual key into the rawData.
      *
-     * @param accessorKey Key to the {@link Datum}
+     * @param accessorKey Key to the data
      * @param accessor    Accessor
      */
     protected void addAccessor(@NonNull final String accessorKey,
                                @NonNull final DataAccessor accessor) {
-        mDatumMap.getOrNew(accessorKey).setAccessor(accessor);
+        mDataAccessorsMap.put(accessorKey, accessor);
     }
 
     /**
@@ -131,7 +285,6 @@ public class DataManager {
                 putString(key, (String) value);
 
             } else if (value instanceof Integer) {
-                //TODO: use putLong?
                 putInt(key, (Integer) value);
 
             } else if (value instanceof Long) {
@@ -141,7 +294,6 @@ public class DataManager {
                 putDouble(key, (Double) value);
 
             } else if (value instanceof Float) {
-                //TODO: use putDouble?
                 putFloat(key, (Float) value);
 
             } else if (value instanceof Boolean) {
@@ -174,12 +326,12 @@ public class DataManager {
      * <p>
      * See the comments on methods in {@link android.database.CursorWindow}
      * for info on type conversions which explains our use of getLong/getDouble.
-     * <p>
-     * Reminder:
-     * - booleans -> long (0,1)
-     * - int -> long
-     * - float -> double
-     * - date -> string
+     * <ul>
+     * <li>booleans -> long (0,1)</li>
+     * <li>int -> long</li>
+     * <li>float -> double</li>
+     * <li>date -> string</li>
+     * </ul>
      *
      * @param cursor to read from
      */
@@ -202,12 +354,12 @@ public class DataManager {
                     putDouble(name, cursor.getDouble(i));
                     break;
 
-                case Cursor.FIELD_TYPE_NULL:
-                    // discard any fields with null values.
-                    break;
-
                 case Cursor.FIELD_TYPE_BLOB:
                     putSerializable(name, cursor.getBlob(i));
+                    break;
+
+                case Cursor.FIELD_TYPE_NULL:
+                    // discard any fields with null values.
                     break;
 
                 default:
@@ -226,24 +378,21 @@ public class DataManager {
      */
     @Nullable
     public Object get(@NonNull final String key) {
-        return get(mDatumMap.getOrNew(key));
-    }
-
-    /**
-     * Get the data object specified by the passed {@link Datum}.
-     *
-     * @return Data object, or {@code null} when not present
-     */
-    @Nullable
-    public Object get(@NonNull final Datum datum) {
-        return datum.get(mRawData);
+        Object o;
+        if (mDataAccessorsMap.containsKey(key)) {
+            //noinspection ConstantConditions
+            o = mDataAccessorsMap.get(key).get(mRawData);
+        } else {
+            o = mRawData.get(key);
+        }
+        return o;
     }
 
     /**
      * @return a boolean value.
      */
     public boolean getBoolean(@NonNull final String key) {
-        return mDatumMap.getOrNew(key).getBoolean(mRawData);
+        return toBoolean(get(key));
     }
 
     /**
@@ -251,74 +400,59 @@ public class DataManager {
      */
     public void putBoolean(@NonNull final String key,
                            final boolean value) {
-        mDatumMap.getOrNew(key).putBoolean(mRawData, value);
-    }
-
-    /**
-     * Store a boolean value.
-     * Shortcut for {@link #putBoolean(String, boolean)}.
-     * Mainly (only?) used by {@link DataValidator} classes.
-     */
-    public void putBoolean(@NonNull final Datum datum,
-                           final boolean value) {
-        datum.putBoolean(mRawData, value);
+        if (mDataAccessorsMap.containsKey(key)) {
+            //noinspection ConstantConditions
+            mDataAccessorsMap.get(key).put(mRawData, value);
+        } else {
+            mRawData.putBoolean(key, value);
+        }
     }
 
     /**
      * @return a double value.
      */
     public double getDouble(@NonNull final String key) {
-        return mDatumMap.getOrNew(key).getDouble(mRawData);
+        return toDouble(get(key));
     }
 
     /**
      * Store a double value.
      */
-    @SuppressWarnings("WeakerAccess")
-    public void putDouble(@NonNull final String key,
-                          final double value) {
-        mDatumMap.getOrNew(key).putDouble(mRawData, value);
-    }
-
-    /**
-     * Store a double value.
-     */
-    @SuppressWarnings("unused")
-    public void putDouble(@NonNull final Datum datum,
-                          final double value) {
-        datum.putDouble(mRawData, value);
+    private void putDouble(@NonNull final String key,
+                           final double value) {
+        if (mDataAccessorsMap.containsKey(key)) {
+            //noinspection ConstantConditions
+            mDataAccessorsMap.get(key).put(mRawData, value);
+        } else {
+            mRawData.putDouble(key, value);
+        }
     }
 
     /**
      * @return a float value.
      */
-    @SuppressWarnings("unused")
-    public float getFloat(@NonNull final String key) {
-        return mDatumMap.getOrNew(key).getFloat(mRawData);
+    float getFloat(@NonNull final String key) {
+        return toFloat(get(key));
     }
 
     /**
      * Store a float value.
      */
-    @SuppressWarnings("WeakerAccess")
     public void putFloat(@NonNull final String key,
                          final float value) {
-        mDatumMap.getOrNew(key).putFloat(mRawData, value);
-    }
-
-    /**
-     * Store a float value.
-     */
-    public void putFloat(@NonNull final Datum datum,
-                         final float value) {
-        datum.putFloat(mRawData, value);
+        if (mDataAccessorsMap.containsKey(key)) {
+            //noinspection ConstantConditions
+            mDataAccessorsMap.get(key).put(mRawData, value);
+        } else {
+            mRawData.putFloat(key, value);
+        }
     }
 
     /**
      * @return an int value.
      */
-    public int getInt(@NonNull final String key) {
-        return mDatumMap.getOrNew(key).getInt(mRawData);
+    public long getInt(@NonNull final String key) {
+        return toLong(get(key));
     }
 
     /**
@@ -326,22 +460,19 @@ public class DataManager {
      */
     public void putInt(@NonNull final String key,
                        final int value) {
-        mDatumMap.getOrNew(key).putInt(mRawData, value);
-    }
-
-    /**
-     * Store an int value.
-     */
-    public void putInt(@NonNull final Datum datum,
-                       final int value) {
-        datum.putInt(mRawData, value);
+        if (mDataAccessorsMap.containsKey(key)) {
+            //noinspection ConstantConditions
+            mDataAccessorsMap.get(key).put(mRawData, value);
+        } else {
+            mRawData.putInt(key, value);
+        }
     }
 
     /**
      * @return a long value.
      */
     public long getLong(@NonNull final String key) {
-        return mDatumMap.getOrNew(key).getLong(mRawData);
+        return toLong(get(key));
     }
 
     /**
@@ -349,15 +480,12 @@ public class DataManager {
      */
     public void putLong(@NonNull final String key,
                         final long value) {
-        mDatumMap.getOrNew(key).putLong(mRawData, value);
-    }
-
-    /**
-     * Store a long value.
-     */
-    public void putLong(@NonNull final Datum datum,
-                        final long value) {
-        datum.putLong(mRawData, value);
+        if (mDataAccessorsMap.containsKey(key)) {
+            //noinspection ConstantConditions
+            mDataAccessorsMap.get(key).put(mRawData, value);
+        } else {
+            mRawData.putLong(key, value);
+        }
     }
 
     /**
@@ -367,17 +495,8 @@ public class DataManager {
      */
     @NonNull
     public String getString(@NonNull final String key) {
-        return mDatumMap.getOrNew(key).getString(mRawData);
-    }
-
-    /**
-     * Get a String value.
-     *
-     * @return Value of the data, can be empty, but never {@code null}
-     */
-    @NonNull
-    public String getString(@NonNull final Datum datum) {
-        return datum.getString(mRawData);
+        Object o = get(key);
+        return o == null ? "" : o.toString().trim();
     }
 
     /**
@@ -385,25 +504,12 @@ public class DataManager {
      */
     public void putString(@NonNull final String key,
                           @NonNull final String value) {
-        mDatumMap.getOrNew(key).putString(mRawData, value);
-    }
-
-    /**
-     * Store a String value.
-     */
-    public void putString(@NonNull final Datum datum,
-                          @NonNull final String value) {
-        datum.putString(mRawData, value);
-    }
-
-    /**
-     * Get the Parcelable ArrayList from the collection.
-     *
-     * @return The list, can be empty, but never {@code null}
-     */
-    @NonNull
-    public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final Datum datum) {
-        return datum.getParcelableArrayList(mRawData);
+        if (mDataAccessorsMap.containsKey(key)) {
+            //noinspection ConstantConditions
+            mDataAccessorsMap.get(key).put(mRawData, value);
+        } else {
+            mRawData.putString(key, value);
+        }
     }
 
     /**
@@ -415,7 +521,19 @@ public class DataManager {
      */
     @NonNull
     public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key) {
-        return mDatumMap.getOrNew(key).getParcelableArrayList(mRawData);
+        Object o;
+        if (mDataAccessorsMap.containsKey(key)) {
+            //noinspection ConstantConditions
+            o = mDataAccessorsMap.get(key).get(mRawData);
+        } else {
+            o = mRawData.get(key);
+        }
+
+        if (o == null) {
+            return new ArrayList<>();
+        }
+        //noinspection unchecked
+        return (ArrayList<T>) o;
     }
 
     /**
@@ -426,19 +544,24 @@ public class DataManager {
      */
     public <T extends Parcelable> void putParcelableArrayList(@NonNull final String key,
                                                               @NonNull final ArrayList<T> value) {
-        mDatumMap.getOrNew(key).putParcelableArrayList(mRawData, value);
+        if (mDataAccessorsMap.containsKey(key)) {
+            //noinspection ConstantConditions
+            mDataAccessorsMap.get(key).put(mRawData, value);
+        } else {
+            mRawData.putParcelableArrayList(key, value);
+        }
     }
 
     /**
      * Get the serializable object from the collection.
-     * We currently do not use a {@link Datum} for special access.
+     * Does not support a {@link DataAccessor}.
      *
      * @param key Key of object
      *
      * @return The data
      */
-    @Nullable
     @SuppressWarnings("unused")
+    @Nullable
     protected <T extends Serializable> T getSerializable(@NonNull final String key) {
         //noinspection unchecked
         return (T) mRawData.getSerializable(key);
@@ -446,14 +569,13 @@ public class DataManager {
 
     /**
      * Set the serializable object in the collection.
-     * We currently do not use a {@link Datum} for special access.
+     * Does not support a {@link DataAccessor}.
      *
      * @param key   Key of object
      * @param value The serializable object
      */
-    @SuppressWarnings("WeakerAccess")
-    public void putSerializable(@NonNull final String key,
-                                @NonNull final Serializable value) {
+    private void putSerializable(@NonNull final String key,
+                                 @NonNull final Serializable value) {
         if (BuildConfig.DEBUG /* always */) {
             Logger.debugWithStackTrace(this, "putSerializable",
                                        "key=" + key,
@@ -468,7 +590,7 @@ public class DataManager {
      * @return {@code true} if the underlying data contains the specified key.
      */
     public boolean containsKey(@NonNull final String key) {
-        return mDatumMap.getOrNew(key).isPresent(mRawData);
+        return mDataAccessorsMap.containsKey(key) || mRawData.containsKey(key);
     }
 
     /**
@@ -476,7 +598,10 @@ public class DataManager {
      */
     @NonNull
     public Set<String> keySet() {
-        return mDatumMap.keySet();
+        Set<String> allKeys = new HashSet<>(mRawData.keySet());
+        // add virtual keys ('real' duplicates are simply overwritten which is fine).
+        allKeys.addAll(mDataAccessorsMap.keySet());
+        return allKeys;
     }
 
     /**
@@ -485,7 +610,7 @@ public class DataManager {
      * @param key Key of data to remove.
      */
     public void remove(@NonNull final String key) {
-        mDatumMap.remove(key);
+        mDataAccessorsMap.remove(key);
         mRawData.remove(key);
     }
 
@@ -494,7 +619,7 @@ public class DataManager {
      */
     public void clear() {
         mRawData.clear();
-        mDatumMap.clear();
+        mDataAccessorsMap.clear();
         mValidatorsMap.clear();
         mCrossValidators.clear();
         mValidationExceptions.clear();
@@ -513,17 +638,15 @@ public class DataManager {
         boolean isOk = true;
         mValidationExceptions.clear();
 
-        // First, just validate individual fields with the cross-val flag set false
-        if (!validate(false)) {
-            isOk = false;
+        for (final Map.Entry<String, DataValidator> entry : mValidatorsMap.entrySet()) {
+            try {
+                entry.getValue().validate(this, entry.getKey());
+            } catch (@NonNull final ValidatorException e) {
+                mValidationExceptions.add(e);
+                isOk = false;
+            }
         }
 
-        // Now re-run with cross-val set to true.
-        if (!validate(true)) {
-            isOk = false;
-        }
-
-        // Finally run the local cross-validation
         for (DataCrossValidator v : mCrossValidators) {
             try {
                 v.validate(this);
@@ -532,46 +655,6 @@ public class DataManager {
                 isOk = false;
             }
         }
-        return isOk;
-    }
-
-    /**
-     * Perform a loop validating all fields.
-     * <p>
-     * {@link ValidatorException} are added to {@link #mValidationExceptions}
-     *
-     * @param crossValidating Options indicating if this is a cross validation pass.
-     *
-     * @return {@code true} if all validations passed.
-     */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean validate(final boolean crossValidating) {
-        boolean isOk = true;
-
-        for (final Map.Entry<String, DataValidator> entry : mValidatorsMap.entrySet()) {
-            Datum datum = mDatumMap.get(entry.getKey());
-            if (datum != null) {
-                try {
-                    entry.getValue().validate(this, datum, crossValidating);
-                } catch (@NonNull final ValidatorException e) {
-                    mValidationExceptions.add(e);
-                    isOk = false;
-                }
-            }
-        }
-
-//        for (Datum datum : mDatumMap.values()) {
-//            validator = mValidatorsMap.get(datum.getKey());
-//            if (validator != null) {
-//                try {
-//                    validator.validate(this, datum, crossValidating);
-//                } catch (@NonNull final ValidatorException e) {
-//                    mValidationExceptions.add(e);
-//                    isOk = false;
-//                }
-//            }
-//        }
-
         return isOk;
     }
 
@@ -603,37 +686,10 @@ public class DataManager {
     public String toString() {
         return "DataManager{"
                + "mRawData=" + mRawData
-               + ", mDatumMap=" + mDatumMap
+               + ", mDataAccessorsMap=" + mDataAccessorsMap
                + ", mValidationExceptions=" + mValidationExceptions
                + ", mValidatorsMap=" + mValidatorsMap
                + ", mCrossValidators=" + mCrossValidators
                + '}';
-    }
-
-    /**
-     * Class to manage the collection of {@link Datum} objects for this DataManager.
-     */
-    private static class DatumMap
-            extends HashMap<String, Datum> {
-
-        private static final long serialVersionUID = 455375570133391482L;
-
-        /**
-         * Get the specified {@link Datum}, or create a new Datum if not present.
-         * The new Datum is stored into the map before returning.
-         *
-         * @param key for the Datum to get
-         *
-         * @return the Datum
-         */
-        @NonNull
-        Datum getOrNew(@NonNull final String key) {
-            Datum datum = super.get(key);
-            if (datum == null) {
-                datum = new Datum(key);
-                put(key, datum);
-            }
-            return datum;
-        }
     }
 }

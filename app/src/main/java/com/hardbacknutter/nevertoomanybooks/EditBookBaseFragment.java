@@ -36,7 +36,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -175,21 +174,7 @@ public abstract class EditBookBaseFragment<T>
     @CallSuper
     void onSaveFieldsToBook() {
         Fields fields = getFields();
-        // validate the fields
-        if (fields.validate(new Bundle())) {
-            // we're ignoring the passed/returned Bundle for now...
-            fields.putAllInto(mBookModel.getBook());
-
-        } else {
-            //noinspection ConstantConditions
-            new AlertDialog.Builder(getContext())
-                    .setTitle(R.string.vldt_failure)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setMessage(fields.getValidationExceptionMessage(getContext()))
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .create()
-                    .show();
-        }
+        fields.putAllInto(mBookModel.getBook());
     }
 
     /**

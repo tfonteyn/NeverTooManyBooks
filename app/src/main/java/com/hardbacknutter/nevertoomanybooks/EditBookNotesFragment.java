@@ -40,7 +40,6 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
-import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
@@ -118,20 +117,6 @@ public class EditBookNotesFragment
         field = fields.add(R.id.read_end, DBDefinitions.KEY_READ_END)
                       .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_read_end, true);
-
-        fields.addCrossValidator((fields1, values) -> {
-            String start = values.getString(DBDefinitions.KEY_READ_START);
-            if (start == null || start.isEmpty()) {
-                return;
-            }
-            String end = values.getString(DBDefinitions.KEY_READ_END);
-            if (end == null || end.isEmpty()) {
-                return;
-            }
-            if (start.compareToIgnoreCase(end) > 0) {
-                throw new ValidatorException(R.string.vldt_read_start_after_end);
-            }
-        });
     }
 
     /**

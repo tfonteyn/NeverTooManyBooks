@@ -62,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -1136,7 +1136,7 @@ public class BooklistAdapter
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
-            if (Datum.toBoolean(rowData.getString(mSourceCol), true)) {
+            if (DataManager.toBoolean(rowData.getString(mSourceCol), true)) {
                 setText(R.string.lbl_read, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
             } else {
                 setText(R.string.lbl_unread, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +33,6 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
 
 /**
  * Validator to require a non-blank field.
@@ -42,24 +42,19 @@ public class NonBlankValidator
 
     @Override
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final Datum datum,
-                         final boolean crossValidating)
+                         @NonNull final String key)
             throws ValidatorException {
 
-        if (crossValidating) {
-            return;
-        }
-
-        Object o = dataManager.get(datum);
+        Object o = dataManager.get(key);
         if (o == null) {
-            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, datum.getKey());
+            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, key);
 
-        } else if ((o instanceof String) && (dataManager.getString(datum).trim().isEmpty())) {
-            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, datum.getKey());
+        } else if ((o instanceof String) && (dataManager.getString(key).trim().isEmpty())) {
+            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, key);
 
-        } else if ((o instanceof ArrayList) && (dataManager.getParcelableArrayList(
-                datum).isEmpty())) {
-            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, datum.getKey());
+        } else if ((o instanceof ArrayList) && (dataManager.getParcelableArrayList(key)
+                                                           .isEmpty())) {
+            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, key);
         }
     }
 }

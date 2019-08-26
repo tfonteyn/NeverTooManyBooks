@@ -243,17 +243,17 @@ public class BookFragment
         fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
               .setFormatter(dateFormatter);
 
-        // defined, but handled manually
+        // defined, but fetched manually
         fields.add(R.id.price_listed, "", DBDefinitions.KEY_PRICE_LISTED);
 
-        // defined, but handled manually
+        // defined, but fetched manually
         fields.add(R.id.author, "", DBDefinitions.KEY_FK_AUTHOR);
-        // defined, but handled manually
+        // defined, but fetched manually
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE);
 
-        Field coverImageField = fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID,
-                                           UniqueId.BKEY_IMAGE)
-                                      .setScale(IMAGE_SCALE);
+        Field coverImageField =
+                fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
+                      .setScale(IMAGE_SCALE);
 
         mCoverHandler = new CoverHandler(this, mBookModel.getDb(),
                                          mBookModel.getBook(),
@@ -285,13 +285,13 @@ public class BookFragment
               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getContext()))
               .setZeroIsEmpty(true);
 
-        // defined, but handled manually
+        // defined, but fetched manually
         fields.add(R.id.price_paid, "", DBDefinitions.KEY_PRICE_PAID);
 
-        // defined, but handled manually
+        // defined, but fetched manually
         fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
 
-        // defined, but handled manually
+        // defined, but fetched manually
         fields.add(R.id.loaned_to, "", DBDefinitions.KEY_LOANEE);
     }
 
@@ -451,7 +451,7 @@ public class BookFragment
             case R.id.MENU_BOOK_READ:
                 // toggle 'read' status
                 boolean isRead = mBookModel.toggleRead();
-                getField(R.id.read).setValue(isRead ? "1" : "0");
+                getField(R.id.read).setValue(isRead);
                 return true;
 
             case R.id.MENU_BOOK_LOAN_ADD:

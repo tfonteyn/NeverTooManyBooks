@@ -3780,9 +3780,10 @@ public class DAO
                                 } else if (entry != null) {
                                     String s = entry.toString();
                                     if (!s.isEmpty()) {
-                                        cv.put(columnInfo.name, Float.parseFloat(s));
+                                        cv.put(columnInfo.name, Double.parseDouble(s));
                                     } else {
-                                        cv.put(columnInfo.name, s);
+                                        // s.isEmpty
+                                        cv.put(columnInfo.name, "");
                                     }
                                 }
                                 break;
@@ -3825,7 +3826,8 @@ public class DAO
                                         }
 
                                     } else {
-                                        cv.put(columnInfo.name, s);
+                                        // s.isEmpty
+                                        cv.put(columnInfo.name, "");
                                     }
                                 }
                                 break;
@@ -3843,8 +3845,8 @@ public class DAO
                                     cv.put(columnInfo.name, (byte[]) entry);
                                 } else if (entry != null) {
                                     throw new IllegalArgumentException(
-                                            "non-null Blob but not a byte[] "
-                                            + "? column.name=" + columnInfo.name
+                                            "non-null Blob but not a byte[] ?"
+                                            + " column.name=" + columnInfo.name
                                             + ", key=" + key);
                                 }
                                 break;

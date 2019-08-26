@@ -31,7 +31,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.datamanager.Datum;
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
  * The database value is stored as an int (0 or 1). Transform to/from boolean
@@ -54,17 +54,12 @@ public class BooleanDataAccessor
     @NonNull
     @Override
     public Boolean get(@NonNull final Bundle source) {
-        return Datum.toBoolean(source.get(mKey));
+        return DataManager.toBoolean(source.get(mKey));
     }
 
     @Override
     public void put(@NonNull final Bundle target,
                     @NonNull final Object value) {
-        target.putBoolean(mKey, Datum.toBoolean(value));
-    }
-
-    @Override
-    public boolean isPresent(@NonNull final Bundle source) {
-        return source.containsKey(mKey);
+        target.putBoolean(mKey, DataManager.toBoolean(value));
     }
 }
