@@ -1,4 +1,32 @@
 /*
+ * @Copyright 2019 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  * Copyright (C) 2009 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -126,30 +154,6 @@ final class CropUtil {
         ProgressDialog progressDialog =
                 ProgressDialog.show(activity, title, message, true, false);
         new Thread(new BackgroundJob(activity, job, progressDialog, handler)).start();
-    }
-
-    /**
-     * Rotates the bitmap by the specified degree.
-     * If a new bitmap is created, the original bitmap is recycled.
-     */
-    public static Bitmap rotate(@Nullable Bitmap bm,
-                                final int degrees) {
-        if (degrees != 0 && bm != null) {
-            Matrix matrix = new Matrix();
-            matrix.setRotate(degrees, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
-            try {
-                Bitmap b2 = Bitmap.createBitmap(bm, 0, 0,
-                                                bm.getWidth(), bm.getHeight(),
-                                                matrix, true);
-                if (bm != b2) {
-                    bm.recycle();
-                    bm = b2;
-                }
-            } catch (@NonNull final OutOfMemoryError e) {
-                // We have no memory to rotate. Return the original bitmap.
-            }
-        }
-        return bm;
     }
 
     /**

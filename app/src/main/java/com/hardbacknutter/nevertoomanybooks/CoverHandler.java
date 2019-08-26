@@ -86,9 +86,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
  * to always use GL is turned on.
  * See:
  * <a href="http://developer.android.com/guide/topics/graphics/hardware-accel.html>
- *     http://developer.android.com/guide/topics/graphics/hardware-accel.html</a>
+ * http://developer.android.com/guide/topics/graphics/hardware-accel.html</a>
  * <a href="http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath">
- *     http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath</a>
+ * http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath</a>
  * so for API: level > 11, we turn it off manually.
  * <p>
  * 2018-11-30: making this a configuration option.
@@ -494,6 +494,9 @@ public class CoverHandler {
                 }
 
                 Matrix matrix = new Matrix();
+
+                // alternative code sets the pivot point.
+                // matrix.setRotate(angle, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
                 matrix.postRotate(angle);
                 Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0,
                                                            bm.getWidth(), bm.getHeight(),

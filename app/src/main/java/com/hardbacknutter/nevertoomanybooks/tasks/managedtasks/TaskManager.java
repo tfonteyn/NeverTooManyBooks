@@ -432,7 +432,7 @@ public class TaskManager {
 
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
-            listener.onTaskFinished(mTaskManager, mTask);
+            listener.onTaskFinished(mTask);
             return false;
         }
 

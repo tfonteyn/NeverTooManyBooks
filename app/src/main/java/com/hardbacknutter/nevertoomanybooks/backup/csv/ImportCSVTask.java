@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public class ImportCSVTask
         extends TaskBase<Integer> {
@@ -84,7 +83,7 @@ public class ImportCSVTask
         Context userContext = App.getFakeUserContext();
 
         try (FileInputStream is = new FileInputStream(mFile)) {
-            mImporter.doBooks(userContext, LocaleUtils.getPreferredLocale(), is,
+            mImporter.doBooks(userContext, is,
                               new LocalCoverFinder(mFile.getParent()),
                               new ProgressListenerBase() {
                                   @Override

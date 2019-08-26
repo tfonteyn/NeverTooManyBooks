@@ -134,13 +134,6 @@ public interface ItemWithFixableId {
     }
 
     /**
-     * Get the id of this item.
-     *
-     * @return the id, or 0 for a "new" item
-     */
-    long getId();
-
-    /**
      * Get the locale of this item.
      *
      * @param fallbackLocale Locale to use if the item has none set

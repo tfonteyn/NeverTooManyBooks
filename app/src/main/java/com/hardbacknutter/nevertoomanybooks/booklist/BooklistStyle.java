@@ -145,10 +145,8 @@ public class BooklistStyle
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_THUMBNAIL = 0x100;
 
-    /**
-     * the amount of details to show in the header.
-     */
-    public static final Integer SUMMARY_HIDE = 0;
+//    /** the amount of details to show in the header. */
+//    public static final Integer SUMMARY_HIDE = 0;
     /** the amount of details to show in the header. */
     public static final Integer SUMMARY_SHOW_COUNT = 1;
     /** the amount of details to show in the header. */
@@ -1202,22 +1200,6 @@ public class BooklistStyle
         void add(@NonNull final BooklistGroup group) {
             mGroups.add(group);
             super.add(group.getKind());
-        }
-
-        /**
-         * Add a new element to the end of the list.
-         *
-         * @param list  current list to add the group to, can be {@code null} or empty.
-         * @param group to add
-         *
-         * @return updated list string
-         */
-        @NonNull
-        String add(@NonNull final SharedPreferences.Editor ed,
-                   @Nullable final String list,
-                   @NonNull final BooklistGroup group) {
-            mGroups.add(group);
-            return super.add(ed, list, group.getKind());
         }
 
         /**

@@ -182,7 +182,7 @@ public class EditBookFragment
         mPagerAdapter.add(new FragmentHolder(fm, EditBookFieldsFragment.TAG,
                                              getString(R.string.tab_lbl_details)));
         mPagerAdapter.add(new FragmentHolder(fm, EditBookPublicationFragment.TAG,
-                                             getString(R.string.lbl_publication)));
+                                             getString(R.string.tab_lbl_publication)));
         mPagerAdapter.add(new FragmentHolder(fm, EditBookNotesFragment.TAG,
                                              getString(R.string.tab_lbl_notes)));
         if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {

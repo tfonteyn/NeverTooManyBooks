@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +32,6 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 
 import androidx.annotation.CallSuper;
@@ -259,18 +259,14 @@ public class BindableItemCursorAdapter
          * 'items' parameter with one {@link ContextDialogItem} per operation that can be
          * performed on this object.
          *
-         * @param context  Context resulting in Click() event
-         * @param parent   that contained the item
-         * @param view     View that was clicked
-         * @param position position in cursor of item
-         * @param id       row id of item
-         * @param items    items collection to fill
-         * @param db       Database Access
+         * @param context Context resulting in Click() event
+         * @param view    View that was clicked
+         * @param id      row id of item
+         * @param items   items collection to fill
+         * @param db      Database Access
          */
         void addContextMenuItems(@NonNull Context context,
-                                 @NonNull AdapterView<?> parent,
                                  @NonNull View view,
-                                 int position,
                                  long id,
                                  @NonNull List<ContextDialogItem> items,
                                  @NonNull DAO db);

@@ -138,26 +138,6 @@ public final class Csv {
     }
 
     /**
-     * Create a CSV List String by replicating the 'element' length'd times.
-     *
-     * @param delimiter e.g. "," or ", " etc...
-     * @param element   for the list
-     * @param length    nr of elements to generate
-     *
-     * @return csv string, can be empty, never {@code null}.
-     */
-    public static String join(@NonNull final CharSequence delimiter,
-                              @NonNull final String element,
-                              final int length) {
-        StringBuilder sb = new StringBuilder(element);
-        for (int i = 1; i < length; i++) {
-            sb.append(delimiter).append(element);
-        }
-        return sb.toString();
-    }
-
-
-    /**
      * Not strictly a Csv method, but closely related as it's usually (always?) followed
      * by sending the list to a join method here.
      *

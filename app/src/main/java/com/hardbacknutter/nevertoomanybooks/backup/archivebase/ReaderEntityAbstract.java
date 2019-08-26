@@ -29,13 +29,9 @@ package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
 
 import androidx.annotation.NonNull;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 
-import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils.DeserializationException;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -83,23 +79,5 @@ public abstract class ReaderEntityAbstract
                 destFile.setLastModified(getDateModified().getTime());
             }
         }
-    }
-
-    @NonNull
-    @Override
-    public <T extends Serializable> T getSerializable()
-            throws IOException, DeserializationException {
-        // Turn the input into a byte array
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        final byte[] buffer = new byte[BUFFER_SIZE];
-        while (true) {
-            int cnt = getInputStream().read(buffer);
-            if (cnt <= 0) {
-                break;
-            }
-            out.write(buffer);
-        }
-        out.close();
-        return SerializationUtils.deserializeObject(out.toByteArray());
     }
 }

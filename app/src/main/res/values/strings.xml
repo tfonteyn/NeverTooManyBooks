@@ -1120,7 +1120,6 @@
     <string name="style_is_user_defined">User-defined</string>
     <string name="style_is_builtin">Builtin</string>
 
-    <!-- Should be as short as possible -->
     <string name="style_builtin_author_series">Author, Series</string>
     <string name="style_builtin_series">Series</string>
     <string name="style_builtin_title_first_letter">Title first letter</string>
@@ -1137,11 +1136,16 @@
     <string name="style_builtin_acquired_date">Acquired</string>
 
     <!-- ####################################################################################### -->
-    <!-- == TAB labels - need to be short == -->
+    <!-- == TAB labels - need to be very short -->
+    <!-- The four labels should preferable fit on one line, otherwise the user will
+         need to scroll the tab-bar
+     -->
     <!-- ####################################################################################### -->
 
     <!-- Heading of the 'Details' tab when editing a book. -->
     <string name="tab_lbl_details">Details</string>
+    <!-- Heading of the 'Publication' tab when editing a book. -->
+    <string name="tab_lbl_publication">Publication</string>
     <!-- Heading of the 'Notes' tab when editing a book.-->
     <string name="tab_lbl_notes">Notes</string>
     <!-- Heading of the 'Table Of Content' (formerly 'Anthology') tab when editing a book. -->

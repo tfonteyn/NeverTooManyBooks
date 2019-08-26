@@ -81,7 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  */
 public class BooklistPseudoCursor
         extends AbstractCursor
-        implements BooklistSupportProvider {
+        implements CursorRowProvider {
 
     /** Number of 'pages' a cursor has to 'away' to be considered for purging. */
     private static final int PAGES_AWAY_FOR_PURGE = 3;
@@ -147,7 +147,6 @@ public class BooklistPseudoCursor
      *
      * @return BooklistBuilder
      */
-    @Override
     @NonNull
     public BooklistBuilder getBuilder() {
         return mBuilder;

@@ -44,7 +44,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -153,7 +152,6 @@ public class CsvImporter
     @WorkerThread
     @NonNull
     public Results doBooks(@NonNull final Context context,
-                           @NonNull final Locale userLocale,
                            @NonNull final InputStream importStream,
                            @Nullable final CoverFinder coverFinder,
                            @NonNull final ProgressListener listener)

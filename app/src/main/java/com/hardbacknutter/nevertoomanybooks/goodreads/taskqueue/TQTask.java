@@ -31,7 +31,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -153,9 +152,7 @@ public abstract class TQTask
      */
     @Override
     public void addContextMenuItems(@NonNull final Context context,
-                                    @NonNull final AdapterView<?> parent,
                                     @NonNull final View view,
-                                    final int position,
                                     final long id,
                                     @NonNull final List<ContextDialogItem> items,
                                     @NonNull final DAO db) {

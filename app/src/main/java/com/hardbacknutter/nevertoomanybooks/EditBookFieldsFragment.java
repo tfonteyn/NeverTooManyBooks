@@ -309,8 +309,17 @@ public class EditBookFieldsFragment
             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         }
 
-        //noinspection ConstantConditions
-        getField(R.id.series).setValue(book.getSeriesTextShort(getContext()));
+        String result;
+        if (list.isEmpty()) {
+            result = "";
+        } else {
+            result = list.get(0).getLabel();
+            if (list.size() > 1) {
+                result += ' ' + getString(R.string.and_others);
+            }
+        }
+
+        getField(R.id.series).setValue(result);
     }
 
     /**

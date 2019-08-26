@@ -84,17 +84,17 @@ public class SearchSuggestionProvider
         return mSSCursor;
     }
 
-    /**
-     * There does not seem to be a way to cleanup resources (here, our db)
-     * in a {@link ContentProvider}.
-     * Added/Leaving this method here as a reminder
-     */
-    public void close() {
-        if (mSSCursor != null) {
-            mSSCursor.close();
-        }
-        if (mDb != null) {
-            mDb.close();
-        }
-    }
+//    /**
+//     * There does not seem to be a way to cleanup resources (here, our db)
+//     * in a {@link ContentProvider}.
+//     * Added/Leaving this method here as a reminder
+//     */
+//    public void close() {
+//        if (mSSCursor != null) {
+//            mSSCursor.close();
+//        }
+//        if (mDb != null) {
+//            mDb.close();
+//        }
+//    }
 }

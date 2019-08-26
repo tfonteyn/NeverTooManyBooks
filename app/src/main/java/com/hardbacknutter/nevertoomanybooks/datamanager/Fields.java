@@ -1736,7 +1736,7 @@ public class Fields {
         }
 
         /**
-         * Get the current value of this field and put it into the Bundle collection.
+         * Get the current value of this field and put it into the DataManager.
          */
         void putValueInto(@NonNull final DataManager target) {
             mFieldDataAccessor.putValueInto(target);

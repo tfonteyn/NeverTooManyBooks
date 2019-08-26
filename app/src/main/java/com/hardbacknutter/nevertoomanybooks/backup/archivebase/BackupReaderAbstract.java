@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -179,8 +178,6 @@ public abstract class BackupReaderAbstract
                             // a CSV file with all book data
                             try (Importer importer = new CsvImporter(userContext, mSettings)) {
                                 mSettings.results = importer.doBooks(userContext,
-                                                                     LocaleUtils
-                                                                             .getPreferredLocale(),
                                                                      entity.getInputStream(), null,
                                                                      progressListener);
                             }

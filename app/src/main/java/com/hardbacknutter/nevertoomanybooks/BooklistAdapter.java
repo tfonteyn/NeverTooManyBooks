@@ -57,7 +57,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup.RowKind;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistMappedCursorRow;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistSupportProvider;
+import com.hardbacknutter.nevertoomanybooks.booklist.CursorRowProvider;
 import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -158,7 +158,7 @@ public class BooklistAdapter
     public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                             final int viewType) {
         //noinspection ConstantConditions
-        CursorMapper row = ((BooklistSupportProvider) mCursor).getCursorMapper();
+        CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
 
         // The view depends on the viewType + level.
         View view = createView(parent, viewType, row.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
@@ -179,7 +179,7 @@ public class BooklistAdapter
         // position the data we need to bind.
         //noinspection ConstantConditions
         mCursor.moveToPosition(position);
-        CursorMapper row = ((BooklistSupportProvider) mCursor).getCursorMapper();
+        CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
         // actual binding depends on the type of row (i.e. holder), so let the holder do it.
         holder.onBindViewHolder(row, mStyle);
     }
@@ -190,7 +190,7 @@ public class BooklistAdapter
             return 0;
         }
         mCursor.moveToPosition(position);
-        CursorMapper row = ((BooklistSupportProvider) mCursor).getCursorMapper();
+        CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
         return row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND);
     }
 
@@ -395,7 +395,7 @@ public class BooklistAdapter
         synchronized (mCursor) {
             final int savedPos = mCursor.getPosition();
             mCursor.moveToPosition(position);
-            BooklistMappedCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+            BooklistMappedCursorRow row = ((CursorRowProvider) mCursor).getCursorRow();
             section = row.getLevelText(context);
             mCursor.moveToPosition(savedPos);
         }

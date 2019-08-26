@@ -61,9 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
 public abstract class BookSearchBaseFragment
         extends Fragment {
 
-    /** Fragment manager tag. */
-    private static final String TAG = "BookSearchBaseFragment";
-
     /** hosting activity. */
     AppCompatActivity mActivity;
     TaskManager mTaskManager;

@@ -35,7 +35,6 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
 
 /**
  * Interface definition for an importer.
@@ -47,7 +46,6 @@ public interface Importer
      * Import books from an InputStream.
      *
      * @param context      Current context
-     * @param userLocale   the users preferred Locale
      * @param importStream Stream for reading data
      * @param coverFinder  (Optional) object to find a cover on the local device
      * @param listener     Progress and cancellation provider
@@ -59,7 +57,6 @@ public interface Importer
      */
     @NonNull
     Results doBooks(@NonNull Context context,
-                    @NonNull Locale userLocale,
                     @NonNull InputStream importStream,
                     @Nullable CoverFinder coverFinder,
                     @NonNull ProgressListener listener)

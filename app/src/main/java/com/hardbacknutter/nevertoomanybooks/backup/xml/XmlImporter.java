@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -188,7 +187,6 @@ public class XmlImporter
     @NonNull
     @Override
     public Results doBooks(@NonNull final Context context,
-                           @NonNull final Locale userLocale,
                            @NonNull final InputStream importStream,
                            @Nullable final CoverFinder coverFinder,
                            @NonNull final ProgressListener listener) {

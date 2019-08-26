@@ -488,6 +488,7 @@
     <string name="tab_lbl_content">Contenido</string>
     <string name="tab_lbl_details">Detalles</string>
     <string name="tab_lbl_notes">Notas</string>
+    <string name="tab_lbl_publication">Publicación</string>
     <string name="tip_authors_book_may_appear_more_than_once">Si se muestra para cada autor, un mismo libro puede aparecer más de una vez en un listado. En ese caso, si se elimina uno de esos libros se eliminará de todas las posiciones del listado.</string>
     <string name="tip_authors_works">Iconos utilizados:</string>
     <string name="tip_authors_works_book">Libro.</string>
@@ -577,5 +578,12 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s no es un ISBN o ASIN válido</string>
     <string name="x_of_y">%1$d de %2$d</string>
     <string name="yes">Sí</string>
+    <string name="lbl_author_translator">Traductor</string>
+    <string name="lbl_author_other">Otro</string>
+    <string name="lbl_author_editor">Editor</string>
+    <string name="lbl_author_contributor">Contribuyente</string>
+    <string name="lbl_artist_colorist">Colorista</string>
+    <string name="lbl_author_primary">Primario</string>
+    <string name="lbl_author_secondary">Secundario</string>
 
 </resources>

@@ -487,6 +487,7 @@
     <string name="tab_lbl_content">περιεχόμενο</string>
     <string name="tab_lbl_details">Λεπτομ</string>
     <string name="tab_lbl_notes">Σημειώσεις</string>
+    <string name="tab_lbl_publication">Δημοσίευση</string>
     <string name="tip_authors_book_may_appear_more_than_once">Αν εμφανίζεται για κάθε συγγραφέα, ένα βιβλίο μπορεί να εμφανίζεται πολλές φορές σε μια λίστα. Τότε, αν διαγραφεί ένα από αυτά, θα διαγραφούν όλα από τη λίστα.</string>
     <string name="tip_authors_works">Χρησιμοποιούμενα εικονίδια:</string>
     <string name="tip_authors_works_book">Βιβλίο.</string>
@@ -576,5 +577,13 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s δεν είναι έγκυρος κωδικός ISBN ή ASIN</string>
     <string name="x_of_y">%1$d από %2$d</string>
     <string name="yes">Ναι</string>
+    <string name="lbl_author_secondary">Δευτερεύων</string>
+    <string name="lbl_author_primary">Πρωταρχικός</string>
+    <string name="lbl_author_other">Αλλα</string>
+    <string name="lbl_author_translator">Μεταφράστης</string>
+    <string name="lbl_artist_colorist">Ζωγράφος</string>
+    <string name="lbl_author_editor">Συντάκτης</string>
+    <string name="lbl_author_contributor">Συνεισφέρων</string>
+    <string name="lbl_edition_slipcase">Ολισθητήρας</string>
 
 </resources>

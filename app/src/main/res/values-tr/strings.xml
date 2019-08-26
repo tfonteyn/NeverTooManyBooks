@@ -482,6 +482,7 @@
     <string name="tab_lbl_content">Içerik</string>
     <string name="tab_lbl_details">Ayrıntılar</string>
     <string name="tab_lbl_notes">Notlar</string>
+    <string name="tab_lbl_publication">Yayınlama</string>
     <string name="tip_authors_book_may_appear_more_than_once">Eğer her yazar için gösteriliyorsa, tek bir kitap bir dizelgede birden fazla görünebilir. Böyle bir durumda bu kitaplardan birini silmek dizelgeden tüm girileri silecektir.</string>
     <string name="tip_authors_works">Kullanılan simgeler:</string>
     <string name="tip_authors_works_book">Kitap.</string>
@@ -571,5 +572,13 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s geçerli bir ISBN veya ASIN değil</string>
     <string name="x_of_y">%1$d (Toplam %2$d)</string>
     <string name="yes">Evet</string>
+    <string name="lbl_author_translator">Çevirmen</string>
+    <string name="lbl_author_other">Diğer</string>
+    <string name="lbl_author_editor">Editör</string>
+    <string name="lbl_edition_slipcase">kitap kabı</string>
+    <string name="lbl_author_contributor">iştirakçi</string>
+    <string name="lbl_author_primary">Birincil</string>
+    <string name="lbl_author_secondary">İkincil</string>
+    <string name="lbl_artist_colorist">Renk</string>
 
 </resources>

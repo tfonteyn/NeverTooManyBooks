@@ -32,10 +32,7 @@ import androidx.annotation.NonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.Date;
-
-import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils.DeserializationException;
 
 /**
  * Interface provided by every entity read from a backup file.
@@ -86,18 +83,6 @@ public interface ReaderEntity {
      */
     void saveToDirectory(@NonNull File name)
             throws IOException;
-
-    /**
-     * Get the data as a Serializable object.
-     *
-     * @return the object
-     *
-     * @throws IOException              on failure
-     * @throws DeserializationException on failure
-     */
-    @NonNull
-    <T extends Serializable> T getSerializable()
-            throws IOException, DeserializationException;
 
     /** Supported entity types. */
     enum Type {

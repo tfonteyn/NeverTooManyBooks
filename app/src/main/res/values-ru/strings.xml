@@ -480,6 +480,7 @@
     <string name="tab_lbl_content">оглавление</string>
     <string name="tab_lbl_details">Детали</string>
     <string name="tab_lbl_notes">заметки</string>
+    <string name="tab_lbl_publication">публикация</string>
     <string name="tip_authors_book_may_appear_more_than_once">Если показывается по авторам, то одна и та же книга может появиться в списке многократно. В этом случае удаление одной из таких книг, удалит и все остальные из списка.</string>
     <string name="tip_authors_works">Используемые значки:</string>
     <string name="tip_authors_works_book">Книга.</string>
@@ -569,5 +570,13 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s неправильный ISBN или ASIN</string>
     <string name="x_of_y">%1$d из %2$d</string>
     <string name="yes">Да</string>
+    <string name="lbl_author_translator">Переводчик</string>
+    <string name="lbl_author_other">Другой</string>
+    <string name="lbl_author_editor">редактор</string>
+    <string name="lbl_edition_slipcase">альбом-бокс</string>
+    <string name="lbl_author_contributor">участник</string>
+    <string name="lbl_artist_colorist">колорист</string>
+    <string name="lbl_author_primary">первичный</string>
+    <string name="lbl_author_secondary">второстепенный</string>
 
 </resources>

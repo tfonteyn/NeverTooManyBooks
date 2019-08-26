@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
  */
 public class BooklistCursor
         extends TrackedCursor
-        implements BooklistSupportProvider, Closeable {
+        implements CursorRowProvider, Closeable {
 
     /** Underlying BooklistBuilder object. */
     @NonNull
@@ -90,7 +90,6 @@ public class BooklistCursor
      *
      * @return BooklistBuilder
      */
-    @Override
     @NonNull
     public BooklistBuilder getBuilder() {
         return mBuilder;

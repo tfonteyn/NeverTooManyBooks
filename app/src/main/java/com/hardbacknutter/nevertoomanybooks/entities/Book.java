@@ -83,12 +83,6 @@ public class Book
     public static final String IS_READ = "+IsRead";
 
     /**
-     * Key for accessor to the underlying {@link DBDefinitions#KEY_SIGNED}.
-     * Type: Boolean
-     */
-    public static final String IS_SIGNED = "+IsSigned";
-
-    /**
      * Key for accessor to the underlying {@link DBDefinitions#KEY_TOC_BITMASK}.
      * Type: Boolean
      * true: anthology by one or more authors
@@ -123,7 +117,6 @@ public class Book
      * NEWKIND: edition
      * Never change the bit value!
      */
-    private static final int EDITION_NOTHING_SPECIAL = 0;
     /** first edition ever of this work/content/story. */
     private static final int EDITION_FIRST = 1;
     /** First printing of 'this' edition. */
@@ -538,27 +531,6 @@ public class Book
         return list.isEmpty() ? null : list.get(0).getTitle();
     }
 
-    /**
-     * TODO: use {@link DataAccessor}.
-     *
-     * @param context Current context
-     *
-     * @return a formatted string for series list.
-     */
-    @NonNull
-    public String getSeriesTextShort(@NonNull final Context context) {
-        List<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-        if (list.isEmpty()) {
-            return "";
-        } else {
-            String newText = list.get(0).getLabel();
-            if (list.size() > 1) {
-                newText += ' ' + context.getString(R.string.and_others);
-            }
-            return newText;
-        }
-    }
-
     @Override
     @NonNull
     public String getTitle() {
@@ -673,7 +645,6 @@ public class Book
 
         // Booleans are stored as Long (0,1)
         addAccessor(IS_READ, new BooleanDataAccessor(DBDefinitions.KEY_READ));
-        addAccessor(IS_SIGNED, new BooleanDataAccessor(DBDefinitions.KEY_SIGNED));
 
         // set/reset a single bit in a bitmask.
         addAccessor(HAS_MULTIPLE_WORKS,

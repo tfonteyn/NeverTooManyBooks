@@ -285,7 +285,7 @@
     <string name="lbl_preferred_styles">Voorkeursstijlen</string>
     <string name="lbl_price_listed">Prijs</string>
     <string name="lbl_price_paid">Betaald</string>
-    <string name="lbl_publication">Publicatie</string>
+    <string name="lbl_publication">Uitgave</string>
     <string name="lbl_publication_month">Maand</string>
     <string name="lbl_publication_year">Jaar</string>
     <string name="lbl_publisher">Uitgever</string>
@@ -476,7 +476,7 @@
     <string name="style_builtin_compact">Compact</string>
     <string name="style_builtin_genre">Genrenaam</string>
     <string name="style_builtin_loaned">Uitlenen</string>
-    <string name="style_builtin_publication_date">Publicatiedatum</string>
+    <string name="style_builtin_publication_date">Uitgifte datum</string>
     <string name="style_builtin_read_and_unread">Gelezen en ongelezen</string>
     <string name="style_builtin_read_date">Datum gelezen</string>
     <string name="style_builtin_series">Series</string>
@@ -488,6 +488,7 @@
     <string name="tab_lbl_content">Inhoud</string>
     <string name="tab_lbl_details">Details</string>
     <string name="tab_lbl_notes">Notities</string>
+    <string name="tab_lbl_publication">Uitgave</string>
     <string name="tip_authors_book_may_appear_more_than_once">Als boeken worden getoond met alle auteurs, kunnen ze meermalen voorkomen in de lijst. Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden verwijderd uit de lijst.</string>
     <string name="tip_authors_works">Gebruikte pictogrammen:</string>
     <string name="tip_authors_works_book">Boek.</string>
@@ -577,5 +578,12 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s is geen geldig ISBN of ASIN</string>
     <string name="x_of_y">%1$d van %2$d</string>
     <string name="yes">Ja</string>
+    <string name="lbl_author_translator">Vertaler</string>
+    <string name="lbl_author_other">Andere</string>
+    <string name="lbl_artist_colorist">Inkleurder</string>
+    <string name="lbl_author_editor">Redacteur</string>
+    <string name="lbl_author_contributor">Medewerker</string>
+    <string name="lbl_author_primary">Primair</string>
+    <string name="lbl_author_secondary">Secondair</string>
 
 </resources>

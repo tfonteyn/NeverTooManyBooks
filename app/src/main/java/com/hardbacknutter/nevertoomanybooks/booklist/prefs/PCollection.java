@@ -29,8 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
 import androidx.annotation.NonNull;
 
-import java.util.Collection;
-
 /**
  * A Set or a List is always represented by a {@code Set<String>} in the SharedPreferences
  * due to limitations of {@link androidx.preference.ListPreference}
@@ -46,7 +44,4 @@ public interface PCollection<E> {
      * It's up to the implementation on how the values will be stored.
      */
     void set(@NonNull Iterable values);
-
-    @NonNull
-    Collection<E> get();
 }

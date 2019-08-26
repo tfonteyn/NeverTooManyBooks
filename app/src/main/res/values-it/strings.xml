@@ -487,6 +487,7 @@
     <string name="tab_lbl_content">Contenuto</string>
     <string name="tab_lbl_details">Dettagli</string>
     <string name="tab_lbl_notes">Note</string>
+    <string name="tab_lbl_publication">Pubblicazione</string>
     <string name="tip_authors_book_may_appear_more_than_once">Se mostrato per ciascun autore, uno stesso libro può risultare elencato più di una volta. In quel caso la cancellazione di una qualsiasi delle occorrenze multiple provocherà la cancellazione dall\'elenco di tutte le occorrenze.</string>
     <string name="tip_authors_works">Icone utilizzate:</string>
     <string name="tip_authors_works_book">Libro.</string>
@@ -576,5 +577,13 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s non è un codice ISBN o ASIN valido</string>
     <string name="x_of_y">%1$d di %2$d</string>
     <string name="yes">Sì</string>
+    <string name="lbl_author_secondary">Secondario</string>
+    <string name="lbl_author_primary">Primario</string>
+    <string name="lbl_author_other">Altro</string>
+    <string name="lbl_author_translator">Traduttore</string>
+    <string name="lbl_artist_colorist">Colorista</string>
+    <string name="lbl_author_editor">Editore</string>
+    <string name="lbl_author_contributor">Collaboratore</string>
+    <string name="lbl_edition_slipcase">Custodia</string>
 
 </resources>

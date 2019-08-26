@@ -32,20 +32,20 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 
 /**
- * Interface for objects that can provide long-lived instances of Booklist-related items.
- * Typically this interface is implemented by objects that have a close() method (e.g. cursors)
- * so that resource-hungry objects can be cleaned up eventually.
+ * Add's a facility to get a cursor row object from a custom cursor.
  */
-public interface BooklistSupportProvider {
+public interface CursorRowProvider {
 
     @NonNull
     BooklistMappedCursorRow getCursorRow();
 
+    /**
+     * Convenience method.
+     *
+     * @return mapper
+     */
     @NonNull
     default CursorMapper getCursorMapper() {
         return getCursorRow().getCursorMapper();
     }
-
-    @NonNull
-    BooklistBuilder getBuilder();
 }

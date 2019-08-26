@@ -53,7 +53,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.datamanager.DataViewer;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -76,8 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
  * BookBaseFragment -> EditBookBaseFragment -> EditBookTocFragment
  */
 public abstract class BookBaseFragment
-        extends Fragment
-        implements DataViewer {
+        extends Fragment {
 
     /** The book. Must be in the Activity scope for {@link EditBookActivity#onBackPressed()}. */
     BookBaseFragmentModel mBookModel;
@@ -167,16 +165,14 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * Populate all Fields with the data from the Book.
+     * Load all Fields from the actual data store/manager.
+     * <p>
      * Loads the data while preserving the isDirty() status.
      * Normally called from the base onResume, but can also be called after {@link Book#reload}.
      * <p>
      * This is 'final' because we want inheritors to implement {@link #onLoadFieldsFromBook}.
-     * <p>
-     * <br>{@inheritDoc}
      */
-    @Override
-    public final void loadFields() {
+    final void loadFields() {
         // load the book, while disabling the AfterFieldChangeListener
         getFields().setAfterFieldChangeListener(null);
         // preserve the 'dirty' status.
@@ -235,8 +231,8 @@ public abstract class BookBaseFragment
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debugWithStackTrace("BookBaseFragment.onActivityResult",
                                                "NOT HANDLED:",
-                                              "requestCode=" + requestCode,
-                                              "resultCode=" + resultCode);
+                                               "requestCode=" + requestCode,
+                                               "resultCode=" + resultCode);
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
