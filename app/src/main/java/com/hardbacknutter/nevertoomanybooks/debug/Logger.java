@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.debug;
 
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -194,8 +193,12 @@ public final class Logger {
     }
 
     private static String tag(@NonNull final Object object) {
-        return object.getClass().isAnonymousClass() ? "AnonymousClass"
-                                                    : object.getClass().getCanonicalName();
+        if (object instanceof Class) {
+            return ((Class) object).getCanonicalName();
+        } else {
+            return object.getClass().isAnonymousClass() ? "AnonymousClass"
+                                                        : object.getClass().getCanonicalName();
+        }
     }
 
     private static String concat(@NonNull final Object[] params) {
@@ -205,15 +208,6 @@ public final class Logger {
         }
         message.append('.');
         return message.toString();
-    }
-
-    private static String buildHeaderMessage(@NonNull final Throwable e,
-                                             @Nullable final String message) {
-        return "An Exception/Error Occurred "
-               + (message != null ? message + '\n' : "")
-               + e.getLocalizedMessage() + '\n'
-               + "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ")\n"
-               + Log.getStackTraceString(e);
     }
 
     /**
