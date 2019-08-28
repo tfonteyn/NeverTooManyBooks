@@ -112,7 +112,6 @@
     <string name="error_backup_failed">Резервное копирование не удалось</string>
     <string name="error_column_is_blank">Столбец %1$s в строке %2$d пуст</string>
     <string name="error_columns_are_blank">В строке %2$d столбцы %1$s пусты</string>
-    <string name="error_database_upgrade_failed">Невозможно обновить версию старше 5.2.2</string>
     <string name="error_email_failed">Не удалось отправить электронное письмо.</string>
     <string name="error_failed_x">Не удалось: %1$d</string>
     <string name="error_google_play_missing">Google Play / Market не установлен</string>

@@ -114,7 +114,6 @@
     <string name="error_backup_failed">Αντίγραφο απέτυχε</string>
     <string name="error_column_is_blank">Η στήλη %1$s είναι κενή στη σειρά %2$d</string>
     <string name="error_columns_are_blank">Οι στήλες %1$s είναι όλες κενές στη σειρά %2$d</string>
-    <string name="error_database_upgrade_failed">Δεν είναι δυνατή η αναβάθμιση από έκδοση μεγαλύτερη από 5.2.2</string>
     <string name="error_email_failed">Αποτυχία αποστολής του μηνύματος ηλεκτρονικού ταχυδρομείου.</string>
     <string name="error_failed_x">Αποτυχία: %1$d</string>
     <string name="error_google_play_missing">Το Google Play / Market δεν είναι εγκατεστημένο</string>

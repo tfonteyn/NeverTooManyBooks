@@ -115,7 +115,6 @@
     <string name="error_backup_failed">Back-up mislukt</string>
     <string name="error_column_is_blank">Kolom %1$s is leeg op lijn %2$d</string>
     <string name="error_columns_are_blank">Kolommen %1$s zijn allemaal leeg op lijn %2$d</string>
-    <string name="error_database_upgrade_failed">Upgraden vanaf een versie ouder dan 5.2.2 is niet ondersteunt</string>
     <string name="error_email_failed">Het verzenden van de e-mail is mislukt.</string>
     <string name="error_failed_x">Mislukt: %1$d</string>
     <string name="error_google_play_missing">Google Play / Market is niet geïnstalleerd</string>

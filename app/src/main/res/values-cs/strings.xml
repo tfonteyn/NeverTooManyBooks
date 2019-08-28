@@ -113,7 +113,6 @@
     <string name="error_backup_failed">Zálohování selhalo</string>
     <string name="error_column_is_blank">Sloupec %1$s je prázdný na řádku %2$d</string>
     <string name="error_columns_are_blank">Sloupce %1$s jsou prázdné na řádku %2$d</string>
-    <string name="error_database_upgrade_failed">Nelze provést upgrade z verze starší než 5.2.2</string>
     <string name="error_email_failed">Odeslání e-mailu se nezdařilo.</string>
     <string name="error_failed_x">Nepodařilo se: %1$d</string>
     <string name="error_google_play_missing">Google Play / Market není nainstalován</string>

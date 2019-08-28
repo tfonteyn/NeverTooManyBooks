@@ -115,7 +115,6 @@
     <string name="error_backup_failed">Sicherungskopie erstellen fehlgeschlagen</string>
     <string name="error_column_is_blank">Die Spalte %1$s ist in Zeile %2$d leer</string>
     <string name="error_columns_are_blank">Die Spalten %1$s sind in der Zeile %2$d leer</string>
-    <string name="error_database_upgrade_failed">Upgrade von einer älteren Version als 5.2.2 ist nicht möglich</string>
     <string name="error_email_failed">Das Senden der E-Mail ist fehlgeschlagen.</string>
     <string name="error_failed_x">Fehlgeschlagen: %1$d</string>
     <string name="error_google_play_missing">Google Play / Market ist nicht installiert</string>

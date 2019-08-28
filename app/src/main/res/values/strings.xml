@@ -120,9 +120,6 @@
     <string name="error_google_play_missing">Google Play/Market is not installed</string>
     <string name="error_search_configuration">Configuration error. Please open the Settings page and check your Search Site preferences.</string>
 
-    <!-- Users of versions older than 5.2.2 need to upgrade to 5.2.2 first -->
-    <string name="error_database_upgrade_failed">Cannot upgrade from a version older than 5.2.2</string>
-
     <!-- Generic authentication failed -->
     <string name="error_authentication_failed">Authentication failed</string>
     <!-- 'Site' authentication failed -->

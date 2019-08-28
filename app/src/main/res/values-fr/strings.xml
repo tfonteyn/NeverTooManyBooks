@@ -116,7 +116,6 @@
     <string name="error_backup_failed">Sauvegarde échouée</string>
     <string name="error_column_is_blank">La colonne %1$s est vide à la ligne %2$d</string>
     <string name="error_columns_are_blank">Les colonnes %1$s sont toutes vides à la ligne %2$d</string>
-    <string name="error_database_upgrade_failed">Mise à niveau impossible à partir d’une version antérieure à 5.2.2</string>
     <string name="error_email_failed">L’envoi de l’e-mail a échoué.</string>
     <string name="error_failed_x">Échec: %1$d</string>
     <string name="error_google_play_missing">Google Play / Market n’est pas installé</string>

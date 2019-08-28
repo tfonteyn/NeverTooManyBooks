@@ -115,7 +115,6 @@
     <string name="error_backup_failed">Copia de seguridad errónea</string>
     <string name="error_column_is_blank">La columna %1$s tiene en blanco la fila %2$d</string>
     <string name="error_columns_are_blank">Las columnas %1$s tienen en blanco la fila %2$d</string>
-    <string name="error_database_upgrade_failed">No se puede actualizar desde una versión anterior a 5.2.2</string>
     <string name="error_email_failed">El envío del correo electrónico falló.</string>
     <string name="error_failed_x">Falló: %1$d</string>
     <string name="error_google_play_missing">Google Play / Market no está instalado</string>

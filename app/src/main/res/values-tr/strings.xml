@@ -113,7 +113,6 @@
     <string name="error_backup_failed">Yedekleme başarısız!</string>
     <string name="error_column_is_blank">Sütun %1$s %2$d numaralı satırda boş</string>
     <string name="error_columns_are_blank">%1$s sütunlarının hepsi %2$d satırında boş</string>
-    <string name="error_database_upgrade_failed">5.2.2\'dan daha eski bir sürümden yükseltme yapılamıyor</string>
     <string name="error_email_failed">E-posta gönderilemedi.</string>
     <string name="error_failed_x">Başarısız: %1$d</string>
     <string name="error_google_play_missing">Google Play / Market yüklü değil</string>

@@ -114,7 +114,6 @@
     <string name="error_backup_failed">Backup fallito</string>
     <string name="error_column_is_blank">La colonna %1$s è vuota alla riga %2$d</string>
     <string name="error_columns_are_blank">Tutte le colonne %1$s sono vuote alla riga %2$d</string>
-    <string name="error_database_upgrade_failed">Impossibile eseguire l\'aggiornamento da una versione precedente alla 5.2.2</string>
     <string name="error_email_failed">L\'invio dell\'email non è riuscito.</string>
     <string name="error_failed_x">Non riuscito: %1$d</string>
     <string name="error_google_play_missing">Google Play / Market non è installato</string>
