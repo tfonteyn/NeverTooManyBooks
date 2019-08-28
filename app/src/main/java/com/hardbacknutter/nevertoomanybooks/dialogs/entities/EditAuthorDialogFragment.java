@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.EditAuthorListActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Dialog to edit an existing single author.
@@ -76,7 +77,9 @@ public class EditAuthorDialogFragment
                                   @NonNull final Author newAuthorData) {
 
         author.copyFrom(newAuthorData, false);
-        mDb.updateOrInsertAuthor(author);
+        //noinspection ConstantConditions
+        mDb.updateOrInsertAuthor(getContext(), LocaleUtils.getPreferredLocale(getContext()),
+                                 author);
 
         Bundle data = new Bundle();
         data.putLong(DBDefinitions.KEY_FK_AUTHOR, author.getId());

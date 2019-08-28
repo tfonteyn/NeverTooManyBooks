@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,10 +63,20 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test parsing the Jsoup Document for ISFDB data.
+ * This is NOT a test for Jsoup.parse.
+ * The document used is loaded locally and the result of a page save of 0-413-60010-6
+ * <a href="http://www.isfdb.org/cgi-bin/pl.cgi?112781">
+ * http://www.isfdb.org/cgi-bin/pl.cgi?112781</a>
+ */
 class IsfdbBookTest {
 
-    private static final String baseUri = "http://www.isfdb.org";
+    /** This test does not 'live' fetch the doc, but this is the correct baseUri. */
+    private static final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
+    /** instead we read this file locally. */
     private static final String filename = "/isfdb-book-1.html";
+    /** After mapping, the expected format (presuming the test runs in english locale). */
     private static final String bookType_paperback = "Paperback";
 
     @Mock
@@ -113,7 +124,7 @@ class IsfdbBookTest {
         Document doc;
         try (InputStream in = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(in);
-            doc = Jsoup.parse(in, IsfdbManager.CHARSET_DECODE_PAGE, baseUri);
+            doc = Jsoup.parse(in, IsfdbManager.CHARSET_DECODE_PAGE, locationHeader);
         }
         assertNotNull(doc);
         assertTrue(doc.hasText());
@@ -126,6 +137,7 @@ class IsfdbBookTest {
 
         assertEquals("Like Nothing on Earth", bookData.getString(DBDefinitions.KEY_TITLE));
         assertEquals(112781, bookData.getLong(DBDefinitions.KEY_ISFDB_ID));
+        // On the site: "Date: 1986-10-00"
         assertEquals("1986-10-01", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("0413600106", bookData.getString(DBDefinitions.KEY_ISBN));
         assertEquals("9780413600103", bookData.getString(IsfdbBook.BookField.ISBN_2));

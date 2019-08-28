@@ -202,7 +202,8 @@ public class BooksOnBookshelf
             new StylePickerDialogFragment.StyleChangedListener() {
                 public void onStyleChanged(@NonNull final BooklistStyle style) {
                     // store the new data
-                    mModel.onStyleChanged(style, mLayoutManager.findFirstVisibleItemPosition(),
+                    mModel.onStyleChanged(BooksOnBookshelf.this, style,
+                                          mLayoutManager.findFirstVisibleItemPosition(),
                                           mListView);
                     // and do a rebuild
                     initBookList(true);
@@ -595,7 +596,7 @@ public class BooksOnBookshelf
                         if (style != null) {
                             // save the new bookshelf/style combination
                             mModel.getCurrentBookshelf().setAsPreferred(this);
-                            mModel.setCurrentStyle(style);
+                            mModel.setCurrentStyle(this, style);
                         }
                         mModel.setFullRebuild(true);
                         break;

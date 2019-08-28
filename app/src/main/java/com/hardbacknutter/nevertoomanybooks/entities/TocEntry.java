@@ -41,6 +41,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Class to represent a single title within an TOC(Anthology).
@@ -259,15 +260,17 @@ public class TocEntry
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Locale bookLocale) {
+    public Locale getLocale(@NonNull final Context context,
+                            @NonNull final Locale bookLocale) {
         return bookLocale;
     }
 
     @Override
-    public long fixId(@NonNull final DAO db,
-                      @NonNull final Context context,
+    public long fixId(@NonNull final Context context,
+                      @NonNull final DAO db,
                       @NonNull final Locale bookLocale) {
-        mAuthor.fixId(db);
+        // don't use the bookLocale for the Author; translated books would have the wrong locale.
+        mAuthor.fixId(context, db, LocaleUtils.getPreferredLocale(context));
         mId = db.getTocEntryId(context, this, bookLocale);
         return mId;
     }

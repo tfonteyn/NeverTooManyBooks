@@ -56,6 +56,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.FlattenedBooklist;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -74,6 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.FlattenedBooklistModel;
 
@@ -218,6 +220,9 @@ public class BookFragment
         super.initFields();
         Fields fields = getFields();
 
+        //noinspection ConstantConditions
+        Locale userLocale = LocaleUtils.getPreferredLocale(getContext());
+
         // multiple use
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
@@ -225,13 +230,13 @@ public class BookFragment
 
         // book fields
         fields.add(R.id.title, DBDefinitions.KEY_TITLE);
-        fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
+        Field<String> isbnField = fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION)
               .setShowHtml(true);
 
         fields.add(R.id.genre, DBDefinitions.KEY_GENRE);
         fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
-              .setFormatter(new Fields.LanguageFormatter());
+              .setFormatter(new Fields.LanguageFormatter(userLocale));
         fields.add(R.id.pages, DBDefinitions.KEY_PAGES)
               .setFormatter(new Fields.PagesFormatter())
               .setZeroIsEmpty(true);
@@ -251,13 +256,13 @@ public class BookFragment
         // defined, but fetched manually
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE);
 
-        Field coverImageField =
+        Field<String> coverImageField =
                 fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
                       .setScale(IMAGE_SCALE);
 
         mCoverHandler = new CoverHandler(this, mBookModel.getDb(),
                                          mBookModel.getBook(),
-                                         fields.getField(R.id.isbn).getView(),
+                                         isbnField.getView(),
                                          coverImageField.getView(),
                                          IMAGE_SCALE);
 
@@ -269,7 +274,7 @@ public class BookFragment
               .setFormatter(new Fields.BitMaskFormatter(Book.EDITIONS))
               .setZeroIsEmpty(true);
         fields.add(R.id.location, DBDefinitions.KEY_LOCATION);
-        fields.add(R.id.rating, DBDefinitions.KEY_RATING);
+        fields.addFloat(R.id.rating, DBDefinitions.KEY_RATING);
         fields.add(R.id.notes, DBDefinitions.KEY_NOTES)
               .setShowHtml(true);
         fields.add(R.id.read_start, DBDefinitions.KEY_READ_START)
@@ -278,10 +283,10 @@ public class BookFragment
               .setFormatter(dateFormatter);
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        fields.add(R.id.read, DBDefinitions.KEY_READ);
+        fields.addBoolean(R.id.read, DBDefinitions.KEY_READ);
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         //noinspection ConstantConditions
-        fields.add(R.id.signed, DBDefinitions.KEY_SIGNED)
+        fields.addBoolean(R.id.signed, DBDefinitions.KEY_SIGNED)
               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getContext()))
               .setZeroIsEmpty(true);
 

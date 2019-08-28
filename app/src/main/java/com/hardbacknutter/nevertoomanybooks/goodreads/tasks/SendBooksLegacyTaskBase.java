@@ -287,7 +287,7 @@ abstract class SendBooksLegacyTaskBase
                 }
             } else {
                 author = context.getString(R.string.unknown)
-                                .toUpperCase(LocaleUtils.getPreferredLocale());
+                                .toUpperCase(LocaleUtils.getPreferredLocale(context));
             }
 
             String title = db.getBookTitle(mBookId);

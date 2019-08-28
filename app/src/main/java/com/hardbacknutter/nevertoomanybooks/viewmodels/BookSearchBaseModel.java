@@ -189,8 +189,8 @@ public class BookSearchBaseModel
     }
 
     @NonNull
-    public ArrayList<String> getAuthorNames(final ArrayList<String> authorNames,
-                                            final Locale locale) {
+    public ArrayList<String> getAuthorNames(@NonNull final ArrayList<String> authorNames,
+                                            @NonNull final Locale locale) {
 
         ArrayList<String> authors = mDb.getAuthorNames(
                 DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);

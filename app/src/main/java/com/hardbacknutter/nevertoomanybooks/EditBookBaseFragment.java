@@ -229,7 +229,7 @@ public abstract class EditBookBaseFragment<T>
      * @param dialogTitleId title of the dialog box.
      * @param todayIfNone   if true, and if the field was empty, pre-populate with today's date
      */
-    void initPartialDatePicker(@NonNull final Field field,
+    void initPartialDatePicker(@NonNull final Field<String> field,
                                @StringRes final int dialogTitleId,
                                final boolean todayIfNone) {
         // only bother when it's in use
@@ -237,9 +237,9 @@ public abstract class EditBookBaseFragment<T>
             field.getView().setOnClickListener(v -> {
                 FragmentManager fm = getChildFragmentManager();
                 if (fm.findFragmentByTag(PartialDatePickerDialogFragment.TAG) == null) {
+                    String value = field.getFieldDataAccessor().getValue(field);
                     PartialDatePickerDialogFragment
-                            .newInstance(field.id, field.getValue().toString(),
-                                         dialogTitleId, todayIfNone)
+                            .newInstance(field.id, value, dialogTitleId, todayIfNone)
                             .show(fm, PartialDatePickerDialogFragment.TAG);
                 }
             });

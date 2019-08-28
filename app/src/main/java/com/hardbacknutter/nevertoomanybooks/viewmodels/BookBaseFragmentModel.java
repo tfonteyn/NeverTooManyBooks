@@ -40,6 +40,7 @@ import androidx.lifecycle.ViewModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -226,8 +227,9 @@ public class BookBaseFragmentModel
         return mBook.setRead(mDb, !mBook.getBoolean(Book.IS_READ));
     }
 
-    public void refreshAuthorList() {
-        mBook.refreshAuthorList(mDb);
+    public void refreshAuthorList(@NonNull final Context context,
+                                  @NonNull final Locale userLocale) {
+        mBook.refreshAuthorList(context, userLocale, mDb);
     }
 
     public void refreshSeriesList(@NonNull final Context context) {

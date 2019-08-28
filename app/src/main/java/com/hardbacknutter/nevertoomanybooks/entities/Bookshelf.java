@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Represents a Bookshelf.
@@ -246,13 +247,15 @@ public class Bookshelf
      * @param db    Database Access
      * @param style to set
      */
-    public void setStyle(@NonNull final DAO db,
+    public void setStyle(@NonNull final Context context,
+                         @NonNull final DAO db,
                          @NonNull final BooklistStyle style) {
         style.setDefault();
 
         mStyleUuid = style.getUuid();
         long styleId = getStyle(db).getId();
-        db.updateOrInsertBookshelf(this, styleId);
+        db.updateOrInsertBookshelf(context, LocaleUtils.getPreferredLocale(context),
+                                   this, styleId);
         mCachedStyle = style;
     }
 
@@ -326,19 +329,14 @@ public class Bookshelf
 
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Locale fallbackLocale) {
+    public Locale getLocale(@NonNull final Context context,
+                            @NonNull final Locale fallbackLocale) {
         return fallbackLocale;
     }
 
     @Override
-    public long fixId(@NonNull final DAO db) {
-        mId = db.getBookshelfId(this);
-        return mId;
-    }
-
-    @Override
-    public long fixId(@NonNull final DAO db,
-                      @NonNull final Context context,
+    public long fixId(@NonNull final Context context,
+                      @NonNull final DAO db,
                       @NonNull final Locale locale) {
         mId = db.getBookshelfId(this);
         return mId;

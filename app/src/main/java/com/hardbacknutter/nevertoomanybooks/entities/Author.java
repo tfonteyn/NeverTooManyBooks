@@ -535,29 +535,18 @@ public class Author
      *
      * @return the locale of the Author
      */
-    @Override
     @NonNull
-    public Locale getLocale(@NonNull final Locale fallbackLocale) {
+    @Override
+    public Locale getLocale(@NonNull final Context context,
+                            @NonNull Locale fallbackLocale) {
         return fallbackLocale;
     }
 
-    /**
-     * Convenience method for {@link ItemWithFixableId#fixId(DAO, Context, Locale)} to satisfy lint.
-     *
-     * @param db Database Access
-     *
-     * @return item id
-     */
-    public long fixId(@NonNull final DAO db) {
-        mId = db.getAuthorId(this);
-        return mId;
-    }
-
     @Override
-    public long fixId(@NonNull final DAO db,
-                      @NonNull final Context context,
+    public long fixId(@NonNull final Context context,
+                      @NonNull final DAO db,
                       @NonNull final Locale locale) {
-        mId = db.getAuthorId(this);
+        mId = db.getAuthorId(context, this, locale);
         return mId;
     }
 

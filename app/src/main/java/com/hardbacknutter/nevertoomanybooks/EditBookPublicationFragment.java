@@ -36,9 +36,12 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the publication fields Tab.
@@ -67,6 +70,9 @@ public class EditBookPublicationFragment
         super.initFields();
         Fields fields = getFields();
 
+        //noinspection ConstantConditions
+        Locale userLocale = LocaleUtils.getPreferredLocale(getContext());
+
         // multiple use
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
@@ -81,7 +87,7 @@ public class EditBookPublicationFragment
                         mBookModel.getFormats());
 
         field = fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
-                      .setFormatter(new Fields.LanguageFormatter());
+                      .setFormatter(new Fields.LanguageFormatter(userLocale));
         initValuePicker(field, R.string.lbl_language, R.id.btn_language,
                         mBookModel.getLanguagesCodes());
 

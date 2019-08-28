@@ -348,6 +348,7 @@ class ImportLegacyTask
      * Passed a Goodreads shelf name, return the best matching local bookshelf name,
      * or the original if no match found.
      *
+     *
      * @param db          Database Access
      * @param grShelfName Goodreads shelf name
      *
@@ -355,7 +356,8 @@ class ImportLegacyTask
      */
     @Nullable
     private String translateBookshelf(@NonNull final DAO db,
-                                      @Nullable final String grShelfName) {
+                                      @Nullable final String grShelfName,
+                                      @NonNull final Locale locale) {
 
         if (grShelfName == null) {
             return null;
@@ -364,12 +366,12 @@ class ImportLegacyTask
             List<Bookshelf> bookshelves = db.getBookshelves();
             mBookshelfLookup = new HashMap<>(bookshelves.size());
             for (Bookshelf bookshelf : bookshelves) {
-                mBookshelfLookup.put(GoodreadsShelf.canonicalizeName(bookshelf.getName()),
+                mBookshelfLookup.put(GoodreadsShelf.canonicalizeName(bookshelf.getName(), locale),
                                      bookshelf.getName());
             }
         }
 
-        String lcGrShelfName = grShelfName.toLowerCase(LocaleUtils.getPreferredLocale());
+        String lcGrShelfName = grShelfName.toLowerCase(locale);
         if (mBookshelfLookup.containsKey(lcGrShelfName)) {
             return mBookshelfLookup.get(lcGrShelfName);
         } else {
@@ -413,7 +415,7 @@ class ImportLegacyTask
 
         // We build a new book bundle each time since it will build on the existing
         // data for the given book (taken from the cursor), not just replace it.
-        Book book = new Book(buildBundle(db, bookCursor, review));
+        Book book = new Book(buildBundle(context, db, bookCursor, review));
         db.updateBook(context, bookCursor.getLong(DBDefinitions.KEY_PK_ID), book,
                       DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
     }
@@ -428,7 +430,7 @@ class ImportLegacyTask
                             @NonNull final DAO db,
                             @NonNull final Bundle review) {
 
-        Book book = new Book(buildBundle(db, null, review));
+        Book book = new Book(buildBundle(context, db, null, review));
         long id = db.insertBook(context, book);
 
         if (id > 0) {
@@ -447,17 +449,22 @@ class ImportLegacyTask
      * Build a book bundle based on the Goodreads 'review' data. Some data is just copied
      * while other data is processed (e.g. dates) and other are combined (authors & series).
      *
+     *
+     * @param context Current context
      * @param db the database
      *
      * @return bookData bundle
      */
     @NonNull
-    private Bundle buildBundle(@NonNull final DAO db,
+    private Bundle buildBundle(@NonNull final Context context,
+                               @NonNull final DAO db,
                                @Nullable final BookCursor bookCursor,
                                @NonNull final Bundle review) {
 
+        Locale userLocale = LocaleUtils.getPreferredLocale(context);
         // The ListReviewsApi does not return the book language
-        Locale bookLocale = LocaleUtils.getPreferredLocale();
+        //noinspection UnnecessaryLocalVariable
+        Locale bookLocale = userLocale;
 
         Bundle bookData = new Bundle();
 
@@ -573,7 +580,7 @@ class ImportLegacyTask
                 seriesList.add(newSeries);
                 bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
 
-                Series.pruneSeriesList(seriesList, bookLocale);
+                Series.pruneSeriesList(context, seriesList, bookLocale);
                 bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
             }
         }
@@ -603,7 +610,7 @@ class ImportLegacyTask
 
             for (Bundle shelfBundle : grShelves) {
                 String bsName = shelfBundle.getString(ListReviewsApiHandler.ReviewField.SHELF);
-                bsName = translateBookshelf(db, bsName);
+                bsName = translateBookshelf(db, bsName, userLocale);
 
                 if (bsName != null && !bsName.isEmpty()) {
                     bsList.add(new Bookshelf(bsName, BooklistStyles.getDefaultStyle(db)));
@@ -611,7 +618,7 @@ class ImportLegacyTask
             }
             //TEST see above
             //--- begin 2019-02-04 ---
-            ItemWithFixableId.pruneList(db, bsList);
+            ItemWithFixableId.pruneList(context, db, bsList, userLocale);
             //--- end 2019-02-04 ---
 
             bookData.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);

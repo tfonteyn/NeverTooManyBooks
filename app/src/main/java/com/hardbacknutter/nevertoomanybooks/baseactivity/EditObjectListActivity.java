@@ -96,7 +96,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         super.onCreate(savedInstanceState);
 
         mModel = new ViewModelProvider(this).get(EditObjectListModel.class);
-        mModel.init(Objects.requireNonNull(getIntent().getExtras()));
+        mModel.init(this, Objects.requireNonNull(getIntent().getExtras()));
 
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState
                                                         : getIntent().getExtras();

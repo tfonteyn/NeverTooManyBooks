@@ -44,6 +44,7 @@ import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -51,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorBaseDialo
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -110,7 +112,7 @@ public class EditAuthorListActivity
 
         Author newAuthor = Author.fromString(name);
         // see if it already exists
-        newAuthor.fixId(mModel.getDb());
+        newAuthor.fixId(this, mModel.getDb(), LocaleUtils.getPreferredLocale(this));
         // and check it's not already in the list.
         if (mList.contains(newAuthor)) {
             UserMessage.show(mAutoCompleteTextView, R.string.warning_author_already_in_list);
@@ -133,9 +135,11 @@ public class EditAuthorListActivity
     private void processChanges(@NonNull final Author author,
                                 @NonNull final Author newAuthorData) {
 
+        Locale userLocale = LocaleUtils.getPreferredLocale(this);
+
         // See if the old one is used by any other books.
-        long nrOfReferences = mModel.getDb().countBooksByAuthor(author)
-                              + mModel.getDb().countTocEntryByAuthor(author);
+        long nrOfReferences = mModel.getDb().countBooksByAuthor(this, userLocale, author)
+                              + mModel.getDb().countTocEntryByAuthor(this, userLocale, author);
 
         // if it's not, then we can simply re-use the old object.
         if (mModel.isSingleUsage(nrOfReferences)) {
@@ -147,7 +151,7 @@ public class EditAuthorListActivity
              * TODO: simplify / don't orphan?
              */
             author.copyFrom(newAuthorData, true);
-            ItemWithFixableId.pruneList(mModel.getDb(), mList);
+            ItemWithFixableId.pruneList(this, mModel.getDb(), mList, userLocale);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -187,11 +191,10 @@ public class EditAuthorListActivity
          * TODO: speculate if this can be simplified.
          */
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, (d, which) -> {
-            mModel.setGlobalReplacementsMade(mModel.getDb().globalReplace(author,
-                                                                          newAuthorData
-                                                                         ));
+            mModel.setGlobalReplacementsMade(mModel.getDb().globalReplace(this, userLocale,
+                                                                          author, newAuthorData));
             author.copyFrom(newAuthorData, false);
-            ItemWithFixableId.pruneList(mModel.getDb(), mList);
+            ItemWithFixableId.pruneList(this, mModel.getDb(), mList, userLocale);
             mListAdapter.notifyDataSetChanged();
         });
 
@@ -215,7 +218,7 @@ public class EditAuthorListActivity
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
                          (d, which) -> {
                              author.copyFrom(newAuthorData, true);
-                             ItemWithFixableId.pruneList(mModel.getDb(), mList);
+                             ItemWithFixableId.pruneList(this, mModel.getDb(), mList, userLocale);
                              mListAdapter.notifyDataSetChanged();
                          });
 

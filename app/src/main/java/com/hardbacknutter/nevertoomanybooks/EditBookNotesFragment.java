@@ -71,10 +71,10 @@ public class EditBookNotesFragment
         //FieldValidator blankOrDateValidator = new Fields.OrValidator(
         //     new Fields.BlankValidator(), new Fields.DateValidator());
 
-        Field field;
+        Field<String> field;
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        fields.add(R.id.read, DBDefinitions.KEY_READ)
+        fields.addBoolean(R.id.read, DBDefinitions.KEY_READ)
               .getView().setOnClickListener(v -> {
             // when user sets 'read', also set the read-end date to today (unless set before)
             Checkable cb = (Checkable) v;
@@ -87,9 +87,9 @@ public class EditBookNotesFragment
         });
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        fields.add(R.id.signed, DBDefinitions.KEY_SIGNED);
+        fields.addBoolean(R.id.signed, DBDefinitions.KEY_SIGNED);
 
-        fields.add(R.id.rating, DBDefinitions.KEY_RATING);
+        fields.addFloat(R.id.rating, DBDefinitions.KEY_RATING);
 
         fields.add(R.id.notes, DBDefinitions.KEY_NOTES);
 

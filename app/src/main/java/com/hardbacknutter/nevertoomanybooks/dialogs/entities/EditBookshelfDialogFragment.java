@@ -40,6 +40,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -49,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
@@ -164,7 +166,7 @@ public class EditBookshelfDialogFragment
         // At this point, we know changes were made.
         // Create a new Bookshelf as a holder for the changes.
         Bookshelf newBookshelf = new Bookshelf(mName, mBookshelf.getStyle(mDb));
-        // yes, this is NOT efficient and plain dumb. But.. it will allow flex later on.
+        // yes, this is NOT efficient and plain dumb. But.. it will give flexibility later on.
         // copy new values
         mBookshelf.copyFrom(newBookshelf);
 
@@ -172,7 +174,9 @@ public class EditBookshelfDialogFragment
             mergeShelves(mBookshelf, existingShelf);
         } else {
             long styleId = mBookshelf.getStyle(mDb).getId();
-            if (mDb.updateOrInsertBookshelf(mBookshelf, styleId)) {
+            //noinspection ConstantConditions
+            Locale userLocale = LocaleUtils.getPreferredLocale(getContext());
+            if (mDb.updateOrInsertBookshelf(getContext(), userLocale, mBookshelf, styleId)) {
                 if (mListener.get() != null) {
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
                 } else {

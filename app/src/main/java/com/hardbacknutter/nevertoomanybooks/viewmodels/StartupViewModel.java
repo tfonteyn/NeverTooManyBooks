@@ -387,7 +387,7 @@ public class StartupViewModel
             publishProgress(new TaskProgressMessage(mTaskId,
                                                     R.string.progress_msg_rebuilding_search_index));
             try {
-                mDb.rebuildFts();
+                mDb.rebuildFts(App.getAppContext());
 
                 PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                                  .edit()

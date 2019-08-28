@@ -96,7 +96,6 @@ public class Editions
     public ArrayList<Edition> fetchPath(@NonNull final String url)
             throws SocketTimeoutException {
 
-        // do not auto-redirect, handled manually. See the comments inside the loadPage method.
         if (loadPage(url) == null) {
             // failed to load, return an empty list.
             return mEditions;
@@ -112,7 +111,10 @@ public class Editions
      */
     @NonNull
     private ArrayList<Edition> parseDoc() {
+        // http://www.isfdb.org/cgi-bin/se.cgi?arg=0887331602&type=ISBN
+        // http://www.isfdb.org/cgi-bin/pl.cgi?326539
         String pageUrl = mDoc.location();
+
 
         if (pageUrl.contains(IsfdbManager.URL_PL_CGI)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.

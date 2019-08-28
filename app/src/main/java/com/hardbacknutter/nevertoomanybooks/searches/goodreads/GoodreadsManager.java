@@ -89,6 +89,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
@@ -668,6 +669,8 @@ public class GoodreadsManager
             // We found a Goodreads book, update it
             long reviewId = 0;
 
+            Locale userLocale = LocaleUtils.getPreferredLocale(context);
+
             // Get the review ID if we have the book details. For new books, it will not be present.
             if (!isNew && grBook.containsKey(ShowBookFieldName.REVIEW_ID)) {
                 reviewId = grBook.getLong(ShowBookApiHandler.ShowBookFieldName.REVIEW_ID);
@@ -683,7 +686,8 @@ public class GoodreadsManager
                 final String bookshelfName = bookshelf.getName();
                 shelves.add(bookshelfName);
 
-                final String canonicalShelfName = GoodreadsShelf.canonicalizeName(bookshelfName);
+                final String canonicalShelfName =
+                        GoodreadsShelf.canonicalizeName(bookshelfName, userLocale);
                 canonicalShelves.add(canonicalShelfName);
 
                 // Count how many of these shelves are exclusive in Goodreads.
@@ -703,7 +707,7 @@ public class GoodreadsManager
                 }
                 if (!shelves.contains(pseudoShelf)) {
                     shelves.add(pseudoShelf);
-                    canonicalShelves.add(GoodreadsShelf.canonicalizeName(pseudoShelf));
+                    canonicalShelves.add(GoodreadsShelf.canonicalizeName(pseudoShelf, userLocale));
                 }
             }
 
@@ -735,7 +739,8 @@ public class GoodreadsManager
             List<String> shelvesToAddTo = new ArrayList<>();
             for (String shelf : shelves) {
                 // Get the name the shelf will have at Goodreads
-                final String canonicalShelfName = GoodreadsShelf.canonicalizeName(shelf);
+                final String canonicalShelfName =
+                        GoodreadsShelf.canonicalizeName(shelf, userLocale);
                 // Can only sent canonical shelf names if the book is on 0 or 1 of them.
                 boolean okToSend = exclusiveCount < 2
                                    || !grShelfList.isExclusive(canonicalShelfName);

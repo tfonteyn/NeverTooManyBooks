@@ -628,7 +628,7 @@ public class App
         setSystemLocale();
 
         // override in the new config
-        newConfig.setLocale(LocaleUtils.getPreferredLocale());
+        newConfig.setLocale(LocaleUtils.getPreferredLocale(getAppContext()));
         // propagate to registered callbacks.
         super.onConfigurationChanged(newConfig);
 

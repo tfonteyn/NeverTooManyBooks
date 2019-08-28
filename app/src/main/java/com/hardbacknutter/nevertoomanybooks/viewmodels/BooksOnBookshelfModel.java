@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * First attempt to split of into a model for BoB.
@@ -304,9 +305,10 @@ public class BooksOnBookshelfModel
         return mCurrentBookshelf.getStyle(mDb);
     }
 
-    public void setCurrentStyle(@NonNull final BooklistStyle style) {
+    public void setCurrentStyle(@NonNull final Context context,
+                                @NonNull final BooklistStyle style) {
         Objects.requireNonNull(mCurrentBookshelf);
-        mCurrentBookshelf.setStyle(mDb, style);
+        mCurrentBookshelf.setStyle(context, mDb, style);
     }
 
     /**
@@ -316,14 +318,15 @@ public class BooksOnBookshelfModel
      * @param topRow   the top row to store
      * @param listView used to derive the top row offset
      */
-    public void onStyleChanged(@NonNull final BooklistStyle style,
+    public void onStyleChanged(@NonNull final Context context,
+                               @NonNull final BooklistStyle style,
                                final int topRow,
                                @NonNull final RecyclerView listView) {
         Objects.requireNonNull(mCurrentBookshelf);
 
         // save the new bookshelf/style combination
         mCurrentBookshelf.setAsPreferred(listView.getContext());
-        mCurrentBookshelf.setStyle(mDb, style);
+        mCurrentBookshelf.setStyle(context, mDb, style);
 
         // Set the rebuild state like this is the first time in, which it sort of is,
         // given we are changing style.
@@ -498,7 +501,8 @@ public class BooksOnBookshelfModel
                 blb.setFilterOnBookshelfId(mCurrentBookshelf.getId());
 
                 // Criteria supported by FTS
-                blb.setFilter(mSearchCriteria.ftsAuthor,
+                blb.setFilter(LocaleUtils.getPreferredLocale(context),
+                              mSearchCriteria.ftsAuthor,
                               mSearchCriteria.ftsTitle,
                               mSearchCriteria.ftsKeywords);
 

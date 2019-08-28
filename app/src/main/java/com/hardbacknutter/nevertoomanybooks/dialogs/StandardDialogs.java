@@ -140,7 +140,7 @@ public final class StandardDialogs {
         if (authorList.isEmpty()) {
             authors.append('<')
                    .append(context.getString(R.string.unknown)
-                                  .toUpperCase(LocaleUtils.getPreferredLocale()))
+                                  .toUpperCase(LocaleUtils.getPreferredLocale(context)))
                    .append('>');
         } else {
             // "a1, a2 and a3"

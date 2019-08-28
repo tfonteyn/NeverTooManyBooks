@@ -272,7 +272,7 @@ public final class DateUtils {
                                   @NonNull final String dateString,
                                   final boolean lenient)
             throws ParseException {
-        df.setLenient(lenient);
+        df.setLenient(lenient); //URGENT
         Date parsedDate = df.parse(dateString);
         // Make sure there is no overflow into the next day due to the user Timezone
         if (parsedDate != null) {

@@ -266,15 +266,14 @@ public class EditBookTocFragment
     protected void initFields() {
         super.initFields();
         Fields fields = getFields();
-        Field field;
         // Anthology is provided as a bitmask, see {@link Book#initAccessorsAndValidators()}
-        fields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
+        fields.addBoolean(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
               .getView().setOnClickListener(v -> {
             // enable controls as applicable.
             mMultipleAuthorsView.setEnabled(((Checkable) v).isChecked());
         });
 
-        field = fields.add(R.id.multiple_authors, Book.HAS_MULTIPLE_AUTHORS);
+        Field<Boolean> field = fields.addBoolean(R.id.multiple_authors, Book.HAS_MULTIPLE_AUTHORS);
         mMultipleAuthorsView = field.getView();
 
         // adding a new TOC entry

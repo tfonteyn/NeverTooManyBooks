@@ -35,7 +35,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -109,8 +108,9 @@ abstract class AbstractBase {
             throws SocketTimeoutException {
 
         if (mDoc == null) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
-                Logger.debug(this, "loadPage", "url=" + url);
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_LOAD_PAGE) {
+                Logger.debug(this, "loadPage", "REQUESTED",
+                             "url=" + url);
             }
 
             try (TerminatorConnection terminatorConnection = new TerminatorConnection(url)) {
@@ -121,19 +121,56 @@ abstract class AbstractBase {
                 con.setRequestProperty("Connection", "close");
                 con.setConnectTimeout(CONNECT_TIMEOUT);
                 con.setReadTimeout(READ_TIMEOUT);
+
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_LOAD_PAGE) {
+                    Logger.debug(this, "loadPage", "BEFORE open",
+                                 "con.getURL()=" + con.getURL().toString());
+                }
                 // GO!
                 terminatorConnection.open();
 
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_LOAD_PAGE) {
+                    Logger.debug(this, "loadPage", "AFTER open",
+                                 "con.getURL()=" + con.getURL().toString());
+                    Logger.debug(this, "loadPage", "AFTER open",
+                                 "con.getHeaderField(\"location\")="
+                                 + con.getHeaderField("location"));
+                }
+
                 // the original url will change after a redirect.
                 // We need the actual url for further processing.
-                String pageUrl = con.getURL().toString();
-                mDoc = Jsoup.parse(terminatorConnection.inputStream,
-                                   IsfdbManager.CHARSET_DECODE_PAGE, pageUrl);
+                String locationHeader = con.getHeaderField("location");
+                if (locationHeader == null || locationHeader.isEmpty()) {
+                    locationHeader = con.getURL().toString();
 
-                // sanity check
-                if (!Objects.equals(pageUrl, mDoc.location())) {
-                    Logger.warn(this, "loadPage",
-                                "pageUrl=" + pageUrl, "location=" + mDoc.location());
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_LOAD_PAGE) {
+                        Logger.debug(this, "loadPage",
+                                     "location header not set, using url");
+                    }
+                }
+
+                /*
+                 VERY IMPORTANT: Explicitly set the baseUri to the location header.
+                 JSoup by default uses the absolute path from the inputStream
+                 and sets that as the document 'location'
+                 From JSoup docs:
+
+                * Get the URL this Document was parsed from. If the starting URL is a redirect,
+                * this will return the final URL from which the document was served from.
+                * @return location
+                public String location() {
+                    return location;
+                }
+
+                However that is WRONG (org.jsoup:jsoup:1.11.3)
+                It will NOT resolve the redirect itself and 'location' == 'baseUri'
+                */
+                mDoc = Jsoup.parse(terminatorConnection.inputStream,
+                                   IsfdbManager.CHARSET_DECODE_PAGE, locationHeader);
+
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_LOAD_PAGE) {
+                    Logger.debug(this, "loadPage", "AFTER parsing",
+                                 "mDoc.location()=" + mDoc.location());
                 }
 
             } catch (@NonNull final HttpStatusException e) {

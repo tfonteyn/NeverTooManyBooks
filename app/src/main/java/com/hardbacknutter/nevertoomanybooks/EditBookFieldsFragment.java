@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -39,6 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
@@ -51,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
@@ -90,17 +93,16 @@ public class EditBookFieldsFragment
         // book fields
 
         fields.add(R.id.title, DBDefinitions.KEY_TITLE);
-        fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION);
 
-        Field coverImageField =
+        Field<String> isbnField = fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
+        Field<String> coverField =
                 fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
                       .setScale(ImageUtils.SCALE_MEDIUM);
 
-        mCoverHandler = new CoverHandler(this, mBookModel.getDb(), book,
-                                         fields.getField(R.id.isbn).getView(),
-                                         coverImageField.getView(),
-                                         ImageUtils.SCALE_MEDIUM);
+        mCoverHandler = new CoverHandler(this, mBookModel.getDb(),
+                                         book, isbnField.getView(),
+                                         coverField.getView(), ImageUtils.SCALE_MEDIUM);
 
         // defined, but fetched/stored manually
         // Storing the list back into the book is handled by onCheckListEditorSave
@@ -158,6 +160,9 @@ public class EditBookFieldsFragment
 
         Book book = mBookModel.getBook();
 
+        //noinspection ConstantConditions
+        Locale userLocale = LocaleUtils.getPreferredLocale(getContext());
+
         switch (requestCode) {
             case REQ_EDIT_AUTHORS:
                 if (data != null) {
@@ -174,11 +179,11 @@ public class EditBookFieldsFragment
                     } else {
                         // Even though the dialog was terminated,
                         // some authors MAY have been modified.
-                        mBookModel.refreshAuthorList();
+                        mBookModel.refreshAuthorList(getContext(), userLocale);
                     }
 
                     boolean wasDirty = mBookModel.isDirty();
-                    populateAuthorListField();
+                    populateAuthorListField(userLocale);
                     mBookModel.setDirty(wasDirty);
 
                 }
@@ -199,7 +204,6 @@ public class EditBookFieldsFragment
                     } else {
                         // Even though the dialog was terminated,
                         // some series MAY have been modified.
-                        //noinspection ConstantConditions
                         mBookModel.refreshSeriesList(getContext());
                     }
 
@@ -245,7 +249,10 @@ public class EditBookFieldsFragment
     protected void onLoadFieldsFromBook() {
         super.onLoadFieldsFromBook();
 
-        populateAuthorListField();
+        //noinspection ConstantConditions
+        Locale userLocale = LocaleUtils.getPreferredLocale(getContext());
+
+        populateAuthorListField(userLocale);
         populateSeriesListField();
         populateBookshelvesField();
 
@@ -279,12 +286,13 @@ public class EditBookFieldsFragment
         }
     }
 
-    private void populateAuthorListField() {
+    private void populateAuthorListField(@NonNull final Locale userLocale) {
         Book book = mBookModel.getBook();
 
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        //noinspection ConstantConditions
         if (!list.isEmpty()
-            && ItemWithFixableId.pruneList(mBookModel.getDb(), list)) {
+            && ItemWithFixableId.pruneList(getContext(), mBookModel.getDb(), list, userLocale)) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
@@ -301,10 +309,12 @@ public class EditBookFieldsFragment
     private void populateSeriesListField() {
         Book book = mBookModel.getBook();
 
+        Context context = getContext();
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        //noinspection ConstantConditions
         if (!list.isEmpty()
             && ItemWithFixableId
-                       .pruneList(mBookModel.getDb(), list, getContext(), book.getLocale())) {
+                       .pruneList(context, mBookModel.getDb(), list, book.getLocale(context))) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         }

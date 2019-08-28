@@ -266,16 +266,18 @@ public class Series
      * bill <-- delete
      * bill(1)
      *
+     * @param context    Current context
      * @param list       to check
      * @param bookLocale Locale to use if the item does not have a Locale of its own.
      */
-    public static void pruneSeriesList(@NonNull final List<Series> list,
+    public static void pruneSeriesList(@NonNull final Context context,
+                                       @NonNull final List<Series> list,
                                        @NonNull final Locale bookLocale) {
         List<Series> toDelete = new ArrayList<>();
         Map<String, Series> index = new HashMap<>();
 
         for (Series series : list) {
-            Locale locale = series.getLocale(bookLocale);
+            Locale locale = series.getLocale(context, bookLocale);
 
             final String title = series.getTitle().trim().toLowerCase(locale);
             final boolean emptyNum = series.getNumber().trim().isEmpty();
@@ -430,17 +432,18 @@ public class Series
      * setting for the Series itself, or on the locale of the <strong>primary</strong> book.
      * For now, we always use the passed fallback which <strong>should be the BOOK Locale</strong>
      *
-     * @return the locale of the TocEntry
+     * @return the locale of the Series
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Locale bookLocale) {
+    public Locale getLocale(@NonNull final Context context,
+                            @NonNull Locale bookLocale) {
         return bookLocale;
     }
 
     @Override
-    public long fixId(@NonNull final DAO db,
-                      @NonNull final Context context,
+    public long fixId(@NonNull final Context context,
+                      @NonNull final DAO db,
                       @NonNull final Locale bookLocale) {
         mId = db.getSeriesId(context, this, bookLocale);
         return mId;

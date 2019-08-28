@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Manages the setup of search engines/sites.
@@ -125,7 +126,8 @@ public final class SearchSites {
         // Dutch.
         Site kbnl = Site.newSite(KBNL, priority++, 5);
         // Disabled by default if the device is not running in Dutch.
-        if (!"nld".equals(App.getSystemLocale().getISO3Language())) {
+        if (!"nld".equals(App.getSystemLocale().getISO3Language())
+            && !"nld".equals(LocaleUtils.getPreferredLocale().getISO3Language())) {
             kbnl.setEnabled(false);
         }
         SEARCH_ORDER_DEFAULTS.add(kbnl);

@@ -57,8 +57,15 @@ public final class LocaleUtils {
 
     /** The SharedPreferences name where we'll maintain our language to ISO mappings. */
     private static final String LANGUAGE_MAP = "language2iso3";
-
-    private static Locale mCachedPreferredLocale;
+    /**
+     * Value stored in preferences if the user runs our app in the default device language.
+     * The string "system" is hardcoded in the preference string-array and
+     * in the default setting in the preference screen.
+     */
+    private static final String SYSTEM_LANGUAGE = "system";
+    /** Remember the current language to detect when language is switched. */
+    private static String sCurrentUILanguage = SYSTEM_LANGUAGE;
+    private static Locale sCachedPreferredLocale;
 
     private LocaleUtils() {
     }
@@ -69,8 +76,8 @@ public final class LocaleUtils {
      * @return {@code true} if there is a change (difference)
      */
     public static boolean isChanged(@NonNull final Context context) {
-        boolean changed = !from(context).equals(getPreferredLocale());
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+        boolean changed = !from(context).equals(getPreferredLocale(context));
+        if (BuildConfig.DEBUG) {
             Logger.debug(LocaleUtils.class, "isChanged", "=" + changed);
         }
         return changed;
@@ -93,23 +100,28 @@ public final class LocaleUtils {
         }
 
         // null it first, so the getPreferredLocale call will re-reset it.
-        mCachedPreferredLocale = null;
-        mCachedPreferredLocale = getPreferredLocale();
+        sCachedPreferredLocale = null;
+        sCachedPreferredLocale = getPreferredLocale(context);
 
         // Apply the user-preferred Locale globally.... but this does not override already
         // loaded resources. So.. this is for FUTURE use when new resources get initialised.
-        Locale.setDefault(mCachedPreferredLocale);
+        Locale.setDefault(sCachedPreferredLocale);
 
         // Apply to the resources as passed in.
         // create a delta-configuration; i.e. only to be used to modify the added items.
         Configuration deltaOnlyConfig = new Configuration();
-        deltaOnlyConfig.setLocale(mCachedPreferredLocale);
+        deltaOnlyConfig.setLocale(sCachedPreferredLocale);
 
+        // current context
         Resources resources = context.getResources();
         resources.updateConfiguration(deltaOnlyConfig, resources.getDisplayMetrics());
 
+        // application context
+        resources = App.getAppContext().getResources();
+        resources.updateConfiguration(deltaOnlyConfig, resources.getDisplayMetrics());
+
         // see if we need to add mappings for the new/current locale
-        createLanguageMappingCache(getLanguageCache(), mCachedPreferredLocale);
+        createLanguageMappingCache(getLanguageCache(), sCachedPreferredLocale);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.debugExit(LocaleUtils.class, "applyPreferred",
@@ -141,23 +153,45 @@ public final class LocaleUtils {
     }
 
     /**
+     * Get the user-preferred Locale as stored in the preferences.
+     * <p>
+     * Try to avoid this method, and use {@link #getPreferredLocale(Context)}.
+     * The latter will work fine from unit tests, while this one will not.
+     *
      * @return the user-preferred Locale as stored in the preferences.
      */
     @NonNull
     public static Locale getPreferredLocale() {
-        String lang = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                       .getString(Prefs.pk_ui_language, null);
+        return getPreferredLocale(App.getAppContext());
+    }
 
-        if (mCachedPreferredLocale == null) {
-            // the string "system" is also hardcoded in the preference string-array and
-            // in the default setting in the preference screen.
-            if (lang == null || lang.isEmpty() || "system".equalsIgnoreCase(lang)) {
-                mCachedPreferredLocale = App.getSystemLocale();
+    /**
+     * Get the user-preferred Locale as stored in the preferences.
+     *
+     * @param context Current context
+     *
+     * @return the user-preferred Locale.
+     */
+    @NonNull
+    public static Locale getPreferredLocale(@NonNull final Context context) {
+        String lang = PreferenceManager.getDefaultSharedPreferences(context)
+                                       .getString(Prefs.pk_ui_language, SYSTEM_LANGUAGE);
+
+        // first start, or if the language was changed since last time.
+        if (sCachedPreferredLocale == null || !sCurrentUILanguage.equals(lang)) {
+            sCurrentUILanguage = lang;
+            if (lang == null || lang.isEmpty() || SYSTEM_LANGUAGE.equals(lang)) {
+                sCachedPreferredLocale = App.getSystemLocale();
             } else {
-                mCachedPreferredLocale = from(lang);
+                sCachedPreferredLocale = from(lang);
             }
         }
-        return mCachedPreferredLocale;
+        if (BuildConfig.DEBUG) {
+            Logger.debug(LocaleUtils.class, "getPreferredLocale",
+                         "lang=" + lang,
+                         "sCachedPreferredLocale=" + sCachedPreferredLocale);
+        }
+        return sCachedPreferredLocale;
     }
 
     /**
@@ -168,6 +202,18 @@ public final class LocaleUtils {
     @NonNull
     public static Locale from(@NonNull final Context context) {
         Locale locale = context.getResources().getConfiguration().locale;
+
+        //if (locale == null || locale.equals(sCachedPreferredLocale)) {
+        if (BuildConfig.DEBUG) {
+            Logger.debugWithStackTrace(LocaleUtils.class, "from",
+                                       "locale=" + locale,
+                                       "sCachedPreferredLocale=" + sCachedPreferredLocale);
+        }
+
+        if (sCachedPreferredLocale == null) {
+            sCachedPreferredLocale = locale;
+        }
+
         return locale != null ? locale : Locale.ENGLISH;
     }
 
@@ -236,16 +282,18 @@ public final class LocaleUtils {
      * That probably covers a lot if not all.
      *
      * @param displayName the string as normally produced by {@link Locale#getDisplayLanguage}
+     * @param userLocale
      *
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public static String getIso3fromDisplayName(@NonNull final String displayName) {
-        String iso = getLanguageCache().getString(displayName, null);
-        if (iso != null) {
-            return iso;
+    public static String getIso3fromDisplayName(@NonNull final String displayName,
+                                                @NonNull final Locale userLocale) {
+        String iso = getLanguageCache().getString(displayName.toLowerCase(userLocale), null);
+        if (iso == null) {
+            return displayName;
         }
-        return displayName;
+        return iso;
     }
 
     /**
@@ -389,7 +437,7 @@ public final class LocaleUtils {
      * Convert the 3-char bibliographic code to the Java used terminology code.
      * <p>
      * Goodreads uses the bibliographic code while Java uses the terminology code.
-     * For example, in Java french is "fra" but GR uses "fre".
+     * For example, in Java French is "fra" but Goodreads uses "fre".
      *
      * <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php">
      * https://www.loc.gov/standards/iso639-2/php/code_list.php</a>
@@ -482,19 +530,23 @@ public final class LocaleUtils {
 
     /**
      * Generate language mappings for a given locale.
+     *
+     * @param prefs      the preferences 'file' used as our language names cache.
+     * @param userLocale the locale the user is running the app in.
      */
     private static void createLanguageMappingCache(@NonNull final SharedPreferences prefs,
-                                                   @NonNull final Locale myLocale) {
+                                                   @NonNull final Locale userLocale) {
         // just return if already done for this locale.
-        if (prefs.getBoolean(myLocale.getISO3Language(), false)) {
+        if (prefs.getBoolean(userLocale.getISO3Language(), false)) {
             return;
         }
         SharedPreferences.Editor ed = prefs.edit();
         for (Locale loc : Locale.getAvailableLocales()) {
-            ed.putString(loc.getDisplayLanguage(myLocale), loc.getISO3Language());
+            ed.putString(loc.getDisplayLanguage(userLocale).toLowerCase(userLocale),
+                         loc.getISO3Language());
         }
         // signal this locale was done
-        ed.putBoolean(myLocale.getISO3Language(), true);
+        ed.putBoolean(userLocale.getISO3Language(), true);
         ed.apply();
     }
 
@@ -517,8 +569,9 @@ public final class LocaleUtils {
 
                + "\nLocale.getDefault()        : " + Locale.getDefault().getDisplayName()
                + "\nLocale.getDefault(cur)     : " + Locale.getDefault().getDisplayName(current)
-               + "\ngetPreferredLocale()       : " + getPreferredLocale().getDisplayName()
-               + "\ngetPreferredLocale(cur)    : " + getPreferredLocale().getDisplayName(current)
+               + "\ngetPreferredLocale()       : " + getPreferredLocale(context).getDisplayName()
+               + "\ngetPreferredLocale(cur)    : " + getPreferredLocale(context)
+                                                             .getDisplayName(current)
 
                + "\nApp.isInNeedOfRecreating() : " + App.isInNeedOfRecreating()
                + "\nApp.isRecreating()         : " + App.isRecreating();

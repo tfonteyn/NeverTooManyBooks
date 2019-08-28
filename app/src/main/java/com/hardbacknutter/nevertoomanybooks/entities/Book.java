@@ -104,7 +104,7 @@ public class Book
     public static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
 
     private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
-    /**
+    /*
      * {@link DBDefinitions#DOM_BOOK_EDITION_BITMASK}.
      * <p>
      * 0%00000000 = a generic edition, or we simply don't know what edition it is.
@@ -510,12 +510,15 @@ public class Book
     /**
      * Update author details from DB.
      *
-     * @param db Database Access
+     * @param userLocale the locale the user is running the app in.
+     * @param db         Database Access
      */
-    public void refreshAuthorList(@NonNull final DAO db) {
+    public void refreshAuthorList(@NonNull final Context context,
+                                  @NonNull final Locale userLocale,
+                                  @NonNull final DAO db) {
         ArrayList<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         for (Author author : list) {
-            db.refreshAuthor(author);
+            db.refreshAuthor(context, userLocale, author);
         }
         putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
     }
@@ -540,8 +543,8 @@ public class Book
     /**
      * Validate the locale (based on the Book's language) and reset the language if needed.
      */
-    public void updateLocale() {
-        getLocale(true);
+    public void updateLocale(@NonNull final Context context) {
+        getLocale(context, true);
     }
 
     /**
@@ -550,8 +553,8 @@ public class Book
      * @return the locale, or the users preferred locale if no language was set.
      */
     @NonNull
-    public Locale getLocale() {
-        return getLocale(false);
+    public Locale getLocale(@NonNull final Context context) {
+        return getLocale(context, false);
     }
 
     /**
@@ -561,8 +564,9 @@ public class Book
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Locale fallbackLocale) {
-        return getLocale(false);
+    public Locale getLocale(@NonNull final Context context,
+                            @NonNull final Locale fallbackLocale) {
+        return getLocale(context, false);
     }
 
     /**
@@ -574,9 +578,10 @@ public class Book
      * @return the locale.
      */
     @NonNull
-    private Locale getLocale(final boolean updateLanguage) {
+    private Locale getLocale(@NonNull final Context context,
+                             final boolean updateLanguage) {
         // fallback if we can't determine the books Locale
-        Locale userLocale = LocaleUtils.getPreferredLocale();
+        Locale userLocale = LocaleUtils.getPreferredLocale(context);
 
         Locale bookLocale = null;
         if (containsKey(DBDefinitions.KEY_LANGUAGE)) {
@@ -584,7 +589,7 @@ public class Book
             int len = lang.length();
             // try to convert to iso3 if needed.
             if (len != 2 && len != 3) {
-                lang = LocaleUtils.getIso3fromDisplayName(lang);
+                lang = LocaleUtils.getIso3fromDisplayName(lang, userLocale);
             }
 
             // some languages have two iso3 codes; convert if needed.
@@ -631,7 +636,7 @@ public class Book
                                   @NonNull final DAO db) {
         ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         for (Series series : list) {
-            db.refreshSeries(context, series, getLocale());
+            db.refreshSeries(context, series, getLocale(context));
         }
         putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
     }

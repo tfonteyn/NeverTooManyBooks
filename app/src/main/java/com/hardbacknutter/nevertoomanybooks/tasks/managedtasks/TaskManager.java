@@ -130,7 +130,7 @@ public class TaskManager {
             }
 
             // Tell all listeners that the task has finished.
-            MESSAGE_SWITCH.send(mMessageSenderId, new TaskFinishedMessage(TaskManager.this, task));
+            MESSAGE_SWITCH.send(mMessageSenderId, new TaskFinishedMessage(task));
 
             // Update the progress dialog
             sendProgress();
@@ -418,15 +418,10 @@ public class TaskManager {
     public static class TaskFinishedMessage
             implements Message<TaskManagerListener> {
 
-        @SuppressWarnings("FieldNotUsedInToString")
-        @NonNull
-        private final TaskManager mTaskManager;
         @NonNull
         private final ManagedTask mTask;
 
-        TaskFinishedMessage(@NonNull final TaskManager taskManager,
-                            @NonNull final ManagedTask task) {
-            mTaskManager = taskManager;
+        TaskFinishedMessage(@NonNull final ManagedTask task) {
             mTask = task;
         }
 

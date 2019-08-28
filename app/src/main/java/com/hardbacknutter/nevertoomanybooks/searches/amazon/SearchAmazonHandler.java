@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
@@ -311,6 +312,8 @@ class SearchAmazonHandler
     private boolean mInError;
     private String mError;
 
+    private Locale mUserLocale;
+
     /**
      * Constructor.
      *
@@ -321,6 +324,8 @@ class SearchAmazonHandler
                         final boolean fetchThumbnail) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
+
+        mUserLocale = LocaleUtils.getPreferredLocale();
     }
 
     @Nullable
@@ -504,7 +509,8 @@ class SearchAmazonHandler
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
                 // the language is a 'DisplayName'
                 addIfNotPresent(mBookData, DBDefinitions.KEY_LANGUAGE,
-                                LocaleUtils.getIso3fromDisplayName(mBuilder.toString()));
+                                LocaleUtils.getIso3fromDisplayName(mBuilder.toString(),
+                                                                   mUserLocale));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {
                 mCurrencyAmount = mBuilder.toString();

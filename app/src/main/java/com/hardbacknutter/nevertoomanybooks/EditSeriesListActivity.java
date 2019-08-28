@@ -116,7 +116,7 @@ public class EditSeriesListActivity
         Series newSeries = new Series(name);
         newSeries.setNumber(mSeriesNumberView.getText().toString().trim());
         // see if it already exists
-        newSeries.fixId(mModel.getDb(), this, mModel.getBookLocale());
+        newSeries.fixId(this, mModel.getDb(), mModel.getBookLocale());
         // and check it's not already in the list.
         if (mList.contains(newSeries)) {
             UserMessage.show(mAutoCompleteTextView, R.string.warning_series_already_in_list);
@@ -148,8 +148,8 @@ public class EditSeriesListActivity
                 // Number is not part of the Series table, but of the book_series table.
                 // so just update it and we're done here.
                 series.setNumber(newNumber);
-                Series.pruneSeriesList(mList, bookLocale);
-                ItemWithFixableId.pruneList(mModel.getDb(), mList, this, bookLocale);
+                Series.pruneSeriesList(this, mList, bookLocale);
+                ItemWithFixableId.pruneList(this, mModel.getDb(), mList, bookLocale);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -167,8 +167,8 @@ public class EditSeriesListActivity
         if (mModel.isSingleUsage(nrOfReferences)) {
             // Use the original mSeries, but update its fields
             series.copyFrom(newSeries, true);
-            Series.pruneSeriesList(mList, bookLocale);
-            ItemWithFixableId.pruneList(mModel.getDb(), mList, this, bookLocale);
+            Series.pruneSeriesList(this, mList, bookLocale);
+            ItemWithFixableId.pruneList(this, mModel.getDb(), mList, bookLocale);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -187,14 +187,14 @@ public class EditSeriesListActivity
                     mModel.setGlobalReplacementsMade(
                             mModel.getDb().globalReplace(this, series, newSeries, bookLocale));
                     series.copyFrom(newSeries, false);
-                    Series.pruneSeriesList(mList, bookLocale);
-                    ItemWithFixableId.pruneList(mModel.getDb(), mList, this, bookLocale);
+                    Series.pruneSeriesList(this, mList, bookLocale);
+                    ItemWithFixableId.pruneList(this, mModel.getDb(), mList, bookLocale);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .setPositiveButton(R.string.btn_this_book, (d, which) -> {
                     series.copyFrom(newSeries, true);
-                    Series.pruneSeriesList(mList, bookLocale);
-                    ItemWithFixableId.pruneList(mModel.getDb(), mList, this, bookLocale);
+                    Series.pruneSeriesList(this, mList, bookLocale);
+                    ItemWithFixableId.pruneList(this, mModel.getDb(), mList, bookLocale);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .create()

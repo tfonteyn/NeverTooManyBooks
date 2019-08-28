@@ -148,7 +148,9 @@ public class PartialDatePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         // Get a calendar for locale-related info (defaults to current date)
-        mCalendarForCalculations = Calendar.getInstance(LocaleUtils.getPreferredLocale());
+        //noinspection ConstantConditions
+        mCalendarForCalculations = Calendar.getInstance(
+                LocaleUtils.getPreferredLocale(getContext()));
 
         mCurrentYear = mCalendarForCalculations.get(Calendar.YEAR);
 

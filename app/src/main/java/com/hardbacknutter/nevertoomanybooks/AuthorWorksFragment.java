@@ -398,7 +398,7 @@ public class AuthorWorksFragment
             return new String[]{mModel.getTocEntries().get(index)
                                       .getTitle()
                                       .substring(0, 1)
-                                        .toUpperCase(LocaleUtils.getPreferredLocale())};
+                                        .toUpperCase(LocaleUtils.getPreferredLocale(context))};
         }
     }
 }

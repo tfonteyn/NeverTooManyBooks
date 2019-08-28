@@ -45,12 +45,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
@@ -70,6 +72,8 @@ public class FTSSearchActivity
     private final Handler mSCHandler = new Handler();
     /** Database Access. */
     private DAO mDb;
+
+    private Locale mLocale;
 
     private String mAuthorSearchText;
     private String mTitleSearchText;
@@ -151,6 +155,7 @@ public class FTSSearchActivity
 
         mDb = new DAO();
 
+        mLocale = LocaleUtils.getPreferredLocale(this);
         mBooksFound = findViewById(R.id.books_found);
 
         // Detect when user touches something, just so we know they are 'busy'.
@@ -195,7 +200,7 @@ public class FTSSearchActivity
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_REBUILD_FTS:
-                mDb.rebuildFts();
+                mDb.rebuildFts(this);
                 return true;
 
             default:
@@ -231,7 +236,8 @@ public class FTSSearchActivity
         mKeywordsSearchText = mKeywordsView.getText().toString().trim();
 
         String tmpMsg = null;
-        try (Cursor cursor = mDb.searchFts(mAuthorSearchText,
+        try (Cursor cursor = mDb.searchFts(mLocale,
+                                           mAuthorSearchText,
                                            mTitleSearchText,
                                            mKeywordsSearchText)) {
             // Null return means searchFts thought the parameters were effectively blank.

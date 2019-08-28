@@ -77,14 +77,16 @@ public final class Format {
     /**
      * Try to map website terminology to our own localised.
      *
+     * URGENT: this should get called after a search / before an edit. and not just at 'save' time.
+     *
      * @param context Current context
      * @param source  string to map
      *
      * @return localized equivalent, or the source if no mapping exists.
      */
-    public static String map(final Context context,
+    public static String map(@NonNull final Context context,
                              @NonNull final String source) {
-        Integer resId = MAPPER.get(source.toLowerCase(LocaleUtils.getPreferredLocale()));
+        Integer resId = MAPPER.get(source.toLowerCase(LocaleUtils.getPreferredLocale(context)));
         return resId != null ? context.getString(resId) : source;
     }
 }

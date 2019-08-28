@@ -61,12 +61,14 @@ public interface ItemWithTitle {
      * return an Spanish Locale even if for example the user runs the app in German,
      * and the device in Danish.
      *
+     * @param context        Current context
      * @param fallbackLocale Locale to use if the item does not have a Locale of its own.
      *
      * @return the item Locale, or the fallbackLocale.
      */
     @NonNull
-    Locale getLocale(@NonNull Locale fallbackLocale);
+    Locale getLocale(@NonNull Context context,
+                     @NonNull Locale fallbackLocale);
 
     @NonNull
     String getTitle();
@@ -83,7 +85,7 @@ public interface ItemWithTitle {
     default String preprocessTitle(@NonNull final Context userContext,
                                    @NonNull final Locale fallbackLocale) {
 
-        Locale locale = getLocale(fallbackLocale);
+        Locale locale = getLocale(userContext, fallbackLocale);
 
         // Getting the string is slow, so we cache it for every Locale.
         String orderPatter = LOCALE_PREFIX_MAP.get(locale);
