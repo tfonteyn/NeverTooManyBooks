@@ -78,8 +78,7 @@ public class EditAuthorDialogFragment
 
         author.copyFrom(newAuthorData, false);
         //noinspection ConstantConditions
-        mDb.updateOrInsertAuthor(getContext(), LocaleUtils.getPreferredLocale(getContext()),
-                                 author);
+        mDb.updateOrInsertAuthor(getContext(), LocaleUtils.getLocale(getContext()), author);
 
         Bundle data = new Bundle();
         data.putLong(DBDefinitions.KEY_FK_AUTHOR, author.getId());

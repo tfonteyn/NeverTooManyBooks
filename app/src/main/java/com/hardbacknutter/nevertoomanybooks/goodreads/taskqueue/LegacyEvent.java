@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -59,10 +58,9 @@ public class LegacyEvent
 
     @NonNull
     @Override
-    public View getView(@NonNull final LayoutInflater inflater,
+    public View getView(@NonNull final Context context,
                         @NonNull final BindableItemCursor cursor,
                         @NonNull final ViewGroup parent) {
-        Context context = inflater.getContext();
         LinearLayout root = new LinearLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
         ViewGroup.LayoutParams margins = new LinearLayout.LayoutParams(

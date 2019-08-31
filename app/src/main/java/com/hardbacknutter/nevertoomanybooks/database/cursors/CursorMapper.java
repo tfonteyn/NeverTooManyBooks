@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 /**
  * A handy wrapper allowing to fetch columns by name.
  * <p>
- * <b>Note:</b> converts {@code null} Strings to an empty String.
+ * <strong>Note:</strong> converts {@code null} Strings to an empty String.
  * <p>
  * Tip: when using a CursorMapper as a parameter to a constructor, e.g.
  * {@link com.hardbacknutter.nevertoomanybooks.entities.Bookshelf#Bookshelf(long, CursorMapper)}

@@ -97,7 +97,7 @@ public abstract class BRBaseActivity
                 new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
-        mAdapter = new FileDetailsAdapter(getLayoutInflater());
+        mAdapter = new FileDetailsAdapter(this);
         mListView.setAdapter(mAdapter);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
@@ -191,14 +191,17 @@ public abstract class BRBaseActivity
 
         @NonNull
         private final LayoutInflater mInflater;
+        @NonNull
+        private final Context mContext;
 
         /**
          * Constructor.
          *
-         * @param inflater LayoutInflater to use
+         * @param context Current context
          */
-        FileDetailsAdapter(@NonNull final LayoutInflater inflater) {
-            mInflater = inflater;
+        FileDetailsAdapter(@NonNull final Context context) {
+            mInflater = LayoutInflater.from(context);
+            mContext = context;
         }
 
         @NonNull
@@ -215,7 +218,7 @@ public abstract class BRBaseActivity
                                      final int position) {
 
             FileDetails item = mFileDetails.get(position);
-            item.onBindViewHolder(holder, mInflater.getContext());
+            item.onBindViewHolder(holder, mContext);
 
             File file = item.getFile();
 

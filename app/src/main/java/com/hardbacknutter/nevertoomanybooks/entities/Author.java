@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 /**
  * Class to hold author data.
  *
- * <b>Note:</b> "type" is a column of {@link DBDefinitions#TBL_BOOK_AUTHOR}
+ * <strong>Note:</strong> "type" is a column of {@link DBDefinitions#TBL_BOOK_AUTHOR}
  * So this class does not strictly represent an Author, but a "BookAuthor"
  * When the type is disregarded, it is a real Author representation.
  */
@@ -537,8 +537,7 @@ public class Author
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Context context,
-                            @NonNull Locale fallbackLocale) {
+    public Locale getLocale(@NonNull Locale fallbackLocale) {
         return fallbackLocale;
     }
 
@@ -546,12 +545,12 @@ public class Author
     public long fixId(@NonNull final Context context,
                       @NonNull final DAO db,
                       @NonNull final Locale locale) {
-        mId = db.getAuthorId(context, this, locale);
+        mId = db.getAuthorId(this, locale);
         return mId;
     }
 
     /**
-     * An Author with a given set of Family and Given-names is defined by a unique id.<br>
+     * An Author with a given set of Family and Given-names is defined by a unique ID.<br>
      * The other fields are not significant in a list of Authors.
      * <ul>
      * <li>The 'isComplete' is a user setting.</li>
@@ -578,11 +577,11 @@ public class Author
      * Equality: <strong>id, family and given-names</strong>.
      * <p>
      * <li>it's the same Object</li>
-     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
+     * <li>one or both of them are 'new' (e.g. id == 0) or have the same ID<br>
      * AND family/given-names are equal</li>
      * <p>
      * <strong>Compare is CASE SENSITIVE</strong>:
-     * This allows correcting case mistakes even with identical id.<br>
+     * This allows correcting case mistakes even with identical ID.<br>
      */
     @Override
     public boolean equals(@Nullable final Object obj) {

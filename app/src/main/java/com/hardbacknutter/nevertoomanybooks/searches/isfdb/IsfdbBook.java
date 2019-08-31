@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,7 +65,7 @@ public class IsfdbBook
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_ISFDB";
 
-    /** Param 1: ISFDB native book id. */
+    /** Param 1: ISFDB native book ID. */
     private static final String BOOK_URL = IsfdbManager.CGI_BIN
                                            + IsfdbManager.URL_PL_CGI + "?%1$s";
 
@@ -81,6 +80,7 @@ public class IsfdbBook
     private static final Pattern YEAR_PATTERN = Pattern.compile(DOT + " \\(([1|2]\\d\\d\\d)\\)");
     /** ISFDB uses 00 for the day/month when unknown. We cut that out. */
     private static final Pattern UNKNOWN_M_D_PATTERN = Pattern.compile("-00", Pattern.LITERAL);
+
 
     /*
      * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
@@ -176,7 +176,7 @@ public class IsfdbBook
     }
 
     /**
-     * @param isfdbId          ISFDB native book id
+     * @param isfdbId          ISFDB native book ID
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   whether to get thumbnails as well
      *
@@ -221,7 +221,7 @@ public class IsfdbBook
     }
 
     /**
-     * @param editions         List of ISFDB Editions with native book id
+     * @param editions         List of ISFDB Editions with native book ID
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   whether to get thumbnails as well
      *
@@ -392,7 +392,6 @@ public class IsfdbBook
 
         Element contentBox = mDoc.select("div.contentbox").first();
         Element ul = contentBox.select("ul").first();
-
         Elements lis = ul.children();
 
         String tmpString;
@@ -491,7 +490,7 @@ public class IsfdbBook
 
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
                     tmpString = li.childNode(2).toString().trim();
-                    CurrencyUtils.splitPrice(tmpString,
+                    CurrencyUtils.splitPrice(IsfdbManager.SITE_LOCALE, tmpString,
                                              DBDefinitions.KEY_PRICE_LISTED,
                                              DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                                              bookData);
@@ -584,7 +583,7 @@ public class IsfdbBook
         // it in their database).
         //ENHANCE: the site is adding language to the data.. revisit.
         // For now, default to a localised 'English" as ISFDB is after all (I presume) 95% english
-        bookData.putString(DBDefinitions.KEY_LANGUAGE, Locale.ENGLISH.getISO3Language());
+        bookData.putString(DBDefinitions.KEY_LANGUAGE, "eng");
 
         // the table of content
         ArrayList<TocEntry> toc = getTocList(bookData, addSeriesFromToc);

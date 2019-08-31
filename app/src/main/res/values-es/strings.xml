@@ -582,7 +582,9 @@
     <string name="lbl_author_editor">Editor</string>
     <string name="lbl_author_contributor">Contribuyente</string>
     <string name="lbl_artist_colorist">Colorista</string>
-    <string name="lbl_author_primary">Primario</string>
-    <string name="lbl_author_secondary">Secundario</string>
+    <string name="tip_update_fields_from_internet">Los enlaces externos del sitio solo se procesan si se contacta realmente con el sitio. Como resultado, el menú «Ver en…» solo mostrará lo que está disponible.</string>
+    <string name="lbl_author_secondary">coautor</string>
+    <string name="lbl_author_type">Tipo de autor</string>
+    <string name="pt_bob_show_details_uses_task_off">inmediatamente</string>
 
 </resources>

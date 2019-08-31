@@ -65,7 +65,7 @@ public class SearchSuggestionProvider
     }
 
     /**
-     * <b>Note:</b> {@link ContentProvider#onCreate()} states that database connections
+     * <strong>Note:</strong> {@link ContentProvider#onCreate()} states that database connections
      * etc should be deferred until needed. Hence creating it on the fly.
      */
     @Override

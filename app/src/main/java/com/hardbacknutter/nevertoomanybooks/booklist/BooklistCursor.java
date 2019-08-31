@@ -85,16 +85,6 @@ public class BooklistCursor
         return mCursorRow;
     }
 
-    /**
-     * Get the builder used to make this cursor.
-     *
-     * @return BooklistBuilder
-     */
-    @NonNull
-    public BooklistBuilder getBuilder() {
-        return mBuilder;
-    }
-
     @Override
     @NonNull
     public String toString() {

@@ -46,9 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 class SendOneBookLegacyTask
         extends SendBooksLegacyTaskBase {
 
-    private static final long serialVersionUID = 8585857100291691934L;
+    private static final long serialVersionUID = 2715001057868693159L;
 
-    /** ID of book to send. */
+    /** id of book to send. */
     private final long mBookId;
 
     /**

@@ -78,10 +78,10 @@ public class RestoreTask
     protected ImportOptions doInBackground(final Void... params) {
         Thread.currentThread().setName("RestoreTask");
 
-        Context userContext = App.getFakeUserContext();
-        try (BackupReader reader = BackupManager.getReader(userContext, mFile)) {
+        Context context = App.getLocalizedAppContext();
+        try (BackupReader reader = BackupManager.getReader(context, mFile)) {
 
-            reader.restore(mSettings, new ProgressListenerBase() {
+            reader.restore(context, mSettings, new ProgressListenerBase() {
 
                 private int mAbsPosition;
 

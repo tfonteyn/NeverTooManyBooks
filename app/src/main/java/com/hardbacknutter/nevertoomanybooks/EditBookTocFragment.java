@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -93,20 +94,24 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * <p>
  * The ISFDB direct interaction should however be seen as temporary as this class should not
  * have to know about any specific search web site.
- * <b>Note:</b> we also pass in 'this' as the task listener... no orientation changes ...
+ * <strong>Note:</strong> we also pass in 'this' as the task listener... no orientation changes ...
  */
 public class EditBookTocFragment
         extends EditBookBaseFragment {
 
     /** Fragment manager tag. */
     public static final String TAG = "EditBookTocFragment";
-
+    private final SimpleAdapterDataObserver mAdapterDataObserver = new SimpleAdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            mBookModel.setDirty(true);
+        }
+    };
     /** The book. */
     @Nullable
     private String mIsbn;
     /** primary author of the book. */
     private Author mBookAuthor;
-
     /** checkbox to hide/show the author edit field. */
     private CompoundButton mMultipleAuthorsView;
     /** the rows. */
@@ -117,14 +122,12 @@ public class EditBookTocFragment
     private RecyclerView mListView;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
-
     /**
      * ISFDB editions of a book(isbn).
      * We'll try them one by one if the user asks for a re-try.
      */
     @Nullable
     private ArrayList<Editions.Edition> mIsfdbEditions;
-
     private final IsfdbResultsListener mIsfdbResultsListener = new IsfdbResultsListener() {
         /**
          * we got a book.
@@ -185,7 +188,6 @@ public class EditBookTocFragment
             }
         }
     };
-
     private final ConfirmToc.ConfirmTocResults mConfirmTocResultsListener =
             new ConfirmToc.ConfirmTocResults() {
                 /**
@@ -214,7 +216,6 @@ public class EditBookTocFragment
                                          mIsfdbResultsListener).execute();
                 }
             };
-
     @Nullable
     private Integer mEditPosition;
     private final EditTocEntryDialogFragment.EditTocEntryResults mEditTocEntryResultsListener =
@@ -235,13 +236,6 @@ public class EditBookTocFragment
                     mListAdapter.notifyDataSetChanged();
                 }
             };
-
-    private final SimpleAdapterDataObserver mAdapterDataObserver = new SimpleAdapterDataObserver() {
-        @Override
-        public void onChanged() {
-            mBookModel.setDirty(true);
-        }
-    };
 
     @Override
     @Nullable
@@ -372,7 +366,8 @@ public class EditBookTocFragment
         // Populate the list view with the book content table.
         mList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
-        mListAdapter = new TocListEditAdapter(getLayoutInflater(), mList,
+        //noinspection ConstantConditions
+        mListAdapter = new TocListEditAdapter(getContext(), mList,
                                               vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mListView.setAdapter(mListAdapter);
@@ -406,7 +401,7 @@ public class EditBookTocFragment
             .setIcon(R.drawable.ic_delete);
 
         String title = item.getTitle();
-        new MenuPicker<>(getLayoutInflater(), title, menu, position, this::onContextItemSelected)
+        new MenuPicker<>(getContext(), title, menu, position, this::onContextItemSelected)
                 .show();
     }
 
@@ -630,14 +625,14 @@ public class EditBookTocFragment
         /**
          * Constructor.
          *
-         * @param inflater          LayoutInflater to use
+         * @param context           Current context
          * @param items             List of TocEntry's
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        TocListEditAdapter(@NonNull final LayoutInflater inflater,
+        TocListEditAdapter(@NonNull final Context context,
                            @NonNull final List<TocEntry> items,
                            @NonNull final StartDragListener dragStartListener) {
-            super(inflater, items, dragStartListener);
+            super(context, items, dragStartListener);
         }
 
         @NonNull

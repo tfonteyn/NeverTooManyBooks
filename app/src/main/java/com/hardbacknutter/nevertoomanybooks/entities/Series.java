@@ -46,11 +46,12 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Class to hold book-related series data.
  * <p>
- * <b>Note:</b> the Series "number" is a column of {@link DBDefinitions#TBL_BOOK_SERIES}
+ * <strong>Note:</strong> the Series "number" is a column of {@link DBDefinitions#TBL_BOOK_SERIES}
  * So this class does not strictly represent a Series, but a "BookInSeries"
  * When the number is disregarded, it is a real Series representation.
  */
@@ -266,18 +267,16 @@ public class Series
      * bill <-- delete
      * bill(1)
      *
-     * @param context    Current context
      * @param list       to check
      * @param bookLocale Locale to use if the item does not have a Locale of its own.
      */
-    public static void pruneSeriesList(@NonNull final Context context,
-                                       @NonNull final List<Series> list,
+    public static void pruneSeriesList(@NonNull final List<Series> list,
                                        @NonNull final Locale bookLocale) {
         List<Series> toDelete = new ArrayList<>();
         Map<String, Series> index = new HashMap<>();
 
         for (Series series : list) {
-            Locale locale = series.getLocale(context, bookLocale);
+            Locale locale = series.getLocale(bookLocale);
 
             final String title = series.getTitle().trim().toLowerCase(locale);
             final boolean emptyNum = series.getNumber().trim().isEmpty();
@@ -436,8 +435,7 @@ public class Series
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Context context,
-                            @NonNull Locale bookLocale) {
+    public Locale getLocale(@NonNull Locale bookLocale) {
         return bookLocale;
     }
 
@@ -445,12 +443,13 @@ public class Series
     public long fixId(@NonNull final Context context,
                       @NonNull final DAO db,
                       @NonNull final Locale bookLocale) {
+        LocaleUtils.insanityCheck(context);
         mId = db.getSeriesId(context, this, bookLocale);
         return mId;
     }
 
     /**
-     * A Series with a given Title is <strong>NOT</strong> defined by a unique id.
+     * A Series with a given Title is <strong>NOT</strong> defined by a unique ID.
      * In a list of Series, the number of a book in a Series ('Elric(1)', 'Elric(2)' etc)
      * can be different, while the Series itself will have the same ID, so it's not unique by ID.
      */
@@ -484,10 +483,10 @@ public class Series
      * Equality: <strong>id, title</strong>.
      * <p>
      * <li>it's the same Object</li>
-     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
+     * <li>one or both of them are 'new' (e.g. id == 0) or have the same ID<br>
      * AND title are equal</li>
      * <p>
-     * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
+     * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical ID.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {

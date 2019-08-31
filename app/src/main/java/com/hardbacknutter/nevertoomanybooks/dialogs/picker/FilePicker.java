@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,20 +56,20 @@ public class FilePicker
     /**
      * Constructor.
      *
-     * @param inflater LayoutInflater to use
+     * @param context    Current context
      * @param title    for the dialog
      * @param message  optional message
      * @param files    list to choose from
      * @param handler  which will receive the selected row item
      */
-    public FilePicker(@NonNull final LayoutInflater inflater,
+    public FilePicker(@NonNull final Context context,
                       @Nullable final String title,
                       @Nullable final String message,
                       @NonNull final List<File> files,
                       @NonNull final PickListener<File> handler) {
-        super(inflater, title, message, true);
+        super(context, title, message, true);
 
-        final FileItemListAdapter adapter = new FileItemListAdapter(inflater, files, item -> {
+        final FileItemListAdapter adapter = new FileItemListAdapter(context, files, item -> {
             dismiss();
             handler.onPicked(item);
         });
@@ -86,22 +87,25 @@ public class FilePicker
         private final LayoutInflater mInflater;
 
         @NonNull
+        private final Context mContext;
+        @NonNull
         private final PickListener<File> mListener;
 
         /**
          * Constructor.
          *
-         * @param inflater LayoutInflater to use
+         * @param context    Current context
          * @param list     List of items
          * @param listener called upon user selection
          */
-        FileItemListAdapter(@NonNull final LayoutInflater inflater,
+        FileItemListAdapter(@NonNull final Context context,
                             @NonNull final List<File> list,
                             @NonNull final PickListener<File> listener) {
 
-            mInflater = inflater;
+            mContext = context;
+            mInflater = LayoutInflater.from(mContext);
             mListener = listener;
-            mLocale = LocaleUtils.from(inflater.getContext());
+            mLocale = LocaleUtils.getLocale(mContext);
             mList = list;
         }
 
@@ -118,12 +122,10 @@ public class FilePicker
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            Context context = mInflater.getContext();
-
             File item = mList.get(position);
             holder.nameView.setText(item.getName());
             holder.pathView.setText(item.getParent());
-            holder.sizeView.setText(StorageUtils.formatFileSize(context, item.length()));
+            holder.sizeView.setText(StorageUtils.formatFileSize(mContext, item.length()));
             holder.lastModDateView
                     .setText(DateUtils.toPrettyDateTime(mLocale, new Date(item.lastModified())));
 

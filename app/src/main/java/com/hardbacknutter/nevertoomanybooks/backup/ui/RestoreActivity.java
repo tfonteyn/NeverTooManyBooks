@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.backup.BackupManager;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.RestoreTask;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupReader;
@@ -65,7 +66,8 @@ public class RestoreActivity
     /** The ViewModel. */
     private ImportOptionsTaskModel mOptionsModel;
 
-    private final ImportOptionsDialogFragment.OptionsListener mOptionsListener = this::onOptionsSet;
+    private final OptionsDialogBase.OptionsListener<ImportOptions> mOptionsListener
+            = this::onOptionsSet;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -98,7 +100,7 @@ public class RestoreActivity
         }
         mOptionsModel.setFile(file);
 
-        ImportOptions options = new ImportOptions();
+        ImportOptions options = new ImportOptions(ImportOptions.ALL);
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_import_from_archive)
@@ -196,7 +198,7 @@ public class RestoreActivity
      */
     private void onOptionsSet(@NonNull final ImportOptions options) {
         // sanity check
-        if (options.what == ImportOptions.NOTHING) {
+        if (options.what == Options.NOTHING) {
             return;
         }
 

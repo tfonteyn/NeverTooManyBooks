@@ -27,9 +27,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -119,7 +119,7 @@ public class PreferredStylesActivity
         mListView.setHasFixedSize(true);
 
         // setup the adapter
-        mListAdapter = new BooklistStylesAdapter(getLayoutInflater(), mModel.getList(),
+        mListAdapter = new BooklistStylesAdapter(this, mModel.getList(),
                                                  vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mListView.setAdapter(mListAdapter);
@@ -132,7 +132,7 @@ public class PreferredStylesActivity
         setTitle(R.string.lbl_preferred_styles);
 
         if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_booklist_styles_editor, null);
+            TipManager.display(this, R.string.tip_booklist_styles_editor, null);
         }
     }
 
@@ -184,7 +184,7 @@ public class PreferredStylesActivity
             .setIcon(R.drawable.ic_content_copy);
 
         String title = style.getLabel(this);
-        new MenuPicker<>(getLayoutInflater(), title, menu, style, this::onContextItemSelected)
+        new MenuPicker<>(this, title, menu, style, this::onContextItemSelected)
                 .show();
     }
 
@@ -267,14 +267,14 @@ public class PreferredStylesActivity
         /**
          * Constructor.
          *
-         * @param inflater          LayoutInflater to use
+         * @param context           Current context
          * @param items             List of styles
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        BooklistStylesAdapter(@NonNull final LayoutInflater inflater,
+        BooklistStylesAdapter(@NonNull final Context context,
                               @NonNull final ArrayList<BooklistStyle> items,
                               @NonNull final StartDragListener dragStartListener) {
-            super(inflater, items, dragStartListener);
+            super(context, items, dragStartListener);
         }
 
         @NonNull

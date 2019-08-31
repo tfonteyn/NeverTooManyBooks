@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 /**
  * Class to find covers for an importer when the import is reading from a local directory.
  * <p>
- * Used be the CSV file import class. It check for a cover with the UUID or the id.
+ * Used be the CSV file import class. It check for a cover with the UUID or the ID.
  */
 public class LocalCoverFinder
         implements Importer.CoverFinder {

@@ -583,7 +583,10 @@
     <string name="lbl_artist_colorist">Coloriste</string>
     <string name="lbl_author_editor">Éditeur</string>
     <string name="lbl_author_contributor">Collaborateur</string>
-    <string name="lbl_author_primary">Primaire</string>
-    <string name="lbl_author_secondary">Secondaire</string>
+    <string name="tip_update_fields_from_internet">Les liens de sites externes ne sont traités que si le site est effectivement contacté. En conséquence, le menu «Voir sur…» ne montrera également que ce qui est disponible.</string>
+    <string name="lbl_author_secondary">coauteur</string>
+    <string name="lbl_author_type">Type d\'auteur</string>
+    <string name="pt_bob_show_details_uses_task_off">immédiatement</string>
+    <string name="lbl_artist_primary">dessinateur</string>
 
 </resources>

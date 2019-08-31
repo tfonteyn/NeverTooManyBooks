@@ -49,6 +49,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
@@ -85,7 +86,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 class ImportLegacyTask
         extends TQTask {
 
-    private static final long serialVersionUID = -3535324410982827612L;
+    private static final long serialVersionUID = 2944686967082059350L;
+
     /**
      * Number of books to retrieve in one batch; we are encouraged to make fewer API calls, so
      * setting this number high is good. 50 seems to take several seconds to retrieve, so it
@@ -175,10 +177,8 @@ class ImportLegacyTask
      * @return {@code false} to requeue, {@code true} for success
      */
     @Override
-    public boolean run(@NonNull final QueueManager queueManager,
-                       @NonNull final Context context) {
-
-
+    public boolean run(@NonNull final QueueManager queueManager) {
+        Context context = App.getLocalizedAppContext();
         try (DAO db = new DAO()) {
             // Load the Goodreads reviews
             boolean ok = processReviews(context, db, queueManager);
@@ -461,7 +461,7 @@ class ImportLegacyTask
                                @Nullable final BookCursor bookCursor,
                                @NonNull final Bundle review) {
 
-        Locale userLocale = LocaleUtils.getPreferredLocale(context);
+        Locale userLocale = LocaleUtils.getLocale(context);
         // The ListReviewsApi does not return the book language
         //noinspection UnnecessaryLocalVariable
         Locale bookLocale = userLocale;
@@ -580,7 +580,7 @@ class ImportLegacyTask
                 seriesList.add(newSeries);
                 bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
 
-                Series.pruneSeriesList(context, seriesList, bookLocale);
+                Series.pruneSeriesList(seriesList, bookLocale);
                 bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
             }
         }

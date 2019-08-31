@@ -37,6 +37,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -78,8 +79,8 @@ public class EditLanguageDialog
     protected void saveChanges(@NonNull final Context context,
                                @NonNull final String from,
                                @NonNull final String to) {
-        Locale userLocale = LocaleUtils.getPreferredLocale(context);
-        mDb.updateLanguage(from, LocaleUtils.getIso3fromDisplayName(to, userLocale));
+        Locale userLocale = LocaleUtils.getLocale(context);
+        mDb.updateLanguage(from, LanguageUtils.getIso3fromDisplayName(to, userLocale));
         if (mListener != null) {
             mListener.onBookChanged(0, BookChangedListener.LANGUAGE, null);
         }

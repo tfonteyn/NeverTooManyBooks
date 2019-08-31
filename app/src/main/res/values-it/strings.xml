@@ -576,13 +576,15 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s non è un codice ISBN o ASIN valido</string>
     <string name="x_of_y">%1$d di %2$d</string>
     <string name="yes">Sì</string>
-    <string name="lbl_author_secondary">Secondario</string>
-    <string name="lbl_author_primary">Primario</string>
     <string name="lbl_author_other">Altro</string>
     <string name="lbl_author_translator">Traduttore</string>
     <string name="lbl_artist_colorist">Colorista</string>
     <string name="lbl_author_editor">Editore</string>
     <string name="lbl_author_contributor">Collaboratore</string>
     <string name="lbl_edition_slipcase">Custodia</string>
+    <string name="tip_update_fields_from_internet">I collegamenti a siti esterni vengono elaborati solo se il sito viene effettivamente contattato. Di conseguenza, anche il menu «Visualizza su…» mostrerà solo ciò che è disponibile.</string>
+    <string name="lbl_author_secondary">coautore</string>
+    <string name="lbl_author_type">Tipo di autore</string>
+    <string name="pt_bob_show_details_uses_task_off">immediatamente</string>
 
 </resources>

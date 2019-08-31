@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.baseactivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -63,8 +64,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public abstract class BaseActivity
         extends AppCompatActivity {
 
+    /** Locale at {@link #onCreate} time. */
+    protected String mInitialLocaleSpec;
+    /** Theme at {@link #onCreate} time. */
+    protected int mInitialThemeId;
+
     @Nullable
     FloatingActionButton mFloatingActionButton;
+
     /** The side/navigation panel. */
     @Nullable
     private DrawerLayout mDrawerLayout;
@@ -78,13 +85,22 @@ public abstract class BaseActivity
         return 0;
     }
 
+    /**
+     * apply the user-preferred Locale/Theme before onCreate is called
+     */
+    protected void attachBaseContext(@NonNull final Context base) {
+        Context context = LocaleUtils.applyLocale(base);
+        App.applyTheme(context);
+
+        super.attachBaseContext(context);
+
+        // preserve, so we can check for changes in onResume.
+        mInitialLocaleSpec = LocaleUtils.getPersistedLocaleSpec();
+        mInitialThemeId = App.getThemeId();
+    }
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        // apply the user-preferred Locale to the configuration before super.onCreate
-        LocaleUtils.applyPreferred(this);
-        // apply the Theme before super.onCreate
-        setTheme(App.getThemeResId());
-
         super.onCreate(savedInstanceState);
 
         int layoutId = getLayoutId();
@@ -115,6 +131,33 @@ public abstract class BaseActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+        }
+    }
+
+    /**
+     * When resuming, recreate activity if needed.
+     */
+    @Override
+    @CallSuper
+    protected void onResume() {
+        super.onResume();
+
+        if (App.isInNeedOfRecreating()
+            || LocaleUtils.isChanged(mInitialLocaleSpec)
+            || App.isThemeChanged(mInitialThemeId)) {
+            // child classes can call App.isRecreating(); after this parent onResume returns.
+            App.setIsRecreating();
+            recreate();
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Logger.debugExit(this, "BaseActivity.onResume", "Recreate!");
+            }
+        } else {
+            // this is the second time we got here in onResume, so we have been re-created.
+            App.clearRecreateFlag();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Logger.debugExit(this, "BaseActivity.onResume", "Resuming");
+            }
         }
     }
 
@@ -261,43 +304,4 @@ public abstract class BaseActivity
         Tracker.exitOnActivityResult(this);
     }
 
-    /**
-     * When resuming, recreate activity if needed.
-     * <p>
-     * The current (2nd) incarnation of restart-logic is still rather broken
-     * as it does not deal with back-stack.
-     * FIXME:  if (getThemeFromThisContext != App.getTheme) then recreate() ...
-     * <p>
-     * https://www.hidroh.com/2015/02/25/support-multiple-themes-android-app-part-2/
-     */
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(this, "BaseActivity.onResume",
-                              LocaleUtils.toDebugString(this));
-        }
-
-        if (App.isInNeedOfRecreating()) {
-            recreate();
-            App.setIsRecreating();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.debugExit(this, "BaseActivity.onResume", "Recreate!");
-            }
-
-        } else if (App.isRecreating()) {
-            App.clearRecreateFlag();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.debugExit(this, "BaseActivity.onResume", "isRecreating");
-            }
-
-        } else {
-            // this is just paranoia... the flag should already have been cleared.
-            App.clearRecreateFlag();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.debugExit(this, "BaseActivity.onResume", "Resuming");
-            }
-        }
-    }
 }

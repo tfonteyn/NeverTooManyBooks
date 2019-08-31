@@ -197,12 +197,12 @@ public class BookSearchBaseModel
 
         final Set<String> uniqueNames = new HashSet<>(authors.size());
         for (String s : authors) {
-            uniqueNames.add(s.toUpperCase(locale));
+            uniqueNames.add(s.toLowerCase(locale));
         }
 
         // Add the names the user has already tried (to handle errors and mistakes)
         for (String s : authorNames) {
-            if (!uniqueNames.contains(s.toUpperCase(locale))) {
+            if (!uniqueNames.contains(s.toLowerCase(locale))) {
                 authors.add(s);
             }
         }

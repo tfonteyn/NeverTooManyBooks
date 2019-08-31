@@ -31,6 +31,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
@@ -52,6 +53,7 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.button.MaterialButton;
@@ -69,10 +71,13 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Format;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -291,7 +296,7 @@ public class Fields {
     /**
      * Convenience function: For an AutoCompleteTextView, set the adapter.
      *
-     * @param fieldId Layout ID of View
+     * @param fieldId Layout id of View
      * @param adapter Adapter to use
      */
     public void setAdapter(@IdRes final int fieldId,
@@ -453,10 +458,6 @@ public class Fields {
 
         /**
          * This method is intended to be called from a {@link FieldDataAccessor}.
-         * It's only needed if the field is some sort of EditText.
-         * Optional to implement if the field it's set on is read-only.
-         * The default implementation throws an UnsupportedOperationException.
-         * i.e. the developer goofed and should fix the bug.
          * <p>
          * Extract a formatted {@code String} from the displayed version.
          *
@@ -465,10 +466,8 @@ public class Fields {
          * @return The extracted value
          */
         @NonNull
-        default String extract(@NonNull final Field<T> field,
-                               @NonNull final String source) {
-            throw new UnsupportedOperationException();
-        }
+        String extract(@NonNull final Field<T> field,
+                       @NonNull final String source);
     }
 
     /**
@@ -1037,12 +1036,14 @@ public class Fields {
      * <p>
      * Can be reused for multiple fields.
      * <p>
-     * Does not support {@link FieldFormatter#extract}
+     * {@link #extract} throws Exception
      */
     public static class BinaryYesNoEmptyFormatter
             implements FieldFormatter<String> {
 
+        @NonNull
         private final String mYes;
+        @NonNull
         private final String mNo;
 
         /**
@@ -1064,16 +1065,27 @@ public class Fields {
                 return "";
             }
             try {
-                boolean val = DataManager.toBoolean(source, false);
+                boolean val = ParseUtils.toBoolean(source, false);
                 return val ? mYes : mNo;
             } catch (@NonNull final NumberFormatException e) {
                 return source;
             }
         }
+
+        @NonNull
+        @Override
+        public String extract(@NonNull final Field<String> field,
+                              @NonNull final String source) {
+            throw new IllegalStateException("not supported");
+        }
     }
 
     /**
      * Formatter for price fields.
+     * Note this is {@code String} typed due to backwards compatibility.
+     * <p>
+     * e.g. pre-decimal UK "Shilling/Pence" is in effect a string.
+     *
      * <p>
      * Uses the context/locale from the field itself.
      * <p>
@@ -1124,26 +1136,45 @@ public class Fields {
             }
         }
 
+        @NonNull
+        @Override
+        public String extract(@NonNull final Field<String> field,
+                              @NonNull final String source) {
+            try {
+                // parse with Locales, and return non-Locale representation.
+                return String.valueOf(ParseUtils.parseFloat(source));
+            } catch (@NonNull final NumberFormatException e) {
+                return source;
+            }
+        }
+
         private String jdkFormat(@NonNull final Field<String> field,
-                                 @NonNull final String source) {
+                                 @NonNull final Object source) {
+            // all Locales taken into account for parsing
+            Float price = ParseUtils.toFloat(source);
+            // but the current Locale is used for formatting
             Locale locale = field.getLocale();
-            Float price = Float.parseFloat(source);
-            Currency currency = Currency.getInstance(mCurrencyCode);
-            // the result is rather dire... most currency 'symbol' are shown as 3-char codes
-            // e.g. 'EUR','US$',...
             NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+
+            Currency currency = Currency.getInstance(mCurrencyCode);
             currencyFormatter.setCurrency(currency);
+            // the result is rather dire... most currency symbols are shown as 3-char codes
+            // e.g. 'EUR','US$',...
             return currencyFormatter.format(price);
         }
 
-        // experimental code... as it turned out, the ICU NumberFormatter is ICU level 60
-        // which means Android 9. Keeping this comment, but pointless to integrate for now.
-//        @TargetApi(24)
+        // The ICU NumberFormatter is only available from ICU level 60, but Android lags behind:
+        // https://developer.android.com/guide/topics/resources/internationalization#versioning-nougat
+        // So you need Android 9 (API level 28) and even then, the NumberFormatter
+        // is not available in android.icu.* so you still would need to bundle the full ICU lib
+        // For now, this is to much overkill.
+//        @TargetApi(28)
 //        private String icuFormat(@NonNull final Field field,
-//                                @NonNull final String source) {
+//                                @NonNull final Object source) {
 //            https://github.com/unicode-org/icu/blob/master/icu4j/main/classes/core/src/
 //            com/ibm/icu/number/NumberFormatter.java
 //            and UnitWidth.NARROW
+//            return "";
 //        }
     }
 
@@ -1152,8 +1183,6 @@ public class Fields {
      * Otherwise outputs the original source value.
      * <p>
      * Uses the context from the Field view.
-     * <p>
-     * Does not support {@link FieldFormatter#extract}.
      */
     public static class PagesFormatter
             implements FieldFormatter<String> {
@@ -1165,7 +1194,9 @@ public class Fields {
             if (source != null && !source.isEmpty() && !"0".equals(source)) {
                 try {
                     int pages = Integer.parseInt(source);
-                    return field.getView().getContext().getString(R.string.lbl_x_pages, pages);
+                    Context context = field.getView().getContext();
+                    LocaleUtils.insanityCheck(context);
+                    return context.getString(R.string.lbl_x_pages, pages);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // don't log, both formats are valid.
                 }
@@ -1173,6 +1204,43 @@ public class Fields {
                 return source;
             }
             return "";
+        }
+
+        @NonNull
+        @Override
+        public String extract(@NonNull final Field<String> field,
+                              @NonNull final String source) {
+            return source;
+        }
+    }
+
+    /**
+     * Formatter for 'format' fields. Attempts to standardize the format descriptor
+     * before displaying. This is not an internal code, but purely text based.
+     * <p>
+     * Uses the context from the Field view.
+     */
+    public static class FormatFormatter
+            implements FieldFormatter<String> {
+
+        @NonNull
+        @Override
+        public String format(@NonNull final Field<String> field,
+                             @Nullable final String source) {
+            if (source != null && !source.isEmpty()) {
+                Context context = field.getView().getContext();
+                LocaleUtils.insanityCheck(context);
+                Locale locale = LocaleUtils.getLocale(context);
+                return Format.map(context, locale, source);
+            }
+            return "";
+        }
+
+        @NonNull
+        @Override
+        public String extract(@NonNull final Field<String> field,
+                              @NonNull final String source) {
+            return source;
         }
     }
 
@@ -1184,7 +1252,8 @@ public class Fields {
     public static class LanguageFormatter
             implements FieldFormatter<String> {
 
-        private Locale mLocale;
+        @NonNull
+        private final Locale mLocale;
 
         public LanguageFormatter(@NonNull final Locale locale) {
             this.mLocale = locale;
@@ -1198,7 +1267,7 @@ public class Fields {
                 return "";
             }
 
-            return LocaleUtils.getDisplayName(field.getLocale(), source);
+            return LanguageUtils.getDisplayName(field.getLocale(), source);
         }
 
         /**
@@ -1212,7 +1281,7 @@ public class Fields {
         @Override
         public String extract(@NonNull final Field<String> field,
                               @NonNull final String source) {
-            return LocaleUtils.getIso3fromDisplayName(source, mLocale);
+            return LanguageUtils.getIso3fromDisplayName(source, mLocale);
         }
     }
 
@@ -1220,14 +1289,15 @@ public class Fields {
      * Field Formatter for a bitmask based field.
      * Formats the checked items as a CSV String.
      * <p>
-     * Does not support {@link FieldFormatter#extract}.
+     * {@link #extract} returns "dummy";
      */
     public static class BitMaskFormatter
             implements FieldFormatter<String> {
 
+        @NonNull
         private final Map<Integer, Integer> mMap;
 
-        public BitMaskFormatter(final Map<Integer, Integer> editions) {
+        public BitMaskFormatter(@NonNull final Map<Integer, Integer> editions) {
             mMap = editions;
         }
 
@@ -1252,12 +1322,12 @@ public class Fields {
         // theoretically we should support the extract method as this formatter is used on
         // 'edit' fragments. But the implementation only ever sets the text on the screen
         // and stores the actual value directly. (dialog/listener setup).
-//        @NonNull
-//        @Override
-//        public String extract(@NonNull final Field field,
-//                              @NonNull final String source) {
-//            ...
-//        }
+        @NonNull
+        @Override
+        public String extract(@NonNull final Field<String> field,
+                              @NonNull final String source) {
+            return "dummy";
+        }
     }
 
     /** fronts an Activity context. */
@@ -1393,7 +1463,8 @@ public class Fields {
          *                        Set to "" to suppress all access.
          * @param visibilityGroup Visibility group. Can be blank.
          */
-        private Field(@NonNull final Fields fields,
+        @VisibleForTesting
+        public Field(@NonNull final Fields fields,
                       @IdRes final int fieldId,
                       @NonNull final String key,
                       @NonNull final String visibilityGroup) {
@@ -1657,7 +1728,12 @@ public class Fields {
          */
         @NonNull
         public Locale getLocale() {
-            Locale locale = getView().getResources().getConfiguration().locale;
+            Locale locale;
+            if (Build.VERSION.SDK_INT >= 24) {
+                locale = getView().getResources().getConfiguration().getLocales().get(0);
+            } else {
+                locale = getView().getResources().getConfiguration().locale;
+            }
             return locale != null ? locale : Locale.ENGLISH;
         }
 

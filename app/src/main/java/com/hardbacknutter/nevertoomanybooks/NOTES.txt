@@ -33,7 +33,13 @@ ENHANCE: XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!
  * con: fools / fields will be bigger due to labels/tags
         not easy to get 'others' to create import files
-        importing id's is dangerous
+        importing IDs is dangerous
+
+ENHANCE: currency fields should not use float/double.
+https://javamoney.github.io - a wonderful library, although it seems it
+won't make it into the JDK for now. Might have issues on Android though.
+https://www.joda.org/joda-money/ not tried, but looks small and neat.
+Alternatively migrate to using BigDecimal as a short term solution.
 
 TODO: go over ViewModel usage and related onSaveInstanceState. Remove the latter when appropriate.
 

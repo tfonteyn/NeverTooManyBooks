@@ -137,7 +137,7 @@ class IsfdbBookTest {
 
         assertEquals("Like Nothing on Earth", bookData.getString(DBDefinitions.KEY_TITLE));
         assertEquals(112781, bookData.getLong(DBDefinitions.KEY_ISFDB_ID));
-        // On the site: "Date: 1986-10-00"
+        // On the site: "Date: 1986-10-00". Our code substitutes "00" with "01"
         assertEquals("1986-10-01", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("0413600106", bookData.getString(DBDefinitions.KEY_ISBN));
         assertEquals("9780413600103", bookData.getString(IsfdbBook.BookField.ISBN_2));
@@ -145,7 +145,7 @@ class IsfdbBookTest {
         assertEquals("1.95", bookData.getString(DBDefinitions.KEY_PRICE_LISTED));
         assertEquals("GBP", bookData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
         assertEquals("159", bookData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals(bookType_paperback, bookData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("pb", bookData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("COLLECTION", bookData.getString(IsfdbBook.BookField.BOOK_TYPE));
         assertEquals(TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS,
                      bookData.getLong(DBDefinitions.KEY_TOC_BITMASK));
@@ -159,10 +159,11 @@ class IsfdbBookTest {
         assertEquals(2, authors.size());
         assertEquals("Russell", authors.get(0).getFamilyName());
         assertEquals("Eric Frank", authors.get(0).getGivenNames());
+        assertEquals(Author.TYPE_GENERIC, authors.get(0).getType());
 
-        assertEquals("Oakes", authors.get(0).getFamilyName());
-        assertEquals("Terry", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_COVER_ARTIST, authors.get(0).getType());
+        assertEquals("Oakes", authors.get(1).getFamilyName());
+        assertEquals("Terry", authors.get(1).getGivenNames());
+        assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
 
         // don't do this: we don't take authors from the TOC yet
 //        assertEquals("Hugi", authors.get(1).getFamilyName());

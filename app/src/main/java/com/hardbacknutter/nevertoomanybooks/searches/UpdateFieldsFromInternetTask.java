@@ -96,7 +96,7 @@ public class UpdateFieldsFromInternetTask
     /**
      * Called in the main thread for this object when the search for one book has completed.
      * <p>
-     * <b>Note:</b> do not make it local... we need a strong reference here.
+     * <strong>Note:</strong> do not make it local... we need a strong reference here.
      */
     @SuppressWarnings("FieldCanBeLocal")
     private final SearchCoordinator.SearchFinishedListener mListener =
@@ -183,9 +183,9 @@ public class UpdateFieldsFromInternetTask
     }
 
     /**
-     * Allows to set the 'lowest' Book ID to start from. See {@link DAO#fetchBooks(List, long)}
+     * Allows to set the 'lowest' Book id to start from. See {@link DAO#fetchBooks(List, long)}
      *
-     * @param fromBookIdOnwards the lowest book ID to start from.
+     * @param fromBookIdOnwards the lowest book id to start from.
      *                          This allows to fetch a subset of the requested set.
      *                          Defaults to 0, i.e. the full set.
      */
@@ -468,8 +468,8 @@ public class UpdateFieldsFromInternetTask
                 }
             }
 
-            Context userContext = App.getFakeUserContext();
-            mDb.updateBook(userContext, mCurrentBookId, new Book(newBookData), 0);
+            Context context = App.getLocalizedAppContext();
+            mDb.updateBook(context, mCurrentBookId, new Book(newBookData), 0);
         }
     }
 

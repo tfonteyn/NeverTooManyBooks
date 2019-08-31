@@ -89,7 +89,7 @@ public class CoverBrowserFragment
     @NonNull
     private final ArrayList<String> mAlternativeEditions = new ArrayList<>();
     @Nullable
-    private final GalleryAdapter mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_MEDIUM);
+    private GalleryAdapter mGalleryAdapter;
     /** Indicates dismiss() has been requested. */
     private boolean mDismissing;
     /** The switcher will be used to display larger versions. */
@@ -135,6 +135,8 @@ public class CoverBrowserFragment
         super.onCreate(savedInstanceState);
 
         Objects.requireNonNull(getTargetFragment());
+
+        mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_MEDIUM);
 
         mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
         mModel.init(requireArguments());

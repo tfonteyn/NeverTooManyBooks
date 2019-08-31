@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,10 +27,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.tasks;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
@@ -59,12 +61,12 @@ public class ImportTask
      * @param isSync       Flag to indicate sync data or import all.
      * @param taskListener for sending progress and finish messages to.
      */
-    public ImportTask(final boolean isSync,
+    public ImportTask(@NonNull final Context context,
+                      final boolean isSync,
                       @NonNull final TaskListener<Integer> taskListener) {
         super(R.id.TASK_ID_GR_IMPORT, taskListener);
         mIsSync = isSync;
-        mTaskDescription = App.getFakeUserContext()
-                              .getString(R.string.gr_import_all_from_goodreads);
+        mTaskDescription = context.getString(R.string.gr_import_all_from_goodreads);
     }
 
     @Override

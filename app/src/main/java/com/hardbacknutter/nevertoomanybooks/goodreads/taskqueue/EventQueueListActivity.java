@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager.TipOwner;
 public class EventQueueListActivity
         extends BindableItemListActivity {
 
-    /** Key to store optional task ID when activity is started. */
+    /** Key to store optional task id when activity is started. */
     public static final String REQ_BKEY_TASK_ID = "EventQueueListActivity.TaskId";
 
     /** Task ID, if provided in intent. */
@@ -104,7 +104,7 @@ public class EventQueueListActivity
         cleanupBtn.setOnClickListener(v -> QueueManager.getQueueManager().cleanupOldEvents());
 
         if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_background_task_events, null);
+            TipManager.display(this, R.string.tip_background_task_events, null);
         }
     }
 
@@ -128,7 +128,7 @@ public class EventQueueListActivity
 
         // If it owns a hint, display it first
         if (event instanceof TipOwner) {
-            TipManager.display(getLayoutInflater(), ((TipOwner) event).getTip(),
+            TipManager.display(this, ((TipOwner) event).getTip(),
                                () -> showContextMenu(parent, v, event, position, id));
         } else {
             showContextMenu(parent, v, event, position, id);

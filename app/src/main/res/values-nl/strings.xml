@@ -27,8 +27,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes „…”  - Regex to find wrong ones: (“|‘|’|«|») -->
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]><!-- Quotes „…”  - Regex to find wrong ones: ("|'|“|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
     <string name="X_about_help_tap_here">Tik hier voor online help</string>
@@ -582,7 +581,11 @@
     <string name="lbl_artist_colorist">Inkleurder</string>
     <string name="lbl_author_editor">Redacteur</string>
     <string name="lbl_author_contributor">Medewerker</string>
-    <string name="lbl_author_primary">Primair</string>
-    <string name="lbl_author_secondary">Secondair</string>
+    <string name="lbl_author_primary">Hoofd-auteur</string>
+    <string name="lbl_author_secondary">coauteur</string>
+    <string name="lbl_author_type">Auteur type</string>
+    <string name="tip_update_fields_from_internet">Externe sitekoppelingen worden alleen verwerkt als er daadwerkelijk contact met de site wordt gemaakt. Als gevolg hiervan zal het menu „Bekijk op…” eveneens alleen weergeven wat beschikbaar is.</string>
+    <string name="pt_bob_show_details_uses_task_off">per direct</string>
+    <string name="lbl_artist_primary">tekenaar</string>
 
 </resources>

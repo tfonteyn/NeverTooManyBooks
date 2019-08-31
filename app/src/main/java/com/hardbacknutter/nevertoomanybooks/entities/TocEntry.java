@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 /**
  * Class to represent a single title within an TOC(Anthology).
  * <p>
- * <b>Note:</b>
+ * <strong>Note:</strong>
  * these are always insert/update'd ONLY when a book is insert/update'd
  * Hence writes are always a {@code List<TocEntry>} in one go.
  * This circumvents the 'position' column as the update will simply insert in-order
@@ -260,8 +260,7 @@ public class TocEntry
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Context context,
-                            @NonNull final Locale bookLocale) {
+    public Locale getLocale(@NonNull final Locale bookLocale) {
         return bookLocale;
     }
 
@@ -270,8 +269,9 @@ public class TocEntry
                       @NonNull final DAO db,
                       @NonNull final Locale bookLocale) {
         // don't use the bookLocale for the Author; translated books would have the wrong locale.
-        mAuthor.fixId(context, db, LocaleUtils.getPreferredLocale(context));
+        mAuthor.fixId(context, db, LocaleUtils.getLocale(context));
         mId = db.getTocEntryId(context, this, bookLocale);
+        LocaleUtils.insanityCheck(context);
         return mId;
     }
 

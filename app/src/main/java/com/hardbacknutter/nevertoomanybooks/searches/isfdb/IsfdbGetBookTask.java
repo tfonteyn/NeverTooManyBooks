@@ -75,7 +75,7 @@ public class IsfdbGetBookTask
     }
 
     /**
-     * Constructor. Initiate a single book lookup by id.
+     * Constructor. Initiate a single book lookup by ID.
      *
      * @param isfdbId          Single ISFDB native ID's
      * @param addSeriesFromToc whether the TOC should get parsed for Series information

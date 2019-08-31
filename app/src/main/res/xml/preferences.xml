@@ -34,7 +34,7 @@
     >
     <PreferenceCategory
         android:title="@string/pg_ui">
-        <!-- the list contains Locale string id's in contrast to other
+        <!-- the list contains Locale string IDs in contrast to other
              ListPreference which use 0,1... -->
         <ListPreference
             android:defaultValue="system"

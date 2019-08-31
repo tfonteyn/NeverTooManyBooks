@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -123,7 +124,7 @@ public class CurrencyUtils {
     /**
      * Takes a combined price field, and returns the value/currency in the Bundle.
      *
-     * <b>Note:</b>
+     * <strong>Note:</strong>
      * The UK (GBP) pre-decimal had Shilling/Pence as subdivisions of the pound.
      * UK Shilling was written as "1/-", for example:
      * three shillings and six pence => 3/6
@@ -132,12 +133,14 @@ public class CurrencyUtils {
      * <a href="https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal">
      * https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal</a>
      *
+     * @param locale            Locale to use for parsing the price string
      * @param priceWithCurrency price, e.g. "Bf459", "$9.99", ...
      * @param keyPrice          bundle key for the value
      * @param keyCurrency       bundle key for the currency
      * @param destination       bundle to add the two keys to.
      */
-    public static void splitPrice(@NonNull final String priceWithCurrency,
+    public static void splitPrice(@NonNull final Locale locale,
+                                  @NonNull final String priceWithCurrency,
                                   @NonNull final String keyPrice,
                                   @NonNull final String keyCurrency,
                                   @NonNull final Bundle destination) {
@@ -150,7 +153,7 @@ public class CurrencyUtils {
 
                     int decDigits = currency.getDefaultFractionDigits();
                     // format with 'digits' decimal places
-                    Float price = Float.parseFloat(data[1]);
+                    Float price = ParseUtils.parseFloat(locale, data[1]);
                     String priceStr = String.format("%." + decDigits + 'f', price);
 
                     destination.putString(keyPrice, priceStr);

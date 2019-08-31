@@ -584,7 +584,7 @@
     <!-- Tip text displayed when user enters the 'Update fields from internet' screen
      The referred "View on…" is "menu_view_book_at_ellipsis" -->
     <string name="tip_update_fields_from_internet">
-        External site id\'s are only processed if the site is actually contacted.\n
+        External site links are only processed if the site is actually contacted.
         As a result the menu “View on…” will likewise only show what is available.
     </string>
 
@@ -1310,16 +1310,16 @@
     <string name="and_others">et. al.</string>
 
     <string name="lbl_author_type">Author type</string>
-    <string name="lbl_author_primary">Primary</string>
-    <string name="lbl_author_secondary">Secondary</string>
+    <string name="lbl_author_primary">author</string>
+    <string name="lbl_author_secondary">co-author</string>
     <string name="lbl_author_other">Other</string>
     <string name="lbl_author_translator">Translator</string>
     <string name="lbl_author_introduction">Fore/Afterword</string>
     <string name="lbl_author_editor">Editor</string>
     <string name="lbl_artist_cover">Cover artist</string>
     <string name="lbl_artist_cover_colorist">Cover colorist</string>
-    <string name="lbl_artist_primary">Primary artist</string>
-    <string name="lbl_artist_secondary">Secondary artist</string>
+    <string name="lbl_artist_primary">artist</string>
+    <string name="lbl_artist_secondary">Co-artist</string>
     <string name="lbl_artist_other">Other artist</string>
     <string name="lbl_artist_colorist">Colorist</string>
     <string name="lbl_author_contributor">Contributor</string>

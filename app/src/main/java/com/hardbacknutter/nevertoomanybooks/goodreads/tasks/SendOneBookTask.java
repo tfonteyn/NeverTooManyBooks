@@ -77,7 +77,7 @@ public class SendOneBookTask
     protected Integer doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.SendOneBookTask " + mBookId);
 
-        Context userContext = App.getFakeUserContext();
+        Context context = App.getLocalizedAppContext();
 
         GoodreadsManager.ExportResult result = null;
         try {
@@ -98,7 +98,7 @@ public class SendOneBookTask
                     }
                     publishProgress(new TaskProgressMessage(mTaskId,
                                                             R.string.progress_msg_sending));
-                    result = grManager.sendOneBook(userContext, db, bookCursor);
+                    result = grManager.sendOneBook(context, db, bookCursor);
                     if (result == GoodreadsManager.ExportResult.sent) {
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);

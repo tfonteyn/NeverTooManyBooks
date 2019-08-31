@@ -37,33 +37,17 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
 
-import java.lang.ref.WeakReference;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 public class ExportOptionsDialogFragment
-        extends DialogFragment {
-
-    /** Fragment manager tag. */
-    public static final String TAG = "ExportOptionsDialogFragment";
-    private static final String BKEY_OPTIONS = TAG + ":options";
+        extends OptionsDialogBase {
 
     private ExportOptions mOptions;
 
-    private WeakReference<OptionsListener> mListener;
-
-    private Checkable cbxBooks;
-    private Checkable cbxCovers;
-    private Checkable cbxPrefs;
-    private Checkable cbxXml;
     private Checkable mRadioSinceLastBackup;
     private Checkable mRadioSinceDate;
     private EditText mDateSinceView;
@@ -100,10 +84,8 @@ public class ExportOptionsDialogFragment
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View root = layoutInflater.inflate(R.layout.dialog_export_options, null);
 
-        cbxBooks = root.findViewById(R.id.cbx_books_csv);
-        cbxCovers = root.findViewById(R.id.cbx_covers);
-        cbxPrefs = root.findViewById(R.id.cbx_preferences);
-        cbxXml = root.findViewById(R.id.cbx_xml_tables);
+        initCommonCbx(mOptions, root);
+
         mRadioSinceLastBackup = root.findViewById(R.id.radioSinceLastBackup);
         mRadioSinceDate = root.findViewById(R.id.radioSinceDate);
         mDateSinceView = root.findViewById(R.id.txtDate);
@@ -114,17 +96,8 @@ public class ExportOptionsDialogFragment
                         .setView(root)
                         .setTitle(R.string.export_options_dialog_title)
                         .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, which) -> {
-                            updateOptions();
-                            if (mListener.get() != null) {
-                                mListener.get().onOptionsSet(mOptions);
-                            } else {
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                                    Logger.debug(this, "onOptionsSet",
-                                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
-                                }
-                            }
-                        })
+                        .setPositiveButton(android.R.string.ok,
+                                           (d, which) -> updateAndSend(mOptions))
                         .create();
 
         dialog.setCanceledOnTouchOutside(false);
@@ -137,33 +110,21 @@ public class ExportOptionsDialogFragment
         outState.putParcelable(BKEY_OPTIONS, mOptions);
     }
 
-    public void setListener(@NonNull final OptionsListener listener) {
-        mListener = new WeakReference<>(listener);
-    }
-
-    private void updateOptions() {
-        // what to export.
-        mOptions.what = ExportOptions.NOTHING;
-
-        if (cbxBooks.isChecked()) {
-            mOptions.what |= ExportOptions.BOOK_CSV;
-        }
-        if (cbxCovers.isChecked()) {
-            mOptions.what |= ExportOptions.COVERS;
-        }
-        if (cbxPrefs.isChecked()) {
-            mOptions.what |= ExportOptions.PREFERENCES | ExportOptions.BOOK_LIST_STYLES;
-        }
-        if (cbxXml.isChecked()) {
-            mOptions.what |= ExportOptions.XML_TABLES;
-        }
+    /**
+     * Read the checkboxes, and set the options accordingly.
+     */
+    protected void updateOptions() {
+        updateOptions(mOptions);
 
         if (mRadioSinceLastBackup.isChecked()) {
             mOptions.what |= ExportOptions.EXPORT_SINCE;
             // it's up to the Exporter to determine/set the last backup date.
             mOptions.dateFrom = null;
+        } else {
+            mOptions.what &= ~ExportOptions.EXPORT_SINCE;
+        }
 
-        } else if (mRadioSinceDate.isChecked()) {
+        if (mRadioSinceDate.isChecked()) {
             try {
                 mOptions.what |= ExportOptions.EXPORT_SINCE;
                 String date = mDateSinceView.getText().toString().trim();
@@ -172,20 +133,8 @@ public class ExportOptionsDialogFragment
                 UserMessage.show(mDateSinceView, R.string.hint_date_not_set_with_brackets);
                 mOptions.what = ExportOptions.NOTHING;
             }
+        } else {
+            mOptions.what &= ~ExportOptions.EXPORT_SINCE;
         }
-    }
-
-    @Override
-    public void onPause() {
-        updateOptions();
-        super.onPause();
-    }
-
-    /**
-     * Listener interface to receive notifications when dialog is confirmed.
-     */
-    public interface OptionsListener {
-
-        void onOptionsSet(@NonNull ExportOptions options);
     }
 }

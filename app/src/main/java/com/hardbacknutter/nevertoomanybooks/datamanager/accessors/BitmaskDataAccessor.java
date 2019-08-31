@@ -31,7 +31,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * A bitmask is read/written to the database as a long.
@@ -64,16 +64,16 @@ public class BitmaskDataAccessor
     @NonNull
     @Override
     public Boolean get(@NonNull final Bundle source) {
-        return (DataManager.toLong(source.get(mDataKey)) & mBitmask) != 0;
+        return (ParseUtils.toLong(source.get(mDataKey)) & mBitmask) != 0;
     }
 
     @Override
     public void put(@NonNull final Bundle target,
                     @NonNull final Object value) {
 
-        long bits = DataManager.toLong(target.get(mDataKey));
+        long bits = ParseUtils.toLong(target.get(mDataKey));
 
-        if (DataManager.toBoolean(value)) {
+        if (ParseUtils.toBoolean(value)) {
             // set the bit
             bits |= mBitmask;
         } else {

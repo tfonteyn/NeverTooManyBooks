@@ -151,7 +151,7 @@ public class EditSeriesDialogFragment
                            mSeries.setTitle(mName);
                            mSeries.setComplete(mIsComplete);
                            // There is no book involved here, so use the users Locale instead
-                           Locale bookLocale = LocaleUtils.getPreferredLocale(getContext());
+                           Locale bookLocale = LocaleUtils.getLocale(getContext());
                            mDb.updateOrInsertSeries(getContext(), mSeries, bookLocale);
 
                            Bundle data = new Bundle();

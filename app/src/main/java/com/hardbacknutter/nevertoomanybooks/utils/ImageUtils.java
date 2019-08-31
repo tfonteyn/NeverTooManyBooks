@@ -127,8 +127,8 @@ public final class ImageUtils {
      * @return amount in pixels
      */
     public static int getMaxImageSize(final int scale) {
-        return scale * (int) App.getAppContext().getResources()
-                                .getDimension(R.dimen.cover_base_size);
+        return scale * (int) App.getAppContext()
+                                .getResources().getDimension(R.dimen.cover_base_size);
     }
 
     /**
@@ -329,7 +329,7 @@ public final class ImageUtils {
     /**
      * Get the image from the file specification.
      * <p>
-     * <b>Note:</b>: forceScaleBitmap is an expensive operation. Make sure you really need it.
+     * <strong>Note:</strong>: forceScaleBitmap is an expensive operation. Make sure you really need it.
      * This method is slower then {@link #createScaledBitmap} but produces a truly scaled
      * bitmap to fit withing the bounds passed in.
      *

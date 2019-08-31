@@ -91,9 +91,9 @@ public final class NetworkUtils {
     @AnyThread
     private static Connectivity getNetworkConnectivity() {
 
-        ConnectivityManager connMgr = (ConnectivityManager)
-                                              App.getAppContext()
-                                                 .getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connMgr =
+                (ConnectivityManager) App.getAppContext()
+                                         .getSystemService(Context.CONNECTIVITY_SERVICE);
 
         Connectivity con = new Connectivity();
 

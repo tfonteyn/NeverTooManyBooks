@@ -37,28 +37,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
 
-import java.lang.ref.WeakReference;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class ImportOptionsDialogFragment
-        extends DialogFragment {
+        extends OptionsDialogBase {
 
-    /** Fragment manager tag. */
-    public static final String TAG = "ImportOptionsDialogFragment";
     private static final String BKEY_ARCHIVE_HAS_VALID_DATES = TAG + ":validDates";
-    private static final String BKEY_OPTIONS = TAG + ":options";
 
     private ImportOptions mOptions;
     private boolean mArchiveHasValidDates;
 
-    private WeakReference<OptionsListener> mListener;
+    private Checkable cbxUpdatedBooks;
 
     /**
      * Constructor.
@@ -95,9 +86,17 @@ public class ImportOptionsDialogFragment
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View root = layoutInflater.inflate(R.layout.dialog_import_options, null);
 
+        initCommonCbx(mOptions, root);
+
+        Checkable cbxAllBooks = root.findViewById(R.id.radioAllBooks);
+        cbxAllBooks.setChecked((mOptions.what & ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED) == 0);
+        cbxUpdatedBooks = root.findViewById(R.id.radioNewAndUpdatedBooks);
+        cbxUpdatedBooks.setChecked((mOptions.what & ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED) != 0);
+
         if (!mArchiveHasValidDates) {
-            View radioNewAndUpdatedBooks = root.findViewById(R.id.radioNewAndUpdatedBooks);
-            radioNewAndUpdatedBooks.setEnabled(false);
+            cbxAllBooks.setChecked(true);
+            cbxUpdatedBooks.setChecked(false);
+            ((View) cbxUpdatedBooks).setEnabled(false);
             TextView blurb = root.findViewById(R.id.radioNewAndUpdatedBooksInfo);
             blurb.setText(R.string.import_warning_old_archive);
         }
@@ -108,17 +107,8 @@ public class ImportOptionsDialogFragment
                         .setView(root)
                         .setTitle(R.string.import_options_dialog_title)
                         .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, which) -> {
-                            updateOptions();
-                            if (mListener.get() != null) {
-                                mListener.get().onOptionsSet(mOptions);
-                            } else {
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                                    Logger.debug(this, "onOptionsSet",
-                                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
-                                }
-                            }
-                        })
+                        .setPositiveButton(android.R.string.ok,
+                                           (d, which) -> updateAndSend(mOptions))
                         .create();
         dialog.setCanceledOnTouchOutside(false);
         return dialog;
@@ -130,41 +120,16 @@ public class ImportOptionsDialogFragment
         outState.putParcelable(BKEY_OPTIONS, mOptions);
     }
 
-    public void setListener(@NonNull final OptionsListener listener) {
-        mListener = new WeakReference<>(listener);
-    }
-
-    private void updateOptions() {
-        Dialog dialog = getDialog();
-        // what to import. All three checked == ImportOptions.ALL
-        //noinspection ConstantConditions
-        if (((Checkable) dialog.findViewById(R.id.cbx_books_csv)).isChecked()) {
-            mOptions.what |= ImportOptions.BOOK_CSV;
-        }
-        if (((Checkable) dialog.findViewById(R.id.cbx_covers)).isChecked()) {
-            mOptions.what |= ImportOptions.COVERS;
-        }
-        if (((Checkable) dialog.findViewById(R.id.cbx_preferences)).isChecked()) {
-            mOptions.what |= ImportOptions.PREFERENCES | ImportOptions.BOOK_LIST_STYLES;
-        }
-
-        Checkable radioNewAndUpdatedBooks = dialog.findViewById(R.id.radioNewAndUpdatedBooks);
-        if (radioNewAndUpdatedBooks.isChecked()) {
-            mOptions.what |= ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED;
-        }
-    }
-
-    @Override
-    public void onPause() {
-        updateOptions();
-        super.onPause();
-    }
-
     /**
-     * Listener interface to receive notifications when dialog is closed by any means.
+     * Read the checkboxes, and set the options accordingly.
      */
-    public interface OptionsListener {
+    protected void updateOptions() {
+        updateOptions(mOptions);
 
-        void onOptionsSet(@NonNull ImportOptions options);
+        if (cbxUpdatedBooks.isChecked()) {
+            mOptions.what |= ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED;
+        } else {
+            mOptions.what &= ~ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED;
+        }
     }
 }

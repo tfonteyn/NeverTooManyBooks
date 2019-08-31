@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +39,7 @@ import android.widget.EditText;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.Group;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -63,6 +65,8 @@ public class BookSearchByTextFragment
 
     private EditText mTitleView;
     private AutoCompleteTextView mAuthorView;
+    private Group mPublisherGroup;
+
     // ENHANCE: add auto-completion for publishers?
     private EditText mPublisherView;
     private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
@@ -130,10 +134,55 @@ public class BookSearchByTextFragment
         mTitleView = view.findViewById(R.id.title);
         mAuthorView = view.findViewById(R.id.author);
         mPublisherView = view.findViewById(R.id.publisher);
-        boolean usePublisher = SearchSites.usePublisher(inflater.getContext());
-        view.findViewById(R.id.publisher_group)
-            .setVisibility(usePublisher ? View.VISIBLE : View.GONE);
+        mPublisherGroup = view.findViewById(R.id.publisher_group);
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mTitleView.setText(mBookSearchBaseModel.getTitleSearchText());
+        mAuthorView.setText(mBookSearchBaseModel.getAuthorSearchText());
+        mPublisherView.setText(mBookSearchBaseModel.getPublisherSearchText());
+
+        //noinspection ConstantConditions
+        boolean usePublisher = SearchSites.usePublisher(getContext());
+        mPublisherGroup.setVisibility(usePublisher ? View.VISIBLE : View.GONE);
+
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.lbl_search_for_books);
+
+        populateAuthorList();
+
+        //noinspection ConstantConditions
+        getView().findViewById(R.id.btn_search).setOnClickListener(v -> {
+            mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
+            mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
+            mBookSearchBaseModel.setPublisherSearchText(mPublisherView.getText().toString().trim());
+            prepareSearch();
+        });
+
+        if (savedInstanceState == null) {
+            TipManager.display(getContext(), R.string.tip_book_search_by_text, null);
+        }
+    }
+
+    /**
+     * Setup the adapter for the Author AutoCompleteTextView field.
+     * Uses {@link DBDefinitions#KEY_AUTHOR_FORMATTED_GIVEN_FIRST} as not all
+     * search sites can copy with the formatted version.
+     */
+    private void populateAuthorList() {
+        //noinspection ConstantConditions
+        Locale locale = LocaleUtils.getLocale(getContext());
+        // Get all known authors and build a Set of the names
+        final ArrayList<String> authors = mBookSearchBaseModel.getAuthorNames(mAuthorNames, locale);
+        // Now get an adapter based on the combined names
+        mAuthorAdapter = new ArrayAdapter<>(getContext(),
+                                            android.R.layout.simple_dropdown_item_1line,
+                                            authors);
+        mAuthorView.setAdapter(mAuthorAdapter);
     }
 
     private void prepareSearch() {
@@ -183,29 +232,11 @@ public class BookSearchByTextFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mTitleView.setText(mBookSearchBaseModel.getTitleSearchText());
-        mAuthorView.setText(mBookSearchBaseModel.getAuthorSearchText());
-        mPublisherView.setText(mBookSearchBaseModel.getPublisherSearchText());
-
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.lbl_search_for_books);
-
-        populateAuthorList();
-
-        //noinspection ConstantConditions
-        getView().findViewById(R.id.btn_search).setOnClickListener(v -> {
-            mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
-            mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
-            mBookSearchBaseModel.setPublisherSearchText(mPublisherView.getText().toString().trim());
-            prepareSearch();
-        });
-
-        if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_book_search_by_text, null);
-        }
+    public void onPause() {
+        super.onPause();
+        mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
+        mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
+        mBookSearchBaseModel.setPublisherSearchText(mPublisherView.getText().toString().trim());
     }
 
     @Override
@@ -218,30 +249,5 @@ public class BookSearchByTextFragment
                            mBookSearchBaseModel.getTitleSearchText());
         outState.putString(DBDefinitions.KEY_PUBLISHER,
                            mBookSearchBaseModel.getPublisherSearchText());
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
-        mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
-        mBookSearchBaseModel.setPublisherSearchText(mPublisherView.getText().toString().trim());
-    }
-
-    /**
-     * Setup the adapter for the Author AutoCompleteTextView field.
-     * Uses {@link DBDefinitions#KEY_AUTHOR_FORMATTED_GIVEN_FIRST} as not all
-     * search sites can copy with the formatted version.
-     */
-    private void populateAuthorList() {
-        //noinspection ConstantConditions
-        Locale locale = LocaleUtils.from(getContext());
-        // Get all known authors and build a Set of the names
-        final ArrayList<String> authors = mBookSearchBaseModel.getAuthorNames(mAuthorNames, locale);
-        // Now get an adapter based on the combined names
-        mAuthorAdapter = new ArrayAdapter<>(getContext(),
-                                            android.R.layout.simple_dropdown_item_1line,
-                                            authors);
-        mAuthorView.setAdapter(mAuthorAdapter);
     }
 }

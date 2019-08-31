@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -53,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -131,7 +133,7 @@ public class XmlExporter
      */
     public XmlExporter() {
         mDb = new DAO();
-        mSettings = new ExportOptions();
+        mSettings = new ExportOptions(ExportOptions.ALL);
     }
 
     /**
@@ -156,7 +158,7 @@ public class XmlExporter
     }
 
     /**
-     * Database row-id.
+     * Database row ID.
      *
      * @param id of the item in its table
      *
@@ -897,8 +899,11 @@ public class XmlExporter
     public int doPreferences(@NonNull final BufferedWriter out,
                              @NonNull final ProgressListener listener)
             throws IOException {
+
+        Map<String, ?> all = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                              .getAll();
+
         // remove the acra settings
-        Map<String, ?> all = mSettings.getPrefs().getAll();
         Iterator<String> it = all.keySet().iterator();
         while (it.hasNext()) {
             String key = it.next();

@@ -38,13 +38,13 @@ import androidx.preference.PreferenceManager;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Represents a Bookshelf.
@@ -214,11 +214,9 @@ public class Bookshelf
 
     /**
      * Set this bookshelf as the current/preferred.
-     *
-     * @param context Current context
      */
-    public void setAsPreferred(@NonNull final Context context) {
-        PreferenceManager.getDefaultSharedPreferences(context)
+    public void setAsPreferred() {
+        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                          .edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
     }
 
@@ -248,14 +246,14 @@ public class Bookshelf
      * @param style to set
      */
     public void setStyle(@NonNull final Context context,
+                         @NonNull final Locale userLocale,
                          @NonNull final DAO db,
                          @NonNull final BooklistStyle style) {
         style.setDefault();
 
         mStyleUuid = style.getUuid();
         long styleId = getStyle(db).getId();
-        db.updateOrInsertBookshelf(context, LocaleUtils.getPreferredLocale(context),
-                                   this, styleId);
+        db.updateOrInsertBookshelf(context, userLocale, this, styleId);
         mCachedStyle = style;
     }
 
@@ -329,8 +327,7 @@ public class Bookshelf
 
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Context context,
-                            @NonNull final Locale fallbackLocale) {
+    public Locale getLocale(@NonNull final Locale fallbackLocale) {
         return fallbackLocale;
     }
 

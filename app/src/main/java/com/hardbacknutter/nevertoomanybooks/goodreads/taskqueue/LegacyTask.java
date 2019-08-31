@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -42,12 +41,17 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
+/**
+ * Used when we find an old task in the database which we don't support.
+ */
 public class LegacyTask
-        extends Task {
+        extends Task
+        implements BindableItemCursorAdapter.BindableItem {
+
+    private static final long serialVersionUID = 3867130615733279304L;
 
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
-    private static final long serialVersionUID = -8686257363994080502L;
 
     public LegacyTask(@NonNull final Context context) {
         super(context.getString(R.string.gr_tq_legacy_task));
@@ -60,10 +64,9 @@ public class LegacyTask
 
     @NonNull
     @Override
-    public View getView(@NonNull final LayoutInflater inflater,
+    public View getView(@NonNull final Context context,
                         @NonNull final BindableItemCursor cursor,
                         @NonNull final ViewGroup parent) {
-        Context context = inflater.getContext();
         LinearLayout root = new LinearLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
         ViewGroup.MarginLayoutParams margins = new ViewGroup.MarginLayoutParams(

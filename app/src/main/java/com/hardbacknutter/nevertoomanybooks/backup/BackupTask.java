@@ -111,10 +111,10 @@ public class BackupTask
     protected ExportOptions doInBackground(final Void... params) {
         Thread.currentThread().setName("BackupTask");
 
-        Context userContext = App.getFakeUserContext();
-        try (BackupWriter writer = BackupManager.getWriter(userContext, mTmpFile)) {
+        Context context = App.getLocalizedAppContext();
+        try (BackupWriter writer = BackupManager.getWriter(context, mTmpFile)) {
 
-            writer.backup(mSettings, new ProgressListenerBase() {
+            writer.backup(context, mSettings, new ProgressListenerBase() {
 
                 private int mAbsPosition;
 
@@ -151,7 +151,7 @@ public class BackupTask
             StorageUtils.renameFile(mTmpFile, mOutputFile);
 
             SharedPreferences.Editor ed = PreferenceManager
-                                                  .getDefaultSharedPreferences(App.getAppContext())
+                                                  .getDefaultSharedPreferences(context)
                                                   .edit();
             // if the backup was a full one (not a 'since') remember that.
             if ((mSettings.what & ExportOptions.EXPORT_SINCE) == 0) {

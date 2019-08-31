@@ -161,7 +161,7 @@ public class EditBookFieldsFragment
         Book book = mBookModel.getBook();
 
         //noinspection ConstantConditions
-        Locale userLocale = LocaleUtils.getPreferredLocale(getContext());
+        Locale userLocale = LocaleUtils.getLocale(getContext());
 
         switch (requestCode) {
             case REQ_EDIT_AUTHORS:
@@ -250,7 +250,7 @@ public class EditBookFieldsFragment
         super.onLoadFieldsFromBook();
 
         //noinspection ConstantConditions
-        Locale userLocale = LocaleUtils.getPreferredLocale(getContext());
+        Locale userLocale = LocaleUtils.getLocale(getContext());
 
         populateAuthorListField(userLocale);
         populateSeriesListField();
@@ -310,11 +310,13 @@ public class EditBookFieldsFragment
         Book book = mBookModel.getBook();
 
         Context context = getContext();
-        ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         //noinspection ConstantConditions
+        Locale userLocale = LocaleUtils.getLocale(context);
+
+        ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (!list.isEmpty()
             && ItemWithFixableId
-                       .pruneList(context, mBookModel.getDb(), list, book.getLocale(context))) {
+                       .pruneList(context, mBookModel.getDb(), list, book.getLocale(userLocale))) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         }

@@ -38,6 +38,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -54,10 +55,11 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
- * <b>Note:</b> yes, this is overkill for the startup. Call it an experiment.
+ * <strong>Note:</strong> yes, this is overkill for the startup. Call it an experiment.
  */
 public class StartupViewModel
         extends ViewModel {
@@ -86,12 +88,12 @@ public class StartupViewModel
     private final MutableLiveData<Exception> mTaskException = new MutableLiveData<>();
     private final MutableLiveData<Integer> mTaskProgressMessage = new MutableLiveData<>();
 
-    private final TaskListener<Void> mTaskListener = new TaskListener<Void>() {
+    private final TaskListener<Boolean> mTaskListener = new TaskListener<Boolean>() {
         /**
          * Called when any startup task completes. If no more tasks, let the activity know.
          */
         @Override
-        public void onTaskFinished(@NonNull final TaskFinishedMessage<Void> message) {
+        public void onTaskFinished(@NonNull final TaskFinishedMessage<Boolean> message) {
             synchronized (mAllTasks) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                     Logger.debug(this, "onTaskFinished", message);
@@ -186,27 +188,30 @@ public class StartupViewModel
 
 
         if (mStartupTasksShouldBeStarted) {
+            Locale userLocale = LocaleUtils.getLocale(context);
+
             int taskId = 0;
             // start this unconditionally
-            startTask(new BuildLanguageMappingsTask(++taskId, mTaskListener));
+            startTask(new BuildLanguageMappingsTask(++taskId, userLocale, mTaskListener));
 
             // this is not critical, once every so often is fine
             if (mDoPeriodicAction) {
                 // cleaner must be started after the language mapper task.
-                startTask(new DBCleanerTask(++taskId, mDb, mTaskListener));
+                startTask(new DBCleanerTask(++taskId, mDb, userLocale, mTaskListener));
             }
 
             // on demand only
             if (PreferenceManager.getDefaultSharedPreferences(context)
                                  .getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
                                              false)) {
-                startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener));
+                startTask(new RebuildFtsTask(++taskId, mDb, userLocale, mTaskListener));
             }
 
             // shouldn't be needed every single time.
             if (mDoPeriodicAction) {
                 // analyse db should always be started as the last task.
-                startTask(new AnalyzeDbTask(++taskId, mDb, mTaskListener));
+                startTask(new AnalyzeDbTask(++taskId, mDb, ImageUtils.imagesAreCached(),
+                                            mTaskListener));
             }
 
             // Clear the flag
@@ -222,7 +227,7 @@ public class StartupViewModel
         }
     }
 
-    private void startTask(@NonNull final TaskBase<Void> task) {
+    private void startTask(@NonNull final TaskBase<Boolean> task) {
         synchronized (mAllTasks) {
             mAllTasks.add(task.getId());
             task.execute();
@@ -266,7 +271,10 @@ public class StartupViewModel
      * Only build once per Locale.
      */
     static class BuildLanguageMappingsTask
-            extends TaskBase<Void> {
+            extends TaskBase<Boolean> {
+
+        @NonNull
+        private final Locale mUserLocale;
 
         /**
          * Constructor.
@@ -276,12 +284,14 @@ public class StartupViewModel
          */
         @UiThread
         BuildLanguageMappingsTask(final int taskId,
-                                  @NonNull final TaskListener<Void> taskListener) {
+                                  @NonNull final Locale userLocale,
+                                  @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
+            mUserLocale = userLocale;
         }
 
         @Override
-        protected Void doInBackground(final Void... params) {
+        protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("BuildLanguageMappingsTask");
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
@@ -289,13 +299,14 @@ public class StartupViewModel
             }
             publishProgress(new TaskProgressMessage(mTaskId, R.string.progress_msg_upgrading));
             try {
-                LocaleUtils.createLanguageMappingCache();
+                LanguageUtils.createLanguageMappingCache(mUserLocale);
 
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;
+                return false;
             }
-            return null;
+            return true;
         }
     }
 
@@ -303,11 +314,13 @@ public class StartupViewModel
      * Data cleaning. Done on each startup.
      */
     static class DBCleanerTask
-            extends TaskBase<Void> {
+            extends TaskBase<Boolean> {
 
         /** Database Access. */
         @NonNull
         private final DAO mDb;
+        @NonNull
+        private final Locale mUserLocale;
 
         /**
          * Constructor.
@@ -319,14 +332,16 @@ public class StartupViewModel
         @UiThread
         DBCleanerTask(final int taskId,
                       @NonNull final DAO db,
-                      @NonNull final TaskListener<Void> taskListener) {
+                      @NonNull final Locale userLocale,
+                      @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
             mDb = db;
+            mUserLocale = userLocale;
         }
 
         @WorkerThread
         @Override
-        protected Void doInBackground(final Void... params) {
+        protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("DBCleanerTask");
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
@@ -337,7 +352,7 @@ public class StartupViewModel
                 DBCleaner cleaner = new DBCleaner(mDb);
 
                 // do a mass update of any languages not yet converted to ISO 639-2 codes
-                cleaner.updateLanguages();
+                cleaner.updateLanguages(mUserLocale);
                 // clean/correct style UUID's on Bookshelves for deleted styles.
                 cleaner.bookshelves();
 
@@ -346,8 +361,9 @@ public class StartupViewModel
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;
+                return false;
             }
-            return null;
+            return true;
         }
     }
 
@@ -355,11 +371,13 @@ public class StartupViewModel
      * Task to rebuild FTS in background. Can take several seconds, so not done in onUpgrade().
      */
     static class RebuildFtsTask
-            extends TaskBase<Void> {
+            extends TaskBase<Boolean> {
 
         /** Database Access. */
         @NonNull
         private final DAO mDb;
+        @NonNull
+        private final Locale mUserLocale;
 
         /**
          * Constructor.
@@ -371,14 +389,16 @@ public class StartupViewModel
         @UiThread
         RebuildFtsTask(final int taskId,
                        @NonNull final DAO db,
-                       @NonNull final TaskListener<Void> taskListener) {
+                       @NonNull final Locale userLocale,
+                       @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
             mDb = db;
+            mUserLocale = userLocale;
         }
 
         @Override
         @WorkerThread
-        protected Void doInBackground(final Void... params) {
+        protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("RebuildFtsTask");
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
@@ -387,17 +407,24 @@ public class StartupViewModel
             publishProgress(new TaskProgressMessage(mTaskId,
                                                     R.string.progress_msg_rebuilding_search_index));
             try {
-                mDb.rebuildFts(App.getAppContext());
+                mDb.rebuildFts(mUserLocale);
+            } catch (@NonNull final RuntimeException e) {
+                Logger.error(this, e);
+                mException = e;
+                return false;
+            }
+            return true;
+        }
 
+        @Override
+        protected void onPostExecute(@NonNull final Boolean result) {
+            super.onPostExecute(result);
+            if (result) {
                 PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                                  .edit()
                                  .remove(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED)
                                  .apply();
-            } catch (@NonNull final RuntimeException e) {
-                Logger.error(this, e);
-                mException = e;
             }
-            return null;
         }
     }
 
@@ -405,11 +432,13 @@ public class StartupViewModel
      * Run 'analyse' on our databases.
      */
     static class AnalyzeDbTask
-            extends TaskBase<Void> {
+            extends TaskBase<Boolean> {
 
         /** Database Access. */
         @NonNull
         private final DAO mDb;
+
+        private final boolean mDoCoversDb;
 
         /**
          * @param taskId       a task identifier, will be returned in the task finished listener.
@@ -419,13 +448,15 @@ public class StartupViewModel
         @UiThread
         AnalyzeDbTask(final int taskId,
                       @NonNull final DAO db,
-                      @NonNull final TaskListener<Void> taskListener) {
+                      final boolean doCoversDb,
+                      @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
             mDb = db;
+            mDoCoversDb = doCoversDb;
         }
 
         @Override
-        protected Void doInBackground(final Void... params) {
+        protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("AnalyzeDbTask");
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
@@ -440,15 +471,16 @@ public class StartupViewModel
                 }
 
                 mDb.analyze();
-                if (ImageUtils.imagesAreCached()) {
+                if (mDoCoversDb) {
                     CoversDAO.analyze();
                 }
 
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;
+                return false;
             }
-            return null;
+            return true;
         }
     }
 }

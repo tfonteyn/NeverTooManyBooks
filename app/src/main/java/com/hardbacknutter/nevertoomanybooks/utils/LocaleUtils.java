@@ -27,11 +27,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
@@ -41,22 +43,38 @@ import java.util.MissingResourceException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
- * Languages.
- * <ul>
- * <li>ISO 639-1: two-letter codes, one per language</li>
- * <li>ISO 639-2: three-letter codes, for the same languages as 639-1</li>
- * </ul>
- * The JDK uses "ISO3" for the 3-character ISO 639-2 format (not to be confused with ISO 639-3)
+ * A fresh and new approach to setting the custom Locale.
+ * <p>
+ * <pre>
+ *  {@code
+ *      public class MyActivity extends AppCompatActivity {
+ *          private String mInitialLocaleSpec;
+ *
+ *          protected void onCreate(@Nullable final Bundle savedInstanceState) {
+ *              super.onCreate(savedInstanceState);
+ *              mInitialLocaleSpec = LocaleUtils.getPersistedLocaleSpec(this);
+ *          }
+ *
+ *          protected void applyLocale(@NonNull final Context base) {
+ *              super.applyLocale(LocaleUtils.applyLocale(base));
+ *          }
+ *
+ *          protected void onResume() {
+ *              super.onResume();
+ *              if (LocaleUtils.isChanged(this, mInitialLocaleSpec)) {
+ *                  recreate();
+ *              }
+ *          }
+ *      }
+ *  }
+ * </pre>
  */
 public final class LocaleUtils {
 
-    /** The SharedPreferences name where we'll maintain our language to ISO mappings. */
-    private static final String LANGUAGE_MAP = "language2iso3";
     /**
      * Value stored in preferences if the user runs our app in the default device language.
      * The string "system" is hardcoded in the preference string-array and
@@ -64,82 +82,40 @@ public final class LocaleUtils {
      */
     private static final String SYSTEM_LANGUAGE = "system";
     /** Remember the current language to detect when language is switched. */
-    private static String sCurrentUILanguage = SYSTEM_LANGUAGE;
-    private static Locale sCachedPreferredLocale;
+    @NonNull
+    private static String sPreferredLocaleSpec = SYSTEM_LANGUAGE;
+    @Nullable
+    private static Locale sPreferredLocale;
 
     private LocaleUtils() {
     }
 
     /**
-     * Check if the user-preferred Locale is different from the currently in use Locale.
+     * Get the user-preferred Locale as stored in the preferences.
      *
-     * @return {@code true} if there is a change (difference)
+     * @return a locale specification as used for Android resources;
+     * or {@link #SYSTEM_LANGUAGE} to use the system settings
      */
-    public static boolean isChanged(@NonNull final Context context) {
-        boolean changed = !from(context).equals(getPreferredLocale(context));
-        if (BuildConfig.DEBUG) {
-            Logger.debug(LocaleUtils.class, "isChanged", "=" + changed);
-        }
-        return changed;
-    }
-
-    /**
-     * Load the Locale setting from the users SharedPreference if needed.
-     *
-     * @param context to apply the user-preferred locale to.
-     */
-    public static void applyPreferred(@NonNull final Context context) {
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(LocaleUtils.class, "applyPreferred",
-                              toDebugString(context));
-        }
-
-        if (!isChanged(context)) {
-            return;
-        }
-
-        // null it first, so the getPreferredLocale call will re-reset it.
-        sCachedPreferredLocale = null;
-        sCachedPreferredLocale = getPreferredLocale(context);
-
-        // Apply the user-preferred Locale globally.... but this does not override already
-        // loaded resources. So.. this is for FUTURE use when new resources get initialised.
-        Locale.setDefault(sCachedPreferredLocale);
-
-        // Apply to the resources as passed in.
-        // create a delta-configuration; i.e. only to be used to modify the added items.
-        Configuration deltaOnlyConfig = new Configuration();
-        deltaOnlyConfig.setLocale(sCachedPreferredLocale);
-
-        // current context
-        Resources resources = context.getResources();
-        resources.updateConfiguration(deltaOnlyConfig, resources.getDisplayMetrics());
-
-        // application context
-        resources = App.getAppContext().getResources();
-        resources.updateConfiguration(deltaOnlyConfig, resources.getDisplayMetrics());
-
-        // see if we need to add mappings for the new/current locale
-        createLanguageMappingCache(getLanguageCache(), sCachedPreferredLocale);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugExit(LocaleUtils.class, "applyPreferred",
-                             toDebugString(context));
-        }
+    public static String getPersistedLocaleSpec() {
+        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                .getString(Prefs.pk_ui_language, SYSTEM_LANGUAGE);
     }
 
     /**
      * Test if the passed Locale is actually a 'real' Locale by checking ISO codes.
+     *
+     * @param locale to test
+     *
+     * @return {@code true} if valid
      */
     public static boolean isValid(@Nullable final Locale locale) {
         if (locale == null) {
             return false;
         }
         try {
-            // MissingResourceException
-            // NullPointerException can be thrown from within, when ISO3Language() fails.
-            return locale.getISO3Language() != null && locale.getISO3Country() != null;
+            return locale.getISO3Language() != null
+                   && locale.getISO3Country() != null;
+
         } catch (@NonNull final MissingResourceException e) {
             // log but ignore.
             Logger.debug(LocaleUtils.class, "isValid",
@@ -148,432 +124,175 @@ public final class LocaleUtils {
             return false;
 
         } catch (@NonNull final RuntimeException ignore) {
+            // NullPointerException can be thrown  when ISO3Language() fails.
             return false;
         }
     }
 
     /**
-     * Get the user-preferred Locale as stored in the preferences.
-     * <p>
-     * Try to avoid this method, and use {@link #getPreferredLocale(Context)}.
-     * The latter will work fine from unit tests, while this one will not.
+     * Check if the current default localeSpec is different from the user preferred localeSpec
      *
-     * @return the user-preferred Locale as stored in the preferences.
+     * @return {@code true} if different
      */
-    @NonNull
-    public static Locale getPreferredLocale() {
-        return getPreferredLocale(App.getAppContext());
+    public static boolean isChanged() {
+        return isChanged(Locale.getDefault().getLanguage());
     }
 
     /**
-     * Get the user-preferred Locale as stored in the preferences.
+     * Check if the passed localeSpec is different from the user preferred Locale
      *
-     * @param context Current context
+     * @param localeSpec to test
      *
-     * @return the user-preferred Locale.
+     * @return {@code true} if different
      */
-    @NonNull
-    public static Locale getPreferredLocale(@NonNull final Context context) {
-        String lang = PreferenceManager.getDefaultSharedPreferences(context)
-                                       .getString(Prefs.pk_ui_language, SYSTEM_LANGUAGE);
-
-        // first start, or if the language was changed since last time.
-        if (sCachedPreferredLocale == null || !sCurrentUILanguage.equals(lang)) {
-            sCurrentUILanguage = lang;
-            if (lang == null || lang.isEmpty() || SYSTEM_LANGUAGE.equals(lang)) {
-                sCachedPreferredLocale = App.getSystemLocale();
-            } else {
-                sCachedPreferredLocale = from(lang);
+    public static boolean isChanged(@Nullable final String localeSpec) {
+        if (BuildConfig.DEBUG /* always */) {
+            // developer sanity check: for now, we don't use/support full local tags
+            if (localeSpec != null && localeSpec.contains("_")) {
+                throw new IllegalStateException("incoming localeSpec is a tag instead of a lang: "
+                                                + localeSpec);
             }
         }
-        if (BuildConfig.DEBUG) {
-            Logger.debug(LocaleUtils.class, "getPreferredLocale",
-                         "lang=" + lang,
-                         "sCachedPreferredLocale=" + sCachedPreferredLocale);
-        }
-        return sCachedPreferredLocale;
+        return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec());
     }
 
     /**
-     * syntax sugar...
-     *
-     * @return the current Locale for the passed context.
+     * this call is not needed. Use Locale.getDefault();
      */
     @NonNull
-    public static Locale from(@NonNull final Context context) {
-        Locale locale = context.getResources().getConfiguration().locale;
+    @AnyThread
+    public static Locale getLocale(@NonNull final Context context) {
+        insanityCheck(context);
 
-        //if (locale == null || locale.equals(sCachedPreferredLocale)) {
+        String localeSpec = getPersistedLocaleSpec();
+
+        // first start, or if the language was changed since last call.
+        if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
+            sPreferredLocaleSpec = localeSpec;
+            sPreferredLocale = createLocale(localeSpec);
+        }
         if (BuildConfig.DEBUG) {
-            Logger.debugWithStackTrace(LocaleUtils.class, "from",
-                                       "locale=" + locale,
-                                       "sCachedPreferredLocale=" + sCachedPreferredLocale);
+            Logger.debug(LocaleUtils.class, "getLocale(Context)",
+                         "lang=" + localeSpec,
+                         "sPreferredLocale=" + sPreferredLocale);
         }
 
-        if (sCachedPreferredLocale == null) {
-            sCachedPreferredLocale = locale;
-        }
-
-        return locale != null ? locale : Locale.ENGLISH;
+        return sPreferredLocale;
     }
 
     /**
-     * Creates a Locale from a concatenated locale string.
+     * Set the system wide default Locale to the given localeSpec.
+     * Set the context's locale to the given localeSpec and return the updated context.
      *
-     * @param code Locale name (e.g. 'de', 'en_AU')
+     * @param context to set the Locale on
      *
-     * @return Locale corresponding to passed name
+     * @return updated context
      */
-    @NonNull
-    private static Locale from(@NonNull final String code) {
-        String[] parts;
-        if (code.contains("_")) {
-            parts = code.split("_");
+    public static Context applyLocale(@NonNull final Context context) {
+        String localeSpec = getPersistedLocaleSpec();
+
+        // create the Locale at first access, or if the requested is different from the current.
+        if (sPreferredLocale == null || !localeSpec.equals(sPreferredLocaleSpec)) {
+            sPreferredLocale = createLocale(localeSpec);
+            sPreferredLocaleSpec = localeSpec;
+        }
+
+        // ALWAYS ALWAYS ALWAYS ALWAYS ALWAYS
+        Locale.setDefault(sPreferredLocale);
+        // ALWAYS ALWAYS ALWAYS ALWAYS ALWAYS
+
+        Context updatedContext;
+        if (Build.VERSION.SDK_INT >= 24) {
+            updatedContext = updateResources(context, sPreferredLocale);
         } else {
-            parts = code.split("-");
+            updatedContext = updateResourcesLegacy(context, sPreferredLocale);
         }
+        insanityCheck(updatedContext);
+        return updatedContext;
+    }
+
+    /**
+     * Create a new Locale as specified by the localeSpec string.
+     *
+     * @param localeSpec a locale specification as used for Android resources;
+     *                   or {@link #SYSTEM_LANGUAGE} to use the system settings
+     *
+     * @return a new locale
+     */
+    @NonNull
+    private static Locale createLocale(@Nullable final String localeSpec) {
         Locale locale;
-        switch (parts.length) {
-            case 1:
-                locale = new Locale(parts[0]);
-                break;
-            case 2:
-                locale = new Locale(parts[0], parts[1]);
-                break;
-            default:
-                locale = new Locale(parts[0], parts[1], parts[2]);
-                break;
+        if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
+            if (Build.VERSION.SDK_INT >= 24) {
+                locale = Resources.getSystem().getConfiguration().getLocales().get(0);
+            } else {
+                locale = Resources.getSystem().getConfiguration().locale;
+            }
+        } else {
+            // Create a Locale from a concatenated locale string (e.g. 'de', 'en_AU')
+            String[] parts;
+            if (localeSpec.contains("_")) {
+                parts = localeSpec.split("_");
+            } else {
+                parts = localeSpec.split("-");
+            }
+            switch (parts.length) {
+                case 1:
+                    locale = new Locale(parts[0]);
+                    break;
+                case 2:
+                    locale = new Locale(parts[0], parts[1]);
+                    break;
+                default:
+                    locale = new Locale(parts[0], parts[1], parts[2]);
+                    break;
+            }
         }
+
         return locale;
     }
 
-    /**
-     * Load a Resources set for the specified Locale.
-     * This is an expensive lookup; we do not cache the Resources here,
-     * but it's advisable to cache the strings (map of locale/string for example) being looked up.
-     *
-     * @param context       Current context
-     * @param desiredLocale the desired Locale, e.g. the locale of a book,series,toc,...
-     *
-     * @return the Resources
-     */
+    @TargetApi(24)
     @NonNull
-    public static Resources getLocalizedResources(@NonNull final Context context,
-                                                  @NonNull final Locale desiredLocale) {
-        Configuration current = context.getResources().getConfiguration();
-        Configuration configuration = new Configuration(current);
-        String lang = desiredLocale.getLanguage();
-        if (lang.length() == 2) {
-            configuration.setLocale(desiredLocale);
+    private static Context updateResources(@NonNull final Context context,
+                                           @NonNull final Locale locale) {
+        Configuration configuration = context.getResources().getConfiguration();
+        configuration.setLocale(locale);
+        configuration.setLayoutDirection(locale);
+
+        return context.createConfigurationContext(configuration);
+    }
+
+    @NonNull
+    private static Context updateResourcesLegacy(@NonNull final Context context,
+                                                 @NonNull final Locale locale) {
+        Resources resources = context.getResources();
+
+        Configuration configuration = resources.getConfiguration();
+        configuration.locale = locale;
+        configuration.setLayoutDirection(locale);
+
+        resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+
+        return context;
+    }
+
+
+    public static void insanityCheck(@NonNull final Context context) {
+        Locale locale;
+        if (Build.VERSION.SDK_INT >= 24) {
+            locale = context.getResources().getConfiguration().getLocales().get(0);
         } else {
-            // any 3-char code needs to be converted to 2-char be able to find the resource.
-            configuration.setLocale(new Locale(mapIso3toIso2(lang)));
+            locale = context.getResources().getConfiguration().locale;
         }
+        String conIso3 = locale.getISO3Language();
+        String defIso3 = Locale.getDefault().getISO3Language();
 
-        Context localizedContext = context.createConfigurationContext(configuration);
-        return localizedContext.getResources();
-    }
-
-
-    /**
-     * Try to convert a Language DisplayName to an ISO3 code.
-     * At installation (or upgrade to v200) we generated the users System Locale + Locale.ENGLISH
-     * Each time the user switches language, we generate an additional set.
-     * That probably covers a lot if not all.
-     *
-     * @param displayName the string as normally produced by {@link Locale#getDisplayLanguage}
-     * @param userLocale
-     *
-     * @return the ISO code, or if conversion failed, the input string
-     */
-    @NonNull
-    public static String getIso3fromDisplayName(@NonNull final String displayName,
-                                                @NonNull final Locale userLocale) {
-        String iso = getLanguageCache().getString(displayName.toLowerCase(userLocale), null);
-        if (iso == null) {
-            return displayName;
-        }
-        return iso;
-    }
-
-    /**
-     * Try to convert a "language-country" code to an ISO code.
-     *
-     * @param iso2 a standard ISO string like "en" or "en-GB" or "en-GB*"
-     *
-     * @return the ISO code, or if conversion failed, the input string
-     */
-    @NonNull
-    public static String getIso3FromIso2(@NonNull final String iso2) {
-        // shortcut for English "en", "en-GB", etc
-        if ("en".equals(iso2) || iso2.startsWith("en-")) {
-            return "eng";
-        } else {
-            try {
-                Locale bl = new Locale(iso2.split("-")[0]);
-                return bl.getISO3Language();
-            } catch (@NonNull final MissingResourceException ignore) {
-                return iso2;
-            }
+        if (!defIso3.equals(conIso3)) {
+            Error e = new java.lang.VerifyError();
+            Logger.error(LocaleUtils.class, e, "defIso3=" + defIso3, "conIso3=" + conIso3);
+            throw e;
         }
     }
 
-    /**
-     * Try to convert a Language ISO code to the display name.
-     *
-     * @param iso the ISO code
-     *
-     * @return the display name for the language,
-     * or the input string itself if it was an invalid ISO code
-     */
-    @NonNull
-    public static String getDisplayName(@NonNull final Context context,
-                                        @NonNull final String iso) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(LocaleUtils.class, "getLabel",
-                              "iso=" + iso, toDebugString(context));
-        }
-        return getDisplayName(from(context), iso);
-    }
-
-    /**
-     * Try to convert a Language ISO code to the display name.
-     *
-     * @param locale to use for the output language
-     * @param iso    the ISO code
-     *
-     * @return the display name for the language,
-     * or the input string itself if it was an invalid ISO code
-     */
-    @NonNull
-    public static String getDisplayName(@NonNull final Locale locale,
-                                        @NonNull final String iso) {
-        Locale isoLocale = new Locale(iso);
-        if (isValid(isoLocale)) {
-            return isoLocale.getDisplayLanguage(locale);
-        }
-        return iso;
-    }
-
-//    Overkill... use the switch structure instead.
-//    @Nullable
-//    private static Map<String, String> LANG3_TO_LANG2_MAP;
-//
-//    private static String mapIso3toIso2viaMap(@NonNull final String iso3) {
-//        if (LANG3_TO_LANG2_MAP == null) {
-//            String[] languages = Locale.getISOLanguages();
-//            LANG3_TO_LANG2_MAP = new HashMap<>(languages.length);
-//            for (String language : languages) {
-//                Locale locale = new Locale(language);
-//                LANG3_TO_LANG2_MAP.put(locale.getISO3Language(), language);
-//            }
-//        }
-//        String iso2 = LANG3_TO_LANG2_MAP.get(iso3);
-//        return iso2 != null ? iso2 : iso3;
-//    }
-
-    /**
-     * Map an ISO 639-2 (3-char) language code to an ISO 639-1 (2-char) language code.
-     * <p>
-     * There is one entry here for each language supported.
-     * NEWKIND: if a new resource language is added, add a mapping here.
-     *
-     * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
-     *
-     * @return ISO 639-1 (2-char) language code
-     */
-    private static String mapIso3toIso2(@NonNull final String iso3) {
-        if (iso3.length() < 3) {
-            return iso3;
-        }
-
-        switch (iso3) {
-            // English
-            case "eng":
-                return "en";
-            // Czech
-            case "cze":
-            case "ces":
-                return "cs";
-            // German
-            case "ger":
-            case "deu":
-                return "de";
-            // Greek
-            case "gre":
-            case "ell":
-                return "el";
-            // Spanish
-            case "spa":
-                return "es";
-            // French
-            case "fre":
-            case "fra":
-                return "fr";
-            // Italian
-            case "ita":
-                return "it";
-            // Dutch
-            case "dut":
-            case "nld":
-                return "nl";
-            // Polish
-            case "pol":
-                return "pl";
-            // Russian
-            case "rus":
-                return "ru";
-            // Turkish
-            case "tur":
-                return "tr";
-
-            default:
-                // anything else is not supported, and (FLW) should never happen.
-                return "en";
-        }
-    }
-
-    /**
-     * Convert the 3-char bibliographic code to the Java used terminology code.
-     * <p>
-     * Goodreads uses the bibliographic code while Java uses the terminology code.
-     * For example, in Java French is "fra" but Goodreads uses "fre".
-     *
-     * <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php">
-     * https://www.loc.gov/standards/iso639-2/php/code_list.php</a>
-     * <p>
-     * This is the entire set correct as on 2019-08-22.
-     */
-    @NonNull
-    public static String normaliseIso3(@NonNull final String lang) {
-        switch (lang) {
-            // Albanian
-            case "alb":
-                return "sqi";
-            // Armenian
-            case "arm":
-                return "hye";
-            // Basque
-            case "baq":
-                return "eus";
-            // Burmese
-            case "bur":
-                return "mya";
-            // Chinese
-            case "chi":
-                return "zho";
-            // Czech
-            case "cze":
-                return "ces";
-            // Dutch
-            case "dut":
-                return "nld";
-            // French
-            case "fre":
-                return "fra";
-            // Georgian
-            case "geo":
-                return "kat";
-            // German
-            case "ger":
-                return "deu";
-            // Greek
-            case "gre":
-                return "ell";
-            // Icelandic
-            case "ice":
-                return "isl";
-            // Macedonian
-            case "mac":
-                return "mkd";
-            // Maori
-            case "mao":
-                return "mri";
-            // Malay
-            case "may":
-                return "msa";
-            // Persian
-            case "per":
-                return "fas";
-            // Romanian
-            case "rum":
-                return "ron";
-            // Slovak
-            case "slo":
-                return "slk";
-            // Tibetan
-            case "tib":
-                return "bod";
-            // Welsh
-            case "wel":
-                return "cym";
-
-            default:
-                return lang;
-        }
-    }
-
-    /**
-     * generate initial language2iso mappings.
-     */
-    public static void createLanguageMappingCache() {
-        SharedPreferences prefs = getLanguageCache();
-
-        // the one the user has configured our app into using
-        createLanguageMappingCache(prefs, Locale.getDefault());
-
-        // the system default
-        createLanguageMappingCache(prefs, App.getSystemLocale());
-        // and English for compatibility with lots of websites.
-        createLanguageMappingCache(prefs, Locale.ENGLISH);
-    }
-
-    /**
-     * Generate language mappings for a given locale.
-     *
-     * @param prefs      the preferences 'file' used as our language names cache.
-     * @param userLocale the locale the user is running the app in.
-     */
-    private static void createLanguageMappingCache(@NonNull final SharedPreferences prefs,
-                                                   @NonNull final Locale userLocale) {
-        // just return if already done for this locale.
-        if (prefs.getBoolean(userLocale.getISO3Language(), false)) {
-            return;
-        }
-        SharedPreferences.Editor ed = prefs.edit();
-        for (Locale loc : Locale.getAvailableLocales()) {
-            ed.putString(loc.getDisplayLanguage(userLocale).toLowerCase(userLocale),
-                         loc.getISO3Language());
-        }
-        // signal this locale was done
-        ed.putBoolean(userLocale.getISO3Language(), true);
-        ed.apply();
-    }
-
-    /** Convenience method to get the language SharedPreferences file. */
-    private static SharedPreferences getLanguageCache() {
-        return App.getAppContext().getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
-    }
-
-    public static String toDebugString(@NonNull final Context context) {
-        Locale current = from(context);
-        Locale configLocale = context.getResources().getConfiguration().locale;
-        if (configLocale == null) {
-            configLocale = Locale.ENGLISH;
-        }
-        return ""
-               + "\nsSystemInitialLocale       : " + App.getSystemLocale().getDisplayName()
-               + "\nsSystemInitialLocale(cur)  : " + App.getSystemLocale().getDisplayName(current)
-               + "\nconfiguration.locale       : " + configLocale.getDisplayName()
-               + "\nconfiguration.locale(cur)  : " + configLocale.getDisplayName(current)
-
-               + "\nLocale.getDefault()        : " + Locale.getDefault().getDisplayName()
-               + "\nLocale.getDefault(cur)     : " + Locale.getDefault().getDisplayName(current)
-               + "\ngetPreferredLocale()       : " + getPreferredLocale(context).getDisplayName()
-               + "\ngetPreferredLocale(cur)    : " + getPreferredLocale(context)
-                                                             .getDisplayName(current)
-
-               + "\nApp.isInNeedOfRecreating() : " + App.isInNeedOfRecreating()
-               + "\nApp.isRecreating()         : " + App.isRecreating();
-    }
 }

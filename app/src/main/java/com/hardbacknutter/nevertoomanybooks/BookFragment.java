@@ -139,7 +139,6 @@ public class BookFragment
         }
     }
 
-
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -192,9 +191,11 @@ public class BookFragment
         // enable the listener for flings
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
         mOnTouchListener = (v, event) -> mGestureDetector.onTouchEvent(event);
-
+        //noinspection ConstantConditions
+        LocaleUtils.insanityCheck(getContext());
         if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_view_only_help, null);
+            //noinspection ConstantConditions
+            TipManager.display(getContext(), R.string.tip_view_only_help, null);
         }
     }
 
@@ -221,7 +222,7 @@ public class BookFragment
         Fields fields = getFields();
 
         //noinspection ConstantConditions
-        Locale userLocale = LocaleUtils.getPreferredLocale(getContext());
+        Locale userLocale = LocaleUtils.getLocale(getContext());
 
         // multiple use
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
@@ -240,7 +241,8 @@ public class BookFragment
         fields.add(R.id.pages, DBDefinitions.KEY_PAGES)
               .setFormatter(new Fields.PagesFormatter())
               .setZeroIsEmpty(true);
-        fields.add(R.id.format, DBDefinitions.KEY_FORMAT);
+        fields.add(R.id.format, DBDefinitions.KEY_FORMAT)
+              .setFormatter(new Fields.FormatFormatter());
 
         fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
         fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
@@ -285,7 +287,6 @@ public class BookFragment
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         fields.addBoolean(R.id.read, DBDefinitions.KEY_READ);
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        //noinspection ConstantConditions
         fields.addBoolean(R.id.signed, DBDefinitions.KEY_SIGNED)
               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getContext()))
               .setZeroIsEmpty(true);
@@ -570,7 +571,7 @@ public class BookFragment
         Fields.PriceFormatter paidFormatter = new Fields.PriceFormatter();
         paidFormatter.setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
         getField(R.id.price_paid).setFormatter(paidFormatter)
-                                 .setValue(book.getString(DBDefinitions.KEY_PRICE_LISTED));
+                                 .setValue(book.getString(DBDefinitions.KEY_PRICE_PAID));
     }
 
     /**

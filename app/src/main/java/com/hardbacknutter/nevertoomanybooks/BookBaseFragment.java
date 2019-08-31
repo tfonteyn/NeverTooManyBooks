@@ -636,10 +636,10 @@ public abstract class BookBaseFragment
          * first VISIBLE object returned by INextView when called recursively.
          *
          * @param list   Collection of all views
-         * @param nextId ID of 'next' view to get
-         * @param getter Interface to lookup 'next' ID given a view
+         * @param nextId id of 'next' view to get
+         * @param getter Interface to lookup 'next' id given a view
          *
-         * @return ID if first visible 'next' view
+         * @return id if first visible 'next' view
          */
         private static int getNextView(@NonNull final Map<Integer, View> list,
                                        final int nextId,
@@ -664,7 +664,7 @@ public abstract class BookBaseFragment
          */
         private static void getViews(@NonNull final View parent,
                                      @NonNull final Map<Integer, View> list) {
-            // Get the view ID and add it to collection if not already present.
+            // Get the view id and add it to collection if not already present.
             @IdRes
             final int id = parent.getId();
             if (id != View.NO_ID && !list.containsKey(id)) {

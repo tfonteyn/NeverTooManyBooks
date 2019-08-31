@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -197,7 +198,7 @@ public class BooklistMappedCursorRow {
                     "groupCount=" + mStyle.groupCount() + " < level=" + level);
         }
 
-        Locale locale = LocaleUtils.from(context);
+        Locale locale = LocaleUtils.getLocale(context);
 
         int index = level - 1;
 
@@ -215,7 +216,7 @@ public class BooklistMappedCursorRow {
                 return source;
 
             case BooklistGroup.RowKind.LANGUAGE:
-                LocaleUtils.getDisplayName(locale, source);
+                LanguageUtils.getDisplayName(locale, source);
                 break;
 
             case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:

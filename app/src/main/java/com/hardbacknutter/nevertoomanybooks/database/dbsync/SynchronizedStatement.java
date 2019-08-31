@@ -359,10 +359,10 @@ public class SynchronizedStatement
     /**
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
      * <p>
-     * Execute this SQL statement and return the ID of the row inserted due to this call.
+     * Execute this SQL statement and return the id of the row inserted due to this call.
      * The SQL statement should be an INSERT for this to be a useful call.
      *
-     * @return the row ID of the last row inserted, if this insert is successful. -1 otherwise.
+     * @return the row id of the last row inserted, if this insert is successful. -1 otherwise.
      */
     public long executeInsert() {
         Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();

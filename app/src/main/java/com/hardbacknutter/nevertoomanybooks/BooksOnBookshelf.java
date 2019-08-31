@@ -94,6 +94,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSuggestionProvider;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
@@ -202,7 +203,9 @@ public class BooksOnBookshelf
             new StylePickerDialogFragment.StyleChangedListener() {
                 public void onStyleChanged(@NonNull final BooklistStyle style) {
                     // store the new data
-                    mModel.onStyleChanged(BooksOnBookshelf.this, style,
+                    mModel.onStyleChanged(BooksOnBookshelf.this,
+                                          LocaleUtils.getLocale(BooksOnBookshelf.this),
+                                          style,
                                           mLayoutManager.findFirstVisibleItemPosition(),
                                           mListView);
                     // and do a rebuild
@@ -271,8 +274,8 @@ public class BooksOnBookshelf
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
 
         if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_view_only_book_details, null);
-            TipManager.display(getLayoutInflater(), R.string.tip_book_list, null);
+            TipManager.display(this, R.string.tip_view_only_book_details, null);
+            TipManager.display(this, R.string.tip_book_list, null);
         }
 
         // populating the spinner and loading the list is done in onResume.
@@ -342,7 +345,7 @@ public class BooksOnBookshelf
         switch (item.getItemId()) {
 
             case R.id.MENU_SORT:
-                TipManager.display(getLayoutInflater(), R.string.tip_booklist_style_menu,
+                TipManager.display(this, R.string.tip_booklist_style_menu,
                                    this::showStylePicker);
                 return true;
 
@@ -467,7 +470,7 @@ public class BooksOnBookshelf
                     case UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING:
                         // a book was deleted.
                         // handle re-positioning better
-                        //mCurrentPositionedBookId = [somehow get the ID 'above' the deleted one];
+                        //mCurrentPositionedBookId = [somehow get the id 'above' the deleted one];
                         mModel.setFullRebuild(false);
                         break;
 
@@ -495,14 +498,14 @@ public class BooksOnBookshelf
                 if (resultCode == UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING) {
                     // one or more books were deleted.
                     // handle re-positioning better
-                    //mCurrentPositionedBookId = [somehow get the ID 'above' the deleted one];
+                    //mCurrentPositionedBookId = [somehow get the id 'above' the deleted one];
                     mModel.setFullRebuild(false);
                 }
                 break;
 
             case UniqueId.REQ_BOOK_SEARCH:
                 if (resultCode == Activity.RESULT_OK) {
-                    // don't enforce having an id. We might not have found or added anything.
+                    // don't enforce having an ID. We might not have found or added anything.
                     // but if we do, the data will be what EditBookActivity returns.
                     if (data != null) {
                         long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
@@ -554,12 +557,6 @@ public class BooksOnBookshelf
                             if (mModel.reloadCurrentBookshelf(this)) {
                                 mModel.setFullRebuild(true);
                             }
-
-                            if (App.isThemeChanged(this)
-                                || LocaleUtils.isChanged(this)) {
-                                recreate();
-                                App.setIsRecreating();
-                            }
                         }
                         if ((options & ImportOptions.BOOK_LIST_STYLES) != 0) {
                             // Assume style changes make a rebuild needed.
@@ -595,8 +592,8 @@ public class BooksOnBookshelf
                         BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                         if (style != null) {
                             // save the new bookshelf/style combination
-                            mModel.getCurrentBookshelf().setAsPreferred(this);
-                            mModel.setCurrentStyle(this, style);
+                            mModel.getCurrentBookshelf().setAsPreferred();
+                            mModel.setCurrentStyle(this, LocaleUtils.getLocale(this), style);
                         }
                         mModel.setFullRebuild(true);
                         break;
@@ -638,7 +635,7 @@ public class BooksOnBookshelf
         if (App.isRecreating()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
                 Logger.debugExit("onResume", "isRecreating",
-                                 LocaleUtils.toDebugString(this));
+                                 LanguageUtils.toDebugString(this));
             }
             return;
         }
@@ -685,7 +682,7 @@ public class BooksOnBookshelf
     /**
      * Populate the BookShelf list in the Spinner and set the current bookshelf/style.
      * <p>
-     * <b>Note:</b> no longer triggers a rebuild, as it was getting messy who/when/where.
+     * <strong>Note:</strong> no longer triggers a rebuild, as it was getting messy who/when/where.
      * Caller takes care now.
      *
      * @return {@code true} if the selected shelf was changed (or set for the first time).
@@ -761,6 +758,7 @@ public class BooksOnBookshelf
                                        "isFullRebuild=" + isFullRebuild);
         }
 
+        LocaleUtils.insanityCheck(this);
         // go create
         mModel.initBookList(this, isFullRebuild);
         mProgressBar.setVisibility(View.VISIBLE);
@@ -896,7 +894,7 @@ public class BooksOnBookshelf
 //        // set the list, this will trigger the adapter to refresh.
 //        mAdapter.setCursor(mModel.getListCursor());
 
-        mAdapter = new BooklistAdapter(getLayoutInflater(), mModel.getCurrentStyle(),
+        mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(),
                                        mModel.getDb(), cursor);
         mAdapter.setOnItemClickListener(this::onItemClick);
         mAdapter.setOnItemLongClickListener(this::onItemLongClick);
@@ -1046,7 +1044,7 @@ public class BooksOnBookshelf
                 title = row.getLevelText(this, mapper.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
             }
             // bring up the context menu
-            new MenuPicker<>(getLayoutInflater(), title, menu, position, (menuItem, pos) -> {
+            new MenuPicker<>(this, title, menu, position, (menuItem, pos) -> {
                 cursor.moveToPosition(pos);
                 return onContextItemSelected(menuItem, cursor.getCursorMapper());
             }).show();
@@ -1554,7 +1552,7 @@ public class BooksOnBookshelf
      * @return Returns {@code true} if search launched, and {@code false} if the activity does
      * not respond to search.
      * <p>
-     * <b>Note:</b> uses the 'advanced' FTS search activity. To use the standard search,
+     * <strong>Note:</strong> uses the 'advanced' FTS search activity. To use the standard search,
      * comment this method out. The system will use {@link SearchSuggestionProvider}
      * as configured in res/xml/searchable.xml
      * <p>

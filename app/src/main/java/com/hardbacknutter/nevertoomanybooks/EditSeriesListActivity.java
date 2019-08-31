@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -85,7 +86,7 @@ public class EditSeriesListActivity
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        LocaleUtils.insanityCheck(this);
         setTitle(R.string.title_edit_book_series);
 
         mAutoCompleteAdapter = new ArrayAdapter<>(this,
@@ -102,7 +103,7 @@ public class EditSeriesListActivity
     protected RecyclerViewAdapterBase
     createListAdapter(@NonNull final ArrayList<Series> list,
                       @NonNull final StartDragListener dragStartListener) {
-        return new SeriesListAdapter(getLayoutInflater(), list, dragStartListener);
+        return new SeriesListAdapter(this, list, dragStartListener);
     }
 
     @Override
@@ -148,7 +149,7 @@ public class EditSeriesListActivity
                 // Number is not part of the Series table, but of the book_series table.
                 // so just update it and we're done here.
                 series.setNumber(newNumber);
-                Series.pruneSeriesList(this, mList, bookLocale);
+                Series.pruneSeriesList(mList, bookLocale);
                 ItemWithFixableId.pruneList(this, mModel.getDb(), mList, bookLocale);
                 mListAdapter.notifyDataSetChanged();
             }
@@ -167,7 +168,7 @@ public class EditSeriesListActivity
         if (mModel.isSingleUsage(nrOfReferences)) {
             // Use the original mSeries, but update its fields
             series.copyFrom(newSeries, true);
-            Series.pruneSeriesList(this, mList, bookLocale);
+            Series.pruneSeriesList(mList, bookLocale);
             ItemWithFixableId.pruneList(this, mModel.getDb(), mList, bookLocale);
             mListAdapter.notifyDataSetChanged();
             return;
@@ -187,13 +188,13 @@ public class EditSeriesListActivity
                     mModel.setGlobalReplacementsMade(
                             mModel.getDb().globalReplace(this, series, newSeries, bookLocale));
                     series.copyFrom(newSeries, false);
-                    Series.pruneSeriesList(this, mList, bookLocale);
+                    Series.pruneSeriesList(mList, bookLocale);
                     ItemWithFixableId.pruneList(this, mModel.getDb(), mList, bookLocale);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .setPositiveButton(R.string.btn_this_book, (d, which) -> {
                     series.copyFrom(newSeries, true);
-                    Series.pruneSeriesList(this, mList, bookLocale);
+                    Series.pruneSeriesList(mList, bookLocale);
                     ItemWithFixableId.pruneList(this, mModel.getDb(), mList, bookLocale);
                     mListAdapter.notifyDataSetChanged();
                 })
@@ -203,7 +204,7 @@ public class EditSeriesListActivity
 
     /**
      * Edit a Series from the list.
-     * It could exist (i.e. have an id) or could be a previously added/new one (id==0).
+     * It could exist (i.e. have an ID) or could be a previously added/new one (ID==0).
      */
     public static class EditBookSeriesDialogFragment
             extends DialogFragment {
@@ -350,14 +351,14 @@ public class EditSeriesListActivity
         /**
          * Constructor.
          *
-         * @param inflater          LayoutInflater to use
+         * @param context          Current context
          * @param items             List of Series
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        SeriesListAdapter(@NonNull final LayoutInflater inflater,
+        SeriesListAdapter(@NonNull final Context context,
                           @NonNull final ArrayList<Series> items,
                           @NonNull final StartDragListener dragStartListener) {
-            super(inflater, items, dragStartListener);
+            super(context, items, dragStartListener);
         }
 
         @NonNull

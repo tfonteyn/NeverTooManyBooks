@@ -195,7 +195,7 @@ public class BooklistPseudoCursor
     }
 
     /**
-     * Check if the passed cursor ID is in the MRU list.
+     * Check if the passed cursor id is in the MRU list.
      *
      * @param id of cursor to check
      *
@@ -302,7 +302,7 @@ public class BooklistPseudoCursor
         if (newPosition < 0 || newPosition >= getCount()) {
             return false;
         }
-        // Get the ID we use for the cursor at the new position
+        // Get the id we use for the cursor at the new position
         Integer cursorId = newPosition / CURSOR_SIZE;
         // Determine the actual start position
         int cursorStartPos = cursorId * CURSOR_SIZE;

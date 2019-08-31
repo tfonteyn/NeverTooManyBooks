@@ -31,7 +31,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -99,7 +98,7 @@ public class EditAuthorListActivity
     protected RecyclerViewAdapterBase
     createListAdapter(@NonNull final ArrayList<Author> list,
                       @NonNull final StartDragListener dragStartListener) {
-        return new AuthorListAdapter(getLayoutInflater(), list, dragStartListener);
+        return new AuthorListAdapter(this, list, dragStartListener);
     }
 
     @Override
@@ -112,7 +111,7 @@ public class EditAuthorListActivity
 
         Author newAuthor = Author.fromString(name);
         // see if it already exists
-        newAuthor.fixId(this, mModel.getDb(), LocaleUtils.getPreferredLocale(this));
+        newAuthor.fixId(this, mModel.getDb(), LocaleUtils.getLocale(this));
         // and check it's not already in the list.
         if (mList.contains(newAuthor)) {
             UserMessage.show(mAutoCompleteTextView, R.string.warning_author_already_in_list);
@@ -135,7 +134,7 @@ public class EditAuthorListActivity
     private void processChanges(@NonNull final Author author,
                                 @NonNull final Author newAuthorData) {
 
-        Locale userLocale = LocaleUtils.getPreferredLocale(this);
+        Locale userLocale = LocaleUtils.getLocale(this);
 
         // See if the old one is used by any other books.
         long nrOfReferences = mModel.getDb().countBooksByAuthor(this, userLocale, author)
@@ -306,14 +305,14 @@ public class EditAuthorListActivity
         /**
          * Constructor.
          *
-         * @param inflater          LayoutInflater to use
+         * @param context           Current context
          * @param items             List of Authors
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        AuthorListAdapter(@NonNull final LayoutInflater inflater,
+        AuthorListAdapter(@NonNull final Context context,
                           @NonNull final ArrayList<Author> items,
                           @NonNull final StartDragListener dragStartListener) {
-            super(inflater, items, dragStartListener);
+            super(context, items, dragStartListener);
 
             mAuthorTypeIsUsed = App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE);
         }

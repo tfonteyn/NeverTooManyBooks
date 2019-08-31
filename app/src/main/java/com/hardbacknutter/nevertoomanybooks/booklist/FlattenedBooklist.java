@@ -78,7 +78,7 @@ public class FlattenedBooklist
     private TableDefinition mTable;
     /** Default position (before first element). */
     private long mPosition = -1;
-    /** Book ID from the currently selected row. */
+    /** Book id from the currently selected row. */
     private long mBookId;
     /** DEBUG: Indicates close() has been called. */
     private boolean mCloseWasCalled;
@@ -221,8 +221,8 @@ public class FlattenedBooklist
     }
 
     /**
-     * Move to the specified book row, based on the row ID, not the book ID or row number.
-     * The row ID should be the row number in the table, including header-related rows.
+     * Move to the specified book row, based on the row ID, not the book id or row number.
+     * The row id should be the row number in the table, including header-related rows.
      *
      * @return {@code true} if successful
      */

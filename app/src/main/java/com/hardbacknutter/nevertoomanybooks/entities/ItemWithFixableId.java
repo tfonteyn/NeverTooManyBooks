@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * An entity (item) in the database which is capable of finding itself in the database
@@ -57,7 +58,7 @@ public interface ItemWithFixableId {
      * ENHANCE: Add {@link Series} aliases table to allow further pruning
      * (e.g. 'Amber Series' <==> 'Amber').
      *
-     * <b>Note:</b> the context and the fallbackLocale must both be null, or both be non-null.
+     * <strong>Note:</strong> the context and the fallbackLocale must both be null, or both be non-null.
      *
      * @param <T>            ItemWithFixableId object
      * @param context        Current context
@@ -79,13 +80,13 @@ public interface ItemWithFixableId {
         Set<Integer> hashCodes = new HashSet<>();
         // will be set to true if we modify the list.
         boolean modified = false;
-
+        LocaleUtils.insanityCheck(context);
         Iterator<T> it = list.iterator();
         while (it.hasNext()) {
             T item = it.next();
 
             // try to find the item.
-            long itemId = item.fixId(context, db, item.getLocale(context, fallbackLocale));
+            long itemId = item.fixId(context, db, item.getLocale(fallbackLocale));
 
             Integer uniqueHashCode = item.uniqueHashCode();
             if (ids.contains(itemId)
@@ -115,14 +116,12 @@ public interface ItemWithFixableId {
      * return an Spanish Locale even if for example the user runs the app in German,
      * and the device in Danish.
      *
-     * @param context        Current context
      * @param fallbackLocale Locale to use if the item does not have a Locale of its own.
      *
      * @return the item Locale, or the fallbackLocale.
      */
     @NonNull
-    Locale getLocale(@NonNull Context context,
-                     @NonNull Locale fallbackLocale);
+    Locale getLocale(@NonNull Locale fallbackLocale);
 
     /**
      * Tries to find the item in the database using all or some of its fields (except the id).
@@ -136,9 +135,9 @@ public interface ItemWithFixableId {
      *
      * @return the item id (also set on the item).
      */
-    long fixId(@NonNull final Context context,
-               @NonNull final DAO db,
-               @NonNull final Locale locale);
+    long fixId(@NonNull Context context,
+               @NonNull DAO db,
+               @NonNull Locale locale);
 
     /**
      * Get the flag as used in {@link #pruneList}.

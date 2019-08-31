@@ -56,6 +56,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Fragment that hosts child fragments to edit a book.
@@ -114,7 +115,8 @@ public class EditBookFragment
 
         int saveOrAddText = mBookModel.isExistingBook() ? R.string.btn_confirm_save
                                                         : R.string.btn_confirm_add;
-
+        //noinspection ConstantConditions
+        LocaleUtils.insanityCheck(getContext());
         menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
                  MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
             .setIcon(R.drawable.ic_keyboard_hide)

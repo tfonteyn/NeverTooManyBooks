@@ -35,6 +35,8 @@ import androidx.annotation.Nullable;
 import java.io.Serializable;
 
 /**
+ * URGENT: child classes are mixing UI with background tasks. REDO.
+ * <p>
  * Abstract base class for all Tasks.
  * <p>
  * A Task *MUST* be serializable.
@@ -47,7 +49,7 @@ import java.io.Serializable;
  * Access to the main thread is provided by ...
  */
 public abstract class Task
-        implements Serializable, BindableItemCursorAdapter.BindableItem {
+        implements BindableItemCursorAdapter.BindableItem, Serializable {
 
     public static final int CAT_GOODREADS_IMPORT_ALL = 3;
     public static final int CAT_GOODREADS_EXPORT_ALL = 4;
@@ -57,9 +59,10 @@ public abstract class Task
     static final String STATUS_FAILED = "F";
     static final String STATUS_QUEUED = "Q";
 
+    private static final long serialVersionUID = -7661826273502736496L;
 
-    private static final long serialVersionUID = -1735892871810069L;
     private static final int RETRY_LIMIT = 15;
+
     @NonNull
     private final String mDescription;
     private long mId;

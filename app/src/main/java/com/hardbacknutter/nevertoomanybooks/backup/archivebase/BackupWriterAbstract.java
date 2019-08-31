@@ -44,7 +44,6 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -99,13 +98,12 @@ public abstract class BackupWriterAbstract
      */
     @Override
     @WorkerThread
-    public void backup(@NonNull final ExportOptions settings,
+    public void backup(@NonNull final Context context,
+                       @NonNull final ExportOptions settings,
                        @NonNull final ProgressListener listener)
             throws IOException {
         mSettings = settings;
         mProgressListener = listener;
-
-        Context userContext = App.getFakeUserContext();
 
         // do a cleanup first
         mDb.purge();
@@ -135,7 +133,7 @@ public abstract class BackupWriterAbstract
                 tmpBookCsvFile = File.createTempFile("tmp_books_csv_", ".tmp");
                 tmpBookCsvFile.deleteOnExit();
 
-                Exporter mExporter = new CsvExporter(userContext, mSettings);
+                Exporter mExporter = new CsvExporter(context, mSettings);
                 try (OutputStream output = new FileOutputStream(tmpBookCsvFile)) {
                     // we know the # of covers...
                     // but getting the progress 100% right is not really important

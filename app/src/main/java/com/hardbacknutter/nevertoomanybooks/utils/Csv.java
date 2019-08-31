@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,32 +38,29 @@ import java.util.Map;
 
 /**
  * CSV utilities.
- * <p>
- * The call to {@link #join(CharSequence, Iterable)} can be replaced by {@link TextUtils#join}
- * One could argue that for consistency you should use this class throughout.
  */
 public final class Csv {
 
     private Csv() {
     }
 
-    /**
-     * Create a CSV list String from the passed collection.
-     * A {@code null} element is morphed into "".
-     * This can be avoided by using {@link #join(CharSequence, Iterable, Formatter)} and
-     * providing a {@link Formatter}.
-     *
-     * @param delimiter  e.g. "," or ", " etc...
-     * @param collection collection
-     *
-     * @return csv string, can be empty, never {@code null}.
-     */
-    @NonNull
-    public static <E> String join(@NonNull final CharSequence delimiter,
-                                  @NonNull final Iterable<E> collection) {
-        return TextUtils.join(delimiter, collection);
-//        return join(delimiter, collection, true, null, null);
-    }
+//    /**
+//     * Create a CSV list String from the passed collection.
+//     * A {@code null} element is morphed into "".
+//     * This can be avoided by using {@link #join(CharSequence, Iterable, Formatter)} and
+//     * providing a {@link Formatter}.
+//     *
+//     * @param delimiter  e.g. "," or ", " etc...
+//     * @param collection collection
+//     *
+//     * @return csv string, can be empty, never {@code null}.
+//     */
+//    @NonNull
+//    public static <E> String join(@NonNull final CharSequence delimiter,
+//                                  @NonNull final Iterable<E> collection) {
+//        return TextUtils.join(delimiter, collection);
+////        return join(delimiter, collection, true, null, null);
+//    }
 
     /**
      * Create a CSV list String from the passed collection.
@@ -142,7 +138,7 @@ public final class Csv {
      * by sending the list to a join method here.
      *
      * @param context Current context
-     * @param map     Map with bits mapped to resource ids
+     * @param map     Map with bits mapped to resource IDs
      * @param bitmask to turn into strings
      *
      * @return list of Strings with the names for each bit.

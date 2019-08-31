@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Base class for parsing the output any web request that returns an XML response.
- * <b>Note:</b> this does not include general web page parsing since they often do not conform
+ * <strong>Note:</strong> this does not include general web page parsing since they often do not conform
  * to XML formatting standards.
  * <p>
  * This class is used with the {@link XmlFilter} class to call user-defined code at

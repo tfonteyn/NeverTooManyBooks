@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
@@ -48,7 +50,7 @@ public class EventsCursor
         extends SQLiteCursor
         implements BindableItemCursor {
 
-    /** Column number of ID column. */
+    /** Column number of id column. */
     private static int sIdCol = -2;
     /** Column number of date column. */
     private static int sDateCol = -2;
@@ -105,7 +107,7 @@ public class EventsCursor
 
     @Override
     @NonNull
-    public BindableItemCursorAdapter.BindableItem getBindableItem() {
+    public BindableItemCursorAdapter.BindableItem getBindableItem(@NonNull final Context context) {
         if (sEventCol < 0) {
             sEventCol = getColumnIndex(TaskQueueDBHelper.DOM_EVENT);
         }
@@ -121,7 +123,7 @@ public class EventsCursor
     }
 
     /**
-     * Accessor for ID field.
+     * Accessor for id field.
      *
      * @return row id
      */

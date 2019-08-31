@@ -27,35 +27,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
-import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.Date;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-
 public class ExportOptions
-        implements Parcelable {
-
-    /**
-     * options as to *what* should be exported.
-     */
-    public static final int NOTHING = 0;
-    public static final int BOOK_CSV = 1;
-    public static final int PREFERENCES = 1 << 1;
-    public static final int BOOK_LIST_STYLES = 1 << 2;
-    public static final int COVERS = 1 << 3;
-    public static final int XML_TABLES = 1 << 4;
-    //public static final int IMPORT_5 = 1 << 5;
-    //public static final int IMPORT_6 = 1 << 6;
-    //public static final int IMPORT_7 = 1 << 7;
-    //public static final int DATABASE = 1 << 8;
+        extends Options {
 
     /**
      * Options to indicate new books or books with more recent update_date
@@ -77,6 +59,7 @@ public class ExportOptions
                                    | COVERS
                                    | XML_TABLES
                                    | EXPORT_SINCE;
+
     public static final Creator<ExportOptions> CREATOR = new Creator<ExportOptions>() {
         @Override
         public ExportOptions createFromParcel(@NonNull final Parcel source) {
@@ -92,22 +75,13 @@ public class ExportOptions
      * Options value to indicate all things should be exported.
      * Note that XML_TABLES is NOT included as it's considered special interest.
      */
-    private static final int ALL = BOOK_CSV
-                                   | PREFERENCES
-                                   | BOOK_LIST_STYLES
-                                   | COVERS;
-    /** bitmask for the options. */
-    public int what = ALL;
-
+    public static final int ALL = BOOK_CSV
+                                  | PREFERENCES
+                                  | BOOK_LIST_STYLES
+                                  | COVERS;
     /** EXPORT_SINCE. */
     @Nullable
     public Date dateFrom;
-
-    /**
-     * Constructor.
-     */
-    public ExportOptions() {
-    }
 
     /**
      * Constructor.
@@ -131,20 +105,12 @@ public class ExportOptions
         }
     }
 
-    public SharedPreferences getPrefs() {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(what);
+        super.writeToParcel(dest, flags);
+
         if (dateFrom != null) {
             // has date
             dest.writeInt(1);

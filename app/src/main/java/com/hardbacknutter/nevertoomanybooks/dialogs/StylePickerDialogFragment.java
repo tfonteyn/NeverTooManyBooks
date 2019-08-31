@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -117,18 +118,17 @@ public class StylePickerDialogFragment
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-
         View root = layoutInflater.inflate(R.layout.dialog_styles_menu, null);
 
         RecyclerView listView = root.findViewById(R.id.styles);
         listView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         listView.setLayoutManager(linearLayoutManager);
-        mAdapter = new RadioGroupRecyclerAdapter<>(layoutInflater, mBooklistStyles,
+        //noinspection ConstantConditions
+        mAdapter = new RadioGroupRecyclerAdapter<>(getContext(), mBooklistStyles,
                                                    mCurrentStyle, this::onStyleSelected);
         listView.setAdapter(mAdapter);
 
-        //noinspection ConstantConditions
         return new AlertDialog.Builder(getContext())
                        .setTitle(R.string.title_select_style)
                        .setView(root)
@@ -217,6 +217,8 @@ public class StylePickerDialogFragment
         @NonNull
         private final LayoutInflater mInflater;
         @NonNull
+        private final Context mContext;
+        @NonNull
         private final List<T> mItems;
         @Nullable
         private final SelectionListener<T> mOnSelectionListener;
@@ -226,17 +228,18 @@ public class StylePickerDialogFragment
         /**
          * Constructor.
          *
-         * @param inflater     LayoutInflater to use
+         * @param context     Current context
          * @param items        List of items
          * @param selectedItem (optional) the pre-selected item
          * @param listener     (optional) to send a selection to
          */
-        RadioGroupRecyclerAdapter(@NonNull final LayoutInflater inflater,
+        RadioGroupRecyclerAdapter(@NonNull final Context context,
                                   @NonNull final List<T> items,
                                   @Nullable final T selectedItem,
                                   @Nullable final SelectionListener<T> listener) {
 
-            mInflater = inflater;
+            mContext = context;
+            mInflater = LayoutInflater.from(mContext);
             mItems = items;
             mSelectedItem = selectedItem;
             mOnSelectionListener = listener;
@@ -257,7 +260,7 @@ public class StylePickerDialogFragment
             T item = mItems.get(position);
             holder.buttonView.setTag(R.id.TAG_ITEM, item);
 
-            holder.buttonView.setText(item.getLabel(mInflater.getContext()));
+            holder.buttonView.setText(item.getLabel(mContext));
             // only 'check' the pre-selected item.
             holder.buttonView.setChecked(item.getId() == mSelectedItem.getId());
             holder.buttonView.setOnClickListener(this::itemCheckChanged);

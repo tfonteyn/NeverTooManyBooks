@@ -72,7 +72,7 @@ public class TrackedCursor
     @NonNull
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
 
-    /** ID of the current cursor. */
+    /** id of the current cursor. */
     private int mId;
 
     /** We record a stack track when a cursor is created. */
@@ -130,7 +130,7 @@ public class TrackedCursor
      * Get the total number of open cursors; verifies that existing weak refs are valid
      * and removes from collection if not.
      * <p>
-     * <b>Note:</b> This is not a *cheap* operation.
+     * <strong>Note:</strong> This is not a *cheap* operation.
      */
     @SuppressWarnings({"unused"})
     public static long getCursorCount() {
@@ -257,7 +257,7 @@ public class TrackedCursor
     }
 
     /**
-     * @return the ID of this cursor.
+     * @return the id of this cursor.
      */
     private long getCursorId() {
         return mId;

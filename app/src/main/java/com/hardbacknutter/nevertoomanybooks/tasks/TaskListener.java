@@ -107,7 +107,7 @@ public interface TaskListener<Result> {
          * Note that 'success' only means the call itself was successful.
          * It usually still depends on the 'result' from the call what the next step should be.
          *
-         * @param taskId    id for the task which was provided at construction time.
+         * @param taskId    ID for the task which was provided at construction time.
          * @param success   {@code true} if the task finished successfully
          * @param result    the result object from the {@link AsyncTask}.
          *                  Nullable/NonNull is up to the implementation.
@@ -162,7 +162,7 @@ public interface TaskListener<Result> {
         /**
          * Constructor using a simple/single {@code StringRes}.
          *
-         * @param taskId   task id
+         * @param taskId   task ID
          * @param stringId string resource if
          */
         public TaskProgressMessage(final int taskId,

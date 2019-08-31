@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -348,7 +349,7 @@ public class BookBaseFragmentModel
 
                 @Override
                 public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
-                    String msg = GoodreadsTasks.handleResult(message);
+                    String msg = GoodreadsTasks.handleResult(App.getLocalizedAppContext(), message);
                     if (msg != null) {
                         mUserMessage.setValue(msg);
                     } else {

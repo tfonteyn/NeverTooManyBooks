@@ -39,9 +39,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public interface ItemWithTitle {
 
@@ -61,14 +61,12 @@ public interface ItemWithTitle {
      * return an Spanish Locale even if for example the user runs the app in German,
      * and the device in Danish.
      *
-     * @param context        Current context
      * @param fallbackLocale Locale to use if the item does not have a Locale of its own.
      *
      * @return the item Locale, or the fallbackLocale.
      */
     @NonNull
-    Locale getLocale(@NonNull Context context,
-                     @NonNull Locale fallbackLocale);
+    Locale getLocale(@NonNull Locale fallbackLocale);
 
     @NonNull
     String getTitle();
@@ -85,13 +83,13 @@ public interface ItemWithTitle {
     default String preprocessTitle(@NonNull final Context userContext,
                                    @NonNull final Locale fallbackLocale) {
 
-        Locale locale = getLocale(userContext, fallbackLocale);
+        Locale locale = getLocale(fallbackLocale);
 
         // Getting the string is slow, so we cache it for every Locale.
         String orderPatter = LOCALE_PREFIX_MAP.get(locale);
         if (orderPatter == null) {
             // the resources bundle in the language that the book (item) is written in.
-            Resources localeResources = LocaleUtils.getLocalizedResources(userContext, locale);
+            Resources localeResources = App.getLocalizedResources(userContext, locale);
             orderPatter = localeResources.getString(R.string.pv_reformat_titles_prefixes);
             LOCALE_PREFIX_MAP.put(locale, orderPatter);
         }

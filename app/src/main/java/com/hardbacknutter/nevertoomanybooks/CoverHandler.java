@@ -35,7 +35,6 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -243,8 +242,7 @@ public class CoverHandler {
             .setIcon(R.drawable.ic_crop);
 
         String title = mContext.getString(R.string.title_cover);
-        new MenuPicker<>(LayoutInflater.from(mContext), title, menu,
-                         R.id.coverImage, this::onViewContextItemSelected)
+        new MenuPicker<>(mContext, title, menu, R.id.coverImage, this::onViewContextItemSelected)
                 .show();
     }
 
@@ -273,7 +271,7 @@ public class CoverHandler {
             case R.id.SUBMENU_THUMB_ROTATE:
                 // Just a submenu; skip, but display a hint if user is rotating a camera image
                 if (mGotCameraImage) {
-                    TipManager.display(LayoutInflater.from(mContext),
+                    TipManager.display(mContext,
                                        R.string.tip_autorotate_camera_images,
                                        null);
                     mGotCameraImage = false;
@@ -648,7 +646,7 @@ public class CoverHandler {
     /**
      * Handles results from Camera, Image Gallery, Cropping.
      * <p>
-     * <b>Note:</b> rotating is done locally in {@link #rotateImage(long)}.
+     * <strong>Note:</strong> rotating is done locally in {@link #rotateImage}.
      *
      * @return {@code true} when handled, {@code false} if unknown requestCode
      */

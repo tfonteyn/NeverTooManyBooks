@@ -65,6 +65,7 @@ public class SettingsActivity
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setTitle(R.string.lbl_settings);
 
         String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
@@ -164,16 +165,16 @@ public class SettingsActivity
         // Trigger a recreate of this activity, if the setting has changed.
         switch (key) {
             case Prefs.pk_ui_theme:
-                if (App.isThemeChanged(this)) {
-                    recreate();
+                if (App.isThemeChanged(mInitialThemeId)) {
                     App.setIsRecreating();
+                    recreate();
                 }
                 break;
 
             case Prefs.pk_ui_language:
-                if (LocaleUtils.isChanged(this)) {
-                    recreate();
+                if (LocaleUtils.isChanged(mInitialLocaleSpec)) {
                     App.setIsRecreating();
+                    recreate();
                 }
                 break;
 

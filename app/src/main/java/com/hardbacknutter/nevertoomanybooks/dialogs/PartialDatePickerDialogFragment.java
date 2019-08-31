@@ -149,8 +149,7 @@ public class PartialDatePickerDialogFragment
 
         // Get a calendar for locale-related info (defaults to current date)
         //noinspection ConstantConditions
-        mCalendarForCalculations = Calendar.getInstance(
-                LocaleUtils.getPreferredLocale(getContext()));
+        mCalendarForCalculations = Calendar.getInstance(LocaleUtils.getLocale(getContext()));
 
         mCurrentYear = mCalendarForCalculations.get(Calendar.YEAR);
 
@@ -184,11 +183,8 @@ public class PartialDatePickerDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        //noinspection ConstantConditions
-        AlertDialog dialog = new PartialDatePickerDialog(getContext(), layoutInflater);
+        AlertDialog dialog = new PartialDatePickerDialog(getContext());
         Bundle args = getArguments();
         if (args != null) {
             @StringRes
@@ -337,6 +333,7 @@ public class PartialDatePickerDialogFragment
         private final NumberPicker mDayPicker;
 
         /** Called after any change made to the pickers. */
+        @SuppressWarnings("FieldCanBeLocal")
         private final NumberPicker.OnValueChangeListener mOnValueChangeListener =
                 new NumberPicker.OnValueChangeListener() {
                     @Override
@@ -369,19 +366,18 @@ public class PartialDatePickerDialogFragment
         /**
          * Constructor.
          *
-         * <b>Note:</b> we explicitly pass in the inflater (independent from the context) so
+         * <strong>Note:</strong> we explicitly pass in the inflater (independent from the context) so
          * we are 100% sure we're using the same one as in {@link #onCreateDialog}.
          * Call it paranoia.
          *
          * @param context        Current context
-         * @param layoutInflater that can be used to create the view.
          */
-        PartialDatePickerDialog(@NonNull final Context context,
-                                @NonNull final LayoutInflater layoutInflater) {
+        PartialDatePickerDialog(@NonNull final Context context) {
             super(context);
 
             @SuppressLint("InflateParams")
-            View root = layoutInflater.inflate(R.layout.dialog_partial_date_picker, null);
+            View root = LayoutInflater.from(context)
+                                      .inflate(R.layout.dialog_partial_date_picker, null);
 
             // Ensure components match current locale order
             reorderPickers(root);

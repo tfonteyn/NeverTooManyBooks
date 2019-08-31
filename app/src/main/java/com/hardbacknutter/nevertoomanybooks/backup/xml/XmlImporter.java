@@ -78,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -105,6 +106,9 @@ public class XmlImporter
     @NonNull
     private final DAO mDb;
 
+    /** Whether Float and Double parsing routines use Locales or not. */
+    private final boolean mFloatUsesLocales;
+
     /**
      * Stack for popping tags on if we go into one.
      * This is of course overkill, just to handle the list/set set,
@@ -116,9 +120,22 @@ public class XmlImporter
 
     /**
      * Constructor.
+     *
+     * Locale independent.
      */
     public XmlImporter() {
         mDb = new DAO();
+        mFloatUsesLocales = false;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param floatUsesLocales take Locales into account when parsing strings or not.
+     */
+    public XmlImporter(final boolean floatUsesLocales) {
+        mDb = new DAO();
+        mFloatUsesLocales = floatUsesLocales;
     }
 
     /**
@@ -158,7 +175,7 @@ public class XmlImporter
     /**
      * Read Preferences from an XML stream.
      * <p>
-     * <b>Note:</b> the passed in SharedPreferences is dependent on the caller.
+     * <strong>Note:</strong> the passed in SharedPreferences is dependent on the caller.
      * Do <strong>not</strong> replace with mSettings.getPrefs() !
      *
      * @param entity   to read
@@ -308,11 +325,19 @@ public class XmlImporter
                         break;
 
                     case XmlTags.XML_FLOAT:
-                        accessor.putFloat(mTag.name, Float.parseFloat(mTag.value));
+                        if (mFloatUsesLocales) {
+                            accessor.putFloat(mTag.name, ParseUtils.parseFloat(mTag.value));
+                        } else {
+                            accessor.putFloat(mTag.name, Float.parseFloat(mTag.value));
+                        }
                         break;
 
                     case XmlTags.XML_DOUBLE:
-                        accessor.putDouble(mTag.name, Double.parseDouble(mTag.value));
+                        if (mFloatUsesLocales) {
+                            accessor.putDouble(mTag.name, ParseUtils.parseDouble(mTag.value));
+                        } else {
+                            accessor.putDouble(mTag.name, Double.parseDouble(mTag.value));
+                        }
                         break;
 
                     default:
@@ -520,9 +545,11 @@ public class XmlImporter
                                  accessor.putLong(mTag.name, Long.parseLong(body));
                                  break;
                              case "Flt":
+                                 // no Locales
                                  accessor.putFloat(mTag.name, Float.parseFloat(body));
                                  break;
                              case "Dbl":
+                                 // no Locales
                                  accessor.putDouble(mTag.name, Double.parseDouble(body));
                                  break;
                              case "Str":

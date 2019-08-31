@@ -104,8 +104,8 @@ public class SearchOrderFragment
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
-        mListAdapter = new SearchSiteListAdapter(
-                getLayoutInflater(), mList, viewHolder -> mItemTouchHelper.startDrag(viewHolder));
+        mListAdapter = new SearchSiteListAdapter(getContext(), mList,
+                                                 vh -> mItemTouchHelper.startDrag(vh));
         // any change done in the adapter will set the data 'dirty'
         // if changing the list externally, make sure to always notify the adapter.
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
@@ -151,14 +151,14 @@ public class SearchOrderFragment
         /**
          * Constructor.
          *
-         * @param inflater          LayoutInflater to use
+         * @param context           Current context
          * @param items             List of sites
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        SearchSiteListAdapter(@NonNull final LayoutInflater inflater,
+        SearchSiteListAdapter(@NonNull final Context context,
                               @NonNull final List<Site> items,
                               @NonNull final StartDragListener dragStartListener) {
-            super(inflater, items, dragStartListener);
+            super(context, items, dragStartListener);
         }
 
         @NonNull

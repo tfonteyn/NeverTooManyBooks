@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
@@ -36,7 +38,6 @@ import androidx.annotation.NonNull;
 
 import java.util.Date;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils;
 
@@ -82,7 +83,7 @@ public final class TasksCursor
             + " IN ('S','F') %1$s"
             + " ORDER BY " + DOM_ID + " DESC";
 
-    /** Column number of ID column. */
+    /** Column number of id column. */
     private static int sIdCol = -1;
     /** Column number of date column. */
     private static int sQueuedDateCol = -2;
@@ -199,7 +200,7 @@ public final class TasksCursor
 
     @NonNull
     @Override
-    public BindableItemCursorAdapter.BindableItem getBindableItem() {
+    public BindableItemCursorAdapter.BindableItem getBindableItem(@NonNull final Context context) {
         if (sTaskCol < 0) {
             sTaskCol = getColumnIndex(DOM_TASK);
         }
@@ -208,7 +209,7 @@ public final class TasksCursor
         try {
             task = SerializationUtils.deserializeObject(blob);
         } catch (@NonNull final SerializationUtils.DeserializationException de) {
-            task = new LegacyTask(App.getFakeUserContext());
+            task = new LegacyTask(context);
         }
         task.setId(getId());
         return task;

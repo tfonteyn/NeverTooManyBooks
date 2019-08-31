@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.searches.goodreads;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -143,7 +142,7 @@ public class GoodreadsSearchActivity
         mListView.setLayoutManager(linearLayoutManager);
         mListView.addItemDecoration(
                 new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
-        mWorksAdapter = new WorksAdapter(getLayoutInflater(), mWorks);
+        mWorksAdapter = new WorksAdapter(this, mWorks);
         mListView.setAdapter(mWorksAdapter);
 
         findViewById(R.id.btn_search).setOnClickListener(v -> doSearch());
@@ -344,12 +343,12 @@ public class GoodreadsSearchActivity
         /**
          * Constructor.
          *
-         * @param inflater LayoutInflater to use
-         * @param items    List of items to display
+         * @param context Current context
+         * @param items   List of items to display
          */
-        WorksAdapter(@NonNull final LayoutInflater inflater,
+        WorksAdapter(@NonNull final Context context,
                      @NonNull final List<GoodreadsWork> items) {
-            super(inflater, items, null);
+            super(context, items, null);
         }
 
         @NonNull

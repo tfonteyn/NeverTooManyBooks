@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * Usage:
  * <p>
  * A sender (typically a background task, thread or thread manager) registers itself and is
- * assigned a unique ID. The creator of the sender uses the ID as the key for later retrieval.
+ * assigned a unique ID. The creator of the sender uses the id as the key for later retrieval.
  * <p>
- * The listener must have access to the unique ID and use that to register themselves.
+ * The listener must have access to the unique id and use that to register themselves.
  * <p>
  * The listener should call {@link #addListener}, {@link #removeListener}
  * or {@link #getController} as necessary.
@@ -69,7 +70,7 @@ public class MessageSwitch<T, U> {
 
     /** Handler object for posting to main thread and for testing if running on UI thread. */
     private static final Handler HANDLER = new Handler();
-    /** ID counter for unique sender ID's; set > 0 to allow for possible future static senders. */
+    /** id counter for unique sender ID's; set > 0 to allow for possible future static senders. */
     @NonNull
     private static final AtomicLong SENDER_ID_COUNTER = new AtomicLong(1024L);
 
@@ -92,7 +93,7 @@ public class MessageSwitch<T, U> {
     /**
      * Register a new sender and it's controller object.
      *
-     * @return the unique ID for this sender
+     * @return the unique id for this sender
      */
     @NonNull
     public Long createSender(@NonNull final U controller) {
@@ -176,7 +177,7 @@ public class MessageSwitch<T, U> {
     /**
      * Get the controller object associated with a sender ID.
      *
-     * @param senderId ID of sender
+     * @param senderId id of sender
      *
      * @return Controller object of type 'U'
      */

@@ -32,6 +32,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -76,8 +77,7 @@ public final class Format {
 
     /**
      * Try to map website terminology to our own localised.
-     *
-     * URGENT: this should get called after a search / before an edit. and not just at 'save' time.
+     * This should be / is used at 'edit' time (a formatter) and again at 'save' time
      *
      * @param context Current context
      * @param source  string to map
@@ -85,8 +85,10 @@ public final class Format {
      * @return localized equivalent, or the source if no mapping exists.
      */
     public static String map(@NonNull final Context context,
+                             @NonNull final Locale locale,
                              @NonNull final String source) {
-        Integer resId = MAPPER.get(source.toLowerCase(LocaleUtils.getPreferredLocale(context)));
+        LocaleUtils.insanityCheck(context);
+        Integer resId = MAPPER.get(source.toLowerCase(locale));
         return resId != null ? context.getString(resId) : source;
     }
 }

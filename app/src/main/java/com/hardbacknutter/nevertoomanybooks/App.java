@@ -39,6 +39,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
@@ -50,7 +51,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -124,7 +125,7 @@ public class App
      */
     public static final String PREFS_FIELD_VISIBILITY = "fields.visibility.";
 
-    /** don't assume / allow the day-night theme to have a different integer id. */
+    /** don't assume / allow the day-night theme to have a different integer ID. */
     private static final int THEME_DAY_NIGHT = 0;
 
     /** we really only use the one. */
@@ -166,7 +167,7 @@ public class App
 
     /**
      * Give static methods access to our singleton.
-     * <b>Note:</b> never store a context in a static, use the instance instead
+     * <strong>Note:</strong> never store a context in a static, use the instance instead
      */
     private static App sInstance;
 
@@ -178,9 +179,9 @@ public class App
     /** Used to sent notifications regarding tasks. */
     private static NotificationManager sNotifier;
     /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
-    private static int sCurrentTheme = -1;
+    private static int sCurrentThemeId = -1;
     /** The locale used at startup; so that we can revert to system locale if we want to. */
-    private static Locale sSystemInitialLocale = Locale.getDefault();
+    private static Locale sSystemInitialLocale;
 
     /** Singleton. */
     @SuppressWarnings("unused")
@@ -189,9 +190,9 @@ public class App
     }
 
     /**
-     * Get the Application Context.
+     * Get the Application Context <strong>using the device Locale.</strong>
      *
-     * @return context
+     * @return app context
      */
     @NonNull
     public static Context getAppContext() {
@@ -199,19 +200,15 @@ public class App
     }
 
     /**
-     * Syntax sugar... used in places where we <strong>really want a user context</strong> but
-     * can't have one. In other words: this is purely a mnemonic reminder for the developer.
-     * <p>
-     * WARNING: can return inconsistent translations when the user has a complicated setup.
-     * e.g. user device and user app preference use a different Locale.
-     * <p>
-     * FIXME: eliminate this where possible.
+     * Get the Application Context <strong>with the user Locale applied.</strong>
      *
-     * @return context
+     * @return localised app context
      */
     @NonNull
-    public static Context getFakeUserContext() {
-        return sInstance.getApplicationContext();
+    public static Context getLocalizedAppContext() {
+        Context context = LocaleUtils.applyLocale(sInstance.getApplicationContext());
+        LocaleUtils.insanityCheck(context);
+        return context;
     }
 
     /**
@@ -290,7 +287,7 @@ public class App
      * @param context Current context
      * @param attr    attribute id to resolve
      *
-     * @return resource id
+     * @return resource ID
      */
     @SuppressWarnings("unused")
     @IdRes
@@ -340,6 +337,30 @@ public class App
 
         return textSize;
     }
+
+
+    /**
+     * Is the field in use; i.e. is it enabled in the user-preferences.
+     *
+     * @param fieldName to lookup
+     *
+     * @return {@code true} if the user wants to use this field.
+     */
+    public static boolean isUsed(@NonNull final String fieldName) {
+        return PreferenceManager.getDefaultSharedPreferences(sInstance.getApplicationContext())
+                                .getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
+    }
+
+    /**
+     * Hide the keyboard.
+     */
+    public static void hideKeyboard(@NonNull final View view) {
+        InputMethodManager imm = (InputMethodManager)
+                                         view.getContext().getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    /* ########################################################################################## */
 
     /**
      * Read a string from the META tags in the Manifest.
@@ -424,87 +445,60 @@ public class App
         return Prefs.toInteger(value);
     }
 
-    @SuppressWarnings("unused")
-    public static boolean isRtl(@NonNull final Locale locale) {
-        return TextUtils.getLayoutDirectionFromLocale(locale) == View.LAYOUT_DIRECTION_RTL;
-    }
+    /* ########################################################################################## */
 
     /**
-     * @return the current Theme resource id.
-     */
-    @StyleRes
-    public static int getThemeResId() {
-        return APP_THEMES[sCurrentTheme];
-    }
-
-    /**
-     * Apply the user's preferred Theme (if it has changed).
+     * Get the current Theme id (NOT the actual resource id)
      *
-     * @param context Current context to apply the theme to.
+     * @return theme id
+     */
+    public static int getThemeId() {
+        if (sCurrentThemeId < 0) {
+            sCurrentThemeId = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
+        }
+        return sCurrentThemeId;
+    }
+
+    /**
+     * Test if the Theme has changed.
      *
      * @return {@code true} if the theme was changed
      */
-    public static boolean isThemeChanged(@NonNull final Context context) {
-        int theme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
-        boolean changed = theme != sCurrentTheme;
-
-        sCurrentTheme = theme;
-
-        if (sCurrentTheme == THEME_DAY_NIGHT) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_UNSPECIFIED);
-        }
-
-        if (changed) {
-            context.setTheme(sCurrentTheme);
-        }
-
-        if (BuildConfig.DEBUG) {
-            dumpDayNightMode();
-        }
-        return changed;
-    }
-
-    public static void setNeedsRecreating() {
-        sActivityRecreateStatus = ACTIVITY_NEEDS_RECREATING;
-    }
-
-    public static boolean isInNeedOfRecreating() {
-        return sActivityRecreateStatus == ACTIVITY_NEEDS_RECREATING;
-    }
-
-    public static void setIsRecreating() {
-        sActivityRecreateStatus = ACTIVITY_IS_RECREATING;
-    }
-
-    public static boolean isRecreating() {
-        return sActivityRecreateStatus == ACTIVITY_IS_RECREATING;
-    }
-
-    public static void clearRecreateFlag() {
-        sActivityRecreateStatus = 0;
+    public static boolean isThemeChanged(final int themeId) {
+        sCurrentThemeId = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
+        return themeId != sCurrentThemeId;
     }
 
     /**
-     * Is the field in use; i.e. is it enabled in the user-preferences.
+     * Apply the user's preferred Theme.
      *
-     * @param fieldName to lookup
-     *
-     * @return {@code true} if the user wants to use this field.
+     * @param context Current context to apply the theme to.
      */
-    public static boolean isUsed(@NonNull final String fieldName) {
-        return PreferenceManager.getDefaultSharedPreferences(sInstance.getApplicationContext())
-                                .getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
+    public static void applyTheme(@NonNull final Context context) {
+        int themeId = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
+        if (themeId != sCurrentThemeId) {
+            sCurrentThemeId = themeId;
+            if (sCurrentThemeId == THEME_DAY_NIGHT) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_UNSPECIFIED);
+            }
+
+            context.setTheme(APP_THEMES[sCurrentThemeId]);
+
+            if (BuildConfig.DEBUG) {
+                dumpDayNightMode(sCurrentThemeId);
+            }
+        }
     }
 
     /**
      * DEBUG only.
      */
-    private static void dumpDayNightMode() {
+    private static void dumpDayNightMode(final int theme) {
         String method = "dumpDayNightMode";
-        String currentTheme = "sCurrentTheme";
-        switch (sCurrentTheme) {
+        String currentTheme = "sCurrentThemeId";
+        switch (theme) {
             case 0:
                 Logger.debug(App.class, method, currentTheme + "=THEME_DAY_NIGHT");
                 break;
@@ -515,7 +509,7 @@ public class App
                 Logger.debug(App.class, method, currentTheme + "=THEME_LIGHT");
                 break;
             default:
-                Logger.debug(App.class, method, currentTheme + "=eh? " + sCurrentTheme);
+                Logger.debug(App.class, method, currentTheme + "=eh? " + theme);
                 break;
         }
 
@@ -548,9 +542,8 @@ public class App
                 break;
 
         }
-        int currentNightMode = sInstance.getApplicationContext().getResources()
-                                        .getConfiguration().uiMode
-                               & Configuration.UI_MODE_NIGHT_MASK;
+        int currentNightMode = sInstance.getApplicationContext().getResources().getConfiguration()
+                                       .uiMode & Configuration.UI_MODE_NIGHT_MASK;
 
         String currentMode = "currentNightMode";
         switch (currentNightMode) {
@@ -569,23 +562,76 @@ public class App
         }
     }
 
+    /* ########################################################################################## */
+
+    public static void setNeedsRecreating() {
+        sActivityRecreateStatus = ACTIVITY_NEEDS_RECREATING;
+    }
+
+    public static boolean isInNeedOfRecreating() {
+        return sActivityRecreateStatus == ACTIVITY_NEEDS_RECREATING;
+    }
+
+    public static void setIsRecreating() {
+        sActivityRecreateStatus = ACTIVITY_IS_RECREATING;
+    }
+
+    public static boolean isRecreating() {
+        return sActivityRecreateStatus == ACTIVITY_IS_RECREATING;
+    }
+
+    public static void clearRecreateFlag() {
+        sActivityRecreateStatus = 0;
+    }
+
+    /* ########################################################################################## */
+
+    @SuppressWarnings("unused")
+    public static boolean isRtl(@NonNull final Locale locale) {
+        return TextUtils.getLayoutDirectionFromLocale(locale) == View.LAYOUT_DIRECTION_RTL;
+    }
+
     /**
      * Return the device Locale.
      *
      * @return the actual System Locale.
      */
+    @NonNull
     public static Locale getSystemLocale() {
+        if (sSystemInitialLocale == null) {
+            sSystemInitialLocale = Locale.getDefault();
+        }
         return sSystemInitialLocale;
     }
 
     /**
-     * Hide the keyboard.
+     * Load a Resources set for the specified Locale.
+     * This is an expensive lookup; we do not cache the Resources here,
+     * but it's advisable to cache the strings (map of locale/string for example) being looked up.
+     *
+     * @param context       Current context
+     * @param desiredLocale the desired Locale, e.g. the locale of a book,series,toc,...
+     *
+     * @return the Resources
      */
-    public static void hideKeyboard(@NonNull final View view) {
-        InputMethodManager imm = (InputMethodManager)
-                                         view.getContext().getSystemService(INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    @NonNull
+    public static Resources getLocalizedResources(@NonNull final Context context,
+                                                  @NonNull final Locale desiredLocale) {
+        Configuration current = context.getResources().getConfiguration();
+        Configuration configuration = new Configuration(current);
+        String lang = desiredLocale.getLanguage();
+        if (lang.length() == 2) {
+            configuration.setLocale(desiredLocale);
+        } else {
+            // any 3-char code needs to be converted to 2-char be able to find the resource.
+            configuration.setLocale(new Locale(LanguageUtils.getIso2fromIso3(lang)));
+        }
+
+        Context localizedContext = context.createConfigurationContext(configuration);
+        return localizedContext.getResources();
     }
+
+    /* ########################################################################################## */
 
     /**
      * Initialize ACRA for a given Application.
@@ -604,11 +650,8 @@ public class App
 
     @Override
     public void onCreate() {
-        // Get the preferred locale as soon as possible
-        setSystemLocale();
-
-        // load the preferred theme from preferences.
-        isThemeChanged(sInstance.getApplicationContext());
+        // preserve startup==system Locale
+        sSystemInitialLocale = Locale.getDefault();
 
         // create the singleton QueueManager
         QueueManager.init();
@@ -624,31 +667,20 @@ public class App
     @Override
     @CallSuper
     public void onConfigurationChanged(@NonNull final Configuration newConfig) {
-        // same as in onCreate
-        setSystemLocale();
-
+        String localeSpec = LocaleUtils.getPersistedLocaleSpec();
         // override in the new config
-        newConfig.setLocale(LocaleUtils.getPreferredLocale(getAppContext()));
+        newConfig.setLocale(new Locale(localeSpec));
         // propagate to registered callbacks.
         super.onConfigurationChanged(newConfig);
 
         if (BuildConfig.DEBUG /* always */) {
-            //API: 24: newConfig.getLocales().get(0)
-            Logger.debug(this, "onConfigurationChanged", newConfig.locale);
-        }
-    }
-
-    /**
-     * Preserve the system (device) Locale, and set the user-preferred Locale.
-     */
-    private void setSystemLocale() {
-        try {
-            // preserve startup==system Locale
-            sSystemInitialLocale = Locale.getDefault();
-            LocaleUtils.applyPreferred(getBaseContext());
-        } catch (@NonNull final RuntimeException e) {
-            // Not much we can do.
-            Logger.error(this, e);
+            Locale locale;
+            if (Build.VERSION.SDK_INT >= 24) {
+                locale = newConfig.getLocales().get(0);
+            } else {
+                locale = newConfig.locale;
+            }
+            Logger.debug(this, "onConfigurationChanged", locale);
         }
     }
 }

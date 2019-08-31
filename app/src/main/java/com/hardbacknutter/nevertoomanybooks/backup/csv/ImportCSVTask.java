@@ -80,10 +80,10 @@ public class ImportCSVTask
     protected Integer doInBackground(final Void... params) {
         Thread.currentThread().setName("ImportCSVTask");
 
-        Context userContext = App.getFakeUserContext();
+        Context context = App.getLocalizedAppContext();
 
         try (FileInputStream is = new FileInputStream(mFile)) {
-            mImporter.doBooks(userContext, is,
+            mImporter.doBooks(context, is,
                               new LocalCoverFinder(mFile.getParent()),
                               new ProgressListenerBase() {
                                   @Override

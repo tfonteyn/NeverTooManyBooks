@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 
 /**
  * Intention is to create cleanup routines for some columns/tables
@@ -122,20 +122,18 @@ public class DBCleaner {
         booleanCleanup(DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_READ, dryRun);
         booleanCleanup(DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_SIGNED, dryRun);
 
-        //TODO: books table: search out invalid uuid's, check if there is a file, rename/remove...
+        //TODO: books table: search out invalid UUIDs, check if there is a file, rename/remove...
         // in particular if the UUID is surrounded with '' or ""
     }
 
     /**
      * Do a mass update of any languages not yet converted to ISO codes.
      */
-    public void updateLanguages() {
-        Locale userLocale = LocaleUtils.getPreferredLocale();
-
+    public void updateLanguages(@NonNull final Locale userLocale) {
         List<String> names = mDb.getLanguageCodes();
         for (String name : names) {
             if (name != null && name.length() > 3) {
-                String iso = LocaleUtils.getIso3fromDisplayName(name, userLocale);
+                String iso = LanguageUtils.getIso3fromDisplayName(name, userLocale);
                 Logger.debug(this, "updateLanguages",
                              "Global language update of `" + name + "` to `" + iso + '`');
                 if (!iso.equals(name)) {

@@ -279,7 +279,7 @@ public class CropImageActivity
     }
 
     /**
-     * <b>Note:</b> setting Window.FEATURE_NO_TITLE + WindowManager.LayoutParams.FLAG_FULLSCREEN
+     * <strong>Note:</strong> setting Window.FEATURE_NO_TITLE + WindowManager.LayoutParams.FLAG_FULLSCREEN
      * is now done in the manifest using a theme on this activity.
      */
     @Override

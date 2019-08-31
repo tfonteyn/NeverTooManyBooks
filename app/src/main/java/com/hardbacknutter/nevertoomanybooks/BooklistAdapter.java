@@ -62,13 +62,14 @@ import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
-import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
 
@@ -110,20 +111,19 @@ public class BooklistAdapter
     /**
      * Constructor.
      *
-     * @param inflater LayoutInflater to use
+     * @param context Current context
      * @param style    The style is used by (some) individual rows.
      * @param db       Database Access
      */
-    public BooklistAdapter(@NonNull final LayoutInflater inflater,
+    public BooklistAdapter(@NonNull final Context context,
                            @NonNull final BooklistStyle style,
                            @NonNull final DAO db,
                            @Nullable final Cursor cursor) {
-        mInflater = inflater;
+        mInflater = LayoutInflater.from(context);
         mStyle = style;
         mDb = db;
         mCursor = cursor;
-        mLevelIndent = mInflater.getContext().getResources()
-                                .getDimensionPixelSize(R.dimen.booklist_level_indent);
+        mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.booklist_level_indent);
     }
 
     /**
@@ -428,7 +428,7 @@ public class BooklistAdapter
         @NonNull
         private final Locale mLocale;
 
-        /** The book ID to fetch. */
+        /** The book id to fetch. */
         private final long mBookId;
 
         private final int mExtraFields;
@@ -452,7 +452,7 @@ public class BooklistAdapter
                           @NonNull final GetBookExtrasTaskFinishedListener taskListener,
                           final int extraFields) {
 
-            mLocale = LocaleUtils.from(context);
+            mLocale = LocaleUtils.getLocale(context);
             mDb = db;
             mBookId = bookId;
             mTaskListener = new WeakReference<>(taskListener);
@@ -714,13 +714,13 @@ public class BooklistAdapter
             mDb = db;
 
             Context context = itemView.getContext();
+            mLocale = LocaleUtils.getLocale(context);
+
             // fetch once and re-use later.
             mName_colon_value = context.getString(R.string.name_colon_value);
             mX_bracket_Y_bracket = context.getString(R.string.a_bracket_b_bracket);
             mShelvesLabel = context.getString(R.string.lbl_bookshelves);
             mLocationLabel = context.getString(R.string.lbl_location);
-
-            mLocale = LocaleUtils.from(context);
 
             mPublisherIsUsed = style.isUsed(DBDefinitions.KEY_PUBLISHER);
             mPubDateIsUsed = style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED);
@@ -938,7 +938,7 @@ public class BooklistAdapter
 
         /** Index of related data column. */
         final int mSourceCol;
-        /** String ID to use when data is blank. */
+        /** String id to use when data is blank. */
         @StringRes
         final int mNoDataId;
 
@@ -961,7 +961,7 @@ public class BooklistAdapter
          *
          * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
-         * @param noDataId    String ID to use when data is blank
+         * @param noDataId    String id to use when data is blank
          */
         GenericStringHolder(@NonNull final View itemView,
                             final int columnIndex,
@@ -1051,7 +1051,7 @@ public class BooklistAdapter
          *
          * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
-         * @param noDataId    String ID to use when data is blank
+         * @param noDataId    String id to use when data is blank
          */
         RatingHolder(@NonNull final View itemView,
                      final int columnIndex,
@@ -1067,6 +1067,7 @@ public class BooklistAdapter
             String s = rowData.getString(mSourceCol);
             if (s != null) {
                 try {
+                    // Locale independent.
                     int i = (int) Float.parseFloat(s);
                     // If valid, format the description
                     if (i >= 0 && i <= Book.RATING_STARS) {
@@ -1091,7 +1092,7 @@ public class BooklistAdapter
          *
          * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
-         * @param noDataId    String ID to use when data is blank
+         * @param noDataId    String id to use when data is blank
          */
         LanguageHolder(@NonNull final View itemView,
                        final int columnIndex,
@@ -1104,11 +1105,12 @@ public class BooklistAdapter
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
-            String s = rowData.getString(mSourceCol);
-            if (s != null && !s.isEmpty()) {
-                s = LocaleUtils.getDisplayName(itemView.getContext(), s);
+            String iso = rowData.getString(mSourceCol);
+            if (iso != null && !iso.isEmpty()) {
+                iso = LanguageUtils
+                              .getDisplayName(LocaleUtils.getLocale(itemView.getContext()), iso);
             }
-            setText(s, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
+            setText(iso, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
         }
     }
 
@@ -1123,7 +1125,7 @@ public class BooklistAdapter
          *
          * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
-         * @param noDataId    String ID to use when data is blank
+         * @param noDataId    String id to use when data is blank
          */
         ReadUnreadHolder(@NonNull final View itemView,
                          final int columnIndex,
@@ -1136,7 +1138,7 @@ public class BooklistAdapter
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
-            if (DataManager.toBoolean(rowData.getString(mSourceCol), true)) {
+            if (ParseUtils.toBoolean(rowData.getString(mSourceCol), true)) {
                 setText(R.string.lbl_read, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
             } else {
                 setText(R.string.lbl_unread, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
@@ -1156,7 +1158,7 @@ public class BooklistAdapter
          *
          * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
-         * @param noDataId    String ID to use when data is blank
+         * @param noDataId    String id to use when data is blank
          */
         MonthHolder(@NonNull final View itemView,
                     final int columnIndex,
@@ -1171,7 +1173,7 @@ public class BooklistAdapter
 
             String s = rowData.getString(mSourceCol);
             if (s != null) {
-                Locale locale = LocaleUtils.from(itemView.getContext());
+                Locale locale = LocaleUtils.getLocale(itemView.getContext());
                 try {
                     int i = Integer.parseInt(s);
                     // If valid, get the short name
@@ -1201,7 +1203,7 @@ public class BooklistAdapter
          * @param itemView       the view specific for this holder
          * @param columnIndex    index in SQL result set
          * @param isLockedSource Column name to use for the boolean 'lock' status
-         * @param noDataId       String ID to use when data is blank
+         * @param noDataId       String id to use when data is blank
          */
         CheckableStringHolder(@NonNull final View itemView,
                               final int columnIndex,

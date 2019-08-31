@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -73,6 +74,9 @@ public class IsfdbManager
     @SuppressWarnings("WeakerAccess")
     static final String CHARSET_ENCODE_URL = "iso-8859-1";
 
+    /** The ISFDB site uses US style currency notation. */
+    static final Locale SITE_LOCALE = Locale.US;
+
     /** Common CGI directory. */
     static final String CGI_BIN = "/cgi-bin/";
     /** bibliographic information for one title. */
@@ -87,6 +91,7 @@ public class IsfdbManager
     static final String URL_SE_CGI = "se.cgi";
     /** Advanced search FORM submission (using GET), and the returned results page url. */
     static final String URL_ADV_SEARCH_RESULTS_CGI = "adv_search_results.cgi";
+
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "ISFDB.";
@@ -114,7 +119,7 @@ public class IsfdbManager
      * Open a Book on ISFDB web site.
      *
      * @param context Current context
-     * @param bookId  book ID to show
+     * @param bookId  book id to show
      */
     public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {

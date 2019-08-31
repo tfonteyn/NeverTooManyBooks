@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
@@ -186,7 +187,7 @@ public class UpdateFieldsFromInternetFragment
         SearchSites.alertRegistrationBeneficial(getContext(), "update_from_internet", mSearchSites);
 
         if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_update_fields_from_internet, null);
+            TipManager.display(getContext(), R.string.tip_update_fields_from_internet, null);
         }
 
         // Check general network connectivity. If none, WARN the user.
@@ -256,7 +257,7 @@ public class UpdateFieldsFromInternetFragment
     /**
      * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param nameStringId Field label string resource id
+     * @param nameStringId Field label string resource ID
      * @param defaultUsage default Usage for this field
      * @param fieldId      Field name to use in FieldUsages + check for visibility
      */
@@ -273,7 +274,7 @@ public class UpdateFieldsFromInternetFragment
     /**
      * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
      *
-     * @param nameStringId Field label string resource id
+     * @param nameStringId Field label string resource ID
      * @param visField     Field name to check for visibility.
      * @param fieldId      List-field name to use in FieldUsages
      */
@@ -353,7 +354,8 @@ public class UpdateFieldsFromInternetFragment
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-
+        //noinspection ConstantConditions
+        LocaleUtils.insanityCheck(getContext());
         Tracker.exitOnActivityResult(this);
     }
 

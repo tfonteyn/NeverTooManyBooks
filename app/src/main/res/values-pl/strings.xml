@@ -571,11 +571,13 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">„%1$s” nie jest prawidłowym numerem ISBN lub ASIN</string>
     <string name="x_of_y">%1$d z %2$d</string>
     <string name="yes">Tak</string>
-    <string name="lbl_author_secondary">Wtórny</string>
-    <string name="lbl_author_primary">Podstawowa</string>
     <string name="lbl_author_other">Inny</string>
     <string name="lbl_author_translator">Tłumacz</string>
     <string name="lbl_artist_colorist">Kolorysta</string>
     <string name="lbl_author_editor">Redaktor</string>
     <string name="lbl_author_contributor">Współpracownik</string>
+    <string name="tip_update_fields_from_internet">Linki do zewnętrznych stron są przetwarzane tylko wtedy, gdy rzeczywiście nawiązano kontakt ze stroną. W rezultacie menu „Widok na……” pokaże tylko to, co jest dostępne.</string>
+    <string name="lbl_author_secondary">współautor</string>
+    <string name="lbl_author_type">Rodzaj autora</string>
+    <string name="pt_bob_show_details_uses_task_off">natychmiast</string>
 </resources>

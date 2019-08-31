@@ -42,7 +42,9 @@ import androidx.annotation.StringRes;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.EditBookActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -71,7 +73,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 abstract class SendBooksLegacyTaskBase
         extends TQTask {
 
-    private static final long serialVersionUID = -8519158637447641604L;
+    private static final long serialVersionUID = 5950331916209877890L;
+
     /** wait time before declaring network failure. */
     private static final int FIVE_MINUTES = 300;
     /** Number of books with no ISBN. */
@@ -96,9 +99,9 @@ abstract class SendBooksLegacyTaskBase
      * @return {@code false} to requeue, {@code true} for success
      */
     @Override
-    public boolean run(@NonNull final QueueManager queueManager,
-                       @NonNull final Context context) {
+    public boolean run(@NonNull final QueueManager queueManager) {
 
+        Context context = App.getLocalizedAppContext();
         if (NetworkUtils.isAlive(GoodreadsManager.BASE_URL)) {
             GoodreadsManager grManager = new GoodreadsManager();
             if (grManager.hasValidCredentials()) {
@@ -219,7 +222,7 @@ abstract class SendBooksLegacyTaskBase
         /**
          * Get the related Book ID.
          *
-         * @return ID of related book.
+         * @return id of related book.
          */
         long getBookId() {
             return mBookId;
@@ -247,10 +250,11 @@ abstract class SendBooksLegacyTaskBase
          */
         @Override
         @NonNull
-        public View getView(@NonNull final LayoutInflater inflater,
+        public View getView(@NonNull final Context context,
                             @NonNull final BindableItemCursor cursor,
                             @NonNull final ViewGroup parent) {
-            View view = inflater.inflate(R.layout.row_event_info, parent, false);
+            View view = LayoutInflater.from(context)
+                                      .inflate(R.layout.row_event_info, parent, false);
             view.setTag(R.id.TAG_GR_EVENT, this);
             BookEventHolder holder = new BookEventHolder(view);
             holder.event = this;
@@ -272,8 +276,10 @@ abstract class SendBooksLegacyTaskBase
                              @NonNull final DAO db) {
             final EventsCursor eventsCursor = (EventsCursor) cursor;
 
+            Locale userLocale = LocaleUtils.getLocale(context);
+
             // Update event info binding; the Views in the holder are unchanged,
-            // but when it is reused the Event and ID will change.
+            // but when it is reused the Event and id will change.
             BookEventHolder holder = (BookEventHolder) view.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
             holder.event = this;
             holder.rowId = eventsCursor.getId();
@@ -286,8 +292,7 @@ abstract class SendBooksLegacyTaskBase
                     author = author + ' ' + context.getString(R.string.and_others);
                 }
             } else {
-                author = context.getString(R.string.unknown)
-                                .toUpperCase(LocaleUtils.getPreferredLocale(context));
+                author = context.getString(R.string.unknown).toUpperCase(userLocale);
             }
 
             String title = db.getBookTitle(mBookId);
@@ -299,8 +304,7 @@ abstract class SendBooksLegacyTaskBase
             holder.authorView.setText(context.getString(R.string.lbl_by_author_s, author));
             holder.errorView.setText(getDescription());
 
-            String date = DateUtils.toPrettyDateTime(LocaleUtils.from(context),
-                                                     eventsCursor.getEventDate());
+            String date = DateUtils.toPrettyDateTime(userLocale, eventsCursor.getEventDate());
             holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
 
             holder.retryView.setVisibility(View.GONE);

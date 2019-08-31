@@ -111,7 +111,8 @@ public class StyleSettingsFragment
         }
 
         if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_booklist_style_properties, null);
+            //noinspection ConstantConditions
+            TipManager.display(getContext(), R.string.tip_booklist_style_properties, null);
         }
 
         // Set the summaries reflecting the current values for all basic Preferences.

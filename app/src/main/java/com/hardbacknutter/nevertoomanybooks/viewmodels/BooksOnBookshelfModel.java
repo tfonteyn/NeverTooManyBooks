@@ -48,8 +48,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -281,7 +283,7 @@ public class BooksOnBookshelfModel
                                     @NonNull final String name) {
 
         mCurrentBookshelf = Bookshelf.getBookshelf(context, mDb, name, true);
-        mCurrentBookshelf.setAsPreferred(context);
+        mCurrentBookshelf.setAsPreferred();
     }
 
     @NonNull
@@ -306,9 +308,10 @@ public class BooksOnBookshelfModel
     }
 
     public void setCurrentStyle(@NonNull final Context context,
+                                @NonNull final Locale userLocale,
                                 @NonNull final BooklistStyle style) {
         Objects.requireNonNull(mCurrentBookshelf);
-        mCurrentBookshelf.setStyle(context, mDb, style);
+        mCurrentBookshelf.setStyle(context, userLocale, mDb, style);
     }
 
     /**
@@ -319,14 +322,15 @@ public class BooksOnBookshelfModel
      * @param listView used to derive the top row offset
      */
     public void onStyleChanged(@NonNull final Context context,
+                               @NonNull final Locale userLocale,
                                @NonNull final BooklistStyle style,
                                final int topRow,
                                @NonNull final RecyclerView listView) {
         Objects.requireNonNull(mCurrentBookshelf);
 
         // save the new bookshelf/style combination
-        mCurrentBookshelf.setAsPreferred(listView.getContext());
-        mCurrentBookshelf.setStyle(context, mDb, style);
+        mCurrentBookshelf.setAsPreferred();
+        mCurrentBookshelf.setStyle(context, userLocale, mDb, style);
 
         // Set the rebuild state like this is the first time in, which it sort of is,
         // given we are changing style.
@@ -399,6 +403,8 @@ public class BooksOnBookshelfModel
     public void initBookList(@NonNull final Context context,
                              final boolean isFullRebuild) {
         Objects.requireNonNull(mCurrentBookshelf);
+
+        Locale userLocale = LocaleUtils.getLocale(context);
 
         BooklistBuilder blb;
 
@@ -501,7 +507,7 @@ public class BooksOnBookshelfModel
                 blb.setFilterOnBookshelfId(mCurrentBookshelf.getId());
 
                 // Criteria supported by FTS
-                blb.setFilter(LocaleUtils.getPreferredLocale(context),
+                blb.setFilter(userLocale,
                               mSearchCriteria.ftsAuthor,
                               mSearchCriteria.ftsTitle,
                               mSearchCriteria.ftsKeywords);
@@ -693,7 +699,7 @@ public class BooksOnBookshelfModel
 
                 @Override
                 public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
-                    String msg = GoodreadsTasks.handleResult(message);
+                    String msg = GoodreadsTasks.handleResult(App.getLocalizedAppContext(), message);
                     if (msg != null) {
                         mUserMessage.setValue(msg);
                     } else {

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,7 +92,7 @@ class TaskQueueDBHelper
             + DOM_TASK_ID + " integer references " + TBL_TASK + ','
             + DOM_EVENT + " blob not null,"
             + DOM_EVENT_DATE + " datetime default current_timestamp)",
-    };
+            };
 
     private static final String[] INDEXES = new String[]{
             "CREATE UNIQUE INDEX " + TBL_QUEUE + "_IX1 ON " + TBL_QUEUE + " (" + DOM_ID + ')',
@@ -115,12 +116,12 @@ class TaskQueueDBHelper
             "CREATE INDEX " + TBL_EVENT + "_IX3 ON " + TBL_EVENT + " ("
             + DOM_TASK_ID
             + ',' + DOM_ID + ')',
-    };
+            };
 
     /**
      * Constructor. Call superclass using locally defined name & version.
      *
-     * @param context Current context
+     * @param context the Application Context (as a param, to allow testing)
      */
     TaskQueueDBHelper(@NonNull final Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

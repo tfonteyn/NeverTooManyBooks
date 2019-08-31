@@ -74,7 +74,7 @@ public abstract class BaseActivityWithTasks
 
     private static final String BKEY_TASK_MANAGER_ID = TAG + ":TaskManagerId";
 
-    /** ID of associated TaskManager. */
+    /** id of associated TaskManager. */
     private long mTaskManagerId;
     /** Associated TaskManager. */
     @Nullable
@@ -205,7 +205,7 @@ public abstract class BaseActivityWithTasks
     }
 
     /**
-     * Save the TaskManager ID for later retrieval.
+     * Save the TaskManager id for later retrieval.
      */
     @Override
     @CallSuper

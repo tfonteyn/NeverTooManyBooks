@@ -50,7 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -67,7 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  */
 public abstract class ShowBookApiHandler
         extends ApiHandler {
-
 
     // Current series being processed
     // private int mCurrSeriesId = 0;
@@ -111,7 +111,7 @@ public abstract class ShowBookApiHandler
     private final XmlHandler mHandleFloat = context -> {
         final String name = (String) context.getUserArg();
         try {
-            double d = Double.parseDouble(context.getBody());
+            double d = ParseUtils.parseDouble(GoodreadsManager.SITE_LOCALE, context.getBody());
             mBookData.putDouble(name, d);
         } catch (@NonNull final NumberFormatException ignore) {
             // Ignore but don't add
@@ -329,9 +329,9 @@ public abstract class ShowBookApiHandler
             String source = mBookData.getString(DBDefinitions.KEY_LANGUAGE);
             if (source != null && !source.isEmpty()) {
                 // Goodreads sometimes uses the 2-char code with region code (e.g. "en_GB")
-                source = LocaleUtils.getIso3FromIso2(source);
+                source = LanguageUtils.getIso3fromIso2(source);
                 // Goodreads sometimes uses the alternative 3-char code for specific languages.
-                source = LocaleUtils.normaliseIso3(source);
+                source = LanguageUtils.iso3ToBibliographic(source);
                 // store the iso3
                 mBookData.putString(DBDefinitions.KEY_LANGUAGE, source);
             }
@@ -409,7 +409,7 @@ public abstract class ShowBookApiHandler
             }
         }
 
-        // and if we do have an image, save it using the Goodreads book ID as base name.
+        // and if we do have an image, save it using the Goodreads book id as base name.
         if (bestImage != null) {
             long grBookId = mBookData.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
             String fileSpec = ImageUtils.saveImage(bestImage, String.valueOf(grBookId),

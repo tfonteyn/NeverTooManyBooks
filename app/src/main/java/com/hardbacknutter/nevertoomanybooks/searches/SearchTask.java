@@ -286,10 +286,8 @@ public class SearchTask
         Context context = getContext();
         try {
             if (e instanceof FormattedMessageException) {
-                // we have a clean user message.
                 s = ((FormattedMessageException) e).getLocalizedMessage(context);
             } else {
-                // best shot
                 s = e.getLocalizedMessage();
             }
         } catch (@NonNull final RuntimeException e2) {

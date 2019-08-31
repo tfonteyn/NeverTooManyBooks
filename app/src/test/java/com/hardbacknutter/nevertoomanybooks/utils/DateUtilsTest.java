@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import java.util.Date;
 import java.util.Locale;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,10 +55,13 @@ class DateUtilsTest {
     @SuppressWarnings("deprecation")
     private final Date d_1987_06_01 = new Date(87, 5, 1);
 
+    @BeforeEach
+    void setUp() {
+        d_1987_06_25.setHours(12);
+        d_1987_06_10.setHours(12);
+        d_1987_06_01.setHours(12);
+    }
 
-    /**
-     *
-     */
     @Test
     void parseAmbiguousMMDD() {
         // Patter list has MMdd before ddMM

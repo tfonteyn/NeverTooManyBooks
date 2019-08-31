@@ -140,7 +140,7 @@ public final class StandardDialogs {
         if (authorList.isEmpty()) {
             authors.append('<')
                    .append(context.getString(R.string.unknown)
-                                  .toUpperCase(LocaleUtils.getPreferredLocale(context)))
+                                  .toUpperCase(LocaleUtils.getLocale(context)))
                    .append('>');
         } else {
             // "a1, a2 and a3"
@@ -173,7 +173,7 @@ public final class StandardDialogs {
      * Show a registration request dialog.
      *
      * @param context   Current context
-     * @param siteResId Site string resource id
+     * @param siteResId Site string resource ID
      * @param intent    Intent to start if the user wants more information.
      * @param required  Show third button allowing disabling message or not.
      * @param prefName  Preference name to use for disabling the message if requested

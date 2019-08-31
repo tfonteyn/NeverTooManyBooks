@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.backup.BackupManager;
 import com.hardbacknutter.nevertoomanybooks.backup.BackupTask;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -74,7 +75,8 @@ public class BackupActivity
     /** The ViewModel. */
     private ExportOptionsTaskModel mOptionsModel;
 
-    private final ExportOptionsDialogFragment.OptionsListener mOptionsListener = this::onOptionsSet;
+    public final OptionsDialogBase.OptionsListener<ExportOptions> mOptionsListener
+            = this::onOptionsSet;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -214,7 +216,7 @@ public class BackupActivity
         }
         mOptionsModel.setFile(file);
 
-        ExportOptions options = new ExportOptions();
+        ExportOptions options = new ExportOptions(ExportOptions.ALL);
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_backup_to_archive)
@@ -239,10 +241,9 @@ public class BackupActivity
      */
     private void onOptionsSet(@NonNull final ExportOptions options) {
         // sanity check
-        if (options.what == ExportOptions.NOTHING) {
+        if (options.what == Options.NOTHING) {
             return;
         }
-
         // backup 'since'
         if ((options.what & ExportOptions.EXPORT_SINCE) != 0) {
             // no date set, use "since last backup."

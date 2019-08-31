@@ -28,9 +28,9 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 /**
  * Activity to edit the groups associated with a style (include/exclude + move up/down).
  * <p>
- * <b>Note:</b>: changes are saved when this activity is quit, see {@link #onBackPressed}.
+ * <strong>Note:</strong>: changes are saved when this activity is quit, see {@link #onBackPressed}.
  */
 public class StyleGroupsActivity
         extends BaseActivity {
@@ -92,7 +92,7 @@ public class StyleGroupsActivity
         // setup the adapter
         // The adapter for the list.
         RecyclerViewAdapterBase listAdapter =
-                new GroupWrapperListAdapter(getLayoutInflater(), mModel.getList(),
+                new GroupWrapperListAdapter(this, mModel.getList(),
                                             vh -> mItemTouchHelper.startDrag(vh));
 
         listView.setAdapter(listAdapter);
@@ -111,7 +111,7 @@ public class StyleGroupsActivity
         }
 
         if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_booklist_style_groups, null);
+            TipManager.display(this, R.string.tip_booklist_style_groups, null);
         }
     }
 
@@ -148,14 +148,14 @@ public class StyleGroupsActivity
         /**
          * Constructor.
          *
-         * @param inflater          LayoutInflater to use
+         * @param context           Current context
          * @param items             List of groups (in GroupWrapper)
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        GroupWrapperListAdapter(@NonNull final LayoutInflater inflater,
+        GroupWrapperListAdapter(@NonNull final Context context,
                                 @NonNull final ArrayList<StyleGroupsModel.GroupWrapper> items,
                                 @NonNull final StartDragListener dragStartListener) {
-            super(inflater, items, dragStartListener);
+            super(context, items, dragStartListener);
         }
 
         @NonNull

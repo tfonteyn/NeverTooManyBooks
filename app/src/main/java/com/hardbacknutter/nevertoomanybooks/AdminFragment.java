@@ -150,11 +150,11 @@ public class AdminFragment
             case R.id.TASK_ID_GR_IMPORT:
             case R.id.TASK_ID_GR_SEND_BOOKS:
             case R.id.TASK_ID_GR_REQUEST_AUTH:
-                String msg = GoodreadsTasks.handleResult(message);
+                //noinspection ConstantConditions
+                String msg = GoodreadsTasks.handleResult(getContext(), message);
                 if (msg != null) {
                     UserMessage.show(view, msg);
                 } else {
-                    //noinspection ConstantConditions
                     RequestAuthTask.needsRegistration(getContext(), mModel.getTaskListener());
                 }
                 break;
@@ -200,8 +200,9 @@ public class AdminFragment
                 importFromCSV(files.get(0));
             } else {
                 // If more than one, ask user which file
+                //noinspection ConstantConditions
                 ValuePicker picker =
-                        new FilePicker(getLayoutInflater(),
+                        new FilePicker(getContext(),
                                        getString(R.string.lbl_import_from_csv),
                                        getString(R.string.import_warning_select_csv_file),
                                        files,
@@ -346,14 +347,16 @@ public class AdminFragment
         root.findViewById(R.id.lbl_sync_with_goodreads)
             .setOnClickListener(v -> {
                 UserMessage.show(v, R.string.progress_msg_connecting);
-                new ImportTask(true, mModel.getTaskListener()).execute();
+                //noinspection ConstantConditions
+                new ImportTask(getContext(), true, mModel.getTaskListener()).execute();
             });
 
         // Goodreads Import All
         root.findViewById(R.id.lbl_import_all_from_goodreads)
             .setOnClickListener(v -> {
                 UserMessage.show(v, R.string.progress_msg_connecting);
-                new ImportTask(false, mModel.getTaskListener()).execute();
+                //noinspection ConstantConditions
+                new ImportTask(getContext(), false, mModel.getTaskListener()).execute();
             });
 
         // Goodreads Export Updated

@@ -168,7 +168,7 @@ public class Editions
      */
     public static class Edition {
 
-        /** The ISFDB native book id. */
+        /** The ISFDB native book ID. */
         final long isfdbId;
         /**
          * If a fetch of editions resulted in a single book returned (via redirects),

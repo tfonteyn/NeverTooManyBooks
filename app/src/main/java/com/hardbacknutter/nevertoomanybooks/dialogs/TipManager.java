@@ -154,7 +154,7 @@ public final class TipManager {
     /**
      * Display the passed tip, if the user has not disabled it.
      *
-     * @param inflater LayoutInflater to use
+     * @param context  Current context
      * @param stringId identifier for "from where" we want the tip to be displayed.
      *                 This allows two different places in the code use the same tip,
      *                 but one place being 'disable the tip' and another 'show'.
@@ -162,7 +162,7 @@ public final class TipManager {
      *                 (or not displayed at all).
      * @param args     Optional arguments for the tip string
      */
-    public static void display(@NonNull final LayoutInflater inflater,
+    public static void display(@NonNull final Context context,
                                @StringRes final int stringId,
                                @Nullable final Runnable postRun,
                                @Nullable final Object... args) {
@@ -173,13 +173,13 @@ public final class TipManager {
             Logger.warnWithStackTrace(TipManager.class, "display", "stringId=" + stringId);
             return;
         }
-        if (!tip.shouldBeShown(inflater.getContext())) {
+        if (!tip.shouldBeShown(context)) {
             if (postRun != null) {
                 postRun.run();
             }
             return;
         }
-        tip.display(inflater, stringId, args, postRun);
+        tip.display(context, stringId, args, postRun);
     }
 
     public interface TipOwner {
@@ -234,20 +234,18 @@ public final class TipManager {
         /**
          * display the tip.
          *
-         * @param inflater LayoutInflater to use
+         * @param context  Current context
          * @param stringId for the message
          * @param args     for the message
          * @param postRun  Runnable to start afterwards
          */
-        void display(@NonNull final LayoutInflater inflater,
+        void display(@NonNull final Context context,
                      @StringRes final int stringId,
                      @Nullable final Object[] args,
                      @Nullable final Runnable postRun) {
 
-            Context context = inflater.getContext();
-
             // Build the tip dialog
-            final View root = inflater.inflate(mLayoutId, null);
+            final View root = LayoutInflater.from(context).inflate(mLayoutId, null);
 
             // Setup the message; this is optional
             final TextView messageView = root.findViewById(R.id.content);
@@ -259,26 +257,22 @@ public final class TipManager {
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());
             }
 
-
-            final AlertDialog dialog = new AlertDialog.Builder(context)
-                                               .setView(root)
-                                               .setTitle(R.string.tip_dialog_title)
-                                               .setNegativeButton(R.string.btn_disable_message,
-                                                                  (d, which) -> {
-                                                                      d.dismiss();
-                                                                      setShowAgain(context, false);
-                                                                      if (postRun != null) {
-                                                                          postRun.run();
-                                                                      }
-                                                                  })
-                                               .setPositiveButton(android.R.string.ok,
-                                                                  (d, which) -> {
-                                                                      d.dismiss();
-                                                                      if (postRun != null) {
-                                                                          postRun.run();
-                                                                      }
-                                                                  })
-                                               .create();
+            AlertDialog dialog =
+                    new AlertDialog.Builder(context)
+                            .setView(root)
+                            .setTitle(R.string.tip_dialog_title)
+                            .setNegativeButton(R.string.btn_disable_message, (d, which) -> {
+                                setShowAgain(context, false);
+                                if (postRun != null) {
+                                    postRun.run();
+                                }
+                            })
+                            .setPositiveButton(android.R.string.ok, (d, which) -> {
+                                if (postRun != null) {
+                                    postRun.run();
+                                }
+                            })
+                            .create();
 
             dialog.show();
             mHasBeenDisplayed = true;
@@ -288,7 +282,7 @@ public final class TipManager {
          * Set the preference to indicate if this tip should be shown again.
          *
          * @param context Current context
-         * @param show Flag indicating future visibility
+         * @param show    Flag indicating future visibility
          */
         private void setShowAgain(@NonNull final Context context,
                                   final boolean show) {

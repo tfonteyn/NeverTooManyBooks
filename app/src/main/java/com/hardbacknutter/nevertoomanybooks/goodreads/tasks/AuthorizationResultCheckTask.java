@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,26 +73,26 @@ public class AuthorizationResultCheckTask
 
     @Override
     protected void onPostExecute(@NonNull final Boolean result) {
-        Context userContext = App.getFakeUserContext();
+        Context context = App.getLocalizedAppContext();
 
         if (result) {
-            App.showNotification(userContext.getString(R.string.info_authorized),
-                                 userContext.getString(R.string.gr_auth_successful));
+            App.showNotification(context.getString(R.string.info_authorized),
+                                 context.getString(R.string.gr_auth_successful));
 
         } else {
             String msg;
             if (mException instanceof FormattedMessageException) {
-                msg = ((FormattedMessageException) mException).getLocalizedMessage(userContext);
+                msg = ((FormattedMessageException) mException).getLocalizedMessage(context);
 
             } else if (mException != null) {
-                msg = userContext.getString(R.string.gr_auth_error) + ' '
-                      + userContext.getString(R.string.error_if_the_problem_persists);
+                msg = context.getString(R.string.gr_auth_error) + ' '
+                      + context.getString(R.string.error_if_the_problem_persists);
 
             } else {
-                msg = userContext.getString(R.string.error_site_authentication_failed,
-                                            userContext.getString(R.string.goodreads));
+                msg = context.getString(R.string.error_site_authentication_failed,
+                                        context.getString(R.string.goodreads));
             }
-            App.showNotification(userContext.getString(R.string.info_not_authorized), msg);
+            App.showNotification(context.getString(R.string.info_not_authorized), msg);
         }
     }
 }

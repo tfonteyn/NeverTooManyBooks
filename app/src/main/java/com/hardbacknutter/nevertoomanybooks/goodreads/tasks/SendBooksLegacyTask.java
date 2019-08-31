@@ -59,7 +59,7 @@ class SendBooksLegacyTask
      */
     private final boolean mUpdatesOnly;
 
-    /** Last book ID processed. */
+    /** Last book id processed. */
     private long mLastId;
     /** Total count of books processed. */
     private int mCount;

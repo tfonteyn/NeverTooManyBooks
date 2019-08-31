@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,20 +62,20 @@ public class MenuPicker<T>
      * The caller can create a menu calling {@link #createMenu(Context)},
      * populate it and pass it here.
      *
-     * @param inflater   LayoutInflater to use
+     * @param context    Current context
      * @param title      for the dialog/menu
      * @param menu       the menu options to show
      * @param userObject a reference free to set/use by the caller
      * @param listener   callback handler with the MenuItem the user chooses + the position
      */
-    public MenuPicker(@NonNull final LayoutInflater inflater,
+    public MenuPicker(@NonNull final Context context,
                       @Nullable final String title,
                       @NonNull final Menu menu,
                       @NonNull final T userObject,
                       @NonNull final ContextItemSelected<T> listener) {
-        super(inflater, title, null, false);
+        super(context, title, null, false);
 
-        mAdapter = new MenuItemListAdapter(inflater, menu, menuItem -> {
+        mAdapter = new MenuItemListAdapter(context, menu, menuItem -> {
             if (menuItem.hasSubMenu()) {
                 setTitle(menuItem.getTitle());
                 mAdapter.setMenu(menuItem.getSubMenu());
@@ -119,20 +120,20 @@ public class MenuPicker<T>
         private final PickListener<MenuItem> mListener;
 
         /**
-         * @param inflater LayoutInflater to use
+         * @param context    Current context
          * @param menu     Menu (list of items) to display
          * @param listener Callback handler
          */
-        MenuItemListAdapter(@NonNull final LayoutInflater inflater,
+        MenuItemListAdapter(@NonNull final Context context,
                             @NonNull final Menu menu,
                             @NonNull final PickListener<MenuItem> listener) {
 
-            mInflater = inflater;
+            mInflater = LayoutInflater.from(context);
             mListener = listener;
             setMenu(menu);
 
             //noinspection ConstantConditions
-            mSubMenuPointer = inflater.getContext().getDrawable(R.drawable.ic_submenu);
+            mSubMenuPointer = context.getDrawable(R.drawable.ic_submenu);
         }
 
         void setMenu(@NonNull final Menu menu) {

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,19 +61,18 @@ public final class GoodreadsTasks {
      *
      * @return a String to display to the user, or {@code null} when authorization is needed.
      */
-    public static String handleResult(@NonNull final TaskFinishedMessage<Integer> message) {
+    public static String handleResult(@NonNull final Context context,
+                                      @NonNull final TaskFinishedMessage<Integer> message) {
         //Reminder:  'success' only means the call itself was successful.
         // It still depends on the 'result' code what the next step is.
-
-        Context userContext = App.getFakeUserContext();
 
         // if auth failed, either first or second time, complain and bail out.
         if (message.result == GR_RESULT_CODE_AUTHORIZATION_FAILED
             ||
             (message.result == GR_RESULT_CODE_AUTHORIZATION_NEEDED
              && message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH)) {
-            return userContext.getString(R.string.error_site_authentication_failed,
-                                         userContext.getString(R.string.goodreads));
+            return context.getString(R.string.error_site_authentication_failed,
+                                     context.getString(R.string.goodreads));
         }
 
 
@@ -82,14 +82,14 @@ public final class GoodreadsTasks {
 
         } else if (message.success) {
             // authenticated fine, just show info results.
-            return userContext.getString(message.result);
+            return context.getString(message.result);
 
         } else {
             // some non-auth related error occurred.
-            String msg = userContext.getString(message.result);
+            String msg = context.getString(message.result);
             if (message.exception instanceof FormattedMessageException) {
                 msg += ' ' + ((FormattedMessageException) message.exception)
-                                     .getLocalizedMessage(userContext);
+                                     .getLocalizedMessage(context);
 
             } else if (message.exception != null) {
                 msg += ' ' + message.exception.getLocalizedMessage();

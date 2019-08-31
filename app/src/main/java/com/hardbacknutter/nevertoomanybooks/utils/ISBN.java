@@ -563,7 +563,7 @@ public class ISBN {
      * <li>compare the 9 significant isbn digits for equality.</li>
      * </ol>
      *
-     * <b>Note:</b> hash codes are done over the {@link #mDigits} objects.
+     * <strong>Note:</strong> hash codes are done over the {@link #mDigits} objects.
      * <p>
      * TODO: SIMPLIFY ISBN equals...
      */

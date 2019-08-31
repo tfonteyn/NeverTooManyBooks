@@ -150,7 +150,7 @@ public final class UniqueId {
     /**
      * Identifier of the field we want the generic Dialog to handle.
      * <p>
-     * <br>type: {@code int} (resource id)
+     * <br>type: {@code int} (resource ID)
      */
     public static final String BKEY_FIELD_ID = "fieldId";
 

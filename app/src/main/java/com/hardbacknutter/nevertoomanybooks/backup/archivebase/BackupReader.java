@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -49,13 +51,15 @@ public interface BackupReader
      * <p>
      * See {@link BackupReaderAbstract} for a default implementation.
      *
+     *
      * @param settings         the import settings
      * @param progressListener Listener to receive progress information.
      *
      * @throws IOException     on failure
      * @throws ImportException on failure
      */
-    void restore(@NonNull ImportOptions settings,
+    void restore(@NonNull final Context context,
+                 @NonNull ImportOptions settings,
                  @NonNull ProgressListener progressListener)
             throws IOException, ImportException;
 

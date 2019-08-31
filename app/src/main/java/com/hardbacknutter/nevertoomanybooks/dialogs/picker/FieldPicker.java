@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.picker;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,22 +57,21 @@ public class FieldPicker<T>
     /**
      * Value picker for a text field.
      *
-     * @param inflater LayoutInflater to use
-     * @param title    Dialog title
-     * @param field    to get/set
-     * @param list     list to choose from
+     * @param context Current context
+     * @param title   Dialog title
+     * @param field   to get/set
+     * @param list    list to choose from
      */
-    public FieldPicker(@NonNull final LayoutInflater inflater,
+    public FieldPicker(@NonNull final Context context,
                        @Nullable final String title,
                        @NonNull final Field field,
                        @NonNull final List<T> list) {
-        super(inflater, title, null, false);
+        super(context, title, null, false);
 
-        final FieldListAdapter<T> adapter =
-                new FieldListAdapter<>(inflater, field, list, item -> {
-                    dismiss();
-                    field.setValue(item.toString());
-                });
+        FieldListAdapter<T> adapter = new FieldListAdapter<>(context, field, list, item -> {
+            dismiss();
+            field.setValue(item.toString());
+        });
         setAdapter(adapter, adapter.getPreSelectedPosition());
     }
 
@@ -93,17 +93,17 @@ public class FieldPicker<T>
         /**
          * Constructor.
          *
-         * @param inflater LayoutInflater to use
+         * @param context  Current context
          * @param field    the Field
          * @param items    List of items
          * @param listener where to send the result back to
          */
-        FieldListAdapter(@NonNull final LayoutInflater inflater,
+        FieldListAdapter(@NonNull final Context context,
                          @NonNull final Field field,
                          @NonNull final List<T> items,
                          @NonNull final PickListener<T> listener) {
 
-            mInflater = inflater;
+            mInflater = LayoutInflater.from(context);
             mListener = listener;
             mItems = items;
 

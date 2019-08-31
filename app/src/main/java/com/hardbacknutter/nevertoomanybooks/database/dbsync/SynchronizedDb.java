@@ -233,7 +233,7 @@ public class SynchronizedDb {
             try (Cursor cursor = db.rawQuery(s, null)) {
                 if (cursor.moveToNext()) {
                     Logger.debug(this, "debugDumpInfo",
-                                 s + " => " + cursor.getString(0));
+                                 s + " = " + cursor.getString(0));
                 }
             }
         }
@@ -296,7 +296,7 @@ public class SynchronizedDb {
     /**
      * Locking-aware wrapper for underlying database method.
      *
-     * @return the row ID of the newly inserted row, or -1 if an error occurred
+     * @return the row id of the newly inserted row, or -1 if an error occurred
      */
     public long insert(@NonNull final String table,
                        @SuppressWarnings("SameParameterValue")
@@ -333,7 +333,7 @@ public class SynchronizedDb {
     /**
      * Locking-aware wrapper for underlying database method.
      * <p>
-     * <b>Note:</b> as far as I can tell, the Statement behind this call is not cached.
+     * <strong>Note:</strong> as far as I can tell, the Statement behind this call is not cached.
      * So this is fine for single-action inserts, but not for loops (should use a prepared stmt).
      *
      * @return the number of rows affected
@@ -369,7 +369,7 @@ public class SynchronizedDb {
     /**
      * Locking-aware wrapper for underlying database method.
      * <p>
-     * <b>Note:</b> as far as I can tell, the Statement behind this call is not cached.
+     * <strong>Note:</strong> as far as I can tell, the Statement behind this call is not cached.
      * So this is fine for single-action deletes, but not for loops (should use a prepared stmt).
      *
      * @return the number of rows affected if a whereClause is passed in, 0

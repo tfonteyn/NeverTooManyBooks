@@ -104,6 +104,7 @@ public class GoodreadsManager
     /** Can only send requests at a throttled speed. */
     @NonNull
     public static final Throttler THROTTLER = new Throttler();
+    public static final Locale SITE_LOCALE = Locale.US;
     /**
      * website & Root URL for API calls. Right now, identical,
      * but this leaves future changes easier.
@@ -615,11 +616,11 @@ public class GoodreadsManager
      * @throws IOException           on other failures
      */
     @NonNull
+    @WorkerThread
     public ExportResult sendOneBook(@NonNull final Context context,
                                     @NonNull final DAO db,
                                     @NonNull final BookCursor bookCursor)
             throws CredentialsException, BookNotFoundException, IOException {
-
 
         long bookId = bookCursor.getLong(DBDefinitions.KEY_PK_ID);
         String isbn = bookCursor.getString(DBDefinitions.KEY_ISBN);
@@ -630,7 +631,7 @@ public class GoodreadsManager
         long grBookId;
         Bundle grBook = null;
 
-        // See if the book already has a Goodreads ID and if it is valid.
+        // See if the book already has a Goodreads id and if it is valid.
         try {
             grBookId = bookCursor.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
             if (grBookId != 0) {
@@ -669,9 +670,10 @@ public class GoodreadsManager
             // We found a Goodreads book, update it
             long reviewId = 0;
 
-            Locale userLocale = LocaleUtils.getPreferredLocale(context);
+            // not the bookLocale.
+            Locale userLocale = LocaleUtils.getLocale(context);
 
-            // Get the review ID if we have the book details. For new books, it will not be present.
+            // Get the review id if we have the book details. For new books, it will not be present.
             if (!isNew && grBook.containsKey(ShowBookFieldName.REVIEW_ID)) {
                 reviewId = grBook.getLong(ShowBookApiHandler.ShowBookFieldName.REVIEW_ID);
             }
@@ -797,19 +799,19 @@ public class GoodreadsManager
             throws CredentialsException,
                    IOException {
 
-        Context userContext = App.getFakeUserContext();
+        Context context = App.getLocalizedAppContext();
 
         try {
             // getBookByIsbn will check on isbn being valid.
             if (isbn != null && !isbn.isEmpty()) {
-                return getBookByIsbn(userContext, isbn, fetchThumbnail);
+                return getBookByIsbn(context, isbn, fetchThumbnail);
 
             } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
                 List<GoodreadsWork> goodreadsWorks = new SearchBooksApiHandler(this)
                                                              .search(author + ' ' + title);
 
                 if (!goodreadsWorks.isEmpty()) {
-                    return getBookById(userContext, goodreadsWorks.get(0).bookId, fetchThumbnail);
+                    return getBookById(context, goodreadsWorks.get(0).bookId, fetchThumbnail);
                 } else {
                     return new Bundle();
                 }

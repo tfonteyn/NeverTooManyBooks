@@ -215,7 +215,7 @@ public abstract class EditBookBaseFragment<T>
 
         // Get the drop-down button for the list and setup dialog
         fieldButton.setOnClickListener(v -> {
-            FieldPicker<String> picker = new FieldPicker<>(getLayoutInflater(),
+            FieldPicker<String> picker = new FieldPicker<>(getContext(),
                                                            getString(dialogTitleId),
                                                            field, list);
             picker.show();

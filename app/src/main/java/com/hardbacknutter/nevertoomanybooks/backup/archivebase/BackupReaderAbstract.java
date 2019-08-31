@@ -32,6 +32,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,13 +92,14 @@ public abstract class BackupReaderAbstract
      * @throws IOException on failure
      */
     @Override
-    public void restore(@NonNull final ImportOptions settings,
+    public void restore(@NonNull final Context context,
+                        @NonNull final ImportOptions settings,
                         @NonNull final ProgressListener progressListener)
             throws IOException, ImportException {
 
-        Context userContext = App.getFakeUserContext();
-
         mSettings = settings;
+        SharedPreferences prefs = PreferenceManager
+                                          .getDefaultSharedPreferences(App.getAppContext());
 
         // keep track of what we read from the archive
         int entitiesRead = ImportOptions.NOTHING;
@@ -147,7 +149,7 @@ public abstract class BackupReaderAbstract
                 ReaderEntity entity = findEntity(ReaderEntity.Type.Preferences);
                 if (entity != null) {
                     try (XmlImporter importer = new XmlImporter()) {
-                        importer.doPreferences(entity, mSettings.getPrefs(), progressListener);
+                        importer.doPreferences(entity, prefs, progressListener);
                     }
                     entitiesRead |= ImportOptions.PREFERENCES;
                     incPrefs = false;
@@ -176,8 +178,8 @@ public abstract class BackupReaderAbstract
                     case Books:
                         if (incBooks) {
                             // a CSV file with all book data
-                            try (Importer importer = new CsvImporter(userContext, mSettings)) {
-                                mSettings.results = importer.doBooks(userContext,
+                            try (Importer importer = new CsvImporter(context, mSettings)) {
+                                mSettings.results = importer.doBooks(context,
                                                                      entity.getInputStream(), null,
                                                                      progressListener);
                             }
@@ -190,8 +192,7 @@ public abstract class BackupReaderAbstract
                         if (incPrefs) {
                             progressListener.onProgressStep(1, mProcessPreferences);
                             try (XmlImporter importer = new XmlImporter()) {
-                                importer.doPreferences(entity, mSettings.getPrefs(),
-                                                       progressListener);
+                                importer.doPreferences(entity, prefs, progressListener);
                             }
                             entitiesRead |= ImportOptions.PREFERENCES;
                             incPrefs = false;
@@ -226,10 +227,10 @@ public abstract class BackupReaderAbstract
                         if (incPrefs) {
                             progressListener.onProgressStep(1, mProcessPreferences);
                             // read them into the 'old' prefs. Migration is done at a later stage.
-                            SharedPreferences prefs = userContext.getSharedPreferences(
+                            SharedPreferences legacyPrefs = context.getSharedPreferences(
                                     Prefs.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE);
                             try (XmlImporter importer = new XmlImporter()) {
-                                importer.doPreferences(entity, prefs, progressListener);
+                                importer.doPreferences(entity, legacyPrefs, progressListener);
                             }
                             entitiesRead |= ImportOptions.PREFERENCES;
                         }

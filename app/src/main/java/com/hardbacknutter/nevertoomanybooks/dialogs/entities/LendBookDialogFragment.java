@@ -139,7 +139,7 @@ public class LendBookDialogFragment
         if (savedInstanceState == null) {
             // see if the string is there
             mAuthorName = args.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
-            // if not, we must have the id.
+            // if not, we must have the ID.
             if (mAuthorName == null) {
                 //noinspection ConstantConditions
                 mAuthorName = mDb.getAuthor(args.getLong(DBDefinitions.KEY_FK_AUTHOR)).getLabel();

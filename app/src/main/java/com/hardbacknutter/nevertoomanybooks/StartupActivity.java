@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -89,11 +90,18 @@ public class StartupActivity
         return sStartupActivity != null ? sStartupActivity.get() : null;
     }
 
+    /**
+     * apply the user-preferred Locale/Theme before onCreate is called
+     */
+    protected void attachBaseContext(@NonNull final Context base) {
+        Context context = LocaleUtils.applyLocale(base);
+        App.applyTheme(context);
+
+        super.attachBaseContext(context);
+    }
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        LocaleUtils.applyPreferred(this);
-        setTheme(App.getThemeResId());
-
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_startup);
@@ -257,7 +265,6 @@ public class StartupActivity
         sStartupActivity.clear();
         finish();
     }
-
 
     /**
      * Checks if we have the needed permissions.

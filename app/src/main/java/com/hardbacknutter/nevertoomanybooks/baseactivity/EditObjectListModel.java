@@ -53,8 +53,7 @@ public class EditObjectListModel
     /** Displayed for user reference only. */
     @Nullable
     private String mBookTitle;
-    /** If set, used for the series default locale. */
-    @Nullable
+    /** Used for the series default locale. */
     private Locale mBookLocale;
 
     /** flag indicating global changes were made. Used in setResult. */
@@ -84,7 +83,7 @@ public class EditObjectListModel
             if (bookLang != null && !bookLang.isEmpty()) {
                 mBookLocale = new Locale(bookLang);
             } else {
-                mBookLocale = LocaleUtils.getPreferredLocale(context);
+                mBookLocale = LocaleUtils.getLocale(context);
             }
         }
     }
@@ -98,17 +97,16 @@ public class EditObjectListModel
     }
 
     @Nullable
-    public String getBookTitle() {
+    String getBookTitle() {
         return mBookTitle;
     }
 
     @NonNull
     public Locale getBookLocale() {
-        //noinspection ConstantConditions
         return mBookLocale;
     }
 
-    public boolean globalReplacementsMade() {
+    boolean globalReplacementsMade() {
         return mGlobalReplacementsMade;
     }
 

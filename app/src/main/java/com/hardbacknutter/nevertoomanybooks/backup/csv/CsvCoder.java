@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * <p>
  * This extends the internally used #fromString(String) constructor.
  *
- * <b>Note:</b> In the format definition, the " * {json}" suffix is optional and can be missing.
+ * <strong>Note:</strong> In the format definition, the " * {json}" suffix is optional and can be missing.
  */
 final class CsvCoder {
 

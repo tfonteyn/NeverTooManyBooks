@@ -121,11 +121,11 @@ public class AuthorWorksFragment
                     new FastScrollerOverlay(getContext(), R.drawable.fast_scroll_overlay));
         }
 
-        mAdapter = new TocAdapter(getLayoutInflater());
+        mAdapter = new TocAdapter(getContext());
         listView.setAdapter(mAdapter);
 
         if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_authors_works, null);
+            TipManager.display(getContext(), R.string.tip_authors_works, null);
         }
     }
 
@@ -182,7 +182,7 @@ public class AuthorWorksFragment
             .setIcon(R.drawable.ic_delete);
 
         String title = item.getTitle();
-        new MenuPicker<>(getLayoutInflater(), title, menu, position, this::onContextItemSelected)
+        new MenuPicker<>(getContext(), title, menu, position, this::onContextItemSelected)
                 .show();
     }
 
@@ -313,10 +313,10 @@ public class AuthorWorksFragment
         /**
          * Constructor.
          *
-         * @param inflater LayoutInflater to use
+         * @param context Current context
          */
-        TocAdapter(@NonNull final LayoutInflater inflater) {
-            mInflater = inflater;
+        TocAdapter(@NonNull final Context context) {
+            mInflater = LayoutInflater.from(context);
         }
 
         @NonNull
@@ -398,7 +398,7 @@ public class AuthorWorksFragment
             return new String[]{mModel.getTocEntries().get(index)
                                       .getTitle()
                                       .substring(0, 1)
-                                        .toUpperCase(LocaleUtils.getPreferredLocale(context))};
+                                        .toUpperCase(LocaleUtils.getLocale(context))};
         }
     }
 }

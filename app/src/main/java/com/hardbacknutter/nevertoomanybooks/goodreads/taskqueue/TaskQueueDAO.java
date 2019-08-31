@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,11 +104,11 @@ class TaskQueueDAO {
     }
 
     /**
-     * Lookup the ID of a queue based on the name.
+     * Lookup the id of a queue based on the name.
      *
      * @param name Queue Name
      *
-     * @return The ID of the queue, 0 if no match
+     * @return The id of the queue, 0 if no match
      */
     private long getQueueId(@NonNull final String name) {
         try (Cursor cursor = getDb().rawQuery(SQL_GET_QUEUE_ID, new String[]{name})) {
@@ -224,7 +225,7 @@ class TaskQueueDAO {
      * Save the passed task back to the database. The parameter must be a Task that
      * is already in the database. This method is used to preserve a task state.
      * <p>
-     * <b>Note:</b> this code must not assume the task exists.
+     * <strong>Note:</strong> this code must not assume the task exists.
      * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
      * @param task The task to be saved. Must exist in database.
@@ -262,7 +263,7 @@ class TaskQueueDAO {
     /**
      * Set the related task record as successfully completed.
      * <p>
-     * <b>Note:</b> this code must not assume the task exists.
+     * <strong>Note:</strong> this code must not assume the task exists.
      * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
      * @param task Task object
@@ -350,7 +351,7 @@ class TaskQueueDAO {
     /**
      * Save and requeue the passed task.
      * <p>
-     * <b>Note:</b> this code must not assume the task exists.
+     * <strong>Note:</strong> this code must not assume the task exists.
      * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
      * @param task task object to requeue.
@@ -376,7 +377,7 @@ class TaskQueueDAO {
     /**
      * Save and set the task as failed.
      * <p>
-     * <b>Note:</b> this code must not assume the task exists.
+     * <strong>Note:</strong> this code must not assume the task exists.
      * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
      * @param task    Task that failed.
@@ -401,7 +402,7 @@ class TaskQueueDAO {
      * Store an Event object for later retrieval after task has completed. This is
      * analogous to writing a line to the 'log file' for the task.
      * <p>
-     * <b>Note:</b> this code must not assume the task exists.
+     * <strong>Note:</strong> this code must not assume the task exists.
      * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      */
     void storeTaskEvent(@NonNull final Task task,
@@ -438,7 +439,7 @@ class TaskQueueDAO {
     /**
      * Get an Events Cursor returning all events for the passed task.
      *
-     * @param taskId ID of the task whose exceptions we want
+     * @param taskId id of the task whose exceptions we want
      *
      * @return A new EventsCursor
      */
@@ -483,7 +484,7 @@ class TaskQueueDAO {
     /**
      * Delete the specified Event object.
      *
-     * @param id ID of Event to delete.
+     * @param id of Event to delete.
      */
     void deleteEvent(final long id) {
         getDb().delete(TBL_EVENT, DOM_ID + "=?", new String[]{String.valueOf(id)});
@@ -493,7 +494,7 @@ class TaskQueueDAO {
     /**
      * Delete the specified Task object.
      *
-     * @param id ID of Task to delete.
+     * @param id of Task to delete.
      */
     void deleteTask(final long id) {
         SQLiteDatabase db = getDb();
@@ -536,7 +537,7 @@ class TaskQueueDAO {
         final byte[] mBlob;
         /** Retry count retrieved from DB. */
         final int mRetries;
-        /** ID of Task. */
+        /** id of Task. */
         final int id;
 
         /**

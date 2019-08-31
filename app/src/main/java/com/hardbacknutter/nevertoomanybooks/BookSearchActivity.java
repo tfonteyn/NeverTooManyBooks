@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
  * - manually provided or scanned ISBN.
  * - Author/Title.
  * <p>
- * <b>Note:</b> eventually these 'hosting' activities are meant to go. The idea is to have ONE
+ * <strong>Note:</strong> eventually these 'hosting' activities are meant to go. The idea is to have ONE
  * hosting/main activity, which swaps in fragments as needed.
  */
 public class BookSearchActivity

@@ -37,7 +37,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
@@ -54,10 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  */
 public abstract class TQTask
         extends Task
-        implements Serializable {
+        implements BindableItemCursorAdapter.BindableItem {
 
-
-    private static final long serialVersionUID = -4388499226374546985L;
+    private static final long serialVersionUID = -937739402397246913L;
 
     /**
      * Constructor.
@@ -71,15 +69,14 @@ public abstract class TQTask
     /**
      * @return {@code false} to requeue, {@code true} for success
      */
-    public abstract boolean run(@NonNull QueueManager queueManager,
-                                @NonNull Context context);
+    public abstract boolean run(@NonNull QueueManager queueManager);
 
     @Override
     @NonNull
-    public View getView(@NonNull final LayoutInflater inflater,
+    public View getView(@NonNull final Context context,
                         @NonNull final BindableItemCursor cursor,
                         @NonNull final ViewGroup parent) {
-        View view = inflater.inflate(R.layout.row_task_info, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.row_task_info, parent, false);
         view.setTag(R.id.TAG_GR_TASK, this);
 
         TaskHolder holder = new TaskHolder(view);
@@ -96,7 +93,7 @@ public abstract class TQTask
         TaskHolder holder = (TaskHolder) view.getTag(R.id.TAG_GR_TASK_HOLDER);
         TasksCursor tasksCursor = (TasksCursor) cursor;
 
-        Locale locale = LocaleUtils.getPreferredLocale(context);
+        Locale locale = LocaleUtils.getLocale(context);
 
         // Update task info binding
         holder.description.setText(getDescription(context));
@@ -142,7 +139,7 @@ public abstract class TQTask
         } else {
             holder.error.setVisibility(View.GONE);
         }
-        //"Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
+        //"Job id 123, Queued at 20 Jul 2012 17:50:23 GMT"
         String date = DateUtils.toPrettyDateTime(locale, tasksCursor.getQueuedDate());
         holder.job_info.setText(context.getString(R.string.gr_tq_generic_task_info, getId(), date));
     }

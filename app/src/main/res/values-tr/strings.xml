@@ -576,8 +576,10 @@
     <string name="lbl_author_editor">Editör</string>
     <string name="lbl_edition_slipcase">kitap kabı</string>
     <string name="lbl_author_contributor">iştirakçi</string>
-    <string name="lbl_author_primary">Birincil</string>
-    <string name="lbl_author_secondary">İkincil</string>
     <string name="lbl_artist_colorist">Renk</string>
+    <string name="tip_update_fields_from_internet">Dış site bağlantıları yalnızca siteyle gerçekten iletişime geçildiyse işlenir. Sonuç olarak, “Üzerinde görüntülemek…” menüsü de aynı şekilde neyin uygun olduğunu gösterecektir.</string>
+    <string name="lbl_author_secondary">yazarlarından</string>
+    <string name="lbl_author_type">Yazar tipi</string>
+    <string name="pt_bob_show_details_uses_task_off">hemen</string>
 
 </resources>

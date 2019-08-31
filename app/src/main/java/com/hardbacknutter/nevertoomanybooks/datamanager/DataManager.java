@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.DataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
@@ -54,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValid
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 
 /**
@@ -69,16 +69,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 public class DataManager {
 
     /** re-usable validator. */
-    protected static final DataValidator INTEGER_VALIDATOR = new IntegerValidator(0);
+    protected static final DataValidator INTEGER_VALIDATOR = new IntegerValidator();
     /** re-usable validator. */
     protected static final DataValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
     /** re-usable validator. */
     protected static final DataValidator BLANK_OR_FLOAT_VALIDATOR = new OrValidator(
             new BlankValidator(),
-            new FloatValidator(0f));
-
-    /** log error string. */
-    private static final String ERROR_INVALID_BOOLEAN_S = "Invalid boolean, s=`";
+            new FloatValidator());
 
     /** DataValidators. */
     private final Map<String, DataValidator> mValidatorsMap = new UniqueMap<>();
@@ -91,153 +88,6 @@ public class DataManager {
     private final Bundle mRawData = new Bundle();
     /** DataAccessors. */
     private final Map<String, DataAccessor> mDataAccessorsMap = new UniqueMap<>();
-
-    /**
-     * Translate the passed object to a Long value.
-     *
-     * @param o Object
-     *
-     * @return Resulting value ({@code null} or empty becomes 0)
-     */
-    public static long toLong(@Nullable final Object o) {
-        if (o == null) {
-            return 0;
-        } else if (o instanceof Long) {
-            return (Long) o;
-        } else if (o instanceof Integer) {
-            return ((Integer) o).longValue();
-        } else if (o.toString().trim().isEmpty()) {
-            return 0;
-        } else {
-            try {
-                return Long.parseLong(o.toString());
-            } catch (@NonNull final NumberFormatException e1) {
-                // desperate ?
-                return toBoolean(o) ? 1 : 0;
-            }
-        }
-    }
-
-    /**
-     * Translate the passed object to a double value.
-     *
-     * @param o Object
-     *
-     * @return Resulting value ({@code null} or empty becomes 0)
-     */
-    private static double toDouble(@Nullable final Object o) {
-        if (o == null) {
-            return 0;
-        } else if (o instanceof Double) {
-            return (Double) o;
-        } else if (o instanceof Float) {
-            return ((Float) o).doubleValue();
-        } else if (o.toString().trim().isEmpty()) {
-            return 0;
-        } else {
-            try {
-                return Double.parseDouble(o.toString());
-            } catch (@NonNull final NumberFormatException e1) {
-                // desperate ?
-                return toBoolean(o) ? 1 : 0;
-            }
-        }
-    }
-
-    /**
-     * Translate the passed object to a float value.
-     *
-     * @param o Object
-     *
-     * @return Resulting value ({@code null} or empty becomes 0)
-     */
-    private static float toFloat(@Nullable final Object o) {
-        if (o == null) {
-            return 0;
-        } else if (o instanceof Float) {
-            return (float) o;
-        } else if (o instanceof Double) {
-            return ((Double) o).floatValue();
-        } else if (o.toString().trim().isEmpty()) {
-            return 0;
-        } else {
-            try {
-                return Float.parseFloat(o.toString());
-            } catch (@NonNull final NumberFormatException e1) {
-                // desperate ?
-                return toBoolean(o) ? 1 : 0;
-            }
-        }
-    }
-
-    /**
-     * Translate the passed Object to a boolean value.
-     *
-     * @param o Object
-     *
-     * @return Resulting value
-     *
-     * @throws NumberFormatException if the Object was not boolean compatible.
-     */
-    public static boolean toBoolean(@Nullable final Object o)
-            throws NumberFormatException {
-        if (o == null) {
-            return false;
-        } else if (o instanceof Boolean) {
-            return (Boolean) o;
-        } else if (o instanceof Integer) {
-            return (Integer) o != 0;
-        } else if (o instanceof Long) {
-            return (Long) o != 0;
-        }
-        // lets see if its a String then
-        return toBoolean(o.toString(), true);
-    }
-
-    /**
-     * Translate a String to a boolean value.
-     *
-     * @param s            String to convert
-     * @param emptyIsFalse if {@code true}, {@code null} and empty string
-     *                     are handled as {@code false}
-     *
-     * @return boolean value
-     *
-     * @throws NumberFormatException if the string does not contain a valid boolean.
-     */
-    public static boolean toBoolean(@Nullable final String s,
-                                    final boolean emptyIsFalse)
-            throws NumberFormatException {
-        if (s == null || s.trim().isEmpty()) {
-            if (emptyIsFalse) {
-                return false;
-            } else {
-                throw new NumberFormatException(ERROR_INVALID_BOOLEAN_S + s + '`');
-            }
-        } else {
-            switch (s.trim().toLowerCase(App.getSystemLocale())) {
-                case "1":
-                case "y":
-                case "yes":
-                case "t":
-                case "true":
-                    return true;
-                case "0":
-                case "n":
-                case "no":
-                case "f":
-                case "false":
-                    return false;
-                default:
-                    try {
-                        return Integer.parseInt(s) != 0;
-                    } catch (@NonNull final NumberFormatException e) {
-                        Logger.error(DataManager.class, e, ERROR_INVALID_BOOLEAN_S + s + '`');
-                        throw e;
-                    }
-            }
-        }
-    }
 
     /**
      * Add a validator for the specified key.
@@ -392,7 +242,7 @@ public class DataManager {
      * @return a boolean value.
      */
     public boolean getBoolean(@NonNull final String key) {
-        return toBoolean(get(key));
+        return ParseUtils.toBoolean(get(key));
     }
 
     /**
@@ -412,7 +262,7 @@ public class DataManager {
      * @return a double value.
      */
     public double getDouble(@NonNull final String key) {
-        return toDouble(get(key));
+        return ParseUtils.toDouble(get(key));
     }
 
     /**
@@ -432,7 +282,7 @@ public class DataManager {
      * @return a float value.
      */
     float getFloat(@NonNull final String key) {
-        return toFloat(get(key));
+        return ParseUtils.toFloat(get(key));
     }
 
     /**
@@ -452,7 +302,7 @@ public class DataManager {
      * @return an int value.
      */
     public long getInt(@NonNull final String key) {
-        return toLong(get(key));
+        return ParseUtils.toLong(get(key));
     }
 
     /**
@@ -472,7 +322,7 @@ public class DataManager {
      * @return a long value.
      */
     public long getLong(@NonNull final String key) {
-        return toLong(get(key));
+        return ParseUtils.toLong(get(key));
     }
 
     /**

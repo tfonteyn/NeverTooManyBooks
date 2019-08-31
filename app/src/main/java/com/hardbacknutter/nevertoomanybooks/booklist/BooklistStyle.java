@@ -83,7 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * <p>
  * 2018-12-20: the implementation no longer stores serialized blobs, neither in the database nor
  * in backup archives (but can still read them from archives/database upgrades).<br>
- * The database table now consists of a PK id, and a UUID column.<br>
+ * The database table now consists of a PK ID, and a UUID column.<br>
  * The UUID serves as the name of the SharedPreference which describes the style.<br>
  * Builtin styles are not stored in the database and (internally) use negative ID's and
  * a hardcoded UUID.<br>
@@ -168,7 +168,7 @@ public class BooklistStyle
 
     /**
      * Unique name. This is a stored in our preference file (with the same name)
-     * and is used for backup/restore purposes as the 'id'.
+     * and is used for backup/restore purposes as the 'ID'.
      * <p>
      * (this is not a PPref, as we'd need the uuid to store the uuid....)
      */
@@ -188,7 +188,7 @@ public class BooklistStyle
     private String mUuid;
 
     /**
-     * ID if string representing name of this style.
+     * id if string representing name of this style.
      * Used for standard system-defined styles
      * Always 0 for a user-defined style
      */

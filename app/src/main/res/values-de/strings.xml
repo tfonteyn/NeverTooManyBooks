@@ -582,7 +582,9 @@
     <string name="lbl_author_other">Andere</string>
     <string name="lbl_author_editor">Editor</string>
     <string name="lbl_author_contributor">Mitarbeiter</string>
-    <string name="lbl_author_primary">Primär</string>
-    <string name="lbl_author_secondary">Zweitens</string>
     <string name="lbl_artist_colorist">Farbe</string>
+    <string name="tip_update_fields_from_internet">Externe Site-Links werden nur verarbeitet, wenn die Site tatsächlich kontaktiert wird. Infolgedessen zeigt das Menü „Anschauen auf…“ ebenfalls nur, was verfügbar ist.</string>
+    <string name="lbl_author_secondary">Mitverfasser</string>
+    <string name="lbl_author_type">Autorentyp</string>
+    <string name="pt_bob_show_details_uses_task_off">sofort</string>
 </resources>

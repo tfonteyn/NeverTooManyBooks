@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +59,7 @@ public class Site
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "SearchSite.";
 
-    /** Internal id, bitmask based, not stored in prefs. */
+    /** Internal ID, bitmask based, not stored in prefs. */
     public final int id;
 
     /** Internal task(thread) name AND user-visible name AND key into prefs. */
@@ -108,7 +109,7 @@ public class Site
      * Create the Site with whatever suitable default values.
      * If previously stored to SharedPreferences, the stored values will be used instead.
      *
-     * @param id          Internal id, bitmask based
+     * @param id          Internal ID, bitmask based
      * @param priority    the search priority order
      * @param reliability the search reliability order
      */
@@ -122,7 +123,7 @@ public class Site
      * Create the Site with whatever suitable default values.
      * If previously stored to SharedPreferences, the stored values will be used instead.
      *
-     * @param id       Internal id, bitmask based
+     * @param id       Internal ID, bitmask based
      * @param priority the search priority order
      */
     static Site newCoverSite(final int id,

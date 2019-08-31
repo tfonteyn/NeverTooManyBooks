@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -309,7 +310,7 @@ public final class QueueManager {
      */
     boolean runTask(@NonNull final Task task) {
         if (task instanceof TQTask) {
-            return ((TQTask) task).run(this, App.getFakeUserContext());
+            return ((TQTask) task).run(this);
         } else {
             // Either extend RunnableTask, or override QueueManager.runTask()
             throw new IllegalStateException("Can not handle tasks that are not RunnableTasks");
@@ -336,7 +337,7 @@ public final class QueueManager {
     private void doToast(@NonNull final String message) {
         if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
-                Toast.makeText(App.getAppContext(), message, Toast.LENGTH_LONG).show();
+                Toast.makeText(App.getLocalizedAppContext(), message, Toast.LENGTH_LONG).show();
             }
         } else {
             // Send message to the handler
@@ -375,7 +376,7 @@ public final class QueueManager {
     /**
      * Return an EventsCursor for the specified task ID.
      *
-     * @param taskId ID of the task
+     * @param taskId id of the task
      *
      * @return Cursor of exceptions
      */
@@ -410,7 +411,7 @@ public final class QueueManager {
     /**
      * Delete the specified Task object and related Event objects.
      *
-     * @param id ID of TaskException to delete.
+     * @param id of TaskException to delete.
      */
     void deleteTask(final long id) {
         boolean isActive = false;
@@ -445,7 +446,7 @@ public final class QueueManager {
     /**
      * Delete the specified Event object.
      *
-     * @param eventId ID of TaskException to delete.
+     * @param eventId id of TaskException to delete.
      */
     public void deleteEvent(final long eventId) {
         mTaskQueueDAO.deleteEvent(eventId);

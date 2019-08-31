@@ -50,7 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * FIXME: replace deprecated classes/methods.
+ * FIXME: Migrate to java.time.* ... which required Android 8.0 (API 26)
+ * or use this backport: https://github.com/JakeWharton/ThreeTenABP
  */
 public final class DateUtils {
 
@@ -222,7 +223,7 @@ public final class DateUtils {
      * Attempt to parse a date string based on a range of possible formats; allow
      * for caller to specify if the parsing should be strict or lenient.
      * <p>
-     * <b>Note:</b> the timestamp part is always set to 00:00:00
+     * <strong>Note:</strong> the timestamp part is always set to 00:00:00
      *
      * @param dateString String to parse
      * @param lenient    {@code true} if parsing should be lenient
@@ -272,11 +273,12 @@ public final class DateUtils {
                                   @NonNull final String dateString,
                                   final boolean lenient)
             throws ParseException {
-        df.setLenient(lenient); //URGENT
+        df.setLenient(lenient);
         Date parsedDate = df.parse(dateString);
         // Make sure there is no overflow into the next day due to the user Timezone
+        // use noon to avoid overflow due to DST
         if (parsedDate != null) {
-            parsedDate.setHours(0);
+            parsedDate.setHours(12);
             parsedDate.setMinutes(0);
             parsedDate.setSeconds(0);
         }
@@ -379,6 +381,10 @@ public final class DateUtils {
      */
     @NonNull
     public static String utcSqlDate(@NonNull final Date date) {
+        // set time to noon, to avoid any overflow due to timezone or DST.
+        date.setHours(12);
+        date.setMinutes(0);
+        date.setSeconds(0);
         return UTC_SQL_DATE_YYYY_MM_DD.format(date);
     }
 

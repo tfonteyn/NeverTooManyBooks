@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
@@ -49,9 +48,6 @@ public class BindableItemCursorAdapter
 
     @NonNull
     private final Context mContext;
-
-    @NonNull
-    private final LayoutInflater mInflater;
 
     @NonNull
     private final BindableItemBinder mBinder;
@@ -76,7 +72,6 @@ public class BindableItemCursorAdapter
                               @NonNull final Context context,
                               @NonNull final Cursor cursor) {
         super(context, cursor);
-        mInflater = LayoutInflater.from(context);
         mContext = context;
         mBinder = binder;
     }
@@ -94,11 +89,11 @@ public class BindableItemCursorAdapter
         if (mLastItemViewTypePos == position) {
             item = mLastItemViewTypeEvent;
         } else {
-            item = cursor.getBindableItem();
+            item = cursor.getBindableItem(mContext);
         }
 
         if (convertView == null) {
-            convertView = item.getView(mInflater, cursor, parent);
+            convertView = item.getView(mContext, cursor, parent);
         }
 
         // Bind it, and we are done!
@@ -156,7 +151,7 @@ public class BindableItemCursorAdapter
 
         BindableItemCursor cursor = (BindableItemCursor) getCursor();
         cursor.moveToPosition(position);
-        BindableItem item = cursor.getBindableItem();
+        BindableItem item = cursor.getBindableItem(mContext);
 
         // Use the class name to generate a layout number
         String s = item.getClass().toString();
@@ -226,17 +221,17 @@ public class BindableItemCursorAdapter
         /**
          * Get a new View object suitable for displaying this type of event.
          * <p>
-         * <b>Note:</b> A single event subclass should NOT RETURN MORE THAN ONE TYPE OF VIEW.
+         * <strong>Note:</strong> A single event subclass should NOT RETURN MORE THAN ONE TYPE OF VIEW.
          * If it needs to do this, create a new Event subclass or use a more complex view.
          *
-         * @param layoutInflater that can be used to create the view.
-         * @param cursor         EventsCursor for this event, positioned at its row.
-         * @param parent         ViewGroup that will contain the new View.
+         * @param context Current context
+         * @param cursor  EventsCursor for this event, positioned at its row.
+         * @param parent  ViewGroup that will contain the new View.
          *
          * @return a new view
          */
         @NonNull
-        View getView(@NonNull LayoutInflater layoutInflater,
+        View getView(@NonNull Context context,
                      @NonNull BindableItemCursor cursor,
                      @NonNull ViewGroup parent);
 

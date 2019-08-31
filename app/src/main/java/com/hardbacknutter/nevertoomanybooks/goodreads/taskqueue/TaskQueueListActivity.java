@@ -87,7 +87,7 @@ public class TaskQueueListActivity
         cleanupBtn.setOnClickListener(v -> QueueManager.getQueueManager().cleanupOldTasks());
 
         if (savedInstanceState == null) {
-            TipManager.display(getLayoutInflater(), R.string.tip_background_tasks, null);
+            TipManager.display(this, R.string.tip_background_tasks, null);
         }
     }
 

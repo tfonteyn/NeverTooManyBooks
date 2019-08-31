@@ -573,10 +573,12 @@
     <string name="yes">Ano</string>
     <string name="lbl_author_translator">Překladatel</string>
     <string name="lbl_author_other">jiný</string>
-    <string name="lbl_author_primary">Hlavní</string>
     <string name="lbl_author_editor">Editor</string>
     <string name="lbl_author_contributor">Spolupracovník</string>
-    <string name="lbl_author_secondary">Sekundární</string>
     <string name="lbl_artist_colorist">Barvivo</string>
+    <string name="tip_update_fields_from_internet">Externí odkazy na stránky jsou zpracovány pouze v případě, že je web skutečně kontaktován. Výsledkem je, že nabídka „Výhled na…“ také ukáže pouze to, co je k dispozici.</string>
+    <string name="lbl_author_secondary">spoluautor</string>
+    <string name="lbl_author_type">Typ autora</string>
+    <string name="pt_bob_show_details_uses_task_off">ihned</string>
 
 </resources>

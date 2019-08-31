@@ -133,7 +133,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
 public class BooklistBuilder
         implements AutoCloseable {
 
-    /** ID values for state preservation property. */
+    /** id values for state preservation property. */
     public static final int PREF_LIST_REBUILD_STATE_PRESERVED = 0;
     public static final int PREF_LIST_REBUILD_ALWAYS_EXPANDED = 1;
     public static final int PREF_LIST_REBUILD_ALWAYS_COLLAPSED = 2;
@@ -276,7 +276,7 @@ public class BooklistBuilder
         // Allocate ID
         mBooklistBuilderId = ID_COUNTER.incrementAndGet();
 
-        mUnknown = context.getString(R.string.unknown).toUpperCase(LocaleUtils.from(context));
+        mUnknown = context.getString(R.string.unknown).toUpperCase(LocaleUtils.getLocale(context));
 
         // Save the requested style
         mStyle = style;
@@ -295,7 +295,7 @@ public class BooklistBuilder
     }
 
     /**
-     * Clones the table definitions and append the ID to make new names in case
+     * Clones the table definitions and append the id to make new names in case
      * more than one view is open.
      */
     private void buildTableDefinitions() {
@@ -306,7 +306,7 @@ public class BooklistBuilder
         mNavTable = TBL_ROW_NAVIGATOR.clone();
         mNavTable.setName(mNavTable.getName() + '_' + mBooklistBuilderId);
 
-        // link the two tables via the row id
+        // link the two tables via the row ID
         mNavTable.addReference(mListTable, DOM_BL_REAL_ROW_ID);
     }
 
@@ -454,7 +454,7 @@ public class BooklistBuilder
      * Criteria must be set before calling this method with one or more of the setCriteria calls.
      *
      * @param preferredState           State to display: expanded, collapsed or remembered
-     * @param previouslySelectedBookId ID of book to remember, so we can scroll back to it
+     * @param previouslySelectedBookId id of book to remember, so we can scroll back to it
      */
     public void build(final int preferredState,
                       final long previouslySelectedBookId) {
@@ -537,7 +537,7 @@ public class BooklistBuilder
             summary.addDomain(DOM_BOOK_UUID, TBL_BOOKS.dot(DOM_BOOK_UUID),
                               SummaryBuilder.FLAG_NONE);
 
-            // If we have a book ID to remember, then add the DOM_BL_NODE_SELECTED field,
+            // If we have a book id to remember, then add the DOM_BL_NODE_SELECTED field,
             // and setup the expression.
             if (previouslySelectedBookId != 0) {
                 summary.addDomain(DOM_BL_NODE_SELECTED,
@@ -2421,7 +2421,7 @@ public class BooklistBuilder
                     addDomain(DOM_SERIES_TITLE, TBL_SERIES.dot(DOM_SERIES_TITLE),
                               SummaryBuilder.FLAG_GROUPED);
 
-                    // Group by ID (we want the ID available and there is a *chance* two
+                    // Group by id (we want the id available and there is a *chance* two
                     // series will have the same name...with bad data
                     addDomain(DOM_FK_SERIES, TBL_BOOK_SERIES.dot(DOM_FK_SERIES),
                               SummaryBuilder.FLAG_GROUPED);

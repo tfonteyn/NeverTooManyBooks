@@ -36,7 +36,7 @@ import androidx.annotation.StringRes;
 import com.hardbacknutter.nevertoomanybooks.App;
 
 /**
- * * String ID and args are stored for later retrieval.
+ * * String id and args are stored for later retrieval.
  * * The messages will be shown to the user.
  */
 public abstract class FormattedMessageException
@@ -65,8 +65,7 @@ public abstract class FormattedMessageException
      * Use {@link #getLocalizedMessage(Context)} directly if possible.
      */
     public String getLocalizedMessage() {
-        Context userContext = App.getFakeUserContext();
-        return getLocalizedMessage(userContext);
+        return getLocalizedMessage(App.getLocalizedAppContext());
     }
 
     @NonNull

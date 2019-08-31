@@ -63,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * See the Amazon example in that xml file.</li>
  * </ol>
  *
- * <b>Note:</b> never change the identifiers (bit flag) of the sites, as they are stored
+ * <strong>Note:</strong> never change the identifiers (bit flag) of the sites, as they are stored
  * in user preferences.
  */
 public final class SearchSites {
@@ -125,9 +125,10 @@ public final class SearchSites {
 
         // Dutch.
         Site kbnl = Site.newSite(KBNL, priority++, 5);
-        // Disabled by default if the device is not running in Dutch.
+        // Disabled by default if neither the device or the app is running in Dutch.
         if (!"nld".equals(App.getSystemLocale().getISO3Language())
-            && !"nld".equals(LocaleUtils.getPreferredLocale().getISO3Language())) {
+            && !"nld".equals(
+                LocaleUtils.getLocale(App.getLocalizedAppContext()).getISO3Language())) {
             kbnl.setEnabled(false);
         }
         SEARCH_ORDER_DEFAULTS.add(kbnl);
@@ -208,7 +209,7 @@ public final class SearchSites {
      * <p>
      * As it's used as a prefs key, it should never be changed.
      * <p>
-     * <b>Note:</b> the name is also required in the actual {@link SearchEngine}
+     * <strong>Note:</strong> the name is also required in the actual {@link SearchEngine}
      * as a {@code StringRes} but the method here can not use that one without
      * instantiating which we don't want to do here.
      *
@@ -239,7 +240,7 @@ public final class SearchSites {
     }
 
     /**
-     * Get a new SearchEngine class instance for the given id.
+     * Get a new SearchEngine class instance for the given ID.
      *
      * @return instance
      */

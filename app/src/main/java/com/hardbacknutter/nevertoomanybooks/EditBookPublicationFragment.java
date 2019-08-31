@@ -71,18 +71,19 @@ public class EditBookPublicationFragment
         Fields fields = getFields();
 
         //noinspection ConstantConditions
-        Locale userLocale = LocaleUtils.getPreferredLocale(getContext());
+        Locale userLocale = LocaleUtils.getLocale(getContext());
 
         // multiple use
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
-        Field field;
+        Field<String> field;
 
         // book fields
 
         fields.add(R.id.pages, DBDefinitions.KEY_PAGES);
 
-        field = fields.add(R.id.format, DBDefinitions.KEY_FORMAT);
+        field = fields.add(R.id.format, DBDefinitions.KEY_FORMAT)
+                      .setFormatter(new Fields.FormatFormatter());
         initValuePicker(field, R.string.lbl_format, R.id.btn_format,
                         mBookModel.getFormats());
 

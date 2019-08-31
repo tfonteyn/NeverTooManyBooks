@@ -193,11 +193,11 @@ public final class CoversDAO
     }
 
     /**
-     * Construct the cache ID for a given thumbnail uuid.
+     * Construct the cache id for a given thumbnail uuid.
      * We use this to allow caching of multiple copies of the same image (book uuid)
      * but with different dimensions.
      * <p>
-     * <b>Note:</b> Any changes to the resulting name MUST be reflected in {@link #delete}
+     * <strong>Note:</strong> Any changes to the resulting name MUST be reflected in {@link #delete}
      *
      * @param uuid      used to construct the cacheId
      * @param maxWidth  used to construct the cacheId

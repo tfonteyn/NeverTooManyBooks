@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItemBase;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
@@ -399,7 +400,7 @@ public class Book
     @NonNull
     public Book reload(@NonNull final DAO db,
                        final long bookId) {
-        // If ID = 0, no details in DB
+        // If id = 0, no details in DB
         if (bookId == 0) {
             return this;
         }
@@ -543,57 +544,44 @@ public class Book
     /**
      * Validate the locale (based on the Book's language) and reset the language if needed.
      */
-    public void updateLocale(@NonNull final Context context) {
-        getLocale(context, true);
-    }
-
-    /**
-     * Convenience method.
-     *
-     * @return the locale, or the users preferred locale if no language was set.
-     */
-    @NonNull
-    public Locale getLocale(@NonNull final Context context) {
-        return getLocale(context, false);
+    public void updateLocale(@NonNull final Locale userLocale) {
+        getLocale(userLocale, true);
     }
 
     /**
      * Get the Book's locale (based on its language).
      *
-     * @return the locale, or the fallbackLocale if no language was set.
+     * @return the locale, or the users preferred locale if no language was set.
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Context context,
-                            @NonNull final Locale fallbackLocale) {
-        return getLocale(context, false);
+    public Locale getLocale(@NonNull final Locale userLocale) {
+        return getLocale(userLocale, false);
     }
 
     /**
      * Use the book's language setting to determine the Locale.
      *
+     * @param userLocale     fallback if we can't determine the books Locale
      * @param updateLanguage {@code true} to update the language field with the ISO code
      *                       if needed. {@code false} to leave it unchanged.
      *
      * @return the locale.
      */
     @NonNull
-    private Locale getLocale(@NonNull final Context context,
+    private Locale getLocale(@NonNull final Locale userLocale,
                              final boolean updateLanguage) {
-        // fallback if we can't determine the books Locale
-        Locale userLocale = LocaleUtils.getPreferredLocale(context);
-
         Locale bookLocale = null;
         if (containsKey(DBDefinitions.KEY_LANGUAGE)) {
             String lang = getString(DBDefinitions.KEY_LANGUAGE);
             int len = lang.length();
             // try to convert to iso3 if needed.
             if (len != 2 && len != 3) {
-                lang = LocaleUtils.getIso3fromDisplayName(lang, userLocale);
+                lang = LanguageUtils.getIso3fromDisplayName(lang, userLocale);
             }
 
             // some languages have two iso3 codes; convert if needed.
-            lang = LocaleUtils.normaliseIso3(lang);
+            lang = LanguageUtils.iso3ToBibliographic(lang);
 
             // we now have an ISO code, or an invalid language.
             bookLocale = new Locale(lang);
@@ -634,9 +622,11 @@ public class Book
      */
     public void refreshSeriesList(@NonNull final Context context,
                                   @NonNull final DAO db) {
+        Locale userLocale = LocaleUtils.getLocale(context);
+
         ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         for (Series series : list) {
-            db.refreshSeries(context, series, getLocale(context));
+            db.refreshSeries(context, series, getLocale(userLocale));
         }
         putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
     }

@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
@@ -51,7 +53,8 @@ public interface BackupWriter
      * @throws IOException on failure
      */
     @WorkerThread
-    void backup(@NonNull ExportOptions settings,
+    void backup(@NonNull final Context context,
+                @NonNull ExportOptions settings,
                 @NonNull ProgressListener listener)
             throws IOException;
 

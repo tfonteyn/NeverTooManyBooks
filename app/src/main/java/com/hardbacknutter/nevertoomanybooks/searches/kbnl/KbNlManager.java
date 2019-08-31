@@ -71,7 +71,7 @@ public class KbNlManager
                                              + " Chrome/76.0.3809.100 Safari/537.36";
 
     /**
-     * <b>Note:</b> This is not the same site as the search site itself.
+     * <strong>Note:</strong> This is not the same site as the search site itself.
      * We have no indication that this site has an image we want, we just try it.
      * <p>
      * param 1: isbn, param 2: size.

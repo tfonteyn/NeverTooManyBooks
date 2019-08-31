@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -95,10 +97,11 @@ public class EditBookshelfListActivity
         setTitle(R.string.title_edit_bookshelves);
         mDb = new DAO();
         mList = mDb.getBookshelves();
-        mAdapter = new BookshelfAdapter(getLayoutInflater());
+        mAdapter = new BookshelfAdapter(this);
 
         findViewById(R.id.fab).setOnClickListener(
-                v -> editItem(new Bookshelf("", BooklistStyles.getDefaultStyle(mDb))));
+                v -> editItem(new Bookshelf("",
+                                            BooklistStyles.getDefaultStyle(mDb))));
 
         RecyclerView listView = findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -127,7 +130,7 @@ public class EditBookshelfListActivity
             .setIcon(R.drawable.ic_delete);
 
         String title = bookshelf.getName();
-        new MenuPicker<>(getLayoutInflater(), title, menu, bookshelf, this::onContextItemSelected)
+        new MenuPicker<>(this, title, menu, bookshelf, this::onContextItemSelected)
                 .show();
     }
 
@@ -214,10 +217,10 @@ public class EditBookshelfListActivity
         /**
          * Constructor.
          *
-         * @param inflater LayoutInflater to use
+         * @param context Current context
          */
-        BookshelfAdapter(@NonNull final LayoutInflater inflater) {
-            mInflater = inflater;
+        BookshelfAdapter(@NonNull final Context context) {
+            mInflater = LayoutInflater.from(context);
         }
 
         @NonNull

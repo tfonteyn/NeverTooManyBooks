@@ -40,8 +40,15 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class IntegerValidator
         implements DataValidator {
 
-    /** Default to apply if the field is empty. */
+    /** Default to apply if the field is {@code null} or empty. */
     private final int mDefaultValue;
+
+    /**
+     * Constructor; default value is 0f.
+     */
+    public IntegerValidator() {
+        mDefaultValue = 0;
+    }
 
     /**
      * Constructor with default value.
@@ -59,24 +66,23 @@ public class IntegerValidator
             throws ValidatorException {
 
         Integer value;
-        Object o = dataManager.get(key);
-        if (o == null) {
+        Object obj = dataManager.get(key);
+        if (obj == null) {
             value = mDefaultValue;
-
-        } else if (o instanceof Integer) {
-            value = (Integer) o;
-
-        } else if (o instanceof Long) {
-            value = ((Long) o).intValue();
-
-        } else if (o.toString().trim().isEmpty()) {
-            value = mDefaultValue;
-
+        } else if (obj instanceof Integer) {
+            value = (Integer) obj;
+        } else if (obj instanceof Long) {
+            value = ((Long) obj).intValue();
         } else {
-            try {
-                value = Integer.parseInt(o.toString());
-            } catch (@NonNull final NumberFormatException e) {
-                throw new ValidatorException(R.string.vldt_integer_expected_for_x, key);
+            String stringValue = obj.toString().trim();
+            if (stringValue.isEmpty()) {
+                value = mDefaultValue;
+            } else {
+                try {
+                    value = Integer.parseInt(stringValue);
+                } catch (@NonNull final NumberFormatException e) {
+                    throw new ValidatorException(R.string.vldt_integer_expected_for_x, key);
+                }
             }
         }
         dataManager.putInt(key, value);

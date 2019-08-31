@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.StartupActivity;
  * <p>
  * The app version is stored in preferences and when there are messages to display, the
  * {@link #getUpgradeMessage} method returns a non-empty string. When the message has been
- * acknowledged by the user, the startup activity should call {@link #setUpgradeAcknowledged()}
+ * acknowledged by the user, the startup activity should call {@link #setUpgradeAcknowledged}
  * to store the current app version in preferences and so prevent re-display of the messages.
  */
 public final class UpgradeMessageManager {
@@ -81,7 +82,7 @@ public final class UpgradeMessageManager {
 
         final StringBuilder message = new StringBuilder();
 
-        // See if we have a saved version id; if it's 0, it's an upgrade from a pre-98 install.
+        // See if we have a saved version ID; if it's 0, it's an upgrade from a pre-98 install.
         long lastVersion = PreferenceManager.getDefaultSharedPreferences(context)
                                             .getLong(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
 
