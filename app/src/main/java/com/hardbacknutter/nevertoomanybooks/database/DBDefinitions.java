@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
  * IMPORTANT: do NOT auto-format! It will cause chaos in the order of definitions.
  * <p>
  * Domain definitions for {@link DAO} and {@link BooklistBuilder}.
- * <b>Note:</b> Fields 'name' attribute must be in LOWER CASE.
+ * <strong>Note:</strong> Fields 'name' attribute must be in LOWER CASE.
  * <p>
  * Static definitions of database objects.
  * This is a *mostly* complete representation of the application database.
@@ -295,7 +295,11 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_BOOK_PUBLISHER;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_DATE_PUBLISHED;
-    /** {@link #TBL_BOOKS}. */
+    /**
+     *  {@link #TBL_BOOKS}.
+     *  A String typed column due to supporting pre-decimal UK "Shilling/Pence" as used on
+     *  the ISFDB web site.
+     */
     public static final DomainDefinition DOM_BOOK_PRICE_LISTED;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_PRICE_LISTED_CURRENCY;
