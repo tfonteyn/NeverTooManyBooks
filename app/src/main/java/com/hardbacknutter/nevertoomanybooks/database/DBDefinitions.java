@@ -35,7 +35,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -141,7 +141,7 @@ public final class DBDefinitions {
     /**
      * foreign key.
      * When a style is deleted, this key will be (re)set to
-     * {@link BooklistStyles#DEFAULT_STYLE_ID}
+     * {@link BooklistStyle#DEFAULT_STYLE_ID}
      */
     public static final DomainDefinition DOM_FK_STYLE_ID;
 
@@ -173,7 +173,7 @@ public final class DBDefinitions {
                         .references(TBL_TOC_ENTRIES, "ON DELETE CASCADE ON UPDATE CASCADE");
         DOM_FK_STYLE_ID =
                 new DomainDefinition(KEY_FK_STYLE, ColumnInfo.TYPE_INTEGER, true)
-                        .setDefault(BooklistStyles.DEFAULT_STYLE_ID)
+                        .setDefault(BooklistStyle.DEFAULT_STYLE_ID)
                         .references(TBL_BOOKLIST_STYLES, "ON DELETE SET DEFAULT ON UPDATE CASCADE");
     }
 
