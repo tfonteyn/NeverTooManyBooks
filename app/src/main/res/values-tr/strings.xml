@@ -190,10 +190,10 @@
     <string name="hint_search_text">Metin ve/veya ISBN</string>
     <string name="import_error_csv_file_must_contain_any_column">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
     <string name="import_error_csv_file_not_found">Herhangi bir dışa aktarma dosyası bulunamadı</string>
-    <string name="import_export_option_csv">Kitap ayrıntıları (CSV)</string>
+    <string name="import_export_option_csv">Kitaplar (*.csv)</string>
     <string name="import_export_option_xml">Tüm veriler XML formatında</string>
     <string name="import_export_option_xml_info">Yalnızca XML dışa aktarma, içe aktarma yok.</string>
-    <string name="import_option_info_all_books">Arşivdeki tüm kitaplar içe aktarılacak; var olan kitaplar güncellenip yeni olanlar eklenecektir.</string>
+    <string name="import_option_info_all_books">Yeni kitaplar eklenecek; mevcut kitaplar güncellenecek.</string>
     <string name="import_option_info_new_and_changed_books">Yalnızca yeni olan veya son zamanlarda arşivde güncellenmiş kitapları içe aktar. Bu seçenek özellikle örneğin iki aygıtı eşlerken yararlıdır.</string>
     <string name="import_option_new_and_changed_books">Yeni ve güncellenmiş kitaplar</string>
     <string name="import_options_dialog_title">Neyin içe aktarılacağını seçin</string>
@@ -202,7 +202,7 @@
     <string name="info_authorized">Yetkilendirilmiş</string>
     <string name="info_cleanup_files_text">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle “Bilgi gönder” düğmesini kullanmayı deneyin.</string>
     <string name="info_displaying_n_books_in_m_entries">%2$d giride %1$d kitap görüntüleniyor</string>
-    <string name="info_install_scanner">ISBN barkodu ile kitap taramak için Zxing barkod tarayıcısı uygulamasını yüklemelisiniz. Yüklemek için Tamam\'a, atlamak için Vazgeç\'e basın.</string>
+    <string name="info_install_scanner">ISBN barkodlarını taramak için, lütfen bu barkod tarayıcı uygulamalarından birini kurmak için aşağıya dokunun.</string>
     <string name="info_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="info_not_authorized">Yetkilendirilmemiş</string>
     <string name="info_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır.\n Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “Kimlik Bilgileri” bölümünün altında bulabilirsiniz.</string>
@@ -382,10 +382,10 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="no">Hayır</string>
     <string name="none">Hiçbiri</string>
-    <string name="pe_bob_thumbnails_cache_resized_each_time">Gerekli olduğunda her seferinde yeniden boyutlandır (daha az yer kaplar, kaydırma daha yavaş olacaktır)</string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">Yeniden boyutlandırılmış ufak resimleri bellekte tut (daha fazla yer kaplar, dizelgeler daha hızlı kayar)</string>
+    <string name="pe_thumbnails_cache_resized_each_time">Gerekli olduğunda her seferinde yeniden boyutlandır (daha az yer kaplar, kaydırma daha yavaş olacaktır)</string>
+    <string name="pe_thumbnails_cache_resized_stored">Yeniden boyutlandırılmış ufak resimleri bellekte tut (daha fazla yer kaplar, dizelgeler daha hızlı kayar)</string>
     <string name="pe_use_recommended_option">Önerilen seçeneği kullanın</string>
-    <string name="pg_bob_extra_book_details">Ek kitap ayarları</string>
+    <string name="pg_bob_show_details">Ek kitap ayarları</string>
     <string name="pg_booklist">Kitap listeleri</string>
     <string name="pg_filters">Kitap süzgeçleri</string>
     <string name="pg_general">Genel</string>
@@ -430,17 +430,17 @@
     <string name="pt_allow_mobile_data">Mobil veri kullanımına izin ver</string>
     <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>
     <string name="pt_bob_books_under_multiple_series">Birden fazla seride bulunan kitaplar</string>
-    <string name="pt_bob_format_author_name">Yazar adları biçimi</string>
+    <string name="pt_bob_author_name">Yazar adları biçimi</string>
     <string name="pt_bob_header">Başlık özet ayrıntıları</string>
-    <string name="pt_bob_list_generation">Kitap dizelgesi oluşturma seçeneği</string>
-    <string name="pt_bob_list_state">Kitap dizelgesi durumu</string>
-    <string name="pt_bob_open_book_read_only">Kitabı salt okunur aç</string>
-    <string name="pt_bob_sort_author_name">Yazarları sırala</string>
+    <string name="pt_booklist_generation">Kitap dizelgesi oluşturma seçeneği</string>
+    <string name="pt_booklist_state">Kitap dizelgesi durumu</string>
+    <string name="pt_booklist_open_book_read_only">Kitabı salt okunur aç</string>
+    <string name="pt_bob_sorting_author">Yazarları sırala</string>
     <string name="pt_bob_text_size">Kitap dizelgesi öğeleri boyutu</string>
-    <string name="pt_bob_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
-    <string name="pt_bob_show_thumbnails">Ufak resimleri göster</string>
+    <string name="pt_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
+    <string name="pt_bob_thumbnails_show">Ufak resimleri göster</string>
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
-    <string name="pt_cover_scale_factor">Listelerdeki görüntü boyutu</string>
+    <string name="pt_bob_thumbnails_scale">Listelerdeki görüntü boyutu</string>
     <string name="pt_reformat_titles_on_insert">Eklerken</string>
     <string name="pt_reformat_titles_on_update">Düzenlerken</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Taranan ISBN geçerli değil ise biple</string>
@@ -450,7 +450,7 @@
     <string name="pt_thumbnail_cropper_layer_type">Küçük resmi kırp “Layer Type”</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">Görüntüleri kırparken çökmeler yaşamadığınız sürece bu ayarı Varsayılan değerde bırakın. Daha güvenli ancak daha yavaş ya da daha az güvenli olmak için “Donanım” için “Yazılım” deneyin, ancak daha hızlı</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Öntanımlı kırpma alanı bütün görseldir</string>
-    <string name="pt_thumbnails_external_cropper">Başka resim kırpıcı kullan (deneysel özellik)</string>
+    <string name="pt_thumbnails_external_cropper">Başka resim kırpıcı kullan</string>
     <string name="pt_thumbnails_rotate_auto">Kamera resimlerini özdevinimli olarak döndür</string>
     <string name="pt_ui_language">Dil</string>
     <string name="pt_ui_messages_use">İle bilgilendir</string>
@@ -476,6 +476,11 @@
     <string name="style_builtin_title_first_letter">İlk harf başlık</string>
     <string name="style_builtin_unread">Okunmayan (Yazar/Seri)</string>
     <string name="style_builtin_update_date">Gün ve ayı güncelle</string>
+    <string name="style_builtin_bookshelf">Kitaplık</string>
+    <string name="style_builtin_rating">Değerlendirme</string>
+    <string name="style_builtin_language">Dil</string>
+    <string name="style_builtin_location">Konum</string>
+    <string name="style_builtin_format">Biçim</string>
     <string name="style_is_builtin">Yerleşik</string>
     <string name="style_is_user_defined">Kullanıcı tanımlı</string>
     <string name="tab_lbl_content">Içerik</string>
@@ -581,5 +586,9 @@
     <string name="lbl_author_secondary">yazarlarından</string>
     <string name="lbl_author_type">Yazar tipi</string>
     <string name="pt_bob_show_details_uses_task_off">hemen</string>
+    <string name="progress_end_import_partially_complete">Kısmi ithalat yapıldı</string>
+    <string name="pt_bob_show_details_uses_task">Ekstra Kitap Detaylarını Almak</string>
+    <string name="pt_bob_show_details_uses_task_on">gecikmiş</string>
+    <string name="lbl_author_primary">yazar</string>
 
 </resources>

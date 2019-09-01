@@ -52,7 +52,7 @@ import java.util.regex.Matcher;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
@@ -89,7 +89,7 @@ class ImportLegacyTask
     private static final long serialVersionUID = 2944686967082059350L;
 
     /**
-     * Number of books to retrieve in one batch; we are encouraged to make fewer API calls, so
+     * Number of books to retrieve in one batch; we are encouraged to make fewer calls, so
      * setting this number high is good. 50 seems to take several seconds to retrieve, so it
      * was chosen.
      */
@@ -162,7 +162,7 @@ class ImportLegacyTask
             return R.string.gr_tq_export_task_is_already_queued;
         }
 
-        // Make sure GR is authorized for this app
+        // Make sure Goodreads is authorized for this app
         GoodreadsManager grManager = new GoodreadsManager();
         if (grManager.hasValidCredentials()) {
             return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZED;
@@ -224,7 +224,6 @@ class ImportLegacyTask
 
             Bundle results;
 
-            // Call the API, return {@code false} if failed.
             try {
                 // If we have not started successfully yet, record the date at which
                 // the run() was called. This date is used if the job is a sync job.
@@ -313,7 +312,7 @@ class ImportLegacyTask
         try {
             boolean found = cursor.moveToFirst();
             if (!found) {
-                // Not found by GR id, look via ISBNs
+                // Not found by Goodreads id, look via ISBNs
                 cursor.close();
                 cursor = null;
 
@@ -392,7 +391,7 @@ class ImportLegacyTask
     }
 
     /**
-     * Update the book using the GR data.
+     * Update the book using the Goodreads data.
      *
      * @param context    Current context
      * @param db         the database
@@ -401,13 +400,14 @@ class ImportLegacyTask
                             @NonNull final DAO db,
                             @NonNull final BookCursor bookCursor,
                             @NonNull final Bundle review) {
-        // Get last date book was sent to GR (may be null)
+        // Get last date book was sent to Goodreads (may be null)
         String lastGrSync = bookCursor.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE);
         // If the review has an 'updated' date, then see if we can compare to book
         if (review.containsKey(ListReviewsApiHandler.ReviewField.UPDATED)) {
             String lastUpdate = review.getString(ReviewField.UPDATED);
-            // If last update in GR was before last GR sync of book, then don't bother
-            // updating book. This typically happens if the last update in GR was from us.
+            // If last update in Goodreads was before last Goodreads sync of book,
+            // then don't bother updating book.
+            // This typically happens if the last update in Goodreads was from us.
             if (lastUpdate != null && lastUpdate.compareTo(lastGrSync) < 0) {
                 return;
             }
@@ -417,7 +417,7 @@ class ImportLegacyTask
         // data for the given book (taken from the cursor), not just replace it.
         Book book = new Book(buildBundle(context, db, bookCursor, review));
         db.updateBook(context, bookCursor.getLong(DBDefinitions.KEY_PK_ID), book,
-                      DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                      DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
     }
 
     /**
@@ -613,7 +613,8 @@ class ImportLegacyTask
                 bsName = translateBookshelf(db, bsName, userLocale);
 
                 if (bsName != null && !bsName.isEmpty()) {
-                    bsList.add(new Bookshelf(bsName, BooklistStyles.getDefaultStyle(db)));
+                    bsList.add(new Bookshelf(bsName, BooklistStyle
+                                                             .getDefaultStyle(db)));
                 }
             }
             //TEST see above
@@ -628,7 +629,7 @@ class ImportLegacyTask
          * New books only: use the Goodreads added date + get the thumbnail
          */
         if (bookCursor == null) {
-            // Use the GR added date for new books
+            // Use the Goodreads added date for new books
             addStringIfNonBlank(review, ReviewField.ADDED,
                                 bookData, DBDefinitions.KEY_DATE_ADDED);
 
@@ -662,7 +663,7 @@ class ImportLegacyTask
         }
 
         // We need to set BOTH of these fields, otherwise the add/update method will set the
-        // last_update_date for us, and that would be ahead of the GR update date.
+        // last_update_date for us, and that would be ahead of the Goodreads update date.
         String now = DateUtils.utcSqlDateTimeForToday();
         bookData.putString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE, now);
         bookData.putString(DBDefinitions.KEY_DATE_LAST_UPDATED, now);

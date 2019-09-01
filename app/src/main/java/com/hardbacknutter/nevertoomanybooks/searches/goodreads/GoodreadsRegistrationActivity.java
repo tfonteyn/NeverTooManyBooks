@@ -84,7 +84,7 @@ public class GoodreadsRegistrationActivity
 
         setTitle(R.string.goodreads);
 
-        // GR Reg Link
+        // Goodreads Reg Link
         TextView register = findViewById(R.id.goodreads_url);
         register.setText(GoodreadsManager.WEBSITE);
         register.setOnClickListener(v -> startActivity(

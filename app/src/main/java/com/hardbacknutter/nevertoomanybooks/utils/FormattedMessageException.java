@@ -64,6 +64,7 @@ public abstract class FormattedMessageException
     /**
      * Use {@link #getLocalizedMessage(Context)} directly if possible.
      */
+    @NonNull
     public String getLocalizedMessage() {
         return getLocalizedMessage(App.getLocalizedAppContext());
     }

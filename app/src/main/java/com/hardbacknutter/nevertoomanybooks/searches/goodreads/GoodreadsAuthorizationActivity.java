@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,8 +54,7 @@ public class GoodreadsAuthorizationActivity
 
         if (uri != null) {
             // Goodreads does not set the verifier...but we may as well check for it.
-            // The verifier was added in API version 1.0A, and Goodreads seems to
-            // implement 1.0.
+            // The verifier was added in version 1.0A, and Goodreads seems to implement 1.0.
             //String verifier = uri.getQueryParameter("oauth_verifier");
 
             // Handle the auth response by passing it off to a background task to check.

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +49,11 @@ import androidx.fragment.app.Fragment;
 public class ZxingScanner
         implements Scanner {
 
-    public static final String ACTION = "com.google.zxing.client.android.SCAN";
+    static final String DISPLAY_NAME = "ZXing";
+
+    static final String MARKET_URL = "market://details?id=com.google.zxing.client.android";
+    static final String ACTION = "com.google.zxing.client.android.SCAN";
+
     private static final String PACKAGE = "com.google.zxing.client.android";
 
     private static final String SCAN_RESULT = "SCAN_RESULT";
@@ -61,18 +66,8 @@ public class ZxingScanner
      *
      * @param mustBeZxingPackage Set to {@code true} if the Zxing scanner app MUST be used
      */
-    ZxingScanner(final boolean mustBeZxingPackage) {
+    private ZxingScanner(final boolean mustBeZxingPackage) {
         mMustBeZxing = mustBeZxingPackage;
-    }
-
-    /**
-     * Check if we have a valid intent available.
-     *
-     * @return {@code true} if present
-     */
-    static boolean isIntentAvailable(@NonNull final Context context,
-                                     final boolean mustBeZxing) {
-        return isIntentAvailable(context, mustBeZxing ? PACKAGE : null);
     }
 
     /**
@@ -104,5 +99,35 @@ public class ZxingScanner
     @Override
     public String getBarcode(@NonNull final Intent data) {
         return data.getStringExtra(SCAN_RESULT);
+    }
+
+    static class ZxingScannerFactory
+            implements ScannerManager.ScannerFactory {
+
+        @NonNull
+        @Override
+        public Scanner newInstance() {
+            return new ZxingScanner(true);
+        }
+
+        @Override
+        public boolean isIntentAvailable(@NonNull final Context context) {
+            return ZxingScanner.isIntentAvailable(context, PACKAGE);
+        }
+    }
+
+    static class ZxingCompatibleScannerFactory
+            implements ScannerManager.ScannerFactory {
+
+        @NonNull
+        @Override
+        public Scanner newInstance() {
+            return new ZxingScanner(false);
+        }
+
+        @Override
+        public boolean isIntentAvailable(@NonNull final Context context) {
+            return ZxingScanner.isIntentAvailable(context, null);
+        }
     }
 }

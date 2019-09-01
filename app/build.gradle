@@ -34,7 +34,7 @@ apply plugin: 'com.android.application'
 //}
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     //  May 7, 2019.: https://developer.android.com/about/dashboards/
     //  A       API     %
@@ -50,7 +50,7 @@ android {
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
         minSdkVersion 23
-        targetSdkVersion 28
+        targetSdkVersion 29
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -123,7 +123,7 @@ dependencies {
     // OAuth for Goodreads secure access.
     implementation 'oauth.signpost:signpost-core:1.2.1.2'
     // Tar file support for backups
-    implementation 'org.apache.commons:commons-compress:1.18'
+    implementation 'org.apache.commons:commons-compress:1.19'
     implementation 'commons-codec:commons-codec:1.13'
 
     // jsoup HTML parser library @ https://jsoup.org/

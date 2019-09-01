@@ -47,6 +47,10 @@ import java.util.Arrays;
 public class Pic2ShopScanner
         implements Scanner {
 
+    static final String DISPLAY_NAME = "Pic2shop";
+
+    static final String MARKET_URL = "market://details?id=com.visionsmarts.pic2shop";
+
     /**
      * When a barcode is read, pic2shop returns Activity.RESULT_OK in
      * {@link Activity}#onActivityResult of the activity which requested the scan using
@@ -160,4 +164,19 @@ public class Pic2ShopScanner
 //            Logger.warnWithStackTrace(e, "Google Play not installed.");
 //        }
 //    }
+
+    static class Pic2ShopScannerFactory
+            implements ScannerManager.ScannerFactory {
+
+        @NonNull
+        @Override
+        public Scanner newInstance() {
+            return new Pic2ShopScanner();
+        }
+
+        @Override
+        public boolean isIntentAvailable(@NonNull final Context context) {
+            return Pic2ShopScanner.isIntentAvailable(context);
+        }
+    }
 }

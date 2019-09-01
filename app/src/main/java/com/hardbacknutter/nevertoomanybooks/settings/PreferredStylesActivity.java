@@ -184,7 +184,7 @@ public class PreferredStylesActivity
             .setIcon(R.drawable.ic_content_copy);
 
         String title = style.getLabel(this);
-        new MenuPicker<>(this, title, menu, style, this::onContextItemSelected)
+        new MenuPicker<>(this, title, null, false, menu, style, this::onContextItemSelected)
                 .show();
     }
 

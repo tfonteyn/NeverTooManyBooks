@@ -152,7 +152,7 @@ public class BooksOnBookshelfModel
                     }
 
                     // Save a flag to say list was loaded at least once successfully (or not)
-                    mListHasBeenLoaded = message.success;
+                    mListHasBeenLoaded = message.wasSuccessful;
 
                     if (mListHasBeenLoaded) {
                         // always copy modified fields.
@@ -709,8 +709,7 @@ public class BooksOnBookshelfModel
                 }
 
                 @Override
-                public void onTaskCancelled(@Nullable final Integer taskId,
-                                            @Nullable final Integer result) {
+                public void onTaskCancelled(@NonNull final TaskFinishedMessage<Integer> message) {
                     mUserMessage.setValue(R.string.progress_end_cancelled);
                 }
 

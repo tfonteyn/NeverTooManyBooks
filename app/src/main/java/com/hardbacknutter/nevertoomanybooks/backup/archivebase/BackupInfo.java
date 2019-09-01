@@ -126,8 +126,11 @@ public class BackupInfo {
         if (packageInfo != null) {
             infoBundle.putString(INFO_APP_PACKAGE, packageInfo.packageName);
             infoBundle.putString(INFO_APP_VERSION_NAME, packageInfo.versionName);
-            // versionCode deprecated and new method in API: 28, till then ignore...
-            infoBundle.putInt(INFO_APP_VERSION_CODE, packageInfo.versionCode);
+            if (Build.VERSION.SDK_INT >= 28) {
+                infoBundle.putLong(INFO_APP_VERSION_CODE, packageInfo.getLongVersionCode());
+            } else {
+                infoBundle.putLong(INFO_APP_VERSION_CODE, packageInfo.versionCode);
+            }
         }
         return new BackupInfo(infoBundle);
     }
@@ -163,8 +166,8 @@ public class BackupInfo {
         return mBundle.getString(INFO_APP_VERSION_NAME);
     }
 
-    public int getAppVersionCode() {
-        return mBundle.getInt(INFO_APP_VERSION_CODE);
+    public long getAppVersionCode() {
+        return mBundle.getLong(INFO_APP_VERSION_CODE);
     }
 
     /**
@@ -175,15 +178,11 @@ public class BackupInfo {
      */
     @SuppressWarnings("unused")
     public int getDatabaseVersionCode() {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (getAppVersionCode()) {
-            case 179:
-                // 5.2.2
-                return 82;
-
-            default:
-                return mBundle.getInt(INFO_DATABASE_VERSION, 0);
+        if (getAppVersionCode() == 179L) {
+            // 5.2.2
+            return 82;
         }
+        return mBundle.getInt(INFO_DATABASE_VERSION, 0);
     }
 
     @SuppressWarnings("unused")

@@ -205,10 +205,9 @@ public class DAO
     /**
      * Flag indicating the UPDATE_DATE field from the bundle should be trusted.
      * If this flag is not set, the UPDATE_DATE will be set based on the current time
-     * <p>
-     * Currently down to a single flag, but not switching to a boolean for now.
      */
-    public static final int BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT = 1;
+    public static final int BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT = 1;
+
     /**
      * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM),
      * Android supplies two more.
@@ -823,7 +822,7 @@ public class DAO
     /**
      * Creates a new {@link Author}.
      *
-     * @param author  object to insert. Will be updated with the id.
+     * @param author object to insert. Will be updated with the id.
      *
      * @return the row id of the newly inserted Author, or -1 if an error occurred
      */
@@ -1182,7 +1181,6 @@ public class DAO
                                 final boolean isNew) {
 
         Locale userLocale = LocaleUtils.getLocale(context);
-        Locale userLocale2 = Locale.getDefault();
         Locale bookLocale = book.getLocale(userLocale);
 
         // Handle AUTHOR. When is this needed? Legacy archive import ?
@@ -1609,7 +1607,6 @@ public class DAO
      *                only an Import should use this
      * @param book    A collection with the columns to be set. May contain extra data.
      *                The id will be updated.
-     *
      * @return the row id of the newly inserted row, or -1 if an error occurred
      */
     public long insertBook(@NonNull final Context context,
@@ -1689,7 +1686,7 @@ public class DAO
      * @param context Current context
      * @param bookId  of the book; takes precedence over the id of the book itself.
      * @param book    A collection with the columns to be set. May contain extra data.
-     * @param flags   See {@link #BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT} for flag definition
+     * @param flags   See {@link #BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT} for flag definition
      *
      * @return the number of rows affected, should be 1 for success.
      */
@@ -1727,7 +1724,7 @@ public class DAO
 
             // set the DOM_DATE_LAST_UPDATED to 'now' if we're allowed,
             // or if it's not present already.
-            if ((flags & BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT) == 0
+            if ((flags & BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT) == 0
                 || !cv.containsKey(DOM_DATE_LAST_UPDATED.name)) {
                 cv.put(DOM_DATE_LAST_UPDATED.name, DateUtils.utcSqlDateTimeForToday());
             }
@@ -3033,12 +3030,12 @@ public class DAO
     }
 
     /**
-     * Get a list of all user defined styles, arranged in a lookup map.
+     * Get a list of all user defined {@link BooklistStyle}, arranged in a lookup map.
      *
      * @return ordered map, with the uuid as key
      */
     @NonNull
-    public Map<String, BooklistStyle> getUserBooklistStyles() {
+    public Map<String, BooklistStyle> getUserStyles() {
         Map<String, BooklistStyle> list = new LinkedHashMap<>();
 
         String sql = SqlSelectFullTable.BOOKLIST_STYLES + " WHERE " + DOM_STYLE_IS_BUILTIN + "=0";
@@ -3058,13 +3055,13 @@ public class DAO
     }
 
     /**
-     * Get the id of a Style with matching UUID.
+     * Get the id of a {@link BooklistStyle} with matching UUID.
      *
      * @param uuid to find
      *
      * @return id
      */
-    public long getBooklistStyleIdByUuid(@NonNull final String uuid) {
+    public long getStyleIdByUuid(@NonNull final String uuid) {
         SynchronizedStatement stmt = mStatements.get(STMT_GET_BOOKLIST_STYLE);
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_BOOKLIST_STYLE, SqlGet.BOOKLIST_STYLE_ID_BY_UUID);
@@ -3078,14 +3075,13 @@ public class DAO
     }
 
     /**
-     * Create a new booklist style.
+     * Create a new {@link BooklistStyle}.
      *
      * @param style object to insert. Will be updated with the id.
      *
      * @return the row id of the last row inserted, if this insert is successful. -1 otherwise.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    public long insertBooklistStyle(@NonNull final BooklistStyle /* in/out */ style) {
+    public long insertStyle(@NonNull final BooklistStyle /* in/out */ style) {
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlInsert.BOOKLIST_STYLE)) {
             stmt.bindString(1, style.getUuid());
             stmt.bindLong(2, style.isUserDefined() ? 0 : 1);
@@ -3098,16 +3094,16 @@ public class DAO
     }
 
     /**
-     * Delete a style.
+     * Delete a {@link BooklistStyle}.
      *
-     * @param id of style to delete
+     * @param uuid of style to delete
      *
      * @return the number of rows affected
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int deleteBooklistStyle(final long id) {
-        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlDelete.STYLE_BY_ID)) {
-            stmt.bindLong(1, id);
+    public int deleteStyle(@NonNull final String uuid) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlDelete.STYLE_BY_UUID)) {
+            stmt.bindString(1, uuid);
             return stmt.executeUpdateDelete();
         }
     }
@@ -5171,10 +5167,10 @@ public class DAO
                 "DELETE FROM " + TBL_TOC_ENTRIES + " WHERE " + DOM_PK_ID + "=?";
 
         /**
-         * Delete a {@link BooklistStyle}.
+         * Delete a {@link BooklistStyle} by matching the UUID.
          */
-        static final String STYLE_BY_ID =
-                "DELETE FROM " + TBL_BOOKLIST_STYLES + " WHERE " + DOM_PK_ID + "=?";
+        static final String STYLE_BY_UUID =
+                "DELETE FROM " + TBL_BOOKLIST_STYLES + " WHERE " + DOM_UUID + "=?";
 
         /**
          * Delete the link between a {@link Book} and an {@link Author}.

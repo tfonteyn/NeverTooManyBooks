@@ -27,29 +27,32 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/DialogFrame"
     >
 
-    <CheckBox
-        android:id="@+id/cbx_books_csv"
-        style="@style/OptionRow.Checkable"
-        android:checked="true"
-        android:text="@string/import_export_option_csv"
+    <Button
+        android:id="@+id/date_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="&#8230;"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/txtDate"
+        app:layout_constraintTop_toBottomOf="@id/radio_buttons"
+        tools:ignore="HardcodedText"
+        tools:visibility="visible"
         />
 
     <CheckBox
         android:id="@+id/cbx_covers"
         style="@style/OptionRow.Checkable"
+        android:layout_width="0dp"
         android:checked="true"
         android:text="@string/lbl_cover_images"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbx_books_csv"
         />
@@ -57,9 +60,10 @@
     <CheckBox
         android:id="@+id/cbx_preferences"
         style="@style/OptionRow.Checkable"
+        android:layout_width="0dp"
         android:checked="true"
         android:text="@string/lbl_settings"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbx_covers"
         />
@@ -67,40 +71,38 @@
     <CheckBox
         android:id="@+id/cbx_xml_tables"
         style="@style/OptionRow.Checkable"
+        android:layout_width="0dp"
         android:checked="false"
         android:text="@string/import_export_option_xml"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbx_preferences"
         />
 
-    <TextView
-        android:id="@+id/cbx_xml_tables_info"
+    <CheckBox
+        android:id="@+id/cbx_books_csv"
+        style="@style/OptionRow.Checkable"
+        android:layout_width="0dp"
+        android:checked="true"
+        android:text="@string/import_export_option_csv"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <EditText
+        android:id="@+id/txtDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/indent_compound_button"
-        android:text="@string/import_export_option_xml_info"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_xml_tables"
-        />
-
-    <View
-        android:id="@+id/footer_divider"
-        style="@style/HorizontalDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_xml_tables_info"
-        />
-
-    <TextView
-        android:id="@+id/export_advanced_date_blurb"
-        style="@style/Blurb"
-        android:text="@string/export_option_info_books_since_date"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/footer_divider"
+        android:ems="10"
+        android:inputType="date"
+        android:visibility="gone"
+        app:layout_constraintBaseline_toBaselineOf="@id/date_button"
+        app:layout_constraintEnd_toStartOf="@id/date_button"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/radio_buttons"
+        tools:ignore="Autofill,LabelFor"
+        tools:visibility="visible"
         />
 
     <RadioGroup
@@ -108,8 +110,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/export_advanced_date_blurb"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
         >
 
         <RadioButton
@@ -139,32 +141,29 @@
             />
     </RadioGroup>
 
-    <EditText
-        android:id="@+id/txtDate"
+    <TextView
+        android:id="@+id/cbx_xml_tables_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_compound_button"
-        android:ems="10"
-        android:inputType="date"
-        android:visibility="gone"
-        app:layout_constraintBaseline_toBaselineOf="@id/date_button"
-        app:layout_constraintEnd_toStartOf="@id/date_button"
+        android:text="@string/import_export_option_xml_info"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/radio_buttons"
-        tools:ignore="Autofill,LabelFor"
-        tools:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/cbx_xml_tables"
         />
 
-    <Button
-        android:id="@+id/date_button"
+    <View
+        android:id="@+id/guideline"
+        style="@style/VerticalDivider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="&#8230;"
-        android:visibility="gone"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/txtDate"
-        app:layout_constraintTop_toBottomOf="@id/radio_buttons"
-        tools:ignore="HardcodedText"
-        tools:visibility="visible"
+        app:layout_constraintGuide_percent="0.45"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

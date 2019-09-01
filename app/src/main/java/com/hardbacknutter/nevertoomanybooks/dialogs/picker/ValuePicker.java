@@ -61,8 +61,8 @@ public class ValuePicker {
      * Constructor.
      *
      * @param context    Current context
-     * @param title      Dialog title
-     * @param message    Message to display at the top
+     * @param title      (optional) Dialog title
+     * @param message    (optional) Message to display at the top
      * @param showCancel set to {@code true} to show a 'cancel' button.
      */
     ValuePicker(@NonNull final Context context,

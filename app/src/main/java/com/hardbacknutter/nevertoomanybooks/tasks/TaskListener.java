@@ -61,19 +61,11 @@ public interface TaskListener<Result> {
     @UiThread
     void onTaskFinished(@NonNull final TaskFinishedMessage<Result> message);
 
-    /**
-     * Optional cancellation callback.
-     *
-     * @param taskId id for the task which was provided at construction time, or {@code null}
-     *               if the task was cancelled before it even started.
-     * @param result depends on the implementation, can be {@code null}
-     */
     @UiThread
-    default void onTaskCancelled(@Nullable Integer taskId,
-                                 Result result) {
+    default void onTaskCancelled(@NonNull final TaskFinishedMessage<Result> message) {
         // do nothing.
         if (BuildConfig.DEBUG /* always */) {
-            throw new IllegalStateException("taskId=" + taskId);
+            throw new IllegalStateException("must be implemented");
         }
     }
 
@@ -96,8 +88,9 @@ public interface TaskListener<Result> {
     class TaskFinishedMessage<Result> {
 
         public final int taskId;
-        public final boolean success;
         public final Result result;
+
+        public final boolean wasSuccessful;
         @Nullable
         public final Exception exception;
 
@@ -107,18 +100,18 @@ public interface TaskListener<Result> {
          * Note that 'success' only means the call itself was successful.
          * It usually still depends on the 'result' from the call what the next step should be.
          *
-         * @param taskId    ID for the task which was provided at construction time.
-         * @param success   {@code true} if the task finished successfully
-         * @param result    the result object from the {@link AsyncTask}.
-         *                  Nullable/NonNull is up to the implementation.
-         * @param exception if the task finished with an exception, or {@code null}.
+         * @param taskId        ID for the task which was provided at construction time.
+         * @param wasSuccessful {@code true} if the task finished successfully
+         * @param result        the result object from the {@link AsyncTask}.
+         *                      Nullable/NonNull is up to the implementation.
+         * @param exception     if the task finished with an exception, or {@code null}.
          */
         public TaskFinishedMessage(final int taskId,
-                                   final boolean success,
+                                   final boolean wasSuccessful,
                                    final Result result,
                                    @Nullable final Exception exception) {
             this.taskId = taskId;
-            this.success = success;
+            this.wasSuccessful = wasSuccessful;
             this.result = result;
             this.exception = exception;
         }
@@ -128,7 +121,55 @@ public interface TaskListener<Result> {
         public String toString() {
             return "TaskFinishedMessage{"
                    + "taskId=" + taskId
-                   + ", success=" + success
+                   + ", success=" + wasSuccessful
+                   + ", result=" + result
+                   + ", exception=" + exception
+                   + '}';
+        }
+    }
+
+    /**
+     * Value class holding task-cancelled values.
+     *
+     * @param <Result> type of the actual result of the task.
+     */
+    class TaskCancelledMessage<Result> {
+
+        public final int taskId;
+        public final Result result;
+
+        public final boolean wasSuccessful;
+        @Nullable
+        public final Exception exception;
+
+        /**
+         * Constructor.
+         * <p>
+         * Note that 'success' only means the call itself was successful.
+         * It usually still depends on the 'result' from the call what the next step should be.
+         *
+         * @param taskId        ID for the task which was provided at construction time.
+         * @param wasSuccessful {@code true} if the task finished successfully
+         * @param result        the result object from the {@link AsyncTask}.
+         *                      Nullable/NonNull is up to the implementation.
+         * @param exception     if the task finished with an exception, or {@code null}.
+         */
+        public TaskCancelledMessage(final int taskId,
+                                    final boolean wasSuccessful,
+                                    final Result result,
+                                    @Nullable final Exception exception) {
+            this.taskId = taskId;
+            this.wasSuccessful = wasSuccessful;
+            this.result = result;
+            this.exception = exception;
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "TaskFinishedMessage{"
+                   + "taskId=" + taskId
+                   + ", success=" + wasSuccessful
                    + ", result=" + result
                    + ", exception=" + exception
                    + '}';

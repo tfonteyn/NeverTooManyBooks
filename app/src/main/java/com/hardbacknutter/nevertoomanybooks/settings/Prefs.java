@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.IntRange;
@@ -48,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -76,11 +76,9 @@ public final class Prefs {
 
     public static final String pk_network_mobile_data = "network.mobile_data";
 
-    public static final String pk_scanning_preferred_scanner = "ScannerManager.PreferredScanner";
-    public static final String pk_scanning_beep_if_valid =
-            "SoundManager.BeepIfScannedIsbnValid";
-    public static final String pk_scanning_beep_if_invalid =
-            "SoundManager.BeepIfScannedIsbnInvalid";
+    public static final String pk_scanner_preferred = "ScannerManager.PreferredScanner";
+    public static final String pk_scanner_beep_if_valid = "SoundManager.BeepIfScannedIsbnValid";
+    public static final String pk_scanner_beep_if_invalid = "SoundManager.BeepIfScannedIsbnInvalid";
 
     public static final String pk_reformat_titles_on_insert = "title.reformat.insert";
     public static final String pk_reformat_titles_on_update = "title.reformat.update";
@@ -230,8 +228,11 @@ public final class Prefs {
         }
         ed.apply();
         if (clearSource) {
-            // API: 24 -> context.deleteSharedPreferences(source);
-            sourcePrefs.edit().clear().apply();
+            if (Build.VERSION.SDK_INT >= 24) {
+                context.deleteSharedPreferences(source);
+            } else {
+                sourcePrefs.edit().clear().apply();
+            }
         }
     }
 
@@ -275,8 +276,11 @@ public final class Prefs {
 
         Map<String, ?> oldMap = oldPrefs.getAll();
         if (oldMap.isEmpty()) {
-            // API: 24 -> context.deleteSharedPreferences(name);
-            oldPrefs.edit().clear().apply();
+            if (Build.VERSION.SDK_INT >= 24) {
+                context.deleteSharedPreferences(name);
+            } else {
+                oldPrefs.edit().clear().apply();
+            }
             return;
         }
 
@@ -359,13 +363,13 @@ public final class Prefs {
                         int scanner = (Integer) oldValue;
                         switch (scanner) {
                             case 1:
-                                scanner = ScannerManager.SCANNER_ZXING_COMPATIBLE;
+                                scanner = ScannerManager.ZXING_COMPATIBLE;
                                 break;
                             case 2:
-                                scanner = ScannerManager.SCANNER_PIC2SHOP;
+                                scanner = ScannerManager.PIC2SHOP;
                                 break;
                             case 3:
-                                scanner = ScannerManager.SCANNER_ZXING;
+                                scanner = ScannerManager.ZXING;
                                 break;
                             default:
                                 break;
@@ -484,8 +488,8 @@ public final class Prefs {
                     case "BooksOnBookshelf.LIST_STYLE":
                         String e = (String) oldValue;
                         styleName = e.substring(0, e.length() - 2);
-                        ed.putString(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
-                                     BooklistStyles.getStyle(context, styleName).getUuid());
+                        ed.putString(BooklistStyle.PREF_BL_STYLE_CURRENT_DEFAULT,
+                                     BooklistStyle.getStyle(context, styleName).getUuid());
                         break;
 
                     case "BooklistStyles.Menu.Items":
@@ -494,9 +498,9 @@ public final class Prefs {
                         String[] styles = ((String) oldValue).split(",");
                         for (String style : styles) {
                             styleName = style.substring(0, style.length() - 2);
-                            uuidSet.add(BooklistStyles.getStyle(context, styleName).getUuid());
+                            uuidSet.add(BooklistStyle.getStyle(context, styleName).getUuid());
                         }
-                        ed.putString(BooklistStyles.PREF_BL_PREFERRED_STYLES,
+                        ed.putString(BooklistStyle.PREF_BL_PREFERRED_STYLES,
                                      TextUtils.join(",", uuidSet));
                         break;
 
@@ -578,8 +582,11 @@ public final class Prefs {
         }
         ed.apply();
 
-        // API: 24 -> context.deleteSharedPreferences(name);
-        oldPrefs.edit().clear().apply();
+        if (Build.VERSION.SDK_INT >= 24) {
+            context.deleteSharedPreferences(name);
+        } else {
+            oldPrefs.edit().clear().apply();
+        }
     }
 
 }

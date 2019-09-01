@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -50,7 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * <p>
  * This extends the internally used #fromString(String) constructor.
  *
- * <strong>Note:</strong> In the format definition, the " * {json}" suffix is optional and can be missing.
+ * <strong>Note:</strong> In the format definition, the " * {json}" suffix is optional
+ * and can be missing.
  */
 final class CsvCoder {
 
@@ -317,7 +318,7 @@ final class CsvCoder {
                     // the right thing to do would be: get a database, then get the 'real'
                     // default style. As this is a lot of overkill for importing,
                     // we're just using the builtin default.
-                    return new Bookshelf(name, BooklistStyles.DEFAULT_STYLE);
+                    return new Bookshelf(name, BooklistStyle.Builtin.DEFAULT);
                 }
 
                 @NonNull

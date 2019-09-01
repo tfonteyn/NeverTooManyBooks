@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -157,7 +156,8 @@ public class StylePickerDialogFragment
     private void loadStyles() {
         try (DAO db = new DAO()) {
             mBooklistStyles.clear();
-            mBooklistStyles.addAll(BooklistStyles.getStyles(db, mShowAllStyles).values());
+            mBooklistStyles.addAll(
+                    BooklistStyle.Helper.getStyles(db, mShowAllStyles).values());
         }
     }
 

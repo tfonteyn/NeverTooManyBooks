@@ -98,8 +98,8 @@ public class AdminFragment
     /** ViewModel for task control. */
     private IntegerTaskModel mModel;
 
-    private void onTaskCancelledMessage(@SuppressWarnings("unused")
-                                        @Nullable final Integer taskId) {
+    private void onTaskCancelledMessage(
+            @SuppressWarnings("unused") @NonNull final TaskFinishedMessage<Integer> message) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
@@ -124,7 +124,7 @@ public class AdminFragment
 
         switch (message.taskId) {
             case R.id.TASK_ID_CSV_EXPORT:
-                if (message.success) {
+                if (message.wasSuccessful) {
                     onExportFinished();
                 } else if (message.exception != null) {
                     UserMessage.show(view, message.exception.getLocalizedMessage());
@@ -132,7 +132,7 @@ public class AdminFragment
                 break;
 
             case R.id.TASK_ID_CSV_IMPORT:
-                if (!message.success) {
+                if (!message.wasSuccessful) {
                     String msg;
                     if (message.exception instanceof FormattedMessageException) {
                         //noinspection ConstantConditions

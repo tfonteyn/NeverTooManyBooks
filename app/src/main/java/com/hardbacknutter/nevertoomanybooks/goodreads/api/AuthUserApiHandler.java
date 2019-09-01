@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
 /**
- * API handler for the "auth.user" call. Just gets the current user details.
+ * Handler for the "auth.user" call. Just gets the current user details.
  * <p>
  * <a href="https://www.goodreads.com/api/index#auth.user">
  * https://www.goodreads.com/api/index#auth.user</a>
@@ -69,7 +70,7 @@ public class AuthUserApiHandler
     }
 
     /**
-     * Call the API.
+     * Retrieve the user id.
      *
      * @return Resulting User ID, 0 if error/none.
      */

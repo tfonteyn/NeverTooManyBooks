@@ -59,9 +59,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 
 /**
- * Base class for all Goodreads API handler classes.
+ * Base class for all Goodreads handler classes.
  * <p>
- * The job of an API handler is to implement a method to run the API (e.g. 'search' in
+ * The job of  handler is to implement a method to run the Goodreads request (e.g. 'search' in
  * {@link SearchBooksApiHandler} and to process the output.
  */
 abstract class ApiHandlerNative {

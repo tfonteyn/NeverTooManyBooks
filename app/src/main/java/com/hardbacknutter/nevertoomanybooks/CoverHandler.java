@@ -242,7 +242,8 @@ public class CoverHandler {
             .setIcon(R.drawable.ic_crop);
 
         String title = mContext.getString(R.string.title_cover);
-        new MenuPicker<>(mContext, title, menu, R.id.coverImage, this::onViewContextItemSelected)
+        new MenuPicker<>(mContext, title, null, false, menu, R.id.coverImage,
+                         this::onViewContextItemSelected)
                 .show();
     }
 

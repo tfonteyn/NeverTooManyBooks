@@ -142,10 +142,12 @@ public abstract class BaseActivity
     protected void onResume() {
         super.onResume();
 
-        if (App.isInNeedOfRecreating()
-            || LocaleUtils.isChanged(mInitialLocaleSpec)
-            || App.isThemeChanged(mInitialThemeId)) {
-            // child classes can call App.isRecreating(); after this parent onResume returns.
+        boolean localeChanged = LocaleUtils.isChanged(mInitialLocaleSpec);
+        if (localeChanged) {
+            LocaleUtils.onLocaleChanged();
+        }
+
+        if (App.isInNeedOfRecreating() || App.isThemeChanged(mInitialThemeId) || localeChanged) {
             App.setIsRecreating();
             recreate();
 

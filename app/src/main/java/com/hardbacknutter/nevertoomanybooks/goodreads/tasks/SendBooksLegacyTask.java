@@ -97,7 +97,7 @@ class SendBooksLegacyTask
             return R.string.gr_tq_import_task_is_already_queued;
         }
 
-        // Make sure GR is authorized for this app
+        // Make sure Goodreads is authorized for this app
         if (grManager.hasValidCredentials()) {
             return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZED;
         } else {

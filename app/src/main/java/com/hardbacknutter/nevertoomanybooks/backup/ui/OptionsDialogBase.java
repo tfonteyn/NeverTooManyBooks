@@ -27,7 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.ui;
 
+import android.app.Dialog;
+import android.content.res.Configuration;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
@@ -116,6 +119,22 @@ public abstract class OptionsDialogBase
     }
 
     protected abstract void updateOptions();
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        //FIXME: large screens will look bad
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Dialog dialog = getDialog();
+            if (dialog != null) {
+                int width = ViewGroup.LayoutParams.MATCH_PARENT;
+                int height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                //noinspection ConstantConditions
+                dialog.getWindow().setLayout(width, height);
+            }
+        }
+    }
 
     @Override
     public void onPause() {

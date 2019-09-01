@@ -122,6 +122,15 @@ public class BackupActivity
         mFilenameView.setText(file.getName());
     }
 
+    protected void onTaskCancelledMessage(@SuppressWarnings("unused")
+                                          @NonNull
+                                          final TaskListener.TaskFinishedMessage<ExportOptions> message) {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
+        UserMessage.show(this, R.string.progress_end_cancelled);
+    }
+
     private void onTaskFinishedMessage(
             final TaskListener.TaskFinishedMessage<ExportOptions> message) {
 
@@ -132,7 +141,7 @@ public class BackupActivity
         //noinspection SwitchStatementWithTooFewBranches
         switch (message.taskId) {
             case R.id.TASK_ID_WRITE_TO_ARCHIVE:
-                if (message.success) {
+                if (message.wasSuccessful) {
                     File file = mOptionsModel.getFile();
                     //noinspection ConstantConditions
                     String msg = getString(R.string.export_info_success_archive_details,

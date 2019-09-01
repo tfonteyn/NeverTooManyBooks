@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -115,13 +116,17 @@ public final class UpgradeMessageManager {
     /**
      * Reads the application version from the manifest.
      *
-     * @return the versionCode.
+     * @return the version
      */
     private static long getVersion() {
-        // versionCode deprecated and new method in API: 28, till then ignore...
         PackageInfo packageInfo = App.getPackageInfo(0);
         if (packageInfo != null) {
-            return (long) packageInfo.versionCode;
+            if (Build.VERSION.SDK_INT >= 28) {
+                return packageInfo.getLongVersionCode();
+            } else {
+                //noinspection deprecation
+                return (long) packageInfo.versionCode;
+            }
         }
         return 0;
     }

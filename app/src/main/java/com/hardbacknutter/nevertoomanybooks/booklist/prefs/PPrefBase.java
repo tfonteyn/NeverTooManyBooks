@@ -91,7 +91,8 @@ public abstract class PPrefBase<T>
     /**
      * for single pref updated.
      * <p>
-     * Stores the value as a String
+     * Stores the value as a String.
+     * {@code null} causes the value to be removed.
      */
     @Override
     public void set(@Nullable final T value) {
@@ -108,6 +109,7 @@ public abstract class PPrefBase<T>
      * for batch updates. Can also be used for setting globals.
      * <p>
      * Stores the value as a String by default. Override if you need another type.
+     * {@code null} causes the value to be removed.
      */
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,

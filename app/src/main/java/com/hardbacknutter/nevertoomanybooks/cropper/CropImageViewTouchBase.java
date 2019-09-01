@@ -208,11 +208,6 @@ public abstract class CropImageViewTouchBase
     private void setImageBitmap(@Nullable final Bitmap bitmap,
                                 final int rotation) {
         super.setImageBitmap(bitmap);
-        // deprecated since API 23:
-//        Drawable d = getDrawable();
-//        if (d != null) {
-//            d.setDither(true);
-//        }
 
         Bitmap old = mBitmapDisplayed.getBitmap();
         mBitmapDisplayed.setBitmap(bitmap);

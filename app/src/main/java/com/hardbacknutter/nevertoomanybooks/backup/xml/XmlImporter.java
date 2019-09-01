@@ -70,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCollection;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt;
@@ -979,11 +978,11 @@ public class XmlImporter
             }
             // add to the menu of preferred styles if needed.
             if (mStyle.isPreferred()) {
-                BooklistStyles.addPreferredStyle(mStyle);
+                BooklistStyle.Helper.addPreferredStyle(mStyle);
             }
 
             // the prefs are written on the fly, but we still need the db entry saved.
-            mStyle.save(mDb);
+            mStyle.insert(mDb);
         }
 
         @Override

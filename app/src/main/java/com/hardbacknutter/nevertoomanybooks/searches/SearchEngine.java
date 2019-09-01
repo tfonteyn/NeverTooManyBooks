@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
- * The API a search engine for a site needs to implement.
+ * The interface a search engine for a site needs to implement.
  */
 public interface SearchEngine {
 

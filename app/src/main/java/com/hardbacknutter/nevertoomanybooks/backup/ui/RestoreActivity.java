@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.backup.BackupManager;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.Importer;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.RestoreTask;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
@@ -119,71 +120,115 @@ public class RestoreActivity
                 .show();
     }
 
+    private void onTaskCancelledMessage(
+            @NonNull final TaskListener.TaskFinishedMessage<ImportOptions> message) {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
+
+        if (message.taskId == R.id.TASK_ID_READ_FROM_ARCHIVE) {
+            if (message.wasSuccessful) {
+                // see if there are any pre-200 preferences that need migrating.
+                if ((message.result.what & ImportOptions.PREFERENCES) != 0) {
+                    Prefs.migratePreV200preferences(this, Prefs.PREF_LEGACY_BOOK_CATALOGUE);
+                }
+
+                String reportMsg = getString(R.string.progress_end_import_partially_complete)
+                                   + createImportReport(message.result.what,
+                                                        message.result.results);
+                reportResults(reportMsg, message.result.what);
+            } else {
+                reportFailure();
+            }
+        } else {
+            Logger.warnWithStackTrace(this, "taskId=" + message.taskId);
+        }
+    }
+
     private void onTaskFinishedMessage(
             @NonNull final TaskListener.TaskFinishedMessage<ImportOptions> message) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (message.taskId) {
-            case R.id.TASK_ID_READ_FROM_ARCHIVE:
-                if (message.success) {
-                    // see if there are any pre-200 preferences that need migrating.
-                    if ((message.result.what & ImportOptions.PREFERENCES) != 0) {
-                        Prefs.migratePreV200preferences(this,
-                                                        Prefs.PREF_LEGACY_BOOK_CATALOGUE);
-                    }
-                    String importMsg;
-                    if (message.result.results != null) {
-                        importMsg = '\n'
-                                    + getString(R.string.progress_msg_n_created_m_updated,
-                                                message.result.results.booksCreated,
-                                                message.result.results.booksUpdated);
-                        if (message.result.results.booksFailed > 0) {
-                            importMsg += '\n'
-                                         + getString(R.string.error_failed_x,
-                                                     message.result.results.booksFailed);
-                        }
-                        importMsg += '\n'
-                                     + getString(R.string.progress_msg_covers_handled,
-                                                 message.result.results.coversImported);
-                    } else {
-                        importMsg = getString(R.string.progress_end_import_complete);
-                    }
 
-                    new AlertDialog.Builder(RestoreActivity.this)
-                            .setTitle(R.string.lbl_import_from_archive)
-                            .setMessage(importMsg)
-                            .setPositiveButton(android.R.string.ok, (d, which) -> {
-                                d.dismiss();
-                                Intent data = new Intent().putExtra(
-                                        UniqueId.BKEY_IMPORT_RESULT,
-                                        message.result.what);
-                                setResult(Activity.RESULT_OK, data);
-                                finish();
-                            })
-                            .create()
-                            .show();
-                } else {
-                    String msg = getString(R.string.error_import_failed)
-                                 + ' ' + getString(R.string.error_storage_not_readable)
-                                 + "\n\n"
-                                 + getString(R.string.error_if_the_problem_persists);
-
-                    new AlertDialog.Builder(RestoreActivity.this)
-                            .setTitle(R.string.lbl_import_from_archive)
-                            .setMessage(msg)
-                            .setPositiveButton(android.R.string.ok,
-                                               (d, which) -> d.dismiss())
-                            .create()
-                            .show();
+        if (message.taskId == R.id.TASK_ID_READ_FROM_ARCHIVE) {
+            if (message.wasSuccessful) {
+                // see if there are any pre-200 preferences that need migrating.
+                if ((message.result.what & ImportOptions.PREFERENCES) != 0) {
+                    Prefs.migratePreV200preferences(this, Prefs.PREF_LEGACY_BOOK_CATALOGUE);
                 }
-                break;
-
-            default:
-                Logger.warnWithStackTrace(this, "taskId=" + message.taskId);
-                break;
+                String reportMsg = getString(R.string.progress_end_import_complete)
+                                   + createImportReport(message.result.what,
+                                                        message.result.results);
+                reportResults(reportMsg, message.result.what);
+            } else {
+                reportFailure();
+            }
+        } else {
+            Logger.warnWithStackTrace(this, "taskId=" + message.taskId);
         }
+    }
+
+    /**
+     * Transform the result data into a user friendly report.
+     */
+    private String createImportReport(final int what,
+                                      @Nullable final Importer.Results results) {
+        StringBuilder msg = new StringBuilder("\n");
+
+        if (results != null) {
+            msg.append(getString(R.string.progress_msg_n_created_m_updated,
+                                 results.booksCreated, results.booksUpdated)).append("\n");
+
+            if (results.booksFailed > 0) {
+                msg.append(getString(R.string.error_failed_x, results.booksFailed)).append("\n");
+            }
+
+            msg.append(getString(R.string.progress_msg_covers_handled, results.coversImported));
+        }
+        if ((what & Options.PREFERENCES) != 0) {
+            msg.append("\n").append(getString(R.string.lbl_settings));
+        }
+        if ((what & Options.BOOK_LIST_STYLES) != 0) {
+            msg.append("\n").append(getString(R.string.lbl_styles));
+        }
+        return msg.toString();
+    }
+
+    /**
+     * All's well that end's well.
+     * <p>
+     * Finish the activity after the user confirms. We return the 'what' result.
+     */
+    private void reportResults(@NonNull final String message,
+                               final int what) {
+        new AlertDialog.Builder(RestoreActivity.this)
+                .setTitle(R.string.lbl_import_from_archive)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    d.dismiss();
+                    Intent data = new Intent().putExtra(UniqueId.BKEY_IMPORT_RESULT, what);
+                    setResult(Activity.RESULT_OK, data);
+                    finish();
+                })
+                .create()
+                .show();
+    }
+
+    /**
+     * It all went horribly wrong.
+     */
+    private void reportFailure() {
+        String msg = getString(R.string.error_import_failed)
+                     + ' ' + getString(R.string.error_storage_not_readable) + "\n\n"
+                     + getString(R.string.error_if_the_problem_persists);
+
+        new AlertDialog.Builder(RestoreActivity.this)
+                .setTitle(R.string.lbl_import_from_archive)
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.ok, (d, which) -> d.dismiss())
+                .create()
+                .show();
     }
 
     @Override

@@ -33,7 +33,6 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
 public class PreferredStylesViewModel
@@ -59,7 +58,7 @@ public class PreferredStylesViewModel
     public void init() {
         if (mDb == null) {
             mDb = new DAO();
-            mList = new ArrayList<>(BooklistStyles.getStyles(mDb, true).values());
+            mList = new ArrayList<>(BooklistStyle.Helper.getStyles(mDb, true).values());
         }
     }
 
@@ -116,7 +115,7 @@ public class PreferredStylesViewModel
 
         // add to the db if the style is a new one.
         if (style.getId() == 0) {
-            mDb.insertBooklistStyle(style);
+            style.insert(mDb);
         }
     }
 
@@ -126,6 +125,6 @@ public class PreferredStylesViewModel
     }
 
     public void saveMenuOrder() {
-        BooklistStyles.savePreferredStyleMenuOrder(mList);
+        BooklistStyle.Helper.saveMenuOrder(mList);
     }
 }

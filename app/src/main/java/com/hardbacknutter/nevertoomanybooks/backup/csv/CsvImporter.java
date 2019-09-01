@@ -394,7 +394,7 @@ public class CsvImporter
         if (exists) {
             if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bids.bookId)) {
                 int rowsAffected = mDb.updateBook(context, bids.bookId, book,
-                                                  DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                                                  DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                 if (rowsAffected == 1) {
                     mResults.booksUpdated++;
                 } else {

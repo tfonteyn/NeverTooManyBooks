@@ -28,7 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
 /**
- * Tag names for the Goodreads API.
+ * Tag names for the Goodreads responses.
  */
 final class XmlTags {
 

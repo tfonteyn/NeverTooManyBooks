@@ -174,7 +174,7 @@ public class StyleSettingsFragment
         List<String> labels;
 
         // the 'extra' fields in use.
-        preference = findPreference(getString(R.string.pg_bob_extra_book_details));
+        preference = findPreference(getString(R.string.pg_bob_show_details));
         if (preference != null) {
             labels = getExtraFieldsLabels();
             if (labels.isEmpty()) {
@@ -234,7 +234,7 @@ public class StyleSettingsFragment
 
         List<String> labels = new ArrayList<>();
         if ((extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
-            labels.add(getString(R.string.pt_bob_show_thumbnails));
+            labels.add(getString(R.string.pt_bob_thumbnails_show));
         }
         if ((extraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
             labels.add(getString(R.string.lbl_bookshelves));

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ @Copyright 2019 HardBackNutter
   ~ @License GNU General Public License
   ~
@@ -28,10 +27,8 @@
   -->
 
 <paths>
-    <!-- must stay in sync with utils/StorageUtils.java -->
-    <external-path name="external" path="./NeverTooManyBooks/"/>
-    <!-- legacy path -->
+    <!-- 'path' attribute must stay in sync with utils/StorageUtils.java#EXT_ROOT_DIR -->
     <external-path
-        name="external"
-        path="./bookCatalogue/" />
+        name="share"
+        path="./NeverTooManyBooks/" />
 </paths>

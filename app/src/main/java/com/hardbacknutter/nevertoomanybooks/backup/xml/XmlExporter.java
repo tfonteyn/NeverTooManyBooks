@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -813,7 +812,7 @@ public class XmlExporter
     private int doStyles2(@NonNull final BufferedWriter out,
                           @NonNull final ProgressListener listener)
             throws IOException {
-        Collection<BooklistStyle> styles = BooklistStyles.getUserStyles(mDb).values();
+        Collection<BooklistStyle> styles = BooklistStyle.Helper.getUserStyles(mDb).values();
         if (styles.isEmpty()) {
             return 0;
         }
@@ -877,7 +876,7 @@ public class XmlExporter
     public int doStyles(@NonNull final BufferedWriter out,
                         @NonNull final ProgressListener listener)
             throws IOException {
-        Collection<BooklistStyle> styles = BooklistStyles.getUserStyles(mDb).values();
+        Collection<BooklistStyle> styles = BooklistStyle.Helper.getUserStyles(mDb).values();
         if (styles.isEmpty()) {
             return 0;
         }

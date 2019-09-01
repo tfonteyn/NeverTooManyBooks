@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.IndexDefinition;
@@ -181,14 +181,14 @@ public final class DBHelper
                 // 1==true
                 + ") VALUES(?,1,?)";
         try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
-            for (int id = BooklistStyles.BUILTIN_MAX_ID; id < 0; id++) {
+            for (int id = BooklistStyle.Builtin.MAX_ID; id < 0; id++) {
                 stmt.bindLong(1, id);
-                stmt.bindString(2, BooklistStyles.ID_UUID[-id]);
+                stmt.bindString(2, BooklistStyle.Builtin.ID_UUID[-id]);
 
                 // oops... after inserting '-1' our debug logging will claim that insert failed.
                 if (BuildConfig.DEBUG /* always */) {
                     if (id == -1) {
-                        Logger.debug(BooklistStyles.class, "prepareStylesTable",
+                        Logger.debug(BooklistStyle.Helper.class, "prepareStylesTable",
                                      "Ignore the debug message about inserting -1 here...");
                     }
                 }
@@ -252,7 +252,7 @@ public final class DBHelper
                          + ',' + DOM_FK_STYLE_ID
                          + ") VALUES ("
                          + "'" + App.getLocalizedAppContext().getString(R.string.bookshelf_my_books)
-                         + "'," + BooklistStyles.DEFAULT_STYLE_ID
+                         + "'," + BooklistStyle.DEFAULT_STYLE_ID
                          + ')');
 
         //reminder: FTS columns don't need a type nor constraints

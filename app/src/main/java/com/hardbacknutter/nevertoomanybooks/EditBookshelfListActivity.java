@@ -50,7 +50,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
@@ -101,7 +101,7 @@ public class EditBookshelfListActivity
 
         findViewById(R.id.fab).setOnClickListener(
                 v -> editItem(new Bookshelf("",
-                                            BooklistStyles.getDefaultStyle(mDb))));
+                                            BooklistStyle.getDefaultStyle(mDb))));
 
         RecyclerView listView = findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -130,7 +130,7 @@ public class EditBookshelfListActivity
             .setIcon(R.drawable.ic_delete);
 
         String title = bookshelf.getName();
-        new MenuPicker<>(this, title, menu, bookshelf, this::onContextItemSelected)
+        new MenuPicker<>(this, title, null, false, menu, bookshelf, this::onContextItemSelected)
                 .show();
     }
 

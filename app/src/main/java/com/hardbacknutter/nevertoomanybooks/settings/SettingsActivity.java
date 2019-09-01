@@ -173,6 +173,7 @@ public class SettingsActivity
 
             case Prefs.pk_ui_language:
                 if (LocaleUtils.isChanged(mInitialLocaleSpec)) {
+                    LocaleUtils.onLocaleChanged();
                     App.setIsRecreating();
                     recreate();
                 }

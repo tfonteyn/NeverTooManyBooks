@@ -31,30 +31,30 @@
 
     <string name="new_in_600"><![CDATA[
         <p><b>New in 6.0.0</b>\n
-            * Modernisation to Android 5.0 bringing lots of new UI goodies.\n
-            * Updated & added more translations (some languages still require work.)
+            * Modernisation to Android 6 (Marshmallow) bringing lots of new UI goodies.\n
+            * Generally more consistent in usage and layout.
+            * UI translations 99\% complete.\n
             * Cover thumbnails and log files moved to dedicated sub folders.\n
             * Configurable search-websites.\n
-            * New Search website: ISFDB.\n
             * Better Anthology support (Edit/View/cross-book) and morphed into “Table of Content” or “TOC”\n
+            * New Search website: ISFDB.\n
             * TOC auto populated (ISFDB site only!).\n
             * List of all works of an author.\n
             * Reformatting of titles configurable.\n
             * Language field shows the translated name in the current locale.\n
-            * More local support in general (formatting etc.)
+            * More Locale support in general (formatting etc.)
             * Books & Anthology/TOC titles now have a “first published” field.\n
+            * Book Formats standardization.\n
             * Book Editions (1st, book-club, etc).\n
             * Book paid price.\n
             * Book date acquired.\n
             * Book pages is now alphanumeric\n
             * Currency support for prices.\n
-            * Styles now exported/imported in XML format.\n
+            * Styles exported/imported in XML format.\n
             * Export of all tables can also be done in XML (no import yet).\n
-            * Better support for rotating the screen.\n
-            * LibraryThing & ISFDB local id for future usage.\n
-            * UI translations 99\% complete.\n
-            * Experimental: New Search website: OpenLibrary\n
-            * Removed: Database upgrades only supported from version 5.2.2 or later.\n
+            * Full support for rotating the screen.\n
+            * External site id usage for direct identification & links.\n
+            * Experimental: New Search website: OpenLibrary, KBNL\n
             * Removed: The old “Classic” view is gone.\n
             * Bug fixes\n
         </p>]]>

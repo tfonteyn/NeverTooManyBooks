@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvExporter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlExporter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -254,7 +253,7 @@ public abstract class BackupWriterAbstract
 
     private void doStyles()
             throws IOException {
-        Map<String, BooklistStyle> bsMap = BooklistStyles.getUserStyles(mDb);
+        Map<String, BooklistStyle> bsMap = BooklistStyle.Helper.getUserStyles(mDb);
         if (!bsMap.isEmpty()) {
             // Turn the styles into an XML file in a byte array
             ByteArrayOutputStream data = new ByteArrayOutputStream();

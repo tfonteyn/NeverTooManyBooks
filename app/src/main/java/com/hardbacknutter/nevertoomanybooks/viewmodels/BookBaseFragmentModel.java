@@ -359,8 +359,7 @@ public class BookBaseFragmentModel
                 }
 
                 @Override
-                public void onTaskCancelled(@Nullable final Integer taskId,
-                                            @Nullable final Integer result) {
+                public void onTaskCancelled(@NonNull final TaskFinishedMessage<Integer> message) {
                     mUserMessage.setValue(R.string.progress_end_cancelled);
                 }
 

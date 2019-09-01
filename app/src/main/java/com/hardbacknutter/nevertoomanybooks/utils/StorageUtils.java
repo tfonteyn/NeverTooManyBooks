@@ -94,7 +94,6 @@ public final class StorageUtils {
      * IMPORTANT: this must stay in sync with res/xml/provider_paths.xml
      */
     private static final String EXT_ROOT_DIR = "NeverTooManyBooks";
-    //private static final String EXT_ROOT_DIR = "bookCatalogue";
 
     /**
      * Filenames *STARTING* with this prefix are considered purgeable.

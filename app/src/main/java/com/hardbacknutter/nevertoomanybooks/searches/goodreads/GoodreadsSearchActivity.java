@@ -207,10 +207,10 @@ public class GoodreadsSearchActivity
     /**
      * Handle user clicking on a book.
      * This should show editions and allow the user to select a specific edition.
-     * ENHANCE: Implement edition lookup - requires access to work.editions API from GR
+     * ENHANCE: Implement edition lookup - requires access to work.editions from Goodreads
      */
     private void onWorkSelected(@NonNull final GoodreadsWork work) {
-        String msg = "Not implemented: requires access to work.editions API from GR";
+        String msg = "Not implemented: requires access to work.editions from Goodreads";
         UserMessage.show(mListView, msg);
     }
 

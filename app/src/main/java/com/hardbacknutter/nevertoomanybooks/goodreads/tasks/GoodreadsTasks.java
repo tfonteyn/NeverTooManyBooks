@@ -80,7 +80,7 @@ public final class GoodreadsTasks {
             // caller should ask to register
             return null;
 
-        } else if (message.success) {
+        } else if (message.wasSuccessful) {
             // authenticated fine, just show info results.
             return context.getString(message.result);
 

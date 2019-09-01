@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,11 +54,15 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessa
 public abstract class TaskModel<Result>
         extends ViewModel {
 
-    private final MutableLiveData<Integer> mTaskCancelledMessage = new MutableLiveData<>();
-    private final MutableLiveData<TaskProgressMessage>
-            mTaskProgressMessage = new MutableLiveData<>();
+    private final MutableLiveData<TaskFinishedMessage<Result>>
+            mTaskCancelledMessage = new MutableLiveData<>();
+
     private final MutableLiveData<TaskFinishedMessage<Result>>
             mTaskFinishedMessage = new MutableLiveData<>();
+
+    private final MutableLiveData<TaskProgressMessage>
+            mTaskProgressMessage = new MutableLiveData<>();
+
     private final TaskListener<Result> mTaskListener = new TaskListener<Result>() {
         @Override
         public void onTaskFinished(@NonNull final TaskFinishedMessage<Result> message) {
@@ -65,9 +70,8 @@ public abstract class TaskModel<Result>
         }
 
         @Override
-        public void onTaskCancelled(@Nullable final Integer taskId,
-                                    @Nullable final Result result) {
-            mTaskCancelledMessage.setValue(taskId);
+        public void onTaskCancelled(@NonNull final TaskFinishedMessage<Result> message) {
+            mTaskCancelledMessage.setValue(message);
         }
 
         @Override
@@ -99,7 +103,7 @@ public abstract class TaskModel<Result>
         return mTaskFinishedMessage;
     }
 
-    public MutableLiveData<Integer> getTaskCancelledMessage() {
+    public MutableLiveData<TaskFinishedMessage<Result>> getTaskCancelledMessage() {
         return mTaskCancelledMessage;
     }
 }

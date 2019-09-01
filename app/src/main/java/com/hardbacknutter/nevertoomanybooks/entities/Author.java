@@ -173,7 +173,7 @@ public class Author
      * A very crude text to bit mapper.
      * <p>
      * Current (2019-08-21) strings have been seen on Goodreads.
-     * No doubt many more are missing. Maybe some day see if we can pull a full list from GR?
+     * No doubt many more are missing. Maybe some day see if we can pull a full list from Goodreads?
      */
     private static final Map<String, Integer> TYPES_MAPPER = new HashMap<>();
 

@@ -212,45 +212,45 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_add"
             android:key="title.reformat.insert"
-            android:summaryOff="@string/pt_reformat_titles_original"
-            android:summaryOn="@string/pt_reformat_titles_reformatted"
+            android:summaryOff="@string/pt_reformat_titles_summary_original"
+            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
             android:title="@string/pt_reformat_titles_on_insert" />
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_edit"
             android:key="title.reformat.update"
-            android:summaryOff="@string/pt_reformat_titles_original"
-            android:summaryOn="@string/pt_reformat_titles_reformatted"
+            android:summaryOff="@string/pt_reformat_titles_summary_original"
+            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
             android:title="@string/pt_reformat_titles_on_update" />
     </PreferenceCategory>
 
     <PreferenceCategory
         android:title="@string/pg_booklist">
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_edit"
-            android:key="BooksOnBookshelf.OpenBookReadOnly"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_bob_open_book_read_only" />
-
-        <!-- default BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED == 0 -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_state"
             android:entryValues="@array/pv_bob_list_state"
             android:icon="@drawable/ic_view_list"
             android:key="BookList.ListRebuildState"
-            android:title="@string/pt_bob_list_state" />
+            android:title="@string/pt_booklist_state" />
 
-        <!-- default BooklistBuilder.CompatibilityMode.PREF_MODE_DEFAULT == 0 -->
+        <!-- default BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED == 0 -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_generation"
             android:entryValues="@array/pv_bob_list_generation"
             android:icon="@drawable/ic_manage"
             android:key="BookList.CompatibilityMode"
-            android:title="@string/pt_bob_list_generation" />
+            android:title="@string/pt_booklist_generation" />
+
+        <!-- default BooklistBuilder.CompatibilityMode.PREF_MODE_DEFAULT == 0 -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_edit"
+            android:key="BooksOnBookshelf.OpenBookReadOnly"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_booklist_open_book_read_only" />
 
     </PreferenceCategory>
 
@@ -272,7 +272,7 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_scanning_beep_if_isbn_valid" />
 
-        <!-- default ScannerManager.SCANNER_ZXING_COMPATIBLE == 0 -->
+        <!-- default ScannerManager.ZXING_COMPATIBLE == 0 -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_scanning_preferred_scanner"
@@ -314,9 +314,9 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_cached"
             android:key="Image.Cache.Resized"
-            android:summaryOff="@string/pe_bob_thumbnails_cache_resized_each_time"
-            android:summaryOn="@string/pe_bob_thumbnails_cache_resized_stored"
-            android:title="@string/pt_bob_thumbnails_cache_resized" />
+            android:summaryOff="@string/pe_thumbnails_cache_resized_each_time"
+            android:summaryOn="@string/pe_thumbnails_cache_resized_stored"
+            android:title="@string/pt_thumbnails_cache_resized" />
 
         <!-- default rotate 0 degrees -->
         <ListPreference

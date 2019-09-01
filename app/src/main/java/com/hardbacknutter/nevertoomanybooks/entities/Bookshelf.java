@@ -41,7 +41,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
@@ -87,9 +86,6 @@ public class Bookshelf
     @NonNull
     private String mStyleUuid;
 
-    /** the style gets cached. It only gets reloaded when the mStyleUuid != cached one. */
-    private BooklistStyle mCachedStyle;
-
     /**
      * Constructor without ID.
      *
@@ -100,7 +96,6 @@ public class Bookshelf
                      @NonNull final String styleUuid) {
         mName = name.trim();
         mStyleUuid = styleUuid;
-//        mCachedStyle = null;
     }
 
     /**
@@ -114,7 +109,6 @@ public class Bookshelf
         mName = name.trim();
 
         mStyleUuid = style.getUuid();
-        mCachedStyle = style;
     }
 
     /**
@@ -131,7 +125,6 @@ public class Bookshelf
         mName = name.trim();
 
         mStyleUuid = style.getUuid();
-        mCachedStyle = style;
     }
 
     /**
@@ -145,7 +138,6 @@ public class Bookshelf
         mId = id;
         mName = mapper.getString(DBDefinitions.KEY_BOOKSHELF);
         mStyleUuid = mapper.getString(DBDefinitions.KEY_UUID);
-//        mCachedStyle = null;
     }
 
     /**
@@ -159,7 +151,6 @@ public class Bookshelf
         mName = in.readString();
         //noinspection ConstantConditions
         mStyleUuid = in.readString();
-//        mCachedStyle = null;
     }
 
     /**
@@ -185,12 +176,12 @@ public class Bookshelf
             } else if (useAll) {
                 // Caller wants "AllBooks" (instead of the default Bookshelf)
                 return new Bookshelf(ALL_BOOKS, context.getString(R.string.bookshelf_all_books),
-                                     BooklistStyles.getDefaultStyle(db));
+                                     BooklistStyle.getDefaultStyle(db));
             }
         }
 
         return new Bookshelf(DEFAULT_ID, context.getString(R.string.bookshelf_my_books),
-                             BooklistStyles.getDefaultStyle(db));
+                             BooklistStyle.getDefaultStyle(db));
     }
 
     /**
@@ -249,12 +240,12 @@ public class Bookshelf
                          @NonNull final Locale userLocale,
                          @NonNull final DAO db,
                          @NonNull final BooklistStyle style) {
+
         style.setDefault();
 
         mStyleUuid = style.getUuid();
         long styleId = getStyle(db).getId();
         db.updateOrInsertBookshelf(context, userLocale, this, styleId);
-        mCachedStyle = style;
     }
 
     /**
@@ -267,14 +258,10 @@ public class Bookshelf
     @NonNull
     public BooklistStyle getStyle(@NonNull final DAO db) {
 
-        if (mCachedStyle == null || !mStyleUuid.equals(mCachedStyle.getUuid())) {
-            // refresh
-            mCachedStyle = BooklistStyles.getStyle(db, mStyleUuid);
-            // the previous uuid might have been overruled.
-            mStyleUuid = mCachedStyle.getUuid();
-        }
-
-        return mCachedStyle;
+        BooklistStyle style = BooklistStyle.getStyle(db, mStyleUuid);
+        // the previous uuid might have been overruled so we always refresh it
+        mStyleUuid = style.getUuid();
+        return style;
     }
 
     /**
@@ -308,7 +295,6 @@ public class Bookshelf
     public void copyFrom(@NonNull final Bookshelf source) {
         mName = source.mName;
         mStyleUuid = source.mStyleUuid;
-        mCachedStyle = null;
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -389,7 +375,6 @@ public class Bookshelf
                + "mId=" + mId
                + ", mName=`" + mName + '`'
                + ", mStyleUuid=" + mStyleUuid
-               + ", mCachedStyle=" + (mCachedStyle != null ? mCachedStyle.getUuid() : null)
                + '}';
     }
 }

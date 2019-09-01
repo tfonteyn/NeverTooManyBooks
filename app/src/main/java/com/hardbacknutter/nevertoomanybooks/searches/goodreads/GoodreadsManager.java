@@ -94,7 +94,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
 /**
- * Class to wrap all Goodreads API calls and manage an API connection.
+ * Class to wrap all Goodreads calls and manage a connection.
  */
 public class GoodreadsManager
         implements SearchEngine {
@@ -106,8 +106,7 @@ public class GoodreadsManager
     public static final Throttler THROTTLER = new Throttler();
     public static final Locale SITE_LOCALE = Locale.US;
     /**
-     * website & Root URL for API calls. Right now, identical,
-     * but this leaves future changes easier.
+     * website & Root URL. Right now identical, but this leaves future changes easier.
      */
     static final String WEBSITE = "https://www.goodreads.com";
     public static final String BASE_URL = WEBSITE;
@@ -470,7 +469,7 @@ public class GoodreadsManager
     }
 
     /**
-     * Wrapper to call ISBN->ID API.
+     * Wrapper to call ISBN->ID.
      *
      * @throws CredentialsException  with GoodReads
      * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
@@ -509,7 +508,7 @@ public class GoodreadsManager
     }
 
     /**
-     * Wrapper to call API to add book to shelf.
+     * Wrapper to add book to shelf.
      *
      * @param grBookId  GoodReads book id
      * @param shelfName GoodReads shelf name
@@ -542,7 +541,7 @@ public class GoodreadsManager
     }
 
     /**
-     * Wrapper to call API to remove a book from a shelf.
+     * Wrapper to remove a book from a shelf.
      *
      * @param grBookId  GoodReads book id
      * @param shelfName GoodReads shelf name

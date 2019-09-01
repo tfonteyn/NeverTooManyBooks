@@ -360,7 +360,7 @@ abstract class SendBooksLegacyTaskBase
                         }
                     }));
 
-            // ENHANCE: Reinstate Goodreads search when Goodreads work.editions API is available
+            // ENHANCE: Reinstate Goodreads search when Goodreads work.editions is available
 //            // SEARCH GOODREADS
 //            items.add(new ContextDialogItem(
 //                    context.getString(R.string.progress_msg_searching_site,

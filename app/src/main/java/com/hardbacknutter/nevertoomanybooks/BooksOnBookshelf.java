@@ -1044,7 +1044,7 @@ public class BooksOnBookshelf
                 title = row.getLevelText(this, mapper.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
             }
             // bring up the context menu
-            new MenuPicker<>(this, title, menu, position, (menuItem, pos) -> {
+            new MenuPicker<>(this, title, null, false, menu, position, (menuItem, pos) -> {
                 cursor.moveToPosition(pos);
                 return onContextItemSelected(menuItem, cursor.getCursorMapper());
             }).show();

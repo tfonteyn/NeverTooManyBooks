@@ -102,10 +102,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean NETWORK = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator} and related. */
     public static final boolean SEARCH_INTERNET = false;
-    /**
-     * GoodReads API.
-     * {@link com.hardbacknutter.nevertoomanybooks.goodreads}.
-     */
+    /** {@link com.hardbacknutter.nevertoomanybooks.goodreads}. */
     public static final boolean GOODREADS = false;
 
     /* ****************************************************************************************** */

@@ -38,6 +38,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 
@@ -81,6 +83,12 @@ public final class LocaleUtils {
      * in the default setting in the preference screen.
      */
     private static final String SYSTEM_LANGUAGE = "system";
+    /**
+     * TEST: We keep strong references. Check if this ever is an issue.
+     */
+    private static final List<OnLocaleChangedListener> sOnLocaleChangedListeners =
+            new ArrayList<>();
+
     /** Remember the current language to detect when language is switched. */
     @NonNull
     private static String sPreferredLocaleSpec = SYSTEM_LANGUAGE;
@@ -130,15 +138,6 @@ public final class LocaleUtils {
     }
 
     /**
-     * Check if the current default localeSpec is different from the user preferred localeSpec
-     *
-     * @return {@code true} if different
-     */
-    public static boolean isChanged() {
-        return isChanged(Locale.getDefault().getLanguage());
-    }
-
-    /**
      * Check if the passed localeSpec is different from the user preferred Locale
      *
      * @param localeSpec to test
@@ -162,8 +161,6 @@ public final class LocaleUtils {
     @NonNull
     @AnyThread
     public static Locale getLocale(@NonNull final Context context) {
-        insanityCheck(context);
-
         String localeSpec = getPersistedLocaleSpec();
 
         // first start, or if the language was changed since last call.
@@ -177,6 +174,7 @@ public final class LocaleUtils {
                          "sPreferredLocale=" + sPreferredLocale);
         }
 
+        insanityCheck(context);
         return sPreferredLocale;
     }
 
@@ -188,6 +186,7 @@ public final class LocaleUtils {
      *
      * @return updated context
      */
+    @NonNull
     public static Context applyLocale(@NonNull final Context context) {
         String localeSpec = getPersistedLocaleSpec();
 
@@ -221,13 +220,9 @@ public final class LocaleUtils {
      */
     @NonNull
     private static Locale createLocale(@Nullable final String localeSpec) {
-        Locale locale;
+
         if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
-            if (Build.VERSION.SDK_INT >= 24) {
-                locale = Resources.getSystem().getConfiguration().getLocales().get(0);
-            } else {
-                locale = Resources.getSystem().getConfiguration().locale;
-            }
+            return getSystemLocale();
         } else {
             // Create a Locale from a concatenated locale string (e.g. 'de', 'en_AU')
             String[] parts;
@@ -238,18 +233,33 @@ public final class LocaleUtils {
             }
             switch (parts.length) {
                 case 1:
-                    locale = new Locale(parts[0]);
-                    break;
+                    return new Locale(parts[0]);
                 case 2:
-                    locale = new Locale(parts[0], parts[1]);
-                    break;
+                    return new Locale(parts[0], parts[1]);
                 default:
-                    locale = new Locale(parts[0], parts[1], parts[2]);
-                    break;
+                    return new Locale(parts[0], parts[1], parts[2]);
             }
         }
+    }
 
-        return locale;
+    @NonNull
+    public static Locale getSystemLocale() {
+        if (Build.VERSION.SDK_INT >= 24) {
+            return Resources.getSystem().getConfiguration().getLocales().get(0);
+        } else {
+            //noinspection deprecation
+            return Resources.getSystem().getConfiguration().locale;
+        }
+    }
+
+    @NonNull
+    private static Locale getConfiguredLocale(@NonNull final Context context) {
+        if (Build.VERSION.SDK_INT >= 24) {
+            return context.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            //noinspection deprecation
+            return context.getResources().getConfiguration().locale;
+        }
     }
 
     @TargetApi(24)
@@ -277,14 +287,8 @@ public final class LocaleUtils {
         return context;
     }
 
-
     public static void insanityCheck(@NonNull final Context context) {
-        Locale locale;
-        if (Build.VERSION.SDK_INT >= 24) {
-            locale = context.getResources().getConfiguration().getLocales().get(0);
-        } else {
-            locale = context.getResources().getConfiguration().locale;
-        }
+        Locale locale = getConfiguredLocale(context);
         String conIso3 = locale.getISO3Language();
         String defIso3 = Locale.getDefault().getISO3Language();
 
@@ -295,4 +299,32 @@ public final class LocaleUtils {
         }
     }
 
+    public static void registerOnLocaleChangedListener(
+            @NonNull final OnLocaleChangedListener listener) {
+        synchronized (sOnLocaleChangedListeners) {
+            if (!sOnLocaleChangedListeners.contains(listener)) {
+                sOnLocaleChangedListeners.add(listener);
+            }
+        }
+    }
+
+    public static void unregisterOnLocaleChangedListener(
+            @NonNull final OnLocaleChangedListener listener) {
+        synchronized (sOnLocaleChangedListeners) {
+            sOnLocaleChangedListeners.remove(listener);
+        }
+    }
+
+    public static void onLocaleChanged() {
+        synchronized (sOnLocaleChangedListeners) {
+            for (OnLocaleChangedListener listener : sOnLocaleChangedListeners) {
+                listener.onLocaleChanged();
+            }
+        }
+    }
+
+    public interface OnLocaleChangedListener {
+
+        void onLocaleChanged();
+    }
 }

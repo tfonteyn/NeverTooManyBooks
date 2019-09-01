@@ -190,10 +190,10 @@
     <string name="hint_search_text">Vložit a/nebo ISBN</string>
     <string name="import_error_csv_file_must_contain_any_column">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
     <string name="import_error_csv_file_not_found">Nebyl nalezen exportovaný soubor</string>
-    <string name="import_export_option_csv">Knihy (CSV)</string>
+    <string name="import_export_option_csv">Knihy (*.csv)</string>
     <string name="import_export_option_xml">Všechna data ve formátu XML</string>
     <string name="import_export_option_xml_info">XML je pouze export, bez importu.</string>
-    <string name="import_option_info_all_books">Všechny knihy v archivu budou importovány, aktualizovány stávající knihy a přidány nové.</string>
+    <string name="import_option_info_all_books">Budou přidány nové knihy; stávající knihy budou aktualizovány.</string>
     <string name="import_option_info_new_and_changed_books">Importujte pouze knihy, které jsou nové nebo které byly aktualizovány v archivu. To je užitečné při synchronizaci dvou zařízení.</string>
     <string name="import_option_new_and_changed_books">Nové a aktualizované knihy</string>
     <string name="import_options_dialog_title">Vyberte, co bude importováno.</string>
@@ -202,7 +202,7 @@
     <string name="info_authorized">Autorizováno</string>
     <string name="info_cleanup_files_text">Dočasné soubory momentálně zabírají %1$s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkal s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka „Poslat informace“.</string>
     <string name="info_displaying_n_books_in_m_entries">zobrazení %1$d knih v položkách %2$d</string>
-    <string name="info_install_scanner">Aby bylo možné přečíst čárový kód je nutné, aby ve Vašem telefonu byla nainstalována aplikace Google Goggles nebo zxing barcode scanner.</string>
+    <string name="info_install_scanner">Chcete-li skenovat čárové kódy ISBN, klepněte na níže a nainstalujte jednu z těchto aplikací pro snímání čárových kódů.</string>
     <string name="info_manage_fields">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
     <string name="info_not_authorized">Neautorizováno</string>
     <string name="info_registration_benefits">Tato funkce těží z registrace u %1$s.\nChcete zobrazit další informace nebo tuto zprávu deaktivovat?\nTyto informace najdete později v části „Přihlašovací údaje“ v nastavení.</string>
@@ -382,10 +382,10 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="no">Ne</string>
     <string name="none">Žádný</string>
-    <string name="pe_bob_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně paměti, rolování bude pomalejší)</string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více paměti)</string>
+    <string name="pe_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně paměti, rolování bude pomalejší)</string>
+    <string name="pe_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více paměti)</string>
     <string name="pe_use_recommended_option">Použijte doporučenou možnost</string>
-    <string name="pg_bob_extra_book_details">Podrobnosti o knize</string>
+    <string name="pg_bob_show_details">Podrobnosti o knize</string>
     <string name="pg_booklist">Seznamy knih</string>
     <string name="pg_filters">Filtry knih</string>
     <string name="pg_general">Obecné</string>
@@ -430,17 +430,17 @@
     <string name="pt_allow_mobile_data">Povolit používání mobilních dat</string>
     <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>
     <string name="pt_bob_books_under_multiple_series">Knihy ve více sériích</string>
-    <string name="pt_bob_format_author_name">Formát zobrazení jména autora</string>
+    <string name="pt_bob_author_name">Formát zobrazení jména autora</string>
     <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
-    <string name="pt_bob_list_generation">Možnost generování seznamu knih</string>
-    <string name="pt_bob_list_state">Stav seznamu knih</string>
-    <string name="pt_bob_open_book_read_only">Otevřete knihu v režimu jen pro čtení</string>
-    <string name="pt_bob_sort_author_name">Seřadit podle jména autora</string>
+    <string name="pt_booklist_generation">Možnost generování seznamu knih</string>
+    <string name="pt_booklist_state">Stav seznamu knih</string>
+    <string name="pt_booklist_open_book_read_only">Otevřete knihu v režimu jen pro čtení</string>
+    <string name="pt_bob_sorting_author">Seřadit podle jména autora</string>
     <string name="pt_bob_text_size">Velikost položek na seznamu knih</string>
-    <string name="pt_bob_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
-    <string name="pt_bob_show_thumbnails">Zobrazit náhledy</string>
+    <string name="pt_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
+    <string name="pt_bob_thumbnails_show">Zobrazit náhledy</string>
     <string name="pt_collect_series_info_from_toc">Sbírejte informace o sériích z obsahu</string>
-    <string name="pt_cover_scale_factor">Velikost miniatur v seznamech</string>
+    <string name="pt_bob_thumbnails_scale">Velikost miniatur v seznamech</string>
     <string name="pt_reformat_titles_on_insert">Při přidávání</string>
     <string name="pt_reformat_titles_on_update">Při úpravách</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Je-li naskenované číslo ISBN neplatné, pípněte</string>
@@ -476,6 +476,11 @@
     <string name="style_builtin_title_first_letter">První písmeno z titulu</string>
     <string name="style_builtin_unread">Nepřečtené (Autor/Série)</string>
     <string name="style_builtin_update_date">Datum aktualizace</string>
+    <string name="style_builtin_bookshelf">Knihovna</string>
+    <string name="style_builtin_rating">Hodnocení</string>
+    <string name="style_builtin_language">Jazyk</string>
+    <string name="style_builtin_location">Umístění knihy</string>
+    <string name="style_builtin_format">Formát</string>
     <string name="style_is_builtin">Vestavěný</string>
     <string name="style_is_user_defined">Definován uživatelem</string>
     <string name="tab_lbl_content">Obsah</string>
@@ -580,5 +585,8 @@
     <string name="lbl_author_secondary">spoluautor</string>
     <string name="lbl_author_type">Typ autora</string>
     <string name="pt_bob_show_details_uses_task_off">ihned</string>
+    <string name="progress_end_import_partially_complete">Částečný import byl dokončen</string>
+    <string name="pt_bob_show_details_uses_task">Načítání podrobností o knize</string>
+    <string name="pt_bob_show_details_uses_task_on">zpožděné</string>
 
 </resources>

@@ -157,7 +157,7 @@ public class AddBookToShelfApiHandler
      * Remove the passed book from the passed shelf.
      * <p>
      * Exclusive shelves: to-read, currently-reading, read:
-     * The Goodreads API cannot remove books from the exclusive shelves.
+     * Goodreads cannot remove books from the exclusive shelves.
      * You can move a book from one shelf to another.
      * <p>
      * Non-exclusive shelves, i.e. user-shelves:
@@ -178,7 +178,7 @@ public class AddBookToShelfApiHandler
     }
 
     /**
-     * Single book and single shelf; same API call for add & remove.
+     * Single book and single shelf; same call for add & remove.
      *
      * @param grBookId  GoodReads book id
      * @param shelfName GoodReads shelf name

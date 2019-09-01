@@ -188,10 +188,10 @@
     <string name="hint_search_text">Текст и/или ISBN</string>
     <string name="import_error_csv_file_must_contain_any_column">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
     <string name="import_error_csv_file_not_found">Файлы экспорта не найдены</string>
-    <string name="import_export_option_csv">Детальное инфо (CSV)</string>
+    <string name="import_export_option_csv">книги (*.csv)</string>
     <string name="import_export_option_xml">Все данные в формате XML</string>
     <string name="import_export_option_xml_info">Только экспорт XML, без импорта.</string>
-    <string name="import_option_info_all_books">Все книги архива будут импортированы, обновив существующие и добавив новые.</string>
+    <string name="import_option_info_all_books">Будут добавлены новые книги; существующие книги будут обновлены.</string>
     <string name="import_option_info_new_and_changed_books">Импортировать только новые книги или только те, что обновлены более поздно. Это удобно, когда синхронизируются несклоько устройств.</string>
     <string name="import_option_new_and_changed_books">Новые и обновленные книги</string>
     <string name="import_options_dialog_title">Выберите, что будет импортировано.</string>
@@ -200,7 +200,7 @@
     <string name="info_authorized">Авторизовано</string>
     <string name="info_cleanup_files_text">Файлы, подлежащие очистке сейчас занимают %1$s на SD-карте. Лог-файлы и другие данные сохраняются на SD-карте при каждом обновлении, когда происходит резервное копирование базы, или в случае аварийного завершения программы. Нажмите кнопку внизу экрана, чтобы очистить эти файлы с SD-карты. Если у вас аварийно завершается программа или происходят иные ошибки, пожалуйста, сначала воспользуйтесь кнопкой «Отправить информацию».</string>
     <string name="info_displaying_n_books_in_m_entries">отображается %1$d книг, в %2$d элементах</string>
-    <string name="info_install_scanner">Чтобы определить ваши книги по ISBN штрих-коду, вы должны установить приложение Google Goggles или zxing.</string>
+    <string name="info_install_scanner">Для сканирования штрих-кодов ISBN нажмите ниже, чтобы установить одно из этих приложений для сканирования штрих-кодов.</string>
     <string name="info_manage_fields">Выбранные поля видны на экранах добавления/редактирования книги. Невыбранные поля скрыты.</string>
     <string name="info_not_authorized">Не авторизовано</string>
     <string name="info_registration_benefits">Эта функция имеет преимущества при регистрации в %1$s.\n Хотите увидеть больше информации или отключить это сообщение?\n Вы можете найти эту информацию позже в разделе «Учетные данные» в настройках.</string>
@@ -380,10 +380,10 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="no">Нет</string>
     <string name="none">Никто</string>
-    <string name="pe_bob_thumbnails_cache_resized_each_time">Не кэшировать (используется меньше места, но пролистывание будет медленнее)</string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">Кэшировать(используется больше места, но пролистывание быстрее)</string>
+    <string name="pe_thumbnails_cache_resized_each_time">Не кэшировать (используется меньше места, но пролистывание будет медленнее)</string>
+    <string name="pe_thumbnails_cache_resized_stored">Кэшировать(используется больше места, но пролистывание быстрее)</string>
     <string name="pe_use_recommended_option">Используйте рекомендуемый вариант</string>
-    <string name="pg_bob_extra_book_details">Дополнительная информация</string>
+    <string name="pg_bob_show_details">Дополнительная информация</string>
     <string name="pg_booklist">Списки книг</string>
     <string name="pg_filters">Фильтры книг</string>
     <string name="pg_general">Основные</string>
@@ -428,17 +428,17 @@
     <string name="pt_allow_mobile_data">Разрешить использование мобильных данных</string>
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
     <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
-    <string name="pt_bob_format_author_name">Форматирование по авторским именам</string>
+    <string name="pt_bob_author_name">Форматирование по авторским именам</string>
     <string name="pt_bob_header">Суммарная информация в заголовке</string>
-    <string name="pt_bob_list_generation">Составление списка книг</string>
-    <string name="pt_bob_list_state">Состояние списка книг</string>
-    <string name="pt_bob_open_book_read_only">Просмотр книги в режиме чтения</string>
-    <string name="pt_bob_sort_author_name">Сортировать авторов</string>
+    <string name="pt_booklist_generation">Составление списка книг</string>
+    <string name="pt_booklist_state">Состояние списка книг</string>
+    <string name="pt_booklist_open_book_read_only">Просмотр книги в режиме чтения</string>
+    <string name="pt_bob_sorting_author">Сортировать авторов</string>
     <string name="pt_bob_text_size">Размер элемента списка книг</string>
-    <string name="pt_bob_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
-    <string name="pt_bob_show_thumbnails">Показывать миниатюры</string>
+    <string name="pt_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
+    <string name="pt_bob_thumbnails_show">Показывать миниатюры</string>
     <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
-    <string name="pt_cover_scale_factor">Размер изображения в списках</string>
+    <string name="pt_bob_thumbnails_scale">Размер изображения в списках</string>
     <string name="pt_reformat_titles_on_insert">При добавлении</string>
     <string name="pt_reformat_titles_on_update">При редактировании</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Подать звуковой сигнал, если сканируемый ISBN не правильный</string>
@@ -448,7 +448,7 @@
     <string name="pt_thumbnail_cropper_layer_type">Обрезать «Layer Type»</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">Оставьте этот параметр по умолчанию, если вы не столкнетесь с падениями при кадрировании изображений. Попробуйте «программное обеспечение» для более безопасного, но медленного или принудительного «оборудования» для менее безопасного, но быстрее</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Рамка по умолчанию: всё изображение</string>
-    <string name="pt_thumbnails_external_cropper">Использовать внешний редактор рисунков (экспериментально)</string>
+    <string name="pt_thumbnails_external_cropper">Использовать внешний редактор рисунков</string>
     <string name="pt_thumbnails_rotate_auto">Автоматически поворачивать фото, полученное камерой</string>
     <string name="pt_ui_language">язык</string>
     <string name="pt_ui_messages_use">Сообщить с</string>
@@ -474,6 +474,11 @@
     <string name="style_builtin_title_first_letter">Первая буква названия</string>
     <string name="style_builtin_unread">Непрочтенные (Автор/Серии)</string>
     <string name="style_builtin_update_date">Дата обновления</string>
+    <string name="style_builtin_bookshelf">Книжная полка</string>
+    <string name="style_builtin_rating">Оценка</string>
+    <string name="style_builtin_language">Язык</string>
+    <string name="style_builtin_location">Местоположение</string>
+    <string name="style_builtin_format">Формат</string>
     <string name="style_is_builtin">Встроенный</string>
     <string name="style_is_user_defined">Определенный пользователем</string>
     <string name="tab_lbl_content">оглавление</string>
@@ -579,5 +584,9 @@
     <string name="lbl_author_secondary">соавтор</string>
     <string name="lbl_author_type">Тип автора</string>
     <string name="pt_bob_show_details_uses_task_off">немедленно</string>
+    <string name="progress_end_import_partially_complete">Частичный импорт выполнен</string>
+    <string name="pt_bob_show_details_uses_task">Получение дополнительных сведений о книге</string>
+    <string name="pt_bob_show_details_uses_task_on">задерживается</string>
+    <string name="lbl_author_primary">писатель</string>
 
 </resources>

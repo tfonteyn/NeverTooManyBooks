@@ -168,7 +168,6 @@ public class SearchBooksApiHandler
     public List<GoodreadsWork> search(@NonNull final String query)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        // Setup API call
         Map<String, String> parameters = new HashMap<>();
         parameters.put("q", query.trim());
         parameters.put("key", mManager.getDevKey());

@@ -293,7 +293,7 @@ public abstract class ShowBookApiHandler
 
         // TODO: Evaluate if ShowBook should store ShowBookFieldName.BOOK_ID.
         // Pros: easier sync
-        // Cons: Overwrite GR id when it should not
+        // Cons: Overwrite Goodreads id when it should not
 //        if (mBookData.containsKey(ShowBookFieldName.BOOK_ID)) {
 //            mBookData.putLong(DBDefinitions.KEY_GOODREADS_BOOK_ID,
 //                              mBookData.getLong(ShowBookFieldName.BOOK_ID));

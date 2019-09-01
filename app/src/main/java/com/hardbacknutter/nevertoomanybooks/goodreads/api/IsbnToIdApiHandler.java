@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
  * <a href="https://www.goodreads.com/api/index#book.isbn_to_id">
  * https://www.goodreads.com/api/index#book.isbn_to_id</a>
  *
- * <strong>Note:</strong> THIS API DOES NOT RETURN XML. The text output is the ID.
+ * <strong>Note:</strong> THIS DOES NOT RETURN XML. The text output is the ID.
  */
 public class IsbnToIdApiHandler
         extends ApiHandler {

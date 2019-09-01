@@ -83,9 +83,15 @@ public interface Importer
     class Results {
 
         public int booksProcessed;
+        public int booksFailed;
+
         public int booksCreated;
         public int booksUpdated;
-        public int booksFailed;
         public int coversImported;
+
+        public boolean nothing() {
+            return (booksCreated == 0) && (booksUpdated == 0) && (coversImported == 0);
+        }
     }
+
 }

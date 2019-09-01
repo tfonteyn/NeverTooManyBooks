@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ @Copyright 2019 HardBackNutter
   ~ @License GNU General Public License
   ~
@@ -27,26 +26,19 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/DialogFrame"
     >
 
     <!-- control visibility of checkboxes. -->
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/cbx_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="cbx_books_csv,cbx_covers,cbx_preferences"
-        />
-
     <CheckBox
         android:id="@+id/cbx_books_csv"
         style="@style/OptionRow.Checkable"
+        android:layout_width="0dp"
         android:checked="true"
         android:text="@string/import_export_option_csv"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
@@ -54,9 +46,10 @@
     <CheckBox
         android:id="@+id/cbx_covers"
         style="@style/OptionRow.Checkable"
+        android:layout_width="0dp"
         android:checked="true"
         android:text="@string/lbl_cover_images"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbx_books_csv"
         />
@@ -64,19 +57,12 @@
     <CheckBox
         android:id="@+id/cbx_preferences"
         style="@style/OptionRow.Checkable"
+        android:layout_width="0dp"
         android:checked="true"
         android:text="@string/lbl_settings"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbx_covers"
-        />
-
-    <View
-        android:id="@+id/footer_divider"
-        style="@style/HorizontalDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_preferences"
         />
 
     <RadioGroup
@@ -84,8 +70,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/footer_divider"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
         >
 
         <RadioButton
@@ -95,16 +81,16 @@
             android:text="@string/bookshelf_all_books"
             />
 
-        <TextView
-            android:id="@+id/textView"
-            style="@style/OptionRow.Blurb"
-            android:text="@string/import_option_info_all_books"
-            />
-
         <RadioButton
             android:id="@+id/radioNewAndUpdatedBooks"
             style="@style/OptionRow.Checkable"
             android:text="@string/import_option_new_and_changed_books"
+            />
+
+        <TextView
+            android:id="@+id/textView"
+            style="@style/OptionRow.Blurb"
+            android:text="@string/import_option_info_all_books"
             />
 
         <TextView
@@ -113,5 +99,25 @@
             android:text="@string/import_option_info_new_and_changed_books"
             />
     </RadioGroup>
+
+    <View
+        android:id="@+id/guideline"
+        style="@style/VerticalDivider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.35"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/cbx_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="cbx_books_csv,cbx_covers,cbx_preferences"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

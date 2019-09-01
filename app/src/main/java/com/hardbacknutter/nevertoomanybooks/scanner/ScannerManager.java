@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,10 +33,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.view.Menu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +44,7 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
@@ -53,13 +55,17 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 public final class ScannerManager {
 
     /** Unique ID's to associate with each supported scanner intent. */
-    public static final int SCANNER_ZXING_COMPATIBLE = 0;
-    public static final int SCANNER_ZXING = 1;
-    public static final int SCANNER_PIC2SHOP = 2;
-    private static final String MARKET_URL_ZXING =
-            "market://details?id=com.google.zxing.client.android";
-    private static final String MARKET_URL_PIC2SHOP =
-            "market://details?id=com.visionsmarts.pic2shop";
+    public static final int ZXING_COMPATIBLE = 0;
+    public static final int ZXING = 1;
+    public static final int PIC2SHOP = 2;
+
+    /** All actions for the supported scanner variants. */
+    public static final String[] ALL_ACTIONS = new String[]{
+            ZxingScanner.ACTION,
+            Pic2ShopScanner.Free.ACTION,
+            Pic2ShopScanner.Pro.ACTION,
+            };
+
     /** Collection of ScannerFactory objects. */
     @SuppressLint("UseSparseArrays")
     private static final Map<Integer, ScannerFactory> SCANNER_FACTORIES = new HashMap<>();
@@ -69,49 +75,58 @@ public final class ScannerManager {
      */
     static {
         // free and easy
-        SCANNER_FACTORIES.put(SCANNER_ZXING, new ScannerFactory() {
-            @NonNull
-            @Override
-            public Scanner newInstance() {
-                return new ZxingScanner(true);
-            }
-
-            @Override
-            public boolean isIntentAvailable(@NonNull final Context context) {
-                return ZxingScanner.isIntentAvailable(context, true);
-            }
-        });
-
-        // not free, but better in bad conditions
-        SCANNER_FACTORIES.put(SCANNER_PIC2SHOP, new ScannerFactory() {
-            @NonNull
-            @Override
-            public Scanner newInstance() {
-                return new Pic2ShopScanner();
-            }
-
-            @Override
-            public boolean isIntentAvailable(@NonNull final Context context) {
-                return Pic2ShopScanner.isIntentAvailable(context);
-            }
-        });
-
+        SCANNER_FACTORIES.put(ZXING, new ZxingScanner.ZxingScannerFactory());
+        // not free, but allegedly better in bad conditions
+        SCANNER_FACTORIES.put(PIC2SHOP, new Pic2ShopScanner.Pic2ShopScannerFactory());
         // bit of a fallback.
-        SCANNER_FACTORIES.put(SCANNER_ZXING_COMPATIBLE, new ScannerFactory() {
-            @NonNull
-            @Override
-            public Scanner newInstance() {
-                return new ZxingScanner(false);
-            }
-
-            @Override
-            public boolean isIntentAvailable(@NonNull final Context context) {
-                return ZxingScanner.isIntentAvailable(context, false);
-            }
-        });
+        SCANNER_FACTORIES.put(ZXING_COMPATIBLE, new ZxingScanner.ZxingCompatibleScannerFactory());
     }
 
     private ScannerManager() {
+    }
+
+    /**
+     * We don't have a scanner setup or it was bad. Prompt the user for installing one.
+     */
+    public static void promptForScannerInstallAndFinish(@NonNull final Activity activity,
+                                                        final boolean noScanner) {
+        int messageId = noScanner ? R.string.info_install_scanner
+                                  : R.string.warning_bad_scanner;
+
+        Menu menu = MenuPicker.createMenu(activity);
+        menu.add(Menu.NONE, R.id.MENU_SCANNER_ZXING, 0, ZxingScanner.DISPLAY_NAME)
+            .setIcon(R.drawable.ic_scanner);
+        menu.add(Menu.NONE, R.id.MENU_SCANNER_PIC2SHOP, 0, Pic2ShopScanner.DISPLAY_NAME)
+            .setIcon(R.drawable.ic_scanner);
+
+        new MenuPicker<Void>(activity, R.string.title_install_scan, messageId, true,
+                             menu, null, (menuItem, userObject) -> {
+            switch (menuItem.getItemId()) {
+                case R.id.MENU_SCANNER_ZXING:
+                    installScanner(activity, ZxingScanner.MARKET_URL);
+                    return true;
+
+                case R.id.MENU_SCANNER_PIC2SHOP:
+                    installScanner(activity, Pic2ShopScanner.MARKET_URL);
+                    return true;
+
+                default:
+                    return false;
+            }
+        }).show();
+    }
+
+    private static void installScanner(@NonNull final Activity activity,
+                                       @NonNull final String uri) {
+        try {
+            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+            activity.startActivity(marketIntent);
+            activity.setResult(Activity.RESULT_CANCELED);
+            activity.finish();
+        } catch (@NonNull final ActivityNotFoundException e) {
+            UserMessage.show(activity, R.string.error_google_play_missing);
+            Logger.warn(ScannerManager.class, "installScanner", e);
+        }
     }
 
     /**
@@ -121,9 +136,7 @@ public final class ScannerManager {
      */
     @Nullable
     public static Scanner getScanner(@NonNull final Context context) {
-        // Find out what the user prefers if any
-        int prefScanner = App.getListPreference(Prefs.pk_scanning_preferred_scanner,
-                                                SCANNER_ZXING_COMPATIBLE);
+        int prefScanner = App.getListPreference(Prefs.pk_scanner_preferred, ZXING_COMPATIBLE);
 
         // See if preferred one is present, if so return a new instance
         ScannerFactory psf = SCANNER_FACTORIES.get(prefScanner);
@@ -141,49 +154,9 @@ public final class ScannerManager {
     }
 
     /**
-     * We don't have a scanner setup or it was bad. Prompt the user for installing one.
-     */
-    public static void promptForScannerInstallAndFinish(@NonNull final Activity activity,
-                                                        final boolean noScanner) {
-        int messageId = noScanner ? R.string.info_install_scanner
-                                  : R.string.warning_bad_scanner;
-
-        new AlertDialog.Builder(activity)
-                .setIcon(R.drawable.ic_scanner)
-                .setTitle(R.string.title_install_scan)
-                .setMessage(messageId)
-                .setNeutralButton(android.R.string.cancel, (d, w) -> {
-                    //do nothing
-                    activity.setResult(Activity.RESULT_CANCELED);
-                    activity.finish();
-                })
-                // we use POS and NEG for scanner choice. If we ever support 3, redo this lazy hack.
-                // text hardcoded as a it is a product name
-                .setNegativeButton("pic2shop",
-                                   (d, which) -> installScanner(activity, MARKET_URL_PIC2SHOP))
-                .setPositiveButton("ZXing",
-                                   (d, which) -> installScanner(activity, MARKET_URL_ZXING))
-                .create()
-                .show();
-    }
-
-    private static void installScanner(@NonNull final Activity activity,
-                                       @NonNull final String uri) {
-        try {
-            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-            activity.startActivity(marketIntent);
-            activity.setResult(Activity.RESULT_CANCELED);
-            activity.finish();
-        } catch (@NonNull final ActivityNotFoundException e) {
-            UserMessage.show(activity, R.string.error_google_play_missing);
-            Logger.warn(ScannerManager.class, "installScanner", e);
-        }
-    }
-
-    /**
      * Support for creating scanner objects on the fly without knowing which ones are available.
      */
-    private interface ScannerFactory {
+    public interface ScannerFactory {
 
         /**
          * @return a new scanner of the related type.

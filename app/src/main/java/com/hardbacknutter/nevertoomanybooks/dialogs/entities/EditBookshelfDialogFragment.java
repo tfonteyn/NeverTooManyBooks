@@ -204,7 +204,7 @@ public class EditBookshelfDialogFragment
     }
 
     /**
-     * Bring up a dumb dialog asking for the next action.
+     * Bring up a dialog asking for the next action.
      */
     private void mergeShelves(@NonNull final Bookshelf source,
                               @NonNull final Bookshelf destination) {

@@ -84,21 +84,6 @@ public abstract class TaskBase<Result>
 
     @Override
     @UiThread
-    protected void onPostExecute(@NonNull final Result result) {
-        if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskFinished(
-                    new TaskListener.TaskFinishedMessage<>(mTaskId, mException == null,
-                                                           result, mException));
-        } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onPostExecute",
-                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
-            }
-        }
-    }
-
-    @Override
-    @UiThread
     protected void onProgressUpdate(@NonNull final TaskListener.TaskProgressMessage... values) {
         if (mTaskListener.get() != null) {
             mTaskListener.get().onTaskProgress(values[0]);
@@ -114,10 +99,27 @@ public abstract class TaskBase<Result>
     @CallSuper
     protected void onCancelled(@Nullable final Result result) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskCancelled(mTaskId, result);
+            mTaskListener.get().onTaskCancelled(
+                    new TaskListener.TaskFinishedMessage<>(mTaskId, mException == null,
+                                                           result, mException));
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onCancelled",
+                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+            }
+        }
+    }
+
+    @Override
+    @UiThread
+    protected void onPostExecute(@NonNull final Result result) {
+        if (mTaskListener.get() != null) {
+            mTaskListener.get().onTaskFinished(
+                    new TaskListener.TaskFinishedMessage<>(mTaskId, mException == null,
+                                                           result, mException));
+        } else {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                Logger.debug(this, "onPostExecute",
                              Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
             }
         }

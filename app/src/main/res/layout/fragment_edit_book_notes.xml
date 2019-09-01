@@ -235,7 +235,7 @@
 
         <View
             android:id="@+id/notes_divider"
-            style="@style/SectionDivider"
+            style="@style/HorizontalDivider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/signed"

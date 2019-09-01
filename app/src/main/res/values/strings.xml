@@ -220,9 +220,9 @@
         Selected fields will be updated from the internet. Unselected fields will remain unchanged.
     </string>
 
+    <!-- prompt to install a scanner. -->
     <string name="info_install_scanner">
-        To scan your books via the ISBN barcode, you must install
-        one of the Zxing or pic2shop barcode scanner applications.
+        To scan ISBN bar codes, please tap below to install one of these barcode scanner applications.
     </string>
 
     <string name="info_manage_fields">
@@ -370,6 +370,7 @@
 
     <!-- progress final message -->
     <string name="progress_end_import_complete">Import complete</string>
+    <string name="progress_end_import_partially_complete">Partial import done</string>
     <string name="progress_end_backup_success">Backup success</string>
     <string name="progress_end_cancelled">Cancelled</string>
     <string name="progress_end_cancelled_info">Cancelled - %1$s</string>
@@ -603,8 +604,17 @@
     <string name="edit">Edit</string>
     <string name="unknown">Unknown</string>
     <string name="done">Done</string>
+
+    <!-- e.g. indicates nothing was selected; nothing was done. -->
     <string name="none">None</string>
+    <!-- e.g. clearing a form. -->
     <string name="clear">Clear</string>
+
+    <!-- abbreviation to indicate there are more of something.
+        e.g. a list of series: "Foundation et.al" indicates a book belongs to the
+        "Foundation" series, but is also present in others.
+    -->
+    <string name="and_others">et. al.</string>
 
     <!-- 'try again' -->
     <string name="retry">Retry</string>
@@ -803,116 +813,152 @@
     <string name="hint_btn_drag_handle">Drag me to reorder this list</string>
 
     <!-- ####################################################################################### -->
-    <!-- == Field labels for preference settings == -->
+    <!-- == Global preference settings == -->
     <!-- ####################################################################################### -->
+    <!--
+         Not a preference as such.
+         These are the locale specific title prefixes that will be moved to the end of a title,
+         if reformatting of titles options are enabled by the user.
+    -->
+    <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
+
     <!-- The defaults for MultiSelect fields, i.e. select nothing -->
     <string-array name="empty_array" />
     <!-- Used in multiple places: the 'default' for a setting the user really should not change. -->
     <string name="pe_use_recommended_option">Use the recommended option</string>
 
-
+    <!-- Preference Category -->
     <string name="pg_ui">User Interface</string>
-    <string name="pg_ui_field_visibility">Field Visibility</string>
-    <string name="pg_reformat_titles">Reformat titles</string>
-    <string name="pg_reformat_titles_summary">Store the original “The title” or reformat to “title, The”</string>
-    <string name="pg_booklist">Book Lists</string>
-    <string name="pg_scanning">Scanning</string>
-    <string name="pg_thumbnails">Thumbnails</string>
-    <string name="pg_general">General</string>
-    <!-- Preference Category; groups (RowKinds) in booklist style -->
-    <string name="pg_groupings">Groupings</string>
-    <!-- Preference Category; filters in booklist style -->
-    <string name="pg_filters">Filters</string>
-    <!-- Preference Category; The extra fields displayed on 'book-level' in the booklist -->
-    <string name="pg_bob_extra_book_details">Extra Book Details</string>
-
-
     <!-- ListPreference - Preferred interface Language -->
     <string name="pt_ui_language">Language</string>
-    <!-- ListPreference - Preferred interface Locale -->
+    <!-- ListPreference - Preferred interface Language; option 1 in the list -->
     <string name="pt_ui_system_locale">System Locale</string>
+    <!-- ListPreference - Preferred interface Theme -->
     <string name="pt_ui_theme">Interface Theme</string>
+    <!-- ListPreference - Preferred interface Message display. -->
     <string name="pt_ui_messages_use">Information messages</string>
-    <!-- SwitchPreference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
-    <string name="pt_bob_open_book_read_only">Open book in read-only mode</string>
+    <!-- Preference screen; opens a new screen listing all Fields. -->
+    <string name="pg_ui_field_visibility">Field Visibility</string>
 
-    <!-- example of 'original' title -->
-    <string name="pt_reformat_titles_original">The title</string>
-    <!-- example of a reformatted title -->
-    <string name="pt_reformat_titles_reformatted">title, The</string>
+
+    <!-- Preference Category -->
+    <string name="pg_reformat_titles">Reformat titles</string>
+    <string name="pg_reformat_titles_summary">Store the original “The title” or reformat to “title, The”</string>
     <!-- SwitchPreference -->
     <string name="pt_reformat_titles_on_insert">When adding</string>
     <!-- SwitchPreference -->
     <string name="pt_reformat_titles_on_update">When editing</string>
-    <!-- MultiSelectListPreference - Determines what is show in book list header -->
-    <string name="pt_bob_header">Summary details in header</string>
-    <!-- ListPreference - Scale text. -->
-    <string name="pt_bob_text_size">Size of book list text</string>
-    <!-- SwitchPreference - Show thumbnail image for each book -->
-    <string name="pt_bob_show_thumbnails">Show Thumbnails</string>
-    <!-- ListPreference - Scale thumbnails in the list view. -->
-    <string name="pt_cover_scale_factor">Thumbnails size in lists</string>
-    <!-- SwitchPreference - Sorting Author by family (default) or given name.
-         This is independent from the display format -->
-    <string name="pt_bob_sort_author_name">Sorting of author names</string>
-    <string name="pt_bob_format_author_name">Format of author names</string>
-    <!-- SwitchPreference -->
-    <string name="pt_bob_books_under_multiple_authors">Books with multiple authors</string>
-    <!-- SwitchPreference -->
-    <string name="pt_bob_books_under_multiple_series">Books in multiple series</string>
-    <!-- Preference - Book list state-related preferences -->
-    <string name="pt_bob_list_state">Book list state</string>
-    <!--  Preference to override the default method used to generate book lists as defined by API level -->
-    <string name="pt_bob_list_generation">Book List Generation Option</string>
+    <!-- example of 'original' title -->
+    <string name="pt_reformat_titles_summary_original">The title</string>
+    <!-- example of a reformatted title -->
+    <string name="pt_reformat_titles_summary_reformatted">title, The</string>
+
+
+    <!-- Preference Category -->
+    <string name="pg_booklist">Book Lists</string>
+    <!-- SwitchPreference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
+    <string name="pt_booklist_open_book_read_only">Open book in read-only mode</string>
+    <!-- ListPreference - Book list state-related preferences -->
+    <string name="pt_booklist_state">Book list state</string>
+    <!--  ListPreference - allows overriding the default method used to generate book lists
+          as defined by Android version -->
+    <string name="pt_booklist_generation">Book List Generation Option</string>
+
+
+    <!-- Preference Category -->
+    <string name="pg_scanning">Scanning</string>
     <!-- SwitchPreference -->
     <string name="pt_scanning_beep_if_isbn_invalid">Beep if scanned ISBN is invalid</string>
     <!-- SwitchPreference -->
     <string name="pt_scanning_beep_if_isbn_valid">Beep if scanned ISBN is valid</string>
     <!-- ListPreference - the barcode scanner to use-->
     <string name="pt_scanning_preferred_scanner">Preferred Scanner</string>
+
+
+    <!-- Preference Category -->
+    <string name="pg_thumbnails">Thumbnails</string>
     <!-- SwitchPreference - zooming images should upscale (or only show actual max size) -->
     <string name="pt_thumbnails_upscale_zoom">Upscale images when zoomed</string>
     <!-- SwitchPreference - start the cropper with the cropper frame set to the whole image -->
     <string name="pt_thumbnails_crop_frame_is_whole_image">Default crop frame is whole image</string>
     <!-- SwitchPreference - use an external app. (Intent) to handle cropping-->
-    <string name="pt_thumbnails_external_cropper">Use an external image cropper</string>
-    <!-- Preference - Thumbnails are cached in a database to avoid resizing all the time -->
-    <string name="pt_bob_thumbnails_cache_resized">Resized images are cached</string>
+    <string name="pt_thumbnails_external_cropper">Use an external image crop app</string>
+    <!-- SwitchPreference - Thumbnails are cached in a database to avoid resizing all the time -->
+    <string name="pt_thumbnails_cache_resized">Resized images are cached</string>
+    <string name="pe_thumbnails_cache_resized_each_time">
+        Resize images each time they are needed (uses less storage, scrolling will be slower)
+    </string>
+    <string name="pe_thumbnails_cache_resized_stored">
+        Cache resized images (scrolling will be faster, uses more storage)
+    </string>
     <!-- ListPreference - Degrees by which to rotate camera images automatically -->
     <string name="pt_thumbnails_rotate_auto">Automatically rotate images captured by camera</string>
     <!-- ListPreference - Compatibility / bug workaround for some devices -->
     <string name="pt_thumbnail_cropper_layer_type">Cropping “Layer Type”</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Leave this setting on “Use default” unless you experience crashes while cropping images. Try “Software” for safer but slower or force “Hardware” for less safe, but faster</string>
+    <string name="pt_thumbnail_cropper_layer_type_summary">
+        Leave this setting on “Use default” unless you experience crashes while cropping images.
+        Try “Software” for safer but slower or force “Hardware” for less safe, but faster.
+    </string>
+
+
+    <!-- category: search sites -->
     <!-- SwitchPreference - allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_mobile_data">Allow mobile data usage</string>
-    <!-- SwitchPreference - search engines can collect series information from the toc.
-        This is not always desirable, and by default switched off. -->
-    <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
     <!-- SwitchPreference - some search engines can add the publisher to the search terms.
         This is not always desirable, as they use "AND" to combine the terms.
         So by default this is switched off. -->
     <string name="pt_search_uses_publisher">Search uses publisher</string>
+    <!-- SwitchPreference - search engines can collect series information from the toc.
+        This is not always desirable, and by default switched off. -->
+    <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
 
 
-    <!-- the prefixes that will be moved to the end of a title. -->
-    <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
+    <!-- ####################################################################################### -->
+    <!-- == Style preference settings == -->
+    <!-- ####################################################################################### -->
+
+    <!-- Preference Category -->
+    <string name="pg_general">General</string>
+
+    <!-- Preference Screen; groups (RowKinds) in booklist style -->
+    <string name="pg_groupings">Groupings</string>
+
+    <!-- Preference Screen; filters in booklist style -->
+    <string name="pg_filters">Filters</string>
+    <!-- Preference Screen; The extra fields displayed on 'book-level' in the booklist -->
+    <string name="pg_bob_show_details">Extra Book Details</string>
+    <string name="pt_bob_show_details_uses_task">Fetching Extra Book Details</string>
+    <string name="pt_bob_show_details_uses_task_on">delayed</string>
+    <string name="pt_bob_show_details_uses_task_off">immediately</string>
+    <!-- MultiSelectListPreference - Determines what is show in book list header -->
+    <string name="pt_bob_header">Summary details in header</string>
+    <!-- ListPreference - Scale text. -->
+    <string name="pt_bob_text_size">Size of book list text</string>
+
+
+    <!-- Preference Category: thumbnails -->
+    <!-- SwitchPreference - Show thumbnail image for each book -->
+    <string name="pt_bob_thumbnails_show">Show Thumbnails</string>
+    <!-- ListPreference - Scale thumbnails in the list view. -->
+    <string name="pt_bob_thumbnails_scale">Thumbnails size in lists</string>
+
+    <!-- Preference Category: author -->
+    <!-- SwitchPreference - Sorting Author by family (default) or given name.
+     This is independent from the display format -->
+    <string name="pt_bob_sorting_author">Sorting of author names</string>
+    <!-- SwitchPreference: "given family" or "family, given" -->
+    <string name="pt_bob_author_name">Format of author names</string>
+    <string name="pv_bob_author_name_given_first">Given name first e.g. “Phillis Wheatley”</string>
+    <string name="pv_bob_author_name_family_first">Family name first e.g. “Wheatley, Phillis”</string>
+    <!-- SwitchPreference -->
+    <string name="pt_bob_books_under_multiple_authors">Books with multiple authors</string>
     <string name="pv_bob_books_under_multiple_primary_1s_only">Under primary %1$s only</string>
     <string name="pv_bob_books_under_multiple_each_1s">Under each %1$s</string>
 
+    <!-- Preference Category: Series -->
     <!-- SwitchPreference -->
-    <string name="pv_bob_author_name_given_first">
-        Given name first e.g. “Phillis Wheatley”
-    </string>
-    <string name="pv_bob_author_name_family_first">
-        Family name first e.g. “Wheatley, Phillis”
-    </string>
+    <string name="pt_bob_books_under_multiple_series">Books in multiple series</string>
 
-    <string name="pe_bob_thumbnails_cache_resized_each_time">
-        Resize images each time they are needed (uses less storage, scrolling will be slower)
-    </string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">
-        Cache resized images (scrolling will be faster, uses more storage)
-    </string>
 
     <!-- ####################################################################################### -->
     <!-- == Field labels == -->
@@ -1131,6 +1177,11 @@
     <string name="style_builtin_unread">Unread (Author/Series)</string>
     <string name="style_builtin_update_date">Date updated</string>
     <string name="style_builtin_acquired_date">Acquired</string>
+    <string name="style_builtin_bookshelf">Bookshelf</string>
+    <string name="style_builtin_rating">Rating</string>
+    <string name="style_builtin_language">Language</string>
+    <string name="style_builtin_location">Location</string>
+    <string name="style_builtin_format">Format</string>
 
     <!-- ####################################################################################### -->
     <!-- == TAB labels - need to be very short -->
@@ -1174,7 +1225,7 @@
     <string name="import_options_dialog_title">Select what will be imported.</string>
     <!-- Explanatory note of the 'import from archive' "all books" option -->
     <string name="import_option_info_all_books">
-        All books in the archive will be imported, updating existing books and adding new ones.
+        New books will be added; existing books will be updated.
     </string>
     <!-- Text for the 'export to archive' option -->
     <string name="import_option_new_and_changed_books">New and updated books</string>
@@ -1215,8 +1266,9 @@
 
     <!-- Options for what will be exported/imported with archives. -->
     <string name="import_export_option_xml">All data in XML format</string>
+    <!-- Displayed as a reminder to the user -->
     <string name="import_export_option_xml_info">XML is export only, no import.</string>
-    <string name="import_export_option_csv">Books (CSV)</string>
+    <string name="import_export_option_csv">Books (*.csv)</string>
 
     <!-- ####################################################################################### -->
     <!-- === Import/Export CSV file specific strings == -->
@@ -1302,30 +1354,33 @@
     </string>
 
     <!-- ####################################################################################### -->
-    <!-- ========== need cleaning/renaming/moving...  ========== -->
+    <!-- ========== likely to change still  ========== -->
     <!-- ####################################################################################### -->
-
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
-    <string name="and_others">et. al.</string>
 
+    <!-- happy -->
     <string name="lbl_author_type">Author type</string>
-    <string name="lbl_author_primary">author</string>
-    <string name="lbl_author_secondary">co-author</string>
-    <string name="lbl_author_other">Other</string>
     <string name="lbl_author_translator">Translator</string>
-    <string name="lbl_author_introduction">Fore/Afterword</string>
     <string name="lbl_author_editor">Editor</string>
-    <string name="lbl_artist_cover">Cover artist</string>
-    <string name="lbl_artist_cover_colorist">Cover colorist</string>
-    <string name="lbl_artist_primary">artist</string>
-    <string name="lbl_artist_secondary">Co-artist</string>
-    <string name="lbl_artist_other">Other artist</string>
-    <string name="lbl_artist_colorist">Colorist</string>
     <string name="lbl_author_contributor">Contributor</string>
+    <string name="lbl_artist_colorist">Colorist</string>
+    <string name="lbl_author_other">Other</string>
 
-    <string name="pt_bob_show_details_uses_task">Fetch the Extra Book Details</string>
-    <string name="pt_bob_show_details_uses_task_on">using a background task</string>
-    <string name="pt_bob_show_details_uses_task_off">immediately</string>
+
+    <!-- art / illustrations -->
+    <string name="lbl_artist_primary">art</string>
+    <!-- Cover art / Cover illustration ?-->
+    <string name="lbl_artist_cover">Cover art</string>
+    <!-- ? -->
+    <string name="lbl_artist_cover_colorist">Cover colorist</string>
+
+    <!-- Not happy; needs changing-->
+    <string name="lbl_author_primary">writer</string>
+    <string name="lbl_author_secondary">co-author</string>
+    <string name="lbl_author_introduction">Fore/Afterword</string>
+    <string name="lbl_artist_secondary">More art</string>
+    <string name="lbl_artist_other">Other art</string>
+
 
 </resources>

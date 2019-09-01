@@ -136,17 +136,6 @@ public abstract class BRBaseActivity
     }
 
     /**
-     * Common for Backup and Restore activity; handles options-model results.
-     */
-    protected void onTaskCancelledMessage(@SuppressWarnings("unused")
-                                          @Nullable final Integer taskId) {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-        }
-        UserMessage.show(this, R.string.progress_end_cancelled);
-    }
-
-    /**
      * Interface for details of mFileDetails in current directory.
      */
     public interface FileDetails {

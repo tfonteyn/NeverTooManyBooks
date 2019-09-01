@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.debug;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -50,8 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.scanner.Pic2ShopScanner;
-import com.hardbacknutter.nevertoomanybooks.scanner.ZxingScanner;
+import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.googlebooks.GoogleBooksManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -78,7 +76,6 @@ public final class DebugReport {
             // Get app info
             PackageManager manager = context.getPackageManager();
             // deprecated... but replacing it fails entirely in API: 21. I presume doc-error.
-            @SuppressLint("PackageManagerGetSignatures")
             PackageInfo appInfo = manager.getPackageInfo(context.getPackageName(),
                                                          PackageManager.GET_SIGNATURES);
 
@@ -136,53 +133,57 @@ public final class DebugReport {
         // setup the mail message
         String subject = '[' + context.getString(R.string.app_name) + "] "
                          + context.getString(R.string.debug_subject);
-        final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
-                                      .setType("plain/text")
-                                      .putExtra(Intent.EXTRA_SUBJECT, subject)
-                                      .putExtra(Intent.EXTRA_EMAIL,
-                                                context.getString(R.string.email_debug)
-                                                       .split(";"));
+        String[] to = context.getString(R.string.email_debug).split(";");
+        Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
+                                .setType("plain/text")
+                                .putExtra(Intent.EXTRA_SUBJECT, subject)
+                                .putExtra(Intent.EXTRA_EMAIL, to);
+
         StringBuilder message = new StringBuilder();
 
-
         // Get app info
-        PackageInfo appInfo = App.getPackageInfo(0);
-        if (appInfo != null) {
-            message.append("App: ")
-                   .append(appInfo.packageName).append('\n')
-                   .append("Version: ")
-                   .append(appInfo.versionName)
-                   // versionCode deprecated and new method in API: 28, till then ignore...
-                   .append(" (").append(appInfo.versionCode).append(")\n");
+        PackageInfo packageInfo = App.getPackageInfo(0);
+        if (packageInfo != null) {
+            message.append("App: ").append(packageInfo.packageName).append('\n')
+                   .append("Version: ").append(packageInfo.versionName)
+                   .append(" (");
+            if (Build.VERSION.SDK_INT >= 28) {
+                message.append(packageInfo.getLongVersionCode());
+            } else {
+                message.append(packageInfo.versionCode);
+            }
+            message.append(")\n");
         } else {
             message.append("PackageInfo == null?");
         }
 
-        message.append("SDK: ").append(Build.VERSION.RELEASE)
-               .append(" (").append(Build.VERSION.SDK_INT)
-               .append(' ').append(Build.TAGS).append(")\n")
-               .append("Phone Model: ").append(Build.MODEL).append('\n')
-               .append("Phone Manufacturer: ").append(Build.MANUFACTURER).append('\n')
-               .append("Phone Device: ").append(Build.DEVICE).append('\n')
-               .append("Phone Product: ").append(Build.PRODUCT).append('\n')
-               .append("Phone Brand: ").append(Build.BRAND).append('\n')
-               .append("Phone ID: ").append(Build.ID).append('\n')
+        message.append("SDK: ")
+               /* */.append(Build.VERSION.RELEASE)
+               /* */.append(" (").append(Build.VERSION.SDK_INT).append(' ')
+               /* */.append(Build.TAGS).append(")\n")
+               .append("Model: ").append(Build.MODEL).append('\n')
+               .append("Manufacturer: ").append(Build.MANUFACTURER).append('\n')
+               .append("Device: ").append(Build.DEVICE).append('\n')
+               .append("Product: ").append(Build.PRODUCT).append('\n')
+               .append("Brand: ").append(Build.BRAND).append('\n')
+               .append("ID: ").append(Build.ID).append('\n')
+
                .append("Signed-By: ").append(signedBy(context)).append('\n')
-               .append("\nHistory:\n").append(Tracker.getEventsInfo()).append('\n');
+
+               //  urls
+               .append("Customizable Search sites URL:\n")
+               .append(AmazonManager.getBaseURL()).append('\n')
+               .append(GoogleBooksManager.getBaseURL()).append('\n');
 
         // Scanners installed
         try {
             message.append("Pref. Scanner: ")
-                   .append(App.getListPreference(Prefs.pk_scanning_preferred_scanner, -1))
+                   .append(App.getListPreference(Prefs.pk_scanner_preferred, -1))
                    .append('\n');
-            String[] scanners = new String[]{
-                    ZxingScanner.ACTION,
-                    Pic2ShopScanner.Free.ACTION,
-                    Pic2ShopScanner.Pro.ACTION,
-                    };
-            for (String scanner : scanners) {
-                message.append("Scanner [").append(scanner).append("]:\n");
-                final Intent mainIntent = new Intent(scanner, null);
+
+            for (String scannerAction : ScannerManager.ALL_ACTIONS) {
+                message.append("Scanner [").append(scannerAction).append("]:\n");
+                final Intent mainIntent = new Intent(scannerAction, null);
                 final List<ResolveInfo> resolved =
                         context.getPackageManager().queryIntentActivities(mainIntent, 0);
 
@@ -208,16 +209,15 @@ public final class DebugReport {
                 }
             }
         } catch (@NonNull final RuntimeException e) {
-            // Don't lose the other debug info if scanner data dies for some reason
+            // Don't lose the other debug info if collecting scanner data dies for some reason
             message.append("Scanner failure: ").append(e.getLocalizedMessage()).append('\n');
         }
         message.append('\n');
 
-        //  urls
-        message.append("Customizable Search sites URL:\n");
-        message.append(AmazonManager.getBaseURL()).append('\n');
-        message.append(GoogleBooksManager.getBaseURL()).append('\n');
+        // Tracker history
+        message.append("\nHistory:\n").append(Tracker.getEventsInfo()).append('\n');
 
+        // User input
         message.append("Details:\n\n")
                .append(context.getString(R.string.debug_body)).append("\n\n");
 
@@ -240,15 +240,15 @@ public final class DebugReport {
             for (String fileSpec : files) {
                 File file = StorageUtils.getFile(fileSpec);
                 if (file.exists() && file.length() > 0) {
-                    attachmentUris.add(FileProvider.getUriForFile(
-                            context, GenericFileProvider.AUTHORITY, file));
+                    attachmentUris.add(FileProvider.getUriForFile(context,
+                                                                  GenericFileProvider.AUTHORITY,
+                                                                  file));
                 }
             }
 
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachmentUris);
-            context.startActivity(
-                    Intent.createChooser(intent, context.getString(R.string.title_send_mail)));
-
+            String chooserText = context.getString(R.string.title_send_mail);
+            context.startActivity(Intent.createChooser(intent, chooserText));
             return true;
 
         } catch (@NonNull final NullPointerException e) {

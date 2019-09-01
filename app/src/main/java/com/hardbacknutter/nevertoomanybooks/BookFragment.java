@@ -194,7 +194,6 @@ public class BookFragment
         //noinspection ConstantConditions
         LocaleUtils.insanityCheck(getContext());
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
             TipManager.display(getContext(), R.string.tip_view_only_help, null);
         }
     }

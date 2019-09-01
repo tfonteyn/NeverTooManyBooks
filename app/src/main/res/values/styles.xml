@@ -57,14 +57,22 @@
     <!-- Page dividers -->
     <!-- *************************************************************************************** -->
 
-    <!-- basic horizontal divider line -->
-    <style name="SectionDivider">
+    <style name="HorizontalDivider">
         <item name="android:layout_width">0dp</item>
         <!-- reminder: don't set layout_height to wrap_content, will CF the layout -->
         <item name="android:layout_height">1dp</item>
         <item name="android:layout_marginTop">2dp</item>
         <item name="android:layout_marginBottom">2dp</item>
         <item name="android:background">?android:attr/dividerHorizontal</item>
+    </style>
+
+    <style name="VerticalDivider">
+        <!-- reminder: don't set layout_width to wrap_content, will CF the layout -->
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_marginStart">2dp</item>
+        <item name="android:layout_marginEnd">2dp</item>
+        <item name="android:background">?android:attr/dividerVertical</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -292,7 +300,6 @@
     <style name="OptionRow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/border1</item>
     </style>
 
     <!-- Menu label for options in a list -->
@@ -490,7 +497,6 @@
     <style name="DialogFrame">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:orientation">vertical</item>
         <item name="android:padding">@dimen/border2</item>
     </style>
 

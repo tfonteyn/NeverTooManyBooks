@@ -1,13 +1,17 @@
 Coding reminder:
-When using onCreateView for a DialogFragment with dynamic added content,
-onResume should force the enclosing dialog to be big enough:
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.WRAP_CONTENT; // MATCH_PARENT
-            dialog.getWindow().setLayout(width, height);
-        }
-
+When using DialogFragment, force the outer frame with:
+@Override
+public void onStart()
+{
+    super.onStart();
+    Dialog dialog = getDialog();
+    if (dialog != null)
+    {
+        int width = ViewGroup.LayoutParams.MATCH_PARENT; // WRAP_CONTENT
+        int height = ViewGroup.LayoutParams.MATCH_PARENT; // WRAP_CONTENT
+        dialog.getWindow().setLayout(width, height);
+    }
+}
 ----------------------------------------------------------------------------------------------------
 TODO: New anthology stuff:
  * when to delete entries in ANTHOLOGY ? when last book is gone? or keep them for adding
