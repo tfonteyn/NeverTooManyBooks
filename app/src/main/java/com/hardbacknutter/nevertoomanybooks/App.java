@@ -394,8 +394,8 @@ public class App
      */
     public static boolean getPrefBoolean(@NonNull final String key,
                                          final boolean defaultValue) {
-        Context context = sInstance.getApplicationContext();
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(key, defaultValue);
+        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                .getBoolean(key, defaultValue);
     }
 
     /**

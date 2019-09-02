@@ -71,7 +71,7 @@ public class EditBookPublicationFragment
         Fields fields = getFields();
 
         //noinspection ConstantConditions
-        Locale userLocale = LocaleUtils.getLocale(getContext());
+        Locale locale = LocaleUtils.getLocale(getContext());
 
         // multiple use
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
@@ -88,7 +88,7 @@ public class EditBookPublicationFragment
                         mBookModel.getFormats());
 
         field = fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
-                      .setFormatter(new Fields.LanguageFormatter(userLocale));
+                      .setFormatter(new Fields.LanguageFormatter(locale));
         initValuePicker(field, R.string.lbl_language, R.id.btn_language,
                         mBookModel.getLanguagesCodes());
 

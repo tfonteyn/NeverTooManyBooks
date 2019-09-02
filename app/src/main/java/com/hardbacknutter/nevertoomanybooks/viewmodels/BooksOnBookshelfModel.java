@@ -404,7 +404,7 @@ public class BooksOnBookshelfModel
                              final boolean isFullRebuild) {
         Objects.requireNonNull(mCurrentBookshelf);
 
-        Locale userLocale = LocaleUtils.getLocale(context);
+        Locale locale = LocaleUtils.getLocale(context);
 
         BooklistBuilder blb;
 
@@ -507,7 +507,7 @@ public class BooksOnBookshelfModel
                 blb.setFilterOnBookshelfId(mCurrentBookshelf.getId());
 
                 // Criteria supported by FTS
-                blb.setFilter(userLocale,
+                blb.setFilter(locale,
                               mSearchCriteria.ftsAuthor,
                               mSearchCriteria.ftsTitle,
                               mSearchCriteria.ftsKeywords);

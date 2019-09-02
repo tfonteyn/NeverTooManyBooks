@@ -221,7 +221,7 @@ public class BookFragment
         Fields fields = getFields();
 
         //noinspection ConstantConditions
-        Locale userLocale = LocaleUtils.getLocale(getContext());
+        Locale locale = LocaleUtils.getLocale(getContext());
 
         // multiple use
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
@@ -236,7 +236,7 @@ public class BookFragment
 
         fields.add(R.id.genre, DBDefinitions.KEY_GENRE);
         fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
-              .setFormatter(new Fields.LanguageFormatter(userLocale));
+              .setFormatter(new Fields.LanguageFormatter(locale));
         fields.add(R.id.pages, DBDefinitions.KEY_PAGES)
               .setFormatter(new Fields.PagesFormatter())
               .setZeroIsEmpty(true);
@@ -376,7 +376,7 @@ public class BookFragment
         menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
 
         menu.add(R.id.MENU_UPDATE_FROM_INTERNET, R.id.MENU_UPDATE_FROM_INTERNET,
-                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields)
+                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_fields)
             .setIcon(R.drawable.ic_cloud_download);
 
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {

@@ -105,8 +105,8 @@
  * ------------------------------------------
  * Serialised User-defined BooklistStyle
  * <p>
- * <strong>Note:</strong> future versions may drop this entry when writing and instead write xml file(s)
- * Reading legacy file *should* be preserved.
+ * <strong>Note:</strong> future versions may drop this entry when writing and
+ * instead write xml file(s). Reading legacy file *should* be preserved.
  * <p>
  * Optional Data Entries: "*.xml"
  * ------------------------------

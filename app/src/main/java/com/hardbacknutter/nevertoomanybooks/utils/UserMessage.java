@@ -48,8 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * TODO: 2019... it's probably time to remove Toast.
  * <p>
  * https://developer.android.com/training/snackbar
- * <strong>Note:</strong> The Snackbar class supersedes Toast. While Toast is currently still supported,
- * Snackbar is now the preferred way to display brief messages to the user.
+ * <strong>Note:</strong> The Snackbar class supersedes Toast.
+ * While Toast is currently still supported, Snackbar is now the preferred way
+ * to display brief messages to the user.
  */
 public final class UserMessage {
 

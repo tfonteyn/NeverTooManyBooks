@@ -34,7 +34,7 @@ apply plugin: 'com.android.application'
 //}
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 28
 
     //  May 7, 2019.: https://developer.android.com/about/dashboards/
     //  A       API     %
@@ -50,7 +50,7 @@ android {
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
         minSdkVersion 23
-        targetSdkVersion 29
+        targetSdkVersion 28
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

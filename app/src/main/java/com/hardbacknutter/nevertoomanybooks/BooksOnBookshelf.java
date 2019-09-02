@@ -58,7 +58,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.BookRowInfo;
@@ -319,9 +319,10 @@ public class BooksOnBookshelf
         menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
             .setIcon(R.drawable.ic_unfold_less);
 
+        // Disabled for now. It's a bit to easy for the user to select this from here,
         // This will use the currently displayed book list (the book ID's)
-        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, 0, R.string.lbl_update_fields)
-            .setIcon(R.drawable.ic_cloud_download);
+//        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, 0, R.string.lbl_update_fields)
+//            .setIcon(R.drawable.ic_cloud_download);
 
         menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, 0, R.string.menu_clear_search_filters)
             .setIcon(R.drawable.ic_undo);
@@ -337,6 +338,13 @@ public class BooksOnBookshelf
             subMenu.add(Menu.NONE, R.id.MENU_EXPORT_DATABASE, 0, R.string.lbl_copy_database);
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    @CallSuper
+    public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
+        menu.findItem(R.id.MENU_CLEAR_FILTERS).setEnabled(!mModel.getSearchCriteria().isEmpty());
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -547,26 +555,29 @@ public class BooksOnBookshelf
             // from BaseActivity Nav Panel
             case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (resultCode == Activity.RESULT_OK) {
+
                     if ((data != null) && data.hasExtra(UniqueId.BKEY_IMPORT_RESULT)) {
                         // RestoreActivity:
                         int options = data.getIntExtra(UniqueId.BKEY_IMPORT_RESULT,
-                                                       ImportOptions.NOTHING);
-
-                        if ((options & ImportOptions.PREFERENCES) != 0) {
-                            // the imported prefs could have a different preferred bookshelf.
-                            if (mModel.reloadCurrentBookshelf(this)) {
-                                mModel.setFullRebuild(true);
+                                                       Options.NOTHING);
+                        if (options != 0) {
+                            if ((options & Options.BOOK_LIST_STYLES) != 0) {
+                                // Force a refresh of the list of user styles.
+                                BooklistStyle.Helper.reload();
                             }
-                        }
-                        if ((options & ImportOptions.BOOK_LIST_STYLES) != 0) {
-                            // Assume style changes make a rebuild needed.
+                            if ((options & Options.PREFERENCES) != 0) {
+                                // Refresh the preferred bookshelf. This also refreshes its style.
+                                mModel.reloadCurrentBookshelf(this);
+                            }
+
+                            // styles, prefs, books, covers,... it all requires a rebuild.
                             mModel.setFullRebuild(true);
                         }
                     }
                     //else if ((data != null) && data.hasExtra(UniqueId.BKEY_EXPORT_RESULT)) {
                     // BackupActivity:
-//                        int options = data.getIntExtra(UniqueId.BKEY_EXPORT_RESULT,
-//                                ExportOptions.NOTHING);
+                    // int options = data.getIntExtra(UniqueId.BKEY_EXPORT_RESULT, Options.NOTHING);
+                    // nothing to do
                     //}
 
 //                    if ((data != null) && data.hasExtra(UniqueId.ZZZZ)) {
@@ -1101,7 +1112,7 @@ public class BooksOnBookshelf
                     .setIcon(R.drawable.ic_goodreads2);
 
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                         MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields_long)
+                         MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_fields)
                     .setIcon(R.drawable.ic_cloud_download);
 
                 boolean hasIsfdbId = 0 != row.getLong(DBDefinitions.KEY_ISFDB_ID);
@@ -1113,7 +1124,7 @@ public class BooksOnBookshelf
                 if (hasIsfdbId || hasGoodreadsId || hasLibraryThingId || hasOpenLibraryId) {
                     SubMenu subMenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_VIEW_BOOK_AT_SITE,
                                                       MenuHandler.ORDER_VIEW_BOOK_AT_SITE,
-                                                      R.string.menu_view_book_at_ellipsis)
+                                                      R.string.menu_view_book_at)
                                           .setIcon(R.drawable.ic_link);
                     if (hasIsfdbId) {
                         subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_ISFDB, 0,
@@ -1151,7 +1162,7 @@ public class BooksOnBookshelf
                         .setIcon(R.drawable.ic_check_box_outline_blank);
                 }
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                         MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields_long)
+                         MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_books)
                     .setIcon(R.drawable.ic_cloud_download);
                 break;
 
@@ -1171,7 +1182,7 @@ public class BooksOnBookshelf
                             .setIcon(R.drawable.ic_check_box_outline_blank);
                     }
                     menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                             MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields_long)
+                             MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_books)
                         .setIcon(R.drawable.ic_cloud_download);
                 }
                 break;

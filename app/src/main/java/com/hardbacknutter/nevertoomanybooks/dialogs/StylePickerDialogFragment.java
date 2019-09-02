@@ -131,7 +131,7 @@ public class StylePickerDialogFragment
         return new AlertDialog.Builder(getContext())
                        .setTitle(R.string.title_select_style)
                        .setView(root)
-                       .setNeutralButton(R.string.menu_customize_ellipsis, (d, w) -> {
+                       .setNeutralButton(R.string.btn_customize, (d, w) -> {
                            Intent intent = new Intent(getContext(), PreferredStylesActivity.class);
                            // use the activity so we get the results there.
                            getActivity().startActivityForResult(intent,
@@ -146,8 +146,8 @@ public class StylePickerDialogFragment
 
     @StringRes
     private int posBtnTxtId() {
-        return mShowAllStyles ? R.string.menu_show_less_ellipsis
-                              : R.string.menu_show_more_ellipsis;
+        return mShowAllStyles ? R.string.btn_show_less
+                              : R.string.btn_show_more;
     }
 
     /**

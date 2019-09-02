@@ -111,7 +111,7 @@ public final class DEBUG_SWITCHES {
     /** {@link IsfdbBook}. */
     public static final boolean ISFDB_SEARCH = false;
     /** {@link IsfdbBook}. */
-    public static final boolean ISFDB_LOAD_PAGE = true;
+    public static final boolean ISFDB_LOAD_PAGE = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager}. */
     public static final boolean OPEN_LIBRARY_SEARCH = false;
     /** {@link DAO}. Check for leaking instances. */
@@ -176,8 +176,7 @@ public final class DEBUG_SWITCHES {
 
     /* ****************************************************************************************** */
     /**
-     * dump savedInstanceState/outState/extras/arguments for functions that
-     * have those parameters.
+     * dump savedInstanceState/outState/extras/arguments for functions that have those parameters.
      */
     public static final boolean DUMP_INSTANCE_STATE = false;
     /** dump the style each time it is accessed. Medium length in the log. */
@@ -187,10 +186,7 @@ public final class DEBUG_SWITCHES {
      * {@link com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection}.
      */
     public static final boolean DUMP_HTTP_URL = false;
-    /**
-     * Dump entire HTTP response to System.out.
-     * WARNING: can abort the function it's in.
-     */
+    /** Dump entire HTTP response to System.out. WARNING: can abort the function it's in. */
     public static final boolean DUMP_HTTP_RESPONSE = false;
     /** Enable strict mode reporting on network,disc,... usage. */
     static final boolean STRICT_MODE = false;

@@ -461,10 +461,10 @@ class ImportLegacyTask
                                @Nullable final BookCursor bookCursor,
                                @NonNull final Bundle review) {
 
-        Locale userLocale = LocaleUtils.getLocale(context);
+        Locale locale = LocaleUtils.getLocale(context);
         // The ListReviewsApi does not return the book language
         //noinspection UnnecessaryLocalVariable
-        Locale bookLocale = userLocale;
+        Locale bookLocale = locale;
 
         Bundle bookData = new Bundle();
 
@@ -610,7 +610,7 @@ class ImportLegacyTask
 
             for (Bundle shelfBundle : grShelves) {
                 String bsName = shelfBundle.getString(ListReviewsApiHandler.ReviewField.SHELF);
-                bsName = translateBookshelf(db, bsName, userLocale);
+                bsName = translateBookshelf(db, bsName, locale);
 
                 if (bsName != null && !bsName.isEmpty()) {
                     bsList.add(new Bookshelf(bsName, BooklistStyle
@@ -619,7 +619,7 @@ class ImportLegacyTask
             }
             //TEST see above
             //--- begin 2019-02-04 ---
-            ItemWithFixableId.pruneList(context, db, bsList, userLocale);
+            ItemWithFixableId.pruneList(context, db, bsList, locale);
             //--- end 2019-02-04 ---
 
             bookData.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);

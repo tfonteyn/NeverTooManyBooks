@@ -435,15 +435,12 @@ public final class LanguageUtils {
         return ""
                + "\nsSystemInitialLocale       : " + systemLocale.getDisplayName()
                + "\nsSystemInitialLocale(cur)  : " + systemLocale.getDisplayName(configLocale)
-               + (configLocale == null ? "" :
-                  "\nconfiguration.locale       : " + configLocale.getDisplayName()
-                  + "\nconfiguration.locale(cur)  : " + configLocale.getDisplayName(configLocale)
-               )
+               + "\nconfiguration.locale       : " + configLocale.getDisplayName()
+               + "\nconfiguration.locale(cur)  : " + configLocale.getDisplayName(configLocale)
                + "\nLocale.getDefault()        : " + defaultLocale.getDisplayName()
                + "\nLocale.getDefault(cur)     : " + defaultLocale.getDisplayName(configLocale)
                + "\ngetPreferredLocale()       : " + prefLocale.getDisplayName()
                + "\ngetPreferredLocale(cur)    : " + prefLocale.getDisplayName(configLocale)
-
                + "\nApp.isInNeedOfRecreating() : " + App.isInNeedOfRecreating()
                + "\nApp.isRecreating()         : " + App.isRecreating();
     }

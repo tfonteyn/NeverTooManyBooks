@@ -33,27 +33,29 @@
     style="@style/DialogFrame"
     android:orientation="vertical"
     >
+
     <TextView
         android:id="@+id/fixedContent"
         style="@style/Blurb"
         android:layout_width="wrap_content"
-        android:text="@string/tip_authors_works"
         android:layout_marginBottom="@dimen/border2"
+        android:text="@string/tip_authors_works"
         tools:ignore="SelectableText"
         />
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:drawableStart="@drawable/ic_library_books"
         android:drawablePadding="@dimen/border2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="@string/tip_authors_works_multiple_books"
         />
+
     <TextView
-        android:drawableStart="@drawable/ic_book"
-        android:drawablePadding="@dimen/border2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:drawableStart="@drawable/ic_book"
+        android:drawablePadding="@dimen/border2"
         android:text="@string/tip_authors_works_book"
         />
 </LinearLayout>

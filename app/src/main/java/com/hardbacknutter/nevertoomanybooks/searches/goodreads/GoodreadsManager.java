@@ -669,8 +669,8 @@ public class GoodreadsManager
             // We found a Goodreads book, update it
             long reviewId = 0;
 
-            // not the bookLocale.
-            Locale userLocale = LocaleUtils.getLocale(context);
+            // do not use the bookLocale!
+            Locale locale = LocaleUtils.getLocale(context);
 
             // Get the review id if we have the book details. For new books, it will not be present.
             if (!isNew && grBook.containsKey(ShowBookFieldName.REVIEW_ID)) {
@@ -688,7 +688,7 @@ public class GoodreadsManager
                 shelves.add(bookshelfName);
 
                 final String canonicalShelfName =
-                        GoodreadsShelf.canonicalizeName(bookshelfName, userLocale);
+                        GoodreadsShelf.canonicalizeName(bookshelfName, locale);
                 canonicalShelves.add(canonicalShelfName);
 
                 // Count how many of these shelves are exclusive in Goodreads.
@@ -708,7 +708,7 @@ public class GoodreadsManager
                 }
                 if (!shelves.contains(pseudoShelf)) {
                     shelves.add(pseudoShelf);
-                    canonicalShelves.add(GoodreadsShelf.canonicalizeName(pseudoShelf, userLocale));
+                    canonicalShelves.add(GoodreadsShelf.canonicalizeName(pseudoShelf, locale));
                 }
             }
 
@@ -741,7 +741,7 @@ public class GoodreadsManager
             for (String shelf : shelves) {
                 // Get the name the shelf will have at Goodreads
                 final String canonicalShelfName =
-                        GoodreadsShelf.canonicalizeName(shelf, userLocale);
+                        GoodreadsShelf.canonicalizeName(shelf, locale);
                 // Can only sent canonical shelf names if the book is on 0 or 1 of them.
                 boolean okToSend = exclusiveCount < 2
                                    || !grShelfList.isExclusive(canonicalShelfName);

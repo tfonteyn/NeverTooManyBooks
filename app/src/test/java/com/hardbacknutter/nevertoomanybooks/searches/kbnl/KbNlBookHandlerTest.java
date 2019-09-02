@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class KbNlHandlerTest {
+class KbNlBookHandlerTest {
 
     private static final String bookFilename = "/kbnl-book-1.xml";
     private static final String comicFilename = "/kbnl-comic-1.xml";
@@ -61,7 +61,7 @@ class KbNlHandlerTest {
     @Mock
     Bundle mBookData;
 
-    private KbNlHandler mHandler;
+    private KbNlBookHandler mHandler;
     private SAXParser mParser;
 
     @BeforeEach
@@ -71,7 +71,7 @@ class KbNlHandlerTest {
         mBookData = BundleMock.mock();
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        mHandler = new KbNlHandler(mBookData);
+        mHandler = new KbNlBookHandler(mBookData);
         mParser = factory.newSAXParser();
     }
 

@@ -58,7 +58,8 @@ public interface ItemWithFixableId {
      * ENHANCE: Add {@link Series} aliases table to allow further pruning
      * (e.g. 'Amber Series' <==> 'Amber').
      *
-     * <strong>Note:</strong> the context and the fallbackLocale must both be null, or both be non-null.
+     * <strong>Note:</strong> the context and the fallbackLocale must both be null,
+     * or both be non-null.
      *
      * @param <T>            ItemWithFixableId object
      * @param context        Current context

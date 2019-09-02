@@ -40,6 +40,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
@@ -131,7 +132,7 @@ public class ExportOptionsDialogFragment
                 mOptions.dateFrom = DateUtils.parseDate(date);
             } catch (@NonNull final RuntimeException e) {
                 UserMessage.show(mDateSinceView, R.string.hint_date_not_set_with_brackets);
-                mOptions.what = ExportOptions.NOTHING;
+                mOptions.what = Options.NOTHING;
             }
         } else {
             mOptions.what &= ~ExportOptions.EXPORT_SINCE;

@@ -73,6 +73,9 @@ public final class Format {
         // KBNL, not already listed above.
         MAPPER.put("geb.", R.string.book_format_hardcover);
 
+        // Seen elsewhere, not activated for now.
+        // MAPPER.put("hardback, R.string.book_format_hardcover);
+        // MAPPER.put("gebonden, R.string.book_format_hardcover);
     }
 
     /**

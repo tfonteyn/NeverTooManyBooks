@@ -10,8 +10,6 @@ Small notes in addition (with a pinch of salt... as I change my own mind from ti
        view.getText().toString().trim();
 
     Eventually the database will then be trim-proof.
-    TODO: perhaps run a batch correction on all fields as an update ? bit brutal...
-
     No doubt some places do a trim which is not really needed, something for a rainy day.
 
 * Layout in code:
@@ -38,11 +36,10 @@ Small notes in addition (with a pinch of salt... as I change my own mind from ti
         getText\(\).toString\(\)(?!\.trim)
 
 
-* TODO tags used; always followed with a colon
+* Tags used; always followed with a colon
   - TODO:
   - FIXME:
   - ENHANCE:
-  - API: like enhance, but specific for Android upgrades
   - TEST: work done, but needs proper testing
   - RELEASE: things that must be checked before doing a public release
   - NEWKIND: where a list of 'items' is processed -> where you can/should add 'items' to that list

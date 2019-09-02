@@ -65,7 +65,10 @@ public class KbNlManager
     /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
 
-    /** RELEASE: Chrome 2019-08-12. Update to latest version. */
+    /**
+     * RELEASE: Chrome 2019-08-12. Update to latest version.
+     * The site does not return full data unless the user agent header is set to a valid browser.
+     */
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
                                              + " AppleWebKit/537.36 (KHTML, like Gecko)"
                                              + " Chrome/76.0.3809.100 Safari/537.36";
@@ -78,8 +81,25 @@ public class KbNlManager
      */
     private static final String BASE_URL_COVERS =
             "https://webservices.bibliotheek.be/index.php?func=cover&ISBN=%1$s&coversize=%2$s";
+
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_KB";
+
+    /**
+     * Response with Dutch labels.
+     * <p>
+     * param 1: isb
+     */
+    private static final String BOOK_URL =
+            "/DB=1/SET=1/TTL=1/LNG=NE/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=%1$s";
+    /* Response with English labels. */
+    //private static final String BOOK_URL =
+    //      "/DB=1/SET=1/TTL=1/LNG=EN/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=%1$s";
+
+    /**
+     * param 1: site specific author id
+     */
+    private static final String AUTHOR_URL = "http://opc4.kb.nl/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
 
     public KbNlManager() {
     }
@@ -105,17 +125,11 @@ public class KbNlManager
             return new Bundle();
         }
 
-        String url;
-        // Response with English labels.
-//      url = getBaseURL() + "/DB=1/SET=1/TTL=1/LNG=EN/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=" + isbn;
-        // Response with Dutch labels.
-        url = getBaseURL() + "/DB=1/SET=1/TTL=1/LNG=NE/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=" + isbn;
+        String url = getBaseURL() + String.format(BOOK_URL, isbn);
 
         Bundle bookData = new Bundle();
-
         SAXParserFactory factory = SAXParserFactory.newInstance();
-
-        KbNlHandler handler = new KbNlHandler(bookData);
+        KbNlBookHandler handler = new KbNlBookHandler(bookData);
 
         try (TerminatorConnection terminatorConnection = new TerminatorConnection(url)) {
             HttpURLConnection con = terminatorConnection.getHttpURLConnection();
@@ -145,7 +159,7 @@ public class KbNlManager
 
     /**
      * Ths kb.nl site does not have images, but we try bibliotheek.be.
-     *
+     * <p>
      * https://webservices.bibliotheek.be/index.php?func=cover&ISBN=9789463731454&coversize=large
      *
      * @param isbn to search for

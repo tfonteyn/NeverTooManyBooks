@@ -89,7 +89,7 @@ public final class MenuHandler {
                     R.string.menu_add_book_by_isbn)
                .setIcon(R.drawable.ic_zoom_in);
         subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, 0,
-                    R.string.menu_search_internet)
+                    R.string.menu_add_book_by_internet_search)
                .setIcon(R.drawable.ic_zoom_in);
         subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_MANUALLY, 0,
                     R.string.menu_add_book_manually)
@@ -143,7 +143,7 @@ public final class MenuHandler {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_VIEW_BOOK_AT_SITE,
                                           R.id.SUBMENU_VIEW_BOOK_AT_SITE,
                                           ORDER_VIEW_BOOK_AT_SITE,
-                                          R.string.menu_view_book_at_ellipsis)
+                                          R.string.menu_view_book_at)
                               .setIcon(R.drawable.ic_link);
         subMenu.add(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
                     R.id.MENU_VIEW_BOOK_AT_GOODREADS, 0,

@@ -39,8 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 /**
  * Hosting activity for admin functions.
  * <p>
- * <strong>Note:</strong> eventually these 'hosting' activities are meant to go. The idea is to have ONE
- * hosting/main activity, which swaps in fragments as needed.
+ * <strong>Note:</strong> eventually these 'hosting' activities are meant to go.
+ * The idea is to have ONE hosting/main activity, which swaps in fragments as needed.
  */
 public class AdminActivity
         extends BaseActivity {
@@ -53,7 +53,7 @@ public class AdminActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.menu_administration_long);
+        setTitle(R.string.title_administration);
 
         FragmentManager fm = getSupportFragmentManager();
         if (null == fm.findFragmentByTag(AdminFragment.TAG)) {

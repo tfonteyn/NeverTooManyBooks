@@ -41,8 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Base class for parsing the output any web request that returns an XML response.
- * <strong>Note:</strong> this does not include general web page parsing since they often do not conform
- * to XML formatting standards.
+ * <strong>Note:</strong> this does not include general web page parsing since they often
+ * do not conform to XML formatting standards.
  * <p>
  * This class is used with the {@link XmlFilter} class to call user-defined code at
  * specific points in an XML file.

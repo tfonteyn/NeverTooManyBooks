@@ -158,7 +158,7 @@
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="fields.visibility.notes"
-                android:title="@string/lbl_notes" />
+                android:title="@string/lbl_personal_notes" />
 
             <SwitchPreference
                 android:defaultValue="true"

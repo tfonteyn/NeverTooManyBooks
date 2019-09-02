@@ -328,8 +328,6 @@ public class PartialDatePickerDialogFragment
     class PartialDatePickerDialog
             extends AlertDialog {
 
-        private final NumberPicker mYearPicker;
-        private final NumberPicker mMonthPicker;
         private final NumberPicker mDayPicker;
 
         /** Called after any change made to the pickers. */
@@ -366,8 +364,8 @@ public class PartialDatePickerDialogFragment
         /**
          * Constructor.
          *
-         * <strong>Note:</strong> we explicitly pass in the inflater (independent from the context) so
-         * we are 100% sure we're using the same one as in {@link #onCreateDialog}.
+         * <strong>Note:</strong> we explicitly pass in the inflater (independent from the
+         * context) so we are 100% sure we're using the same one as in {@link #onCreateDialog}.
          * Call it paranoia.
          *
          * @param context        Current context
@@ -385,20 +383,20 @@ public class PartialDatePickerDialogFragment
             // Set the view
             setView(root);
 
-            mYearPicker = root.findViewById(R.id.year);
-            mYearPicker.setId(R.id.PICKER_YEAR);
-            mYearPicker.setMinValue(0);
+            NumberPicker yearPicker = root.findViewById(R.id.year);
+            yearPicker.setId(R.id.PICKER_YEAR);
+            yearPicker.setMinValue(0);
             // we're optimistic...
-            mYearPicker.setMaxValue(2100);
-            mYearPicker.setOnValueChangedListener(mOnValueChangeListener);
+            yearPicker.setMaxValue(2100);
+            yearPicker.setOnValueChangedListener(mOnValueChangeListener);
 
-            mMonthPicker = root.findViewById(R.id.month);
-            mMonthPicker.setId(R.id.PICKER_MONTH);
-            mMonthPicker.setMinValue(0);
+            NumberPicker monthPicker = root.findViewById(R.id.month);
+            monthPicker.setId(R.id.PICKER_MONTH);
+            monthPicker.setMinValue(0);
             // 12 months + the 'not set'
-            mMonthPicker.setMaxValue(12);
-            mMonthPicker.setDisplayedValues(mMonthNames);
-            mMonthPicker.setOnValueChangedListener(mOnValueChangeListener);
+            monthPicker.setMaxValue(12);
+            monthPicker.setDisplayedValues(mMonthNames);
+            monthPicker.setOnValueChangedListener(mOnValueChangeListener);
 
             mDayPicker = root.findViewById(R.id.day);
             mDayPicker.setId(R.id.PICKER_DAY);
@@ -411,8 +409,8 @@ public class PartialDatePickerDialogFragment
             mDayPicker.setOnValueChangedListener(mOnValueChangeListener);
 
             // initial date
-            mYearPicker.setValue(mYear != null ? mYear : mCurrentYear);
-            mMonthPicker.setValue(mMonth != null ? mMonth : 0);
+            yearPicker.setValue(mYear != null ? mYear : mCurrentYear);
+            monthPicker.setValue(mMonth != null ? mMonth : 0);
             mDayPicker.setValue(mDay != null ? mDay : 0);
             setDaysOfMonth();
 

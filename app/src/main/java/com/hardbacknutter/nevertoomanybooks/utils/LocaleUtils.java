@@ -288,8 +288,7 @@ public final class LocaleUtils {
     }
 
     public static void insanityCheck(@NonNull final Context context) {
-        Locale locale = getConfiguredLocale(context);
-        String conIso3 = locale.getISO3Language();
+        String conIso3 = getConfiguredLocale(context).getISO3Language();
         String defIso3 = Locale.getDefault().getISO3Language();
 
         if (!defIso3.equals(conIso3)) {

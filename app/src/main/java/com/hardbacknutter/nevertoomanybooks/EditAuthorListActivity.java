@@ -134,11 +134,11 @@ public class EditAuthorListActivity
     private void processChanges(@NonNull final Author author,
                                 @NonNull final Author newAuthorData) {
 
-        Locale userLocale = LocaleUtils.getLocale(this);
+        Locale locale = LocaleUtils.getLocale(this);
 
         // See if the old one is used by any other books.
-        long nrOfReferences = mModel.getDb().countBooksByAuthor(this, userLocale, author)
-                              + mModel.getDb().countTocEntryByAuthor(this, userLocale, author);
+        long nrOfReferences = mModel.getDb().countBooksByAuthor(this, locale, author)
+                              + mModel.getDb().countTocEntryByAuthor(this, locale, author);
 
         // if it's not, then we can simply re-use the old object.
         if (mModel.isSingleUsage(nrOfReferences)) {
@@ -150,7 +150,7 @@ public class EditAuthorListActivity
              * TODO: simplify / don't orphan?
              */
             author.copyFrom(newAuthorData, true);
-            ItemWithFixableId.pruneList(this, mModel.getDb(), mList, userLocale);
+            ItemWithFixableId.pruneList(this, mModel.getDb(), mList, locale);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -190,10 +190,10 @@ public class EditAuthorListActivity
          * TODO: speculate if this can be simplified.
          */
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, (d, which) -> {
-            mModel.setGlobalReplacementsMade(mModel.getDb().globalReplace(this, userLocale,
+            mModel.setGlobalReplacementsMade(mModel.getDb().globalReplace(this, locale,
                                                                           author, newAuthorData));
             author.copyFrom(newAuthorData, false);
-            ItemWithFixableId.pruneList(this, mModel.getDb(), mList, userLocale);
+            ItemWithFixableId.pruneList(this, mModel.getDb(), mList, locale);
             mListAdapter.notifyDataSetChanged();
         });
 
@@ -217,7 +217,7 @@ public class EditAuthorListActivity
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
                          (d, which) -> {
                              author.copyFrom(newAuthorData, true);
-                             ItemWithFixableId.pruneList(this, mModel.getDb(), mList, userLocale);
+                             ItemWithFixableId.pruneList(this, mModel.getDb(), mList, locale);
                              mListAdapter.notifyDataSetChanged();
                          });
 

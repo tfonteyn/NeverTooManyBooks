@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
 import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
+import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
@@ -504,8 +505,8 @@ public class XmlExporter
 
         int delta = 0;
 
-        boolean incStyles = (mSettings.what & ExportOptions.BOOK_LIST_STYLES) != 0;
-        boolean incPrefs = (mSettings.what & ExportOptions.PREFERENCES) != 0;
+        boolean incStyles = (mSettings.what & Options.BOOK_LIST_STYLES) != 0;
+        boolean incPrefs = (mSettings.what & Options.PREFERENCES) != 0;
 
         try (OutputStreamWriter osw = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
              BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE)) {

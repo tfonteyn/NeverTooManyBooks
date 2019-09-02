@@ -215,13 +215,13 @@ public class CoverHandler {
                                      .setIcon(R.drawable.ic_find_replace);
 
         replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_CAMERA, 0,
-                           R.string.menu_cover_add_from_camera)
+                           R.string.menu_cover_replace_from_camera)
                       .setIcon(R.drawable.ic_add_a_photo);
         replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_GALLERY, 0,
-                           R.string.menu_cover_add_from_gallery)
+                           R.string.menu_cover_replace_from_gallery)
                       .setIcon(R.drawable.ic_photo_gallery);
         replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_ALT_EDITIONS, 0,
-                           R.string.menu_cover_search_alt_editions)
+                           R.string.menu_cover_replace_from_alt_editions)
                       .setIcon(R.drawable.ic_find_replace);
 
         SubMenu rotateSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_ROTATE, 0,

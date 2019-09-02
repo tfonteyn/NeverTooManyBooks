@@ -79,8 +79,8 @@ public class EditLanguageDialog
     protected void saveChanges(@NonNull final Context context,
                                @NonNull final String from,
                                @NonNull final String to) {
-        Locale userLocale = LocaleUtils.getLocale(context);
-        mDb.updateLanguage(from, LanguageUtils.getIso3fromDisplayName(to, userLocale));
+        Locale locale = LocaleUtils.getLocale(context);
+        mDb.updateLanguage(from, LanguageUtils.getIso3fromDisplayName(to, locale));
         if (mListener != null) {
             mListener.onBookChanged(0, BookChangedListener.LANGUAGE, null);
         }

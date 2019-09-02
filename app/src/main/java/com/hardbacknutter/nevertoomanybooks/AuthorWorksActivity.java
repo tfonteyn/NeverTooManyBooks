@@ -41,8 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 /**
  * Hosting activity for showing an author.
  * <p>
- * <strong>Note:</strong> eventually these 'hosting' activities are meant to go. The idea is to have ONE
- * hosting/main activity, which swaps in fragments as needed.
+ * <strong>Note:</strong> eventually these 'hosting' activities are meant to go.
+ * The idea is to have ONE hosting/main activity, which swaps in fragments as needed.
  */
 public class AuthorWorksActivity
         extends BaseActivity {

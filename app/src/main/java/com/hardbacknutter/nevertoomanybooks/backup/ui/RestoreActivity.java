@@ -129,7 +129,7 @@ public class RestoreActivity
         if (message.taskId == R.id.TASK_ID_READ_FROM_ARCHIVE) {
             if (message.wasSuccessful) {
                 // see if there are any pre-200 preferences that need migrating.
-                if ((message.result.what & ImportOptions.PREFERENCES) != 0) {
+                if ((message.result.what & Options.PREFERENCES) != 0) {
                     Prefs.migratePreV200preferences(this, Prefs.PREF_LEGACY_BOOK_CATALOGUE);
                 }
 
@@ -154,7 +154,7 @@ public class RestoreActivity
         if (message.taskId == R.id.TASK_ID_READ_FROM_ARCHIVE) {
             if (message.wasSuccessful) {
                 // see if there are any pre-200 preferences that need migrating.
-                if ((message.result.what & ImportOptions.PREFERENCES) != 0) {
+                if ((message.result.what & Options.PREFERENCES) != 0) {
                     Prefs.migratePreV200preferences(this, Prefs.PREF_LEGACY_BOOK_CATALOGUE);
                 }
                 String reportMsg = getString(R.string.progress_end_import_complete)

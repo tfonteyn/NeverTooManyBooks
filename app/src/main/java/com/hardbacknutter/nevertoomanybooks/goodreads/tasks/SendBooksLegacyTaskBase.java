@@ -276,7 +276,7 @@ abstract class SendBooksLegacyTaskBase
                              @NonNull final DAO db) {
             final EventsCursor eventsCursor = (EventsCursor) cursor;
 
-            Locale userLocale = LocaleUtils.getLocale(context);
+            Locale locale = LocaleUtils.getLocale(context);
 
             // Update event info binding; the Views in the holder are unchanged,
             // but when it is reused the Event and id will change.
@@ -292,7 +292,7 @@ abstract class SendBooksLegacyTaskBase
                     author = author + ' ' + context.getString(R.string.and_others);
                 }
             } else {
-                author = context.getString(R.string.unknown).toUpperCase(userLocale);
+                author = context.getString(R.string.unknown).toUpperCase(locale);
             }
 
             String title = db.getBookTitle(mBookId);
@@ -304,7 +304,7 @@ abstract class SendBooksLegacyTaskBase
             holder.authorView.setText(context.getString(R.string.lbl_by_author_s, author));
             holder.errorView.setText(getDescription());
 
-            String date = DateUtils.toPrettyDateTime(userLocale, eventsCursor.getEventDate());
+            String date = DateUtils.toPrettyDateTime(locale, eventsCursor.getEventDate());
             holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
 
             holder.retryView.setVisibility(View.GONE);
@@ -346,7 +346,7 @@ abstract class SendBooksLegacyTaskBase
 
             // EDIT BOOK
             items.add(new ContextDialogItem(
-                    context.getString(R.string.menu_edit_book),
+                    context.getString(R.string.menu_edit),
                     () -> {
                         try {
                             GrSendBookEvent event =

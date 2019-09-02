@@ -128,7 +128,7 @@ public class EditBookFragment
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         menu.add(R.id.MENU_UPDATE_FROM_INTERNET, R.id.MENU_UPDATE_FROM_INTERNET,
-                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields)
+                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_fields)
             .setIcon(R.drawable.ic_cloud_download);
 
         super.onCreateOptionsMenu(menu, inflater);

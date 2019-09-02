@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
 import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
+import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvExporter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlExporter;
@@ -108,15 +109,15 @@ public abstract class BackupWriterAbstract
         mDb.purge();
 
         // keep track of what we wrote to the archive
-        int entitiesWritten = ExportOptions.NOTHING;
+        int entitiesWritten = Options.NOTHING;
         int bookCount = 0;
         int coverCount = 0;
 
-        boolean incBooks = (mSettings.what & ExportOptions.BOOK_CSV) != 0;
-        boolean incCovers = (mSettings.what & ExportOptions.COVERS) != 0;
-        boolean incStyles = (mSettings.what & ExportOptions.BOOK_LIST_STYLES) != 0;
-        boolean incPrefs = (mSettings.what & ExportOptions.PREFERENCES) != 0;
-        boolean incXml = (mSettings.what & ExportOptions.XML_TABLES) != 0;
+        boolean incBooks = (mSettings.what & Options.BOOK_CSV) != 0;
+        boolean incCovers = (mSettings.what & Options.COVERS) != 0;
+        boolean incStyles = (mSettings.what & Options.BOOK_LIST_STYLES) != 0;
+        boolean incPrefs = (mSettings.what & Options.PREFERENCES) != 0;
+        boolean incXml = (mSettings.what & Options.XML_TABLES) != 0;
 
         File tmpBookCsvFile = null;
 

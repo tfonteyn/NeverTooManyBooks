@@ -343,7 +343,8 @@ public class SearchBooksApiHandler
      *  }
      *  </pre>
      *
-     *  <strong>Note:</strong> the response does not contain the language code (checked with a french book).
+     *  <strong>Note:</strong> the response does not contain the language code
+     *  (checked with a french book).
      */
     private void buildFilters() {
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_SEARCH,

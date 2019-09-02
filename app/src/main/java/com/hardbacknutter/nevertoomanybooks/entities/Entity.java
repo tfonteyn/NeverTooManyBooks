@@ -49,8 +49,8 @@ public interface Entity {
     /**
      * Get the label to use.
      * <p>
-     * TODO: this should be the optional method and call getLabel(App.getFakeUserContext())
-     * but currently we have on the {@link BooklistStyle#getLabel(Context)},
+     * TODO: this should be the optional method and call getLabel(Context)
+     * but currently we have only one use of {@link BooklistStyle#getLabel(Context)},
      * while the non-context variant is used multiple time.
      *
      * @return the label.
@@ -59,8 +59,6 @@ public interface Entity {
 
     /**
      * Optional.
-     * <p>
-     * TODO: and this the mandatory method.
      *
      * @param context Current context
      *

@@ -1379,6 +1379,10 @@ public class BooklistStyle
         private Helper() {
         }
 
+        public static void reload() {
+            sUserStyles.clear();
+        }
+
         /**
          * Get the user-defined Styles from the database.
          *

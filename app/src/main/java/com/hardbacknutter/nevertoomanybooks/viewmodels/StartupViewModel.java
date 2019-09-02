@@ -188,23 +188,23 @@ public class StartupViewModel
 
 
         if (mStartupTasksShouldBeStarted) {
-            Locale userLocale = LocaleUtils.getLocale(context);
+            Locale locale = LocaleUtils.getLocale(context);
 
             int taskId = 0;
             // start this unconditionally
-            startTask(new BuildLanguageMappingsTask(++taskId, userLocale, mTaskListener));
+            startTask(new BuildLanguageMappingsTask(++taskId, locale, mTaskListener));
 
             // this is not critical, once every so often is fine
             if (mDoPeriodicAction) {
                 // cleaner must be started after the language mapper task.
-                startTask(new DBCleanerTask(++taskId, mDb, userLocale, mTaskListener));
+                startTask(new DBCleanerTask(++taskId, mDb, locale, mTaskListener));
             }
 
             // on demand only
             if (PreferenceManager.getDefaultSharedPreferences(context)
                                  .getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
                                              false)) {
-                startTask(new RebuildFtsTask(++taskId, mDb, userLocale, mTaskListener));
+                startTask(new RebuildFtsTask(++taskId, mDb, locale, mTaskListener));
             }
 
             // shouldn't be needed every single time.

@@ -447,7 +447,7 @@ public class UpdateFieldsFromInternetFragment
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setTitle(R.string.lbl_update_fields)
+                    .setTitle(R.string.menu_update_fields)
                     .setMessage(R.string.confirm_overwrite_thumbnail)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                     .setNeutralButton(R.string.no, (d, which) -> {

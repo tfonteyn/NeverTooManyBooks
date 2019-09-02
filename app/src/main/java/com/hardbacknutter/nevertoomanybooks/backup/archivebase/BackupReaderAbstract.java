@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
+import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
@@ -102,13 +103,13 @@ public abstract class BackupReaderAbstract
                                           .getDefaultSharedPreferences(App.getAppContext());
 
         // keep track of what we read from the archive
-        int entitiesRead = ImportOptions.NOTHING;
+        int entitiesRead = Options.NOTHING;
 
         // entities that only appear once
-        boolean incStyles = (mSettings.what & ImportOptions.BOOK_LIST_STYLES) != 0;
-        boolean incPrefs = (mSettings.what & ImportOptions.PREFERENCES) != 0;
-        boolean incBooks = (mSettings.what & ImportOptions.BOOK_CSV) != 0;
-        boolean incCovers = (mSettings.what & ImportOptions.COVERS) != 0;
+        boolean incStyles = (mSettings.what & Options.BOOK_LIST_STYLES) != 0;
+        boolean incPrefs = (mSettings.what & Options.PREFERENCES) != 0;
+        boolean incBooks = (mSettings.what & Options.BOOK_CSV) != 0;
+        boolean incCovers = (mSettings.what & Options.COVERS) != 0;
 
         // progress counters
         int coverCount = 0;
@@ -137,7 +138,7 @@ public abstract class BackupReaderAbstract
                     try (XmlImporter importer = new XmlImporter()) {
                         importer.doStyles(entity, progressListener);
                     }
-                    entitiesRead |= ImportOptions.BOOK_LIST_STYLES;
+                    entitiesRead |= Options.BOOK_LIST_STYLES;
                     incStyles = false;
                 }
                 reset();
@@ -151,7 +152,7 @@ public abstract class BackupReaderAbstract
                     try (XmlImporter importer = new XmlImporter()) {
                         importer.doPreferences(entity, prefs, progressListener);
                     }
-                    entitiesRead |= ImportOptions.PREFERENCES;
+                    entitiesRead |= Options.PREFERENCES;
                     incPrefs = false;
                 }
                 reset();
@@ -183,7 +184,7 @@ public abstract class BackupReaderAbstract
                                                                      entity.getInputStream(), null,
                                                                      progressListener);
                             }
-                            entitiesRead |= ImportOptions.BOOK_CSV;
+                            entitiesRead |= Options.BOOK_CSV;
                             incBooks = false;
                         }
                         break;
@@ -194,7 +195,7 @@ public abstract class BackupReaderAbstract
                             try (XmlImporter importer = new XmlImporter()) {
                                 importer.doPreferences(entity, prefs, progressListener);
                             }
-                            entitiesRead |= ImportOptions.PREFERENCES;
+                            entitiesRead |= Options.PREFERENCES;
                             incPrefs = false;
                         }
                         break;
@@ -205,7 +206,7 @@ public abstract class BackupReaderAbstract
                             try (XmlImporter importer = new XmlImporter()) {
                                 importer.doStyles(entity, progressListener);
                             }
-                            entitiesRead |= ImportOptions.BOOK_LIST_STYLES;
+                            entitiesRead |= Options.BOOK_LIST_STYLES;
                             incStyles = false;
                         }
                         break;
@@ -232,7 +233,7 @@ public abstract class BackupReaderAbstract
                             try (XmlImporter importer = new XmlImporter()) {
                                 importer.doPreferences(entity, legacyPrefs, progressListener);
                             }
-                            entitiesRead |= ImportOptions.PREFERENCES;
+                            entitiesRead |= Options.PREFERENCES;
                         }
                         break;
 
@@ -249,7 +250,7 @@ public abstract class BackupReaderAbstract
         } finally {
             // report what we actually imported
             if (coverCount > 0) {
-                entitiesRead |= ImportOptions.COVERS;
+                entitiesRead |= Options.COVERS;
                 // sanity check... we would not have covers unless we had books? or would we?
                 if (mSettings.results == null) {
                     mSettings.results = new Importer.Results();

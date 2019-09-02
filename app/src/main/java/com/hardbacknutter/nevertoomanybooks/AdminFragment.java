@@ -51,6 +51,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvExporter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.ExportCSVTask;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.ImportCSVTask;
@@ -177,7 +178,7 @@ public class AdminFragment
             mProgressDialog.show(fm, TAG);
             //noinspection ConstantConditions
             ExportCSVTask task = new ExportCSVTask(getContext(),
-                                                   new ExportOptions(ExportOptions.BOOK_CSV),
+                                                   new ExportOptions(Options.BOOK_CSV),
                                                    mModel.getTaskListener());
             mModel.setTask(task);
             task.execute();
@@ -218,7 +219,7 @@ public class AdminFragment
      * @param file the CSV file to read
      */
     private void importFromCSV(@NonNull final File file) {
-        ImportOptions settings = new ImportOptions(ImportOptions.BOOK_CSV);
+        ImportOptions settings = new ImportOptions(Options.BOOK_CSV);
 
         View content = getLayoutInflater().inflate(R.layout.dialog_import_options, null);
         content.findViewById(R.id.cbx_group).setVisibility(View.GONE);

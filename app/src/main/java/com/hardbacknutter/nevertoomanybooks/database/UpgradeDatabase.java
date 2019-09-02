@@ -343,7 +343,7 @@ public final class UpgradeDatabase {
 
         db.execSQL("ALTER TABLE " + table + " ADD " + destination + " text not null default ''");
 
-        Locale userLocale = LocaleUtils.getLocale(App.getLocalizedAppContext());
+        Locale locale = LocaleUtils.getLocale(App.getLocalizedAppContext());
         SQLiteStatement update = db.compileStatement(
                 "UPDATE " + table + " SET " + destination + "=?"
                 + " WHERE " + DBDefinitions.DOM_PK_ID + "=?");
@@ -354,7 +354,7 @@ public final class UpgradeDatabase {
             while (cur.moveToNext()) {
                 final long id = cur.getLong(0);
                 final String in = cur.getString(1);
-                update.bindString(1, DAO.encodeOrderByColumn(in, userLocale));
+                update.bindString(1, DAO.encodeOrderByColumn(in, locale));
                 update.bindLong(2, id);
                 update.executeUpdateDelete();
             }

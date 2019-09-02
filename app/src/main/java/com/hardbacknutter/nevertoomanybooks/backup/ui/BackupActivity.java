@@ -122,9 +122,9 @@ public class BackupActivity
         mFilenameView.setText(file.getName());
     }
 
-    protected void onTaskCancelledMessage(@SuppressWarnings("unused")
-                                          @NonNull
-                                          final TaskListener.TaskFinishedMessage<ExportOptions> message) {
+    protected void onTaskCancelledMessage(
+            @SuppressWarnings("unused")
+            @NonNull final TaskListener.TaskFinishedMessage<ExportOptions> message) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }

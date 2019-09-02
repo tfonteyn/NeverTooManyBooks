@@ -245,7 +245,7 @@
             android:id="@+id/lbl_notes"
             style="@style/FieldLabel"
             android:labelFor="@id/notes"
-            android:text="@string/menu_edit_book_notes"
+            android:text="@string/lbl_personal_notes"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/notes_divider"
             />

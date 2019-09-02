@@ -56,7 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * <p>
  * Deadlocks are not possible because the implementation involves a single lock object.
  * <p>
- * <strong>Note:</strong> This lock can cause writer starvation since it does not introduce pending locks.
+ * <strong>Note:</strong> This lock can cause writer starvation since it does not introduce
+ * pending locks.
  */
 public class Synchronizer {
 

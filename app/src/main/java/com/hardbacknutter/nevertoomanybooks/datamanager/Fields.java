@@ -1153,8 +1153,7 @@ public class Fields {
             // all Locales taken into account for parsing
             Float price = ParseUtils.toFloat(source);
             // but the current Locale is used for formatting
-            Locale locale = field.getLocale();
-            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(field.getLocale());
 
             Currency currency = Currency.getInstance(mCurrencyCode);
             currencyFormatter.setCurrency(currency);

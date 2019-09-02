@@ -37,7 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.TaskModel;
 /**
  * See parent class doc.
  *
- * <strong>Note:</strong> a ViewModel must be "public" despite Android Studio proposing "package-private"
+ * <strong>Note:</strong> a ViewModel must be "public" despite Android Studio proposing
+ * "package-private".
  * The catch: it will work in the emulator, but fail on a real device.
  */
 @SuppressWarnings("WeakerAccess")

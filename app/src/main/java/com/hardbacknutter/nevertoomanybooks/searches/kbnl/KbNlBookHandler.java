@@ -30,13 +30,9 @@ package com.hardbacknutter.nevertoomanybooks.searches.kbnl;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -44,13 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
-class KbNlHandler
-        extends DefaultHandler {
-
-    private static final String XML_LABEL = "psi:labelledLabel";
-    private static final String XML_DATA = "psi:labelledData";
-    private static final String XML_LINE = "psi:line";
-    private static final String XML_TEXT = "psi:text";
+class KbNlBookHandler
+        extends KbNlHandlerBase {
 
     @NonNull
     private final Bundle mBookData;
@@ -61,88 +52,16 @@ class KbNlHandler
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
 
-    /** XML content. */
-    private final StringBuilder mBuilder = new StringBuilder();
-    private final List<String> mCurrentData = new ArrayList<>();
-    private boolean inLabel;
-    private boolean inData;
-    private boolean inLine;
-    private boolean inText;
-    private String mCurrentLabel;
-
     /**
      * Constructor.
      *
      * @param bookData bundle to populate.
      */
-    KbNlHandler(@NonNull final Bundle bookData) {
+    KbNlBookHandler(@NonNull final Bundle bookData) {
         mBookData = bookData;
     }
 
-    @Override
-    public void startElement(final String uri,
-                             final String localName,
-                             final String qName,
-                             final Attributes attributes) {
-        switch (qName) {
-            case XML_LABEL:
-                mCurrentLabel = null;
-                inLabel = true;
-                break;
 
-            case XML_DATA:
-                mCurrentData.clear();
-                inData = true;
-                break;
-
-            case XML_LINE:
-                inLine = true;
-                break;
-
-            case XML_TEXT:
-                mBuilder.setLength(0);
-                inText = true;
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void endElement(final String uri,
-                           final String localName,
-                           final String qName) {
-        switch (qName) {
-            case XML_LABEL:
-                inLabel = false;
-                break;
-
-            case XML_DATA:
-                if (mCurrentLabel != null && !mCurrentLabel.isEmpty()) {
-                    processEntry(mCurrentLabel, mCurrentData);
-                }
-                inData = false;
-                break;
-
-            case XML_LINE:
-                inLine = false;
-                break;
-
-            case XML_TEXT:
-                if (inLabel) {
-                    mCurrentLabel = mBuilder.toString().split(":")[0].trim();
-
-                } else if (inLine) {
-                    mCurrentData.add(mBuilder.toString().trim());
-                }
-                inText = false;
-                break;
-
-            default:
-                break;
-        }
-    }
 
     @Override
     public void endDocument() {
@@ -159,45 +78,15 @@ class KbNlHandler
         }
     }
 
-    @Override
-    public void characters(final char[] ch,
-                           final int start,
-                           final int length) {
-        mBuilder.append(ch, start, length);
-    }
 
-    /**
-     * Filter a string of all non-digits. Used to clean isbn strings, years... etc.
-     *
-     * @param s      string to parse
-     * @param isIsbn When set will also allow 'X' and 'x'
-     *
-     * @return stripped string
-     */
-    @Nullable
-    private String digits(@Nullable final String s,
-                          final boolean isIsbn) {
-        if (s == null) {
-            return null;
-        }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            // allows an X anywhere instead of just at the end; doesn't really matter.
-            if (Character.isDigit(c) || (isIsbn && Character.toUpperCase(c) == 'X')) {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
 
     /**
      * Labels for both Dutch (default) and English are listed.
      * <p>
      * Note that "Colorist" is also used in Dutch.
      */
-    private void processEntry(@NonNull final String currentLabel,
-                              @NonNull final List<String> currentData) {
+    protected void processEntry(@NonNull final String currentLabel,
+                                @NonNull final List<String> currentData) {
         switch (currentLabel) {
             case "Title":
             case "Titel":
@@ -298,6 +187,13 @@ class KbNlHandler
      *   </psi:line>
      * </psi:labelledData>
      * }</pre>
+     *
+     * Note that the author name in the above example can be the "actual" name, and not
+     * the publicly known/used name, i.e. in this case "Isaac Asimov"
+     * ENHANCE: we *really* need to create an 'alias' table for authors.
+     *
+     * Getting author names:
+     * http://opc4.kb.nl/DB=1/SET=1/TTL=1/REL?PPN=068561504
      */
     private void processAuthor(@NonNull final List<String> currentData,
                                final int type) {

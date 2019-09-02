@@ -221,7 +221,7 @@ public class BindableItemCursorAdapter
         /**
          * Get a new View object suitable for displaying this type of event.
          * <p>
-         * <strong>Note:</strong> A single event subclass should NOT RETURN MORE THAN ONE TYPE OF VIEW.
+         * <strong>Note:</strong> A single event subclass should RETURN ONLY ONE TYPE OF VIEW.
          * If it needs to do this, create a new Event subclass or use a more complex view.
          *
          * @param context Current context

@@ -113,7 +113,7 @@ public class SearchAdminActivity
                 break;
 
             default:
-                setTitle(R.string.menu_search_internet);
+                setTitle(R.string.menu_add_book_by_internet_search);
 
                 FragmentManager fm = getSupportFragmentManager();
                 // add them in order! i.e. in the order the TAB_* constants are defined.

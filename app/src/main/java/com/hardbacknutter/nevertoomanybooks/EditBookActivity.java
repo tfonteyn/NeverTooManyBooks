@@ -46,8 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 /**
  * The hosting activity for editing a book.
  * <p>
- * <strong>Note:</strong> eventually these 'hosting' activities are meant to go. The idea is to have ONE
- * hosting/main activity, which swaps in fragments as needed.
+ * <strong>Note:</strong> eventually these 'hosting' activities are meant to go.
+ * The idea is to have ONE hosting/main activity, which swaps in fragments as needed.
  */
 public class EditBookActivity
         extends BaseActivity {

@@ -43,6 +43,7 @@ import android.widget.AutoCompleteTextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -90,6 +91,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -1180,8 +1182,8 @@ public class DAO
                                 @NonNull final Book book,
                                 final boolean isNew) {
 
-        Locale userLocale = LocaleUtils.getLocale(context);
-        Locale bookLocale = book.getLocale(userLocale);
+        Locale locale = LocaleUtils.getLocale(context);
+        Locale bookLocale = book.getLocale(locale);
 
         // Handle AUTHOR. When is this needed? Legacy archive import ?
         if (book.containsKey(KEY_AUTHOR_FORMATTED)
@@ -1209,9 +1211,11 @@ public class DAO
         // Handle all price related fields.
         preprocessPrices(book, bookLocale);
 
-        // Map website formats to standard ones. TODO: make this optional via a pref.
-        if (book.containsKey(DBDefinitions.KEY_FORMAT)) {
-            String format = Format.map(context, userLocale,
+        // Map website formats to standard ones if enabled by the user.
+        if (book.containsKey(DBDefinitions.KEY_FORMAT)
+            && PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                .getBoolean(Prefs.pk_reformat_formats, false)) {
+            String format = Format.map(context, locale,
                                        book.getString(DBDefinitions.KEY_FORMAT));
             book.putString(DBDefinitions.KEY_FORMAT, format);
         }
@@ -1375,20 +1379,20 @@ public class DAO
     private void preprocessLegacyAuthor(@NonNull final Context context,
                                         @NonNull final Book book) {
 
-        Locale userLocale = LocaleUtils.getLocale(context);
+        Locale locale = LocaleUtils.getLocale(context);
 
         // If present, get the author id from the author name
         // (it may have changed with a name change)
         if (book.containsKey(KEY_AUTHOR_FORMATTED)) {
 
             Author author = Author.fromString(book.getString(KEY_AUTHOR_FORMATTED));
-            if (author.fixId(context, this, userLocale) == 0) {
+            if (author.fixId(context, this, locale) == 0) {
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.debug(this, "preprocessLegacyAuthor",
                                  "KEY_AUTHOR_FORMATTED",
                                  "inserting author: " + author);
                 }
-                insertAuthor(userLocale, author);
+                insertAuthor(locale, author);
             }
             book.putLong(DOM_FK_AUTHOR.name, author.getId());
 
@@ -1402,13 +1406,13 @@ public class DAO
             }
 
             Author author = new Author(family, given);
-            if (author.fixId(context, this, userLocale) == 0) {
+            if (author.fixId(context, this, locale) == 0) {
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.debug(this, "preprocessLegacyAuthor",
                                  "KEY_AUTHOR_FAMILY_NAME",
                                  "inserting author: " + author);
                 }
-                insertAuthor(userLocale, author);
+                insertAuthor(locale, author);
             }
             book.putLong(DOM_FK_AUTHOR.name, author.getId());
         }
@@ -1607,13 +1611,14 @@ public class DAO
      *                only an Import should use this
      * @param book    A collection with the columns to be set. May contain extra data.
      *                The id will be updated.
+     *
      * @return the row id of the newly inserted row, or -1 if an error occurred
      */
     public long insertBook(@NonNull final Context context,
                            final long bookId,
                            @NonNull final Book /* in/out */ book) {
 
-        Locale userLocale = LocaleUtils.getLocale(context);
+        Locale locale = LocaleUtils.getLocale(context);
 
         SyncLock txLock = null;
         if (!sSyncedDb.inTransaction()) {
@@ -1621,7 +1626,7 @@ public class DAO
         }
 
         // Handle Language field FIRST, we might need it for 'ORDER BY' fields.
-        book.updateLocale(userLocale);
+        book.updateLocale(locale);
 
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_INSERT) {
@@ -1638,7 +1643,7 @@ public class DAO
             }
 
             // correct field types if needed, and filter out fields we don't have in the db table.
-            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(userLocale));
+            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(locale));
 
             // if we have an id, use it.
             if (bookId > 0) {
@@ -1657,8 +1662,8 @@ public class DAO
 
             long newBookId = sSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
             if (newBookId > 0) {
-                insertBookDependents(context, userLocale, newBookId, book);
-                insertFts(userLocale, newBookId);
+                insertBookDependents(context, locale, newBookId, book);
+                insertFts(locale, newBookId);
                 // it's an insert, success only if we really inserted.
                 if (txLock != null) {
                     sSyncedDb.setTransactionSuccessful();
@@ -1696,7 +1701,7 @@ public class DAO
                           @NonNull final Book book,
                           final int flags) {
 
-        Locale userLocale = LocaleUtils.getLocale(context);
+        Locale locale = LocaleUtils.getLocale(context);
 
         SyncLock txLock = null;
         if (!sSyncedDb.inTransaction()) {
@@ -1704,7 +1709,7 @@ public class DAO
         }
 
         // Handle Language field FIRST, we might need it for 'ORDER BY' fields.
-        book.updateLocale(userLocale);
+        book.updateLocale(locale);
 
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_UPDATE) {
@@ -1715,7 +1720,7 @@ public class DAO
             // and remove blank fields for which we have defaults)
             preprocessBook(context, book, bookId == 0);
 
-            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(userLocale));
+            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(locale));
 
             // Disallow UUID updates
             if (cv.containsKey(DOM_BOOK_UUID.name)) {
@@ -1735,8 +1740,8 @@ public class DAO
             int rowsAffected = sSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
                                                 new String[]{String.valueOf(bookId)});
 
-            insertBookDependents(context, userLocale, bookId, book);
-            updateFts(userLocale, bookId);
+            insertBookDependents(context, locale, bookId, book);
+            updateFts(locale, bookId);
 
             if (txLock != null) {
                 sSyncedDb.setTransactionSuccessful();

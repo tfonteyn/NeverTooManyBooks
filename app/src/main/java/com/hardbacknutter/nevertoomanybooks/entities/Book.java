@@ -622,11 +622,11 @@ public class Book
      */
     public void refreshSeriesList(@NonNull final Context context,
                                   @NonNull final DAO db) {
-        Locale userLocale = LocaleUtils.getLocale(context);
+        Locale locale = LocaleUtils.getLocale(context);
 
         ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         for (Series series : list) {
-            db.refreshSeries(context, series, getLocale(userLocale));
+            db.refreshSeries(context, series, getLocale(locale));
         }
         putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
     }
