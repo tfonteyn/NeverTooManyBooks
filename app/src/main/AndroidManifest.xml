@@ -27,11 +27,12 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.hardbacknutter.nevertoomanybooks"
-          android:installLocation="auto"
-          android:versionCode="200"
-          android:versionName="6.0.0"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hardbacknutter.nevertoomanybooks"
+    android:installLocation="auto"
+    android:versionCode="200"
+    android:versionName="6.0.0"
     >
     <!-- original package -->
     <!-- android:versionCode="179" -->
@@ -55,7 +56,7 @@
 
         <meta-data
             android:name="beta.build"
-            android:value="2019-08-18" />
+            android:value="2019-09-02" />
 
         <!-- Application developer keys - stripped out in a git pre-commit script. -->
         <meta-data
@@ -78,12 +79,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
-        <activity
-            android:name="org.acra.dialog.CrashReportDialog"
-            android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance" />
 
         <!--
             This is the activity that will appear in the app launcher
@@ -136,41 +131,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <!-- Data Import/Export -->
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.backup.ui.BackupActivity" />
         <activity android:name="com.hardbacknutter.nevertoomanybooks.backup.ui.RestoreActivity" />
         <!-- Update book Fields from the internet -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.UpdateFieldsFromInternetActivity" />
-        <!-- Credentials Goodreads -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity">
-            <intent-filter>
-                <action android:name="goodreads.credentials.EDIT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <!-- Credentials LibraryThing -->
-        <activity
-            android:name="com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-            <intent-filter>
-                <action android:name="librarything.credentials.EDIT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <!-- Goodreads background tasks & events -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueListActivity" />
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.EventQueueListActivity" />
-        <!-- Search Sites configuration -->
-        <activity
-            android:name="com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-            <intent-filter>
-                <action android:name="search.website.order.EDIT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
         <!-- Local Search -->
         <activity
             android:name="com.hardbacknutter.nevertoomanybooks.FTSSearchActivity"
@@ -198,8 +164,45 @@
             android:name="com.hardbacknutter.nevertoomanybooks.cropper.CropImageActivity"
             android:theme="@style/AppTheme.FullScreen"
             />
-        <!-- This Goodreads activity is commented out (waiting on API access) -->
+
+        <!-- Search Sites configuration -->
+        <activity
+            android:name="com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+            <intent-filter>
+                <action android:name="search.website.order.EDIT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Credentials LibraryThing -->
+        <activity
+            android:name="com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+            <intent-filter>
+                <action android:name="librarything.credentials.EDIT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Credentials Goodreads -->
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity">
+            <intent-filter>
+                <action android:name="goodreads.credentials.EDIT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+
+        <!-- Goodreads background tasks & events -->
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueListActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.EventQueueListActivity" />
+        <!-- This Goodreads activity is commented out (waiting on access) -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchActivity" />
+
         <!--
              The callback-activity after we requested authorizing this application
              for the current user to Goodreads.
@@ -220,7 +223,13 @@
                     android:scheme="com.hardbacknutter.nevertoomanybooks" />
             </intent-filter>
         </activity>
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.backup.ui.BackupActivity" />
+
+        <activity
+            android:name="org.acra.dialog.CrashReportDialog"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance" />
+
     </application>
 
 </manifest>
