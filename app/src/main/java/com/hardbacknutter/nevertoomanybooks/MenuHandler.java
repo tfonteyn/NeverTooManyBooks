@@ -140,33 +140,23 @@ public final class MenuHandler {
     }
 
     static void addViewBookSubMenu(@NonNull final Menu menu) {
-        SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_VIEW_BOOK_AT_SITE,
-                                          R.id.SUBMENU_VIEW_BOOK_AT_SITE,
+        SubMenu subMenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_VIEW_BOOK_AT_SITE,
                                           ORDER_VIEW_BOOK_AT_SITE,
                                           R.string.menu_view_book_at)
                               .setIcon(R.drawable.ic_link);
-        subMenu.add(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
-                    R.id.MENU_VIEW_BOOK_AT_GOODREADS, 0,
-                    R.string.goodreads);
-        subMenu.add(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
-                    R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING, 0,
-                    R.string.library_thing);
-        subMenu.add(R.id.MENU_VIEW_BOOK_AT_ISFDB,
-                    R.id.MENU_VIEW_BOOK_AT_ISFDB, 0,
-                    R.string.isfdb);
-        subMenu.add(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-                    R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0,
-                    R.string.open_library);
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_GOODREADS, 0, R.string.goodreads);
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING, 0, R.string.library_thing);
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_ISFDB, 0, R.string.isfdb);
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0, R.string.open_library);
     }
 
     static void prepareViewBookSubMenu(@NonNull final Menu menu,
                                        @NonNull final Book book) {
-        menu.setGroupVisible(
-                R.id.SUBMENU_VIEW_BOOK_AT_SITE,
-                0 != book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)
-                || 0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)
-                || 0 != book.getLong(DBDefinitions.KEY_ISFDB_ID)
-                || !book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
+        menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE)
+            .setVisible(0 != book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)
+                        || 0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)
+                        || 0 != book.getLong(DBDefinitions.KEY_ISFDB_ID)
+                        || !book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
     }
 
     static boolean handleViewBookSubMenu(@NonNull final Context context,
@@ -176,15 +166,14 @@ public final class MenuHandler {
             case R.id.SUBMENU_VIEW_BOOK_AT_SITE:
                 // after the user selects the submenu, we make individual items visible/hidden.
                 SubMenu menu = menuItem.getSubMenu();
-
-                menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
-                                     0 != book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
-                menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
-                                     0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
-                menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_ISFDB,
-                                     0 != book.getLong(DBDefinitions.KEY_ISFDB_ID));
-                menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-                                     !book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
+                menu.findItem(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
+                    .setVisible(0 != book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
+                menu.findItem(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
+                    .setVisible(0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
+                menu.findItem(R.id.MENU_VIEW_BOOK_AT_ISFDB)
+                    .setVisible(0 != book.getLong(DBDefinitions.KEY_ISFDB_ID));
+                menu.findItem(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY)
+                    .setVisible(!book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
                 // let the normal call flow go on, it will display the submenu
                 return false;
 
@@ -227,14 +216,11 @@ public final class MenuHandler {
                               .setIcon(R.drawable.ic_search);
 
         // we use the group to make the entry visible/invisible, hence it's == the actual ID.
-        subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR,
-                    R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0,
+        subMenu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0,
                     R.string.menu_amazon_books_by_author);
-        subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
-                    R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0,
+        subMenu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0,
                     R.string.menu_amazon_books_by_author_in_series);
-        subMenu.add(R.id.MENU_AMAZON_BOOKS_IN_SERIES,
-                    R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0,
+        subMenu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0,
                     R.string.menu_amazon_books_in_series);
 
         return subMenu;
@@ -255,7 +241,7 @@ public final class MenuHandler {
                                            @NonNull final Book book) {
         boolean hasAuthor = !book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty();
         boolean hasSeries = !book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY).isEmpty();
-        menu.setGroupVisible(R.id.SUBMENU_AMAZON_SEARCH, hasAuthor || hasSeries);
+        menu.findItem(R.id.SUBMENU_AMAZON_SEARCH).setVisible(hasAuthor || hasSeries);
     }
 
     /**
@@ -279,10 +265,12 @@ public final class MenuHandler {
                 boolean hasSeries = !book.getParcelableArrayList(
                         UniqueId.BKEY_SERIES_ARRAY).isEmpty();
 
-                menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
-                menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
-                                     hasAuthor && hasSeries);
-                menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
+                menu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
+                    .setVisible(hasAuthor);
+                menu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)
+                    .setVisible(hasAuthor && hasSeries);
+                menu.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
+                    .setVisible(hasSeries);
                 // let the normal call flow go on, it will display the submenu
                 return false;
 

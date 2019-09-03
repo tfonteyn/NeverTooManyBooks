@@ -595,5 +595,6 @@
     <string name="pt_bob_show_details_uses_task_on">différé</string>
     <string name="lbl_author_primary">écrivain</string>
     <string name="lbl_artist_primary">dessins</string>
+    <string name="lbl_edition_slipcase">étui</string>
 
 </resources>

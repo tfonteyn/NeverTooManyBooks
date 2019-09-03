@@ -577,7 +577,7 @@
     <string name="lbl_author_translator">Çevirmen</string>
     <string name="lbl_author_other">Diğer</string>
     <string name="lbl_author_editor">Editör</string>
-    <string name="lbl_edition_slipcase">kitap kabı</string>
+    <string name="lbl_edition_slipcase">Kitap kabı</string>
     <string name="lbl_author_contributor">iştirakçi</string>
     <string name="lbl_artist_colorist">Renk</string>
     <string name="tip_update_fields_from_internet">Dış site bağlantıları yalnızca siteyle gerçekten iletişime geçildiyse işlenir. Sonuç olarak, “Üzerinde görüntülemek…” menüsü de aynı şekilde neyin uygun olduğunu gösterecektir.</string>

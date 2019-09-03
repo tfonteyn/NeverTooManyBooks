@@ -372,18 +372,18 @@ public class BookFragment
             .setIcon(R.drawable.ic_content_copy);
 
         // Only one of these two is made visible.
-        menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
-        menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
+        menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
+        menu.add(Menu.NONE, R.id.MENU_BOOK_UNREAD, 0, R.string.menu_set_unread);
 
-        menu.add(R.id.MENU_UPDATE_FROM_INTERNET, R.id.MENU_UPDATE_FROM_INTERNET,
+        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                  MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_fields)
             .setIcon(R.drawable.ic_cloud_download);
 
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
             // Only one of these two is made visible.
-            menu.add(R.id.MENU_BOOK_LOAN_ADD, R.id.MENU_BOOK_LOAN_ADD,
+            menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_ADD,
                      MenuHandler.ORDER_LENDING, R.string.menu_loan_lend_book);
-            menu.add(R.id.MENU_BOOK_LOAN_DELETE, R.id.MENU_BOOK_LOAN_DELETE,
+            menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_DELETE,
                      MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book);
         }
 
@@ -407,13 +407,13 @@ public class BookFragment
         boolean isExistingBook = mBookModel.isExistingBook();
         boolean isRead = book.getBoolean(Book.IS_READ);
 
-        menu.setGroupVisible(R.id.MENU_BOOK_READ, isExistingBook && !isRead);
-        menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, isExistingBook && isRead);
+        menu.findItem(R.id.MENU_BOOK_READ).setVisible(isExistingBook && !isRead);
+        menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isExistingBook && isRead);
 
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
             boolean isAvailable = mBookModel.isAvailable();
-            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_ADD, isExistingBook && isAvailable);
-            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_DELETE, isExistingBook && !isAvailable);
+            menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(isExistingBook && isAvailable);
+            menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(isExistingBook && !isAvailable);
         }
 
         MenuHandler.prepareViewBookSubMenu(menu, book);
@@ -454,7 +454,8 @@ public class BookFragment
                 return true;
 
             case R.id.MENU_BOOK_READ:
-                // toggle 'read' status
+            case R.id.MENU_BOOK_UNREAD:
+                // toggle 'read' status of the book
                 boolean isRead = mBookModel.toggleRead();
                 getField(R.id.read).setValue(isRead);
                 return true;
@@ -618,7 +619,8 @@ public class BookFragment
         Book book = mBookModel.getBook();
 
         // we can get called more then once (when user moves sideways to another book),
-        // so clear the view before populating it. Actual visibility is handled later.
+        // so clear and hide/disable the view before populating it.
+        // Actual visibility is handled after building the list.
         mTocView.removeAllViews();
         mTocView.setVisibility(View.GONE);
         mTocButton.setChecked(false);
@@ -632,9 +634,8 @@ public class BookFragment
 
         if (hasToc) {
             for (TocEntry item : tocList) {
-                View rowView = getLayoutInflater()
-                                       .inflate(R.layout.row_toc_entry_with_author, mTocView,
-                                                false);
+                View rowView = getLayoutInflater().inflate(R.layout.row_toc_entry_with_author,
+                                                           mTocView, false);
 
                 TextView titleView = rowView.findViewById(R.id.title);
                 TextView authorView = rowView.findViewById(R.id.author);

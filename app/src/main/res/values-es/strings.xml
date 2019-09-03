@@ -593,5 +593,6 @@
     <string name="pt_bob_show_details_uses_task">Obteniendo detalles adicionales del libro</string>
     <string name="pt_bob_show_details_uses_task_on">retrasado</string>
     <string name="lbl_author_primary">escritor</string>
+    <string name="lbl_edition_slipcase">Funda</string>
 
 </resources>

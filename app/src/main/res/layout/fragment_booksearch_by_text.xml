@@ -74,7 +74,7 @@
 
     <EditText
         android:id="@+id/title"
-        style="@style/simpleTextEntry"
+        style="@style/titleTextEntry"
         android:hint="@string/lbl_title"
         android:textAppearance="?android:attr/textAppearanceLarge"
         app:layout_constraintEnd_toEndOf="parent"
@@ -113,7 +113,7 @@
 
     <EditText
         android:id="@+id/publisher"
-        style="@style/simpleTextEntry"
+        style="@style/personalNameTextEntry"
         android:hint="@string/lbl_publisher"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:visibility="gone"

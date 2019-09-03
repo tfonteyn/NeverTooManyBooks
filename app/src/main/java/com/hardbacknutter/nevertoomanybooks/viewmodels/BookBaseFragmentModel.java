@@ -216,6 +216,7 @@ public class BookBaseFragmentModel
      * The book was returned, remove the loanee.
      */
     public void deleteLoan() {
+        mBook.remove(DBDefinitions.KEY_LOANEE);
         mDb.deleteLoan(mBook.getId());
     }
 

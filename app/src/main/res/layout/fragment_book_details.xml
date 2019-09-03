@@ -187,7 +187,7 @@
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             tools:ignore="SelectableText"
-            tools:text="• Series name (1)\n• Series name (2)"
+            tools:text="• Series name (1)\n• Another Series (X)"
             />
 
         <!-- Table Of Content -->
@@ -231,13 +231,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_toc"
             tools:visibility="visible"
-            />
+            >
+            <!-- rows will be added here dynamically -->
+        </LinearLayout>
 
         <!-- Publication section -->
 
         <TextView
             android:id="@+id/lbl_publication_section"
-            style="@style/SectionHeader"
+            style="@style/FieldLabel"
             android:text="@string/lbl_publication"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toc"

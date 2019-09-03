@@ -30,6 +30,7 @@
   -->
 
 <!-- Copyright (c) 2019 by OCLC -->
+<!--suppress ALL -->
 <psi:response xmlns:psi="http://www.oclcpica.org/xml/"
     name="PPNLIST">
     <psi:context>

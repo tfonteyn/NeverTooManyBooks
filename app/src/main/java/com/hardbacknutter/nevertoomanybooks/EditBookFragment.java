@@ -117,18 +117,17 @@ public class EditBookFragment
                                                         : R.string.btn_confirm_add;
         //noinspection ConstantConditions
         LocaleUtils.insanityCheck(getContext());
-        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
+        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD, MenuHandler.ORDER_HIDE_KEYBOARD,
+                 R.string.menu_hide_keyboard)
             .setIcon(R.drawable.ic_keyboard_hide)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        menu.add(Menu.NONE, R.id.MENU_SAVE,
-                 MenuHandler.ORDER_SAVE, saveOrAddText)
+        menu.add(Menu.NONE, R.id.MENU_SAVE, MenuHandler.ORDER_SAVE, saveOrAddText)
             .setIcon(R.drawable.ic_save)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        menu.add(R.id.MENU_UPDATE_FROM_INTERNET, R.id.MENU_UPDATE_FROM_INTERNET,
-                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_fields)
+        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, MenuHandler.ORDER_UPDATE_FIELDS,
+                 R.string.menu_update_fields)
             .setIcon(R.drawable.ic_cloud_download);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -142,8 +141,7 @@ public class EditBookFragment
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         super.onPrepareOptionsMenu(menu);
-
-        menu.setGroupVisible(R.id.MENU_UPDATE_FROM_INTERNET, mBookModel.isExistingBook());
+        menu.findItem(R.id.MENU_UPDATE_FROM_INTERNET).setVisible(mBookModel.isExistingBook());
     }
 
     @Override
@@ -328,7 +326,7 @@ public class EditBookFragment
         @Override
         @NonNull
         public CharSequence getPageTitle(final int position) {
-            return mFragmentList.get(position).getTitle();
+            return mFragmentList.get(position).getPageTitle();
         }
 
         void add(@NonNull final FragmentHolder fragmentHolder) {
@@ -382,7 +380,7 @@ public class EditBookFragment
         }
 
         @NonNull
-        String getTitle() {
+        String getPageTitle() {
             return mTitle;
         }
 

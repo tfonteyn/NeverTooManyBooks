@@ -449,7 +449,7 @@ public class BooksOnBookshelfModel
             /*
              * URGENT: experimental... {@link BooklistStyle#extrasByTask()}.
              * When set to false, "extra" field bookshelves (if selected) will not be populated.
-             * Depending on the device speed, and user habit BOTH methods can be advantageous.
+             * Depending on the device speed, and user habits, BOTH methods can be advantageous.
              * ==> now a preference <strong>per style</strong>
              */
             if (!style.extrasByTask()) {

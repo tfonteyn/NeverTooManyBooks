@@ -429,16 +429,16 @@ public final class LanguageUtils {
         }
 
         Locale systemLocale = App.getSystemLocale();
-        Locale defaultLocale = Locale.getDefault();
         Locale prefLocale = LocaleUtils.getLocale(context);
 
         return ""
                + "\nsSystemInitialLocale       : " + systemLocale.getDisplayName()
                + "\nsSystemInitialLocale(cur)  : " + systemLocale.getDisplayName(configLocale)
+               + "\nLocale.getDefault()        : " + Locale.getDefault().getDisplayName()
+               + "\nLocale.getDefault(cur)     : " + Locale.getDefault()
+                                                           .getDisplayName(configLocale)
                + "\nconfiguration.locale       : " + configLocale.getDisplayName()
                + "\nconfiguration.locale(cur)  : " + configLocale.getDisplayName(configLocale)
-               + "\nLocale.getDefault()        : " + defaultLocale.getDisplayName()
-               + "\nLocale.getDefault(cur)     : " + defaultLocale.getDisplayName(configLocale)
                + "\ngetPreferredLocale()       : " + prefLocale.getDisplayName()
                + "\ngetPreferredLocale(cur)    : " + prefLocale.getDisplayName(configLocale)
                + "\nApp.isInNeedOfRecreating() : " + App.isInNeedOfRecreating()

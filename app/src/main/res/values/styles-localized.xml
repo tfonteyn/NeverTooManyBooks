@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <!-- *************************************************************************************** -->
+    <!-- translators: create a language specific styles-localized.xml file for these styles,
+         and modify the "android:inputType" attribute as needed.
+    -->
+    <!-- *************************************************************************************** -->
+
+    <!-- Simple; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
+    <style name="titleTextEntry" parent="@style/EditText.Title">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- AutoComplete; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
+    <style name="titleTextEntryAutoComplete" parent="@style/EditText.AutoComplete.Title">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- 'human' names. e.g. Author, Publisher, ... -->
+    <style name="personalNameTextEntry" parent="@style/EditText.AutoComplete.Name">
+        <item name="android:inputType">textPersonName|textCapWords</item>
+    </style>
+
+    <!-- Personal Notes, Description. -->
+    <style name="notesTextEntry" parent="@style/EditText.Notes">
+        <item name="android:inputType">textLongMessage|textMultiLine|textCapSentences</item>
+    </style>
+
+
+    <!-- The language field. -->
+    <style name="languageTextEntry" parent="@style/EditText.AutoComplete">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- The book format field. -->
+    <style name="bookFormatTextEntry" parent="@style/EditText.AutoComplete">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- The price (listed, paid, ... ) fields. -->
+    <style name="priceTextEntry" parent="@style/EditText">
+        <item name="android:inputType">numberDecimal</item>
+    </style>
+
+
+    <!-- Generic single-line fields not listed above-->
+    <style name="simpleTextEntry" parent="@style/EditText">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- Generic AutoComplete fields not listed above -->
+    <style name="autoCompleteTextEntry" parent="@style/EditText.AutoComplete">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+</resources>

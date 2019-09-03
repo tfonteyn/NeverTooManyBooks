@@ -1241,10 +1241,12 @@ public class BooksOnBookshelf
 
         if (hasAuthor || hasSeries) {
             SubMenu subMenu = MenuHandler.addAmazonSearchSubMenu(menu);
-            subMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
-            subMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
-                                    hasAuthor && hasSeries);
-            subMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
+            subMenu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
+                   .setVisible(hasAuthor);
+            subMenu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)
+                   .setVisible(hasAuthor && hasSeries);
+            subMenu.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
+                   .setVisible(hasSeries);
         }
 
         return true;
@@ -1490,10 +1492,12 @@ public class BooksOnBookshelf
                                     && row.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
 
                 SubMenu amazonSubMenu = menuItem.getSubMenu();
-                amazonSubMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
-                amazonSubMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
-                                              hasAuthor && hasSeries);
-                amazonSubMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
+                amazonSubMenu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
+                             .setVisible(hasAuthor);
+                amazonSubMenu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)
+                             .setVisible(hasAuthor && hasSeries);
+                amazonSubMenu.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
+                             .setVisible(hasSeries);
                 // let the normal call flow go on, it will display the submenu
                 return false;
 

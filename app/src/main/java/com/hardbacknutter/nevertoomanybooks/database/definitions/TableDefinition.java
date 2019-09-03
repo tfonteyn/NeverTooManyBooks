@@ -230,6 +230,7 @@ public class TableDefinition
     /**
      * Make a copy of this table.
      */
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @NonNull
     public TableDefinition clone() {
         TableDefinition newTbl = new TableDefinition()

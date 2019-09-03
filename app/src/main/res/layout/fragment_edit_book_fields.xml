@@ -188,7 +188,7 @@
 
         <EditText
             android:id="@+id/description"
-            style="@style/multiLineTextEntry"
+            style="@style/notesTextEntry"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

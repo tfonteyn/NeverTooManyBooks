@@ -27,30 +27,22 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    style="@style/DialogFrame"
-    >
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <AutoCompleteTextView
-        android:id="@+id/name"
-        style="@style/autoCompleteTextEntry"
-        android:layout_marginTop="8dp"
-        android:hint="@string/lbl_genre"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="Autofill"
-        />
+    <!-- Simple; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
+    <style name="titleTextEntry" parent="@style/EditText.Title">
+        <item name="android:inputType">textCapSentences</item>
+    </style>
 
-    <TextView
-        android:id="@+id/blurb"
-        style="@style/Blurb"
-        android:text="@string/warning_immediate_global_changes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/name"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- AutoComplete; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
+    <style name="titleTextEntryAutoComplete" parent="@style/EditText.AutoComplete.Title">
+        <item name="android:inputType">textCapSentences</item>
+    </style>
+
+    <!-- The book format field. -->
+    <style name="bookFormatTextEntry" parent="@style/EditText.AutoComplete">
+        <item name="android:inputType">textCapSentences</item>
+    </style>
+
+</resources>
+

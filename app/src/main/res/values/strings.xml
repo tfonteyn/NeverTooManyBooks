@@ -691,7 +691,8 @@
     <string name="pt_ui_messages_use">Information messages</string>
     <!-- Preference screen; opens a new screen listing all Fields. -->
     <string name="pg_ui_field_visibility">Field Visibility</string>
-
+    <!-- Preference screen; opens a new screen where some text handling can be adjusted. -->
+    <string name="pg_reformat">Reformat</string>
 
     <!-- Preference Category -->
     <string name="pg_reformat_titles">Reformat titles</string>
@@ -704,6 +705,8 @@
     <string name="pt_reformat_titles_summary_original">The title</string>
     <!-- example of a reformatted title -->
     <string name="pt_reformat_titles_summary_reformatted">title, The</string>
+    <!-- SwitchPreference -->
+    <string name="pt_reformat_format_on_update">Unify &amp; translate “format” names</string>
 
 
     <!-- Preference Category -->
@@ -1398,6 +1401,7 @@
     <!-- ####################################################################################### -->
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
+
 
     <!-- happy -->
     <string name="lbl_author_type">Author type</string>

@@ -205,24 +205,104 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:summary="@string/pg_reformat_titles_summary"
-        android:title="@string/pg_reformat_titles">
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_add"
-            android:key="title.reformat.insert"
-            android:summaryOff="@string/pt_reformat_titles_summary_original"
-            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
-            android:title="@string/pt_reformat_titles_on_insert" />
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_edit"
-            android:key="title.reformat.update"
-            android:summaryOff="@string/pt_reformat_titles_summary_original"
-            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
-            android:title="@string/pt_reformat_titles_on_update" />
-    </PreferenceCategory>
+    <PreferenceScreen
+        android:icon="@drawable/ic_image"
+        android:key="@string/pg_thumbnails"
+        android:title="@string/pg_thumbnails"
+        >
+
+        <PreferenceCategory
+            android:title="@string/pg_thumbnails">
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:icon="@drawable/ic_zoom_in"
+                android:key="Image.Zoom.Upscale"
+                android:summaryOff="@string/no"
+                android:summaryOn="@string/yes"
+                android:title="@string/pt_thumbnails_upscale_zoom" />
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:icon="@drawable/ic_crop_original"
+                android:key="Image.Cropper.FrameIsWholeImage"
+                android:summaryOff="@string/no"
+                android:summaryOn="@string/yes"
+                android:title="@string/pt_thumbnails_crop_frame_is_whole_image" />
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:icon="@drawable/ic_apps"
+                android:key="Image.Cropper.UseExternalApp"
+                android:summaryOff="@string/no"
+                android:summaryOn="@string/yes"
+                android:title="@string/pt_thumbnails_external_cropper" />
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:icon="@drawable/ic_cached"
+                android:key="Image.Cache.Resized"
+                android:summaryOff="@string/pe_thumbnails_cache_resized_each_time"
+                android:summaryOn="@string/pe_thumbnails_cache_resized_stored"
+                android:title="@string/pt_thumbnails_cache_resized" />
+
+            <!-- default rotate 0 degrees -->
+            <ListPreference
+                android:defaultValue="0"
+                android:entries="@array/pe_thumbnails_rotate_auto"
+                android:entryValues="@array/pv_thumbnails_rotate_auto"
+                android:icon="@drawable/ic_rotate_right"
+                android:key="Image.Camera.Autorotate"
+                android:title="@string/pt_thumbnails_rotate_auto" />
+
+            <!-- default CropImageViewTouchBase.LAYER_TYPE_USE_DEFAULT == -1 -->
+            <ListPreference
+                android:defaultValue="-1"
+                android:dialogIcon="@drawable/ic_warning"
+                android:entries="@array/pe_thumbnails_cropper_layer_type"
+                android:entryValues="@array/pv_thumbnails_cropper_layer_type"
+                android:icon="@drawable/ic_manage"
+                android:key="Image.ViewLayerType"
+                android:title="@string/pt_thumbnail_cropper_layer_type" />
+
+        </PreferenceCategory>
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:icon="@drawable/ic_text_format"
+        android:key="@string/pg_reformat"
+        android:title="@string/pg_reformat"
+        >
+        <PreferenceCategory
+            android:summary="@string/pg_reformat_titles_summary"
+            android:title="@string/pg_reformat_titles">
+            <SwitchPreference
+                android:defaultValue="true"
+                android:icon="@drawable/ic_add"
+                android:key="reformat.title.insert"
+                android:summaryOff="@string/pt_reformat_titles_summary_original"
+                android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
+                android:title="@string/pt_reformat_titles_on_insert" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:icon="@drawable/ic_edit"
+                android:key="reformat.title.update"
+                android:summaryOff="@string/pt_reformat_titles_summary_original"
+                android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
+                android:title="@string/pt_reformat_titles_on_update" />
+        </PreferenceCategory>
+
+        <PreferenceCategory
+            android:title="@string/lbl_format">
+            <SwitchPreference
+                android:defaultValue="true"
+                android:icon="@drawable/ic_edit"
+                android:key="reformat.format.update"
+                android:summaryOff="@string/no"
+                android:summaryOn="@string/yes"
+                android:title="@string/pt_reformat_format_on_update" />
+        </PreferenceCategory>
+    </PreferenceScreen>
 
     <PreferenceCategory
         android:title="@string/pg_booklist">
@@ -252,108 +332,6 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_booklist_open_book_read_only" />
 
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/pg_scanning">
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_surround_sound"
-            android:key="SoundManager.BeepIfScannedIsbnInvalid"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_scanning_beep_if_isbn_invalid" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_surround_sound"
-            android:key="SoundManager.BeepIfScannedIsbnValid"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_scanning_beep_if_isbn_valid" />
-
-        <!-- default ScannerManager.ZXING_COMPATIBLE == 0 -->
-        <ListPreference
-            android:defaultValue="0"
-            android:entries="@array/pe_scanning_preferred_scanner"
-            android:entryValues="@array/pv_scanning_preferred_scanner"
-            android:icon="@drawable/ic_scanner"
-            android:key="ScannerManager.PreferredScanner"
-            android:title="@string/pt_scanning_preferred_scanner" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/pg_thumbnails">
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_zoom_in"
-            android:key="Image.Zoom.Upscale"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_thumbnails_upscale_zoom" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_crop_original"
-            android:key="Image.Cropper.FrameIsWholeImage"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_thumbnails_crop_frame_is_whole_image" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_apps"
-            android:key="Image.Cropper.UseExternalApp"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_thumbnails_external_cropper" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_cached"
-            android:key="Image.Cache.Resized"
-            android:summaryOff="@string/pe_thumbnails_cache_resized_each_time"
-            android:summaryOn="@string/pe_thumbnails_cache_resized_stored"
-            android:title="@string/pt_thumbnails_cache_resized" />
-
-        <!-- default rotate 0 degrees -->
-        <ListPreference
-            android:defaultValue="0"
-            android:entries="@array/pe_thumbnails_rotate_auto"
-            android:entryValues="@array/pv_thumbnails_rotate_auto"
-            android:icon="@drawable/ic_rotate_right"
-            android:key="Image.Camera.Autorotate"
-            android:title="@string/pt_thumbnails_rotate_auto" />
-
-        <!-- default CropImageViewTouchBase.LAYER_TYPE_USE_DEFAULT == -1 -->
-        <ListPreference
-            android:defaultValue="-1"
-            android:dialogIcon="@drawable/ic_warning"
-            android:entries="@array/pe_thumbnails_cropper_layer_type"
-            android:entryValues="@array/pv_thumbnails_cropper_layer_type"
-            android:icon="@drawable/ic_manage"
-            android:key="Image.ViewLayerType"
-            android:title="@string/pt_thumbnail_cropper_layer_type" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/lbl_credentials">
-        <PreferenceScreen
-            android:icon="@drawable/ic_goodreads2"
-            android:key="@string/goodreads"
-            android:title="@string/goodreads">
-            <intent android:action="goodreads.credentials.EDIT" />
-        </PreferenceScreen>
-
-        <PreferenceScreen
-            android:icon="@drawable/ic_security"
-            android:key="@string/library_thing"
-            android:title="@string/library_thing">
-            <intent android:action="librarything.credentials.EDIT" />
-        </PreferenceScreen>
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -421,4 +399,51 @@
         <!--android:key="ISFDB.hostUrl"-->
         <!--android:title="@string/ISFDB" />-->
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pg_scanning">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_surround_sound"
+            android:key="SoundManager.BeepIfScannedIsbnInvalid"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_scanning_beep_if_isbn_invalid" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_surround_sound"
+            android:key="SoundManager.BeepIfScannedIsbnValid"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_scanning_beep_if_isbn_valid" />
+
+        <!-- default ScannerManager.ZXING_COMPATIBLE == 0 -->
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_scanning_preferred_scanner"
+            android:entryValues="@array/pv_scanning_preferred_scanner"
+            android:icon="@drawable/ic_scanner"
+            android:key="ScannerManager.PreferredScanner"
+            android:title="@string/pt_scanning_preferred_scanner" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/lbl_credentials">
+        <PreferenceScreen
+            android:icon="@drawable/ic_goodreads2"
+            android:key="@string/goodreads"
+            android:title="@string/goodreads">
+            <intent android:action="goodreads.credentials.EDIT" />
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:icon="@drawable/ic_security"
+            android:key="@string/library_thing"
+            android:title="@string/library_thing">
+            <intent android:action="librarything.credentials.EDIT" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+
 </PreferenceScreen>

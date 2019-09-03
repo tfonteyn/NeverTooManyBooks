@@ -584,7 +584,7 @@
     <string name="lbl_artist_colorist">Ζωγράφος</string>
     <string name="lbl_author_editor">Συντάκτης</string>
     <string name="lbl_author_contributor">Συνεισφέρων</string>
-    <string name="lbl_edition_slipcase">Ολισθητήρας</string>
+    <string name="lbl_edition_slipcase">παντζούρια</string>
     <string name="tip_update_fields_from_internet">Οι εξωτερικοί σύνδεσμοι ιστότοπου υποβάλλονται σε επεξεργασία μόνο αν ο ιστότοπος επικοινωνεί πραγματικά. Ως εκ τούτου, το μενού «Προβολή στο…» θα δείξει και ό, τι είναι διαθέσιμο.</string>
     <string name="lbl_author_secondary">συν-συγγραφέας</string>
     <string name="lbl_author_type">Τύπος συγγραφέα</string>

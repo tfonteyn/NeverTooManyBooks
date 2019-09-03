@@ -598,5 +598,6 @@
     <string name="progress_end_import_partially_complete">Gedeeltelijke import voltooid</string>
     <string name="pt_bob_show_details_uses_task">Extra boekdetails ophalen</string>
     <string name="pt_bob_show_details_uses_task_on">vertraagd</string>
+    <string name="lbl_edition_slipcase">Cassette</string>
 
 </resources>

@@ -163,15 +163,10 @@ public final class LocaleUtils {
     public static Locale getLocale(@NonNull final Context context) {
         String localeSpec = getPersistedLocaleSpec();
 
-        // first start, or if the language was changed since last call.
+        // create the Locale at first access, or if the requested is different from the current.
         if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
             sPreferredLocaleSpec = localeSpec;
             sPreferredLocale = createLocale(localeSpec);
-        }
-        if (BuildConfig.DEBUG) {
-            Logger.debug(LocaleUtils.class, "getLocale(Context)",
-                         "lang=" + localeSpec,
-                         "sPreferredLocale=" + sPreferredLocale);
         }
 
         insanityCheck(context);
@@ -191,9 +186,9 @@ public final class LocaleUtils {
         String localeSpec = getPersistedLocaleSpec();
 
         // create the Locale at first access, or if the requested is different from the current.
-        if (sPreferredLocale == null || !localeSpec.equals(sPreferredLocaleSpec)) {
-            sPreferredLocale = createLocale(localeSpec);
+        if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
             sPreferredLocaleSpec = localeSpec;
+            sPreferredLocale = createLocale(localeSpec);
         }
 
         // ALWAYS ALWAYS ALWAYS ALWAYS ALWAYS

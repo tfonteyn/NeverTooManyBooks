@@ -575,7 +575,7 @@
     <string name="lbl_author_translator">Переводчик</string>
     <string name="lbl_author_other">Другой</string>
     <string name="lbl_author_editor">редактор</string>
-    <string name="lbl_edition_slipcase">альбом-бокс</string>
+    <string name="lbl_edition_slipcase">шкатулка</string>
     <string name="lbl_author_contributor">участник</string>
     <string name="lbl_artist_colorist">колорист</string>
     <string name="tip_update_fields_from_internet">Ссылки на внешние сайты обрабатываются только в том случае, если сайт действительно связался. В результате меню «Смотреть на…» также будет показывать только то, что доступно.</string>

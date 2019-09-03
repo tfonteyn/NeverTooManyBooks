@@ -66,6 +66,7 @@
         <item name="android:background">?android:attr/dividerHorizontal</item>
     </style>
 
+    <!-- used in landscape mode only -->
     <style name="VerticalDivider">
         <!-- reminder: don't set layout_width to wrap_content, will CF the layout -->
         <item name="android:layout_width">1dp</item>
@@ -104,7 +105,7 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
-    <!-- Book title. -->
+    <!-- Book title gets a distinct style. -->
     <style name="TextDetail.BookTitle">
         <item name="android:textStyle">italic</item>
     </style>
@@ -114,7 +115,7 @@
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <!-- Book title. -->
+    <!-- Book title gets a distinct style. -->
     <style name="TextDetail.Small.BookTitle" tools:keep="@style/TextDetail_Small_BookTitle">
         <item name="android:textStyle">italic</item>
     </style>
@@ -124,7 +125,7 @@
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
-    <!-- Book title. -->
+    <!-- Book title gets a distinct style. -->
     <style name="TextDetail.Large.BookTitle">
         <item name="android:textStyle">italic</item>
     </style>
@@ -136,8 +137,6 @@
         <item name="android:paddingStart">@dimen/indent2</item>
         <item name="android:paddingEnd">@dimen/indent2</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLargeInverse</item>
-        <!--<item name="android:drawableStart">@drawable/ic_on_loan_selector</item>-->
-        <!--<item name="android:drawableTint">?attr/colorError</item>-->
     </style>
 
     <!-- *************************************************************************************** -->
@@ -162,16 +161,24 @@
     <!-- EditText fields -->
     <!-- *************************************************************************************** -->
 
-    <!-- base style for all EditText; not to be used directly in layouts. -->
+    <!-- Base style for all EditText and AutoComplete; not to be used directly in layouts. -->
     <style name="EditText">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
-    <!-- base style for all AutoCompleteTextView; not to be used directly in layouts. -->
-    <style name="EditText.AutoComplete">
-    </style>
+    <!-- Base style for Localized field; not to be used directly in layouts. -->
+    <style name="EditText.AutoComplete" />
+    <!-- Base style for Localized field; not to be used directly in layouts. -->
+    <style name="EditText.AutoComplete.Title" />
+    <!-- Base style for Localized field; not to be used directly in layouts. -->
+    <style name="EditText.Title" />
+    <!-- Base style for Localized field; not to be used directly in layouts. -->
+    <style name="EditText.Notes" />
+    <!-- Base style for Localized field; not to be used directly in layouts. -->
+    <style name="EditText.AutoComplete.Name" />
+
 
     <style name="EditText.SeriesNumber">
         <item name="android:hint">@string/lbl_series_num</item>
@@ -222,6 +229,7 @@
         <item name="android:hint">@string/hint_field_not_set</item>
     </style>
 
+    <!-- a text-picker button next to an edit field -->
     <style name="DropDownMenu">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0dp</item>
@@ -437,16 +445,19 @@
         <item name="android:focusableInTouchMode">false</item>
     </style>
 
+    <!-- Indicator a book has been read. -->
     <style name="Flag.Read">
         <item name="android:button">@drawable/ic_selector_read</item>
         <item name="android:buttonTint">?attr/checked_icon_tint</item>
     </style>
 
+    <!-- Indicator a book has been lend out. -->
     <style name="Flag.OnLoan">
         <item name="android:button">@drawable/ic_selector_on_loan</item>
         <item name="android:buttonTint">?attr/colorError</item>
     </style>
 
+    <!-- Indicator a story (TOC entry) is present in multiple books -->
     <style name="Flag.MultipleBooks">
         <item name="android:button">@drawable/ic_selector_multiple_books</item>
     </style>
@@ -468,7 +479,7 @@
         <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
     </style>
 
-    <!-- err. -->
+    <!-- error. -->
     <style name="ErrorMessage">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">?android:attr/colorError</item>
@@ -489,6 +500,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">?android:attr/actionBarSize</item>
         <!--<item name="android:background">?android:attr/colorPrimary</item>-->
+        <!-- gradient, looks nicer -->
         <item name="android:background">@drawable/side_nav_bar</item>
         <item name="android:elevation">4dp</item>
     </style>
@@ -519,7 +531,7 @@
     </style>
 
     <!-- Keys on the isbn search keyboard.
-     Must extend system style so Button/ImageButton (the 'del' key) look the same -->
+     Must extend system style so Button/ImageButton (the 'del' key below) looks the same -->
     <style name="IsbnSearchKey" parent="@style/Widget.MaterialComponents.Button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">75dp</item>
@@ -528,70 +540,10 @@
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
+    <!-- 'del' key on the isbn search keyboard. -->
     <style name="IsbnSearchKey.Del">
         <item name="android:src">@drawable/ic_backspace</item>
         <item name="android:tint">?attr/colorOnPrimary</item>
-    </style>
-
-    <!-- 'plus' and 'minus' buttons on the PartialDatePicker dialog.-->
-    <style name="PartialDatePickerButtons" tools:keep="@style/PartialDatePickerButtons">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/border2</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- translators: create a language specific styles.xml file and copy these styles. -->
-    <!-- *************************************************************************************** -->
-
-    <!-- Simple; Generic single-line fields -->
-    <style name="simpleTextEntry" parent="@style/EditText">
-        <item name="android:inputType">textCapWords</item>
-    </style>
-
-    <!-- Simple; Generic multi-line fields -->
-    <style name="multiLineTextEntry" parent="@style/EditText">
-        <item name="android:inputType">textMultiLine|textCapSentences</item>
-    </style>
-
-    <!-- AutoComplete; Generic fields -->
-    <style name="autoCompleteTextEntry" parent="@style/EditText.AutoComplete">
-        <item name="android:inputType">textCapWords</item>
-    </style>
-
-    <!-- ....................................................................................... -->
-
-    <!-- AutoComplete; Fields for 'human' names. e.g. Author, Publisher, ... -->
-    <style name="personalNameTextEntry" parent="@style/EditText.AutoComplete">
-        <item name="android:inputType">textCapWords</item>
-    </style>
-
-    <!-- Simple; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="titleTextEntry" parent="@style/EditText">
-        <item name="android:inputType">textCapWords</item>
-    </style>
-
-    <!-- AutoComplete; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="titleTextEntryAutoComplete" parent="@style/EditText.AutoComplete">
-        <item name="android:inputType">textCapWords</item>
-    </style>
-
-    <!-- ....................................................................................... -->
-
-    <!-- AutoComplete; The language field. -->
-    <style name="languageTextEntry" parent="@style/EditText.AutoComplete">
-        <item name="android:inputType">textCapWords</item>
-    </style>
-
-    <!-- AutoComplete; The book format field. -->
-    <style name="bookFormatTextEntry" parent="@style/EditText.AutoComplete">
-        <item name="android:inputType">textCapWords</item>
-    </style>
-
-    <!-- The price (listed, paid, ... ) fields. -->
-    <style name="priceTextEntry" parent="@style/EditText">
-        <item name="android:inputType">numberDecimal</item>
     </style>
 
     <!-- *************************************************************************************** -->
