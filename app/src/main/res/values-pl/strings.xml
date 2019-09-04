@@ -31,6 +31,43 @@
 <!-- Quotes „…”  - Regex to find wrong ones: (“|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
+    <string name="pe_ui_theme_day_night">Dzień / Noc</string>
+    <string name="pe_ui_theme_dark">Ciemny</string>
+    <string name="pe_ui_theme_light">Światło</string>
+
+    <string name="pe_bob_list_state_preserve">Zachowaj stan listy książek</string>
+    <string name="pe_bob_list_state_expanded">Rozszerzone są zawsze listy książek</string>
+    <string name="pe_bob_list_state_collapsed">Zawinięte zostały zawsze listy książek</string>
+
+    <string name="pe_bob_list_generation_full">Wymuś pełne wyróżnienie</string>
+    <string name="pe_bob_list_generation_enhanced">Wymuś rozszerzony tryb zgodności</string>
+    <string name="pe_bob_list_generation_legacy">Tryb zgodności sił</string>
+
+    <string name="pe_thumbnails_cropper_layer_type_hardware">Sprzęt komputerowy</string>
+    <string name="pe_thumbnails_cropper_layer_type_software">Oprogramowanie</string>
+    <string name="pe_bob_filter_read_yes">Książki czytane</string>
+    <string name="pe_bob_filter_read_no">Książki nieprzeczytane</string>
+    <string name="pe_bob_filter_signed_yes">Podpisane książki</string>
+    <string name="pe_bob_filter_signed_no">Książki niepodpisane</string>
+    <string name="pe_bob_filter_anthology_yes">Antologie</string>
+    <string name="pe_bob_filter_anthology_no">Wszystkie oprócz antologii</string>
+    <string name="pe_bob_filter_loaned_yes">Książki wypożyczone</string>
+    <string name="pe_bob_filter_loaned_no">Książki dostępne</string>
+
+
+    <string name="pv_bob_header_nr_of_books">Liczba książek</string>
+    <string name="pv_bob_header_level_1">Nagłówek pierwszego poziomu</string>
+    <string name="pv_bob_header_level_2">Nagłówek drugiego poziomu</string>
+
+    <string name="size_x_small">X-Mały</string>
+    <string name="size_small">Mały</string>
+    <string name="size_medium">Średni</string>
+    <string name="size_large">Duży</string>
+    <string name="size_x_large">X-Duży</string>
+    <string name="size_xx_large">2X-Duży</string>
+
+    <string name="pv_scanner_zxing_compatible">Skaner kompatybilny z Zxing</string>
+
     <string name="X_about_help_tap_here">Kliknij tu by wejść do pomocy online</string>
     <string name="X_anthology_titles">Tytuły antologii</string>
     <string name="X_btn_do_not_show_again">Nie pokazuj ponownie</string>
@@ -264,7 +301,7 @@
     <string name="lbl_given_names">Imiona</string>
     <string name="lbl_import_from_archive">Importuj z archiwum</string>
     <string name="lbl_import_from_csv">Importuj z pliku CSV</string>
-    <string name="lbl_is_anthology">Ta książka to antologia</string>
+    <string name="lbl_toc_anthology">Ta książka to antologia</string>
     <string name="lbl_is_complete">Jest gotowy</string>
     <string name="lbl_is_read">Przeczytełeś tę książkę?</string>
     <string name="lbl_is_signed">Czy książka jest podpisana</string>

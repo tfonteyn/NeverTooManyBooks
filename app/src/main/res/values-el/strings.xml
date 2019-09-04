@@ -31,6 +31,43 @@
 <!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’) -->
 <!--suppress LongLine -->
 <resources>
+    <string name="pe_ui_theme_day_night">Ημέρα / Νύχτα</string>
+    <string name="pe_ui_theme_dark">Σκούρο</string>
+    <string name="pe_ui_theme_light">Φως</string>
+
+    <string name="pe_bob_list_state_preserve">Διατήρηση κατάστασης λίστας βιβλίων</string>
+    <string name="pe_bob_list_state_expanded">Εκκίνηση πάντα με ανοιχτές λίστες βιβλίων</string>
+    <string name="pe_bob_list_state_collapsed">Εκκίνηση πάντα με κλειστές λίστες βιβλίων</string>
+
+    <string name="pe_bob_list_generation_full">Επιβολή Ολοκληρωμένων Χαρακτηριστικών</string>
+    <string name="pe_bob_list_generation_enhanced">Επιβολή ενισχυμένης λειτουργίας συμβατότηταςe</string>
+    <string name="pe_bob_list_generation_legacy">Επιβολή λειτουργίας συμβατότητας</string>
+
+    <string name="pe_thumbnails_cropper_layer_type_hardware">υλισμικό</string>
+    <string name="pe_thumbnails_cropper_layer_type_software">λογισμικού</string>
+    <string name="pe_bob_filter_read_yes">Τα βιβλία διαβάζουν</string>
+    <string name="pe_bob_filter_read_no">Βιβλία μη αναγνωσμένα</string>
+    <string name="pe_bob_filter_signed_yes">Υπογεγραμμένα βιβλία</string>
+    <string name="pe_bob_filter_signed_no">Βιβλία χωρίς υπογραφή</string>
+    <string name="pe_bob_filter_anthology_yes">Ανθολογίες</string>
+    <string name="pe_bob_filter_anthology_no">Όλοι εκτός από Ανθολογίες</string>
+    <string name="pe_bob_filter_loaned_yes">Βιβλία δανείου</string>
+    <string name="pe_bob_filter_loaned_no">Βιβλία διαθέσιμα</string>
+
+
+    <string name="pv_bob_header_nr_of_books">Εμφάνιση αριθμού βιβλίων</string>
+    <string name="pv_bob_header_level_1">Εμφάνιση επικεφαλίδας πρώτου επιπέδου</string>
+    <string name="pv_bob_header_level_2">Εμφάνιση τίτλου δευτέρου επιπέδου</string>
+
+    <string name="size_x_small">X-Μικρό</string>
+    <string name="size_small">Μικρό</string>
+    <string name="size_medium">Μεσαίο</string>
+    <string name="size_large">Μεγάλο</string>
+    <string name="size_x_large">X-Μεγάλο</string>
+    <string name="size_xx_large">2X-Μεγάλο</string>
+
+    <string name="pv_scanner_zxing_compatible">Σαρωτής συμβατός με το Zxing</string>
+
     <string name="X_about_help_tap_here">Παρακαλούμε πατήστε εδώ για να μπέιτε στις online σελίδες βοήθειας</string>
     <string name="X_anthology_titles">Τίτλοι Ανθολογιών</string>
     <string name="X_btn_do_not_show_again">Μην εμφανιστείς ξανά</string>
@@ -265,7 +302,7 @@
     <string name="lbl_given_names">Ονόματα</string>
     <string name="lbl_import_from_archive">Εισαγωγή από Αρχείο</string>
     <string name="lbl_import_from_csv">Εισαγωγή από αρχείο CSV</string>
-    <string name="lbl_is_anthology">Αυτό το βιβλίο είναι μια Ανθολογία</string>
+    <string name="lbl_toc_anthology">Αυτό το βιβλίο είναι μια Ανθολογία</string>
     <string name="lbl_is_complete">Ολοκληρώθηκε</string>
     <string name="lbl_is_read">Έχετε διαβάσει αυτό το βιβλίο;</string>
     <string name="lbl_is_signed">Έιναι αυτό το βιβλίο υπογεγραμένο</string>

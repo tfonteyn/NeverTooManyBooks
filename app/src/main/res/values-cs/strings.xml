@@ -31,6 +31,43 @@
 <!-- Quotes „…“ - Regex to find wrong ones: (”|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
+    <string name="pe_ui_theme_day_night">Den / Noc</string>
+    <string name="pe_ui_theme_dark">Temný</string>
+    <string name="pe_ui_theme_light">Světlo</string>
+
+    <string name="pe_bob_list_state_preserve">Zachovat stav seznamu knih</string>
+    <string name="pe_bob_list_state_expanded">Vždy otevřít seznam knih rozbalený</string>
+    <string name="pe_bob_list_state_collapsed">Vždy otevřít seznam knih sbalený</string>
+
+    <string name="pe_bob_list_generation_full">Síla plně vybavený</string>
+    <string name="pe_bob_list_generation_enhanced">Vynutit rozšířený režim kompatibility</string>
+    <string name="pe_bob_list_generation_legacy">Vynutit režim kompatibility</string>
+
+    <string name="pe_thumbnails_cropper_layer_type_hardware">Hardware</string>
+    <string name="pe_thumbnails_cropper_layer_type_software">Software</string>
+
+    <string name="pe_bob_filter_read_yes">Knihy číst</string>
+    <string name="pe_bob_filter_read_no">Knihy nepřečtené</string>
+    <string name="pe_bob_filter_signed_yes">Podepsané knihy</string>
+    <string name="pe_bob_filter_signed_no">Knihy nepodepsané</string>
+    <string name="pe_bob_filter_anthology_yes">Anthology</string>
+    <string name="pe_bob_filter_anthology_no">Všechno kromě Anthologies</string>
+    <string name="pe_bob_filter_loaned_yes">Knihy o půjčce</string>
+    <string name="pe_bob_filter_loaned_no">Dostupné knihy</string>
+
+    <string name="pv_bob_header_nr_of_books">Počet knih</string>
+    <string name="pv_bob_header_level_1">Nadpis 1. úrovně</string>
+    <string name="pv_bob_header_level_2">Záhlaví druhé úrovně</string>
+
+    <string name="size_x_small">X-Malý</string>
+    <string name="size_small">Malý</string>
+    <string name="size_medium">Střední</string>
+    <string name="size_large">Velký</string>
+    <string name="size_x_large">X-Velký</string>
+    <string name="size_xx_large">2X-Velký</string>
+
+    <string name="pv_scanner_zxing_compatible">Kompatibilní skener Zxing</string>
+
     <string name="X_about_help_tap_here">Klikněte zde pro přístup k online nápovědě</string>
     <string name="X_anthology_titles">Antologické tituly</string>
     <string name="X_btn_do_not_show_again">Příště již nezobrazovat</string>
@@ -264,7 +301,7 @@
     <string name="lbl_given_names">Křestní jméno</string>
     <string name="lbl_import_from_archive">Import z archivu</string>
     <string name="lbl_import_from_csv">Import ze souboru CSV</string>
-    <string name="lbl_is_anthology">Tato kniha je antologie</string>
+    <string name="lbl_toc_anthology">Tato kniha je antologie</string>
     <string name="lbl_is_complete">Je kompletní</string>
     <string name="lbl_is_read">Máte tuto knihu přečtenou?</string>
     <string name="lbl_is_signed">Byla tato kniha podepsána</string>

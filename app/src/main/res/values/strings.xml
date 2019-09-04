@@ -679,6 +679,7 @@
     <!-- Used in multiple places: the 'default' for a setting the user really should not change. -->
     <string name="pe_use_recommended_option">Use the recommended option</string>
 
+
     <!-- Preference Category -->
     <string name="pg_ui">User Interface</string>
     <!-- ListPreference - Preferred interface Language -->
@@ -687,6 +688,9 @@
     <string name="pt_ui_system_locale">System Locale</string>
     <!-- ListPreference - Preferred interface Theme -->
     <string name="pt_ui_theme">Interface Theme</string>
+    <string name="pe_ui_theme_day_night">Day / Night</string>
+    <string name="pe_ui_theme_dark">Dark</string>
+    <string name="pe_ui_theme_light">Light</string>
     <!-- ListPreference - Preferred interface Message display. -->
     <string name="pt_ui_messages_use">Information messages</string>
     <!-- Preference screen; opens a new screen listing all Fields. -->
@@ -715,9 +719,15 @@
     <string name="pt_booklist_open_book_read_only">Open book in read-only mode</string>
     <!-- ListPreference - Book list state-related preferences -->
     <string name="pt_booklist_state">Book list state</string>
+    <string name="pe_bob_list_state_preserve">Preserve book list state</string>
+    <string name="pe_bob_list_state_expanded">Always start book lists expanded</string>
+    <string name="pe_bob_list_state_collapsed">Always start book lists collapsed</string>
     <!--  ListPreference - allows overriding the default method used to generate book lists
           as defined by Android version -->
     <string name="pt_booklist_generation">Book List Generation Option</string>
+    <string name="pe_bob_list_generation_full">Force Fully Featured</string>
+    <string name="pe_bob_list_generation_enhanced">Force Enhanced Compatibility Mode</string>
+    <string name="pe_bob_list_generation_legacy">Force Compatibility Mode</string>
 
 
     <!-- Preference Category -->
@@ -728,6 +738,7 @@
     <string name="pt_scanning_beep_if_isbn_valid">Beep if scanned ISBN is valid</string>
     <!-- ListPreference - the barcode scanner to use-->
     <string name="pt_scanning_preferred_scanner">Preferred Scanner</string>
+    <string name="pv_scanner_zxing_compatible">Zxing Compatible Scanner</string>
 
 
     <!-- Preference Category -->
@@ -754,6 +765,8 @@
         Leave this setting on “Use default” unless you experience crashes while cropping images.
         Try “Software” for safer but slower or force “Hardware” for less safe, but faster.
     </string>
+    <string name="pe_thumbnails_cropper_layer_type_hardware">Hardware</string>
+    <string name="pe_thumbnails_cropper_layer_type_software">Software</string>
 
 
     <!-- category: search sites -->
@@ -780,13 +793,27 @@
 
     <!-- Preference Screen; filters in booklist style -->
     <string name="pg_filters">Filters</string>
+    <string name="pe_bob_filter_read_yes">Books Read</string>
+    <string name="pe_bob_filter_read_no">Books Unread</string>
+    <string name="pe_bob_filter_signed_yes">Books Signed</string>
+    <string name="pe_bob_filter_signed_no">Books Unsigned</string>
+    <string name="pe_bob_filter_anthology_yes">Anthologies</string>
+    <string name="pe_bob_filter_anthology_no">All but Anthologies</string>
+    <string name="pe_bob_filter_loaned_yes">Books on loan</string>
+    <string name="pe_bob_filter_loaned_no">Books available</string>
+
     <!-- Preference Screen; The extra fields displayed on 'book-level' in the booklist -->
     <string name="pg_bob_show_details">Extra Book Details</string>
     <string name="pt_bob_show_details_uses_task">Fetching Extra Book Details</string>
     <string name="pt_bob_show_details_uses_task_on">delayed</string>
     <string name="pt_bob_show_details_uses_task_off">immediately</string>
+
     <!-- MultiSelectListPreference - Determines what is show in book list header -->
     <string name="pt_bob_header">Summary details in header</string>
+    <string name="pv_bob_header_nr_of_books">Number of books</string>
+    <string name="pv_bob_header_level_1">1st level heading</string>
+    <string name="pv_bob_header_level_2">2nd level heading</string>
+
     <!-- ListPreference - Scale text. -->
     <string name="pt_bob_text_size">Size of book list text</string>
 
@@ -1057,6 +1084,13 @@
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0fB</string>
 
+    <string name="size_x_small">X-Small</string>
+    <string name="size_small">Small</string>
+    <string name="size_medium">Medium</string>
+    <string name="size_large">Large</string>
+    <string name="size_x_large">X-Large</string>
+    <string name="size_xx_large">2X-Large</string>
+
     <!-- ####################################################################################### -->
     <!-- == Book format names. Used to unify terminology from internet search sites.  == -->
     <!-- ####################################################################################### -->
@@ -1217,8 +1251,9 @@
     <string name="lbl_allow_asin">Allow ASIN</string>
 
     <!-- checkbox for the TOC edit screen. Should fit on a single line -->
-    <string name="lbl_is_anthology">This book is an Anthology</string>
-    <string name="lbl_toc_multiple_authors">This Anthology has multiple authors</string>
+    <string name="lbl_toc_anthology">This is an Anthology</string>
+    <string name="lbl_toc_has_notes">It has an introduction, afterword,…</string>
+    <string name="lbl_toc_multiple_authors">It has multiple authors</string>
 
     <!-- Book edition -->
     <string name="lbl_edition">Edition</string>

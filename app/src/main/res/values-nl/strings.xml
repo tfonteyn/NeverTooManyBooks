@@ -29,6 +29,42 @@
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]><!-- Quotes „…”  - Regex to find wrong ones: ("|'|“|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
+    <string name="pe_ui_theme_day_night">Dag / Nacht</string>
+    <string name="pe_ui_theme_dark">Donker</string>
+    <string name="pe_ui_theme_light">Helder</string>
+
+    <string name="pe_bob_list_state_preserve">Behoud boekenlijst status</string>
+    <string name="pe_bob_list_state_expanded">Boekenlijst uitgeklapt starten</string>
+    <string name="pe_bob_list_state_collapsed">Boekenlijst ingeklapt starten</string>
+
+    <string name="pe_bob_list_generation_full">Forceer volledige functionaliteit</string>
+    <string name="pe_bob_list_generation_enhanced">Forceer uitgebreide compatibiliteitsmodus</string>
+    <string name="pe_bob_list_generation_legacy">Forceer compatibele modus</string>
+
+    <string name="pe_thumbnails_cropper_layer_type_hardware">Hardware</string>
+    <string name="pe_thumbnails_cropper_layer_type_software">Software</string>
+    <string name="pe_bob_filter_read_yes">Gelezen boeken</string>
+    <string name="pe_bob_filter_read_no">Niet Gelezen boeken</string>
+    <string name="pe_bob_filter_signed_yes">Gesigneerd boeken</string>
+    <string name="pe_bob_filter_signed_no">Niet Gesigneerd boeken</string>
+    <string name="pe_bob_filter_anthology_yes">Bloemlezingen</string>
+    <string name="pe_bob_filter_anthology_no">Geen Bloemlezingen</string>
+    <string name="pe_bob_filter_loaned_yes">Uitgeleende boeken</string>
+    <string name="pe_bob_filter_loaned_no">Niet Uitgeleende boeken</string>
+
+    <string name="pv_bob_header_nr_of_books">Aantal boeken</string>
+    <string name="pv_bob_header_level_1">Toon 1ste niveau</string>
+    <string name="pv_bob_header_level_2">Toon 2de niveau</string>
+
+    <string name="size_x_small">X-Klein</string>
+    <string name="size_small">Klein</string>
+    <string name="size_medium">Medium</string>
+    <string name="size_large">Groot</string>
+    <string name="size_x_large">X-Groot</string>
+    <string name="size_xx_large">2X-Groot</string>
+
+    <string name="pv_scanner_zxing_compatible">Zxing Compatibele Scanner</string>
+
     <string name="X_about_help_tap_here">Tik hier voor online help</string>
     <string name="X_anthology_titles">Bloemlezing titels</string>
     <string name="X_btn_do_not_show_again">Niet meer laten zien</string>
@@ -270,7 +306,7 @@
     <string name="lbl_given_names">Voornamen</string>
     <string name="lbl_import_from_archive">Importeren vanuit archief</string>
     <string name="lbl_import_from_csv">Importeer vanuit CSV-bestand</string>
-    <string name="lbl_is_anthology">Dit boek is een bloemlezing</string>
+    <string name="lbl_toc_anthology">Dit boek is een bloemlezing</string>
     <string name="lbl_is_complete">Is volledig</string>
     <string name="lbl_is_read">Heeft u dit boek gelezen?</string>
     <string name="lbl_is_signed">Is dit boek gesigneerd?</string>

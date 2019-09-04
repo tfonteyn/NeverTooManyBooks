@@ -31,6 +31,43 @@
 <!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’) -->
 <!--suppress LongLine -->
 <resources>
+    <string name="pe_ui_theme_day_night">День / Ночь</string>
+    <string name="pe_ui_theme_dark">темный</string>
+    <string name="pe_ui_theme_light">свет</string>
+
+    <string name="pe_bob_list_state_expanded">Всегда открывать списки раскрытыми</string>
+    <string name="pe_bob_list_state_collapsed">Всегда открывать списоки свернутыми</string>
+    <string name="pe_bob_list_state_preserve">Запоминать состояние списков</string>
+
+    <string name="pe_bob_list_generation_full">Полная функциональность</string>
+    <string name="pe_bob_list_generation_enhanced">Повышенный режим совместимости</string>
+    <string name="pe_bob_list_generation_legacy">Режим совместимости</string>
+
+    <string name="pe_thumbnails_cropper_layer_type_hardware">аппаратные средства</string>
+    <string name="pe_thumbnails_cropper_layer_type_software">Программного обеспечения</string>
+    <string name="pe_bob_filter_read_yes">Книги читают</string>
+    <string name="pe_bob_filter_read_no">Книги непрочитанные</string>
+    <string name="pe_bob_filter_signed_yes">Книги подписаны</string>
+    <string name="pe_bob_filter_signed_no">Книги без подписи</string>
+    <string name="pe_bob_filter_anthology_yes">Антологии</string>
+    <string name="pe_bob_filter_anthology_no">Все, кроме антологий</string>
+    <string name="pe_bob_filter_loaned_yes">Книги в долг</string>
+    <string name="pe_bob_filter_loaned_no">Книги доступны</string>
+
+
+    <string name="pv_bob_header_nr_of_books">Показывать номера книг</string>
+    <string name="pv_bob_header_level_1">Показать заголовок</string>
+    <string name="pv_bob_header_level_2">Показать заголовок 2 уровня</string>
+
+    <string name="size_x_small">X-Маленький</string>
+    <string name="size_small">Маленький</string>
+    <string name="size_medium">Средняя</string>
+    <string name="size_large">большой</string>
+    <string name="size_x_large">X-большой</string>
+    <string name="size_xx_large">2X-большой</string>
+
+    <string name="pv_scanner_zxing_compatible">Zxing совместимый сканер</string>
+
     <string name="X_about_help_tap_here">Пожалуйста, нажмите здесь, чтобы получить справочную информацию в интернете</string>
     <string name="X_anthology_titles">Названия антологий</string>
     <string name="X_btn_do_not_show_again">Больше не показывать</string>
@@ -262,7 +299,7 @@
     <string name="lbl_given_names">Имя</string>
     <string name="lbl_import_from_archive">Импорт из архива</string>
     <string name="lbl_import_from_csv">Импортировать CSV файл</string>
-    <string name="lbl_is_anthology">Эта книга Антология</string>
+    <string name="lbl_toc_anthology">Эта книга Антология</string>
     <string name="lbl_is_complete">Завершено</string>
     <string name="lbl_is_read">Вы прочитали эту книгу?</string>
     <string name="lbl_is_signed">Книга подписана?</string>

@@ -31,6 +31,42 @@
 <!-- Quotes “…”  - Regex to find wrong ones: („|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
+    <string name="pe_ui_theme_day_night">Gündüz / Gece</string>
+    <string name="pe_ui_theme_dark">Karanlık</string>
+    <string name="pe_ui_theme_light">ışık</string>
+
+    <string name="pe_bob_list_state_expanded">Kitap dizelgelerini genişletilmiş olarak başlat</string>
+    <string name="pe_bob_list_state_collapsed">Kitap dizelgelerini içe kapalı olarak başlat</string>
+    <string name="pe_bob_list_state_preserve">Kitap dizelgesi durumunu koru</string>
+
+    <string name="pe_bob_list_generation_full">Tam takım oluşturma seçeneğini zorla</string>
+    <string name="pe_bob_list_generation_enhanced">Geliştirilmiş uyumluluk kipini zorla</string>
+    <string name="pe_bob_list_generation_legacy">Uyumluluk kipini zorla</string>
+
+    <string name="pe_thumbnails_cropper_layer_type_hardware">Donanım</string>
+    <string name="pe_thumbnails_cropper_layer_type_software">Yazılım</string>
+    <string name="pe_bob_filter_read_yes">Kitap okumak</string>
+    <string name="pe_bob_filter_read_no">Kitaplar okunmadı</string>
+    <string name="pe_bob_filter_signed_yes">İmzalanan kitaplar</string>
+    <string name="pe_bob_filter_signed_no">İmzasız kitaplar</string>
+    <string name="pe_bob_filter_anthology_yes">Antolojiler</string>
+    <string name="pe_bob_filter_anthology_no">Antolojiler hariç hepsi</string>
+    <string name="pe_bob_filter_loaned_yes">Borç kitapları</string>
+    <string name="pe_bob_filter_loaned_no">Mevcut kitaplar</string>
+
+    <string name="pv_bob_header_nr_of_books">Kitap sayısını göster</string>
+    <string name="pv_bob_header_level_1">Başlığı göster</string>
+    <string name="pv_bob_header_level_2">2. seviye başlığı göster</string>
+
+    <string name="size_x_small">X-Küçük</string>
+    <string name="size_small">Küçük</string>
+    <string name="size_medium">Orta</string>
+    <string name="size_large">Büyük</string>
+    <string name="size_x_large">X-Büyük</string>
+    <string name="size_xx_large">2X-Büyük</string>
+
+    <string name="pv_scanner_zxing_compatible">Zxing Uyumlu Tarayıcı</string>
+
     <string name="X_about_help_tap_here">Çevrimiçi yardım sayfalarına erişmek için lütfen dokunun</string>
     <string name="X_anthology_titles">Seçmeler</string>
     <string name="X_btn_do_not_show_again">Bir daha gösterme</string>
@@ -264,7 +300,7 @@
     <string name="lbl_given_names">Adı</string>
     <string name="lbl_import_from_archive">Arşivden içe aktar</string>
     <string name="lbl_import_from_csv">CSV dosyasından içe aktar</string>
-    <string name="lbl_is_anthology">Bu kitap bir antoloji</string>
+    <string name="lbl_toc_anthology">Bu kitap bir antoloji</string>
     <string name="lbl_is_complete">Tamamlandı</string>
     <string name="lbl_is_read">Bu kitabı okudunuz mu?</string>
     <string name="lbl_is_signed">Bu kitap imzalı mı?</string>

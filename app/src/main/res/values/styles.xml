@@ -32,28 +32,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- *************************************************************************************** -->
-    <!-- Page section headers -->
-    <!-- *************************************************************************************** -->
-
-    <style name="SectionHeader">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/border2</item>
-        <item name="android:layout_marginBottom">@dimen/border1</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAllCaps">true</item>
-    </style>
-
-    <style name="SectionHeader.Large" tools:keep="@style/SectionHeader_Large">
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-    </style>
-
-    <style name="SectionHeader.Small">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
     <!-- Page dividers -->
     <!-- *************************************************************************************** -->
 
@@ -77,20 +55,42 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- Field labels -->
+    <!-- Field & section labels -->
     <!-- *************************************************************************************** -->
 
-    <!-- generic field labels where the data is below the label -->
-    <style name="FieldLabel">
+    <!-- Base style; not to be used directly in layouts. -->
+    <style name="Label">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!-- generic field labels where the data is below the label -->
+    <style name="Label.Field">
+    </style>
+
     <!-- generic field labels where the data is on the side of the label -->
-    <style name="FieldLabel.Inline">
+    <style name="Label.Field.Inline">
         <item name="android:paddingEnd">@dimen/indent1</item>
+    </style>
+
+    <!-- Section field labels where the data is below the label -->
+    <style name="Label.Section">
+        <item name="android:layout_marginTop">@dimen/border1</item>
+    </style>
+
+    <!-- Section field labels where there is a set of data below. -->
+    <style name="Label.Header">
+        <item name="android:layout_marginTop">@dimen/border2</item>
+        <item name="android:layout_marginBottom">@dimen/border1</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <!-- Section field labels where there is a set of data below. -->
+    <style name="Label.Header.Small">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
     <!-- *************************************************************************************** -->
