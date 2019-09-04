@@ -5,12 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
  * Without their original creation, this project would not exist in its
  * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and
- * not at the original creators.
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition.TableTypes;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 /**
@@ -356,12 +357,14 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_BOOK_UUID;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_EDITION_BITMASK;
-    /** {@link #TBL_BOOKS}. See {@link TocEntry.Authors}. */
+    /** {@link #TBL_BOOKS}. See {@link Book#TOC_SINGLE_AUTHOR_SINGLE_WORK}. */
     public static final DomainDefinition DOM_BOOK_TOC_BITMASK;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_PRICE_PAID;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_PRICE_PAID_CURRENCY;
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_IS_OWNED;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_DATE_ACQUIRED;
     /** {@link #TBL_BOOKS} added to the collection. */
@@ -399,6 +402,7 @@ public final class DBDefinitions {
     public static final String KEY_SIGNED = "signed";
     public static final String KEY_RATING = "rating";
     public static final String KEY_NOTES = "notes";
+    public static final String KEY_OWNED = "owned";
     public static final String KEY_DATE_ACQUIRED = "date_acquired";
     public static final String KEY_DATE_ADDED = "date_added";
 
@@ -412,16 +416,19 @@ public final class DBDefinitions {
                         .setDefault(0);
         DOM_BOOK_TOC_BITMASK =
                 new DomainDefinition(KEY_TOC_BITMASK, ColumnInfo.TYPE_INTEGER, true)
-                        .setDefault(TocEntry.Authors.SINGLE_AUTHOR_SINGLE_WORK);
+                        .setDefault(Book.TOC_SINGLE_AUTHOR_SINGLE_WORK);
 
+        DOM_BOOK_IS_OWNED =
+                new DomainDefinition(KEY_OWNED, ColumnInfo.TYPE_BOOLEAN, true)
+                        .setDefault(0);
+        DOM_BOOK_DATE_ACQUIRED =
+                new DomainDefinition(KEY_DATE_ACQUIRED, ColumnInfo.TYPE_DATE, true)
+                        .setDefaultEmptyString();
         DOM_BOOK_PRICE_PAID =
                 new DomainDefinition(KEY_PRICE_PAID, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
         DOM_BOOK_PRICE_PAID_CURRENCY =
                 new DomainDefinition(KEY_PRICE_PAID_CURRENCY, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_DATE_ACQUIRED =
-                new DomainDefinition(KEY_DATE_ACQUIRED, ColumnInfo.TYPE_DATE, true)
                         .setDefaultEmptyString();
         DOM_BOOK_DATE_ADDED =
                 new DomainDefinition(KEY_DATE_ADDED, ColumnInfo.TYPE_DATETIME, true)
@@ -843,6 +850,7 @@ public final class DBDefinitions {
                              DOM_BOOK_DESCRIPTION,
 
                              // personal data
+                             //DOM_BOOK_IS_OWNED,
                              DOM_BOOK_PRICE_PAID,
                              DOM_BOOK_PRICE_PAID_CURRENCY,
                              DOM_BOOK_DATE_ACQUIRED,
