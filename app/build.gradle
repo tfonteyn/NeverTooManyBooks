@@ -116,7 +116,11 @@ dependencies {
 //    implementation 'androidx.viewpager2:viewpager2:1.0.0-beta03'
     //
     implementation 'com.google.android.material:material:1.1.0-alpha09'
-    //
+
+    // barcode decoder using https://developers.google.com/android/guides/setup
+    implementation 'com.google.android.gms:play-services-vision:18.0.0'
+
+
     implementation 'ch.acra:acra-mail:5.3.0'
     implementation 'ch.acra:acra-toast:5.3.0'
     implementation 'ch.acra:acra-dialog:5.3.0'

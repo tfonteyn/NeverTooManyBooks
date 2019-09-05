@@ -34,8 +34,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Checkable;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -314,134 +312,20 @@ public abstract class BookBaseFragment
     /**
      * Hides unused fields if they have no useful data.
      * Should normally be called at the *end* of {@link #onLoadFieldsFromBook}
-     * <p>
-     * Authors & Title are always visible.
-     * <p>
-     * Series is done in:
-     * {@link BookFragment}#populateSeriesListField}
-     * {@link EditBookFieldsFragment}#populateSeriesListField}
-     * <p>
-     * Special fields not checked here:
-     * - toc
      *
      * @param hideIfEmpty set to {@code true} when displaying; {@code false} when editing.
      */
     void showOrHideFields(final boolean hideIfEmpty) {
-        // reset to user-preferences.
-        getFields().resetVisibility();
 
-        // actual book
-        setVisibility(R.id.coverImage, hideIfEmpty);
-        setVisibility(R.id.series, hideIfEmpty,
-                      R.id.lbl_series);
-        setVisibility(R.id.isbn, hideIfEmpty,
-                      R.id.lbl_isbn);
-        setVisibility(R.id.description, hideIfEmpty,
-                      R.id.lbl_description);
-        setVisibility(R.id.pages, hideIfEmpty,
-                      R.id.lbl_pages);
-        setVisibility(R.id.format, hideIfEmpty,
-                      R.id.lbl_format);
-        setVisibility(R.id.genre, hideIfEmpty,
-                      R.id.lbl_genre);
-        setVisibility(R.id.language, hideIfEmpty,
-                      R.id.lbl_language);
+        // do all fields with their related fields
+        getFields().resetVisibility(hideIfEmpty);
 
-        setVisibility(R.id.publisher, hideIfEmpty);
-        setVisibility(R.id.date_published, hideIfEmpty);
-        setVisibility(R.id.first_publication, hideIfEmpty,
-                      R.id.lbl_first_publication);
-        setVisibility(R.id.price_listed, hideIfEmpty,
-                      R.id.price_listed_currency,
-                      R.id.lbl_price_listed);
-
-        // Hide the Publication section label if none of the publishing fields are shown.
-        setSectionLabelVisibility(R.id.lbl_publication_section,
-                                  R.id.publisher,
-                                  R.id.date_published,
-                                  R.id.price_listed,
-                                  R.id.first_publication);
-
-        //  setVisibility(hideIfEmpty, R.id.toc, R.id.row_toc);
-
-        // personal fields
-        setVisibility(R.id.loaned_to, hideIfEmpty);
-        setVisibility(R.id.read, hideIfEmpty);
-        setVisibility(R.id.notes, hideIfEmpty);
-        setVisibility(R.id.bookshelves, hideIfEmpty,
-                      R.id.lbl_bookshelves);
-        setVisibility(R.id.edition, hideIfEmpty,
-                      R.id.lbl_edition);
-        setVisibility(R.id.location, hideIfEmpty,
-                      R.id.lbl_location,
-                      R.id.lbl_location_long);
-        setVisibility(R.id.date_acquired, hideIfEmpty,
-                      R.id.lbl_date_acquired);
-        setVisibility(R.id.price_paid, hideIfEmpty,
-                      R.id.price_paid_currency,
-                      R.id.lbl_price_paid);
-        setVisibility(R.id.signed, hideIfEmpty,
-                      R.id.lbl_signed);
-        setVisibility(R.id.rating, hideIfEmpty,
-                      R.id.lbl_rating);
-
-        setVisibility(R.id.read_start, hideIfEmpty,
-                      R.id.lbl_read_start);
-        setVisibility(R.id.read_end, hideIfEmpty,
-                      R.id.lbl_read_end);
         // Hide the baseline for the read labels if both labels are gone.
         setBaselineVisibility(R.id.lbl_read_start_end_baseline,
                               R.id.lbl_read_start, R.id.lbl_read_end);
         // Hide the baseline for the value field if the labels are gone.
         setBaselineVisibility(R.id.read_start_end_baseline,
                               R.id.lbl_read_start_end_baseline);
-
-        // Hide the Notes label if none of the notes fields are shown.
-        setSectionLabelVisibility(R.id.lbl_notes,
-                                  R.id.notes,
-                                  R.id.lbl_edition,
-                                  R.id.lbl_signed,
-                                  R.id.lbl_date_acquired,
-                                  R.id.lbl_price_paid,
-                                  R.id.lbl_read_start,
-                                  R.id.lbl_read_end,
-                                  R.id.lbl_location);
-
-        //NEWKIND: new fields
-    }
-
-    /**
-     * Set the visibility for the field.
-     *
-     * @param fieldId       layout resource id of the field
-     * @param hideIfEmpty   hide the field if it's empty
-     * @param relatedFields list of fields whose visibility will also be set, based
-     */
-    private void setVisibility(@IdRes final int fieldId,
-                               final boolean hideIfEmpty,
-                               @NonNull @IdRes final int... relatedFields) {
-        //noinspection ConstantConditions
-        View view = getView().findViewById(fieldId);
-        if (view != null) {
-            int visibility = view.getVisibility();
-            if (hideIfEmpty) {
-                // Don't check/show a field if it is already hidden (assumed by user preference)
-                if (visibility != View.GONE) {
-
-                    // hide any unchecked Checkable.
-                    if (view instanceof Checkable) {
-                        visibility = ((Checkable) view).isChecked() ? View.VISIBLE : View.GONE;
-                        view.setVisibility(visibility);
-
-                    } else if (!(view instanceof ImageView)) {
-                        // don't act on ImageView, but all other fields can be tested.
-                        visibility = !getField(fieldId).isEmpty() ? View.VISIBLE : View.GONE;
-                        view.setVisibility(visibility);
-                    }
-                }
-            }
-            setVisibility(visibility, relatedFields);
-        }
     }
 
     /**
@@ -467,9 +351,9 @@ public abstract class BookBaseFragment
      * @param sectionLabelId field to set
      * @param fields         to check
      */
-    private void setSectionLabelVisibility(@SuppressWarnings("SameParameterValue")
-                                           @IdRes final int sectionLabelId,
-                                           @NonNull @IdRes final int... fields) {
+    void setSectionLabelVisibility(@SuppressWarnings("SameParameterValue")
+                                   @IdRes final int sectionLabelId,
+                                   @NonNull @IdRes final int... fields) {
         showOrHide(sectionLabelId, View.VISIBLE, fields);
     }
 
@@ -485,10 +369,10 @@ public abstract class BookBaseFragment
                             final int visibilityToSet,
                             @NonNull @IdRes final int... fields) {
         //noinspection ConstantConditions
-        View baselineField = getView().findViewById(fieldToSet);
-        if (baselineField != null) {
+        View fieldView = getView().findViewById(fieldToSet);
+        if (fieldView != null) {
             boolean allGone = hasSameVisibility(View.GONE, fields);
-            baselineField.setVisibility(allGone ? View.GONE : visibilityToSet);
+            fieldView.setVisibility(allGone ? View.GONE : visibilityToSet);
         }
     }
 

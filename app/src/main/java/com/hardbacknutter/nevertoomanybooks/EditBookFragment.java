@@ -77,11 +77,11 @@ public class EditBookFragment
     public static final String REQUEST_BKEY_TAB = "tab";
     @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT = 0;
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings("unused")
     public static final int TAB_EDIT_PUBLICATION = 1;
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings("unused")
     public static final int TAB_EDIT_NOTES = 2;
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings({"unused"})
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
     private AppCompatActivity mActivity;
@@ -151,29 +151,11 @@ public class EditBookFragment
 
         // any specific tab desired as 'selected' ?
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState : getArguments();
-        int tabWanted;
+        int showTab;
         if (currentArgs != null) {
-            tabWanted = currentArgs.getInt(REQUEST_BKEY_TAB, TAB_EDIT);
+            showTab = currentArgs.getInt(REQUEST_BKEY_TAB, TAB_EDIT);
         } else {
-            tabWanted = TAB_EDIT;
-        }
-
-        int showTab = TAB_EDIT;
-        switch (tabWanted) {
-            case TAB_EDIT:
-            case TAB_EDIT_PUBLICATION:
-            case TAB_EDIT_NOTES:
-                showTab = tabWanted;
-                break;
-
-            case TAB_EDIT_ANTHOLOGY:
-                if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
-                    showTab = tabWanted;
-                }
-                break;
-
-            default:
-                throw new IllegalArgumentException("Unknown tab=" + tabWanted);
+            showTab = TAB_EDIT;
         }
 
         FragmentManager fm = getChildFragmentManager();
@@ -185,10 +167,8 @@ public class EditBookFragment
                                              getString(R.string.tab_lbl_publication)));
         mPagerAdapter.add(new FragmentHolder(fm, EditBookNotesFragment.TAG,
                                              getString(R.string.tab_lbl_notes)));
-        if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
-            mPagerAdapter.add(new FragmentHolder(fm, EditBookTocFragment.TAG,
-                                                 getString(R.string.tab_lbl_content)));
-        }
+        mPagerAdapter.add(new FragmentHolder(fm, EditBookTocFragment.TAG,
+                                             getString(R.string.tab_lbl_content)));
 
         mViewPager.setAdapter(mPagerAdapter);
 
@@ -196,6 +176,10 @@ public class EditBookFragment
         TabLayout tabLayout = mActivity.findViewById(R.id.tab_panel);
 
         tabLayout.setupWithViewPager(mViewPager);
+        // sanity check
+        if (showTab > mPagerAdapter.getCount()) {
+            throw new IllegalStateException("tab=" + showTab);
+        }
         mViewPager.setCurrentItem(showTab);
     }
 

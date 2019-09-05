@@ -27,18 +27,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-
-    <!-- Color for a boolean status icon; true: this color; false: transparent. -->
-    <attr name="checked_icon_tint" format="reference|color" />
-
-    <!-- Color for a boolean status icon; true: this color; false: transparent. -->
-    <attr name="completed_icon_tint" format="reference|color" />
-
-    <!-- drawable/border.xml uses this color. -->
-    <attr name="border_color" format="reference|color" />
-
-    <!-- ItemTouchHelper uses this for background color while a row is being dragged. -->
-    <attr name="itemTouchHelper_onSelected_color" format="reference|color" />
-
-</resources>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@android:color/transparent" android:state_checked="false" />
+    <item android:drawable="@drawable/ic_check" android:state_checked="true" />
+</selector>

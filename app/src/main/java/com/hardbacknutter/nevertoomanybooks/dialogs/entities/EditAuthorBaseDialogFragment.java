@@ -123,7 +123,7 @@ public abstract class EditAuthorBaseDialogFragment
         mGivenNamesView.setText(mGivenNames);
         mGivenNamesView.setAdapter(mGivenNameAdapter);
 
-        mIsCompleteView = root.findViewById(R.id.is_complete);
+        mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
         mIsCompleteView.setChecked(mIsComplete);
 
         return new AlertDialog.Builder(context)

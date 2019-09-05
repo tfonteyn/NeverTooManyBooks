@@ -425,7 +425,7 @@
     <string name="pg_general">Genel</string>
     <string name="pg_groupings">Öbeklemeler</string>
     <string name="pg_reformat_titles">Reformat başlıkları</string>
-    <string name="pg_scanning">Tarama</string>
+    <string name="pg_barcode_scanner">Barkod okuyucu</string>
     <string name="pg_thumbnails">Ufak resimler</string>
     <string name="pg_ui">Kullanıcı arayüzü</string>
     <string name="pg_ui_field_visibility">Alan görünürlüğünü yönet</string>

@@ -68,6 +68,109 @@ public abstract class BookSearchBaseFragment
     /** the ViewModel. */
     BookSearchBaseModel mBookSearchBaseModel;
 
+    @Override
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
+        mActivity = (AppCompatActivity) context;
+        mTaskManager = ((BookSearchActivity) mActivity).getTaskManager();
+    }
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Mandatory
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mBookSearchBaseModel = new ViewModelProvider(this).get(BookSearchBaseModel.class);
+        mBookSearchBaseModel.init(requireArguments(), savedInstanceState);
+
+        //noinspection ConstantConditions
+        SearchSites.alertRegistrationBeneficial(getContext(), "search",
+                                                mBookSearchBaseModel.getSearchSites());
+
+        // Check general network connectivity. If none, warn the user.
+        if (!NetworkUtils.isNetworkAvailable()) {
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.error_no_internet_connection);
+        }
+    }
+
+    /**
+     * (re)connect with the {@link SearchCoordinator} by starting to listen to its messages.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onResume() {
+        super.onResume();
+        if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
+            SearchCoordinator.MESSAGE_SWITCH
+                    .addListener(mBookSearchBaseModel.getSearchCoordinatorId(), true,
+                                 getSearchFinishedListener());
+        }
+    }
+
+    /**
+     * Cut us loose from the {@link SearchCoordinator} by stopping listening to its messages.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onPause() {
+        if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
+            SearchCoordinator.MESSAGE_SWITCH.removeListener(
+                    mBookSearchBaseModel.getSearchCoordinatorId(),
+                    getSearchFinishedListener());
+        }
+        super.onPause();
+    }
+
+    @Override
+    @CallSuper
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+
+        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
+                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
+            .setIcon(R.drawable.ic_keyboard_hide)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
+                 MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_search_sites)
+            .setIcon(R.drawable.ic_search)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    @CallSuper
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.MENU_HIDE_KEYBOARD:
+                //noinspection ConstantConditions
+                App.hideKeyboard(getView());
+                return true;
+
+            case R.id.MENU_PREFS_SEARCH_SITES:
+                Intent intent = new Intent(getContext(), SearchAdminActivity.class)
+                                        .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
+                                                  SearchAdminActivity.TAB_ORDER);
+                startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     abstract SearchCoordinator.SearchFinishedListener getSearchFinishedListener();
 
     /**
@@ -163,115 +266,12 @@ public abstract class BookSearchBaseFragment
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debugWithStackTrace(this, "BookSearchBaseFragment.onActivityResult",
                                                "NOT HANDLED:",
-                                              "requestCode=" + requestCode,
-                                              "resultCode=" + resultCode);
+                                               "requestCode=" + requestCode,
+                                               "resultCode=" + resultCode);
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
         Tracker.exitOnActivityResult(this);
-    }
-
-    @Override
-    public void onAttach(@NonNull final Context context) {
-        super.onAttach(context);
-        mActivity = (AppCompatActivity) context;
-        mTaskManager = ((BookSearchActivity) mActivity).getTaskManager();
-    }
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Mandatory
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mBookSearchBaseModel = new ViewModelProvider(this).get(BookSearchBaseModel.class);
-        mBookSearchBaseModel.init(requireArguments(), savedInstanceState);
-
-        //noinspection ConstantConditions
-        SearchSites.alertRegistrationBeneficial(getContext(), "search",
-                                                mBookSearchBaseModel.getSearchSites());
-
-        // Check general network connectivity. If none, WARN the user.
-        if (!NetworkUtils.isNetworkAvailable()) {
-            //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_no_internet_connection);
-        }
-    }
-
-    /**
-     * (re)connect with the {@link SearchCoordinator} by starting to listen to its messages.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onResume() {
-        super.onResume();
-        if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
-            SearchCoordinator.MESSAGE_SWITCH
-                    .addListener(mBookSearchBaseModel.getSearchCoordinatorId(), true,
-                                 getSearchFinishedListener());
-        }
-    }
-
-    /**
-     * Cut us loose from the {@link SearchCoordinator} by stopping listening to its messages.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onPause() {
-        if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
-            SearchCoordinator.MESSAGE_SWITCH.removeListener(
-                    mBookSearchBaseModel.getSearchCoordinatorId(),
-                    getSearchFinishedListener());
-        }
-        super.onPause();
-    }
-
-    @Override
-    @CallSuper
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-
-        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
-            .setIcon(R.drawable.ic_keyboard_hide)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
-                 MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_search_sites)
-            .setIcon(R.drawable.ic_search)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.MENU_HIDE_KEYBOARD:
-                //noinspection ConstantConditions
-                App.hideKeyboard(getView());
-                return true;
-
-            case R.id.MENU_PREFS_SEARCH_SITES:
-                Intent intent = new Intent(getContext(), SearchAdminActivity.class)
-                                        .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
-                                                  SearchAdminActivity.TAB_ORDER);
-                startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 }

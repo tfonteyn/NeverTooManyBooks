@@ -226,36 +226,57 @@ public class BookFragment
         // multiple use
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
-        // not added here: non-text TOC
-
         // book fields
         fields.add(R.id.title, DBDefinitions.KEY_TITLE);
-        Field<String> isbnField = fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
-        fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION)
-              .setShowHtml(true);
-
-        fields.add(R.id.genre, DBDefinitions.KEY_GENRE);
-        fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
-              .setFormatter(new Fields.LanguageFormatter(locale));
-        fields.add(R.id.pages, DBDefinitions.KEY_PAGES)
-              .setFormatter(new Fields.PagesFormatter())
-              .setZeroIsEmpty(true);
-        fields.add(R.id.format, DBDefinitions.KEY_FORMAT)
-              .setFormatter(new Fields.FormatFormatter());
-
-        fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
-        fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
-              .setFormatter(dateFormatter);
-        fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
-              .setFormatter(dateFormatter);
-
-        // defined, but fetched manually
-        fields.add(R.id.price_listed, "", DBDefinitions.KEY_PRICE_LISTED);
 
         // defined, but fetched manually
         fields.add(R.id.author, "", DBDefinitions.KEY_FK_AUTHOR);
+
         // defined, but fetched manually
-        fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE);
+        fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE)
+              .setRelatedFieldIds(R.id.lbl_series);
+
+        Field<String> isbnField = fields.add(R.id.isbn, DBDefinitions.KEY_ISBN)
+                                        .setRelatedFieldIds(R.id.lbl_isbn);
+
+        fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION)
+              .setShowHtml(true)
+              .setRelatedFieldIds(R.id.lbl_description);
+
+        fields.addBoolean(R.id.cbx_anthology, Book.HAS_MULTIPLE_WORKS)
+              .setZeroIsEmpty(true)
+              .setRelatedFieldIds(R.id.lbl_anthology);
+        // not added here: actual TOC which is non-text
+
+        fields.add(R.id.genre, DBDefinitions.KEY_GENRE)
+              .setRelatedFieldIds(R.id.lbl_genre);
+
+        fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
+              .setFormatter(new Fields.LanguageFormatter(locale))
+              .setRelatedFieldIds(R.id.lbl_language);
+
+        fields.add(R.id.pages, DBDefinitions.KEY_PAGES)
+              .setFormatter(new Fields.PagesFormatter())
+              .setZeroIsEmpty(true)
+              .setRelatedFieldIds(R.id.lbl_pages);
+
+        fields.add(R.id.format, DBDefinitions.KEY_FORMAT)
+              .setFormatter(new Fields.FormatFormatter())
+              .setRelatedFieldIds(R.id.lbl_format);
+
+        fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
+
+        fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
+              .setFormatter(dateFormatter)
+              .setRelatedFieldIds(R.id.lbl_date_published);
+
+        fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
+              .setFormatter(dateFormatter)
+              .setRelatedFieldIds(R.id.lbl_first_publication);
+
+        // defined, but fetched manually
+        fields.add(R.id.price_listed, "", DBDefinitions.KEY_PRICE_LISTED)
+              .setRelatedFieldIds(R.id.price_listed_currency, R.id.lbl_price_listed);
 
         Field<String> coverImageField =
                 fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
@@ -269,32 +290,47 @@ public class BookFragment
 
         // Personal fields
         fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
-              .setFormatter(dateFormatter);
+              .setFormatter(dateFormatter)
+              .setRelatedFieldIds(R.id.lbl_date_acquired);
 
         fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
               .setFormatter(new Fields.BitMaskFormatter(Book.EDITIONS))
-              .setZeroIsEmpty(true);
-        fields.add(R.id.location, DBDefinitions.KEY_LOCATION);
-        fields.addFloat(R.id.rating, DBDefinitions.KEY_RATING);
+              .setZeroIsEmpty(true)
+              .setRelatedFieldIds(R.id.lbl_edition);
+
+        fields.add(R.id.location, DBDefinitions.KEY_LOCATION)
+              .setRelatedFieldIds(R.id.lbl_location, R.id.lbl_location_long);
+
+        fields.addFloat(R.id.rating, DBDefinitions.KEY_RATING)
+              .setRelatedFieldIds(R.id.lbl_rating);
+
         fields.add(R.id.notes, DBDefinitions.KEY_NOTES)
-              .setShowHtml(true);
+              .setShowHtml(true)
+              .setRelatedFieldIds(R.id.lbl_notes);
+
         fields.add(R.id.read_start, DBDefinitions.KEY_READ_START)
-              .setFormatter(dateFormatter);
+              .setFormatter(dateFormatter)
+              .setRelatedFieldIds(R.id.lbl_read_start);
+
         fields.add(R.id.read_end, DBDefinitions.KEY_READ_END)
-              .setFormatter(dateFormatter);
+              .setFormatter(dateFormatter)
+              .setRelatedFieldIds(R.id.lbl_read_end);
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        fields.addBoolean(R.id.read, DBDefinitions.KEY_READ);
+        fields.addBoolean(R.id.cbx_read, DBDefinitions.KEY_READ);
+
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        fields.addBoolean(R.id.signed, DBDefinitions.KEY_SIGNED)
-              .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getContext()))
-              .setZeroIsEmpty(true);
+        fields.addBoolean(R.id.cbx_signed, DBDefinitions.KEY_SIGNED)
+              .setZeroIsEmpty(true)
+              .setRelatedFieldIds(R.id.lbl_signed);
 
         // defined, but fetched manually
-        fields.add(R.id.price_paid, "", DBDefinitions.KEY_PRICE_PAID);
+        fields.add(R.id.price_paid, "", DBDefinitions.KEY_PRICE_PAID)
+              .setRelatedFieldIds(R.id.price_paid_currency, R.id.lbl_price_paid);
 
         // defined, but fetched manually
-        fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
+        fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF)
+              .setRelatedFieldIds(R.id.lbl_bookshelves);
 
         // defined, but fetched manually
         fields.add(R.id.loaned_to, "", DBDefinitions.KEY_LOANEE);
@@ -321,6 +357,24 @@ public class BookFragment
 
         // hide unwanted and empty fields
         showOrHideFields(true);
+
+        // Hide the Publication section label if none of the publishing fields are shown.
+        setSectionLabelVisibility(R.id.lbl_publication_section,
+                                  R.id.publisher,
+                                  R.id.date_published,
+                                  R.id.price_listed,
+                                  R.id.first_publication);
+
+        // Hide the Notes label if none of the notes fields are shown.
+        setSectionLabelVisibility(R.id.lbl_notes,
+                                  R.id.notes,
+                                  R.id.lbl_edition,
+                                  R.id.lbl_signed,
+                                  R.id.lbl_date_acquired,
+                                  R.id.lbl_price_paid,
+                                  R.id.lbl_read_start,
+                                  R.id.lbl_read_end,
+                                  R.id.lbl_location);
     }
 
 
@@ -457,7 +511,7 @@ public class BookFragment
             case R.id.MENU_BOOK_UNREAD:
                 // toggle 'read' status of the book
                 boolean isRead = mBookModel.toggleRead();
-                getField(R.id.read).setValue(isRead);
+                getField(R.id.cbx_read).setValue(isRead);
                 return true;
 
             case R.id.MENU_BOOK_LOAN_ADD:
@@ -627,12 +681,8 @@ public class BookFragment
 
         ArrayList<TocEntry> tocList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
-        // only show if: field in use + it's flagged as having a toc + the toc actually has titles
-        boolean hasToc = App.isUsed(DBDefinitions.KEY_TOC_BITMASK)
-                         && book.getBoolean(Book.HAS_MULTIPLE_WORKS)
-                         && !tocList.isEmpty();
-
-        if (hasToc) {
+        if (!tocList.isEmpty()) {
+            Context context = getContext();
             for (TocEntry item : tocList) {
                 View rowView = getLayoutInflater().inflate(R.layout.row_toc_entry_with_author,
                                                            mTocView, false);
@@ -654,8 +704,8 @@ public class BookFragment
                         firstPubView.setVisibility(View.GONE);
                     } else {
                         firstPubView.setVisibility(View.VISIBLE);
-                        firstPubView.setText(
-                                firstPubView.getContext().getString(R.string.brackets, year));
+                        //noinspection ConstantConditions
+                        firstPubView.setText(context.getString(R.string.brackets, year));
                     }
                 }
                 mTocView.addView(rowView);

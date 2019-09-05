@@ -39,7 +39,7 @@
     >
 
     <CheckBox
-        android:id="@+id/allow_asin"
+        android:id="@+id/cbx_allow_asin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/border2"
@@ -53,7 +53,7 @@
         android:id="@+id/isbn"
         style="@style/EditText.Isbn.Large"
         app:layout_constraintEnd_toStartOf="@id/btn_search"
-        app:layout_constraintStart_toEndOf="@id/allow_asin"
+        app:layout_constraintStart_toEndOf="@id/cbx_allow_asin"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="Autofill,LabelFor"
         />
@@ -73,7 +73,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="allow_asin,isbn,btn_search"
+        app:constraint_referenced_ids="cbx_allow_asin,isbn,btn_search"
         />
 
     <Button

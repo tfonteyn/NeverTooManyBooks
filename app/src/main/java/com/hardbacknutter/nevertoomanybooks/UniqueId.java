@@ -89,6 +89,8 @@ public final class UniqueId {
 
     /** Request code: system request to ask the user for permissions. */
     public static final int REQ_ANDROID_PERMISSIONS = 9_000;
+    /** Request code: system request to ask the user to install this stuff */
+    public static final int REQ_INSTALL_GOOGLE_PLAY_SERVICES = 9_001;
 
     /** The activity changed something that warrants a recreation of the caller to be needed. */
     public static final int ACTIVITY_RESULT_RECREATE_NEEDED = 10_000;
@@ -116,8 +118,6 @@ public final class UniqueId {
     public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
     /** title search text. */
     public static final String BKEY_SEARCH_TITLE = "searchTitle";
-    /** isbn search text. */
-    public static final String BKEY_SEARCH_ISBN = "searchIsbn";
 
     /**
      * Search site flags as in {@link com.hardbacknutter.nevertoomanybooks.searches.SearchSites}.

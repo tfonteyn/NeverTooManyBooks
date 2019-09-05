@@ -427,7 +427,7 @@
     <string name="pg_groupings">Raggruppamenti</string>
     <string name="pg_reformat_titles">Riformattare i titoli</string>
     <string name="pg_reformat_titles_summary">Memorizza l\'originale «Il titolo» o riformatta in «titolo, Il»</string>
-    <string name="pg_scanning">Acquisizione</string>
+    <string name="pg_barcode_scanner">Scanner di codici a barre</string>
     <string name="pg_thumbnails">Miniature</string>
     <string name="pg_ui">Interfaccia Utente</string>
     <string name="pg_ui_field_visibility">Gestisci visibilità campi</string>

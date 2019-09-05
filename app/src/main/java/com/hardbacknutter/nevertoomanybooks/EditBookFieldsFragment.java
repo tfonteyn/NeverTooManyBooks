@@ -93,16 +93,6 @@ public class EditBookFieldsFragment
         // book fields
 
         fields.add(R.id.title, DBDefinitions.KEY_TITLE);
-        fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION);
-
-        Field<String> isbnField = fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
-        Field<String> coverField =
-                fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
-                      .setScale(ImageUtils.SCALE_MEDIUM);
-
-        mCoverHandler = new CoverHandler(this, mBookModel.getDb(),
-                                         book, isbnField.getView(),
-                                         coverField.getView(), ImageUtils.SCALE_MEDIUM);
 
         // defined, but fetched/stored manually
         // Storing the list back into the book is handled by onCheckListEditorSave
@@ -123,6 +113,7 @@ public class EditBookFieldsFragment
         // defined, but fetched/stored manually
         // Storing the list back into the book is handled by onCheckListEditorSave
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE)
+              .setRelatedFieldIds(R.id.lbl_series)
               .getView().setOnClickListener(v -> {
             // use the current title.
             String title = fields.getField(R.id.title).getValue().toString();
@@ -137,16 +128,32 @@ public class EditBookFieldsFragment
             startActivityForResult(intent, REQ_EDIT_SERIES);
         });
 
+        fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION)
+              .setRelatedFieldIds(R.id.lbl_description);
+
+        Field<String> isbnField = fields.add(R.id.isbn, DBDefinitions.KEY_ISBN)
+                                        .setRelatedFieldIds(R.id.lbl_isbn);
+
+        Field<String> coverField =
+                fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
+                      .setScale(ImageUtils.SCALE_MEDIUM);
+
+        mCoverHandler = new CoverHandler(this, mBookModel.getDb(),
+                                         book, isbnField.getView(),
+                                         coverField.getView(), ImageUtils.SCALE_MEDIUM);
+
         Field field;
 
-        field = fields.add(R.id.genre, DBDefinitions.KEY_GENRE);
+        field = fields.add(R.id.genre, DBDefinitions.KEY_GENRE)
+                      .setRelatedFieldIds(R.id.lbl_genre);
         initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, mBookModel.getGenres());
 
         // Personal fields
 
         // defined, but fetched/stored manually
         // Storing the list back into the book is handled by onCheckListEditorSave
-        field = fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
+        field = fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF)
+                      .setRelatedFieldIds(R.id.lbl_bookshelves);
         initCheckListEditor(field, R.string.lbl_bookshelves_long,
                             () -> mBookModel.getEditableBookshelvesList());
     }

@@ -57,7 +57,7 @@
 
         <TextView
             android:id="@+id/lbl_author"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/author"
             android:text="@string/lbl_author"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,7 +74,7 @@
 
         <TextView
             android:id="@+id/lbl_title"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/title"
             android:text="@string/lbl_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -92,7 +92,7 @@
 
         <TextView
             android:id="@+id/lbl_isbn"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/isbn"
             android:text="@string/lbl_isbn"
             app:layout_constraintStart_toStartOf="parent"
@@ -110,7 +110,7 @@
 
         <TextView
             android:id="@+id/lbl_series"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/series"
             android:text="@string/lbl_series"
             app:layout_constraintStart_toStartOf="parent"
@@ -127,7 +127,7 @@
 
         <TextView
             android:id="@+id/lbl_bookshelves"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:text="@string/lbl_bookshelves_long"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/series"
@@ -143,7 +143,7 @@
 
         <TextView
             android:id="@+id/lbl_genre"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/genre"
             android:text="@string/lbl_genre"
             app:layout_constraintStart_toStartOf="parent"
@@ -178,7 +178,7 @@
 
         <TextView
             android:id="@+id/lbl_description"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:layout_width="wrap_content"
             android:labelFor="@id/description"
             android:text="@string/lbl_description"

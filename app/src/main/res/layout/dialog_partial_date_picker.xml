@@ -1,5 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!--
 Keep this as a LinearLayout!
 The order of the 3 columns will be changed dynamically depending on the Locale.
  -->
@@ -22,7 +50,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 
         <TextView
             android:id="@+id/lbl_year"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:text="@string/lbl_year"
             app:layout_constraintStart_toStartOf="@id/year"
             app:layout_constraintTop_toTopOf="parent"
@@ -46,7 +74,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 
         <TextView
             android:id="@+id/lbl_month"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:text="@string/lbl_month"
             app:layout_constraintStart_toStartOf="@id/month"
             app:layout_constraintTop_toTopOf="parent"
@@ -70,7 +98,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 
         <TextView
             android:id="@+id/lbl_day"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:text="@string/lbl_day"
             app:layout_constraintStart_toStartOf="@id/day"
             app:layout_constraintTop_toTopOf="parent"

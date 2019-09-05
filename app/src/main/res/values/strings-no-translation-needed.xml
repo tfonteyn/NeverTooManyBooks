@@ -66,6 +66,7 @@
 
     <!--  acronyms -->
     <string name="lbl_isbn" translatable="false">ISBN</string>
+
     <!-- External sites / trademarks  -->
     <string name="goodreads" translatable="false">Goodreads</string>
     <string name="google_books" translatable="false">Google Books</string>
@@ -76,6 +77,11 @@
     <string name="amazon" translatable="false">Amazon</string>
     <!-- specific for a submenu title -->
     <string name="amazon_ellipsis" translatable="false">Amazon…</string>
+
+    <!-- hardcoded scanner names -->
+    <string name="pv_scanner_zxing" translatable="false">Zxing</string>
+    <string name="pv_scanner_pic2shop" translatable="false">Pic2Shop</string>
+
 
     <string name="brackets" translatable="false">(%1$s)</string>
 
@@ -164,11 +170,10 @@
 
     <!-- ListPreference - the barcode scanner to use-->
     <string-array name="pe_scanning_preferred_scanner">
-        <!-- URGENT: used as a place holder. Should get a proper string -->
-        <item>@string/common_google_play_services_install_title</item>
+        <item>@string/google_play_services</item>
         <item>@string/pv_scanner_zxing_compatible</item>
-        <item>Zxing</item>
-        <item>Pic2Shop</item>
+        <item>@string/pv_scanner_zxing</item>
+        <item>@string/pv_scanner_pic2shop</item>
     </string-array>
     <string-array name="pv_scanning_preferred_scanner">
         <item>0</item>

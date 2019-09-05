@@ -426,7 +426,7 @@
     <string name="pg_general">Ogólne</string>
     <string name="pg_groupings">Grupowanie</string>
     <string name="pg_reformat_titles">Sformatuj tytuły</string>
-    <string name="pg_scanning">Skaner</string>
+    <string name="pg_barcode_scanner">Skaner kodów kreskowych</string>
     <string name="pg_thumbnails">Miniatury</string>
     <string name="pg_ui">Interfejs użytkownika</string>
     <string name="pg_ui_field_visibility">Dostosuj widoczność pól</string>

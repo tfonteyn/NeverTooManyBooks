@@ -48,7 +48,7 @@
 
     <TextView
         android:id="@+id/lbl_author"
-        style="@style/FieldLabel"
+        style="@style/Label.Field"
         android:text="@string/lbl_author"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -66,7 +66,7 @@
 
     <TextView
         android:id="@+id/lbl_title"
-        style="@style/FieldLabel"
+        style="@style/Label.Field"
         android:text="@string/lbl_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
@@ -93,7 +93,7 @@
 
     <TextView
         android:id="@+id/lbl_publisher"
-        style="@style/FieldLabel"
+        style="@style/Label.Field"
         android:text="@string/lbl_publisher"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
@@ -102,7 +102,7 @@
 
     <TextView
         android:id="@+id/publisher_info"
-        style="@style/FieldLabel"
+        style="@style/Label.Field"
         android:paddingStart="@dimen/border2"
         android:text="@string/warning_isfdb_only"
         android:visibility="gone"

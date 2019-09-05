@@ -432,7 +432,7 @@
     <string name="pg_groupings">Groeperingen</string>
     <string name="pg_reformat_titles">Herformatteren van titels</string>
     <string name="pg_reformat_titles_summary">Bewaar het origineel „De titel” of herformatteer naar „titel, De”</string>
-    <string name="pg_scanning">Scannen</string>
+    <string name="pg_barcode_scanner">Streepjescodescanner</string>
     <string name="pg_thumbnails">Miniaturen</string>
     <string name="pg_ui">Gebruikersinterface</string>
     <string name="pg_ui_field_visibility">Zichtbaarheid velden beheren</string>

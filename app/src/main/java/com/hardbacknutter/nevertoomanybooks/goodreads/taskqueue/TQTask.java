@@ -179,7 +179,7 @@ public abstract class TQTask
             retry_info = view.findViewById(R.id.retry_info);
             error = view.findViewById(R.id.error);
             job_info = view.findViewById(R.id.job_info);
-            checkButton = view.findViewById(R.id.checked);
+            checkButton = view.findViewById(R.id.cbx_checked);
             retryButton = view.findViewById(R.id.retry);
 
             view.setTag(R.id.TAG_GR_TASK_HOLDER, this);

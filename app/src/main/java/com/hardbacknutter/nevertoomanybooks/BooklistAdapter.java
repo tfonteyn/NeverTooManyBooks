@@ -735,11 +735,11 @@ public class BooklistAdapter
             titleView = itemView.findViewById(R.id.title);
 
             // visibility is independent from actual data, so set here.
-            readView = itemView.findViewById(R.id.read);
+            readView = itemView.findViewById(R.id.cbx_read);
             readView.setVisibility(mReadIsUsed ? View.VISIBLE : View.GONE);
 
             // visibility is independent from actual data, so set here.
-            onLoanView = itemView.findViewById(R.id.on_loan);
+            onLoanView = itemView.findViewById(R.id.cbx_on_loan);
             onLoanView.setVisibility(mLoaneeIsUsed ? View.VISIBLE : View.GONE);
 
             // visibility is independent from actual data, so set here.

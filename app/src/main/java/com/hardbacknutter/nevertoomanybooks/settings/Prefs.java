@@ -77,6 +77,7 @@ public final class Prefs {
     public static final String pk_network_mobile_data = "network.mobile_data";
 
     public static final String pk_scanner_preferred = "ScannerManager.PreferredScanner";
+
     public static final String pk_scanner_beep_if_valid = "SoundManager.BeepIfScannedIsbnValid";
     public static final String pk_scanner_beep_if_invalid = "SoundManager.BeepIfScannedIsbnInvalid";
 
@@ -361,6 +362,10 @@ public final class Prefs {
                         break;
 
                     case "ScannerManager.PreferredScanner":
+                        // original code:
+                        // 	public static final int SCANNER_ZXING_COMPATIBLE = 1;
+                        //	public static final int SCANNER_PIC2SHOP = 2;
+                        //	public static final int SCANNER_ZXING = 3;
                         int scanner = (Integer) oldValue;
                         switch (scanner) {
                             case 1:
@@ -373,6 +378,7 @@ public final class Prefs {
                                 scanner = ScannerManager.ZXING;
                                 break;
                             default:
+                                scanner = ScannerManager.GOOGLE_PLAY_SERVICES;
                                 break;
                         }
                         ed.putString(entry.getKey(), String.valueOf(scanner));

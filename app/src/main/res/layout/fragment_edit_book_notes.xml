@@ -44,7 +44,7 @@
 
         <TextView
             android:id="@+id/lbl_rating"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/rating"
             android:text="@string/lbl_rating"
             app:layout_constraintStart_toStartOf="parent"
@@ -63,7 +63,7 @@
             />
 
         <CheckBox
-            android:id="@+id/read"
+            android:id="@+id/cbx_read"
             style="@style/CheckboxEntry"
             android:text="@string/lbl_is_read"
             app:layout_constraintStart_toStartOf="parent"
@@ -80,13 +80,13 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/read"
+            app:layout_constraintTop_toBottomOf="@id/cbx_read"
             tools:ignore="SelectableText"
             />
 
         <TextView
             android:id="@+id/lbl_read_start"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:layout_width="0dp"
             android:text="@string/lbl_read_start"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_read_start_end_baseline"
@@ -95,7 +95,7 @@
 
         <TextView
             android:id="@+id/lbl_read_end"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:layout_width="0dp"
             android:text="@string/lbl_read_end"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_read_start_end_baseline"
@@ -131,7 +131,7 @@
 
         <TextView
             android:id="@+id/lbl_location"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/location"
             android:text="@string/lbl_location_long"
             app:layout_constraintStart_toStartOf="parent"
@@ -158,7 +158,7 @@
 
         <TextView
             android:id="@+id/lbl_date_acquired"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:text="@string/lbl_date_acquired"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/location"
@@ -174,7 +174,7 @@
 
         <TextView
             android:id="@+id/lbl_price_paid"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/price_paid"
             android:text="@string/lbl_price_paid"
             app:layout_constraintStart_toStartOf="parent"
@@ -210,7 +210,7 @@
 
         <TextView
             android:id="@+id/lbl_edition"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:text="@string/lbl_edition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/price_paid"
@@ -225,7 +225,7 @@
             />
 
         <CheckBox
-            android:id="@+id/signed"
+            android:id="@+id/cbx_signed"
             style="@style/CheckboxEntry"
             android:text="@string/lbl_is_signed"
             app:layout_constraintStart_toStartOf="parent"
@@ -238,12 +238,12 @@
             style="@style/HorizontalDivider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/signed"
+            app:layout_constraintTop_toBottomOf="@id/cbx_signed"
             />
 
         <TextView
             android:id="@+id/lbl_notes"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/notes"
             android:text="@string/lbl_personal_notes"
             app:layout_constraintStart_toStartOf="parent"

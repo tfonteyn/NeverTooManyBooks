@@ -105,7 +105,7 @@ public class BitmaskFilter
     @NonNull
     public String toString() {
         return "BitmaskFilter{"
-               + "table=" + mTable
+               + "table=" + mTable.getName()
                + ", domain=" + mDomain
                + ", mLabelId=" + mLabelId
                + ", " + super.toString()

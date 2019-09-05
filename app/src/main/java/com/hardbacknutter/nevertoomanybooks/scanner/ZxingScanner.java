@@ -30,9 +30,12 @@ package com.hardbacknutter.nevertoomanybooks.scanner;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * This object will start a Zxing compatible scanner and extract the data
@@ -49,9 +52,7 @@ import androidx.fragment.app.Fragment;
 public class ZxingScanner
         implements Scanner {
 
-    static final String DISPLAY_NAME = "ZXing";
-
-    static final String MARKET_URL = "market://details?id=com.google.zxing.client.android";
+    private static final String MARKET_URL = "market://details?id=com.google.zxing.client.android";
     static final String ACTION = "com.google.zxing.client.android.SCAN";
 
     private static final String PACKAGE = "com.google.zxing.client.android";
@@ -85,17 +86,18 @@ public class ZxingScanner
     }
 
     @Override
-    public void startActivityForResult(@NonNull final Fragment fragment,
-                                       final int requestCode) {
+    public boolean startActivityForResult(@NonNull final Fragment fragment,
+                                          final int requestCode) {
         Intent intent = new Intent(ACTION);
         if (mMustBeZxing) {
             intent.setPackage(PACKAGE);
         }
         // not limiting the format, just grab anything supported.
         fragment.startActivityForResult(intent, requestCode);
+        return true;
     }
 
-    @NonNull
+    @Nullable
     @Override
     public String getBarcode(@NonNull final Intent data) {
         return data.getStringExtra(SCAN_RESULT);
@@ -105,13 +107,30 @@ public class ZxingScanner
             implements ScannerManager.ScannerFactory {
 
         @NonNull
+        public String getMarketUrl() {
+            return MARKET_URL;
+        }
+
+        @IdRes
         @Override
-        public Scanner newInstance() {
+        public int getResId() {
+            return R.id.MENU_SCANNER_ZXING;
+        }
+
+        @NonNull
+        @Override
+        public String getLabel(@NonNull final Context context) {
+            return context.getString(R.string.pv_scanner_zxing);
+        }
+
+        @NonNull
+        @Override
+        public Scanner newInstance(@NonNull final Context context) {
             return new ZxingScanner(true);
         }
 
         @Override
-        public boolean isIntentAvailable(@NonNull final Context context) {
+        public boolean isAvailable(@NonNull final Context context) {
             return ZxingScanner.isIntentAvailable(context, PACKAGE);
         }
     }
@@ -120,13 +139,30 @@ public class ZxingScanner
             implements ScannerManager.ScannerFactory {
 
         @NonNull
+        public String getMarketUrl() {
+            return MARKET_URL;
+        }
+
+        @IdRes
         @Override
-        public Scanner newInstance() {
+        public int getResId() {
+            return R.id.MENU_SCANNER_ZXING_COMPATIBLE;
+        }
+
+        @NonNull
+        @Override
+        public String getLabel(@NonNull final Context context) {
+            return context.getString(R.string.pv_scanner_zxing_compatible);
+        }
+
+        @NonNull
+        @Override
+        public Scanner newInstance(@NonNull final Context context) {
             return new ZxingScanner(false);
         }
 
         @Override
-        public boolean isIntentAvailable(@NonNull final Context context) {
+        public boolean isAvailable(@NonNull final Context context) {
             return ZxingScanner.isIntentAvailable(context, null);
         }
     }

@@ -430,7 +430,7 @@
     <string name="pg_groupings">Groupes</string>
     <string name="pg_reformat_titles">Reformater les titres</string>
     <string name="pg_reformat_titles_summary">Stockez l’original «Le titre» ou reformatez-le en «titre, Le»</string>
-    <string name="pg_scanning">Scan</string>
+    <string name="pg_barcode_scanner">Scanner de code à barres</string>
     <string name="pg_thumbnails">Miniatures</string>
     <string name="pg_ui">Interface utilisateur</string>
     <string name="pg_ui_field_visibility">Gérer la visibilité des champs</string>

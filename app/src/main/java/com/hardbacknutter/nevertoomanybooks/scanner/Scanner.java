@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,11 +31,12 @@ import android.app.Activity;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 /**
  * Interface defining required methods for any external scanner interface.
- * At least one of the {@link #startActivityForResult} methods must be implemented before using.
+ * Implementation must implement at least  one of the {@link #startActivityForResult} methods.
  */
 public interface Scanner {
 
@@ -43,9 +45,11 @@ public interface Scanner {
      *
      * @param fragment    calling fragment
      * @param requestCode which will be passed back to onActivityResult
+     *
+     * @return {@code true} if we could start the activity.
      */
-    default void startActivityForResult(@NonNull Fragment fragment,
-                                        int requestCode) {
+    default boolean startActivityForResult(@NonNull Fragment fragment,
+                                           int requestCode) {
         throw new IllegalStateException("must be implemented");
     }
 
@@ -54,15 +58,17 @@ public interface Scanner {
      *
      * @param activity    calling activity
      * @param requestCode which will be passed back to onActivityResult
+     *
+     * @return {@code true} if we could start the activity.
      */
-    default void startActivityForResult(@NonNull Activity activity,
-                                        int requestCode) {
+    default boolean startActivityForResult(@NonNull Activity activity,
+                                           int requestCode) {
         throw new IllegalStateException("must be implemented");
     }
 
     /**
-     * @return the barcode from the resulting intent of a scan action.
+     * @return the barcode from the resulting intent of a scan action; or {@code null}
      */
-    @NonNull
+    @Nullable
     String getBarcode(@NonNull Intent data);
 }

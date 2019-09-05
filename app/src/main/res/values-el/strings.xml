@@ -428,7 +428,7 @@
     <string name="pg_groupings">Ομαδοποιήσεις</string>
     <string name="pg_reformat_titles">Αναμορφώστε τους τίτλους</string>
     <string name="pg_reformat_titles_summary">Αποθηκεύστε το πρωτότυπο «Ο τίτλος» ή αναδιαμορφώστε σε «τίτλος, Ο»</string>
-    <string name="pg_scanning">Γίνεται Σάρωση</string>
+    <string name="pg_barcode_scanner">Σάρωση γραμμοκώδικα</string>
     <string name="pg_thumbnails">Μικρογραφίες</string>
     <string name="pg_ui">Περιβάλλον Χρήστη</string>
     <string name="pg_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>

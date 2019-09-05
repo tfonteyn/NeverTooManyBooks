@@ -40,7 +40,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -372,87 +371,4 @@ public class TocEntry
         }
     }
 
-    /**
-     * The original code was IMHO a bit vague on the exact meaning of the 'anthology mask'.
-     * So this information was mainly written for myself.
-     * <p>
-     * Original, it looked like this was the meaning:
-     * 0%00 == book by single author
-     * 0%01 == anthology by one author
-     * 0%11 == anthology by multiple authors.
-     * which would mean it missed books with a single story, but multiple authors; i.e. the 0%10
-     * <p>
-     * A more complete definition below.
-     * <p>
-     * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
-     * <p>
-     * 0%00 = contains one 'work' and is written by a single author.
-     * 0%01 = multiple 'work' and is written by a single author (anthology from ONE author)
-     * 0%10 = multiple authors cooperating on a single 'work'
-     * 0%11 = multiple authors and multiple 'work's (it's an anthology from multiple author)
-     * <p>
-     * or in other words:
-     * * bit 0 indicates if a book has one (bit unset) or multiple (bit set) works
-     * * bit 1 indicates if a book has one (bit unset) or multiple (bit set) authors.
-     * <p>
-     * Having said all that, the 0%10 should not actually occur, as this is a simple case of
-     * collaborating authors which is covered without the use of
-     * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
-     * <p>
-     * Which of course brings it back full-circle to the original and correct (!) meaning.
-     * <p>
-     * Leaving all this here, as it will remind myself (and maybe others) of the 'missing' bit.
-     * <p>
-     * ENHANCE: currently we use the bit definitions directly. Should use the enum as an enum.
-     */
-    public enum Authors {
-        singleAuthorSingleWork, singleAuthorCollection, multipleAuthorsCollection;
-
-        /** Bit definitions. */
-        public static final int SINGLE_AUTHOR_SINGLE_WORK = 0;
-        public static final int MULTIPLE_WORKS = 1;
-        public static final int MULTIPLE_AUTHORS = 1 << 1;
-
-        /**
-         * Get the int representation as stored in the database.
-         *
-         * @return bitmask
-         */
-        public int getBitmask() {
-            switch (this) {
-                case singleAuthorSingleWork:
-                    return SINGLE_AUTHOR_SINGLE_WORK;
-
-                case singleAuthorCollection:
-                    return MULTIPLE_WORKS;
-
-                case multipleAuthorsCollection:
-                    return MULTIPLE_WORKS | MULTIPLE_AUTHORS;
-            }
-            return SINGLE_AUTHOR_SINGLE_WORK;
-        }
-
-        /**
-         * @param bitmask the int representation as stored in the database.
-         *
-         * @return the enum representation
-         */
-        public Authors get(final int bitmask) {
-            switch (bitmask) {
-                case SINGLE_AUTHOR_SINGLE_WORK:
-                    return singleAuthorSingleWork;
-
-                case MULTIPLE_WORKS:
-                    return singleAuthorCollection;
-
-                // cover legacy bad data.
-                case 0x10:
-                case MULTIPLE_WORKS | MULTIPLE_AUTHORS:
-                    return multipleAuthorsCollection;
-
-                default:
-                    throw new IllegalStateException(String.valueOf(bitmask));
-            }
-        }
-    }
 }

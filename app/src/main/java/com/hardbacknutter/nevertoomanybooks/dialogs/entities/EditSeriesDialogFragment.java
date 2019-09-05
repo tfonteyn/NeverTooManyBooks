@@ -127,7 +127,7 @@ public class EditSeriesDialogFragment
         mNameView.setText(mName);
         mNameView.setAdapter(mAdapter);
 
-        mIsCompleteView = root.findViewById(R.id.is_complete);
+        mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
         mIsCompleteView.setChecked(mIsComplete);
 
         return new AlertDialog.Builder(getContext())

@@ -426,7 +426,7 @@
     <string name="pg_general">Obecné</string>
     <string name="pg_groupings">Seskupení</string>
     <string name="pg_reformat_titles">Přeformátujte tituly</string>
-    <string name="pg_scanning">Snímání</string>
+    <string name="pg_barcode_scanner">Čtečka kódů</string>
     <string name="pg_thumbnails">Náhledy</string>
     <string name="pg_ui">Uživatelské rozhraní</string>
     <string name="pg_ui_field_visibility">Spravovat viditelnost jednotlivých polí</string>

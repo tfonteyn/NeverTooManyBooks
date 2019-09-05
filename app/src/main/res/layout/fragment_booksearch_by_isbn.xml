@@ -205,7 +205,7 @@
         />
 
     <CheckBox
-        android:id="@+id/allow_asin"
+        android:id="@+id/cbx_allow_asin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/border2"

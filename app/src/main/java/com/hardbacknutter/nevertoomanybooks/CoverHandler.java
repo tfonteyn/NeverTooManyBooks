@@ -125,6 +125,8 @@ public class CoverHandler {
     @Nullable
     private CoverBrowserFragment mCoverBrowserFragment;
 
+    /** Set to true if we want a full size image instead of the default icon-sized bitmap. */
+    private boolean mWantFullSizeCameraImage;
     /** Used to display a hint if user rotates a camera image. */
     private boolean mGotCameraImage;
 
@@ -181,7 +183,7 @@ public class CoverHandler {
             // copy new file on top of old.
             StorageUtils.renameFile(newFile, bookFile);
             // Update the ImageView with the new image
-            ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
+            refreshImageView();
             // all done, get rid of the browser fragment
             mCoverBrowserFragment.dismiss();
             mCoverBrowserFragment = null;
@@ -280,15 +282,21 @@ public class CoverHandler {
                 return true;
 
             case R.id.MENU_THUMB_ROTATE_CW:
-                rotateImage(90);
+                if (rotateImage(getCoverFile(), 90)) {
+                    refreshImageView();
+                }
                 return true;
 
             case R.id.MENU_THUMB_ROTATE_CCW:
-                rotateImage(-90);
+                if (rotateImage(getCoverFile(), -90)) {
+                    refreshImageView();
+                }
                 return true;
 
             case R.id.MENU_THUMB_ROTATE_180:
-                rotateImage(180);
+                if (rotateImage(getCoverFile(), 180)) {
+                    refreshImageView();
+                }
                 return true;
 
             case R.id.MENU_THUMB_CROP:
@@ -296,7 +304,8 @@ public class CoverHandler {
                 return true;
 
             case R.id.MENU_THUMB_ADD_FROM_CAMERA:
-                getCoverFromCamera();
+                //TEST:  with 'false' (identical results as before) + with 'true'
+                getCoverFromCamera(false);
                 return true;
 
             case R.id.MENU_THUMB_ADD_FROM_GALLERY:
@@ -310,6 +319,15 @@ public class CoverHandler {
             default:
                 return false;
         }
+    }
+
+    /**
+     * Syntax sugar.
+     * <p>
+     * Put the cover image on screen.
+     */
+    private void refreshImageView() {
+        ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
     }
 
     /**
@@ -366,58 +384,72 @@ public class CoverHandler {
     /**
      * Start the camera to get an image.
      */
-    private void getCoverFromCamera() {
+    private void getCoverFromCamera(final boolean fullSize) {
+
+        mWantFullSizeCameraImage = fullSize;
+
         // Increment the temp counter and cleanup the temp directory
         sTempImageCounter++;
         StorageUtils.purgeTempStorage();
+
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        /*
-        We don't do the next bit of code here because we have no reliable way to rotate a
-        large image without producing memory exhaustion.
-        Android does not include a file-based image rotation.
-
-        File f = getCameraTempCoverFile();
-        StorageUtils.deleteFile(f);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-        */
+        if (mWantFullSizeCameraImage) {
+            File cameraFile = StorageUtils.getTempCoverFile(String.valueOf(sTempImageCounter),
+                                                            "_camera");
+            Uri photoURI = FileProvider.getUriForFile(mContext, GenericFileProvider.AUTHORITY,
+                                                      cameraFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+        }
         mCallerFragment.startActivityForResult(intent, UniqueId.REQ_ACTION_IMAGE_CAPTURE);
     }
 
     /**
      * The camera has captured an image, process it.
      */
-    private void addCoverFromCamera(final int requestCode,
-                                    final int resultCode,
-                                    @Nullable final Bitmap bitmap) {
-        if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
-            Matrix matrix = new Matrix();
-            matrix.postRotate(App.getListPreference(Prefs.pk_images_rotate_auto, 0));
-            Bitmap result = Bitmap.createBitmap(bitmap, 0, 0,
-                                                bitmap.getWidth(), bitmap.getHeight(),
-                                                matrix, true);
+    private void addCoverFromCamera(@NonNull final Intent data) {
 
-            File cameraFile = StorageUtils.getTempCoverFile(String.valueOf(sTempImageCounter),
-                                                            "_camera");
-            // Create a file to copy the image into
-            try (OutputStream out = new FileOutputStream(cameraFile.getAbsoluteFile())) {
-                result.compress(Bitmap.CompressFormat.PNG, 100, out);
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-                Logger.error(this, e);
+        int rotationAngle = App.getListPreference(Prefs.pk_images_rotate_auto, 0);
+
+        if (!mWantFullSizeCameraImage) {
+            Bitmap bitmap = data.getParcelableExtra("data");
+            if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
+                // as this bitmap will be small, we take a shortcut and do the rotation here.
+                Matrix matrix = new Matrix();
+                matrix.postRotate(rotationAngle);
+                Bitmap result = Bitmap.createBitmap(bitmap, 0, 0,
+                                                    bitmap.getWidth(), bitmap.getHeight(),
+                                                    matrix, true);
+
+                File tmpFile = StorageUtils.getTempCoverFile(String.valueOf(sTempImageCounter),
+                                                             "_camera");
+                // Create a file to copy the image into
+                try (OutputStream out = new FileOutputStream(tmpFile.getAbsoluteFile())) {
+                    result.compress(Bitmap.CompressFormat.PNG, 100, out);
+                } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
+                    Logger.error(this, e);
+                    return;
+                }
+
+            } else {
+                // eh ? what happened ?
+                UserMessage.show(mCoverView, R.string.warning_cover_not_found);
+                mGotCameraImage = false;
                 return;
             }
-
-            cropCoverImage(cameraFile);
-            mGotCameraImage = true;
-
-        } else {
-            if (BuildConfig.DEBUG  /* always */) {
-                Logger.debug(this, "addCoverFromCamera",
-                             "camera image empty", "onActivityResult",
-                             "requestCode=" + requestCode,
-                             "resultCode=" + resultCode);
-            }
         }
+
+        // either way, we have the file in:
+        File cameraFile = StorageUtils.getTempCoverFile(String.valueOf(sTempImageCounter),
+                                                        "_camera");
+
+        // if we did not ask for a full image, then rotation is already handled.
+        if (mWantFullSizeCameraImage && rotationAngle != 0) {
+            rotateImage(cameraFile, rotationAngle);
+        }
+
+        cropCoverImage(cameraFile);
+        mGotCameraImage = true;
     }
 
     /**
@@ -450,7 +482,7 @@ public class CoverHandler {
 
             if (bytesRead > 0) {
                 // Update the ImageView with the new image
-                ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
+                refreshImageView();
             } else {
                 String msg = mContext.getString(R.string.warning_cover_copy_failed) + ". "
                              + mContext.getString(R.string.error_if_the_problem_persists);
@@ -466,16 +498,17 @@ public class CoverHandler {
     }
 
     /**
-     * Rotate the image.
+     * Rotate the image. Reads from the passed file, and writes the result back to it.
+     * <p>
      * TODO: add a progress spinner
      *
+     * @param file  to read/write
      * @param angle rotate by the specified amount
      */
-    private void rotateImage(final long angle) {
-
-        File file = getCoverFile();
+    private boolean rotateImage(@NonNull final File file,
+                                final long angle) {
         if (!file.exists()) {
-            return;
+            return false;
         }
 
         // We load the file and first scale it to scale 10 x the "standard" display size.
@@ -489,7 +522,7 @@ public class CoverHandler {
                 Bitmap bm = ImageUtils.forceScaleBitmap(file.getPath(),
                                                         imageSize, imageSize, true);
                 if (bm == null) {
-                    return;
+                    return false;
                 }
 
                 Matrix matrix = new Matrix();
@@ -511,12 +544,10 @@ public class CoverHandler {
 
                 } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
                     Logger.error(this, e);
-                    return;
+                    return false;
                 }
 
-                // put the new image on screen.
-                ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
-                return;
+                return true;
 
             } catch (@NonNull final OutOfMemoryError e) {
                 attempts--;
@@ -641,7 +672,7 @@ public class CoverHandler {
             CoversDAO.delete(getUuid());
         }
         // replace the old image with a placeholder.
-        ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
+        refreshImageView();
     }
 
     /**
@@ -667,8 +698,7 @@ public class CoverHandler {
             case UniqueId.REQ_ACTION_IMAGE_CAPTURE:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-                    Bitmap bitmap = data.getParcelableExtra(CropImageActivity.BKEY_DATA);
-                    addCoverFromCamera(requestCode, resultCode, bitmap);
+                    addCoverFromCamera(data);
                 }
                 return true;
 
@@ -687,8 +717,7 @@ public class CoverHandler {
                         File destination = getCoverFile();
                         StorageUtils.renameFile(cropped, destination);
                         // Update the ImageView with the new image
-                        ImageUtils.setImageView(mCoverView, getCoverFile(),
-                                                mMaxWidth, mMaxHeight, true);
+                        refreshImageView();
                     } else {
                         if (BuildConfig.DEBUG /* always */) {
                             Logger.debug(this, "onActivityResult",

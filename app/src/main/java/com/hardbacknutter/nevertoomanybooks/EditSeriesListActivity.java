@@ -276,7 +276,7 @@ public class EditSeriesListActivity
             mNameView.setText(mSeriesName);
             mNameView.setAdapter(mActivity.mAutoCompleteAdapter);
 
-            mIsCompleteView = root.findViewById(R.id.is_complete);
+            mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
             if (mIsCompleteView != null) {
                 mIsCompleteView.setChecked(mSeriesIsComplete);
             }

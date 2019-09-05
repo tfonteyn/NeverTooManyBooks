@@ -37,9 +37,9 @@
     >
 
     <CheckBox
-        android:id="@+id/is_anthology"
+        android:id="@+id/cbx_is_anthology"
         style="@style/CheckboxEntry"
-        android:text="@string/lbl_is_anthology"
+        android:text="@string/lbl_toc_anthology"
         android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,13 +48,13 @@
         />
 
     <CheckBox
-        android:id="@+id/multiple_authors"
+        android:id="@+id/cbx_multiple_authors"
         style="@style/CheckboxEntry"
         android:text="@string/lbl_toc_multiple_authors"
         android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/is_anthology"
+        app:layout_constraintTop_toBottomOf="@id/cbx_is_anthology"
         tools:checked="true"
         />
 
@@ -63,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/btn_confirm_new"
-        app:layout_constraintBottom_toBottomOf="@id/multiple_authors"
+        app:layout_constraintBottom_toBottomOf="@id/cbx_multiple_authors"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
@@ -73,7 +73,7 @@
         style="@style/HorizontalDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/multiple_authors"
+        app:layout_constraintTop_toBottomOf="@id/cbx_multiple_authors"
         />
 
     <androidx.recyclerview.widget.RecyclerView

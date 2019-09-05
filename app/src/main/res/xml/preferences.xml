@@ -138,13 +138,6 @@
                 android:key="fields.visibility.list_price"
                 android:title="@string/lbl_price_listed" />
 
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.anthology"
-                android:title="@string/lbl_table_of_content" />
-
-
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="fields.visibility.bookshelf"
@@ -401,7 +394,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pg_scanning">
+        android:title="@string/pg_barcode_scanner">
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_surround_sound"
@@ -418,7 +411,7 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_scanning_beep_if_isbn_valid" />
 
-        <!-- default ScannerManager.ZXING_COMPATIBLE == 0 -->
+        <!-- default ScannerManager.GOOGLE_PLAY_SERVICES  -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_scanning_preferred_scanner"

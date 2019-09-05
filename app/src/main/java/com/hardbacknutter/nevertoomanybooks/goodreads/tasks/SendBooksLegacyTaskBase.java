@@ -412,7 +412,7 @@ abstract class SendBooksLegacyTaskBase
             BookEventHolder(@NonNull final View view) {
                 titleView = view.findViewById(R.id.title);
                 authorView = view.findViewById(R.id.author);
-                buttonView = view.findViewById(R.id.checked);
+                buttonView = view.findViewById(R.id.cbx_checked);
                 dateView = view.findViewById(R.id.date);
                 errorView = view.findViewById(R.id.error);
                 retryView = view.findViewById(R.id.retry);

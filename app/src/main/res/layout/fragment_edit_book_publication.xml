@@ -44,7 +44,7 @@
 
         <TextView
             android:id="@+id/lbl_format"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/format"
             android:text="@string/lbl_format"
             app:layout_constraintStart_toStartOf="parent"
@@ -71,7 +71,7 @@
 
         <TextView
             android:id="@+id/lbl_language"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/language"
             android:text="@string/lbl_language"
             app:layout_constraintStart_toStartOf="parent"
@@ -98,7 +98,7 @@
 
         <TextView
             android:id="@+id/lbl_publication_section"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/publisher"
             android:text="@string/lbl_publisher"
             app:layout_constraintStart_toStartOf="parent"
@@ -138,7 +138,7 @@
 
         <TextView
             android:id="@+id/lbl_first_publication"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:layout_width="0dp"
             android:text="@string/lbl_first_publication"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_publication_dates_baseline"
@@ -147,7 +147,7 @@
 
         <TextView
             android:id="@+id/lbl_date_published"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:layout_width="0dp"
             android:text="@string/lbl_date_published"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_publication_dates_baseline"
@@ -183,7 +183,7 @@
 
         <TextView
             android:id="@+id/lbl_pages"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/pages"
             android:text="@string/lbl_pages"
             app:layout_constraintStart_toStartOf="parent"
@@ -204,7 +204,7 @@
 
         <TextView
             android:id="@+id/lbl_price_listed"
-            style="@style/FieldLabel"
+            style="@style/Label.Field"
             android:labelFor="@id/price_listed"
             android:text="@string/lbl_price_listed"
             app:layout_constraintStart_toStartOf="parent"

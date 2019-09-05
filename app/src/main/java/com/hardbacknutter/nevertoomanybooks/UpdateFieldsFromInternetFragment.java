@@ -318,7 +318,7 @@ public class UpdateFieldsFromInternetFragment
             //noinspection ConstantConditions
             fieldLabel.setText(usage.getLabel(getContext()));
 
-            CompoundButton cb = row.findViewById(R.id.usage);
+            CompoundButton cb = row.findViewById(R.id.cbx_usage);
             cb.setChecked(usage.isWanted());
             cb.setText(usage.getUsageInfo(getContext()));
             cb.setTag(R.id.TAG_FIELD_USAGE, usage);
@@ -416,7 +416,7 @@ public class UpdateFieldsFromInternetFragment
         int nChildren = mFieldListView.getChildCount();
         for (int i = 0; i < nChildren; i++) {
             View view = mFieldListView.getChildAt(i);
-            CompoundButton cb = view.findViewById(R.id.usage);
+            CompoundButton cb = view.findViewById(R.id.cbx_usage);
             if (cb != null) {
                 FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
                 if (fieldUsage.isWanted()) {

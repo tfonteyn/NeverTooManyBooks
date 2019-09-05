@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -147,7 +148,7 @@ class IsfdbBookTest {
         assertEquals("159", bookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("pb", bookData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("COLLECTION", bookData.getString(IsfdbBook.BookField.BOOK_TYPE));
-        assertEquals(TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS,
+        assertEquals(Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS,
                      bookData.getLong(DBDefinitions.KEY_TOC_BITMASK));
 
         assertEquals(13665857, bookData.getLong(DBDefinitions.KEY_WORLDCAT_ID));

@@ -106,6 +106,7 @@ public class KbNlManager
 
     @NonNull
     public static String getBaseURL() {
+        //noinspection ConstantConditions
         return SearchEngine.getPref().getString(PREFS_HOST_URL, "http://opc4.kb.nl");
     }
 

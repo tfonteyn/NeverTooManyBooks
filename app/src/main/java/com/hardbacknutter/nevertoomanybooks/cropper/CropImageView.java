@@ -78,8 +78,8 @@ class CropImageView
      *
      * @param context Current context
      */
-    CropImageView(@NonNull final Context context,
-                  @NonNull final AttributeSet attrs) {
+    public CropImageView(@NonNull final Context context,
+                         @NonNull final AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }

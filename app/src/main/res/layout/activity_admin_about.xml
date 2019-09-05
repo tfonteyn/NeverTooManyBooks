@@ -115,7 +115,7 @@
 
             <TextView
                 android:id="@+id/contacts"
-                style="@style/SectionHeader"
+                style="@style/Label.Header"
                 android:text="@string/lbl_about_contacts"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/sourcecode6"
@@ -139,7 +139,7 @@
 
             <TextView
                 android:id="@+id/lbl_creators"
-                style="@style/SectionHeader"
+                style="@style/Label.Header"
                 android:text="@string/lbl_about_creators"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contact2"
@@ -173,7 +173,7 @@
 
             <TextView
                 android:id="@+id/thanks"
-                style="@style/SectionHeader"
+                style="@style/Label.Header"
                 android:text="@string/lbl_about_special_thanks"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/sourcecode"

@@ -96,15 +96,35 @@ public class Book
      * true: anthology by multiple authors
      */
     public static final String HAS_MULTIPLE_AUTHORS = "+HasMultiAuthors";
+
     /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
+
     /** mapping the edition bit to a resource string for displaying. Ordered. */
     @SuppressLint("UseSparseArrays")
     public static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
 
-    private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
+    /**
+     * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
+     * <p>
+     * 0b001 = indicates if a book has one (bit unset) or multiple (bit set) works
+     * 0b010 = indicates if a book has one (bit unset) or multiple (bit set) authors.
+     * <p>
+     * or in other words:
+     * 0b000 = contains one 'work' and is written by a single author.
+     * 0b001 = multiple 'work' and is written by a single author (anthology from ONE author)
+     * 0b010 = multiple authors cooperating on a single 'work'
+     * 0b011 = multiple authors and multiple 'work's (it's an anthology from multiple author)
+     * <p>
+     * Bit 0b010 should not actually occur, as this is a simple case of
+     * collaborating authors on a single 'work' which is covered without the use of this field.
+     */
+    public static final int TOC_SINGLE_AUTHOR_SINGLE_WORK = 0;
+    public static final int TOC_MULTIPLE_WORKS = 1;
+    public static final int TOC_MULTIPLE_AUTHORS = 1 << 1;
+
     /*
      * {@link DBDefinitions#DOM_BOOK_EDITION_BITMASK}.
      * <p>
@@ -128,6 +148,9 @@ public class Book
     private static final int EDITION_SLIPCASE = 1 << 3;
     /** It's a bookclub edition. boooo.... */
     private static final int EDITION_BOOK_CLUB = 1 << 7;
+
+
+    private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
 
     /*
      * NEWKIND: edition.
@@ -221,19 +244,17 @@ public class Book
         }
 
         // prepare the cover to post
-        File coverFile = StorageUtils.getCoverFile(uuid);
-        Uri coverURI = FileProvider
-                               .getUriForFile(context, GenericFileProvider.AUTHORITY, coverFile);
+        File file = StorageUtils.getCoverFile(uuid);
+        Uri uri = FileProvider.getUriForFile(context, GenericFileProvider.AUTHORITY, file);
 
 
-        // TEST: There's a problem with the facebook app in android,
         // so despite it being shown on the list it will not post any text unless the user types it.
         String text = context.getString(R.string.info_share_book_im_reading,
                                         title, author, series, ratingString);
         return new Intent(Intent.ACTION_SEND)
                        .setType("text/plain")
                        .putExtra(Intent.EXTRA_TEXT, text)
-                       .putExtra(Intent.EXTRA_STREAM, coverURI);
+                       .putExtra(Intent.EXTRA_STREAM, uri);
     }
 
     /**
@@ -643,12 +664,9 @@ public class Book
 
         // set/reset a single bit in a bitmask.
         addAccessor(HAS_MULTIPLE_WORKS,
-                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
-                                            TocEntry.Authors.MULTIPLE_WORKS));
+                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK, TOC_MULTIPLE_WORKS));
         addAccessor(HAS_MULTIPLE_AUTHORS,
-                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
-                                            TocEntry.Authors.MULTIPLE_AUTHORS));
-
+                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK, TOC_MULTIPLE_AUTHORS));
 
         addValidator(DBDefinitions.KEY_TITLE, NON_BLANK_VALIDATOR);
         addValidator(UniqueId.BKEY_AUTHOR_ARRAY, NON_BLANK_VALIDATOR);

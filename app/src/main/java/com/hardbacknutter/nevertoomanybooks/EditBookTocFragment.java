@@ -38,7 +38,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Checkable;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
@@ -61,7 +60,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
@@ -112,8 +110,35 @@ public class EditBookTocFragment
     private String mIsbn;
     /** primary author of the book. */
     private Author mBookAuthor;
-    /** checkbox to hide/show the author edit field. */
-    private CompoundButton mMultipleAuthorsView;
+    private final ConfirmToc.ConfirmTocResults mConfirmTocResultsListener =
+            new ConfirmToc.ConfirmTocResults() {
+                /**
+                 * The user approved, so add the TOC to the list and refresh the screen
+                 * (still not saved to database).
+                 */
+                public void commitIsfdbData(final long tocBitMask,
+                                            @NonNull final List<TocEntry> tocEntries) {
+                    if (tocBitMask != 0) {
+                        Book book = mBookModel.getBook();
+                        book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
+                        getField(R.id.cbx_is_anthology).setValueFrom(book);
+                        getField(R.id.cbx_multiple_authors).setValueFrom(book);
+                    }
+
+                    mList.addAll(tocEntries);
+                    mListAdapter.notifyDataSetChanged();
+                }
+
+                /**
+                 * Start a task to get the next edition of this book (that we know of).
+                 */
+                public void getNextEdition() {
+                    // remove the top one, and try again
+                    mIsfdbEditions.remove(0);
+                    new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
+                                         mIsfdbResultsListener).execute();
+                }
+            };
     /** the rows. */
     private ArrayList<TocEntry> mList;
     /** The adapter for the list. */
@@ -188,34 +213,8 @@ public class EditBookTocFragment
             }
         }
     };
-    private final ConfirmToc.ConfirmTocResults mConfirmTocResultsListener =
-            new ConfirmToc.ConfirmTocResults() {
-                /**
-                 * The user approved, so add the TOC to the list and refresh the screen
-                 * (still not saved to database).
-                 */
-                public void commitIsfdbData(final long tocBitMask,
-                                            @NonNull final List<TocEntry> tocEntries) {
-                    if (tocBitMask != 0) {
-                        Book book = mBookModel.getBook();
-                        book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-                        getField(R.id.multiple_authors).setValueFrom(book);
-                    }
-
-                    mList.addAll(tocEntries);
-                    mListAdapter.notifyDataSetChanged();
-                }
-
-                /**
-                 * Start a task to get the next edition of this book (that we know of).
-                 */
-                public void getNextEdition() {
-                    // remove the top one, and try again
-                    mIsfdbEditions.remove(0);
-                    new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
-                                         mIsfdbResultsListener).execute();
-                }
-            };
+    /** checkbox to hide/show the author edit field. */
+    private CompoundButton mMultiAuthorsView;
     @Nullable
     private Integer mEditPosition;
     private final EditTocEntryDialogFragment.EditTocEntryResults mEditTocEntryResultsListener =
@@ -261,14 +260,10 @@ public class EditBookTocFragment
         super.initFields();
         Fields fields = getFields();
         // Anthology is provided as a bitmask, see {@link Book#initAccessorsAndValidators()}
-        fields.addBoolean(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
-              .getView().setOnClickListener(v -> {
-            // enable controls as applicable.
-            mMultipleAuthorsView.setEnabled(((Checkable) v).isChecked());
-        });
+        fields.addBoolean(R.id.cbx_is_anthology, Book.HAS_MULTIPLE_WORKS);
 
-        Field<Boolean> field = fields.addBoolean(R.id.multiple_authors, Book.HAS_MULTIPLE_AUTHORS);
-        mMultipleAuthorsView = field.getView();
+        mMultiAuthorsView = fields.addBoolean(R.id.cbx_multiple_authors, Book.HAS_MULTIPLE_AUTHORS)
+                                  .getView();
 
         // adding a new TOC entry
         //noinspection ConstantConditions
@@ -297,7 +292,7 @@ public class EditBookTocFragment
 
         Book book = mBookModel.getBook();
 
-        // Author to use if mMultipleAuthorsView is set to false
+        // Author to use if mMultiAuthorsView is set to false
         List<Author> authorList = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (!authorList.isEmpty()) {
             mBookAuthor = authorList.get(0);
@@ -361,7 +356,6 @@ public class EditBookTocFragment
         super.onLoadFieldsFromBook();
 
         Book book = mBookModel.getBook();
-        mMultipleAuthorsView.setEnabled(book.getBoolean(Book.HAS_MULTIPLE_WORKS));
 
         // Populate the list view with the book content table.
         mList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
@@ -455,7 +449,7 @@ public class EditBookTocFragment
 
         FragmentManager fm = getChildFragmentManager();
         if (fm.findFragmentByTag(EditTocEntryDialogFragment.TAG) == null) {
-            EditTocEntryDialogFragment.newInstance(tocEntry, mMultipleAuthorsView.isChecked())
+            EditTocEntryDialogFragment.newInstance(tocEntry, mMultiAuthorsView.isChecked())
                                       .show(fm, EditTocEntryDialogFragment.TAG);
         }
     }

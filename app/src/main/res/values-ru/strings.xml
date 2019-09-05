@@ -424,7 +424,7 @@
     <string name="pg_general">Основные</string>
     <string name="pg_groupings">Группирование</string>
     <string name="pg_reformat_titles">Переформатировать заголовки</string>
-    <string name="pg_scanning">Сканирование</string>
+    <string name="pg_barcode_scanner">Сканер штрих-кода</string>
     <string name="pg_thumbnails">Миниатюры</string>
     <string name="pg_ui">Пользовательский интерфейс</string>
     <string name="pg_ui_field_visibility">Видимость полей</string>

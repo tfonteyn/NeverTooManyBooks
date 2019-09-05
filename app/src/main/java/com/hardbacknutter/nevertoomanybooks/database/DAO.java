@@ -1197,13 +1197,13 @@ public class DAO
             book.putString(DOM_TITLE_OB.name, encodeOrderByColumn(title, bookLocale));
         }
 
-        // Handle ANTHOLOGY_BITMASK only, no handling of actual titles here
+        // Handle TOC_BITMASK only, no handling of actual titles here,
+        // making sure TOC_MULTIPLE_AUTHORS is correct.
         ArrayList<TocEntry> tocEntries = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
         if (!tocEntries.isEmpty()) {
-            // definitively an anthology, overrule whatever the KEY_TOC_BITMASK was.
-            int type = TocEntry.Authors.MULTIPLE_WORKS;
+            long type = book.getLong(DBDefinitions.KEY_TOC_BITMASK);
             if (TocEntry.hasMultipleAuthors(tocEntries)) {
-                type |= TocEntry.Authors.MULTIPLE_AUTHORS;
+                type |= Book.TOC_MULTIPLE_AUTHORS;
             }
             book.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
         }

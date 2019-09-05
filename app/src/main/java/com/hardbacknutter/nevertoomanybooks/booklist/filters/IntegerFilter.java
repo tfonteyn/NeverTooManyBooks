@@ -98,7 +98,7 @@ public class IntegerFilter
     @NonNull
     public String toString() {
         return "IntegerFilter{"
-               + "mTable=" + mTable
+               + "mTable=" + mTable.getName()
                + ", mDomain=" + mDomain
                + ", mLabelId=" + mLabelId
                + ", " + super.toString()

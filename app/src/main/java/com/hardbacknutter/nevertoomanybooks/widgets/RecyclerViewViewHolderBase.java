@@ -32,10 +32,12 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperViewHolder;
 
@@ -71,6 +73,9 @@ public class RecyclerViewViewHolderBase
     @Nullable
     final View mDeleteButton;
 
+    @ColorInt
+    private int mItemSelectedBackgroundColor;
+
     protected RecyclerViewViewHolderBase(@NonNull final View itemView) {
         super(itemView);
 
@@ -84,12 +89,14 @@ public class RecyclerViewViewHolderBase
         mDeleteButton = itemView.findViewById(R.id.ROW_DELETE_BTN);
         mCheckableButton = itemView.findViewById(R.id.ROW_CHECKABLE_BTN);
         mDragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
+
+        mItemSelectedBackgroundColor = App.getColorInt(itemView.getContext(),
+                                                       R.attr.itemTouchHelper_onSelected_color);
     }
 
     @Override
     public void onItemSelected() {
-        //ENHANCE: style this.
-        itemView.setBackgroundColor(Color.LTGRAY);
+        itemView.setBackgroundColor(mItemSelectedBackgroundColor);
     }
 
     @Override

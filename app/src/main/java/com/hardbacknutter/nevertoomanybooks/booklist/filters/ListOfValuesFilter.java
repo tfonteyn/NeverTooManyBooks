@@ -88,7 +88,7 @@ public class ListOfValuesFilter<T>
     @NonNull
     public String toString() {
         return "ListOfValuesFilter{"
-               + "mTable=" + mTable
+               + "mTable=" + mTable.getName()
                + ", mDomain=" + mDomain
                + ", mCriteria=`" + mCriteria + '`'
                + '}';

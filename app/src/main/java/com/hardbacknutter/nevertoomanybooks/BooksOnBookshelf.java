@@ -1056,6 +1056,7 @@ public class BooksOnBookshelf
             }
             // bring up the context menu
             new MenuPicker<>(this, title, null, false, menu, position, (menuItem, pos) -> {
+                //noinspection ConstantConditions
                 cursor.moveToPosition(pos);
                 return onContextItemSelected(menuItem, cursor.getCursorMapper());
             }).show();

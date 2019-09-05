@@ -1282,6 +1282,7 @@ public class BooklistStyle
         }
 
         int getGroupKindAt(final int index) {
+            //noinspection ConstantConditions
             return (int) get().toArray()[index];
         }
 

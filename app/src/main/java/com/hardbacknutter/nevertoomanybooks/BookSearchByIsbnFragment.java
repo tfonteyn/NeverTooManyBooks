@@ -29,6 +29,9 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
@@ -45,6 +48,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.io.File;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -56,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
+import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchByScanModel;
 
@@ -115,10 +120,10 @@ public class BookSearchByIsbnFragment
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
-     * Flag to indicate the Activity should not 'finish()' because an alert is being displayed.
-     * The alert will call finish().
+     * Flag to indicate the Activity should not call 'finish()' after a failure.
      */
-    private boolean mDisplayingAlert;
+    private boolean mKeepAlive;
+
     /** The preferred (or found) scanner. */
     @Nullable
     private Scanner mScanner;
@@ -194,7 +199,7 @@ public class BookSearchByIsbnFragment
 
         View view = inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
         mIsbnView = view.findViewById(R.id.isbn);
-        mAllowAsinCb = view.findViewById(R.id.allow_asin);
+        mAllowAsinCb = view.findViewById(R.id.cbx_allow_asin);
         return view;
     }
 
@@ -206,36 +211,17 @@ public class BookSearchByIsbnFragment
         View root = getView();
         if (root != null) {
             initUI(root);
-        } else {
-            initScanner();
         }
-    }
 
-    private void initScanner() {
-        //noinspection ConstantConditions
-        mScanner = ScannerManager.getScanner(getContext());
-        if (mScanner == null) {
-            ScannerManager.promptForScannerInstallAndFinish(mActivity, true);
-            // Prevent our activity to finish.
-            //mDisplayingAlert = true;
-        } else {
-            // we have a scanner, but first check if we already have an isbn from somewhere
-            if (!mBookSearchBaseModel.getIsbnSearchText().isEmpty()) {
-                prepareSearch();
-            } else {
-                // let's scan....
-                if (mModel.isFirstStart()) {
-                    mModel.setFirstStart(false);
-                    try {
-                        startScannerActivity();
-                    } catch (@NonNull final RuntimeException e) {
-                        // we had a scanner setup, but something went wrong starting it.
-                        ScannerManager.promptForScannerInstallAndFinish(mActivity, false);
-                        // Prevent our activity to finish.
-                        //mDisplayingAlert = true;
-                    }
-                }
-            }
+        // first check if we already have an isbn from somewhere
+        if (!mBookSearchBaseModel.getIsbnSearchText().isEmpty()) {
+            prepareSearch();
+            return;
+        }
+
+        if (mModel.isScanMode() && mModel.isFirstStart()) {
+            mModel.setFirstStart(false);
+            startScannerActivity();
         }
     }
 
@@ -366,26 +352,31 @@ public class BookSearchByIsbnFragment
                     case Activity.RESULT_OK:
                         // Got a scan result.
                         Objects.requireNonNull(data);
+
+                        if (BuildConfig.DEBUG) {
+                            // detect emulator for testing
+                            if (Build.PRODUCT.startsWith("sdk")) {
+                                File file = StorageUtils.getFile("barcode.jpg");
+                                if (file.exists()) {
+                                    Bitmap dummy = BitmapFactory.decodeFile(file.getAbsolutePath());
+                                    data.putExtra("data", dummy);
+                                }
+                            }
+                        }
                         //noinspection ConstantConditions
-                        mBookSearchBaseModel.setIsbnSearchText(mScanner.getBarcode(data));
-                        prepareSearch();
+                        String barCode = mScanner.getBarcode(data);
+                        if (barCode != null) {
+                            mBookSearchBaseModel.setIsbnSearchText(barCode);
+                            prepareSearch();
+                        } else {
+                            scanFailed();
+                        }
                         return;
 
                     default:
-                        // Scanner Cancelled/failed.
-                        // Pass the last book we got back to our caller and finish here.
-                        Intent lastBookData = mBookSearchBaseModel.getLastBookData();
-                        mActivity.setResult(lastBookData != null ? Activity.RESULT_OK
-                                                                 : Activity.RESULT_CANCELED,
-                                            lastBookData);
-                        // and exit if no dialog present.
-                        if (!mDisplayingAlert) {
-                            mActivity.finish();
-                            return;
-                        }
-                        break;
+                        scanFailed();
+                        return;
                 }
-                break;
             }
 
             case UniqueId.REQ_BOOK_EDIT:
@@ -397,12 +388,36 @@ public class BookSearchByIsbnFragment
                 }
                 break;
 
+            case UniqueId.REQ_INSTALL_GOOGLE_PLAY_SERVICES:
+                if (resultCode == Activity.RESULT_OK) {
+                    if (mModel.isScanMode()) {
+                        // go scan next book until the user cancels scanning.
+                        startScannerActivity();
+                    }
+                }
+                break;
+
             default:
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
 
         Tracker.exitOnActivityResult(this);
+    }
+
+    /**
+     * Scanner Cancelled/failed.
+     * Pass the last book we got back to our caller and finish here.
+     */
+    private void scanFailed() {
+
+        Intent lastBookData = mBookSearchBaseModel.getLastBookData();
+        mActivity.setResult(lastBookData != null ? Activity.RESULT_OK : Activity.RESULT_CANCELED,
+                            lastBookData);
+        // and exit if no dialog present.
+        if (!mKeepAlive) {
+            mActivity.finish();
+        }
     }
 
     @Override
@@ -539,17 +554,33 @@ public class BookSearchByIsbnFragment
     }
 
     /**
-     * Start scanner activity if we have a scanner.
+     * Start scanner activity.
      */
     private void startScannerActivity() {
-        // sanity check.
-        if (mScanner == null) {
-            return;
+        try {
+            if (mScanner == null) {
+                mScanner = ScannerManager.getScanner(mActivity);
+                if (mScanner == null) {
+                    ScannerManager.promptForScanner(mActivity, true);
+                    mKeepAlive = true;
+                    return;
+                }
+            }
+
+            // go scan
+            if (!mModel.isScannerStarted()) {
+                mModel.setScannerStarted(true);
+                if (mScanner.startActivityForResult(this, UniqueId.REQ_IMAGE_FROM_SCANNER)) {
+                    return;
+                }
+            }
+        } catch (@NonNull final RuntimeException e) {
+            Logger.error(this, e);
         }
 
-        if (!mModel.isScannerStarted()) {
-            mModel.setScannerStarted(true);
-            mScanner.startActivityForResult(this, UniqueId.REQ_IMAGE_FROM_SCANNER);
-        }
+        // failed to init or to scan or some fatal Exception. Try to recover...
+        ScannerManager.promptForScanner(mActivity, false);
+        mKeepAlive = true;
     }
+
 }

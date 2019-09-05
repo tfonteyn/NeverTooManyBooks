@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
@@ -101,28 +102,29 @@ public class IsfdbBook
      * as OMNIBUS publications
      *
      * Put all these together into the Anthology bucket.
-     * After processing MULTIPLE_AUTHORS is added when needed.
+     * After processing TOC_MULTIPLE_AUTHORS is added when needed.
      *
      * Reminder: a "Digest" is a format, not a type.
      */
     static {
         // multiple works, one author
-        TYPE_MAP.put("coll", TocEntry.Authors.MULTIPLE_WORKS);
-        TYPE_MAP.put("COLLECTION", TocEntry.Authors.MULTIPLE_WORKS);
+        TYPE_MAP.put("coll", Book.TOC_MULTIPLE_WORKS);
+        TYPE_MAP.put("COLLECTION", Book.TOC_MULTIPLE_WORKS);
 
         // multiple works, multiple authors
         TYPE_MAP.put("anth",
-                     TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+                     Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
         TYPE_MAP.put("ANTHOLOGY",
-                     TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+                     Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
 
         // multiple works that have previously been published independently
         TYPE_MAP.put("omni",
-                     TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+                     Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
         TYPE_MAP.put("OMNIBUS",
-                     TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+                     Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
 
-        TYPE_MAP.put("MAGAZINE", TocEntry.Authors.MULTIPLE_WORKS);
+        // we assume magazines have multiple authors.
+        TYPE_MAP.put("MAGAZINE", Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
 
         // others, treated as a standard book.
 //        TYPE_MAP.put("novel", 0);
@@ -586,31 +588,31 @@ public class IsfdbBook
         bookData.putString(DBDefinitions.KEY_LANGUAGE, "eng");
 
         // the table of content
-        ArrayList<TocEntry> toc = getTocList(bookData, addSeriesFromToc);
-        bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
+        ArrayList<TocEntry> tocEntries = getTocList(bookData, addSeriesFromToc);
+        bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, tocEntries);
 
         // store accumulated ArrayList's, do this *after* we got the TOC
         bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
         bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
 
-        // set Anthology type
-        if (!toc.isEmpty()) {
-            int type = TocEntry.Authors.MULTIPLE_WORKS;
-            if (TocEntry.hasMultipleAuthors(toc)) {
-                type |= TocEntry.Authors.MULTIPLE_AUTHORS;
+        // Anthology type: make sure TOC_MULTIPLE_AUTHORS is correct.
+        if (!tocEntries.isEmpty()) {
+            long type = bookData.getLong(DBDefinitions.KEY_TOC_BITMASK);
+            if (TocEntry.hasMultipleAuthors(tocEntries)) {
+                type |= Book.TOC_MULTIPLE_AUTHORS;
             }
             bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
         }
 
         // try to deduce the first publication date
-        if (toc.size() == 1) {
+        if (tocEntries.size() == 1) {
             // if the content table has only one entry,
             // then this will have the first publication year for sure
-            String d = digits(toc.get(0).getFirstPublication(), false);
+            String d = digits(tocEntries.get(0).getFirstPublication(), false);
             if (d != null && !d.isEmpty()) {
                 bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, d);
             }
-        } else if (toc.size() > 1) {
+        } else if (tocEntries.size() > 1) {
             // we gamble and take what we found in the TOC
             if (mFirstPublication != null) {
                 bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,

@@ -429,7 +429,7 @@
     <string name="pg_groupings">Gruppierung</string>
     <string name="pg_reformat_titles">Neuformatierung der Titel</string>
     <string name="pg_reformat_titles_summary">Speichern Sie das Original „Der Titel“ oder formatieren Sie es in „Titel, Der“.</string>
-    <string name="pg_scanning">Scanne</string>
+    <string name="pg_barcode_scanner">Barcodelesegerät</string>
     <string name="pg_thumbnails">Umschlagbilder</string>
     <string name="pg_ui">Benutzeroberfläche</string>
     <string name="pg_ui_field_visibility">Feld Sichtbarkeit bearbeiten</string>

@@ -291,8 +291,8 @@ public class App
      */
     @SuppressWarnings("unused")
     @IdRes
-    public static int getAttr(@NonNull final Context context,
-                              @AttrRes final int attr) {
+    public static int getAttrResId(@NonNull final Context context,
+                                   @AttrRes final int attr) {
         TypedValue tv = new TypedValue();
         context.getTheme().resolveAttribute(attr, tv, true);
         return tv.resourceId;
@@ -304,10 +304,9 @@ public class App
      *
      * @return A single color value in the form 0xAARRGGBB.
      */
-    @SuppressWarnings("unused")
     @ColorInt
-    public static int getColor(@NonNull final Context context,
-                               @AttrRes final int attr) {
+    public static int getColorInt(@NonNull final Context context,
+                                  @AttrRes final int attr) {
         Resources.Theme theme = context.getTheme();
         TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
@@ -470,7 +469,7 @@ public class App
     }
 
     /**
-     * Apply the user's preferred Theme.
+     * Apply the user's preferred Theme. MODE_NIGHT_FOLLOW_SYSTEM
      *
      * @param context Current context to apply the theme to.
      */
@@ -479,7 +478,14 @@ public class App
         if (themeId != sCurrentThemeId) {
             sCurrentThemeId = themeId;
             if (sCurrentThemeId == THEME_DAY_NIGHT) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
+                if (Build.VERSION.SDK_INT >= 29) {
+                    AppCompatDelegate
+                            .setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                } else {
+                    AppCompatDelegate
+                            .setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
+                }
+
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_UNSPECIFIED);
             }

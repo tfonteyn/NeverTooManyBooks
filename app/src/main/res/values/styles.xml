@@ -445,6 +445,12 @@
         <item name="android:focusableInTouchMode">false</item>
     </style>
 
+    <!-- Generic Indicator. -->
+    <style name="Flag.Generic">
+        <item name="android:button">@drawable/ic_selector_check</item>
+        <item name="android:buttonTint">?attr/checked_icon_tint</item>
+    </style>
+
     <!-- Indicator a book has been read. -->
     <style name="Flag.Read">
         <item name="android:button">@drawable/ic_selector_read</item>

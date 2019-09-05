@@ -61,6 +61,7 @@ import com.google.android.material.button.MaterialButton;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
@@ -279,9 +280,24 @@ public class Fields {
     }
 
     /**
+     * Check if the field exists in this collection.
+     *
+     * @param fieldId to test
+     *
+     * @return {@code true} if present
+     */
+    public boolean contains(@IdRes final int fieldId) {
+        return mAllFields.get(fieldId) != null;
+    }
+
+    /**
      * Return the Field associated with the passed layout ID.
+     * <p>
+     * Use {@link #contains(int)} for to check if needed.
      *
      * @return Associated Field.
+     *
+     * @throws IllegalArgumentException if the field does not exist.
      */
     @NonNull
     public Field getField(@IdRes final int fieldId) {
@@ -363,6 +379,15 @@ public class Fields {
     public void resetVisibility() {
         for (Field field : mAllFields.values()) {
             field.resetVisibility();
+        }
+    }
+
+    /**
+     * Reset all field visibility based on user preferences.
+     */
+    public void resetVisibility(final boolean hideIfEmpty) {
+        for (Field field : mAllFields.values()) {
+            field.resetVisibility(hideIfEmpty);
         }
     }
 
@@ -1453,6 +1478,9 @@ public class Fields {
          */
         private boolean mDoNoFetch;
 
+        @Nullable
+        private int[] mRelatedFields;
+
         /**
          * Constructor.
          *
@@ -1464,9 +1492,9 @@ public class Fields {
          */
         @VisibleForTesting
         public Field(@NonNull final Fields fields,
-                      @IdRes final int fieldId,
-                      @NonNull final String key,
-                      @NonNull final String visibilityGroup) {
+                     @IdRes final int fieldId,
+                     @NonNull final String key,
+                     @NonNull final String visibilityGroup) {
 
             mFields = new WeakReference<>(fields);
             id = fieldId;
@@ -1549,13 +1577,13 @@ public class Fields {
         public String toString() {
             return "Field{"
                    + "id=" + id
-                   //+ ", mFields=" + mFields
                    + ", group='" + group + '\''
                    + ", mKey='" + mKey + '\''
                    + ", mZeroIsEmpty=" + mZeroIsEmpty
                    + ", mIsUsed=" + mIsUsed
                    + ", mDoNoFetch=" + mDoNoFetch
                    + ", mFieldDataAccessor=" + mFieldDataAccessor
+                   + ", mRelatedFields=" + Arrays.toString(mRelatedFields)
                    + '}';
         }
 
@@ -1622,6 +1650,16 @@ public class Fields {
         }
 
         /**
+         * set the field ids which should follow visibility with this Field.
+         *
+         * @param relatedFields labels etc
+         */
+        public Field<T> setRelatedFieldIds(@NonNull @IdRes final int... relatedFields) {
+            mRelatedFields = relatedFields;
+            return this;
+        }
+
+        /**
          * Is the field in use; i.e. is it enabled in the user-preferences.
          *
          * @return {@code true} if the field *can* be visible
@@ -1636,6 +1674,41 @@ public class Fields {
         private void resetVisibility() {
             mIsUsed = App.isUsed(group);
             getView().setVisibility(mIsUsed ? View.VISIBLE : View.GONE);
+        }
+
+        /**
+         * Set the visibility for the field.
+         *
+         * @param hideIfEmpty hide the field if it's empty
+         */
+        private void resetVisibility(final boolean hideIfEmpty) {
+
+            mIsUsed = App.isUsed(group);
+            int visibility = mIsUsed ? View.VISIBLE : View.GONE;
+            View fieldView = getView();
+
+            if (mIsUsed && hideIfEmpty) {
+                if (fieldView instanceof Checkable) {
+                    // hide any unchecked Checkable.
+                    visibility = ((Checkable) fieldView).isChecked() ? View.VISIBLE : View.GONE;
+
+                } else if (!(fieldView instanceof ImageView)) {
+                    // don't act on ImageView, but all other fields can be tested on being empty
+                    visibility = !isEmpty() ? View.VISIBLE : View.GONE;
+                }
+            }
+
+            fieldView.setVisibility(visibility);
+
+            if (mRelatedFields != null) {
+                FieldsContext context = mFields.get().getFieldContext();
+                for (int fieldId : mRelatedFields) {
+                    View field = context.findViewById(fieldId);
+                    if (field != null) {
+                        field.setVisibility(visibility);
+                    }
+                }
+            }
         }
 
         /**
@@ -1768,7 +1841,12 @@ public class Fields {
          */
         public boolean isEmpty() {
             String value = mFieldDataAccessor.getValue(this).toString();
-            return value.isEmpty() || (mZeroIsEmpty && "0".equals(value));
+            if (value.isEmpty() || (mZeroIsEmpty && "0".equals(value))) {
+                return true;
+            }
+
+            //TEST: this *should* be enough instead of a full toBoolean call.
+            return "false".equalsIgnoreCase(value);
         }
 
         /**

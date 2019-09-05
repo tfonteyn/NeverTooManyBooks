@@ -31,10 +31,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.Arrays;
+
+import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Based on the pic2shop client code at github, this object will start pic2shop and
@@ -47,9 +51,7 @@ import java.util.Arrays;
 public class Pic2ShopScanner
         implements Scanner {
 
-    static final String DISPLAY_NAME = "Pic2shop";
-
-    static final String MARKET_URL = "market://details?id=com.visionsmarts.pic2shop";
+    private static final String MARKET_URL = "market://details?id=com.visionsmarts.pic2shop";
 
     /**
      * When a barcode is read, pic2shop returns Activity.RESULT_OK in
@@ -67,16 +69,8 @@ public class Pic2ShopScanner
      *
      * @return {@code true} if present
      */
-    static boolean isIntentAvailable(@NonNull final Context context) {
-        return isFreeScannerAppInstalled(context) || isProScannerAppInstalled(context);
-    }
-
-    private static boolean isFreeScannerAppInstalled(@NonNull final Context context) {
-        return isIntentAvailable(context, Free.ACTION);
-    }
-
-    private static boolean isProScannerAppInstalled(@NonNull final Context context) {
-        return isIntentAvailable(context, Pro.ACTION);
+    private static boolean isIntentAvailable(@NonNull final Context context) {
+        return isIntentAvailable(context, Free.ACTION) || isIntentAvailable(context, Pro.ACTION);
     }
 
     private static boolean isIntentAvailable(@NonNull final Context context,
@@ -85,33 +79,31 @@ public class Pic2ShopScanner
         return context.getPackageManager().resolveActivity(test, 0) != null;
     }
 
-    /**
-     * <br>{@inheritDoc}
-     * <br>
-     * <p>Note that we always send an intent; the caller should have checked that
-     * one of the intents is valid, or catch the resulting errors.
-     */
     @Override
-    public void startActivityForResult(@NonNull final Fragment fragment,
-                                       final int requestCode) {
+    public boolean startActivityForResult(@NonNull final Fragment fragment,
+                                          final int requestCode) {
         Intent intent;
         //noinspection ConstantConditions
-        if (isFreeScannerAppInstalled(fragment.getContext())) {
+        if (isIntentAvailable(fragment.getContext(), Free.ACTION)) {
             intent = new Intent(Free.ACTION);
-        } else {
+
+        } else if (isIntentAvailable(fragment.getContext(), Pro.ACTION)) {
             intent = new Intent(Pro.ACTION).putExtra(Pro.FORMATS, Pro.BARCODE_TYPES);
+        } else {
+            return false;
         }
         fragment.startActivityForResult(intent, requestCode);
+        return true;
     }
 
     @Override
-    @NonNull
+    @Nullable
     public String getBarcode(@NonNull final Intent data) {
         String barcode = data.getStringExtra(BARCODE);
         // only for Pro:
         String barcodeFormat = data.getStringExtra(Pro.FORMAT);
         if (barcodeFormat != null && !Arrays.asList(Pro.BARCODE_TYPES).contains(barcodeFormat)) {
-            throw new IllegalStateException("Unexpected format for barcode: " + barcodeFormat);
+            return null;
         }
 
         return barcode;
@@ -132,7 +124,7 @@ public class Pic2ShopScanner
      * The example code at github lists:
      * String[] ALL_BARCODE_TYPES = {"EAN13","EAN8","UPCE","ITF","CODE39","CODE128","CODABAR","QR"};
      * <p>
-     * of which only {"EAN13","UPCE"} are useful for ou purposes
+     * of which only {"EAN13","UPCE"} are useful for our purposes
      */
     public interface Pro {
 
@@ -146,36 +138,34 @@ public class Pic2ShopScanner
         String FORMAT = "format";
     }
 
-//    public static void launchMarketToInstallFreeScannerApp(@NonNull final Context context) {
-//        launchMarketToInstallApp(context, Free.PACKAGE);
-//    }
-//
-//    public static void launchMarketToInstallProScannerApp(@NonNull final Context context) {
-//        launchMarketToInstallApp(context, Pro.PACKAGE);
-//    }
-
-//    private static void launchMarketToInstallApp(@NonNull final Context context,
-//                                                 @NonNull final String packageName) {
-//        try {
-//            Intent intent = new Intent(Intent.ACTION_VIEW,
-//                                       Uri.parse("market://details?id=" + packageName));
-//            context.startActivity(intent);
-//        } catch (@NonNull final ActivityNotFoundException e) {
-//            Logger.warnWithStackTrace(e, "Google Play not installed.");
-//        }
-//    }
-
     static class Pic2ShopScannerFactory
             implements ScannerManager.ScannerFactory {
 
         @NonNull
+        public String getMarketUrl() {
+            return MARKET_URL;
+        }
+
+        @IdRes
         @Override
-        public Scanner newInstance() {
+        public int getResId() {
+            return R.id.MENU_SCANNER_PIC2SHOP;
+        }
+
+        @NonNull
+        @Override
+        public String getLabel(@NonNull final Context context) {
+            return context.getString(R.string.pv_scanner_pic2shop);
+        }
+
+        @NonNull
+        @Override
+        public Scanner newInstance(@NonNull final Context context) {
             return new Pic2ShopScanner();
         }
 
         @Override
-        public boolean isIntentAvailable(@NonNull final Context context) {
+        public boolean isAvailable(@NonNull final Context context) {
             return Pic2ShopScanner.isIntentAvailable(context);
         }
     }

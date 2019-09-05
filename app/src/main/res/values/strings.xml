@@ -73,7 +73,6 @@
         better by reporting this crash.
     </string>
     <string name="acra_resNotifText">Please tap here for details</string>
-
     <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
     <string name="acra_resReportSendSuccessToast">Thank you!</string>
 
@@ -82,8 +81,8 @@
     <!-- ####################################################################################### -->
 
     <string name="error_unexpected_error">
-        An unexpected error has occurred, please send the details to support
-        via the “Admin” page from the main menu.
+        An unexpected error has occurred, please send the details to support via the “Admin”
+        page from the main menu.
     </string>
     <string name="error_unknown">An unknown error occurred.</string>
     <string name="error_if_the_problem_persists">
@@ -92,33 +91,39 @@
     <string name="error_search_failed">
         Searching for the book failed. Please check your network settings.
     </string>
-    <string name="error_search_exception">Search failed while %1$s: %2$s</string>
-    <string name="error_column_is_blank">Column “%1$s” is blank at row %2$d</string>
-    <string name="error_columns_are_blank">Columns “%1$s” are all blank at row %2$d</string>
-    <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed</string>
+    <string name="error_search_exception">Search failed while %1$s: %2$s.</string>
+    <string name="error_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
+    <string name="error_columns_are_blank">Columns “%1$s” are all blank at row %2$d.</string>
+    <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
     <string name="error_no_internet_connection">Internet connection is not available.</string>
     <string name="error_failed_x">Failed: %1$d</string>
     <!-- generic import failure -->
     <string name="error_import_failed">Import failed.</string>
     <!-- generic backup failure -->
-    <string name="error_backup_failed">Backup Failed</string>
+    <string name="error_backup_failed">Backup Failed.</string>
 
     <!-- Displayed when any read operation from Shared Storage fails -->
     <string name="error_storage_not_readable">Please check that storage is accessible.</string>
     <!-- Displayed when any write operation to Shared Storage fails -->
-    <string name="error_storage_not_writable">Please check that storage is writable, and has sufficient space.</string>
+    <string name="error_storage_not_writable">
+        Please check that storage is writable, and has sufficient space.
+    </string>
     <!-- Shared Storage file system access fails for some reason -->
-    <string name="error_storage_not_accessible">Storage not accessible</string>
+    <string name="error_storage_not_accessible">Storage not accessible.</string>
     <!-- you're out of Shared Storage space... buy a bigger SD Card -->
-    <string name="error_storage_no_space_left">Insufficient storage available</string>
+    <string name="error_storage_no_space_left">Insufficient storage available.</string>
 
-    <string name="error_not_available">%1$s is not available</string>
+    <string name="error_not_available">%1$s is not available.</string>
 
-    <string name="error_no_external_crop_app">An application for trimming images was not found</string>
-    <string name="error_network_timeout">No response, please try again</string>
+    <string name="error_no_external_crop_app">
+        An application for trimming images was not found.
+    </string>
+    <string name="error_network_timeout">No response, please try again.</string>
     <string name="error_email_failed">Failed to send the email.</string>
-    <string name="error_google_play_missing">Google Play/Market is not installed</string>
-    <string name="error_search_configuration">Configuration error. Please open the Settings page and check your Search Site preferences.</string>
+    <string name="error_google_play_missing">Google Play/Market is not installed.</string>
+    <string name="error_search_configuration">
+        Configuration error. Please open the Settings page and check your Search Site preferences.
+    </string>
 
     <!-- Generic authentication failed -->
     <string name="error_authentication_failed">Authentication failed</string>
@@ -220,10 +225,13 @@
         Selected fields will be updated from the internet. Unselected fields will remain unchanged.
     </string>
 
-    <!-- prompt to install a scanner. -->
+    <!-- prompt to install a scanner. Shown above a menu of Scanners. -->
     <string name="info_install_scanner">
         To scan ISBN bar codes, please tap below to install one of these barcode scanner applications.
     </string>
+
+    <!-- prompt to install a scanner. Shown if the device does not support Google APIs. -->
+    <string name="info_install_scanner_manually">Please install: %1$s</string>
 
     <string name="info_manage_fields">
         Selected fields are visible in the add/edit book screens. Unselected fields are hidden.
@@ -731,7 +739,7 @@
 
 
     <!-- Preference Category -->
-    <string name="pg_scanning">Scanning</string>
+    <string name="pg_barcode_scanner">Barcode scanner</string>
     <!-- SwitchPreference -->
     <string name="pt_scanning_beep_if_isbn_invalid">Beep if scanned ISBN is invalid</string>
     <!-- SwitchPreference -->
@@ -1437,6 +1445,8 @@
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
 
+    <!-- wouldn't there be some 'official' string ?? -->
+    <string name="google_play_services">Google Play Services</string>
 
     <!-- happy -->
     <string name="lbl_author_type">Author type</string>
