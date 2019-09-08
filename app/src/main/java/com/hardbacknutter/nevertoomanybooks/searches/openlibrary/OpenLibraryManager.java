@@ -105,7 +105,7 @@ public class OpenLibraryManager
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
 
     /** param 1: isbn, param 2: L/M/S for the size. */
-    private static final String BASE_URL_COVERS
+    private static final String BASE_COVER_URL
             = "https://covers.openlibrary.com/b/isbn/%1$s-%2$s.jpg?default=false";
 
     /** file suffix for cover files. */
@@ -228,8 +228,8 @@ public class OpenLibraryManager
         }
 
         // Fetch, then save it with a suffix
-        String fileSpec = ImageUtils.saveImage(String.format(BASE_URL_COVERS, isbn, sizeParam),
-                                               isbn, FILENAME_SUFFIX + '_' + size);
+        String fileSpec = ImageUtils.saveImage(String.format(BASE_COVER_URL, isbn, sizeParam),
+                                               isbn, FILENAME_SUFFIX, sizeParam);
         if (fileSpec != null) {
             return new File(fileSpec);
         }
@@ -538,20 +538,21 @@ public class OpenLibraryManager
         if (fetchThumbnail) {
             // get the largest cover image available.
             o = result.optJSONObject("cover");
-            String size = "large";
+            String sizeParam = "large";
             if (o != null) {
-                String url = o.optString(size);
-                if (url.isEmpty()) {
-                    size = "medium";
-                    url = o.optString(size);
-                    if (url.isEmpty()) {
-                        size = "small";
-                        url = o.optString(size);
+                String coverUrl = o.optString(sizeParam);
+                if (coverUrl.isEmpty()) {
+                    sizeParam = "medium";
+                    coverUrl = o.optString(sizeParam);
+                    if (coverUrl.isEmpty()) {
+                        sizeParam = "small";
+                        coverUrl = o.optString(sizeParam);
                     }
                 }
                 // we assume that the download will work if there is a url.
-                if (!url.isEmpty()) {
-                    String fileSpec = ImageUtils.saveImage(url, isbn, FILENAME_SUFFIX + '_' + size);
+                if (!coverUrl.isEmpty()) {
+                    String fileSpec = ImageUtils.saveImage(coverUrl, isbn, FILENAME_SUFFIX,
+                                                           sizeParam);
                     if (fileSpec != null) {
                         ArrayList<String> imageList =
                                 bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

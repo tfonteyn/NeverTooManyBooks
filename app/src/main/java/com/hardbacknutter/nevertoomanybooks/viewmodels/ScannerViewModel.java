@@ -35,8 +35,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import com.hardbacknutter.nevertoomanybooks.BookSearchByIsbnFragment;
+import com.hardbacknutter.nevertoomanybooks.scanner.Scanner;
 
-public class BookSearchByScanModel
+/**
+ * Holds the Scanner and related data.
+ */
+public class ScannerViewModel
         extends ViewModel {
 
     /** Only start the scanner automatically upon the very first start of the fragment. */
@@ -45,6 +49,9 @@ public class BookSearchByScanModel
     private boolean mScanMode;
     /** flag indicating the scanner is already started. */
     private boolean mScannerStarted;
+    /** The preferred (or found) scanner. */
+    @Nullable
+    private Scanner mScanner;
 
     /**
      * Pseudo constructor.
@@ -62,8 +69,8 @@ public class BookSearchByScanModel
         return mFirstStart;
     }
 
-    public void setFirstStart(final boolean firstStart) {
-        mFirstStart = firstStart;
+    public void clearFirstStart() {
+        mFirstStart = false;
     }
 
     public boolean isScanMode() {
@@ -76,5 +83,14 @@ public class BookSearchByScanModel
 
     public void setScannerStarted(final boolean scannerStarted) {
         mScannerStarted = scannerStarted;
+    }
+
+    @Nullable
+    public Scanner getScanner() {
+        return mScanner;
+    }
+
+    public void setScanner(@Nullable final Scanner scanner) {
+        mScanner = scanner;
     }
 }

@@ -59,6 +59,8 @@ public final class GoodreadsTasks {
      * <p>
      * This method provides handling for these outcomes.
      *
+     * @param context Current context
+     *
      * @return a String to display to the user, or {@code null} when authorization is needed.
      */
     public static String handleResult(@NonNull final Context context,

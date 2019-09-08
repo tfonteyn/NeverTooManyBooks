@@ -406,8 +406,7 @@ public class BookFragment
         ((BookDetailsActivity) mActivity).unregisterOnTouchListener(mOnTouchListener);
 
         //  set the current visible book id as the result data.
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID,
-                                            mBookModel.getBook().getId());
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, mBookModel.getBook().getId());
         mActivity.setResult(Activity.RESULT_OK, data);
 
         super.onPause();
@@ -496,7 +495,8 @@ public class BookFragment
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBookAlert(getContext(), title, authors, () -> {
                     mBookModel.getDb().deleteBook(book.getId());
-                    mActivity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
+                    Intent data = new Intent().putExtra(UniqueId.BKEY_DELETED_SOMETHING, true);
+                    mActivity.setResult(Activity.RESULT_OK, data);
                     mActivity.finish();
                 });
                 return true;
@@ -557,11 +557,6 @@ public class BookFragment
         }
     }
 
-    /**
-     * @param menuItem that was selected
-     *
-     * @return {@code true} if handled.
-     */
     @Override
     @CallSuper
     public boolean onContextItemSelected(@NonNull final MenuItem menuItem) {

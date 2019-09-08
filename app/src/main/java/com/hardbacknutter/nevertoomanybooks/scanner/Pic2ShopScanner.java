@@ -139,7 +139,7 @@ public class Pic2ShopScanner
     }
 
     static class Pic2ShopScannerFactory
-            implements ScannerManager.ScannerFactory {
+            implements ScannerFactory {
 
         @NonNull
         public String getMarketUrl() {
@@ -148,7 +148,7 @@ public class Pic2ShopScanner
 
         @IdRes
         @Override
-        public int getResId() {
+        public int getMenuId() {
             return R.id.MENU_SCANNER_PIC2SHOP;
         }
 

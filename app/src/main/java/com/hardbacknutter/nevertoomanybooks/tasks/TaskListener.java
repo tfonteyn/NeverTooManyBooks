@@ -59,7 +59,7 @@ public interface TaskListener<Result> {
      * Called when a task finishes.
      */
     @UiThread
-    void onTaskFinished(@NonNull final TaskFinishedMessage<Result> message);
+    void onTaskFinished(@NonNull TaskFinishedMessage<Result> message);
 
     @UiThread
     default void onTaskCancelled(@NonNull final TaskFinishedMessage<Result> message) {

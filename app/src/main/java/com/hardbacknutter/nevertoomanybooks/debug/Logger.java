@@ -35,9 +35,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -233,6 +237,25 @@ public final class Logger {
             out.write(DATE_FORMAT.format(new Date()) + '|' + type + '|' + message + exMsg);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignored) {
             // do nothing - we can't log an error in the logger (and we don't want to CF the app).
+        }
+    }
+
+    /**
+     * DEBUG. Dump an InputStream to the console.
+     */
+    public static void dump(@NonNull final Object object,
+                            @NonNull final InputStream inputStream) {
+        try {
+            BufferedInputStream bis = new BufferedInputStream(inputStream);
+            ByteArrayOutputStream buf = new ByteArrayOutputStream();
+            int result = bis.read();
+            while (result != -1) {
+                buf.write((byte) result);
+                result = bis.read();
+            }
+            Log.d(tag(object), buf.toString("UTF-8"));
+        } catch (IOException e) {
+            Log.d(tag(object), "dumping failed: ", e);
         }
     }
 

@@ -66,6 +66,11 @@ final class CsvCoder {
                                                                 + "|[1|2]\\d\\d\\d-\\d\\d"
                                                                 + "|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)"
                                                                 + "\\)");
+    /** JSON tags used. */
+    private static final String JSON_COMPLETE = "complete";
+    private static final String JSON_TYPE = "type";
+    private static final String JSON_STYLE = "style";
+
     /** pre-configured coder/decoder for Author elements. */
     @Nullable
     private static StringList<Author> sAuthorUtils;
@@ -78,6 +83,9 @@ final class CsvCoder {
     /** pre-configured  coder/decoder for Bookshelf elements. */
     @Nullable
     private static StringList<Bookshelf> sBookshelfUtils;
+
+    private CsvCoder() {
+    }
 
     /**
      * StringList factory for a Author.
@@ -104,8 +112,8 @@ final class CsvCoder {
                     if (elements.size() > 1) {
                         try {
                             JSONObject details = new JSONObject(elements.get(1));
-                            author.setComplete(details.optBoolean("complete"));
-                            author.setType(details.optInt("type"));
+                            author.setComplete(details.optBoolean(JSON_COMPLETE));
+                            author.setType(details.optInt(JSON_TYPE));
                         } catch (@NonNull final JSONException ignore) {
                         }
                     }
@@ -124,10 +132,10 @@ final class CsvCoder {
                     JSONObject details = new JSONObject();
                     try {
                         if (author.isComplete()) {
-                            details.put("complete", author.isComplete());
+                            details.put(JSON_COMPLETE, author.isComplete());
                         }
                         if (author.getType() != 0) {
-                            details.put("type", author.getType());
+                            details.put(JSON_TYPE, author.getType());
                         }
                     } catch (@NonNull final JSONException e) {
                         throw new IllegalStateException(e);
@@ -166,7 +174,7 @@ final class CsvCoder {
                     if (elements.size() > 1) {
                         try {
                             JSONObject details = new JSONObject(elements.get(1));
-                            series.setComplete(details.optBoolean("complete"));
+                            series.setComplete(details.optBoolean(JSON_COMPLETE));
                         } catch (@NonNull final JSONException ignore) {
                         }
                     }
@@ -191,7 +199,7 @@ final class CsvCoder {
                     JSONObject details = new JSONObject();
                     try {
                         if (series.isComplete()) {
-                            details.put("complete", series.isComplete());
+                            details.put(JSON_COMPLETE, series.isComplete());
                         }
                     } catch (@NonNull final JSONException e) {
                         throw new IllegalStateException(e);
@@ -305,7 +313,7 @@ final class CsvCoder {
                     if (elements.size() > 1) {
                         try {
                             JSONObject details = new JSONObject(elements.get(1));
-                            uuid = details.optString("style");
+                            uuid = details.optString(JSON_STYLE);
                             // it's quite possible that the UUID is not a style we (currently)
                             // know. But that does not matter as we'll check it upon first access.
                         } catch (@NonNull final JSONException ignore) {
@@ -329,7 +337,7 @@ final class CsvCoder {
                     JSONObject details = new JSONObject();
                     try {
                         if (!bookshelf.getStyleUuid().isEmpty()) {
-                            details.put("style", bookshelf.getStyleUuid());
+                            details.put(JSON_STYLE, bookshelf.getStyleUuid());
                         }
                     } catch (@NonNull final JSONException e) {
                         throw new IllegalStateException(e);
@@ -343,8 +351,5 @@ final class CsvCoder {
             });
         }
         return sBookshelfUtils;
-    }
-
-    private CsvCoder() {
     }
 }

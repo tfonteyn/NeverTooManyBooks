@@ -30,8 +30,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.StyleSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -74,7 +72,7 @@ public final class UniqueId {
     public static final int REQ_PREFERRED_SEARCH_SITES = 2_201;
 
     /** Request code: ask the CoverBrowserFragment to get an alternative edition cover. */
-    public static final int REQ_ALT_EDITION = 3_001;
+    public static final int REQ_ACTION_COVER_BROWSER = 3_001;
     /** Request code: use internal routines for cropping images. */
     public static final int REQ_CROP_IMAGE_INTERNAL = 3_002;
     /** Request code: start an intent for an external application to do the cropping. */
@@ -90,19 +88,7 @@ public final class UniqueId {
     /** Request code: system request to ask the user for permissions. */
     public static final int REQ_ANDROID_PERMISSIONS = 9_000;
     /** Request code: system request to ask the user to install this stuff */
-    public static final int REQ_INSTALL_GOOGLE_PLAY_SERVICES = 9_001;
-
-    /** The activity changed something that warrants a recreation of the caller to be needed. */
-    public static final int ACTIVITY_RESULT_RECREATE_NEEDED = 10_000;
-
-    /** The activity deleted something. */
-    public static final int ACTIVITY_RESULT_DELETED_SOMETHING = 10_001;
-
-    /** {@link PreferredStylesActivity}. The preferred styles were modified somehow. */
-    public static final int ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES = 10_101;
-
-    /** {@link StyleSettingsFragment}. A style was modified. */
-    public static final int ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE = 10_102;
+    public static final int REQ_UPDATE_GOOGLE_PLAY_SERVICES = 9_001;
 
     /**
      * Bundle keys for {@code ParcelableArrayList<Entity>}.
@@ -180,6 +166,7 @@ public final class UniqueId {
      * <br>type: {@code boolean}
      */
     public static final String BKEY_IMAGE = "thumbnail";
+    public static final String BKEY_COVER_NAME = "coverName";
 
     /**
      * A BooklistStyle.
@@ -226,6 +213,38 @@ public final class UniqueId {
      * setResult
      */
     public static final String BKEY_CANCELED = "cancelled";
+
+    /**
+     * Something changed (or not) that warrants a recreation of the caller to be needed.
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_RECREATE_ACTIVITY = "recreate";
+
+    /**
+     * The current style was modified (or not).
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_STYLE_MODIFIED = "styleModified";
+
+    /**
+     * The preferred styles were modified (or not).
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_PREFERRED_STYLES_MODIFIED = "preferredStylesModified";
+
+    /**
+     * Something was deleted (or not).
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_DELETED_SOMETHING = "deletedSomething";
 
     private UniqueId() {
     }

@@ -76,7 +76,6 @@ public class Editions
 
         String url = IsfdbManager.getBaseURL() + String.format(EDITIONS_URL, isbn);
 
-        // do not auto-redirect, handled manually. See the comments inside the loadPage method.
         if (loadPage(url) == null) {
             // failed to load, return an empty list.
             return mEditions;

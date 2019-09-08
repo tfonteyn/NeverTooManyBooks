@@ -152,17 +152,18 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      */
     @NonNull
     public String add(@NonNull final SharedPreferences.Editor ed,
-                      @Nullable String list,
+                      @Nullable final String list,
                       @NonNull final E element) {
 
+        StringBuilder result = new StringBuilder();
         if (list == null) {
-            list = String.valueOf(element);
+            result.append(element);
         } else {
-            list += DELIM + element;
+            result.append(list).append(DELIM).append(element);
         }
-        ed.putString(getKey(), list);
+        ed.putString(getKey(), result.toString());
 
-        return list;
+        return result.toString();
     }
 
     /**

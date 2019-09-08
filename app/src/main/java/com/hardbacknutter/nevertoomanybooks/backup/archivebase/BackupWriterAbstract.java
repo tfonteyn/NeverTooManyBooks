@@ -82,6 +82,8 @@ public abstract class BackupWriterAbstract
 
     /**
      * Constructor.
+     *
+     * @param context Current context
      */
     protected BackupWriterAbstract(@NonNull final Context context) {
         mDb = new DAO();
@@ -93,17 +95,18 @@ public abstract class BackupWriterAbstract
     /**
      * Do a full backup.
      *
-     * @param settings what to backup
-     * @param listener to send progress updates to
+     * @param context          Current context
+     * @param settings         what to backup
+     * @param progressListener to send progress updates to
      */
     @Override
     @WorkerThread
     public void backup(@NonNull final Context context,
                        @NonNull final ExportOptions settings,
-                       @NonNull final ProgressListener listener)
+                       @NonNull final ProgressListener progressListener)
             throws IOException {
         mSettings = settings;
-        mProgressListener = listener;
+        mProgressListener = progressListener;
 
         // do a cleanup first
         mDb.purge();
@@ -219,6 +222,8 @@ public abstract class BackupWriterAbstract
     }
 
     /**
+     * Export user data as XML.
+     *
      * @throws IOException on failure
      */
     private void doXmlTables()
@@ -294,7 +299,7 @@ public abstract class BackupWriterAbstract
             final int uuidCol = cursor.getColumnIndex(DBDefinitions.KEY_BOOK_UUID);
             while (cursor.moveToNext() && !mProgressListener.isCancelled()) {
                 String uuid = cursor.getString(uuidCol);
-                File cover = StorageUtils.getCoverFile(uuid);
+                File cover = StorageUtils.getCoverForUuid(uuid);
                 if (cover.exists()) {
                     if (cover.exists()
                         && (mSettings.dateFrom == null || sinceTime < cover.lastModified())) {

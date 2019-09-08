@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -95,7 +96,8 @@ public class PreferredStylesActivity
             // we save the order after each change.
             mModel.saveMenuOrder();
             // and make sure the results flags up we changed something.
-            setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES);
+            Intent data = new Intent().putExtra(UniqueId.BKEY_PREFERRED_STYLES_MODIFIED, true);
+            setResult(Activity.RESULT_OK, data);
         }
     };
 
@@ -147,16 +149,18 @@ public class PreferredStylesActivity
         switch (requestCode) {
             case UniqueId.REQ_EDIT_STYLE: {
 
-                if (resultCode == UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE) {
+                if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-                    BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
-                    if (style != null) {
-                        mModel.handleStyleChange(style);
-                    }
-                    mListAdapter.notifyDataSetChanged();
+                    if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
+                        BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
+                        if (style != null) {
+                            mModel.handleStyleChange(style);
+                        }
+                        mListAdapter.notifyDataSetChanged();
 
-                    // need to send up the chain
-                    setResult(resultCode, data);
+                        // pass all results up the chain
+                        setResult(resultCode, data);
+                    }
                 }
                 break;
             }
@@ -184,7 +188,7 @@ public class PreferredStylesActivity
             .setIcon(R.drawable.ic_content_copy);
 
         String title = style.getLabel(this);
-        new MenuPicker<>(this, title, null, false, menu, style, this::onContextItemSelected)
+        new MenuPicker<>(this, title, null, menu, style, this::onContextItemSelected)
                 .show();
     }
 
@@ -216,8 +220,8 @@ public class PreferredStylesActivity
             case R.id.MENU_DELETE:
                 mModel.deleteStyle(style);
                 mListAdapter.notifyDataSetChanged();
-
-                setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
+                Intent data = new Intent().putExtra(UniqueId.BKEY_DELETED_SOMETHING, true);
+                setResult(Activity.RESULT_OK, data);
                 return true;
 
             default:

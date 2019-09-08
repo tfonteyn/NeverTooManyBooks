@@ -144,9 +144,6 @@ public abstract class TQTask
         holder.job_info.setText(context.getString(R.string.gr_tq_generic_task_info, getId(), date));
     }
 
-    /**
-     * Add context menu items.
-     */
     @Override
     public void addContextMenuItems(@NonNull final Context context,
                                     @NonNull final View view,

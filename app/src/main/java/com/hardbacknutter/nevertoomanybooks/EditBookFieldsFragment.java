@@ -171,7 +171,7 @@ public class EditBookFieldsFragment
         Locale userLocale = LocaleUtils.getLocale(getContext());
 
         switch (requestCode) {
-            case REQ_EDIT_AUTHORS:
+            case REQ_EDIT_AUTHORS: {
                 if (data != null) {
                     if (resultCode == Activity.RESULT_OK
                         && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
@@ -195,8 +195,8 @@ public class EditBookFieldsFragment
 
                 }
                 break;
-
-            case REQ_EDIT_SERIES:
+            }
+            case REQ_EDIT_SERIES: {
                 if (data != null) {
                     if (resultCode == Activity.RESULT_OK
                         && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
@@ -220,13 +220,14 @@ public class EditBookFieldsFragment
 
                 }
                 break;
-
-            default:
+            }
+            default: {
                 // handle any cover image request codes
                 if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
                     super.onActivityResult(requestCode, resultCode, data);
                 }
                 break;
+            }
         }
 
         Tracker.exitOnActivityResult(this);

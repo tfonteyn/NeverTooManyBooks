@@ -64,7 +64,7 @@ public class DomainDefinition
     /** Constraint string. */
     private static final String NOT_NULL = "NOT NULL";
     @NonNull
-    public final String name;
+    private final String mName;
     @NonNull
     private final String mType;
     @NonNull
@@ -83,7 +83,7 @@ public class DomainDefinition
      * @param name column name
      */
     public DomainDefinition(@NonNull final String name) {
-        this.name = name;
+        this.mName = name;
         mType = ColumnInfo.TYPE_INTEGER;
         mIsPrimaryKey = true;
         mConstraints.add(NOT_NULL);
@@ -97,7 +97,7 @@ public class DomainDefinition
      */
     public DomainDefinition(@NonNull final String name,
                             @NonNull final String type) {
-        this.name = name;
+        this.mName = name;
         mType = type;
     }
 
@@ -111,7 +111,7 @@ public class DomainDefinition
     public DomainDefinition(@NonNull final String name,
                             @NonNull final String type,
                             final boolean notNull) {
-        this.name = name;
+        this.mName = name;
         mType = type;
         if (notNull) {
             mConstraints.add(NOT_NULL);
@@ -128,7 +128,7 @@ public class DomainDefinition
                             @NonNull final String type,
                             final boolean notNull,
                             @Nullable final String... constraints) {
-        this.name = name;
+        this.mName = name;
         mType = type;
         if (notNull) {
             mConstraints.add(NOT_NULL);
@@ -145,7 +145,7 @@ public class DomainDefinition
      */
     private DomainDefinition(@NonNull final Parcel in) {
         //noinspection ConstantConditions
-        name = in.readString();
+        mName = in.readString();
         //noinspection ConstantConditions
         mType = in.readString();
         in.readList(mConstraints, getClass().getClassLoader());
@@ -257,6 +257,16 @@ public class DomainDefinition
     }
 
     /**
+     * Get the name of this domain.
+     *
+     * @return name
+     */
+    @NonNull
+    public String getName() {
+        return mName;
+    }
+
+    /**
      * Get the type of this domain.
      *
      * @return one of ColumnInfo#TYPE*
@@ -279,7 +289,7 @@ public class DomainDefinition
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeString(name);
+        dest.writeString(mName);
         dest.writeString(mType);
         dest.writeList(mConstraints);
         dest.writeString(mReferences);
@@ -297,7 +307,7 @@ public class DomainDefinition
     @Override
     @NonNull
     public String toString() {
-        return name;
+        return mName;
     }
 
     /**
@@ -309,7 +319,7 @@ public class DomainDefinition
      */
     @NonNull
     String def(final boolean withConstraints) {
-        StringBuilder sql = new StringBuilder(name + ' ' + mType);
+        StringBuilder sql = new StringBuilder(mName + ' ' + mType);
         if (mIsPrimaryKey) {
             sql.append(" PRIMARY KEY AUTOINCREMENT");
         }

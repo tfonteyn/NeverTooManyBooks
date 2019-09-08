@@ -91,7 +91,7 @@ public class StartupActivity
     }
 
     /**
-     * apply the user-preferred Locale/Theme before onCreate is called
+     * apply the user-preferred Locale/Theme before onCreate is called.
      */
     protected void attachBaseContext(@NonNull final Context base) {
         Context context = LocaleUtils.applyLocale(base);

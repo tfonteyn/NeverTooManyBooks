@@ -491,8 +491,8 @@ public class Fields {
          * @return The extracted value
          */
         @NonNull
-        String extract(@NonNull final Field<T> field,
-                       @NonNull final String source);
+        String extract(@NonNull Field<T> field,
+                       @NonNull String source);
     }
 
     /**
@@ -982,21 +982,21 @@ public class Fields {
         /**
          * Populates the view and sets the UUID (incoming value) as a tag on the view.
          *
-         * @param source the book UUID
+         * @param uuid the book UUID
          * @param target Field to set the value on
          */
         @Override
-        public void setValue(@Nullable final String source,
+        public void setValue(@Nullable final String uuid,
                              @NonNull final Field<String> target) {
             ImageView imageView = target.getView();
 
-            if (source != null) {
+            if (uuid != null) {
                 File imageFile;
-                if (source.isEmpty()) {
+                if (uuid.isEmpty()) {
                     imageFile = StorageUtils.getTempCoverFile();
                 } else {
-                    imageView.setTag(R.id.TAG_UUID, source);
-                    imageFile = StorageUtils.getCoverFile(source);
+                    imageView.setTag(R.id.TAG_UUID, uuid);
+                    imageFile = StorageUtils.getCoverForUuid(uuid);
                 }
                 ImageUtils.setImageView(imageView, imageFile, mMaxWidth, mMaxHeight, true);
             } else {

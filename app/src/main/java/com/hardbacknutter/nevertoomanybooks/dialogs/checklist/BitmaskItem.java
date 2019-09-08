@@ -88,11 +88,6 @@ public class BitmaskItem
         dest.writeInt(mLabelId);
     }
 
-    /**
-     * @param context Current context
-     *
-     * @return the label to display
-     */
     @Override
     public String getLabel(@NonNull final Context context) {
         return context.getString(mLabelId);

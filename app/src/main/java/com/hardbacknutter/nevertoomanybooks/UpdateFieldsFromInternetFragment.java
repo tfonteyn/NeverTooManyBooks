@@ -183,10 +183,11 @@ public class UpdateFieldsFromInternetFragment
         initFields();
         populateFields();
 
-        //noinspection ConstantConditions
-        SearchSites.alertRegistrationBeneficial(getContext(), "update_from_internet", mSearchSites);
-
         if (savedInstanceState == null) {
+            //noinspection ConstantConditions
+            SearchSites.alertRegistrationBeneficial(getContext(), "update_from_internet",
+                                                    mSearchSites);
+
             TipManager.display(getContext(), R.string.tip_update_fields_from_internet, null);
         }
 

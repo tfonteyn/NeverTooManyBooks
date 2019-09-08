@@ -97,7 +97,7 @@ public class KbNlManager
     //      "/DB=1/SET=1/TTL=1/LNG=EN/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=%1$s";
 
     /**
-     * param 1: site specific author id
+     * param 1: site specific author id.
      */
     private static final String AUTHOR_URL = "http://opc4.kb.nl/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
 
@@ -177,26 +177,26 @@ public class KbNlManager
             return null;
         }
 
-        String sizeParam;
+        String sizeSuffix;
         if (size == null) {
-            sizeParam = "large";
+            sizeSuffix = "large";
         } else {
             switch (size) {
                 case Small:
-                    sizeParam = "small";
+                    sizeSuffix = "small";
                     break;
                 case Medium:
-                    sizeParam = "medium";
+                    sizeSuffix = "medium";
                     break;
                 case Large:
                 default:
-                    sizeParam = "large";
+                    sizeSuffix = "large";
                     break;
             }
         }
 
-        String url = String.format(BASE_URL_COVERS, isbn, sizeParam);
-        String fileSpec = ImageUtils.saveImage(url, isbn, FILENAME_SUFFIX + "_" + sizeParam);
+        String coverUrl = String.format(BASE_URL_COVERS, isbn, sizeSuffix);
+        String fileSpec = ImageUtils.saveImage(coverUrl, isbn, FILENAME_SUFFIX, sizeSuffix);
         if (fileSpec != null) {
             return new File(fileSpec);
         }

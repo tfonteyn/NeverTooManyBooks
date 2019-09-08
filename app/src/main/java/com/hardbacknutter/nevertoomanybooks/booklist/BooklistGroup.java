@@ -162,10 +162,12 @@ public class BooklistGroup
     }
 
     /**
+     * Get a list of BooklistGroups, one for each defined RowKind.
+     *
      * @param uuid               of the style
      * @param isUserDefinedStyle {@code true} if the group properties should be persisted
      *
-     * @return a list of BooklistGroups, one for each defined RowKind.
+     * @return the list
      */
     @NonNull
     public static List<BooklistGroup> getAllGroups(@NonNull final String uuid,
@@ -335,7 +337,7 @@ public class BooklistGroup
         public void addPreferencesTo(@NonNull final PreferenceScreen screen) {
             Context context = screen.getContext();
             PreferenceCategory category =
-                    screen.findPreference(context.getString(R.string.lbl_series));
+                    screen.findPreference(Prefs.psk_style_series);
             String description = context.getString(R.string.lbl_series);
             if (category != null) {
                 category.setVisible(true);
@@ -466,7 +468,7 @@ public class BooklistGroup
         public void addPreferencesTo(@NonNull final PreferenceScreen screen) {
             Context context = screen.getContext();
             PreferenceCategory category =
-                    screen.findPreference(context.getString(R.string.lbl_author));
+                    screen.findPreference(Prefs.psk_style_author);
             String description = context.getString(R.string.lbl_author);
             if (category != null) {
                 category.setVisible(true);
@@ -748,6 +750,8 @@ public class BooklistGroup
 
         /**
          * Don't use {@link #ROW_KIND_MAX} for code. Use this method.
+         *
+         * @return the number of row kinds
          */
         public static int size() {
             return ALL_KINDS.size();
@@ -766,6 +770,8 @@ public class BooklistGroup
 
         /**
          * The display domain will never be {@code null}, except for a BOOK.
+         *
+         * @return the display domain
          */
         @NonNull
         public DomainDefinition getDisplayDomain() {
@@ -781,6 +787,8 @@ public class BooklistGroup
          * <p>
          * The name will be of the form 'prefix/id' where 'prefix' is the prefix specific
          * to the RowKind, and 'id' the id of the row, e.g. 's/18' for Series with id=18
+         *
+         * @return the key
          */
         @NonNull
         CompoundKey getCompoundKey() {

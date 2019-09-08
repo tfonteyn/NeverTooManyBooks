@@ -159,8 +159,8 @@ public final class CoversDAO
         TBL_IMAGE
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex("id", true, DOM_PK_ID)
-                .addIndex(DOM_CACHE_ID.name, true, DOM_CACHE_ID)
-                .addIndex(DOM_CACHE_ID.name + '_' + DOM_DATE.name,
+                .addIndex(DOM_CACHE_ID.getName(), true, DOM_CACHE_ID)
+                .addIndex(DOM_CACHE_ID.getName() + '_' + DOM_DATE.getName(),
                           true, DOM_CACHE_ID, DOM_DATE);
     }
 
@@ -230,7 +230,7 @@ public final class CoversDAO
                 return null;
             }
 
-            File file = StorageUtils.getCoverFile(uuid);
+            File file = StorageUtils.getCoverForUuid(uuid);
             String dateStr = DateUtils.utcSqlDateTime(new Date(file.lastModified()));
             String cacheId = constructCacheId(uuid, maxWidth, maxHeight);
             try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE,
@@ -381,10 +381,10 @@ public final class CoversDAO
 
         String cacheId = constructCacheId(uuid, maxWidth, maxHeight);
         ContentValues cv = new ContentValues();
-        cv.put(DOM_CACHE_ID.name, cacheId);
-        cv.put(DOM_IMAGE.name, image);
-        cv.put(DOM_WIDTH.name, bitmap.getHeight());
-        cv.put(DOM_HEIGHT.name, bitmap.getWidth());
+        cv.put(DOM_CACHE_ID.getName(), cacheId);
+        cv.put(DOM_IMAGE.getName(), image);
+        cv.put(DOM_WIDTH.getName(), bitmap.getHeight());
+        cv.put(DOM_HEIGHT.getName(), bitmap.getWidth());
 
         SynchronizedStatement existsStmt = mStatements.get(STMT_EXISTS);
         if (existsStmt == null) {
@@ -395,7 +395,7 @@ public final class CoversDAO
             sSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
         } else {
             sSyncedDb.update(TBL_IMAGE.getName(), cv,
-                             DOM_CACHE_ID.name + "=?", new String[]{cacheId});
+                             DOM_CACHE_ID.getName() + "=?", new String[]{cacheId});
         }
     }
 

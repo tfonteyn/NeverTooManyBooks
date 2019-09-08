@@ -190,7 +190,7 @@ public class App
     }
 
     /**
-     * Get the Application Context <strong>using the device Locale.</strong>
+     * Get the Application Context <strong>using the device Locale</strong>.
      *
      * @return app context
      */
@@ -200,7 +200,7 @@ public class App
     }
 
     /**
-     * Get the Application Context <strong>with the user Locale applied.</strong>
+     * Get the Application Context <strong>with the user Locale applied</strong>.
      *
      * @return localised app context
      */
@@ -212,16 +212,20 @@ public class App
     }
 
     /**
-     * @return the name of this application's package.
+     * Get the name of this application's package.
+     *
+     * @return package name
      */
     public static String getAppPackageName() {
         return sInstance.getPackageName();
     }
 
     /**
+     * Get the PackageInfo object containing information about the package.
+     *
      * @param flags option flags for {@link PackageManager#getPackageInfo(String, int)}
      *
-     * @return A PackageInfo object containing information about the package.
+     * @return PackageInfo
      */
     @Nullable
     public static PackageInfo getPackageInfo(final int flags) {
@@ -447,7 +451,7 @@ public class App
     /* ########################################################################################## */
 
     /**
-     * Get the current Theme id (NOT the actual resource id)
+     * Get the current Theme id (NOT the actual resource id).
      *
      * @return theme id
      */

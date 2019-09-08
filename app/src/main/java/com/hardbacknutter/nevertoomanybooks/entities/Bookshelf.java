@@ -157,7 +157,7 @@ public class Bookshelf
      * Get the named bookshelf with fallback to Default/AllBooks as needed.
      *
      * @param context Current context
-     * @param db      the database
+     * @param db      Database Access
      * @param name    of bookshelf to get
      * @param useAll  set to {@code true} to return the AllBooks shelf, instead the default
      *                if the desired shelf was not found.
@@ -188,7 +188,7 @@ public class Bookshelf
      * Get the preferred bookshelf with fallback to Default/AllBooks as needed.
      *
      * @param context Current context
-     * @param db      the database
+     * @param db      Database Access
      * @param useAll  set to {@code true} to return the AllBooks shelf, instead the default
      *                if the desired shelf was not found.
      *
@@ -233,8 +233,9 @@ public class Bookshelf
     /**
      * Set the style for this bookshelf. The style will also be set as the global default.
      *
-     * @param db    Database Access
-     * @param style to set
+     * @param context Current context
+     * @param db      Database Access
+     * @param style   to set
      */
     public void setStyle(@NonNull final Context context,
                          @NonNull final Locale userLocale,

@@ -289,13 +289,13 @@ class SearchGoogleBooksEntryHandler
             if ("http://schemas.google.com/books/2008/thumbnail"
                         .equals(attributes.getValue("", "rel"))) {
 
-                String thumbnail = attributes.getValue("", "href");
+                String coverUrl = attributes.getValue("", "href");
                 String name = mBookData.getString(DBDefinitions.KEY_ISBN, "");
                 if (name.isEmpty()) {
                     // just use something...
                     name = mIsbn != null ? mIsbn : String.valueOf(System.currentTimeMillis());
                 }
-                String fileSpec = ImageUtils.saveImage(thumbnail, name, FILENAME_SUFFIX);
+                String fileSpec = ImageUtils.saveImage(coverUrl, name, FILENAME_SUFFIX, null);
                 if (fileSpec != null) {
                     ArrayList<String> imageList =
                             mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

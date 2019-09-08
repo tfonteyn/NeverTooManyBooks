@@ -308,6 +308,7 @@ public final class SearchSites {
     /**
      * Update the standard search order/enabled list.
      *
+     * @param context Current context
      * @param newList to use
      */
     public static void setSearchOrder(@NonNull final Context context,
@@ -328,6 +329,7 @@ public final class SearchSites {
     /**
      * Update the dedicated cover search order/enabled list.
      *
+     * @param context Current context
      * @param newList to use
      */
     public static void setCoverSearchOrder(@NonNull final Context context,
@@ -348,17 +350,24 @@ public final class SearchSites {
      * @param prefSuffix  Tip preference marker
      * @param searchSites sites
      *
-     * @see com.hardbacknutter.nevertoomanybooks.dialogs.TipManager
+     * @return {@code true} if an alert is currently shown
      */
-    public static void alertRegistrationBeneficial(@NonNull final Context context,
-                                                   @NonNull final String prefSuffix,
-                                                   final int searchSites) {
+    public static boolean alertRegistrationBeneficial(@NonNull final Context context,
+                                                      @NonNull final String prefSuffix,
+                                                      final int searchSites) {
+        boolean showingAlert = false;
+
         if ((searchSites & GOODREADS) != 0) {
-            GoodreadsManager.alertRegistrationBeneficial(context, false, prefSuffix);
+            showingAlert = GoodreadsManager.alertRegistrationBeneficial(context,
+                                                                        false, prefSuffix);
         }
 
         if ((searchSites & LIBRARY_THING) != 0) {
-            LibraryThingManager.alertRegistrationBeneficial(context, false, prefSuffix);
+            showingAlert = showingAlert
+                           || LibraryThingManager.alertRegistrationBeneficial(context,
+                                                                              false, prefSuffix);
         }
+
+        return showingAlert;
     }
 }

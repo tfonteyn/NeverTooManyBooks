@@ -74,13 +74,21 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * <p>
  * "External Storage" == what Android considers non-application-private storage.
  * i.e the user has access to it.
- * ('external' refers to old android phones where Shared Storage *always* was on an sdcard)
+ * ('external' refers to old android phones where Shared Storage was *always* on an sdcard)
  * Also referred to as "Shared Storage" because all apps have access to it.
- * <p>
  * For the sake of clarity (confusion?) we'll call it "Shared Storage" only.
  * <p>
  * FIXME: implement the sample code for 'watching'  Environment.getExternalStorageDirectory()
  * and/or isExternalStorageRemovable()
+ * <p>
+ * <strong>Important:</strong> Any changes to the location of
+ * {@link #EXT_ROOT_DIR} directory and the use of {@link Context#getExternalCacheDir()}
+ * must be mirrored in "res/xml/provider_paths.xml"
+ * <p>
+ * <strong>Note:</strong> we use the external cache directory, so a 'rename' works as is.
+ * see {@link #renameFile(File, File)}
+ * <p>
+ * TODO: ExternalStorageException added were appropriate, but other then here are not caught
  */
 public final class StorageUtils {
 
@@ -89,10 +97,7 @@ public final class StorageUtils {
     /** buffer size for file copy operations. */
     private static final int FILE_COPY_BUFFER_SIZE = 32768;
 
-    /**
-     * Our root directory to be created on the 'external storage' aka Shared Storage.
-     * IMPORTANT: this must stay in sync with res/xml/provider_paths.xml
-     */
+    /** Our root directory to be created on the 'external storage' aka Shared Storage. */
     private static final String EXT_ROOT_DIR = "NeverTooManyBooks";
 
     /**
@@ -136,27 +141,27 @@ public final class StorageUtils {
             return msgId;
         }
 
-        // need root first (duh)
-        if (!createDir(getSharedStoragePath())) {
-            return R.string.error_storage_not_writable;
-        }
-        // then log dir!
-        if (!createDir(getLogStoragePath())) {
-            return R.string.error_storage_not_writable;
-        }
-
-        // from here on, we have a log file and if we could create the log directory,
-        // this one should never fail... flw
-        if (!createDir(getCoverStoragePath())) {
-            Logger.warn(StorageUtils.class, "Failed to create covers directory="
-                                            + getCoverStoragePath());
-        }
-
-        // A .nomedia file will be created which will stop the thumbnails showing up
-        // in the gallery (thanks Brandon)
         try {
+            // need root first (duh)
+            if (!createDir(getRootStoragePath())) {
+                return R.string.error_storage_not_writable;
+            }
+            // then log dir!
+            if (!createDir(getLogStoragePath())) {
+                return R.string.error_storage_not_writable;
+            }
+
+            // from here on, we have a log file and if we could create the log directory,
+            // this one should never fail... flw
+            if (!createDir(getCoverStoragePath())) {
+                Logger.warn(StorageUtils.class, "Failed to create covers directory="
+                                                + getCoverStoragePath());
+            }
+
+            // Prevent thumbnails showing up in the device Image Gallery.
+
             //noinspection ResultOfMethodCallIgnored
-            new File(getSharedStoragePath() + File.separator
+            new File(getRootStoragePath() + File.separator
                      + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
             //noinspection ResultOfMethodCallIgnored
             new File(getCoverStoragePath() + File.separator
@@ -170,40 +175,88 @@ public final class StorageUtils {
     }
 
     /**
-     * Root external storage aka Shared Storage.
-     *
-     * @return the Shared Storage root Directory object
+     * @return Space in bytes free on Shared Storage,
+     * or {@link #ERROR_CANNOT_STAT} on error accessing it
      */
-    private static String getSharedStoragePath() {
-        return Environment.getExternalStorageDirectory() + File.separator + EXT_ROOT_DIR;
+    public static long getSharedStorageFreeSpace() {
+        try {
+            StatFs stat = new StatFs(getRootStoragePath());
+            return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
+        } catch (@NonNull final IllegalArgumentException | ExternalStorageException e) {
+            Logger.error(StorageUtils.class, e);
+            return ERROR_CANNOT_STAT;
+        }
     }
 
     /**
-     * @return the Shared Storage root Directory object
+     * Check the current state of the primary shared/external storage media.
+     *
+     * @return a string resource id matching the state; 0 for no issue found.
      */
-    public static File getSharedStorage() {
-        return new File(getSharedStoragePath());
+    @StringRes
+    public static int getMediaStateMessageId() {
+        /*
+         * Returns the current state of the primary Shared Storage media.
+         *
+         * @see Environment#getExternalStorageDirectory()
+         * @return one of {@link #MEDIA_UNKNOWN}, {@link #MEDIA_REMOVED},
+         *         {@link #MEDIA_UNMOUNTED}, {@link #MEDIA_CHECKING},
+         *         {@link #MEDIA_NOFS}, {@link #MEDIA_MOUNTED},
+         *         {@link #MEDIA_MOUNTED_READ_ONLY}, {@link #MEDIA_SHARED},
+         *         {@link #MEDIA_BAD_REMOVAL}, or {@link #MEDIA_UNMOUNTABLE}.
+         */
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (Environment.getExternalStorageState()) {
+            case Environment.MEDIA_MOUNTED:
+                // all ok
+                return 0;
+            // should we check on other states ? do we care ?
+
+            default:
+                return R.string.error_storage_not_accessible;
+        }
     }
 
-    private static String getCoverStoragePath() {
-        return getSharedStoragePath() + File.separator + "covers";
+    /**
+     * Root external storage aka Shared Storage.
+     *
+     * @return the Shared Storage <strong>root</strong> Directory object
+     *
+     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
+     */
+    public static String getRootStoragePath()
+            throws ExternalStorageException {
+        File dir = Environment.getExternalStorageDirectory();
+        if (dir == null) {
+            throw new ExternalStorageException();
+        }
+        return dir + File.separator + EXT_ROOT_DIR;
     }
 
-    public static File getCoverStorage() {
-        return new File(getCoverStoragePath());
+    /**
+     * Covers storage location.
+     *
+     * @return the Shared Storage <strong>covers</strong> Directory object
+     *
+     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
+     */
+    public static String getCoverStoragePath()
+            throws ExternalStorageException {
+        return getRootStoragePath() + File.separator + "covers";
     }
 
-    public static String getLogStoragePath() {
-        return getSharedStoragePath() + File.separator + "log";
+    /**
+     * Log storage location.
+     *
+     * @return the Shared Storage <strong>log</strong> Directory object
+     *
+     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
+     */
+    public static String getLogStoragePath()
+            throws ExternalStorageException {
+        return getRootStoragePath() + File.separator + "log";
     }
 
-    public static File getLogStorage() {
-        return new File(getLogStoragePath());
-    }
-
-    private static File getTempStorage() {
-        return App.getAppContext().getExternalCacheDir();
-    }
 
     /**
      * return a general purpose File, located in the Shared Storage path (or a sub directory).
@@ -212,58 +265,27 @@ public final class StorageUtils {
      * @param fileName the relative filename (including sub dirs) to the Shared Storage path
      *
      * @return the file
-     */
-    public static File getFile(@NonNull final String fileName) {
-        return new File(getSharedStoragePath() + File.separator + fileName);
-    }
-
-    /**
-     * @return the 'standard' temp file name for new books.
-     * Is also used as the standard file name for images downloaded from the internet.
-     */
-    public static File getTempCoverFile() {
-        return new File(getTempStorage() + File.separator + "tmp.jpg");
-    }
-
-    /**
-     * @param name   for the file.
-     * @param suffix optional suffix
      *
-     * @return a temp cover file spec.
+     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
      */
-    public static File getTempCoverFile(@NonNull final String name,
-                                        @Nullable final String suffix) {
-        return new File(getTempStorage() + File.separator
-                        + "tmp" + name + (suffix != null ? suffix : "")
-                        + ".jpg");
+    public static File getFile(@NonNull final String fileName)
+            throws ExternalStorageException {
+        return new File(getRootStoragePath() + File.separator + fileName);
     }
 
     /**
-     * Delete the 'standard' temp file.
-     */
-    public static void deleteTempCoverFile() {
-        deleteFile(getTempCoverFile());
-    }
-
-    /**
-     * @param filename a generic filename.
-     *
-     * @return a File with that name, located in the covers directory
-     */
-    @NonNull
-    public static File getRawCoverFile(@NonNull final String filename) {
-        return new File(getCoverStoragePath() + File.separator + filename);
-    }
-
-    /**
-     * return the cover for the given uuid.
+     * return the cover for the given uuid. We'll attempt to find a jpg or a png.
+     * If no file found, a jpg place holder is returned.
      *
      * @param uuid of the book, must be valid.
      *
-     * @return The File object for existing files, or a new (jpg) placeholder.
+     * @return The File object for existing files, or a new jpg placeholder.
+     *
+     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
      */
     @NonNull
-    public static File getCoverFile(@NonNull final String uuid) {
+    public static File getCoverForUuid(@NonNull final String uuid)
+            throws ExternalStorageException {
         final File jpg = new File(getCoverStoragePath() + File.separator + uuid + ".jpg");
         if (jpg.exists()) {
             return jpg;
@@ -278,8 +300,56 @@ public final class StorageUtils {
         return jpg;
     }
 
+
+    /**
+     * Get the cache directory.
+     *
+     * @return File
+     *
+     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
+     */
+    private static File getCacheDir()
+            throws ExternalStorageException {
+        File dir = App.getAppContext().getExternalCacheDir();
+        if (dir == null) {
+            throw new ExternalStorageException();
+        }
+        return dir;
+    }
+
+    /**
+     * Get a 'standard' temporary file for the <strong>current</strong> cover being processed.
+     * Used for example for new books, images downloaded from the internet,...
+     *
+     * @return the 'standard' temporary file name for a cover.
+     *
+     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
+     */
+    public static File getTempCoverFile()
+            throws ExternalStorageException {
+        return new File(getCacheDir() + File.separator + "tmp.jpg");
+    }
+
+    /**
+     * Get a specific file for a temporary cover being processed when the single 'standard'
+     * file is not enough.
+     *
+     * @param name for the file.
+     *
+     * @return a temp cover file spec.
+     *
+     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
+     */
+    public static File getTempCoverFile(@NonNull final String name)
+            throws ExternalStorageException {
+        return new File(getCacheDir() + File.separator + "tmp" + name + ".jpg");
+    }
+
+
     /**
      * Count size + (optional) Cleanup any purgeable files.
+     * <p>
+     * Does <strong>not</strong> enter subdirectories.
      *
      * @param reallyDelete if {@code true}, delete files, if {@code false} only count bytes
      *
@@ -288,60 +358,44 @@ public final class StorageUtils {
     public static long purgeFiles(final boolean reallyDelete) {
         long totalSize = 0;
         try {
-            totalSize += purgeDir(getLogStorage(), reallyDelete);
-            totalSize += purgeDir(getCoverStorage(), reallyDelete);
-            totalSize += purgeDir(getSharedStorage(), reallyDelete);
-            totalSize += purgeDir(getTempStorage(), reallyDelete);
+            totalSize += purgeDir(new File(getLogStoragePath()), reallyDelete);
+            totalSize += purgeDir(new File(getCoverStoragePath()), reallyDelete);
+            totalSize += purgeDir(new File(getRootStoragePath()), reallyDelete);
+            totalSize += purgeDir(getCacheDir(), reallyDelete);
 
-        } catch (@NonNull final SecurityException e) {
+        } catch (@NonNull final SecurityException | ExternalStorageException e) {
+            // not critical, just log it.
             Logger.error(StorageUtils.class, e);
-        }
-        return totalSize;
-    }
-
-    private static long purgeDir(@NonNull final File dir,
-                                 final boolean reallyDelete) {
-        long totalSize = 0;
-        for (String name : dir.list()) {
-            totalSize += purgeFile(name, reallyDelete);
-        }
-        return totalSize;
-    }
-
-    private static long purgeFile(@NonNull final String name,
-                                  final boolean reallyDelete) {
-        long totalSize = 0;
-        for (String prefix : PURGEABLE_FILE_PREFIXES) {
-            if (name.startsWith(prefix)) {
-                final File file = getFile(name);
-                if (file.isFile()) {
-                    totalSize += file.length();
-                    if (reallyDelete) {
-                        deleteFile(file);
-                    }
-                }
-            }
         }
         return totalSize;
     }
 
     /**
-     * Delete *everything* in the temp file directory.
+     * Does <strong>not</strong> enter subdirectories.
+     *
+     * @param dir          to purge
+     * @param reallyDelete if {@code true}, delete files, if {@code false} only count bytes
+     *
+     * @return number of bytes (potentially) deleted
      */
-    public static void purgeTempStorage() {
-        try {
-            File dir = getTempStorage();
-            if (dir.exists() && dir.isDirectory()) {
-                File[] files = dir.listFiles();
-                if (files != null) {
-                    for (File file : files) {
-                        deleteFile(file);
+    private static long purgeDir(@NonNull final File dir,
+                                 final boolean reallyDelete)
+            throws ExternalStorageException {
+        long totalSize = 0;
+        for (String name : dir.list()) {
+            for (String prefix : PURGEABLE_FILE_PREFIXES) {
+                if (name.startsWith(prefix)) {
+                    final File file = getFile(name);
+                    if (file.isFile()) {
+                        totalSize += file.length();
+                        if (reallyDelete) {
+                            deleteFile(file);
+                        }
                     }
                 }
             }
-        } catch (@NonNull final SecurityException e) {
-            Logger.error(StorageUtils.class, e);
         }
+        return totalSize;
     }
 
     /**
@@ -523,11 +577,8 @@ public final class StorageUtils {
                                             @NonNull final File out) {
         Objects.requireNonNull(is);
 
-        File tmpFile = null;
+        File tmpFile = getTempCoverFile("is");
         try {
-            // Use the getTempStorage() location, which is on the same physical storage
-            // as the destination (SharedStorage)
-            tmpFile = File.createTempFile("tmp_is_", ".tmp", getTempStorage());
             OutputStream tempFos = new FileOutputStream(tmpFile);
             // Copy from input to temp file
             byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
@@ -557,7 +608,7 @@ public final class StorageUtils {
     }
 
     /**
-     * just to avoid boilerplate coding.
+     * Convenience wrapper for {@link File#delete()}.
      *
      * @param file to delete
      */
@@ -570,7 +621,7 @@ public final class StorageUtils {
                     Logger.debug(StorageUtils.class, "deleteFile",
                                  "file=" + file.getAbsolutePath());
                 }
-            } catch (@NonNull final RuntimeException e) {
+            } catch (@NonNull final SecurityException e) {
                 Logger.error(StorageUtils.class, e);
             }
         }
@@ -578,7 +629,7 @@ public final class StorageUtils {
 
     /**
      * ENHANCE: make suitable for multiple filesystems using {@link #copyFile(File, File)}
-     * from the Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
+     * Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      *
      * @return {@code true} if the rename worked, this is really a ".exists()" call.
      * and not relying on the OS renameTo call.
@@ -610,7 +661,8 @@ public final class StorageUtils {
      */
     public static void renameFileWithBackup(@NonNull final File source,
                                             @NonNull final String destFilename,
-                                            final int copies) {
+                                            final int copies)
+            throws ExternalStorageException {
         // remove to oldest copy
         File previous = getFile(destFilename + "." + copies);
         deleteFile(previous);
@@ -719,48 +771,6 @@ public final class StorageUtils {
         }
     }
 
-    /**
-     * @return Space in bytes free on Shared Storage,
-     * or {@link #ERROR_CANNOT_STAT} on error accessing it
-     */
-    public static long getSharedStorageFreeSpace() {
-        try {
-            StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
-            return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
-        } catch (@NonNull final IllegalArgumentException e) {
-            Logger.error(StorageUtils.class, e);
-            return ERROR_CANNOT_STAT;
-        }
-    }
-
-    /**
-     * Check the current state of the primary shared/external storage media.
-     *
-     * @return a string resource id matching the state; 0 for no issue found.
-     */
-    @StringRes
-    public static int getMediaStateMessageId() {
-        /*
-         * Returns the current state of the primary Shared Storage media.
-         *
-         * @see #getExternalStorageDirectory()
-         * @return one of {@link #MEDIA_UNKNOWN}, {@link #MEDIA_REMOVED},
-         *         {@link #MEDIA_UNMOUNTED}, {@link #MEDIA_CHECKING},
-         *         {@link #MEDIA_NOFS}, {@link #MEDIA_MOUNTED},
-         *         {@link #MEDIA_MOUNTED_READ_ONLY}, {@link #MEDIA_SHARED},
-         *         {@link #MEDIA_BAD_REMOVAL}, or {@link #MEDIA_UNMOUNTABLE}.
-         */
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (Environment.getExternalStorageState()) {
-            case Environment.MEDIA_MOUNTED:
-                // all ok
-                return 0;
-            // should we check on other states ? do we care ?
-
-            default:
-                return R.string.error_storage_not_accessible;
-        }
-    }
 
     /**
      * Format a number of bytes in a human readable form.

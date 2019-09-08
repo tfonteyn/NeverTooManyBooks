@@ -26,7 +26,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]><!-- Quotes „…”  - Regex to find wrong ones: ("|'|“|‘|’|«|») -->
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
+<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
     <string name="pe_ui_theme_day_night">Dag / Nacht</string>
@@ -151,7 +152,7 @@
     <string name="error_columns_are_blank">Kolommen %1$s zijn allemaal leeg op lijn %2$d</string>
     <string name="error_email_failed">Het verzenden van de e-mail is mislukt.</string>
     <string name="error_failed_x">Mislukt: %1$d</string>
-    <string name="error_google_play_missing">Google Play / Market is niet geïnstalleerd</string>
+    <string name="error_google_play_store_missing">Google Play / Market is niet geïnstalleerd</string>
     <string name="error_if_the_problem_persists">Als het probleem aanhoud, maak dan contact met ondersteuning via de „Over deze App” optie.</string>
     <string name="error_import_failed">Import mislukt.</string>
     <string name="error_network_timeout">Geen antwoord, probeer opnieuw</string>
@@ -505,7 +506,7 @@
     <string name="pv_bob_author_name_given_first">Voornaam eerst bvb. „Gerard Reve”</string>
     <string name="pv_reformat_titles_prefixes">de|De|een|Een|het|Het</string>
     <string name="rebuild_fts">FTS opnieuw opbouwen\n(Experimenteel!)</string>
-    <string name="retry">Opnieuw\\nproberen</string>
+    <string name="retry">Opnieuw\nproberen</string>
     <string name="style_builtin_acquired_date">Datum verworven</string>
     <string name="style_builtin_added_date">Datum toegevoegd</string>
     <string name="style_builtin_author_series">Auteur daarna Serie</string>
@@ -589,7 +590,8 @@
     <string name="warning_action_requires_isbn">Voor deze actie is een geldig ISBN-nummer vereist.</string>
     <string name="warning_author_already_in_list">Auteur staat al in de lijst</string>
     <string name="warning_backup_request">Wilt u  een back-up van uw database op uw SD kaart maken?</string>
-    <string name="warning_bad_scanner">Het lijkt er op dat de door u gebruikt streepjescode scanner app niet compatibel is met &APP_NAME;. Wij kunnen de Zxing streepjescode scanner application aanbevelen. Als deze al is geïnstalleerd raden we aan deze te deïnstalleren en daarna weer opnieuw te installeren.</string>
+    <string name="warning_bad_scanner">Het lijkt er op dat de door u gebruikt streepjescode scanner app niet compatibel is met &APP_NAME;.</string>
+    <string name="info_install_scanner_recommendation">Wij kunnen de Zxing streepjescode scanner application aanbevelen. Als deze al is geïnstalleerd raden we aan deze te deïnstalleren en daarna weer opnieuw te installeren.</string>
     <string name="warning_book_no_longer_exists">Het gespecificeerde boek bestaat niet meer</string>
     <string name="warning_book_not_found">Het gescande boek is niet gevonden. Je kan de juiste streepjescode aan de achterkant van de omslag vinden. Vul anders de gegevens handmatig in.</string>
     <string name="warning_book_was_deleted_uc">DIT BOEK IS VERWIJDERD</string>
@@ -635,5 +637,8 @@
     <string name="pt_bob_show_details_uses_task">Extra boekdetails ophalen</string>
     <string name="pt_bob_show_details_uses_task_on">vertraagd</string>
     <string name="lbl_edition_slipcase">Cassette</string>
+    <string name="menu_search_local">Lokaal zoeken</string>
+    <string name="pg_reformat">Herformatteren</string>
+    <string name="info_install_scanner_manually">Installeer: %1$s</string>
 
 </resources>

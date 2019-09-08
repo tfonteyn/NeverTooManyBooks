@@ -89,10 +89,6 @@ public abstract class BookSearchBaseFragment
         mBookSearchBaseModel = new ViewModelProvider(this).get(BookSearchBaseModel.class);
         mBookSearchBaseModel.init(requireArguments(), savedInstanceState);
 
-        //noinspection ConstantConditions
-        SearchSites.alertRegistrationBeneficial(getContext(), "search",
-                                                mBookSearchBaseModel.getSearchSites());
-
         // Check general network connectivity. If none, warn the user.
         if (!NetworkUtils.isNetworkAvailable()) {
             //noinspection ConstantConditions
@@ -240,7 +236,7 @@ public abstract class BookSearchBaseFragment
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
-            case UniqueId.REQ_PREFERRED_SEARCH_SITES:
+            case UniqueId.REQ_PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     mBookSearchBaseModel.setSearchSites(
@@ -248,12 +244,12 @@ public abstract class BookSearchBaseFragment
                                              mBookSearchBaseModel.getSearchSites()));
                 }
                 break;
-
-            case UniqueId.REQ_BOOK_EDIT:
+            }
+            case UniqueId.REQ_BOOK_EDIT: {
                 if (resultCode == Activity.RESULT_OK) {
                     // Created a book; save the intent
                     mBookSearchBaseModel.setLastBookData(data);
-                    // and set it as the default result
+                    // pass all results up the chain
                     mActivity.setResult(resultCode, mBookSearchBaseModel.getLastBookData());
 
                 } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -261,8 +257,8 @@ public abstract class BookSearchBaseFragment
                     mActivity.setResult(Activity.RESULT_CANCELED);
                 }
                 break;
-
-            default:
+            }
+            default: {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debugWithStackTrace(this, "BookSearchBaseFragment.onActivityResult",
                                                "NOT HANDLED:",
@@ -271,6 +267,7 @@ public abstract class BookSearchBaseFragment
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
+            }
         }
         Tracker.exitOnActivityResult(this);
     }

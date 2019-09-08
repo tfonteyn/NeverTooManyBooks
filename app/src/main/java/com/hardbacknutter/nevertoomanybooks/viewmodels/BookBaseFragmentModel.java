@@ -185,7 +185,7 @@ public class BookBaseFragmentModel
                     String uuid = mDb.getBookUuid(id);
                     // get the temporary downloaded file
                     File source = StorageUtils.getTempCoverFile();
-                    File destination = StorageUtils.getCoverFile(uuid);
+                    File destination = StorageUtils.getCoverForUuid(uuid);
                     // and rename it to the permanent UUID one.
                     StorageUtils.renameFile(source, destination);
                 }

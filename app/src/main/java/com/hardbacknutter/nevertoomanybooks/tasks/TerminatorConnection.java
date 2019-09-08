@@ -95,13 +95,15 @@ public final class TerminatorConnection
      */
     public TerminatorConnection(@NonNull final String urlStr)
             throws IOException {
-        this(urlStr, false);
+        // redirect MUST BE SET TO TRUE here.
+        this(urlStr, true);
     }
 
     /**
      * Constructor.
      *
-     * @param urlStr URL to retrieve
+     * @param urlStr   URL to retrieve
+     * @param redirect whether redirects should be followed or not
      *
      * @throws IOException on failure
      */

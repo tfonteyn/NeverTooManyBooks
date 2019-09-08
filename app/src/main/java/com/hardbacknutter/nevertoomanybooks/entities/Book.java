@@ -40,7 +40,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -180,7 +179,7 @@ public class Book
      * Otherwise will leave the Book blank for new books.
      *
      * @param bookId of book (may be 0 for new)
-     * @param db     database, used to load the book data IF the bookId is valid.
+     * @param db     Database Access
      */
     public Book(final long bookId,
                 @NonNull final DAO db) {
@@ -244,9 +243,8 @@ public class Book
         }
 
         // prepare the cover to post
-        File file = StorageUtils.getCoverFile(uuid);
-        Uri uri = FileProvider.getUriForFile(context, GenericFileProvider.AUTHORITY, file);
-
+        Uri uri = FileProvider.getUriForFile(context, GenericFileProvider.AUTHORITY,
+                                             StorageUtils.getCoverForUuid(uuid));
 
         // so despite it being shown on the list it will not post any text unless the user types it.
         String text = context.getString(R.string.info_share_book_im_reading,
@@ -357,7 +355,7 @@ public class Book
      * Update the 'read' status of a book in the database + sets the 'read end' to today.
      * The book will have its 'read' status updated ONLY if the update went through.
      *
-     * @param db     database
+     * @param db     Database Access
      * @param isRead Flag for the 'read' status
      *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
@@ -532,6 +530,7 @@ public class Book
     /**
      * Update author details from DB.
      *
+     * @param context    Current context
      * @param userLocale the locale the user is running the app in.
      * @param db         Database Access
      */
@@ -677,7 +676,7 @@ public class Book
         addValidator(DBDefinitions.KEY_PRICE_LISTED, BLANK_OR_FLOAT_VALIDATOR);
         addValidator(DBDefinitions.KEY_PRICE_PAID, BLANK_OR_FLOAT_VALIDATOR);
 
-        addCrossValidator((book) -> {
+        addCrossValidator(book -> {
             String start = book.getString(DBDefinitions.KEY_READ_START);
             if (start.isEmpty()) {
                 return;
@@ -692,6 +691,13 @@ public class Book
         });
     }
 
+    /**
+     * Get the name of the loanee (if any).
+     *
+     * @param db Database Access
+     *
+     * @return name, or {@code null} if none
+     */
     @Nullable
     public String getLoanee(@NonNull final DAO db) {
         // Hopefully we have it in the last cursor we fetched.
@@ -752,11 +758,6 @@ public class Book
             dest.writeParcelable(item, flags);
         }
 
-        /**
-         * @param context Current context
-         *
-         * @return the label to display
-         */
         @NonNull
         public String getLabel(@NonNull final Context context) {
             return getItem().getName();

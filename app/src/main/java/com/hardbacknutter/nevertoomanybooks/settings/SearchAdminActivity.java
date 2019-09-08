@@ -36,7 +36,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -99,23 +98,28 @@ public class SearchAdminActivity
         TabLayout tabLayout = findViewById(R.id.tab_panel);
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
+        FragmentManager fm = getSupportFragmentManager();
         switch (requestedTab) {
-            case TAB_ORDER:
+            case TAB_ORDER: {
+                setTitle(R.string.lbl_books);
+                mUseScenario = true;
                 tabLayout.setVisibility(View.GONE);
-                initSingleTab(SearchOrderFragment.TAG + TAB_ORDER,
-                              R.string.lbl_books);
+                mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_ORDER,
+                                                getString(R.string.lbl_books)));
                 break;
-
-            case TAB_COVER_ORDER:
+            }
+            case TAB_COVER_ORDER: {
+                setTitle(R.string.lbl_cover);
+                mUseScenario = true;
                 tabLayout.setVisibility(View.GONE);
-                initSingleTab(SearchOrderFragment.TAG + TAB_COVER_ORDER,
-                              R.string.lbl_cover);
+                mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_COVER_ORDER,
+                                                getString(R.string.lbl_cover)));
                 break;
-
-            default:
+            }
+            default: {
+                // show both
                 setTitle(R.string.menu_add_book_by_internet_search);
-
-                FragmentManager fm = getSupportFragmentManager();
+                mUseScenario = false;
                 // add them in order! i.e. in the order the TAB_* constants are defined.
                 mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_ORDER,
                                                 getString(R.string.lbl_books)));
@@ -123,6 +127,7 @@ public class SearchAdminActivity
                 mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_COVER_ORDER,
                                                 getString(R.string.lbl_covers)));
                 break;
+            }
         }
 
         // fire up the adapter.
@@ -168,14 +173,6 @@ public class SearchAdminActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void initSingleTab(@NonNull final String tag,
-                               @StringRes final int titleId) {
-        mUseScenario = true;
-
-        setTitle(titleId);
-        mAdapter.add(new FragmentHolder(getSupportFragmentManager(), tag, getString(titleId)));
     }
 
     @Override

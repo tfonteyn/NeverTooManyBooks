@@ -28,7 +28,7 @@
   -->
 
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’) -->
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
 <!--suppress LongLine -->
 <resources>
     <string name="pe_ui_theme_day_night">Ημέρα / Νύχτα</string>
@@ -153,7 +153,7 @@
     <string name="error_columns_are_blank">Οι στήλες %1$s είναι όλες κενές στη σειρά %2$d</string>
     <string name="error_email_failed">Αποτυχία αποστολής του μηνύματος ηλεκτρονικού ταχυδρομείου.</string>
     <string name="error_failed_x">Αποτυχία: %1$d</string>
-    <string name="error_google_play_missing">Το Google Play / Market δεν είναι εγκατεστημένο</string>
+    <string name="error_google_play_store_missing">Το Google Play / Market δεν είναι εγκατεστημένο</string>
     <string name="error_if_the_problem_persists">Εαν το πρόβλημα συνεχίζεται, επικοινωνήστε με την υποστήρηξη μέσω της «Διαχειριστής» στο κέντρικό μενού.</string>
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
     <string name="error_network_timeout">Δεν υπάρχει απάντηση, δοκιμάστε ξανά</string>
@@ -585,7 +585,8 @@
     <string name="warning_action_requires_isbn">Αυτή η ενέργεια απαιτεί έγκυρο ISBN.</string>
     <string name="warning_author_already_in_list">Ο συγγραφέας βρίσκεται ήδη στη λίστα</string>
     <string name="warning_backup_request">Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;</string>
-    <string name="warning_bad_scanner">Η εφαρμογή για σκανάρισμα barcode που έχετε δεν είναι συμβατή με το &APP_NAME;. Προτείνουμε να εγκαταστήσετε την εφαρμογή Zxing barcode scanner, και αν είναι ήδη εγκατεστημένη, προτείνουμε να την απεγκαταστήσετε και να την ξαναεγκαταστήσετε.</string>
+    <string name="warning_bad_scanner">Η εφαρμογή για σκανάρισμα barcode που έχετε δεν είναι συμβατή με το &APP_NAME;.</string>
+    <string name="info_install_scanner_recommendation">Προτείνουμε να εγκαταστήσετε την εφαρμογή Zxing barcode scanner, και αν είναι ήδη εγκατεστημένη, προτείνουμε να την απεγκαταστήσετε και να την ξαναεγκαταστήσετε.</string>
     <string name="warning_book_no_longer_exists">Το συγκεκριμένο βιβλίο δεν υπάρχει πλέον.</string>
     <string name="warning_book_not_found">Το βιβλίο που σαρώθηκε δεν βρέθηκε. Κάποιες φορές το σωστό barcode βρίσκεται στο εσωτερικό του εξωφύλλου. Αλλιώς εισάγετε τις λεπτομέρειες χειροκίνητα.</string>
     <string name="warning_book_was_deleted_uc">ΑΥΤΟ ΤΟ ΒΙΒΛΙΟ ΕΧΕΙ ΔΙΑΓΡΑΦΕΙ</string>
@@ -630,5 +631,8 @@
     <string name="pt_bob_show_details_uses_task">Λήψη επιπλέον στοιχείων βιβλίου</string>
     <string name="pt_bob_show_details_uses_task_on">καθυστέρηση</string>
     <string name="lbl_author_primary">συγγραφέας</string>
+    <string name="menu_search_local">Τοπική αναζήτηση</string>
+    <string name="pg_reformat">Μεταρρύθμιση</string>
+    <string name="info_install_scanner_manually">Παρακαλώ εγκαταστήστε: %1$s</string>
 
 </resources>

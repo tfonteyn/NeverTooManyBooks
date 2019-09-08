@@ -40,9 +40,6 @@ import androidx.annotation.NonNull;
 public interface CheckListItem<T>
         extends Parcelable {
 
-    /**
-     * @return the item we're encapsulating.
-     */
     T getItem();
 
     boolean isChecked();
@@ -50,6 +47,8 @@ public interface CheckListItem<T>
     void setChecked(boolean selected);
 
     /**
+     * Get the user friendly label to display.
+     *
      * @param context Current context
      *
      * @return the label to use in a {@link CheckListDialogFragment}.

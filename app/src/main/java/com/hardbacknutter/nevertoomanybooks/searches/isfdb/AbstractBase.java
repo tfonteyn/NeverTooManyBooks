@@ -74,9 +74,12 @@ abstract class AbstractBase {
     private static final int READ_TIMEOUT = 60_000;
     private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 
+    /** Not needed for now, but handy for testing. */
+    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                                             + " AppleWebKit/537.36 (KHTML, like Gecko)"
+                                             + " Chrome/76.0.3809.100 Safari/537.36";
     /** The parsed downloaded web page. */
     Document mDoc;
-
     /** If the site drops connection, we retry once. */
     private boolean afterEofTryAgain = true;
 

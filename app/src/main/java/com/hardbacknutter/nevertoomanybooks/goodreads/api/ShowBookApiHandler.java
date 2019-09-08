@@ -397,23 +397,23 @@ public abstract class ShowBookApiHandler
     private void handleThumbnail() {
 
         // first check what the "best" image is that we have.
-        String bestImage = null;
+        String coverUrl = null;
         if (mBookData.containsKey(ShowBookFieldName.IMAGE_URL)) {
-            bestImage = mBookData.getString(ShowBookFieldName.IMAGE_URL);
-            if (!GoodreadsTasks.hasCover(bestImage)
+            coverUrl = mBookData.getString(ShowBookFieldName.IMAGE_URL);
+            if (!GoodreadsTasks.hasCover(coverUrl)
                 && mBookData.containsKey(ShowBookFieldName.SMALL_IMAGE_URL)) {
-                bestImage = mBookData.getString(ShowBookFieldName.SMALL_IMAGE_URL);
-                if (!GoodreadsTasks.hasCover(bestImage)) {
-                    bestImage = null;
+                coverUrl = mBookData.getString(ShowBookFieldName.SMALL_IMAGE_URL);
+                if (!GoodreadsTasks.hasCover(coverUrl)) {
+                    coverUrl = null;
                 }
             }
         }
 
         // and if we do have an image, save it using the Goodreads book id as base name.
-        if (bestImage != null) {
+        if (coverUrl != null) {
             long grBookId = mBookData.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
-            String fileSpec = ImageUtils.saveImage(bestImage, String.valueOf(grBookId),
-                                                   GoodreadsManager.FILENAME_SUFFIX);
+            String fileSpec = ImageUtils.saveImage(coverUrl, String.valueOf(grBookId),
+                                                   GoodreadsManager.FILENAME_SUFFIX, null);
             if (fileSpec != null) {
                 ArrayList<String> list =
                         mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

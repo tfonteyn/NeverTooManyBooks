@@ -28,10 +28,12 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -48,9 +50,44 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * <p>
  * Uses OnSharedPreferenceChangeListener to dynamically update the summary for each preference.
  */
-abstract class BaseSettingsFragment
+public abstract class BaseSettingsFragment
         extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private static final String TAG = "BaseSettingsFragment";
+
+    /** Allows auto-scrolling on opening the preference screen to the desired key. */
+    public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
+
+    @Nullable
+    private String mAutoScrollToKey;
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            mAutoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getPreferenceScreen().getSharedPreferences()
+                             .registerOnSharedPreferenceChangeListener(this);
+
+        if (mAutoScrollToKey != null) {
+            scrollToPreference(mAutoScrollToKey);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        getPreferenceScreen().getSharedPreferences()
+                             .unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
 
     /**
      * Set the summaries reflecting the current values for all Preferences.
@@ -123,19 +160,7 @@ abstract class BaseSettingsFragment
         setSummary(key);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getPreferenceScreen().getSharedPreferences()
-                             .registerOnSharedPreferenceChangeListener(this);
-    }
 
-    @Override
-    public void onPause() {
-        getPreferenceScreen().getSharedPreferences()
-                             .unregisterOnSharedPreferenceChangeListener(this);
-        super.onPause();
-    }
 
     /**
      * Force children to adopt this pattern / to not forget to set a result.

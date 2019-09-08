@@ -435,7 +435,7 @@ public class Series
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull Locale bookLocale) {
+    public Locale getLocale(@NonNull final Locale bookLocale) {
         return bookLocale;
     }
 

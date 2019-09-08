@@ -34,58 +34,16 @@ import android.database.sqlite.SQLiteStatement;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
-import java.io.File;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DESCRIPTION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_FORMAT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GENRE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_ISBN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LANGUAGE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LOCATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_NOTES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PRICE_LISTED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PUBLISHER;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ_END;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ_START;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SIGNED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_TOC_ENTRY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
  * Moved all upgrade specific definitions/methods from {@link DBHelper} here.
@@ -264,7 +222,6 @@ public final class UpgradeDatabase {
      * @param tableToRecreate the table
      * @param toRemove        (optional) List of fields to be removed from the source table
      */
-    @SuppressWarnings("WeakerAccess")
     static void recreateAndReloadTable(@NonNull final SynchronizedDb db,
                                        @SuppressWarnings("SameParameterValue")
                                        @NonNull final TableDefinition tableToRecreate,
@@ -359,160 +316,5 @@ public final class UpgradeDatabase {
                 update.executeUpdateDelete();
             }
         }
-    }
-
-    /**
-     * For the upgrade to version 200, all cover files were moved to a sub directory.
-     * <p>
-     * This routine renames all files, if they exist.
-     * Any image files left in the root directory are not in use.
-     */
-    private static void v200_moveCoversToDedicatedDirectory(@NonNull final SQLiteDatabase db) {
-
-        try (Cursor cur = db.rawQuery("SELECT " + DBDefinitions.DOM_BOOK_UUID
-                                      + " FROM " + DBDefinitions.TBL_BOOKS,
-                                      null)) {
-            while (cur.moveToNext()) {
-                String uuid = cur.getString(0);
-                File source = StorageUtils.getFile(uuid + ".jpg");
-                if (!source.exists()) {
-                    source = StorageUtils.getFile(uuid + ".png");
-                    if (!source.exists()) {
-                        continue;
-                    }
-                }
-                File destination = StorageUtils.getCoverFile(uuid);
-                StorageUtils.renameFile(source, destination);
-            }
-        }
-    }
-
-    static void toDb100(@NonNull final SQLiteDatabase db,
-                        @NonNull final SynchronizedDb syncedDb) {
-        // we're now using the 'real' cache directory
-        StorageUtils.deleteFile(new File(StorageUtils.getSharedStorage()
-                                         + File.separator + "tmp_images"));
-
-        // migrate old properties.
-        Prefs.migratePreV200preferences(App.getLocalizedAppContext(),
-                                        Prefs.PREF_LEGACY_BOOK_CATALOGUE);
-
-        // add the UUID field for the move of styles to SharedPreferences
-        db.execSQL("ALTER TABLE " + TBL_BOOKLIST_STYLES
-                   + " ADD " + DOM_UUID + " text not null default ''");
-
-        // insert the builtin style ID's so foreign key rules are possible.
-        DBHelper.prepareStylesTable(db);
-
-        // drop the serialized field; this will remove legacy blob styles.
-        recreateAndReloadTable(syncedDb, TBL_BOOKLIST_STYLES,
-                /* remove field */ "style");
-
-        // add the foreign key rule pointing to the styles table.
-        recreateAndReloadTable(syncedDb, TBL_BOOKSHELF);
-
-        // this trigger was replaced.
-        db.execSQL("DROP TRIGGER IF EXISTS books_tg_reset_goodreads");
-
-        // Due to a number of code remarks, and some observation... do a clean of some columns.
-        // these two are due to a remark in the CSV exporter that (at one time?)
-        // the author name and title could be bad
-        final String UNKNOWN = App.getLocalizedAppContext().getString(R.string.unknown);
-        db.execSQL("UPDATE " + TBL_AUTHORS
-                   + " SET " + DOM_AUTHOR_FAMILY_NAME + "='" + UNKNOWN + '\''
-                   + " WHERE " + DOM_AUTHOR_FAMILY_NAME + "=''"
-                   + " OR " + DOM_AUTHOR_FAMILY_NAME + " IS NULL");
-
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_TITLE + "='" + UNKNOWN + '\''
-                   + " WHERE " + DOM_TITLE + "='' OR " + DOM_TITLE + " IS NULL");
-
-        // clean columns where we are adding a "not null default ''" constraint
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_FORMAT + "=''"
-                   + " WHERE " + DOM_BOOK_FORMAT + " IS NULL");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GENRE + "=''"
-                   + " WHERE " + DOM_BOOK_GENRE + " IS NULL");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LANGUAGE + "=''"
-                   + " WHERE " + DOM_BOOK_LANGUAGE + " IS NULL");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LOCATION + "=''"
-                   + " WHERE " + DOM_BOOK_LOCATION + " IS NULL");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PUBLISHER + "=''"
-                   + " WHERE " + DOM_BOOK_PUBLISHER + " IS NULL");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_ISBN + "=''"
-                   + " WHERE " + DOM_BOOK_ISBN + " IS NULL");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PRICE_LISTED + "=''"
-                   + " WHERE " + DOM_BOOK_PRICE_LISTED + " IS NULL");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DESCRIPTION + "=''"
-                   + " WHERE " + DOM_BOOK_DESCRIPTION + " IS NULL");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_NOTES + "=''"
-                   + " WHERE " + DOM_BOOK_NOTES + " IS NULL");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_START + "=''"
-                   + " WHERE " + DOM_BOOK_READ_START + " IS NULL");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_END + "=''"
-                   + " WHERE " + DOM_BOOK_READ_END + " IS NULL");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DATE_PUBLISHED + "=''"
-                   + " WHERE " + DOM_BOOK_DATE_PUBLISHED + " IS NULL");
-
-        // clean boolean columns where we have seen non-0/1 values.
-        // 'true'/'false' were seen in 5.2.2 exports. 't'/'f' just because paranoid.
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=1"
-                   + " WHERE lower(" + DOM_BOOK_READ + ") IN ('true', 't')");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=0"
-                   + " WHERE lower(" + DOM_BOOK_READ + ") IN ('false', 'f')");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=1"
-                   + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('true', 't')");
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=0"
-                   + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('false', 'f')");
-
-        // Make sure the TOC bitmask is valid: int: 0,1,3. Reset anything else to 0.
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_TOC_BITMASK + "=0"
-                   + " WHERE " + DOM_BOOK_TOC_BITMASK + " NOT IN (0,1,3)");
-
-        // probably not needed, but there were some 'COALESCE' usages. Paranoia again...
-        db.execSQL("UPDATE " + TBL_BOOKSHELF + " SET " + DOM_BOOKSHELF + "=''"
-                   + " WHERE " + DOM_BOOKSHELF + " IS NULL");
-
-        // recreate to get column types & constraints properly updated.
-        recreateAndReloadTable(syncedDb, TBL_BOOKS);
-
-        // anthology-titles are now cross-book;
-        // e.g. one 'story' can be present in multiple books
-        db.execSQL("CREATE TABLE " + TBL_BOOK_TOC_ENTRIES
-                   + '(' + DOM_FK_BOOK + " integer REFERENCES "
-                   + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE"
-
-                   + ',' + DOM_FK_TOC_ENTRY + " integer REFERENCES "
-                   + TBL_TOC_ENTRIES + " ON DELETE CASCADE ON UPDATE CASCADE"
-
-                   + ',' + DOM_BOOK_TOC_ENTRY_POSITION + " integer not null"
-                   + ", PRIMARY KEY (" + DOM_FK_BOOK
-                   + ',' + DOM_FK_TOC_ENTRY + ')'
-                   + ", FOREIGN KEY (" + DOM_FK_BOOK + ')'
-                   + " REFERENCES " + TBL_BOOKS + '(' + DOM_PK_ID + ')'
-                   + ", FOREIGN KEY (" + DOM_FK_TOC_ENTRY + ')'
-                   + " REFERENCES " + TBL_TOC_ENTRIES + '(' + DOM_PK_ID + ')'
-                   + ')');
-
-        // move the existing book-anthology links to the new table
-        db.execSQL("INSERT INTO " + TBL_BOOK_TOC_ENTRIES
-                   + " SELECT " + DOM_FK_BOOK + ',' + DOM_PK_ID + ','
-                   + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
-
-        // reorganise the original table
-        recreateAndReloadTable(syncedDb, TBL_TOC_ENTRIES,
-                /* remove fields: */ DOM_FK_BOOK.name, DOM_BOOK_TOC_ENTRY_POSITION.name);
-
-        // just for consistency, rename the table.
-        db.execSQL("ALTER TABLE book_bookshelf_weak RENAME TO " + TBL_BOOK_BOOKSHELF);
-
-        // add the 'ORDER BY' columns
-        addOrderByColumn(db, TBL_BOOKS, DOM_TITLE, DOM_TITLE_OB);
-        addOrderByColumn(db, TBL_SERIES, DOM_SERIES_TITLE, DOM_SERIES_TITLE_OB);
-        addOrderByColumn(db, TBL_TOC_ENTRIES, DOM_TITLE, DOM_TITLE_OB);
-        addOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_FAMILY_NAME, DOM_AUTHOR_FAMILY_NAME_OB);
-        addOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_GIVEN_NAMES, DOM_AUTHOR_GIVEN_NAMES_OB);
-
-            /* move cover files to a sub-folder.
-            Only files with matching rows in 'books' are moved. */
-        v200_moveCoversToDedicatedDirectory(db);
     }
 }

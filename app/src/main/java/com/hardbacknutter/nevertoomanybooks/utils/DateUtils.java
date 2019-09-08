@@ -274,15 +274,14 @@ public final class DateUtils {
                                   final boolean lenient)
             throws ParseException {
         df.setLenient(lenient);
-        Date parsedDate = df.parse(dateString);
-        // Make sure there is no overflow into the next day due to the user Timezone
-        // use noon to avoid overflow due to DST
-        if (parsedDate != null) {
-            parsedDate.setHours(12);
-            parsedDate.setMinutes(0);
-            parsedDate.setSeconds(0);
+        Date date = df.parse(dateString);
+        // set time to noon, to avoid any overflow due to timezone or DST.
+        if (date != null) {
+            date.setHours(12);
+            date.setMinutes(0);
+            date.setSeconds(0);
         }
-        return parsedDate;
+        return date;
     }
 
     /**
@@ -446,6 +445,7 @@ public final class DateUtils {
         } else {
             String value = String.format(Locale.ENGLISH, "%04d", year);
             if (month != null && month > 0) {
+                //noinspection CallToNumericToString
                 String mm = month.toString();
                 if (mm.length() == 1) {
                     mm = '0' + mm;
@@ -454,6 +454,7 @@ public final class DateUtils {
                 value += '-' + mm;
 
                 if (day != null && day > 0) {
+                    //noinspection CallToNumericToString
                     String dd = day.toString();
                     if (dd.length() == 1) {
                         dd = '0' + dd;

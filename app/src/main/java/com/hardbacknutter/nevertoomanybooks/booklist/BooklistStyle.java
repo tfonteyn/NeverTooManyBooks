@@ -308,6 +308,7 @@ public class BooklistStyle
      * Only used when styles are loaded from storage / importing from xml.
      * Real new styles are created by cloning an existing style.
      *
+     * @param id   the row id of the style
      * @param uuid the UUID of the style
      */
     public BooklistStyle(final long id,
@@ -987,6 +988,8 @@ public class BooklistStyle
     }
 
     /**
+     * @param context Current context
+     *
      * @return a list of in-use group names in a human readable format.
      */
     @NonNull
@@ -1089,6 +1092,8 @@ public class BooklistStyle
      * All actual settings reside in a dedicated SharedPreference file.
      * <p>
      * if an insert fails, the style retains id==0.
+     *
+     * @param db Database Access
      */
     public void insert(@NonNull final DAO db) {
         if (!isUserDefined()) {
@@ -1099,7 +1104,7 @@ public class BooklistStyle
         long existingId = db.getStyleIdByUuid(mUuid);
         if (existingId == 0) {
             if (db.insertStyle(this) > 0) {
-                Helper.sUserStyles.put(getUuid(), this);
+                Helper.S_USER_STYLES.put(getUuid(), this);
             }
         } else {
             // force-update the id.
@@ -1109,6 +1114,8 @@ public class BooklistStyle
 
     /**
      * Delete this style.
+     *
+     * @param db Database Access
      */
     public void delete(@NonNull final DAO db) {
         // cannot delete a builtin or a 'new' style(id==0)
@@ -1116,7 +1123,7 @@ public class BooklistStyle
             throw new IllegalArgumentException("Builtin Style cannot be deleted");
         }
 
-        Helper.sUserStyles.remove(mUuid);
+        Helper.S_USER_STYLES.remove(mUuid);
         db.deleteStyle(mUuid);
 
         if (Build.VERSION.SDK_INT >= 24) {
@@ -1184,6 +1191,14 @@ public class BooklistStyle
                + '}';
     }
 
+    /**
+     * Check if a particular 'Extra' field is in use,
+     * or a particular group (the display-domain).
+     *
+     * @param key to check
+     *
+     * @return {@code true} if in used
+     */
     public boolean isUsed(@NonNull final String key) {
         switch (key) {
             case UniqueId.BKEY_IMAGE:
@@ -1211,6 +1226,11 @@ public class BooklistStyle
                 return App.isUsed(key) && mExtraShowPubDate.isTrue();
 
             default:
+                for (BooklistGroup group : getGroups()) {
+                    if (group.getDisplayDomain().getName().equals(key)) {
+                        return true;
+                    }
+                }
                 return false;
         }
     }
@@ -1267,7 +1287,7 @@ public class BooklistStyle
         }
 
         @Nullable
-        BooklistGroup getGroupForKind(final int kind) {
+        BooklistGroup getGroupForKind(@SuppressWarnings("SameParameterValue") final int kind) {
             for (BooklistGroup group : mGroups) {
                 if (group.getKind() == kind) {
                     return group;
@@ -1354,7 +1374,7 @@ public class BooklistStyle
         }
 
         /**
-         * Walk the list of Groups, and store their kind in SharedPreference.
+         * Store the kind of all groups in SharedPreference.
          */
         private void writeGroupIds() {
             List<Integer> list = new ArrayList<>();
@@ -1375,13 +1395,13 @@ public class BooklistStyle
          * <p>
          * Key: uuid of style.
          */
-        private static final Map<String, BooklistStyle> sUserStyles = new HashMap<>();
+        private static final Map<String, BooklistStyle> S_USER_STYLES = new LinkedHashMap<>();
 
         private Helper() {
         }
 
         public static void reload() {
-            sUserStyles.clear();
+            S_USER_STYLES.clear();
         }
 
         /**
@@ -1393,10 +1413,10 @@ public class BooklistStyle
          */
         @NonNull
         public static Map<String, BooklistStyle> getUserStyles(@NonNull final DAO db) {
-            if (sUserStyles.size() == 0) {
-                sUserStyles.putAll(db.getUserStyles());
+            if (S_USER_STYLES.size() == 0) {
+                S_USER_STYLES.putAll(db.getUserStyles());
             }
-            return sUserStyles;
+            return S_USER_STYLES;
         }
 
         /**
@@ -1660,7 +1680,7 @@ public class BooklistStyle
          * <p>
          * Key: uuid of style.
          */
-        private static final Map<String, BooklistStyle> sBuiltinStyles = new LinkedHashMap<>();
+        private static final Map<String, BooklistStyle> S_BUILTIN_STYLES = new LinkedHashMap<>();
 
         private Builtin() {
         }
@@ -1676,17 +1696,17 @@ public class BooklistStyle
         @NonNull
         private static Map<String, BooklistStyle> getStyles() {
 
-            if (sBuiltinStyles.size() == 0) {
+            if (S_BUILTIN_STYLES.size() == 0) {
                 create();
             }
-            return sBuiltinStyles;
+            return S_BUILTIN_STYLES;
         }
 
         private static void create() {
             BooklistStyle style;
 
             // Author/Series
-            sBuiltinStyles.put(DEFAULT.getUuid(), DEFAULT);
+            S_BUILTIN_STYLES.put(DEFAULT.getUuid(), DEFAULT);
 
             // Unread
             style = new BooklistStyle(UNREAD_AUTHOR_THEN_SERIES_ID,
@@ -1694,7 +1714,7 @@ public class BooklistStyle
                                       R.string.style_builtin_unread,
                                       BooklistGroup.RowKind.AUTHOR,
                                       BooklistGroup.RowKind.SERIES);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
             style.setFilter(Prefs.pk_bob_filter_read, false);
 
             // Compact
@@ -1702,7 +1722,7 @@ public class BooklistStyle
                                       COMPACT_UUID,
                                       R.string.style_builtin_compact,
                                       BooklistGroup.RowKind.AUTHOR);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
             style.setScale(TEXT_SCALE_SMALL);
             style.setShowThumbnails(false);
 
@@ -1711,14 +1731,14 @@ public class BooklistStyle
                                       TITLE_FIRST_LETTER_UUID,
                                       R.string.style_builtin_title_first_letter,
                                       BooklistGroup.RowKind.TITLE_LETTER);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Series
             style = new BooklistStyle(SERIES_ID,
                                       SERIES_UUID,
                                       R.string.style_builtin_series,
                                       BooklistGroup.RowKind.SERIES);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Genre
             style = new BooklistStyle(GENRE_ID,
@@ -1727,7 +1747,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.GENRE,
                                       BooklistGroup.RowKind.AUTHOR,
                                       BooklistGroup.RowKind.SERIES);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Loaned
             style = new BooklistStyle(LENDING_ID,
@@ -1736,7 +1756,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.LOANED,
                                       BooklistGroup.RowKind.AUTHOR,
                                       BooklistGroup.RowKind.SERIES);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Read & Unread
             style = new BooklistStyle(READ_AND_UNREAD_ID,
@@ -1745,7 +1765,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.READ_STATUS,
                                       BooklistGroup.RowKind.AUTHOR,
                                       BooklistGroup.RowKind.SERIES);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Publication date
             style = new BooklistStyle(PUBLICATION_DATA_ID,
@@ -1755,7 +1775,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.DATE_PUBLISHED_MONTH,
                                       BooklistGroup.RowKind.AUTHOR,
                                       BooklistGroup.RowKind.SERIES);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Added date
             style = new BooklistStyle(DATE_ADDED_ID,
@@ -1765,7 +1785,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.DATE_ADDED_MONTH,
                                       BooklistGroup.RowKind.DATE_ADDED_DAY,
                                       BooklistGroup.RowKind.AUTHOR);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Acquired date
             style = new BooklistStyle(DATE_ACQUIRED_ID,
@@ -1775,7 +1795,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.DATE_ACQUIRED_MONTH,
                                       BooklistGroup.RowKind.DATE_ACQUIRED_DAY,
                                       BooklistGroup.RowKind.AUTHOR);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Author/Publication date
             style = new BooklistStyle(AUTHOR_AND_YEAR_ID,
@@ -1784,14 +1804,14 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.AUTHOR,
                                       BooklistGroup.RowKind.DATE_PUBLISHED_YEAR,
                                       BooklistGroup.RowKind.SERIES);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Format
             style = new BooklistStyle(FORMAT_ID,
                                       FORMAT_UUID,
                                       R.string.style_builtin_format,
                                       BooklistGroup.RowKind.FORMAT);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Read date
             style = new BooklistStyle(DATE_READ_ID,
@@ -1800,7 +1820,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.DATE_READ_YEAR,
                                       BooklistGroup.RowKind.DATE_READ_MONTH,
                                       BooklistGroup.RowKind.AUTHOR);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Location
             style = new BooklistStyle(LOCATION_ID,
@@ -1809,7 +1829,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.LOCATION,
                                       BooklistGroup.RowKind.AUTHOR,
                                       BooklistGroup.RowKind.SERIES);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Location
             style = new BooklistStyle(LANGUAGE_ID,
@@ -1818,7 +1838,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.LANGUAGE,
                                       BooklistGroup.RowKind.AUTHOR,
                                       BooklistGroup.RowKind.SERIES);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Rating
             style = new BooklistStyle(RATING_ID,
@@ -1827,7 +1847,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.RATING,
                                       BooklistGroup.RowKind.AUTHOR,
                                       BooklistGroup.RowKind.SERIES);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Bookshelf
             style = new BooklistStyle(BOOKSHELF_ID,
@@ -1836,7 +1856,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.BOOKSHELF,
                                       BooklistGroup.RowKind.AUTHOR,
                                       BooklistGroup.RowKind.SERIES);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Update date
             style = new BooklistStyle(DATE_LAST_UPDATE_ID,
@@ -1845,7 +1865,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.DATE_LAST_UPDATE_YEAR,
                                       BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH,
                                       BooklistGroup.RowKind.DATE_LAST_UPDATE_DAY);
-            sBuiltinStyles.put(style.getUuid(), style);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
             style.setShowAuthor(true);
 
             // NEWKIND: BooklistStyle

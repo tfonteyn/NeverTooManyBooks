@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -72,7 +74,8 @@ public class AuthorWorksActivity
         AuthorWorksModel model = new ViewModelProvider(this).get(AuthorWorksModel.class);
 
         if (model.isAtLeastOneBookDeleted()) {
-            setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
+            Intent data = new Intent().putExtra(UniqueId.BKEY_DELETED_SOMETHING, true);
+            setResult(Activity.RESULT_OK, data);
         }
         super.onBackPressed();
     }

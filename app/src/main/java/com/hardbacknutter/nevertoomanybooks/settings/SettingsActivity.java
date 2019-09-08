@@ -47,7 +47,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 
 /**
  * Hosting activity for Preference editing.
@@ -162,8 +164,9 @@ public class SettingsActivity
                               "key=" + key);
         }
 
-        // Trigger a recreate of this activity, if the setting has changed.
+
         switch (key) {
+            // Trigger a recreate of this activity, if the setting has changed.
             case Prefs.pk_ui_theme:
                 if (App.isThemeChanged(mInitialThemeId)) {
                     App.setIsRecreating();
@@ -171,6 +174,7 @@ public class SettingsActivity
                 }
                 break;
 
+            // Trigger a recreate of this activity, if the setting has changed.
             case Prefs.pk_ui_language:
                 if (LocaleUtils.isChanged(mInitialLocaleSpec)) {
                     LocaleUtils.onLocaleChanged();
@@ -179,8 +183,25 @@ public class SettingsActivity
                 }
                 break;
 
+            case Prefs.pk_scanner_beep_if_invalid:
+                SoundManager.beepLow(this);
+                break;
+
+            case Prefs.pk_scanner_beep_if_valid:
+                SoundManager.beepHigh(this);
+                break;
+
+            case Prefs.pk_scanner_preferred:
+                ScannerManager.installScanner(this, success -> {
+                    if (!success) {
+                        ScannerManager.setDefaultScanner(this);
+                    }
+                });
+                break;
+
             default:
                 break;
         }
     }
+
 }

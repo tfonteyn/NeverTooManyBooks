@@ -166,37 +166,6 @@ public final class DBHelper
         return context.getDatabasePath(DATABASE_NAME);
     }
 
-    /**
-     * Run at installation (and v200 upgrade) time to add the builtin style ID's to the database.
-     * This allows foreign keys to work.
-     *
-     * @param db Database Access
-     */
-    static void prepareStylesTable(@NonNull final SQLiteDatabase db) {
-        String sqlInsertStyles =
-                "INSERT INTO " + TBL_BOOKLIST_STYLES
-                + '(' + DOM_PK_ID
-                + ',' + DOM_STYLE_IS_BUILTIN
-                + ',' + DOM_UUID
-                // 1==true
-                + ") VALUES(?,1,?)";
-        try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
-            for (int id = BooklistStyle.Builtin.MAX_ID; id < 0; id++) {
-                stmt.bindLong(1, id);
-                stmt.bindString(2, BooklistStyle.Builtin.ID_UUID[-id]);
-
-                // oops... after inserting '-1' our debug logging will claim that insert failed.
-                if (BuildConfig.DEBUG /* always */) {
-                    if (id == -1) {
-                        Logger.debug(BooklistStyle.Helper.class, "prepareStylesTable",
-                                     "Ignore the debug message about inserting -1 here...");
-                    }
-                }
-                stmt.executeInsert();
-            }
-        }
-    }
-
     @Override
     public void onConfigure(@NonNull final SQLiteDatabase db) {
         // Turn ON foreign key support so that CASCADE etc. works.
@@ -262,16 +231,39 @@ public final class DBHelper
     }
 
     /**
-     * Since renaming the application, a direct upgrade from the original database is
-     * actually no longer needed/done. Migrating from BC to this rewritten version should
-     * be a simple 'backup to archive' in the old app, and an 'import from archive' in this app.
-     * <p>
-     * Leaving the code here below for now, but it's bound to be completely removed soon.
-     * <p>
+     * Run at installation time to add the builtin style ID's to the database.
+     * This allows foreign keys to work.
+     *
+     * @param db Database Access
+     */
+    private static void prepareStylesTable(@NonNull final SQLiteDatabase db) {
+        String sqlInsertStyles =
+                "INSERT INTO " + TBL_BOOKLIST_STYLES
+                + '(' + DOM_PK_ID
+                + ',' + DOM_STYLE_IS_BUILTIN
+                + ',' + DOM_UUID
+                // 1==true
+                + ") VALUES(?,1,?)";
+        try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
+            for (int id = BooklistStyle.Builtin.MAX_ID; id < 0; id++) {
+                stmt.bindLong(1, id);
+                stmt.bindString(2, BooklistStyle.Builtin.ID_UUID[-id]);
+
+                // oops... after inserting '-1' our debug logging will claim that insert failed.
+                if (BuildConfig.DEBUG /* always */) {
+                    if (id == -1) {
+                        Logger.debug(BooklistStyle.Helper.class, "prepareStylesTable",
+                                     "Ignore the debug message about inserting -1 here...");
+                    }
+                }
+                stmt.executeInsert();
+            }
+        }
+    }
+
+    /**
      * This function is called each time the database is upgraded.
      * It will run all upgrade scripts between the oldVersion and the newVersion.
-     * <p>
-     * Minimal application version 5.2.2 (database version 82). Older versions not supported.
      * <p>
      * REMINDER: do not use [column].ref() or [table].create/createAll.
      * The 'current' definition might not match the upgraded definition!
@@ -293,7 +285,7 @@ public final class DBHelper
                               "Old database version: " + oldVersion,
                               "Upgrading database: " + db.getPath());
         }
-        if (oldVersion < 82) {
+        if (oldVersion < 100) {
             throw new UpgradeException();
         }
 
@@ -310,14 +302,7 @@ public final class DBHelper
         int curVersion = oldVersion;
         SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
-        // db82 == app179 == 5.2.2 == last official version.
-        if (curVersion < newVersion && curVersion == 82) {
-            // db100 == app200 == 6.0.0;
-            //noinspection UnusedAssignment
-            curVersion = 100;
-            UpgradeDatabase.toDb100(db, syncedDb);
-        }
-
+        // db100 == app200 == 6.0.0;
 //        if (curVersion < newVersion && curVersion == 100) {
 //            //noinspection UnusedAssignment
 //            curVersion = 101;

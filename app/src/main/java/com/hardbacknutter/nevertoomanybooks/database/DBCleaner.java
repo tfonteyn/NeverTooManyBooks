@@ -107,6 +107,8 @@ public class DBCleaner {
 
     /**
      * Constructor.
+     *
+     * @param db Database Access
      */
     public DBCleaner(@NonNull final DAO db) {
         mDb = db;

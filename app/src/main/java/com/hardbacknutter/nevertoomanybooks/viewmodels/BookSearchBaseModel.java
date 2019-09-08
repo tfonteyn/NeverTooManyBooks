@@ -178,7 +178,7 @@ public class BookSearchBaseModel
 
     /**
      * At least one criteria must be available.
-     * The publisher is optional.
+     * The publisher is optional and in addition to the standard criteria.
      *
      * @return {@code true} if we have something to search on.
      */

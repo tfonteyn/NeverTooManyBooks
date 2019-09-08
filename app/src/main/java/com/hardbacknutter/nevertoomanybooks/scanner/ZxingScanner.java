@@ -52,9 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class ZxingScanner
         implements Scanner {
 
-    private static final String MARKET_URL = "market://details?id=com.google.zxing.client.android";
     static final String ACTION = "com.google.zxing.client.android.SCAN";
-
+    private static final String MARKET_URL = "market://details?id=com.google.zxing.client.android";
     private static final String PACKAGE = "com.google.zxing.client.android";
 
     private static final String SCAN_RESULT = "SCAN_RESULT";
@@ -103,8 +102,16 @@ public class ZxingScanner
         return data.getStringExtra(SCAN_RESULT);
     }
 
+    @Override
+    @NonNull
+    public String toString() {
+        return "ZxingScanner{"
+               + "mMustBeZxing=" + mMustBeZxing
+               + '}';
+    }
+
     static class ZxingScannerFactory
-            implements ScannerManager.ScannerFactory {
+            implements ScannerFactory {
 
         @NonNull
         public String getMarketUrl() {
@@ -113,7 +120,7 @@ public class ZxingScanner
 
         @IdRes
         @Override
-        public int getResId() {
+        public int getMenuId() {
             return R.id.MENU_SCANNER_ZXING;
         }
 
@@ -136,7 +143,7 @@ public class ZxingScanner
     }
 
     static class ZxingCompatibleScannerFactory
-            implements ScannerManager.ScannerFactory {
+            implements ScannerFactory {
 
         @NonNull
         public String getMarketUrl() {
@@ -145,7 +152,7 @@ public class ZxingScanner
 
         @IdRes
         @Override
-        public int getResId() {
+        public int getMenuId() {
             return R.id.MENU_SCANNER_ZXING_COMPATIBLE;
         }
 

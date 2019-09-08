@@ -202,7 +202,7 @@ public class TableDefinition
     /**
      * Create all indices defined for this table.
      *
-     * @param db Database to use
+     * @param db Database
      *
      * @return TableDefinition (for chaining)
      */
@@ -398,14 +398,14 @@ public class TableDefinition
             return false;
         }
         // Make sure one with the same name is not already in table, can't ignore that, go crash.
-        if (mDomainNameCheck.containsKey(domain.name.toLowerCase(App.getSystemLocale()))) {
+        if (mDomainNameCheck.containsKey(domain.getName().toLowerCase(App.getSystemLocale()))) {
             throw new IllegalArgumentException("A domain '" + domain + "' has already been added");
         }
         // Add it
         mDomains.add(domain);
 
         mDomainCheck.add(domain);
-        mDomainNameCheck.put(domain.name, domain);
+        mDomainNameCheck.put(domain.getName(), domain);
         return true;
     }
 
@@ -601,7 +601,7 @@ public class TableDefinition
     public TableDefinition addIndex(@NonNull final DomainDefinition domain,
                                     final boolean unique,
                                     @NonNull final DomainDefinition... domains) {
-        return addIndex(domain.name, unique, Arrays.asList(domains));
+        return addIndex(domain.getName(), unique, Arrays.asList(domains));
     }
 
     /**
@@ -648,7 +648,7 @@ public class TableDefinition
      */
     @NonNull
     public String dot(@NonNull final DomainDefinition domain) {
-        return getAlias() + '.' + domain.name;
+        return getAlias() + '.' + domain.getName();
     }
 
     /**
@@ -678,7 +678,7 @@ public class TableDefinition
      */
     @NonNull
     public String dotAs(@NonNull final DomainDefinition domain) {
-        return getAlias() + '.' + domain.name + " AS " + domain.name;
+        return getAlias() + '.' + domain.getName() + " AS " + domain.getName();
     }
 
     /**
@@ -697,7 +697,7 @@ public class TableDefinition
     @NonNull
     public String dotAs(@NonNull final DomainDefinition domain,
                         @NonNull final String asDomain) {
-        return getAlias() + '.' + domain.name + " AS " + asDomain;
+        return getAlias() + '.' + domain.getName() + " AS " + asDomain;
     }
 
     /**
@@ -981,8 +981,8 @@ public class TableDefinition
         @NonNull
         String getPredicate() {
             if (mParentKey != null) {
-                return mParent.getAlias() + '.' + mParentKey.name
-                       + '=' + mChild.getAlias() + '.' + mDomains.get(0).name;
+                return mParent.getAlias() + '.' + mParentKey.getName()
+                       + '=' + mChild.getAlias() + '.' + mDomains.get(0).getName();
 
             } else {
                 List<DomainDefinition> pk = mParent.getPrimaryKey();
@@ -998,11 +998,11 @@ public class TableDefinition
                     }
                     sql.append(mParent.getAlias());
                     sql.append('.');
-                    sql.append(pk.get(i).name);
+                    sql.append(pk.get(i).getName());
                     sql.append('=');
                     sql.append(mChild.getAlias());
                     sql.append('.');
-                    sql.append(mDomains.get(i).name);
+                    sql.append(mDomains.get(i).getName());
                 }
                 return sql.toString();
             }

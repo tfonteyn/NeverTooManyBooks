@@ -28,7 +28,7 @@
   -->
 
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes „…”  - Regex to find wrong ones: (“|‘|’|«|») -->
+<!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
     <string name="pe_ui_theme_day_night">Dzień / Noc</string>
@@ -152,7 +152,7 @@
     <string name="error_columns_are_blank">Pola %1$s są puste w linii %2$d</string>
     <string name="error_email_failed">E-mail nie mógł zostać wysłany.</string>
     <string name="error_failed_x">Nie powiodło się: %1$d</string>
-    <string name="error_google_play_missing">Google Play / Market nie jest zainstalowany</string>
+    <string name="error_google_play_store_missing">Google Play / Market nie jest zainstalowany</string>
     <string name="error_if_the_problem_persists">Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną za pomocą strony „Administracja” w menu głównym.</string>
     <string name="error_import_failed">Import nie powiódł się.</string>
     <string name="error_network_timeout">Brak odpowiedzi. Spróbuj ponownie.</string>
@@ -496,7 +496,7 @@
     <string name="pv_bob_author_name_family_first">Najpierw imię rodziny, np. „Lem, Stanisław”</string>
     <string name="pv_bob_author_name_given_first">Pierwsze imię, np. „Stanisław Lem”</string>
     <string name="rebuild_fts">Odbuduj FTS (eksperymentalne!)</string>
-    <string name="retry">spróbować\\nponownie</string>
+    <string name="retry">spróbować\nponownie</string>
     <string name="style_builtin_acquired_date">Nabyty</string>
     <string name="style_builtin_added_date">Data dodania</string>
     <string name="style_builtin_author_series">Autor, seria</string>
@@ -580,7 +580,8 @@
     <string name="warning_action_requires_isbn">Ta akcja wymaga prawidłowego numeru ISBN.</string>
     <string name="warning_author_already_in_list">Autor jest już na liście</string>
     <string name="warning_backup_request">Czy chcesz wykonac kopię zapasową na karcie SD?</string>
-    <string name="warning_bad_scanner">Wygląda na to, że istniejąca aplikacja skanera kodów kreskowych nie jest kompatybilna z &APP_NAME;. Zalecamy zainstalowanie aplikacji skanera kodów kreskowych Zxing, a jeśli jest już zainstalowana, zalecamy odinstalowanie i ponowne zainstalowanie.</string>
+    <string name="warning_bad_scanner">Wygląda na to, że istniejąca aplikacja skanera kodów kreskowych nie jest kompatybilna z &APP_NAME;.</string>
+    <string name="info_install_scanner_recommendation">Zalecamy zainstalowanie aplikacji skanera kodów kreskowych Zxing, a jeśli jest już zainstalowana, zalecamy odinstalowanie i ponowne zainstalowanie.</string>
     <string name="warning_book_no_longer_exists">Określona książka już nie istnieje</string>
     <string name="warning_book_not_found">Zeskanowana książka nie została odnaleziona. Spóbuj ponownie z kodem, który może znajdować się w środku okładki lub wprowadź dane ręcznie.</string>
     <string name="warning_book_was_deleted_uc">NINIEJSZA KSIĄŻKA ZOSTAŁA USUNIĘTA</string>
@@ -625,4 +626,7 @@
     <string name="pt_bob_show_details_uses_task_on">opóźniony</string>
     <string name="lbl_author_primary">pisarz</string>
     <string name="lbl_edition_slipcase">Futerał</string>
+    <string name="menu_search_local">Wyszukiwanie lokalne</string>
+    <string name="pg_reformat">Formatowanie</string>
+    <string name="info_install_scanner_manually">Zainstaluj: %1$s</string>
 </resources>

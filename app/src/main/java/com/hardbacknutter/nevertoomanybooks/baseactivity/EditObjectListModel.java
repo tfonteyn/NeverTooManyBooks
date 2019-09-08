@@ -69,6 +69,7 @@ public class EditObjectListModel
     /**
      * Pseudo constructor.
      *
+     * @param context Current context
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Context context,

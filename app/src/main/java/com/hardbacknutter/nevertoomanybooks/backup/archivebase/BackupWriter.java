@@ -50,12 +50,16 @@ public interface BackupWriter
      * <p>
      * See BackupWriterAbstract for a default implementation.
      *
+     * @param context          Current context
+     * @param settings         the import settings
+     * @param progressListener Listener to receive progress information.
+     *
      * @throws IOException on failure
      */
     @WorkerThread
-    void backup(@NonNull final Context context,
+    void backup(@NonNull Context context,
                 @NonNull ExportOptions settings,
-                @NonNull ProgressListener listener)
+                @NonNull ProgressListener progressListener)
             throws IOException;
 
     /**

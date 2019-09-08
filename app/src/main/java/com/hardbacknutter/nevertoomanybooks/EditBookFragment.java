@@ -81,7 +81,7 @@ public class EditBookFragment
     public static final int TAB_EDIT_PUBLICATION = 1;
     @SuppressWarnings("unused")
     public static final int TAB_EDIT_NOTES = 2;
-    @SuppressWarnings({"unused"})
+    @SuppressWarnings("unused")
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
     private AppCompatActivity mActivity;

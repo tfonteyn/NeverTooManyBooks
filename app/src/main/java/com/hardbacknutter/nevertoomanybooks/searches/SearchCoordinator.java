@@ -285,8 +285,10 @@ public class SearchCoordinator {
 
         mFetchThumbnail = fetchThumbnail;
         if (mFetchThumbnail) {
-            // delete any leftover temporary thumbnails
-            StorageUtils.deleteTempCoverFile();
+            // each site might have a cover, but when accumulating all covers found,
+            // we rename the 'best' to the standard name. So here we make sure to
+            // delete any orphaned temporary cover file
+            StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
         }
 
         // Listen for TaskManager messages.

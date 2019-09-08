@@ -270,7 +270,7 @@ class SearchAmazonHandler
     private String mCurrencyAmount = "";
 
     @NonNull
-    private String mThumbnailUrl = "";
+    private String mCoverUrl = "";
     /** max size found, -1 for no images found. */
     private int mThumbnailSize = -1;
 
@@ -377,9 +377,9 @@ class SearchAmazonHandler
     @Override
     @CallSuper
     public void endDocument() {
-        if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
+        if (mFetchThumbnail && !mCoverUrl.isEmpty()) {
             String name = mBookData.getString(DBDefinitions.KEY_ASIN, "");
-            String fileSpec = ImageUtils.saveImage(mThumbnailUrl, name, FILENAME_SUFFIX);
+            String fileSpec = ImageUtils.saveImage(mCoverUrl, name, FILENAME_SUFFIX, null);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
@@ -449,7 +449,7 @@ class SearchAmazonHandler
                            @NonNull final String qName) {
 
         if (mInImage && localName.equalsIgnoreCase(XML_THUMBNAIL)) {
-            mThumbnailUrl = mBuilder.toString();
+            mCoverUrl = mBuilder.toString();
             mInImage = false;
 
         } else if (localName.equalsIgnoreCase(XML_LANGUAGE)) {

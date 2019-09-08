@@ -150,27 +150,32 @@ public class LibraryThingManager
      *                   {@code false} it it would be beneficial.
      * @param prefSuffix String used to flag in preferences if we showed the alert from
      *                   that caller already or not yet.
+     *
+     * @return {@code true} if an alert is currently shown
      */
-    public static void alertRegistrationBeneficial(@NonNull final Context context,
-                                                   final boolean required,
-                                                   @NonNull final String prefSuffix) {
+    public static boolean alertRegistrationBeneficial(@NonNull final Context context,
+                                                      final boolean required,
+                                                      @NonNull final String prefSuffix) {
         if (!hasKey()) {
-            alertRegistrationNeeded(context, required, prefSuffix);
+            return alertRegistrationNeeded(context, required, prefSuffix);
         }
+        return false;
     }
 
     /**
-     * Alert the user if not shown before that we require or would benefit from LT access.
+     * Alert the user if not shown before that we require or would benefit from LibraryThing access.
      *
      * @param context    Current context
      * @param required   {@code true} if we must have access to LT.
      *                   {@code false} it it would be beneficial.
      * @param prefSuffix String used to flag in preferences if we showed the alert from
      *                   that caller already or not yet.
+     *
+     * @return {@code true} if an alert is currently shown
      */
-    public static void alertRegistrationNeeded(@NonNull final Context context,
-                                               final boolean required,
-                                               @NonNull final String prefSuffix) {
+    public static boolean alertRegistrationNeeded(@NonNull final Context context,
+                                                  final boolean required,
+                                                  @NonNull final String prefSuffix) {
 
         final String prefName = PREFS_HIDE_ALERT + prefSuffix;
         boolean showAlert;
@@ -186,6 +191,8 @@ public class LibraryThingManager
             StandardDialogs.registrationDialog(context, R.string.library_thing,
                                                intent, required, prefName);
         }
+
+        return showAlert;
     }
 
     /**
@@ -372,8 +379,8 @@ public class LibraryThingManager
         THROTTLER.waitUntilRequestAllowed();
 
         // Fetch, then save it with a suffix
-        String url = String.format(BASE_URL_COVERS, getDevKey(), sizeParam, isbn);
-        String fileSpec = ImageUtils.saveImage(url, isbn, FILENAME_SUFFIX + '_' + size);
+        String coverUrl = String.format(BASE_URL_COVERS, getDevKey(), sizeParam, isbn);
+        String fileSpec = ImageUtils.saveImage(coverUrl, isbn, FILENAME_SUFFIX, sizeParam);
         if (fileSpec != null) {
             return new File(fileSpec);
         }

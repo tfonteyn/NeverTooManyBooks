@@ -79,8 +79,8 @@ public class EditBookActivity
      */
     @Override
     public void onBackPressed() {
-        // delete any leftover temporary thumbnails
-        StorageUtils.deleteTempCoverFile();
+        // delete any orphaned temporary cover file
+        StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
 
         BookBaseFragmentModel model = new ViewModelProvider(this)
                                               .get(BookBaseFragmentModel.class);

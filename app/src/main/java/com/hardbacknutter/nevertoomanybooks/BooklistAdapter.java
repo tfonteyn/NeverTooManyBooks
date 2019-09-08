@@ -112,8 +112,9 @@ public class BooklistAdapter
      * Constructor.
      *
      * @param context Current context
-     * @param style    The style is used by (some) individual rows.
-     * @param db       Database Access
+     * @param style   The style is used by (some) individual rows.
+     * @param db      Database Access
+     * @param cursor  cursor with the 'list of items'.
      */
     public BooklistAdapter(@NonNull final Context context,
                            @NonNull final BooklistStyle style,
@@ -157,159 +158,17 @@ public class BooklistAdapter
     @Override
     public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                             final int viewType) {
-        //noinspection ConstantConditions
-        CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
 
-        // The view depends on the viewType + level.
-        View view = createView(parent, viewType, row.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
-
-        // do holder type dependent init.
-        return createHolder(viewType, view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull final RowViewHolder holder,
-                                 final int position) {
-
-        // tag for the position, so the click-listeners can get it.
-        holder.itemView.setTag(R.id.TAG_POSITION, position);
-        holder.itemView.setOnClickListener(mOnItemClick);
-        holder.itemView.setOnLongClickListener(mOnItemLongClick);
-
-        // position the data we need to bind.
-        //noinspection ConstantConditions
-        mCursor.moveToPosition(position);
-        CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
-        // actual binding depends on the type of row (i.e. holder), so let the holder do it.
-        holder.onBindViewHolder(row, mStyle);
-    }
-
-    @Override
-    public int getItemViewType(final int position) {
-        if (mCursor == null) {
-            return 0;
-        }
-        mCursor.moveToPosition(position);
-        CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
-        return row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND);
-    }
-
-    @Override
-    public int getItemCount() {
-        return mCursor == null ? 0 : mCursor.getCount();
-    }
-
-    private View createView(@NonNull final ViewGroup parent,
-                            final int viewType,
-                            final int level) {
-        @LayoutRes
-        int layoutId;
-
-        // Indent (0..) based on level (1..)
-        int indent = level - 1;
-
-        // A Book occurs always at the lowest level regardless of the groups in the style.
-        if (viewType == RowKind.BOOK) {
-            switch (mStyle.getThumbnailScaleFactor()) {
-
-                case ImageUtils.SCALE_2X_LARGE:
-                    layoutId = R.layout.booksonbookshelf_row_book_3x_large_image;
-                    break;
-
-                case ImageUtils.SCALE_X_LARGE:
-                    layoutId = R.layout.booksonbookshelf_row_book_2x_large_image;
-                    break;
-
-                default:
-                    layoutId = R.layout.booksonbookshelf_row_book;
-                    break;
-            }
-
-            // "out-dent" books. Looks better.
-            if (indent > 0) {
-                --indent;
-            }
-
-        } else {
-            // for all other types, the level determines the view
-            switch (level) {
-                case 1:
-                    layoutId = R.layout.booksonbookshelf_row_level_1;
-                    break;
-                case 2:
-                    layoutId = R.layout.booksonbookshelf_row_level_2;
-                    break;
-
-                default:
-                    // level 3 and higher all use the same layout.
-                    layoutId = R.layout.booksonbookshelf_row_level_3;
-                    break;
-            }
-        }
-
-        View view = mInflater.inflate(layoutId, parent, false);
-        view.setPaddingRelative(indent * mLevelIndent, 0, 0, 0);
-
-        // Scale text if required
-        float scale = mStyle.getScaleFactor();
-        if (scale != 1.0f) {
-            scaleTextViews(scale, view);
-        }
-        return view;
-    }
-
-    /**
-     * Scale text in a View (and children) as per user preferences.
-     * <p>
-     * Note that ImageView experiments from the original code never worked.
-     * Bottom line is that Android will scale *down* (i.e. image to big ? make it smaller)
-     * but will NOT scale up to fill the provided space. This means scaling needs to be done
-     * at bind time (as we need <strong>actual</strong> size of the image), not at create time
-     * of the view.
-     * <br>So this method only deals with TextView instances.
-     *
-     * @param root the view (and its children) we'll scale
-     */
-    private void scaleTextViews(final float scale,
-                                @NonNull final View root) {
-        // text gets scaled
-        if (root instanceof TextView) {
-            TextView textView = (TextView) root;
-            float px = textView.getTextSize();
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, px * scale);
-        }
-
-        // all elements get scaled padding; using the absolute padding values.
-        root.setPadding((int) (scale * root.getPaddingLeft()),
-                        (int) (scale * root.getPaddingTop()),
-                        (int) (scale * root.getPaddingRight()),
-                        (int) (scale * root.getPaddingBottom()));
-
-        // go recursive if needed
-        if (root instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) root;
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                scaleTextViews(scale, viewGroup.getChildAt(i));
-            }
-        }
-    }
-
-    /**
-     * Return a Holder object for the row pointed to by row.
-     *
-     * @return the holder
-     */
-    private RowViewHolder createHolder(final int viewType,
-                                       @NonNull final View itemView) {
+        View itemView = createView(parent, viewType);
 
         // a BookHolder is based on multiple columns, the holder itself will sort them out.
         if (viewType == RowKind.BOOK) {
             return new BookHolder(itemView, mDb, mStyle);
         }
 
-        // Except for CheckableStringHolder which uses an additional fixed column,
+        // Except for CheckableStringHolder, which uses an additional fixed column,
         // all other rows are based on a single column
-        String columnName = RowKind.get(viewType).getDisplayDomain().name;
+        String columnName = RowKind.get(viewType).getDisplayDomain().getName();
         //noinspection ConstantConditions
         int columnIndex = mCursor.getColumnIndex(columnName);
         if (columnIndex < 0) {
@@ -374,6 +233,136 @@ public class BooklistAdapter
         }
     }
 
+    private View createView(@NonNull final ViewGroup parent,
+                            final int viewType) {
+
+        //noinspection ConstantConditions
+        CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
+        int level = row.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+        // Indent (0..) based on level (1..)
+        int indent = level - 1;
+
+        @LayoutRes
+        int layoutId;
+
+        // A Book occurs always at the lowest level regardless of the groups in the style.
+        if (viewType == RowKind.BOOK) {
+            switch (mStyle.getThumbnailScaleFactor()) {
+
+                case ImageUtils.SCALE_2X_LARGE:
+                    layoutId = R.layout.booksonbookshelf_row_book_3x_large_image;
+                    break;
+
+                case ImageUtils.SCALE_X_LARGE:
+                    layoutId = R.layout.booksonbookshelf_row_book_2x_large_image;
+                    break;
+
+                default:
+                    layoutId = R.layout.booksonbookshelf_row_book;
+                    break;
+            }
+
+            // "out-dent" books. Looks better.
+            if (indent > 0) {
+                --indent;
+            }
+
+        } else {
+            // for all other types, the level determines the view
+            switch (level) {
+                case 1:
+                    layoutId = R.layout.booksonbookshelf_row_level_1;
+                    break;
+                case 2:
+                    layoutId = R.layout.booksonbookshelf_row_level_2;
+                    break;
+
+                default:
+                    // level 3 and higher all use the same layout.
+                    layoutId = R.layout.booksonbookshelf_row_level_3;
+                    break;
+            }
+        }
+
+        View view = mInflater.inflate(layoutId, parent, false);
+        view.setPaddingRelative(indent * mLevelIndent, 0, 0, 0);
+
+        // Scale text if required
+        float scale = mStyle.getScaleFactor();
+        if (scale != 1.0f) {
+            scaleTextViews(scale, view);
+        }
+        return view;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull final RowViewHolder holder,
+                                 final int position) {
+
+        // tag for the position, so the click-listeners can get it.
+        holder.itemView.setTag(R.id.TAG_POSITION, position);
+        holder.itemView.setOnClickListener(mOnItemClick);
+        holder.itemView.setOnLongClickListener(mOnItemLongClick);
+
+        // position the data we need to bind.
+        //noinspection ConstantConditions
+        mCursor.moveToPosition(position);
+        CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
+        // actual binding depends on the type of row (i.e. holder), so let the holder do it.
+        holder.onBindViewHolder(row, mStyle);
+    }
+
+    @Override
+    public int getItemViewType(final int position) {
+        if (mCursor == null) {
+            return 0;
+        }
+        mCursor.moveToPosition(position);
+        CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
+        return row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mCursor == null ? 0 : mCursor.getCount();
+    }
+
+    /**
+     * Scale text in a View (and children) as per user preferences.
+     * <p>
+     * Note that ImageView experiments from the original code never worked.
+     * Bottom line is that Android will scale *down* (i.e. image to big ? make it smaller)
+     * but will NOT scale up to fill the provided space. This means scaling needs to be done
+     * at bind time (as we need <strong>actual</strong> size of the image), not at create time
+     * of the view.
+     * <br>So this method only deals with TextView instances.
+     *
+     * @param root the view (and its children) we'll scale
+     */
+    private void scaleTextViews(final float scale,
+                                @NonNull final View root) {
+        // text gets scaled
+        if (root instanceof TextView) {
+            TextView textView = (TextView) root;
+            float px = textView.getTextSize();
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, px * scale);
+        }
+
+        // all elements get scaled padding; using the absolute padding values.
+        root.setPadding((int) (scale * root.getPaddingLeft()),
+                        (int) (scale * root.getPaddingTop()),
+                        (int) (scale * root.getPaddingRight()),
+                        (int) (scale * root.getPaddingBottom()));
+
+        // go recursive if needed
+        if (root instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) root;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                scaleTextViews(scale, viewGroup.getChildAt(i));
+            }
+        }
+    }
+
     /**
      * Get the text to display for the row at the current cursor position.
      * <p>
@@ -430,7 +419,7 @@ public class BooklistAdapter
 
         /** The book id to fetch. */
         private final long mBookId;
-
+        /** Bit mask with the fields that should be fetched. */
         private final int mExtraFields;
 
         /** Resulting data. */
@@ -655,29 +644,40 @@ public class BooklistAdapter
         @NonNull
         private final DAO mDb;
 
+        /** Cached Locale. */
+        @NonNull
+        private final Locale mLocale;
+
+        /** Based on user preference. */
+        private final boolean mReadIsUsed;
+        /** Based on user preference. */
+        private final boolean mLoaneeIsUsed;
+
+        /** Book level - Based on style. */
+        private final boolean mSeriesIsUsed;
+        /** Extras - Based on style. */
+        private final boolean mPublisherIsUsed;
+        /** Extras - Based on style. */
+        private final boolean mPubDateIsUsed;
+        /** Extras - Based on style. */
+        private final boolean mCoverIsUsed;
+        /** Extras - Based on style. */
+        private final int mMaxCoverSize;
+
+        /** Based on style; bitmask with the extra fields to use. */
+        private final int mExtraFieldsUsed;
+
+
         /** Bookshelves label resource string. */
         @NonNull
         private final String mShelvesLabel;
         /** Location label resource string. */
         @NonNull
         private final String mLocationLabel;
-
-        @NonNull
-        private final Locale mLocale;
-
-        private final boolean mPublisherIsUsed;
-        private final boolean mPubDateIsUsed;
-        private final boolean mReadIsUsed;
-        private final boolean mSeriesIsUsed;
-        private final boolean mLoaneeIsUsed;
-        private final boolean mCoverIsUsed;
-        private final int mExtraFieldsUsed;
-
-        private final int mMaxCoverSize;
-
         /** Format string. */
         @NonNull
         private final String mName_colon_value;
+        /** Format string. */
         @NonNull
         private final String mX_bracket_Y_bracket;
 
@@ -722,15 +722,20 @@ public class BooklistAdapter
             mShelvesLabel = context.getString(R.string.lbl_bookshelves);
             mLocationLabel = context.getString(R.string.lbl_location);
 
+            mReadIsUsed = App.isUsed(DBDefinitions.KEY_READ);
+            mLoaneeIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
+
+            // check which groups are in use.
+            mSeriesIsUsed = style.isUsed(DBDefinitions.KEY_SERIES_TITLE);
+
+            // check which extras are in use.
             mPublisherIsUsed = style.isUsed(DBDefinitions.KEY_PUBLISHER);
             mPubDateIsUsed = style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED);
-            mReadIsUsed = App.isUsed(DBDefinitions.KEY_READ);
-            mSeriesIsUsed = App.isUsed(DBDefinitions.KEY_SERIES_TITLE);
-            mLoaneeIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
             mCoverIsUsed = style.isUsed(UniqueId.BKEY_IMAGE);
             mExtraFieldsUsed = style.getExtraFieldsStatus();
 
             mMaxCoverSize = ImageUtils.getMaxImageSize(style.getThumbnailScaleFactor());
+
             // always visible
             titleView = itemView.findViewById(R.id.title);
 
@@ -774,7 +779,7 @@ public class BooklistAdapter
 
             titleView.setText(rowData.getString(DBDefinitions.KEY_TITLE));
 
-            if (mReadIsUsed) {
+            if (mReadIsUsed && rowData.contains(DBDefinitions.KEY_READ)) {
                 readView.setChecked(rowData.getInt(DBDefinitions.KEY_READ) != 0);
             }
 
@@ -782,7 +787,7 @@ public class BooklistAdapter
                 onLoanView.setChecked(!rowData.getBoolean(DBDefinitions.KEY_LOANEE_AS_BOOLEAN));
             }
 
-            if (mCoverIsUsed) {
+            if (mCoverIsUsed && rowData.contains(DBDefinitions.KEY_BOOK_UUID)) {
                 // store the uuid for use in the onClick
                 coverView.setTag(R.id.TAG_UUID, rowData.getString(DBDefinitions.KEY_BOOK_UUID));
 
@@ -795,12 +800,12 @@ public class BooklistAdapter
                         FragmentActivity activity = (FragmentActivity) v.getContext();
                         String currentUuid = (String) v.getTag(R.id.TAG_UUID);
                         ZoomedImageDialogFragment.show(activity.getSupportFragmentManager(),
-                                                       StorageUtils.getCoverFile(currentUuid));
+                                                       StorageUtils.getCoverForUuid(currentUuid));
                     });
                 }
             }
 
-            if (mSeriesIsUsed) {
+            if (mSeriesIsUsed && rowData.contains(DBDefinitions.KEY_BOOK_NUM_IN_SERIES)) {
                 String number = rowData.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
                 if (!number.isEmpty()) {
                     // Display it in one of the views, based on the size of the text.

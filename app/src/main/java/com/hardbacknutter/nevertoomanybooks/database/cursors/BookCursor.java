@@ -47,6 +47,7 @@ public class BookCursor
         extends TrackedCursor
         implements Closeable {
 
+    /** Helper to fetch columns by name. */
     @Nullable
     private CursorMapper mMapper;
 

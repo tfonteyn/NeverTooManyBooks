@@ -130,7 +130,7 @@ public class EditBookshelfListActivity
             .setIcon(R.drawable.ic_delete);
 
         String title = bookshelf.getName();
-        new MenuPicker<>(this, title, null, false, menu, bookshelf, this::onContextItemSelected)
+        new MenuPicker<>(this, title, null, menu, bookshelf, this::onContextItemSelected)
                 .show();
     }
 

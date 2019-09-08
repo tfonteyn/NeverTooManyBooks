@@ -62,10 +62,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchByScanModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
-// Try stopping the soft input keyboard to pop up at all cost when entering isbn....
-
+// UI mode: try stopping the soft input keyboard to pop up at all cost when entering isbn....
+//
 //  field gets focus, up it pops
 //        mIsbnView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 //            @Override
@@ -124,15 +124,12 @@ public class BookSearchByIsbnFragment
      */
     private boolean mKeepAlive;
 
-    /** The preferred (or found) scanner. */
-    @Nullable
-    private Scanner mScanner;
     @Nullable
     private EditText mIsbnView;
     @Nullable
     private CompoundButton mAllowAsinCb;
 
-    private BookSearchByScanModel mModel;
+    private ScannerViewModel mModel;
 
     private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
             new SearchCoordinator.SearchFinishedListener() {
@@ -182,7 +179,7 @@ public class BookSearchByIsbnFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mModel = new ViewModelProvider(this).get(BookSearchByScanModel.class);
+        mModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         mModel.init(getArguments());
     }
 
@@ -213,14 +210,19 @@ public class BookSearchByIsbnFragment
             initUI(root);
         }
 
+        //URGENT: find a solution for showing reg dialog AND starting a scan
+//        //noinspection ConstantConditions
+//        boolean alertShowing = SearchSites.alertRegistrationBeneficial(getContext(), "search",
+//                                                mBookSearchBaseModel.getSearchSites());
+
         // first check if we already have an isbn from somewhere
         if (!mBookSearchBaseModel.getIsbnSearchText().isEmpty()) {
             prepareSearch();
             return;
         }
-
+        // scan mode ?
         if (mModel.isScanMode() && mModel.isFirstStart()) {
-            mModel.setFirstStart(false);
+            mModel.clearFirstStart();
             startScannerActivity();
         }
     }
@@ -344,42 +346,37 @@ public class BookSearchByIsbnFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+
         switch (requestCode) {
             case UniqueId.REQ_IMAGE_FROM_SCANNER: {
                 mModel.setScannerStarted(false);
-                //noinspection SwitchStatementWithTooFewBranches
-                switch (resultCode) {
-                    case Activity.RESULT_OK:
-                        // Got a scan result.
-                        Objects.requireNonNull(data);
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
 
-                        if (BuildConfig.DEBUG) {
-                            // detect emulator for testing
-                            if (Build.PRODUCT.startsWith("sdk")) {
-                                File file = StorageUtils.getFile("barcode.jpg");
-                                if (file.exists()) {
-                                    Bitmap dummy = BitmapFactory.decodeFile(file.getAbsolutePath());
-                                    data.putExtra("data", dummy);
-                                }
+                    if (BuildConfig.DEBUG) {
+                        // detect emulator for testing
+                        if (Build.PRODUCT.startsWith("sdk")) {
+                            File file = StorageUtils.getFile("barcode.jpg");
+                            if (file.exists()) {
+                                Bitmap dummy = BitmapFactory.decodeFile(file.getAbsolutePath());
+                                data.putExtra("data", dummy);
                             }
                         }
-                        //noinspection ConstantConditions
-                        String barCode = mScanner.getBarcode(data);
-                        if (barCode != null) {
-                            mBookSearchBaseModel.setIsbnSearchText(barCode);
-                            prepareSearch();
-                        } else {
-                            scanFailed();
-                        }
+                    }
+                    Scanner scanner = mModel.getScanner();
+                    //noinspection ConstantConditions
+                    String barCode = scanner.getBarcode(data);
+                    if (barCode != null) {
+                        mBookSearchBaseModel.setIsbnSearchText(barCode);
+                        prepareSearch();
                         return;
-
-                    default:
-                        scanFailed();
-                        return;
+                    }
                 }
-            }
 
-            case UniqueId.REQ_BOOK_EDIT:
+                scanFailedOrCancelled();
+                return;
+            }
+            case UniqueId.REQ_BOOK_EDIT: {
                 // first do the common action when the user has saved the data for the book.
                 super.onActivityResult(requestCode, resultCode, data);
                 if (mModel.isScanMode()) {
@@ -387,37 +384,29 @@ public class BookSearchByIsbnFragment
                     startScannerActivity();
                 }
                 break;
-
-            case UniqueId.REQ_INSTALL_GOOGLE_PLAY_SERVICES:
+            }
+            case UniqueId.REQ_NAV_PANEL_SETTINGS: {
+                // go scan next book; the scanner will get tested again
+                mModel.setScanner(null);
+                startScannerActivity();
+                break;
+            }
+            case UniqueId.REQ_UPDATE_GOOGLE_PLAY_SERVICES: {
                 if (resultCode == Activity.RESULT_OK) {
-                    if (mModel.isScanMode()) {
-                        // go scan next book until the user cancels scanning.
-                        startScannerActivity();
-                    }
+                    // go scan next book until the user cancels scanning.
+                    startScannerActivity();
+                } else {
+                    scanFailedOrCancelled();
                 }
                 break;
-
-            default:
+            }
+            default: {
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
+            }
         }
 
         Tracker.exitOnActivityResult(this);
-    }
-
-    /**
-     * Scanner Cancelled/failed.
-     * Pass the last book we got back to our caller and finish here.
-     */
-    private void scanFailed() {
-
-        Intent lastBookData = mBookSearchBaseModel.getLastBookData();
-        mActivity.setResult(lastBookData != null ? Activity.RESULT_OK : Activity.RESULT_CANCELED,
-                            lastBookData);
-        // and exit if no dialog present.
-        if (!mKeepAlive) {
-            mActivity.finish();
-        }
     }
 
     @Override
@@ -530,6 +519,9 @@ public class BookSearchByIsbnFragment
 
     /**
      * ISBN was invalid. Inform the user and go back to either the UI or the scanner.
+     *
+     * @param isbn      the isbn which was invalid
+     * @param allowAsin whether ASIN was enabled or not
      */
     private void isbnInvalid(@NonNull final String isbn,
                              final boolean allowAsin) {
@@ -557,30 +549,75 @@ public class BookSearchByIsbnFragment
      * Start scanner activity.
      */
     private void startScannerActivity() {
+        Scanner scanner = mModel.getScanner();
         try {
-            if (mScanner == null) {
-                mScanner = ScannerManager.getScanner(mActivity);
-                if (mScanner == null) {
-                    ScannerManager.promptForScanner(mActivity, true);
+            if (scanner == null) {
+                scanner = ScannerManager.getScanner(mActivity);
+                if (scanner == null) {
+                    // *none* of the scanners was available ?
+                    ScannerManager.openBarcodePreferences(mActivity,
+                                                          UniqueId.REQ_NAV_PANEL_SETTINGS);
+//                    ScannerManager.promptForScanner(mActivity, false,
+//                                                    this::onScannerInstallResult);
                     mKeepAlive = true;
                     return;
                 }
+                mModel.setScanner(scanner);
             }
 
             // go scan
             if (!mModel.isScannerStarted()) {
                 mModel.setScannerStarted(true);
-                if (mScanner.startActivityForResult(this, UniqueId.REQ_IMAGE_FROM_SCANNER)) {
-                    return;
-                }
+                scanner.startActivityForResult(this, UniqueId.REQ_IMAGE_FROM_SCANNER);
             }
+
         } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
+            String msg = getString(R.string.warning_bad_scanner) + '\n'
+                         + getString(R.string.info_install_scanner_recommendation);
+            // TODO: add onDismiss listener that takes the user to the preferences?
+            //noinspection ConstantConditions
+            new AlertDialog.Builder(getContext())
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setTitle(R.string.pg_barcode_scanner)
+                    .setMessage(msg)
+                    .create()
+                    .show();
+            mKeepAlive = true;
         }
-
-        // failed to init or to scan or some fatal Exception. Try to recover...
-        ScannerManager.promptForScanner(mActivity, false);
-        mKeepAlive = true;
     }
 
+    /**
+     * Called after the user was prompted to install a scanner.
+     *
+     * @param success {@code true} if a scanner was installed already.
+     */
+    private void onScannerInstallResult(final boolean success) {
+        if (success) {
+            // try again
+            startScannerActivity();
+        } else {
+            // that's the end of it
+            mKeepAlive = false;
+            scanFailedOrCancelled();
+        }
+    }
+
+    /**
+     * Scanner Cancelled/failed.
+     * Pass the last book we got back to our caller and finish here.
+     */
+    private void scanFailedOrCancelled() {
+        if (BuildConfig.DEBUG) {
+            Logger.warnWithStackTrace(this, "scanFailedOrCancelled",
+                                      "mScanner=" + mModel.getScanner());
+        }
+        Intent lastBookData = mBookSearchBaseModel.getLastBookData();
+        mActivity.setResult(lastBookData != null ? Activity.RESULT_OK : Activity.RESULT_CANCELED,
+                            lastBookData);
+        // and exit if no dialog present.
+        if (!mKeepAlive) {
+            mActivity.finish();
+        }
+    }
 }

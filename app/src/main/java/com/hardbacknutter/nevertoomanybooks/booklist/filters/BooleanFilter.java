@@ -47,9 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 public class BooleanFilter
         extends IntegerFilter {
 
-    private static final Integer P_TRUE = 1;
-    private static final Integer P_FALSE = 0;
-
     public BooleanFilter(@StringRes final int labelId,
                          @NonNull final String key,
                          @NonNull final String uuid,
@@ -61,6 +58,6 @@ public class BooleanFilter
     }
 
     public void set(final boolean value) {
-        set(value ? P_TRUE : P_FALSE);
+        set(value ? 1 : 0);
     }
 }

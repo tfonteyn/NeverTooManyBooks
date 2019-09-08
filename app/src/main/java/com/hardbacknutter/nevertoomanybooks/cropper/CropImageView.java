@@ -181,7 +181,7 @@ class CropImageView
         }
 
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_DOWN: {
                 if (cropImage.mWaitingToPickFace) {
                     recomputeFocus(event);
                 } else {
@@ -203,8 +203,8 @@ class CropImageView
                     }
                 }
                 break;
-
-            case MotionEvent.ACTION_UP:
+            }
+            case MotionEvent.ACTION_UP: {
                 if (cropImage.mWaitingToPickFace) {
                     for (int i = 0; i < mHighlightViews.size(); i++) {
                         CropHighlightView hv = mHighlightViews.get(i);
@@ -227,8 +227,8 @@ class CropImageView
                 mMotionHighlightView = null;
                 center(true, true);
                 break;
-
-            case MotionEvent.ACTION_MOVE:
+            }
+            case MotionEvent.ACTION_MOVE: {
                 if (cropImage.mWaitingToPickFace) {
                     recomputeFocus(event);
                 } else if (mMotionHighlightView != null) {
@@ -255,7 +255,7 @@ class CropImageView
                     center(true, true);
                 }
                 break;
-
+            }
             default:
                 break;
         }

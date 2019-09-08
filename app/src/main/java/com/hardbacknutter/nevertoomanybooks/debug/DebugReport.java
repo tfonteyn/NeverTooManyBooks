@@ -51,7 +51,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.googlebooks.GoogleBooksManager;
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
+import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
+import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
+import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
@@ -130,15 +135,7 @@ public final class DebugReport {
         tmpFile.deleteOnExit();
         StorageUtils.exportFile(DBHelper.getDatabasePath(context), tmpFile.getName());
 
-        // setup the mail message
-        String subject = '[' + context.getString(R.string.app_name) + "] "
-                         + context.getString(R.string.debug_subject);
-        String[] to = context.getString(R.string.email_debug).split(";");
-        Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
-                                .setType("plain/text")
-                                .putExtra(Intent.EXTRA_SUBJECT, subject)
-                                .putExtra(Intent.EXTRA_EMAIL, to);
-
+        // Collect all info
         StringBuilder message = new StringBuilder();
 
         // Get app info
@@ -171,9 +168,14 @@ public final class DebugReport {
                .append("Signed-By: ").append(signedBy(context)).append('\n')
 
                //  urls
-               .append("Customizable Search sites URL:\n")
+               .append("Search sites URL:\n")
                .append(AmazonManager.getBaseURL()).append('\n')
-               .append(GoogleBooksManager.getBaseURL()).append('\n');
+               .append(GoodreadsManager.getBaseURL()).append('\n')
+               .append(GoogleBooksManager.getBaseURL()).append('\n')
+               .append(IsfdbManager.getBaseURL()).append('\n')
+               .append(KbNlManager.getBaseURL()).append('\n')
+               .append(LibraryThingManager.getBaseURL()).append('\n')
+               .append(OpenLibraryManager.getBaseURL()).append('\n');
 
         // Scanners installed
         try {
@@ -183,9 +185,9 @@ public final class DebugReport {
 
             for (String scannerAction : ScannerManager.ALL_ACTIONS) {
                 message.append("Scanner [").append(scannerAction).append("]:\n");
-                final Intent mainIntent = new Intent(scannerAction, null);
-                final List<ResolveInfo> resolved =
-                        context.getPackageManager().queryIntentActivities(mainIntent, 0);
+                Intent scannerIntent = new Intent(scannerAction, null);
+                List<ResolveInfo> resolved =
+                        context.getPackageManager().queryIntentActivities(scannerIntent, 0);
 
                 if (!resolved.isEmpty()) {
                     for (ResolveInfo r : resolved) {
@@ -225,24 +227,34 @@ public final class DebugReport {
             Logger.debug(DebugReport.class, "sendDebugInfo", message);
         }
 
+
+        // setup the mail message
+        String subject = '[' + context.getString(R.string.app_name) + "] "
+                         + context.getString(R.string.debug_subject);
+        String[] to = context.getString(R.string.email_debug).split(";");
+        Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
+                                .setType("plain/text")
+                                .putExtra(Intent.EXTRA_SUBJECT, subject)
+                                .putExtra(Intent.EXTRA_EMAIL, to);
+
         ArrayList<String> extraText = new ArrayList<>();
         extraText.add(message.toString());
-
         intent.putExtra(Intent.EXTRA_TEXT, extraText);
 
         try {
             // Find all files of interest to send, root and log dirs
             List<String> files =
-                    collectFiles(StorageUtils.getSharedStorage(), StorageUtils.getLogStorage());
+                    collectFiles(new File(StorageUtils.getRootStoragePath()),
+                                 new File(StorageUtils.getLogStoragePath()));
 
             // Build the attachment list
             ArrayList<Uri> attachmentUris = new ArrayList<>();
             for (String fileSpec : files) {
                 File file = StorageUtils.getFile(fileSpec);
                 if (file.exists() && file.length() > 0) {
-                    attachmentUris.add(FileProvider.getUriForFile(context,
-                                                                  GenericFileProvider.AUTHORITY,
-                                                                  file));
+                    Uri uri = FileProvider.getUriForFile(context, GenericFileProvider.AUTHORITY,
+                                                         file);
+                    attachmentUris.add(uri);
                 }
             }
 

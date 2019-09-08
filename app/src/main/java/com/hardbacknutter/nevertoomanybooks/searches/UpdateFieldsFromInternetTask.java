@@ -231,7 +231,7 @@ public class UpdateFieldsFromInternetTask
         switch (usage.fieldId) {
             // - If it's a thumbnail, then see if it's missing or empty.
             case UniqueId.BKEY_IMAGE:
-                File file = StorageUtils.getCoverFile(mCurrentUuid);
+                File file = StorageUtils.getCoverForUuid(mCurrentUuid);
                 if (!file.exists() || file.length() == 0) {
                     fieldUsages.put(usage.fieldId, usage);
                 }
@@ -408,7 +408,7 @@ public class UpdateFieldsFromInternetTask
                     boolean copyThumb = false;
                     switch (usage.getUsage()) {
                         case CopyIfBlank:
-                            File file = StorageUtils.getCoverFile(mCurrentUuid);
+                            File file = StorageUtils.getCoverForUuid(mCurrentUuid);
                             copyThumb = !file.exists() || file.length() == 0;
                             break;
 
@@ -427,7 +427,7 @@ public class UpdateFieldsFromInternetTask
 
                     File downloadedFile = StorageUtils.getTempCoverFile();
                     if (copyThumb) {
-                        File destination = StorageUtils.getCoverFile(mCurrentUuid);
+                        File destination = StorageUtils.getCoverForUuid(mCurrentUuid);
                         StorageUtils.renameFile(downloadedFile, destination);
                     } else {
                         StorageUtils.deleteFile(downloadedFile);

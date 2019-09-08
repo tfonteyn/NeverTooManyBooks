@@ -121,6 +121,9 @@ abstract class SendBooksLegacyTaskBase
     }
 
     /**
+     * @param context   Current context
+     * @param grManager the Goodreads Manager
+     *
      * @return {@code false} to requeue, {@code true} for success
      */
     protected abstract boolean send(@NonNull QueueManager queueManager,
@@ -132,6 +135,7 @@ abstract class SendBooksLegacyTaskBase
      *
      * @param context   Current context
      * @param grManager the Goodreads Manager
+     * @param db        Database Access
      *
      * @return {@code false} on failure, {@code true} on success
      */
@@ -230,6 +234,8 @@ abstract class SendBooksLegacyTaskBase
 
         /**
          * Resubmit this book and delete this event.
+         *
+         * @param context   Current context
          */
         void retry(@NonNull final Context context) {
             QueueManager qm = QueueManager.getQueueManager();
@@ -266,9 +272,6 @@ abstract class SendBooksLegacyTaskBase
             return view;
         }
 
-        /**
-         * Display the related book details in the passed View object.
-         */
         @Override
         public void bindView(@NonNull final View view,
                              @NonNull final Context context,
@@ -332,11 +335,6 @@ abstract class SendBooksLegacyTaskBase
             holder.retryView.setVisibility(View.GONE);
         }
 
-        /**
-         * Add ContextDialogItems relevant for the specific book the selected View is
-         * associated with.
-         * Subclass can override this and add items at end/start or just replace these completely.
-         */
         @Override
         public void addContextMenuItems(@NonNull final Context context,
                                         @NonNull final View view,

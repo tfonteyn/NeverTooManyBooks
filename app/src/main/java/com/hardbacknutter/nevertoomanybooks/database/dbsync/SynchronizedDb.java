@@ -124,7 +124,7 @@ public class SynchronizedDb {
      * Utility routine, purely for debugging ref count issues (mainly Android 2.1).
      *
      * @param message Message to display (relating to context)
-     * @param db      Database object
+     * @param db      SQLiteDatabase object
      **/
     @SuppressWarnings({"JavaReflectionMemberAccess"})
     public static void printRefCount(@Nullable final String message,
@@ -551,7 +551,7 @@ public class SynchronizedDb {
     }
 
     /**
-     * Wrapper
+     * Wrapper.
      *
      * @return {@code true} if the current thread is in a transaction.
      */

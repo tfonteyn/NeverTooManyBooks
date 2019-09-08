@@ -57,7 +57,7 @@ public class LocalCoverFinder
      */
     LocalCoverFinder(@NonNull final String srcPath) {
         mSrc = srcPath;
-        mIsForeign = !mSrc.equals(StorageUtils.getSharedStorage().getAbsolutePath());
+        mIsForeign = !mSrc.startsWith(StorageUtils.getRootStoragePath());
     }
 
     /**
@@ -141,17 +141,17 @@ public class LocalCoverFinder
     @NonNull
     private File getCoverFile(@NonNull final String uuid) {
         // Check for ANY current image; delete empty ones and retry
-        File newFile = StorageUtils.getCoverFile(uuid);
+        File newFile = StorageUtils.getCoverForUuid(uuid);
         while (newFile.exists()) {
             if (newFile.length() > 0) {
                 return newFile;
             } else {
                 StorageUtils.deleteFile(newFile);
             }
-            newFile = StorageUtils.getCoverFile(uuid);
+            newFile = StorageUtils.getCoverForUuid(uuid);
         }
 
-        return StorageUtils.getCoverFile(uuid);
+        return StorageUtils.getCoverForUuid(uuid);
     }
 
     /**

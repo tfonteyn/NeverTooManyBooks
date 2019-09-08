@@ -51,14 +51,14 @@ public interface BackupReader
      * <p>
      * See {@link BackupReaderAbstract} for a default implementation.
      *
-     *
+     * @param context          Current context
      * @param settings         the import settings
      * @param progressListener Listener to receive progress information.
      *
      * @throws IOException     on failure
      * @throws ImportException on failure
      */
-    void restore(@NonNull final Context context,
+    void restore(@NonNull Context context,
                  @NonNull ImportOptions settings,
                  @NonNull ProgressListener progressListener)
             throws IOException, ImportException;

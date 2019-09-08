@@ -128,7 +128,7 @@ public class BooklistMappedCursorRow {
 
         int index = level - 1;
         if (mLevelCol[index] < 0) {
-            final String name = mStyle.getGroupAt(index).getDisplayDomain().name;
+            final String name = mStyle.getGroupAt(index).getDisplayDomain().getName();
             mLevelCol[index] = mCursor.getColumnIndex(name);
             if (mLevelCol[index] < 0) {
                 throw new ColumnNotPresentException(name);
@@ -203,7 +203,7 @@ public class BooklistMappedCursorRow {
         int index = level - 1;
 
         switch (mStyle.getGroupKindAt(index)) {
-            case BooklistGroup.RowKind.READ_STATUS:
+            case BooklistGroup.RowKind.READ_STATUS: {
                 switch (source) {
                     case "0":
                         return context.getString(R.string.lbl_unread);
@@ -214,16 +214,16 @@ public class BooklistMappedCursorRow {
                         break;
                 }
                 return source;
-
-            case BooklistGroup.RowKind.LANGUAGE:
+            }
+            case BooklistGroup.RowKind.LANGUAGE: {
                 LanguageUtils.getDisplayName(locale, source);
                 break;
-
+            }
             case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
             case BooklistGroup.RowKind.DATE_ADDED_MONTH:
             case BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH:
             case BooklistGroup.RowKind.DATE_PUBLISHED_MONTH:
-            case BooklistGroup.RowKind.DATE_READ_MONTH:
+            case BooklistGroup.RowKind.DATE_READ_MONTH: {
                 try {
                     int i = Integer.parseInt(source);
                     // If valid, get the short name
@@ -234,8 +234,8 @@ public class BooklistMappedCursorRow {
                     Logger.error(this, e);
                 }
                 break;
-
-            case BooklistGroup.RowKind.RATING:
+            }
+            case BooklistGroup.RowKind.RATING: {
                 try {
                     int i = Integer.parseInt(source);
                     // If valid, get the name
@@ -246,7 +246,7 @@ public class BooklistMappedCursorRow {
                     Logger.error(this, e);
                 }
                 break;
-
+            }
             default:
                 // no special formatting needed.
                 break;

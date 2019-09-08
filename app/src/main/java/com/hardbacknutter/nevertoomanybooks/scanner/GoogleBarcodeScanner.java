@@ -27,13 +27,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.scanner;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.provider.MediaStore;
 import android.util.SparseArray;
 
 import androidx.annotation.IdRes;
@@ -48,7 +44,7 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 
 /**
  * Using the Google Play Services to scan a barcode.
@@ -60,9 +56,10 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 public class GoogleBarcodeScanner
         implements Scanner {
 
-    static final String ACTION = MediaStore.ACTION_IMAGE_CAPTURE;
-
     private final BarcodeDetector mDetector;
+
+    @Nullable
+    private CameraHelper mCameraHelper;
 
     /**
      * Constructor.
@@ -75,58 +72,6 @@ public class GoogleBarcodeScanner
                                                | Barcode.EAN_13 | Barcode.EAN_8
                                                | Barcode.UPC_A | Barcode.UPC_E)
                             .build();
-    }
-
-    /**
-     * Check availability of the Google Play Services API.
-     * <ul>Possible outcomes at 'return' time:
-     * <li>Installed</li>
-     * <li>Not supported on device</li>
-     * <li>A dialog is being shown to the user to install/upgrade.<br>
-     * If the user cancels the dialog, the passed cancelListener is called.</li>
-     * </ul>
-     *
-     * @param activity to which we'll redirect if we have to prompt the user.
-     *                 Activity#onActivityResult will get called with
-     *                 requestCode == {@link UniqueId#REQ_INSTALL_GOOGLE_PLAY_SERVICES}
-     */
-    static GooglePSInstall installGooglePS(@NonNull final Activity activity,
-                                           @NonNull final DialogInterface.OnCancelListener
-                                                   cancelListener) {
-
-        GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
-        int status = gApi.isGooglePlayServicesAvailable(activity);
-        // Api docs say it will be one of these:
-        // ConnectionResult.SUCCESS
-        // ConnectionResult.SERVICE_MISSING
-        // ConnectionResult.SERVICE_UPDATING,
-        // ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED
-        // ConnectionResult.SERVICE_DISABLED
-        // ConnectionResult.SERVICE_INVALID
-        switch (status) {
-            case ConnectionResult.SUCCESS:
-                return GooglePSInstall.Success;
-
-            case ConnectionResult.SERVICE_INVALID:
-                return GooglePSInstall.NotAvailable;
-
-            default:
-                Dialog dialog = gApi.getErrorDialog(activity, status,
-                                                    UniqueId.REQ_INSTALL_GOOGLE_PLAY_SERVICES,
-                                                    cancelListener);
-                // Paranoia...
-                if (dialog == null) {
-                    return GooglePSInstall.Success;
-                }
-
-                dialog.show();
-                // we prompted the user to install
-                return GooglePSInstall.PromptedUser;
-        }
-    }
-
-    public boolean isOperational() {
-        return mDetector.isOperational();
     }
 
     @Nullable
@@ -154,24 +99,38 @@ public class GoogleBarcodeScanner
             return false;
         }
 
-        Intent intent = new Intent(ACTION);
-        fragment.startActivityForResult(intent, UniqueId.REQ_IMAGE_FROM_SCANNER);
+        if (mCameraHelper == null) {
+            mCameraHelper = new CameraHelper();
+            //TEST:  with 'true'
+            mCameraHelper.setUseFullSize(false);
+        }
+        mCameraHelper.startCamera(fragment, requestCode);
         return true;
     }
 
     @Nullable
     @Override
     public String getBarcode(@NonNull final Intent data) {
-        Bitmap bm = data.getParcelableExtra("data");
-        return decode(bm);
+        //noinspection ConstantConditions
+        Bitmap bm = mCameraHelper.getBitmap(data);
+        if (bm != null) {
+            return decode(bm);
+        }
+        return null;
     }
 
-    public enum GooglePSInstall {
-        Success, NotAvailable, PromptedUser
+    @Override
+    @NonNull
+    public String toString() {
+        return "GoogleBarcodeScanner{"
+               + "mDetector=" + mDetector
+               + ", isOperational=" + (mDetector != null ? mDetector.isOperational() : "false")
+               + ", mCameraHelper=" + mCameraHelper
+               + '}';
     }
 
-    static class GooglePlayScannerFactory
-            implements ScannerManager.ScannerFactory {
+    static class GoogleBarcodeScannerFactory
+            implements ScannerFactory {
 
         @NonNull
         public String getMarketUrl() {
@@ -180,7 +139,7 @@ public class GoogleBarcodeScanner
 
         @IdRes
         @Override
-        public int getResId() {
+        public int getMenuId() {
             return R.id.MENU_SCANNER_GOOGLE_PLAY;
         }
 

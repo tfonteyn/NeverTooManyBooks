@@ -90,7 +90,7 @@ public class StyleSettingsFragment
         PreferenceScreen screen = getPreferenceScreen();
 
         // doing this in our base class. TODO: use this for all prefs instead of our own code
-//        EditTextPreference np = screen.findPreference(getString(R.string.name));
+//        EditTextPreference np = screen.findPreference(Prefs.X));
 //        np.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
 
         // add the preferences from all groups:
@@ -146,13 +146,16 @@ public class StyleSettingsFragment
     /**
      * Put the style into the activity result.
      * <p>
-     * Reminder: do NOT call this in onPause... as onBackPressed is called before (and does finish).
+     * <strong>Note:</strong>: do NOT call this in onPause
+     * as onBackPressed is called before (and does finish).
      */
     @Override
     void prepareResult() {
-        Intent data = new Intent().putExtra(UniqueId.BKEY_STYLE, mStyle);
+        Intent data = new Intent()
+                              .putExtra(UniqueId.BKEY_STYLE_MODIFIED, true)
+                              .putExtra(UniqueId.BKEY_STYLE, mStyle);
         //noinspection ConstantConditions
-        getActivity().setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE, data);
+        getActivity().setResult(Activity.RESULT_OK, data);
 
     }
 
@@ -174,7 +177,7 @@ public class StyleSettingsFragment
         List<String> labels;
 
         // the 'extra' fields in use.
-        preference = findPreference(getString(R.string.pg_bob_show_details));
+        preference = findPreference(Prefs.psk_style_show_details);
         if (preference != null) {
             labels = getExtraFieldsLabels();
             if (labels.isEmpty()) {
@@ -185,7 +188,7 @@ public class StyleSettingsFragment
         }
 
         // the 'filters' in use
-        preference = findPreference(getString(R.string.pg_filters));
+        preference = findPreference(Prefs.psk_style_filters);
         if (preference != null) {
             //noinspection ConstantConditions
             labels = mStyle.getFilterLabels(getContext(), false);
@@ -197,7 +200,7 @@ public class StyleSettingsFragment
         }
 
         // the 'groups' in use.
-        preference = findPreference(getString(R.string.pg_groupings));
+        preference = findPreference(Prefs.psk_style_groupings);
         if (preference != null) {
             //noinspection ConstantConditions
             preference.setSummary(mStyle.getGroupLabels(getContext()));
@@ -210,12 +213,12 @@ public class StyleSettingsFragment
 
         // The "Series" category has no settings of its own (in contrast to "Authors").
         // So unless the group is included, we hide the "Series" category.
-        preference = findPreference(getString(R.string.lbl_series));
+        preference = findPreference(Prefs.psk_style_series);
         if (preference != null) {
             preference.setVisible(mStyle.hasGroupKind(BooklistGroup.RowKind.SERIES));
         }
         // always visible
-//        preference = findPreference(getString(R.string.lbl_author));
+//        preference = findPreference(Prefs.psk_style_author);
 //        if (preference != null) {
 //            preference.setVisible(mStyle.hasGroupKind(BooklistGroup.RowKind.AUTHOR));
 //        }

@@ -25,29 +25,17 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads;
+package com.hardbacknutter.nevertoomanybooks.utils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+/**
+ * Thrown when external storage media is not available.
+ */
+class ExternalStorageException
+        extends RuntimeException {
 
-import java.util.Map;
+    private static final long serialVersionUID = -8444141375654155396L;
 
-public class GoodreadsShelves {
-
-    @NonNull
-    private final Map<String, GoodreadsShelf> mMap;
-
-    /**
-     * Constructor.
-     *
-     * @param map of shelves
-     */
-    public GoodreadsShelves(@NonNull final Map<String, GoodreadsShelf> map) {
-        mMap = map;
-    }
-
-    public boolean isExclusive(@Nullable final String name) {
-        GoodreadsShelf shelf = mMap.get(name);
-        return shelf != null && shelf.isExclusive();
+    ExternalStorageException() {
+        super("no external media");
     }
 }

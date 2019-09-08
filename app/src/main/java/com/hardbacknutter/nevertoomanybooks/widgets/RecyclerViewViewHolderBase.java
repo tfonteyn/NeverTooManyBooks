@@ -74,7 +74,7 @@ public class RecyclerViewViewHolderBase
     final View mDeleteButton;
 
     @ColorInt
-    private int mItemSelectedBackgroundColor;
+    private final int mItemSelectedBackgroundColor;
 
     protected RecyclerViewViewHolderBase(@NonNull final View itemView) {
         super(itemView);

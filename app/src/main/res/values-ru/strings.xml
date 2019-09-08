@@ -28,7 +28,7 @@
   -->
 
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’) -->
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
 <!--suppress LongLine -->
 <resources>
     <string name="pe_ui_theme_day_night">День / Ночь</string>
@@ -151,7 +151,7 @@
     <string name="error_columns_are_blank">В строке %2$d столбцы %1$s пусты</string>
     <string name="error_email_failed">Не удалось отправить электронное письмо.</string>
     <string name="error_failed_x">Не удалось: %1$d</string>
-    <string name="error_google_play_missing">Google Play / Market не установлен</string>
+    <string name="error_google_play_store_missing">Google Play / Market не установлен</string>
     <string name="error_if_the_problem_persists">Если проблема осталась, свяжитесь с поддержкой через меню «Настройки» главного меню.</string>
     <string name="error_import_failed">Импорт не удался.</string>
     <string name="error_network_timeout">Нет ответа, пожалуйста, попробуйте еще раз</string>
@@ -578,7 +578,8 @@
     <string name="warning_action_requires_isbn">Для этого действия требуется действительный ISBN.</string>
     <string name="warning_author_already_in_list">Автор уже есть в списке</string>
     <string name="warning_backup_request">Вы хотите создать резервную копию базы данных на SD-карте?</string>
-    <string name="warning_bad_scanner">Возможно, ваше приложение-сканер не совместимо с &APP_NAME;. Мы рекомендуем установить Zxing сканер, или если он уже установлен, удалите его, затем снова установите.</string>
+    <string name="warning_bad_scanner">Возможно, ваше приложение-сканер не совместимо с &APP_NAME;.</string>
+    <string name="info_install_scanner_recommendation">Мы рекомендуем установить Zxing сканер, или если он уже установлен, удалите его, затем снова установите.</string>
     <string name="warning_book_no_longer_exists">Указанная книга больше не существует</string>
     <string name="warning_book_not_found">Не найдена книга, соответствующая отсканированному штрих-коду. Возможно правильный штрих-код находится внутри книги. Иначе, пожалуйста, введите детализированную информацию о книге вручную.</string>
     <string name="warning_book_was_deleted_uc">ЭТА КИНГА БЫЛА УДАЛЕНА</string>
@@ -623,5 +624,8 @@
     <string name="pt_bob_show_details_uses_task">Получение дополнительных сведений о книге</string>
     <string name="pt_bob_show_details_uses_task_on">задерживается</string>
     <string name="lbl_author_primary">писатель</string>
+    <string name="menu_search_local">Локальный поиск</string>
+    <string name="pg_reformat">переформатирующий</string>
+    <string name="info_install_scanner_manually">Пожалуйста, установите: %1$s</string>
 
 </resources>

@@ -69,16 +69,19 @@
 
     <!-- External sites / trademarks  -->
     <string name="goodreads" translatable="false">Goodreads</string>
-    <string name="google_books" translatable="false">Google Books</string>
     <string name="library_thing" translatable="false">LibraryThing</string>
     <string name="open_library" translatable="false">OpenLibrary</string>
     <string name="isfdb" translatable="false">ISFDB</string>
     <string name="KBNL" translatable="false">KBNL</string>
+
     <string name="amazon" translatable="false">Amazon</string>
     <!-- specific for a submenu title -->
     <string name="amazon_ellipsis" translatable="false">Amazon…</string>
 
-    <!-- hardcoded scanner names -->
+    <string name="google_books" translatable="false">Google Books</string>
+    <string name="google_play_services" translatable="false">Google Play</string>
+
+    <!-- Scanner names -->
     <string name="pv_scanner_zxing" translatable="false">Zxing</string>
     <string name="pv_scanner_pic2shop" translatable="false">Pic2Shop</string>
 

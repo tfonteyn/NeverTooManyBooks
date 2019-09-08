@@ -27,9 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -68,77 +66,6 @@ public final class MenuHandler {
     private MenuHandler() {
     }
 
-    /**
-     * Add SubMenu for book creation.
-     * <p>
-     * Group: R.id.SUBMENU_BOOK_ADD
-     *
-     * @param menu Root menu
-     */
-    static void addCreateBookSubMenu(@NonNull final Menu menu) {
-        SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_BOOK_ADD, R.id.SUBMENU_BOOK_ADD,
-                                          0, R.string.menu_add_book)
-                              .setIcon(R.drawable.ic_add);
-
-        subMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SCAN, 0,
-                    R.string.menu_add_book_by_barcode_scan)
-               .setIcon(R.drawable.ic_add_a_photo);
-        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN, 0,
-                    R.string.menu_add_book_by_isbn)
-               .setIcon(R.drawable.ic_zoom_in);
-        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, 0,
-                    R.string.menu_add_book_by_internet_search)
-               .setIcon(R.drawable.ic_zoom_in);
-        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_MANUALLY, 0,
-                    R.string.menu_add_book_manually)
-               .setIcon(R.drawable.ic_keyboard);
-    }
-
-    /**
-     * Handle the menu items created by {@link #addCreateBookSubMenu(Menu)}.
-     *
-     * @param activity Calling activity
-     * @param menuItem The item selected
-     *
-     * @return {@code true} if handled
-     */
-    static boolean handleBookSubMenu(@NonNull final Activity activity,
-                                     @NonNull final MenuItem menuItem) {
-        Intent intent;
-        switch (menuItem.getItemId()) {
-            case R.id.MENU_BOOK_ADD_BY_SCAN:
-                intent = new Intent(activity, BookSearchActivity.class)
-                                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
-                                 .putExtra(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE, true);
-                activity.startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
-                return true;
-
-            case R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN:
-                intent = new Intent(activity, BookSearchActivity.class)
-                                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG,
-                                           BookSearchByIsbnFragment.TAG);
-                activity.startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
-                return true;
-
-            case R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT:
-                intent = new Intent(activity, BookSearchActivity.class)
-                                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG,
-                                           BookSearchByTextFragment.TAG);
-                activity.startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
-                return true;
-
-            case R.id.MENU_BOOK_ADD_MANUALLY:
-                intent = new Intent(activity, EditBookActivity.class);
-                activity.startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-                return true;
-
-            default:
-                return false;
-        }
-    }
-
     static void addViewBookSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_VIEW_BOOK_AT_SITE,
                                           ORDER_VIEW_BOOK_AT_SITE,
@@ -163,7 +90,7 @@ public final class MenuHandler {
                                          @NonNull final MenuItem menuItem,
                                          @NonNull final Book book) {
         switch (menuItem.getItemId()) {
-            case R.id.SUBMENU_VIEW_BOOK_AT_SITE:
+            case R.id.SUBMENU_VIEW_BOOK_AT_SITE: {
                 // after the user selects the submenu, we make individual items visible/hidden.
                 SubMenu menu = menuItem.getSubMenu();
                 menu.findItem(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
@@ -176,7 +103,7 @@ public final class MenuHandler {
                     .setVisible(!book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
                 // let the normal call flow go on, it will display the submenu
                 return false;
-
+            }
             case R.id.MENU_VIEW_BOOK_AT_ISFDB:
                 IsfdbManager.openWebsite(context, book.getLong(DBDefinitions.KEY_ISFDB_ID));
                 return true;
@@ -257,7 +184,7 @@ public final class MenuHandler {
                                              @NonNull final MenuItem menuItem,
                                              @NonNull final Book book) {
         switch (menuItem.getItemId()) {
-            case R.id.SUBMENU_AMAZON_SEARCH:
+            case R.id.SUBMENU_AMAZON_SEARCH: {
                 // after the user selects the submenu, we make individual items visible/hidden.
                 SubMenu menu = menuItem.getSubMenu();
                 boolean hasAuthor = !book.getParcelableArrayList(
@@ -273,7 +200,7 @@ public final class MenuHandler {
                     .setVisible(hasSeries);
                 // let the normal call flow go on, it will display the submenu
                 return false;
-
+            }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
                 AmazonManager.openWebsite(context, book.getPrimaryAuthor(), null);
                 return true;

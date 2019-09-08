@@ -70,6 +70,22 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
  */
 public final class Prefs {
 
+    /** PreferenceScreen/PreferenceCategory Key. */
+    public static final String psk_style_groupings = "psk_style_groupings";
+    /** PreferenceScreen/PreferenceCategory Key. */
+    public static final String psk_style_filters = "psk_style_filters";
+    /** PreferenceScreen/PreferenceCategory Key. */
+    public static final String psk_style_show_details = "psk_style_show_details";
+    /** PreferenceScreen/PreferenceCategory Key. */
+    public static final String psk_style_author = "psk_style_author";
+    /** PreferenceScreen/PreferenceCategory Key. */
+    public static final String psk_style_series = "psk_style_series";
+
+    /** PreferenceScreen/PreferenceCategory Key. */
+    public static final String psk_barcode_scanner = "psk_barcode_scanner";
+
+
+    /** Preference Key. */
     public static final String pk_ui_language = "App.Locale";
     public static final String pk_ui_theme = "App.Theme";
     public static final String pk_ui_messages_use = "App.UserMessage";

@@ -90,12 +90,6 @@ public class AuthorWorksModel
         }
     }
 
-    @NonNull
-    public Author getAuthor() {
-        Objects.requireNonNull(mAuthor);
-        return mAuthor;
-    }
-
     public void loadTocEntries(final boolean withTocEntries,
                                final boolean withBooks) {
         mWithTocEntries = withTocEntries;
@@ -141,6 +135,7 @@ public class AuthorWorksModel
     }
 
     public String getScreenTitle() {
-        return getAuthor().getLabel() + " [" + getTocEntries().size() + ']';
+        //noinspection ConstantConditions
+        return mAuthor.getLabel() + " [" + getTocEntries().size() + ']';
     }
 }

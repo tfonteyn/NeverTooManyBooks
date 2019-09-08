@@ -27,6 +27,14 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+    The main/root PreferenceScreen for the app.
+    Notes:
+     - All PreferenceScreen elements <strong>must</strong> have a key.
+     - PreferenceCategory which have a key <strong>must</strong> be mirrored in "Prefs.java"
+     - Actual preference elements <strong>may</strong> need to be mirrored in "Prefs.java"
+     - defaultValue attribute must match with wherever the underlying preference is used.
+ -->
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -34,7 +42,7 @@
     >
     <PreferenceCategory
         android:title="@string/pg_ui">
-        <!-- the list contains Locale string IDs in contrast to other
+        <!-- The language list contains Locale string IDs in contrast to other
              ListPreference which use 0,1... -->
         <ListPreference
             android:defaultValue="system"
@@ -64,7 +72,7 @@
 
         <PreferenceScreen
             android:icon="@drawable/ic_visibility"
-            android:key="@string/pg_ui_field_visibility"
+            android:key="psk_fields_visibility"
             android:summary="@string/info_manage_fields"
             android:title="@string/pg_ui_field_visibility"
             >
@@ -200,7 +208,7 @@
 
     <PreferenceScreen
         android:icon="@drawable/ic_image"
-        android:key="@string/pg_thumbnails"
+        android:key="psk_thumbnails"
         android:title="@string/pg_thumbnails"
         >
 
@@ -263,7 +271,7 @@
 
     <PreferenceScreen
         android:icon="@drawable/ic_text_format"
-        android:key="@string/pg_reformat"
+        android:key="psk_reformat"
         android:title="@string/pg_reformat"
         >
         <PreferenceCategory
@@ -340,7 +348,7 @@
 
         <PreferenceScreen
             android:icon="@drawable/ic_sort"
-            android:key="@string/lbl_search_site_order"
+            android:key="psk_search_site_order"
             android:title="@string/lbl_search_site_order">
             <intent android:action="search.website.order.EDIT" />
         </PreferenceScreen>
@@ -394,7 +402,18 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="psk_barcode_scanner"
         android:title="@string/pg_barcode_scanner">
+
+        <!-- default ScannerManager.GOOGLE_PLAY_SERVICES  -->
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_scanning_preferred_scanner"
+            android:entryValues="@array/pv_scanning_preferred_scanner"
+            android:icon="@drawable/ic_scanner"
+            android:key="ScannerManager.PreferredScanner"
+            android:title="@string/pt_scanning_preferred_scanner" />
+
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_surround_sound"
@@ -411,29 +430,20 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_scanning_beep_if_isbn_valid" />
 
-        <!-- default ScannerManager.GOOGLE_PLAY_SERVICES  -->
-        <ListPreference
-            android:defaultValue="0"
-            android:entries="@array/pe_scanning_preferred_scanner"
-            android:entryValues="@array/pv_scanning_preferred_scanner"
-            android:icon="@drawable/ic_scanner"
-            android:key="ScannerManager.PreferredScanner"
-            android:title="@string/pt_scanning_preferred_scanner" />
-
     </PreferenceCategory>
 
     <PreferenceCategory
         android:title="@string/lbl_credentials">
         <PreferenceScreen
             android:icon="@drawable/ic_goodreads2"
-            android:key="@string/goodreads"
+            android:key="psk_goodreads"
             android:title="@string/goodreads">
             <intent android:action="goodreads.credentials.EDIT" />
         </PreferenceScreen>
 
         <PreferenceScreen
             android:icon="@drawable/ic_security"
-            android:key="@string/library_thing"
+            android:key="psk_library_thing"
             android:title="@string/library_thing">
             <intent android:action="librarything.credentials.EDIT" />
         </PreferenceScreen>

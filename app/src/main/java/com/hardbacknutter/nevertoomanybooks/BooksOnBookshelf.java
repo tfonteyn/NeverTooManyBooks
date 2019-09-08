@@ -274,7 +274,6 @@ public class BooksOnBookshelf
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
 
         if (savedInstanceState == null) {
-            TipManager.display(this, R.string.tip_view_only_book_details, null);
             TipManager.display(this, R.string.tip_book_list, null);
         }
 
@@ -306,8 +305,23 @@ public class BooksOnBookshelf
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
-        // add the 'add book' submenu
-        MenuHandler.addCreateBookSubMenu(menu);
+        SubMenu addBookSubMenu = menu.addSubMenu(R.id.SUBMENU_BOOK_ADD, R.id.SUBMENU_BOOK_ADD,
+                                                 0, R.string.menu_add_book)
+                                     .setIcon(R.drawable.ic_add);
+        addBookSubMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SCAN, 0,
+                           R.string.menu_add_book_by_barcode_scan)
+                      .setIcon(R.drawable.ic_add_a_photo);
+        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN, 0,
+                           R.string.menu_add_book_by_isbn)
+                      .setIcon(R.drawable.ic_zoom_in);
+        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, 0,
+                           R.string.menu_add_book_by_internet_search)
+                      .setIcon(R.drawable.ic_zoom_in);
+        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_MANUALLY, 0,
+                           R.string.menu_add_book_manually)
+                      .setIcon(R.drawable.ic_keyboard);
 
         menu.add(Menu.NONE, R.id.MENU_SORT, 0, R.string.menu_sort_and_style_ellipsis)
             .setIcon(R.drawable.ic_sort_by_alpha)
@@ -328,14 +342,14 @@ public class BooksOnBookshelf
             .setIcon(R.drawable.ic_undo);
 
         if (BuildConfig.DEBUG /* always */) {
-            SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
-                                              0, R.string.debug);
+            SubMenu debugSubMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
+                                                   0, R.string.debug);
 
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, R.string.lbl_style);
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, R.string.debug_history);
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_TABLES, 0, R.string.debug_bob_tables);
-            subMenu.add(Menu.NONE, R.id.MENU_EXPORT_DATABASE, 0, R.string.lbl_copy_database);
+            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
+            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, R.string.lbl_style);
+            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, R.string.debug_history);
+            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TABLES, 0, R.string.debug_bob_tables);
+            debugSubMenu.add(Menu.NONE, R.id.MENU_EXPORT_DATABASE, 0, R.string.lbl_copy_database);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -365,12 +379,12 @@ public class BooksOnBookshelf
                 expandOrCollapseAllNodes(false);
                 return true;
 
-            case R.id.MENU_CLEAR_FILTERS:
+            case R.id.MENU_CLEAR_FILTERS: {
                 mModel.getSearchCriteria().clear();
                 initBookList(true);
                 return true;
-
-            case R.id.MENU_UPDATE_FROM_INTERNET:
+            }
+            case R.id.MENU_UPDATE_FROM_INTERNET: {
                 // IMPORTANT: this is from an options menu selection.
                 // We pass the book ID's for the currently displayed list.
                 ArrayList<Long> bookIds = mModel.getCurrentBookIdList();
@@ -378,8 +392,38 @@ public class BooksOnBookshelf
                                         .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
                 startActivityForResult(intent, UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
                 return true;
+            }
 
-            default:
+            case R.id.MENU_BOOK_ADD_BY_SCAN: {
+                Intent intent = new Intent(this, BookSearchActivity.class)
+                                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG,
+                                                  BookSearchByIsbnFragment.TAG)
+                                        .putExtra(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE,
+                                                  true);
+                startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+                return true;
+            }
+            case R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN: {
+                Intent intent = new Intent(this, BookSearchActivity.class)
+                                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG,
+                                                  BookSearchByIsbnFragment.TAG);
+                startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+                return true;
+            }
+            case R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT: {
+                Intent intent = new Intent(this, BookSearchActivity.class)
+                                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG,
+                                                  BookSearchByTextFragment.TAG);
+                startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+                return true;
+            }
+            case R.id.MENU_BOOK_ADD_MANUALLY: {
+                Intent intent = new Intent(this, EditBookActivity.class);
+                startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+                return true;
+            }
+
+            default: {
                 if (BuildConfig.DEBUG  /* always */) {
                     switch (item.getItemId()) {
                         case R.id.MENU_DEBUG_PREFS:
@@ -411,8 +455,8 @@ public class BooksOnBookshelf
                     }
                 }
 
-                return MenuHandler.handleBookSubMenu(this, item)
-                       || super.onOptionsItemSelected(item);
+                return super.onOptionsItemSelected(item);
+            }
         }
     }
 
@@ -473,45 +517,41 @@ public class BooksOnBookshelf
 
         switch (requestCode) {
             case UniqueId.REQ_BOOK_VIEW:
-            case UniqueId.REQ_BOOK_EDIT:
-                switch (resultCode) {
-                    case UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING:
-                        // a book was deleted.
-                        // handle re-positioning better
+            case UniqueId.REQ_BOOK_EDIT: {
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
+
+                    if (data.getBooleanExtra(UniqueId.BKEY_DELETED_SOMETHING, false)) {
+                        // one or more books were deleted.
+                        // TODO: handle re-positioning better
                         //mCurrentPositionedBookId = [somehow get the id 'above' the deleted one];
                         mModel.setFullRebuild(false);
-                        break;
 
-                    case Activity.RESULT_OK:
+                    } else {
                         // a book was changed/added.
-                        Objects.requireNonNull(data);
                         long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
                         if (newId != 0) {
                             mModel.setCurrentPositionedBookId(newId);
                         }
                         mModel.setFullRebuild(false);
-                        break;
-
-
-                    default:
-                        // no changes were made, we'l redisplay the list as-is.
-                        if (resultCode != Activity.RESULT_CANCELED) {
-                            Logger.warnWithStackTrace(this, "resultCode=" + resultCode);
-                        }
-                        break;
+                    }
                 }
                 break;
+            }
+            case UniqueId.REQ_AUTHOR_WORKS: {
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
 
-            case UniqueId.REQ_AUTHOR_WORKS:
-                if (resultCode == UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING) {
-                    // one or more books were deleted.
-                    // handle re-positioning better
-                    //mCurrentPositionedBookId = [somehow get the id 'above' the deleted one];
-                    mModel.setFullRebuild(false);
+                    if (data.getBooleanExtra(UniqueId.BKEY_DELETED_SOMETHING, false)) {
+                        // one or more books were deleted.
+                        // TODO: handle re-positioning better
+                        //mCurrentPositionedBookId = [somehow get the id 'above' the deleted one];
+                        mModel.setFullRebuild(false);
+                    }
                 }
                 break;
-
-            case UniqueId.REQ_BOOK_SEARCH:
+            }
+            case UniqueId.REQ_BOOK_SEARCH: {
                 if (resultCode == Activity.RESULT_OK) {
                     // don't enforce having an ID. We might not have found or added anything.
                     // but if we do, the data will be what EditBookActivity returns.
@@ -525,8 +565,8 @@ public class BooksOnBookshelf
                     mModel.setFullRebuild(false);
                 }
                 break;
-
-            case UniqueId.REQ_ADVANCED_LOCAL_SEARCH:
+            }
+            case UniqueId.REQ_ADVANCED_LOCAL_SEARCH: {
                 // no changes made, but we might have data to act on.
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
@@ -539,9 +579,9 @@ public class BooksOnBookshelf
                     }
                 }
                 break;
-
+            }
             // from BaseActivity Nav Panel
-            case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
+            case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     // the last edited/inserted shelf
@@ -551,9 +591,9 @@ public class BooksOnBookshelf
                     mModel.setFullRebuild(true);
                 }
                 break;
-
+            }
             // from BaseActivity Nav Panel
-            case UniqueId.REQ_NAV_PANEL_ADMIN:
+            case UniqueId.REQ_NAV_PANEL_ADMIN: {
                 if (resultCode == Activity.RESULT_OK) {
 
                     if ((data != null) && data.hasExtra(UniqueId.BKEY_IMPORT_RESULT)) {
@@ -587,19 +627,21 @@ public class BooksOnBookshelf
 //                    }
                 }
                 break;
-
+            }
             // from BaseActivity Nav Panel or from sort menu dialog
-            // TODO: more complicated then it should be....
             case UniqueId.REQ_NAV_PANEL_EDIT_STYLES: {
-                switch (resultCode) {
-                    case UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING:
-                    case UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES:
-                        // no data
-                        mModel.setFullRebuild(true);
-                        break;
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
 
-                    case UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE:
-                        Objects.requireNonNull(data);
+                    if (data.getBooleanExtra(UniqueId.BKEY_DELETED_SOMETHING, false)) {
+                        mModel.setFullRebuild(true);
+                    }
+
+                    if (data.getBooleanExtra(UniqueId.BKEY_PREFERRED_STYLES_MODIFIED, false)) {
+                        mModel.setFullRebuild(true);
+                    }
+
+                    if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
                         BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                         if (style != null) {
                             // save the new bookshelf/style combination
@@ -607,20 +649,15 @@ public class BooksOnBookshelf
                             mModel.setCurrentStyle(this, LocaleUtils.getLocale(this), style);
                         }
                         mModel.setFullRebuild(true);
-                        break;
-
-                    default:
-                        if (resultCode != Activity.RESULT_CANCELED) {
-                            Logger.warnWithStackTrace(this, "resultCode=" + resultCode);
-                        }
-                        break;
+                    }
                 }
                 break;
             }
 
-            default:
+            default: {
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
+            }
         }
 
         Tracker.exitOnActivityResult(this);
@@ -1055,7 +1092,7 @@ public class BooksOnBookshelf
                 title = row.getLevelText(this, mapper.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
             }
             // bring up the context menu
-            new MenuPicker<>(this, title, null, false, menu, position, (menuItem, pos) -> {
+            new MenuPicker<>(this, title, null, menu, position, (menuItem, pos) -> {
                 //noinspection ConstantConditions
                 cursor.moveToPosition(pos);
                 return onContextItemSelected(menuItem, cursor.getCursorMapper());
@@ -1078,7 +1115,7 @@ public class BooksOnBookshelf
 
         final int rowKind = row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND);
         switch (rowKind) {
-            case BooklistGroup.RowKind.BOOK:
+            case BooklistGroup.RowKind.BOOK: {
                 if (row.getInt(DBDefinitions.KEY_READ) != 0) {
                     menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread)
                         .setIcon(R.drawable.ic_check_box_outline_blank);
@@ -1149,8 +1186,8 @@ public class BooksOnBookshelf
                     }
                 }
                 break;
-
-            case BooklistGroup.RowKind.AUTHOR:
+            }
+            case BooklistGroup.RowKind.AUTHOR: {
                 menu.add(Menu.NONE, R.id.MENU_AUTHOR_WORKS, 0, R.string.menu_author_details)
                     .setIcon(R.drawable.ic_details);
                 menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT, 0, R.string.menu_edit)
@@ -1166,8 +1203,8 @@ public class BooksOnBookshelf
                          MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_books)
                     .setIcon(R.drawable.ic_cloud_download);
                 break;
-
-            case BooklistGroup.RowKind.SERIES:
+            }
+            case BooklistGroup.RowKind.SERIES: {
                 if (row.getLong(DBDefinitions.KEY_FK_SERIES) != 0) {
                     menu.add(Menu.NONE, R.id.MENU_SERIES_DELETE, 0, R.string.menu_delete)
                         .setIcon(R.drawable.ic_delete);
@@ -1187,45 +1224,46 @@ public class BooksOnBookshelf
                         .setIcon(R.drawable.ic_cloud_download);
                 }
                 break;
-
-            case BooklistGroup.RowKind.PUBLISHER:
+            }
+            case BooklistGroup.RowKind.PUBLISHER: {
                 if (!row.getString(DBDefinitions.KEY_PUBLISHER).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_PUBLISHER_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
-
-            case BooklistGroup.RowKind.LANGUAGE:
+            }
+            case BooklistGroup.RowKind.LANGUAGE: {
                 if (!row.getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
-
-            case BooklistGroup.RowKind.LOCATION:
+            }
+            case BooklistGroup.RowKind.LOCATION: {
                 if (!row.getString(DBDefinitions.KEY_LOCATION).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
-
-            case BooklistGroup.RowKind.GENRE:
+            }
+            case BooklistGroup.RowKind.GENRE: {
                 if (!row.getString(DBDefinitions.KEY_GENRE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
-
-            case BooklistGroup.RowKind.FORMAT:
+            }
+            case BooklistGroup.RowKind.FORMAT: {
                 if (!row.getString(DBDefinitions.KEY_FORMAT).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
-
-            default:
+            }
+            default: {
                 Logger.warnWithStackTrace(this, "rowKind=" + rowKind);
                 break;
+            }
         }
 
         // if there are no specific menus for the current row.
@@ -1268,7 +1306,7 @@ public class BooksOnBookshelf
         long bookId;
 
         switch (menuItem.getItemId()) {
-            case R.id.MENU_BOOK_DELETE:
+            case R.id.MENU_BOOK_DELETE: {
                 String title = row.getString(DBDefinitions.KEY_TITLE);
                 bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
                 List<Author> authors = mModel.getDb().getAuthorsByBookId(bookId);
@@ -1278,8 +1316,8 @@ public class BooksOnBookshelf
                             .onBookChanged(bookId, BookChangedListener.BOOK_WAS_DELETED, null);
                 });
                 return true;
-
-            case R.id.MENU_BOOK_READ:
+            }
+            case R.id.MENU_BOOK_READ: {
                 // toggle the read status
                 bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
                 if (mModel.getDb().setBookRead(bookId, !row.getBoolean(DBDefinitions.KEY_READ))) {
@@ -1287,7 +1325,7 @@ public class BooksOnBookshelf
                             .onBookChanged(bookId, BookChangedListener.BOOK_READ, null);
                 }
                 return true;
-
+            }
             case R.id.MENU_BOOK_EDIT: {
                 bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
                 Intent intent = new Intent(this, EditBookActivity.class)
@@ -1302,40 +1340,41 @@ public class BooksOnBookshelf
                 Intent intent = new Intent(this, UpdateFieldsFromInternetActivity.class);
                 ArrayList<Long> bookIds;
                 switch (row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)) {
-                    case BooklistGroup.RowKind.BOOK:
+                    case BooklistGroup.RowKind.BOOK: {
                         bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
                         bookIds = new ArrayList<>();
                         bookIds.add(bookId);
                         intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
                                         row.getString(DBDefinitions.KEY_TITLE));
                         break;
-
-                    case BooklistGroup.RowKind.AUTHOR:
+                    }
+                    case BooklistGroup.RowKind.AUTHOR: {
                         bookIds = mModel.getDb().getBookIdsByAuthor(
                                 row.getLong(DBDefinitions.KEY_FK_AUTHOR));
                         intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
                                         row.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
                         break;
-
-                    case BooklistGroup.RowKind.SERIES:
+                    }
+                    case BooklistGroup.RowKind.SERIES: {
                         bookIds = mModel.getDb().getBookIdsBySeries(
                                 row.getLong(DBDefinitions.KEY_FK_SERIES));
                         intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
                                         row.getString(DBDefinitions.KEY_SERIES_TITLE));
                         break;
-
-                    case BooklistGroup.RowKind.PUBLISHER:
+                    }
+                    case BooklistGroup.RowKind.PUBLISHER: {
                         String publisher = row.getString(DBDefinitions.KEY_PUBLISHER);
                         bookIds = mModel.getDb().getBookIdsByPublisher(publisher);
                         intent.putExtra(UniqueId.BKEY_DIALOG_TITLE, publisher);
                         break;
-
-                    default:
+                    }
+                    default: {
                         Logger.warnWithStackTrace(this, "onContextItemSelected",
                                                   "MENU_BOOK_UPDATE_FROM_INTERNET not supported",
                                                   "RowKind="
                                                   + row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND));
                         return true;
+                    }
                 }
 
                 intent.putExtra(UniqueId.BKEY_ID_LIST, bookIds);
@@ -1345,7 +1384,7 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
 
-            case R.id.MENU_BOOK_LOAN_ADD:
+            case R.id.MENU_BOOK_LOAN_ADD: {
                 if (fm.findFragmentByTag(LendBookDialogFragment.TAG) == null) {
                     LendBookDialogFragment.newInstance(row.getLong(DBDefinitions.KEY_FK_BOOK),
                                                        row.getLong(DBDefinitions.KEY_FK_AUTHOR),
@@ -1353,31 +1392,31 @@ public class BooksOnBookshelf
                                           .show(fm, LendBookDialogFragment.TAG);
                 }
                 return true;
-
-            case R.id.MENU_BOOK_LOAN_DELETE:
+            }
+            case R.id.MENU_BOOK_LOAN_DELETE: {
                 mModel.getDb().deleteLoan(row.getLong(DBDefinitions.KEY_FK_BOOK));
                 mBookChangedListener.onBookChanged(row.getLong(DBDefinitions.KEY_FK_BOOK),
                                                    BookChangedListener.BOOK_LOANEE, null);
                 return true;
-
+            }
             /* ********************************************************************************** */
 
-            case R.id.MENU_SHARE:
+            case R.id.MENU_SHARE: {
                 Book book = new Book(row.getLong(DBDefinitions.KEY_FK_BOOK), mModel.getDb());
                 startActivity(Intent.createChooser(book.getShareBookIntent(this),
                                                    getString(R.string.menu_share_this)));
                 return true;
-
-            case R.id.MENU_BOOK_SEND_TO_GOODREADS:
+            }
+            case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
                 UserMessage.show(this, R.string.progress_msg_connecting);
                 new SendOneBookTask(row.getLong(DBDefinitions.KEY_FK_BOOK),
                                     mModel.getGoodreadsTaskListener())
                         .execute();
                 return true;
-
+            }
             /* ********************************************************************************** */
 
-            case R.id.MENU_SERIES_EDIT:
+            case R.id.MENU_SERIES_EDIT: {
                 if (fm.findFragmentByTag(EditSeriesDialogFragment.TAG) == null) {
                     long seriesId = row.getLong(DBDefinitions.KEY_FK_SERIES);
                     //noinspection ConstantConditions
@@ -1385,8 +1424,8 @@ public class BooksOnBookshelf
                                             .show(fm, EditSeriesDialogFragment.TAG);
                 }
                 return true;
-
-            case R.id.MENU_SERIES_COMPLETE:
+            }
+            case R.id.MENU_SERIES_COMPLETE: {
                 long seriesId = row.getLong(DBDefinitions.KEY_FK_SERIES);
                 // toggle the complete status
                 boolean seriesComplete = !row.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
@@ -1394,7 +1433,7 @@ public class BooksOnBookshelf
                     mBookChangedListener.onBookChanged(0, BookChangedListener.SERIES, null);
                 }
                 return true;
-
+            }
             case R.id.MENU_SERIES_DELETE: {
                 Series series = mModel.getDb().getSeries(row.getLong(DBDefinitions.KEY_FK_SERIES));
                 if (series != null) {
@@ -1416,7 +1455,7 @@ public class BooksOnBookshelf
                 return true;
             }
 
-            case R.id.MENU_AUTHOR_EDIT:
+            case R.id.MENU_AUTHOR_EDIT: {
                 if (fm.findFragmentByTag(EditAuthorDialogFragment.TAG) == null) {
                     long authorId = row.getLong(DBDefinitions.KEY_FK_AUTHOR);
                     //noinspection ConstantConditions
@@ -1424,8 +1463,8 @@ public class BooksOnBookshelf
                                             .show(fm, EditAuthorDialogFragment.TAG);
                 }
                 return true;
-
-            case R.id.MENU_AUTHOR_COMPLETE:
+            }
+            case R.id.MENU_AUTHOR_COMPLETE: {
                 long authorId = row.getLong(DBDefinitions.KEY_FK_AUTHOR);
                 // toggle the complete status
                 boolean authorComplete = !row.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
@@ -1433,59 +1472,59 @@ public class BooksOnBookshelf
                     mBookChangedListener.onBookChanged(0, BookChangedListener.AUTHOR, null);
                 }
                 return true;
-
+            }
             /* ********************************************************************************** */
 
-            case R.id.MENU_PUBLISHER_EDIT:
+            case R.id.MENU_PUBLISHER_EDIT: {
                 if (fm.findFragmentByTag(EditPublisherDialogFragment.TAG) == null) {
                     Publisher publisher = new Publisher(row.getString(DBDefinitions.KEY_PUBLISHER));
                     EditPublisherDialogFragment.newInstance(publisher)
                                                .show(fm, EditPublisherDialogFragment.TAG);
                 }
                 return true;
-
+            }
             /* ********************************************************************************** */
 
-            case R.id.MENU_FORMAT_EDIT:
+            case R.id.MENU_FORMAT_EDIT: {
                 new EditFormatDialog(this, mModel.getDb(), mBookChangedListener)
                         .edit(row.getString(DBDefinitions.KEY_FORMAT));
                 return true;
-
-            case R.id.MENU_GENRE_EDIT:
+            }
+            case R.id.MENU_GENRE_EDIT: {
                 new EditGenreDialog(this, mModel.getDb(), mBookChangedListener)
                         .edit(row.getString(DBDefinitions.KEY_GENRE));
                 return true;
-
-            case R.id.MENU_LANGUAGE_EDIT:
+            }
+            case R.id.MENU_LANGUAGE_EDIT: {
                 new EditLanguageDialog(this, mModel.getDb(), mBookChangedListener)
                         .edit(row.getString(DBDefinitions.KEY_LANGUAGE));
                 return true;
-
-            case R.id.MENU_LOCATION_EDIT:
+            }
+            case R.id.MENU_LOCATION_EDIT: {
                 new EditLocationDialog(this, mModel.getDb(), mBookChangedListener)
                         .edit(row.getString(DBDefinitions.KEY_LOCATION));
                 return true;
-
+            }
             /* ********************************************************************************** */
 
-            case R.id.MENU_VIEW_BOOK_AT_ISFDB:
+            case R.id.MENU_VIEW_BOOK_AT_ISFDB: {
                 IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_ISFDB_ID));
                 return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
+            }
+            case R.id.MENU_VIEW_BOOK_AT_GOODREADS: {
                 IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
                 return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
+            }
+            case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING: {
                 IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
                 return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
+            }
+            case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY: {
                 IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_OPEN_LIBRARY_ID));
                 return true;
-
+            }
             /* ********************************************************************************** */
-            case R.id.SUBMENU_AMAZON_SEARCH:
+            case R.id.SUBMENU_AMAZON_SEARCH: {
                 // after the user selects the submenu, we make individual items visible/hidden.
                 boolean hasAuthor = row.contains(DBDefinitions.KEY_FK_AUTHOR)
                                     && row.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
@@ -1501,21 +1540,21 @@ public class BooksOnBookshelf
                              .setVisible(hasSeries);
                 // let the normal call flow go on, it will display the submenu
                 return false;
-
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
+            }
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                 AmazonManager.openWebsite(this, mModel.getAuthorFromRow(row), null);
                 return true;
-
-            case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
+            }
+            case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
                 AmazonManager.openWebsite(this, null, mModel.getSeriesFromRow(row));
                 return true;
-
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
+            }
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
                 AmazonManager.openWebsite(this,
                                           mModel.getAuthorFromRow(row),
                                           mModel.getSeriesFromRow(row));
                 return true;
-
+            }
             default:
                 return false;
         }

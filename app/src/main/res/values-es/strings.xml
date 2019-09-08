@@ -28,7 +28,7 @@
   -->
 
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’) -->
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
 <!--suppress LongLine -->
 <resources>
     <string name="pe_ui_theme_day_night">Día / Noche</string>
@@ -154,7 +154,7 @@
     <string name="error_columns_are_blank">Las columnas %1$s tienen en blanco la fila %2$d</string>
     <string name="error_email_failed">El envío del correo electrónico falló.</string>
     <string name="error_failed_x">Falló: %1$d</string>
-    <string name="error_google_play_missing">Google Play / Market no está instalado</string>
+    <string name="error_google_play_store_missing">Google Play / Market no está instalado</string>
     <string name="error_if_the_problem_persists">Si el problema persiste, contacte con soporte utilizando la opción de «Admin» del menú principal.</string>
     <string name="error_import_failed">La importación falló.</string>
     <string name="error_network_timeout">No hay respuesta, por favor intente de nuevo</string>
@@ -586,7 +586,8 @@
     <string name="warning_action_requires_isbn">Esta acción requiere un ISBN válido.</string>
     <string name="warning_author_already_in_list">Ese autor ya está en la lista</string>
     <string name="warning_backup_request">¿Desea realizar una copia de la base de datos a la tarjeta SD?</string>
-    <string name="warning_bad_scanner">Su aplicación de escaneado de código de barras no es compatible con &APP_NAME;. Recomendamos la instalción de Zxing barcode scanner, y si ya está instalada, pruebe a desinstalarla y volver a instalarla.</string>
+    <string name="warning_bad_scanner">Su aplicación de escaneado de código de barras no es compatible con &APP_NAME;.</string>
+    <string name="info_install_scanner_recommendation">Recomendamos la instalción de Zxing barcode scanner, y si ya está instalada, pruebe a desinstalarla y volver a instalarla.</string>
     <string name="warning_book_no_longer_exists">El libro especificado no existe</string>
     <string name="warning_book_not_found">El libro escaneado no ha sido encontrado. El código de barras correcto se encuentra a veces en el interior de la portada. También puede introducir los datos de forma manual.</string>
     <string name="warning_book_was_deleted_uc">ESTE LIBRO HA SIDO ELIMINADO</string>
@@ -631,5 +632,8 @@
     <string name="pt_bob_show_details_uses_task_on">retrasado</string>
     <string name="lbl_author_primary">escritor</string>
     <string name="lbl_edition_slipcase">Funda</string>
+    <string name="menu_search_local">Busqueda local</string>
+    <string name="pg_reformat">Reformatear</string>
+    <string name="info_install_scanner_manually">Por favor instale: %1$s</string>
 
 </resources>

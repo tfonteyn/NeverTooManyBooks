@@ -27,15 +27,18 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- Define entities that can be used inside of other string (not possible with standard Android
- resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
- cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- each language string.xml file uses localized quotes as per
-    https://en.wikipedia.org/wiki/Quotation_mark#Summary_table
-    See top of each file for the "quotes" comment.
+<!--
+    Define entities that can be used inside of other string (not possible with standard Android
+    resources e.g. the entities file define APP_NAME; use it in another string with: &APP_NAME;
+    cannot put these into an external file: https://issuetracker.google.com/issues/68434088
 -->
-<!-- Quotes “…” - Regex to find wrong ones: („|‘|’|«|») -->
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
+<!--
+    Each language string.xml file uses localized quotes as per
+    https://en.wikipedia.org/wiki/Quotation_mark#Summary_table
+    See top of each language resource file for the "quotes" comment.
+-->
+<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
 
@@ -120,7 +123,7 @@
     </string>
     <string name="error_network_timeout">No response, please try again.</string>
     <string name="error_email_failed">Failed to send the email.</string>
-    <string name="error_google_play_missing">Google Play/Market is not installed.</string>
+    <string name="error_google_play_store_missing">Google Play/Market is not installed.</string>
     <string name="error_search_configuration">
         Configuration error. Please open the Settings page and check your Search Site preferences.
     </string>
@@ -195,11 +198,7 @@
     <!-- Displayed when a file/save dialog results in an invalid file -->
     <string name="warning_enter_valid_filename">Please enter a valid file name.</string>
 
-    <string name="warning_bad_scanner">
-        It looks like your existing barcode scanner app is not compatible with &APP_NAME;.
-        We recommend installing the Zxing barcode scanner application, and if it is already
-        installed, we recommend uninstalling it and reinstalling it.
-    </string>
+
 
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
@@ -228,6 +227,17 @@
     <!-- prompt to install a scanner. Shown above a menu of Scanners. -->
     <string name="info_install_scanner">
         To scan ISBN bar codes, please tap below to install one of these barcode scanner applications.
+    </string>
+
+    <string name="warning_bad_scanner">
+        It looks like your existing barcode scanner app is not compatible with &APP_NAME;.
+    </string>
+
+    <!-- prompt to install a scanner. Shown above a menu of Scanners.
+        This is used after a previous scanner selection was not working. -->
+    <string name="info_install_scanner_recommendation">
+        We recommend installing the Zxing barcode scanner application, and if it is already
+        installed, we recommend uninstalling it and reinstalling it.
     </string>
 
     <!-- prompt to install a scanner. Shown if the device does not support Google APIs. -->
@@ -1260,7 +1270,6 @@
 
     <!-- checkbox for the TOC edit screen. Should fit on a single line -->
     <string name="lbl_toc_anthology">This is an Anthology</string>
-    <string name="lbl_toc_has_notes">It has an introduction, afterword,…</string>
     <string name="lbl_toc_multiple_authors">It has multiple authors</string>
 
     <!-- Book edition -->
@@ -1444,9 +1453,6 @@
     <!-- ####################################################################################### -->
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
-
-    <!-- wouldn't there be some 'official' string ?? -->
-    <string name="google_play_services">Google Play Services</string>
 
     <!-- happy -->
     <string name="lbl_author_type">Author type</string>

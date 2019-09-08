@@ -140,7 +140,7 @@ public class BackupActivity
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (message.taskId) {
-            case R.id.TASK_ID_WRITE_TO_ARCHIVE:
+            case R.id.TASK_ID_WRITE_TO_ARCHIVE: {
                 if (message.wasSuccessful) {
                     File file = mOptionsModel.getFile();
                     //noinspection ConstantConditions
@@ -174,7 +174,7 @@ public class BackupActivity
                             .show();
                 }
                 break;
-
+            }
             default:
                 Logger.warnWithStackTrace(this, "taskId=" + message.taskId);
                 break;
@@ -247,6 +247,8 @@ public class BackupActivity
 
     /**
      * kick of the backup task.
+     *
+     * @param options final options to use
      */
     private void onOptionsSet(@NonNull final ExportOptions options) {
         // sanity check

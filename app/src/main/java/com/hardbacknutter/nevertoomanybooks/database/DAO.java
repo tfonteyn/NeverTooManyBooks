@@ -382,6 +382,8 @@ public class DAO
 
     /**
      * DEBUG only.
+     *
+     * @param db Database Access
      */
     private static void debugAddInstance(@NonNull final DAO db) {
         Logger.debug(db, "debugAddInstance",
@@ -393,6 +395,8 @@ public class DAO
 
     /**
      * DEBUG only.
+     *
+     * @param db Database Access
      */
     private static void debugRemoveInstance(@NonNull final DAO db) {
         Logger.debug(db, "debugRemoveInstance",
@@ -809,12 +813,13 @@ public class DAO
             CursorMapper mapper = new CursorMapper(cursor);
 
             while (cursor.moveToNext()) {
-                TocEntry tocEntry = new TocEntry(mapper.getLong(DOM_PK_ID.name),
-                                                 author,
-                                                 mapper.getString(DOM_TITLE.name),
-                                                 mapper.getString(DOM_DATE_FIRST_PUBLICATION.name),
-                                                 mapper.getString(DOM_TOC_TYPE.name).charAt(0),
-                                                 mapper.getInt(DOM_BL_BOOK_COUNT.name));
+                TocEntry tocEntry =
+                        new TocEntry(mapper.getLong(DOM_PK_ID.getName()),
+                                     author,
+                                     mapper.getString(DOM_TITLE.getName()),
+                                     mapper.getString(DOM_DATE_FIRST_PUBLICATION.getName()),
+                                     mapper.getString(DOM_TOC_TYPE.getName()).charAt(0),
+                                     mapper.getInt(DOM_BL_BOOK_COUNT.getName()));
                 list.add(tocEntry);
             }
         }
@@ -865,13 +870,13 @@ public class DAO
         Locale authorLocale = author.getLocale(userLocale);
 
         ContentValues cv = new ContentValues();
-        cv.put(DOM_AUTHOR_FAMILY_NAME.name, author.getFamilyName());
-        cv.put(DOM_AUTHOR_FAMILY_NAME_OB.name,
+        cv.put(DOM_AUTHOR_FAMILY_NAME.getName(), author.getFamilyName());
+        cv.put(DOM_AUTHOR_FAMILY_NAME_OB.getName(),
                encodeOrderByColumn(author.getFamilyName(), authorLocale));
-        cv.put(DOM_AUTHOR_GIVEN_NAMES.name, author.getGivenNames());
-        cv.put(DOM_AUTHOR_GIVEN_NAMES_OB.name,
+        cv.put(DOM_AUTHOR_GIVEN_NAMES.getName(), author.getGivenNames());
+        cv.put(DOM_AUTHOR_GIVEN_NAMES_OB.getName(),
                encodeOrderByColumn(author.getGivenNames(), authorLocale));
-        cv.put(DOM_AUTHOR_IS_COMPLETE.name, author.isComplete());
+        cv.put(DOM_AUTHOR_IS_COMPLETE.getName(), author.isComplete());
 
         return sSyncedDb.update(TBL_AUTHORS.getName(), cv,
                                 DOM_PK_ID + "=?",
@@ -1194,7 +1199,7 @@ public class DAO
         // Handle TITLE
         if (book.containsKey(DBDefinitions.KEY_TITLE)) {
             String title = book.preprocessTitle(context, isNew, bookLocale);
-            book.putString(DOM_TITLE_OB.name, encodeOrderByColumn(title, bookLocale));
+            book.putString(DOM_TITLE_OB.getName(), encodeOrderByColumn(title, bookLocale));
         }
 
         // Handle TOC_BITMASK only, no handling of actual titles here,
@@ -1228,19 +1233,19 @@ public class DAO
                 DOM_BOOK_LIBRARY_THING_ID,
                 DOM_BOOK_GOODREADS_ID,
                 }) {
-            if (book.containsKey(domain.name)) {
+            if (book.containsKey(domain.getName())) {
                 switch (domain.getType()) {
                     case ColumnInfo.TYPE_INTEGER:
-                        long v = book.getLong(domain.name);
+                        long v = book.getLong(domain.getName());
                         if (v < 1) {
-                            book.remove(domain.name);
+                            book.remove(domain.getName());
                         }
                         break;
 
                     case ColumnInfo.TYPE_TEXT:
-                        Object o = book.get(domain.name);
+                        Object o = book.get(domain.getName());
                         if (o == null || o.toString().isEmpty()) {
-                            book.remove(domain.name);
+                            book.remove(domain.getName());
                         }
                         break;
 
@@ -1333,16 +1338,16 @@ public class DAO
                             DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         }
 
-        // Handle currencies making sure they are lowercase
+        // Handle currencies making sure they are uppercase
         if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
             book.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                            book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
-                               .toLowerCase(bookLocale));
+                               .toUpperCase(bookLocale));
         }
         if (book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
             book.putString(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
                            book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)
-                               .toLowerCase(bookLocale));
+                               .toUpperCase(bookLocale));
         }
     }
 
@@ -1394,7 +1399,7 @@ public class DAO
                 }
                 insertAuthor(locale, author);
             }
-            book.putLong(DOM_FK_AUTHOR.name, author.getId());
+            book.putLong(DOM_FK_AUTHOR.getName(), author.getId());
 
         } else if (book.containsKey(KEY_AUTHOR_FAMILY_NAME)) {
             String family = book.getString(KEY_AUTHOR_FAMILY_NAME);
@@ -1414,7 +1419,7 @@ public class DAO
                 }
                 insertAuthor(locale, author);
             }
-            book.putLong(DOM_FK_AUTHOR.name, author.getId());
+            book.putLong(DOM_FK_AUTHOR.getName(), author.getId());
         }
     }
 
@@ -1578,7 +1583,7 @@ public class DAO
     private void deleteThumbnail(@Nullable final String uuid) {
         if (uuid != null) {
             // remove from file system
-            StorageUtils.deleteFile(StorageUtils.getCoverFile(uuid));
+            StorageUtils.deleteFile(StorageUtils.getCoverForUuid(uuid));
             // remove from cache
             if (!uuid.isEmpty()) {
                 CoversDAO.delete(uuid);
@@ -1647,7 +1652,7 @@ public class DAO
 
             // if we have an id, use it.
             if (bookId > 0) {
-                cv.put(DOM_PK_ID.name, bookId);
+                cv.put(DOM_PK_ID.getName(), bookId);
             }
 
             // if we do NOT have a date set, then use TODAY
@@ -1671,7 +1676,7 @@ public class DAO
             }
 
             // set the new id on the Book itself
-            book.putLong(DOM_PK_ID.name, newBookId);
+            book.putLong(DOM_PK_ID.getName(), newBookId);
             // and return it
             return newBookId;
 
@@ -1723,15 +1728,15 @@ public class DAO
             ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(locale));
 
             // Disallow UUID updates
-            if (cv.containsKey(DOM_BOOK_UUID.name)) {
-                cv.remove(DOM_BOOK_UUID.name);
+            if (cv.containsKey(DOM_BOOK_UUID.getName())) {
+                cv.remove(DOM_BOOK_UUID.getName());
             }
 
             // set the DOM_DATE_LAST_UPDATED to 'now' if we're allowed,
             // or if it's not present already.
             if ((flags & BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT) == 0
-                || !cv.containsKey(DOM_DATE_LAST_UPDATED.name)) {
-                cv.put(DOM_DATE_LAST_UPDATED.name, DateUtils.utcSqlDateTimeForToday());
+                || !cv.containsKey(DOM_DATE_LAST_UPDATED.getName())) {
+                cv.put(DOM_DATE_LAST_UPDATED.getName(), DateUtils.utcSqlDateTimeForToday());
             }
 
             // go !
@@ -1747,7 +1752,7 @@ public class DAO
                 sSyncedDb.setTransactionSuccessful();
             }
             // make sure the Book has the correct id.
-            book.putLong(DOM_PK_ID.name, bookId);
+            book.putLong(DOM_PK_ID.getName(), bookId);
 
             return rowsAffected;
         } catch (@NonNull final RuntimeException e) {
@@ -1772,11 +1777,11 @@ public class DAO
     public boolean setBookRead(final long id,
                                final boolean read) {
         ContentValues cv = new ContentValues();
-        cv.put(DOM_BOOK_READ.name, read);
+        cv.put(DOM_BOOK_READ.getName(), read);
         if (read) {
-            cv.put(DOM_BOOK_READ_END.name, DateUtils.localSqlDateForToday());
+            cv.put(DOM_BOOK_READ_END.getName(), DateUtils.localSqlDateForToday());
         } else {
-            cv.put(DOM_BOOK_READ_END.name, "");
+            cv.put(DOM_BOOK_READ_END.getName(), "");
         }
 
         return 0 < sSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
@@ -1794,7 +1799,7 @@ public class DAO
     public boolean setAuthorComplete(final long authorId,
                                      final boolean isComplete) {
         ContentValues cv = new ContentValues();
-        cv.put(DOM_AUTHOR_IS_COMPLETE.name, isComplete);
+        cv.put(DOM_AUTHOR_IS_COMPLETE.getName(), isComplete);
 
         return 0 < sSyncedDb.update(TBL_AUTHORS.getName(), cv, DOM_PK_ID + "=?",
                                     new String[]{String.valueOf(authorId)});
@@ -1811,7 +1816,7 @@ public class DAO
     public boolean setSeriesComplete(final long seriesId,
                                      final boolean isComplete) {
         ContentValues cv = new ContentValues();
-        cv.put(DOM_SERIES_IS_COMPLETE.name, isComplete);
+        cv.put(DOM_SERIES_IS_COMPLETE.getName(), isComplete);
 
         return 0 < sSyncedDb.update(TBL_SERIES.getName(), cv, DOM_PK_ID + "=?",
                                     new String[]{String.valueOf(seriesId)});
@@ -1850,7 +1855,7 @@ public class DAO
 
         if (book.containsKey(DBDefinitions.KEY_LOANEE)
             && !book.getString(DBDefinitions.KEY_LOANEE).isEmpty()) {
-            updateOrInsertLoan(bookId, book.getString(DOM_LOANEE.name));
+            updateOrInsertLoan(bookId, book.getString(DOM_LOANEE.getName()));
         }
     }
 
@@ -2067,9 +2072,9 @@ public class DAO
                 String title = tocEntry.preprocessTitle(context, false, bookLocale);
 
                 ContentValues cv = new ContentValues();
-                cv.put(DOM_TITLE.name, title);
-                cv.put(DOM_TITLE_OB.name, encodeOrderByColumn(title, bookLocale));
-                cv.put(DOM_DATE_FIRST_PUBLICATION.name, tocEntry.getFirstPublication());
+                cv.put(DOM_TITLE.getName(), title);
+                cv.put(DOM_TITLE_OB.getName(), encodeOrderByColumn(title, bookLocale));
+                cv.put(DOM_DATE_FIRST_PUBLICATION.getName(), tocEntry.getFirstPublication());
 
                 sSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
                                  DOM_PK_ID + "=?",
@@ -2421,8 +2426,8 @@ public class DAO
         try (Cursor cursor = sSyncedDb.rawQuery(sql, new String[]{String.valueOf(fromId),
                                                                   String.valueOf(toId)})) {
             // Get the column indexes we need
-            int bookCol = cursor.getColumnIndexOrThrow(DOM_FK_BOOK.name);
-            int posCol = cursor.getColumnIndexOrThrow(posDomain.name);
+            int bookCol = cursor.getColumnIndexOrThrow(DOM_FK_BOOK.getName());
+            int posCol = cursor.getColumnIndexOrThrow(posDomain.getName());
 
             // Loop through all instances of the old object appearing
             while (cursor.moveToNext()) {
@@ -2506,12 +2511,12 @@ public class DAO
             CursorMapper mapper = new CursorMapper(cursor);
 
             while (cursor.moveToNext()) {
-                Author author = new Author(mapper.getLong(DOM_FK_AUTHOR.name), mapper);
+                Author author = new Author(mapper.getLong(DOM_FK_AUTHOR.getName()), mapper);
 
-                list.add(new TocEntry(mapper.getLong(DOM_PK_ID.name),
+                list.add(new TocEntry(mapper.getLong(DOM_PK_ID.getName()),
                                       author,
-                                      mapper.getString(DOM_TITLE.name),
-                                      mapper.getString(DOM_DATE_FIRST_PUBLICATION.name),
+                                      mapper.getString(DOM_TITLE.getName()),
+                                      mapper.getString(DOM_DATE_FIRST_PUBLICATION.getName()),
                                       TocEntry.Type.TYPE_BOOK, 1));
             }
         }
@@ -2636,7 +2641,7 @@ public class DAO
                                                 new String[]{String.valueOf(bookId)})) {
             CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Author(mapper.getLong(DOM_PK_ID.name), mapper));
+                list.add(new Author(mapper.getLong(DOM_PK_ID.getName()), mapper));
             }
         }
         return list;
@@ -2659,7 +2664,7 @@ public class DAO
             }
             CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Series(mapper.getLong(DOM_PK_ID.name), mapper));
+                list.add(new Series(mapper.getLong(DOM_PK_ID.getName()), mapper));
             }
         }
         return list;
@@ -2675,7 +2680,7 @@ public class DAO
      * @return A full piece of SQL to perform the search
      */
     @NonNull
-    private String getAllBooksSql(@NonNull final String whereClause) {
+    private String getBookSql(@NonNull final String whereClause) {
 
         Context context = App.getLocalizedAppContext();
         String andOthersText = context.getString(R.string.and_others);
@@ -2710,7 +2715,7 @@ public class DAO
     public BookCursor fetchBookById(final long bookId) {
         return (BookCursor)
                        sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                                                     getAllBooksSql(
+                                                     getBookSql(
                                                              TBL_BOOKS.dot(DOM_PK_ID) + "=?"),
                                                      new String[]{String.valueOf(bookId)},
                                                      "");
@@ -2747,7 +2752,7 @@ public class DAO
         }
 
         // the order by is used to be able to restart the update.
-        String sql = getAllBooksSql(whereClause) + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
+        String sql = getBookSql(whereClause) + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
 
         return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                                           sql, null, "");
@@ -2864,7 +2869,7 @@ public class DAO
         int rowsAffected;
 
         ContentValues cv = new ContentValues();
-        cv.put(DOM_FK_BOOKSHELF.name, destId);
+        cv.put(DOM_FK_BOOKSHELF.getName(), destId);
 
         SyncLock txLock = sSyncedDb.beginTransaction(true);
         try {
@@ -2930,7 +2935,7 @@ public class DAO
                                                 new String[]{name})) {
             CursorMapper mapper = new CursorMapper(cursor);
             if (cursor.moveToFirst()) {
-                return new Bookshelf(mapper.getLong(DOM_PK_ID.name), mapper);
+                return new Bookshelf(mapper.getLong(DOM_PK_ID.getName()), mapper);
             }
             return null;
         }
@@ -2947,7 +2952,7 @@ public class DAO
                                                 new String[]{String.valueOf(id)})) {
             CursorMapper mapper = new CursorMapper(cursor);
             if (cursor.moveToFirst()) {
-                return new Bookshelf(mapper.getLong(DOM_PK_ID.name), mapper);
+                return new Bookshelf(mapper.getLong(DOM_PK_ID.getName()), mapper);
             }
             return null;
         }
@@ -2966,8 +2971,8 @@ public class DAO
                                final long styleId) {
 
         ContentValues cv = new ContentValues();
-        cv.put(DOM_BOOKSHELF.name, bookshelf.getName());
-        cv.put(DOM_FK_STYLE_ID.name, styleId);
+        cv.put(DOM_BOOKSHELF.getName(), bookshelf.getName());
+        cv.put(DOM_FK_STYLE_ID.getName(), styleId);
 
         return sSyncedDb.update(TBL_BOOKSHELF.getName(), cv,
                                 DOM_PK_ID + "=?",
@@ -3009,7 +3014,7 @@ public class DAO
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.BOOKSHELVES_ORDERED, null)) {
             CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Bookshelf(mapper.getLong(DOM_PK_ID.name), mapper));
+                list.add(new Bookshelf(mapper.getLong(DOM_PK_ID.getName()), mapper));
             }
         }
         return list;
@@ -3028,7 +3033,7 @@ public class DAO
                                                 new String[]{String.valueOf(bookId)})) {
             CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Bookshelf(mapper.getLong(DOM_PK_ID.name), mapper));
+                list.add(new Bookshelf(mapper.getLong(DOM_PK_ID.getName()), mapper));
             }
             return list;
         }
@@ -3043,7 +3048,11 @@ public class DAO
     public Map<String, BooklistStyle> getUserStyles() {
         Map<String, BooklistStyle> list = new LinkedHashMap<>();
 
-        String sql = SqlSelectFullTable.BOOKLIST_STYLES + " WHERE " + DOM_STYLE_IS_BUILTIN + "=0";
+        String sql = SqlSelectFullTable.BOOKLIST_STYLES
+                     + " WHERE " + DOM_STYLE_IS_BUILTIN + "=0"
+                     // We order by the id, i.e. in the order the styles were created.
+                     // This is only done to get a reproducible and consistent order.
+                     + " ORDER BY " + DOM_PK_ID;
 
         try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
             if (cursor.getCount() == 0) {
@@ -3051,8 +3060,8 @@ public class DAO
             }
             CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
-                long id = mapper.getLong(DOM_PK_ID.name);
-                String uuid = mapper.getString(DOM_UUID.name);
+                long id = mapper.getLong(DOM_PK_ID.getName());
+                String uuid = mapper.getString(DOM_UUID.getName());
                 list.put(uuid, new BooklistStyle(id, uuid));
             }
         }
@@ -3127,21 +3136,23 @@ public class DAO
     }
 
     /**
-     * Returns a unique list of all currencies in the database.
+     * Returns a unique list of all currencies in the database for the specified domain.
+     *
+     * @param domainName for which to collect the used currency codes
      *
      * @return The list
      */
     @NonNull
-    public ArrayList<String> getCurrencyCodes(@NonNull final String type) {
+    public ArrayList<String> getCurrencyCodes(@NonNull final String domainName) {
         String column;
-        if (DBDefinitions.KEY_PRICE_LISTED_CURRENCY.equals(type)) {
+        if (DBDefinitions.KEY_PRICE_LISTED_CURRENCY.equals(domainName)) {
             column = DBDefinitions.KEY_PRICE_LISTED_CURRENCY;
 //        } else if (DBDefinitions.KEY_PRICE_PAID_CURRENCY.equals(type)) {
         } else {
             column = DBDefinitions.KEY_PRICE_PAID_CURRENCY;
         }
 
-        String sql = "SELECT DISTINCT " + column + " FROM " + TBL_BOOKS
+        String sql = "SELECT DISTINCT upper(" + column + ") FROM " + TBL_BOOKS
                      + " ORDER BY upper(" + column + ") " + COLLATION;
 
         try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
@@ -3297,7 +3308,7 @@ public class DAO
     private boolean updateLoan(final long bookId,
                                @NonNull final String loanee) {
         ContentValues cv = new ContentValues();
-        cv.put(DOM_LOANEE.name, loanee);
+        cv.put(DOM_LOANEE.getName(), loanee);
         int rowsAffected = sSyncedDb.update(TBL_BOOK_LOANEE.getName(), cv,
                                             DOM_FK_BOOK + "=?",
                                             new String[]{String.valueOf(bookId)});
@@ -3425,9 +3436,9 @@ public class DAO
         String title = series.preprocessTitle(context, false, seriesLocale);
 
         ContentValues cv = new ContentValues();
-        cv.put(DOM_SERIES_TITLE.name, title);
-        cv.put(DOM_SERIES_TITLE_OB.name, encodeOrderByColumn(title, seriesLocale));
-        cv.put(DOM_SERIES_IS_COMPLETE.name, series.isComplete());
+        cv.put(DOM_SERIES_TITLE.getName(), title);
+        cv.put(DOM_SERIES_TITLE_OB.getName(), encodeOrderByColumn(title, seriesLocale));
+        cv.put(DOM_SERIES_IS_COMPLETE.getName(), series.isComplete());
 
         return sSyncedDb.update(TBL_SERIES.getName(), cv,
                                 DOM_PK_ID + "=?",
@@ -3660,7 +3671,7 @@ public class DAO
      */
     @NonNull
     public ArrayList<String> getAllSeriesNames() {
-        return getColumnAsList(SqlSelectFullTable.SERIES_NAME, DOM_SERIES_TITLE.name);
+        return getColumnAsList(SqlSelectFullTable.SERIES_NAME, DOM_SERIES_TITLE.getName());
     }
 
     /**
@@ -3692,7 +3703,7 @@ public class DAO
      */
     @NonNull
     public BookCursor fetchBooksByGoodreadsBookId(final long grBookId) {
-        String sql = getAllBooksSql(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_ID) + "=?");
+        String sql = getBookSql(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_ID) + "=?");
         return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY, sql,
                                                           new String[]{String.valueOf(grBookId)},
                                                           "");
@@ -3824,7 +3835,7 @@ public class DAO
                     Object entry = data.get(key);
                     try {
                         switch (columnInfo.storageClass) {
-                            case Real:
+                            case Real: {
                                 if (entry instanceof Float) {
                                     cv.put(columnInfo.name, (Float) entry);
                                 } else if (entry instanceof Double) {
@@ -3840,8 +3851,8 @@ public class DAO
                                     }
                                 }
                                 break;
-
-                            case Integer:
+                            }
+                            case Integer: {
                                 if (entry instanceof Boolean) {
                                     if ((Boolean) entry) {
                                         cv.put(columnInfo.name, 1);
@@ -3884,16 +3895,16 @@ public class DAO
                                     }
                                 }
                                 break;
-
-                            case Text:
+                            }
+                            case Text: {
                                 if (entry instanceof String) {
                                     cv.put(columnInfo.name, (String) entry);
                                 } else if (entry != null) {
                                     cv.put(columnInfo.name, entry.toString());
                                 }
                                 break;
-
-                            case Blob:
+                            }
+                            case Blob: {
                                 if (entry instanceof byte[]) {
                                     cv.put(columnInfo.name, (byte[]) entry);
                                 } else if (entry != null) {
@@ -3903,6 +3914,7 @@ public class DAO
                                             + ", key=" + key);
                                 }
                                 break;
+                            }
                         }
                     } catch (@NonNull final NumberFormatException e) {
                         Logger.error(this, e,
@@ -3956,13 +3968,13 @@ public class DAO
             // Get list of authors
             try (Cursor authors = sSyncedDb.rawQuery(
                     SqlFTS.GET_AUTHORS_BY_BOOK_ID,
-                    new String[]{String.valueOf(bookCursor.getLong(DOM_PK_ID.name))})) {
+                    new String[]{String.valueOf(bookCursor.getLong(DOM_PK_ID.getName()))})) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
-                    colGivenNames = authors.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
+                    colGivenNames = authors.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.getName());
                 }
                 if (colFamilyName < 0) {
-                    colFamilyName = authors.getColumnIndex(DOM_AUTHOR_FAMILY_NAME.name);
+                    colFamilyName = authors.getColumnIndex(DOM_AUTHOR_FAMILY_NAME.getName());
                 }
                 // Append each author
                 while (authors.moveToNext()) {
@@ -3976,7 +3988,7 @@ public class DAO
             // Get list of series
             try (Cursor series = sSyncedDb.rawQuery(
                     SqlFTS.GET_SERIES_BY_BOOK_ID,
-                    new String[]{String.valueOf(bookCursor.getLong(DOM_PK_ID.name))})) {
+                    new String[]{String.valueOf(bookCursor.getLong(DOM_PK_ID.getName()))})) {
                 // Get column indexes, if not already got
                 if (colSeriesInfo < 0) {
                     colSeriesInfo = series.getColumnIndexOrThrow(SqlFTS.DOM_SERIES_INFO);
@@ -3991,7 +4003,7 @@ public class DAO
             // Get list of anthology data (author and title)
             try (Cursor tocEntries = sSyncedDb.rawQuery(
                     SqlFTS.GET_TOC_ENTRIES_BY_BOOK_ID,
-                    new String[]{String.valueOf(bookCursor.getLong(DOM_PK_ID.name))})) {
+                    new String[]{String.valueOf(bookCursor.getLong(DOM_PK_ID.getName()))})) {
                 // Get column indexes, if not already got
                 if (colTOCEntryAuthorInfo < 0) {
                     colTOCEntryAuthorInfo =
@@ -4016,24 +4028,25 @@ public class DAO
                 // Set the parameters and call
                 bindStringOrNull(stmt, 1, authorText.toString(), userLocale);
                 // Titles should only contain title, not SERIES
-                bindStringOrNull(stmt, 2, bookCursor.getString(DOM_TITLE.name) + "; " + titleText,
+                bindStringOrNull(stmt, 2,
+                                 bookCursor.getString(DOM_TITLE.getName()) + "; " + titleText,
                                  userLocale);
                 // We could add a 'series' column, or just add it as part of the description
                 bindStringOrNull(stmt, 3,
-                                 bookCursor.getString(DOM_BOOK_DESCRIPTION.name) + seriesText,
+                                 bookCursor.getString(DOM_BOOK_DESCRIPTION.getName()) + seriesText,
                                  userLocale);
-                bindStringOrNull(stmt, 4, bookCursor.getString(DOM_BOOK_NOTES.name),
+                bindStringOrNull(stmt, 4, bookCursor.getString(DOM_BOOK_NOTES.getName()),
                                  userLocale);
-                bindStringOrNull(stmt, 5, bookCursor.getString(DOM_BOOK_PUBLISHER.name),
+                bindStringOrNull(stmt, 5, bookCursor.getString(DOM_BOOK_PUBLISHER.getName()),
                                  userLocale);
-                bindStringOrNull(stmt, 6, bookCursor.getString(DOM_BOOK_GENRE.name),
+                bindStringOrNull(stmt, 6, bookCursor.getString(DOM_BOOK_GENRE.getName()),
                                  userLocale);
-                bindStringOrNull(stmt, 7, bookCursor.getString(DOM_BOOK_LOCATION.name),
+                bindStringOrNull(stmt, 7, bookCursor.getString(DOM_BOOK_LOCATION.getName()),
                                  userLocale);
-                bindStringOrNull(stmt, 8, bookCursor.getString(DOM_BOOK_ISBN.name),
+                bindStringOrNull(stmt, 8, bookCursor.getString(DOM_BOOK_ISBN.getName()),
                                  userLocale);
                 // DOM_PK_DOCID
-                stmt.bindLong(9, bookCursor.getLong(DOM_PK_ID.name));
+                stmt.bindLong(9, bookCursor.getLong(DOM_PK_ID.getName()));
 
                 stmt.execute();
             }
@@ -4209,6 +4222,11 @@ public class DAO
         @NonNull
         private final Throwable mCreationStackTrace;
 
+        /**
+         * Constructor.
+         *
+         * @param db Database Access
+         */
         InstanceRefDebug(@NonNull final DAO db) {
             super(db);
             mCreationStackTrace = new Throwable();
@@ -4235,7 +4253,7 @@ public class DAO
     private static class SqlAllBooks {
 
         /**
-         * {@link #getAllBooksSql(String)}.
+         * {@link #getBookSql(String)}.
          */
         private static final String PREFIX =
                 "SELECT b.*"
@@ -4307,7 +4325,8 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_LAST_SYNC_DATE)
 
                 // Find the first (i.e. primary) Series
-                + ',' + "(SELECT " + DOM_FK_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
+                + ','
+                + "(SELECT " + DOM_FK_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
                 + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
                 + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC LIMIT 1)"
                 + " AS " + DOM_FK_SERIES
@@ -4341,7 +4360,7 @@ public class DAO
                 ;
 
         /**
-         * {@link #getAllBooksSql(String)}.
+         * {@link #getBookSql(String)}.
          * {@link #fetchBooksForExport(Date)}.
          */
         private static final String ALL_BOOKS =
@@ -4354,7 +4373,7 @@ public class DAO
                 + TBL_BOOKS.dot(DOM_PK_ID) + ')';
 
         /**
-         * {@link #getAllBooksSql(String)}.
+         * {@link #getBookSql(String)}.
          */
         private static final String SUFFIX =
                 // with their primary author

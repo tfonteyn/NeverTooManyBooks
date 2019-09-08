@@ -44,6 +44,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.About;
 import com.hardbacknutter.nevertoomanybooks.AdminActivity;
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -86,7 +88,7 @@ public abstract class BaseActivity
     }
 
     /**
-     * apply the user-preferred Locale/Theme before onCreate is called
+     * apply the user-preferred Locale/Theme before onCreate is called.
      */
     protected void attachBaseContext(@NonNull final Context base) {
         Context context = LocaleUtils.applyLocale(base);
@@ -258,8 +260,11 @@ public abstract class BaseActivity
                     Logger.debug(this, "BaseActivity.onActivityResult",
                                  "REQ_NAV_PANEL_SETTINGS");
                 }
-                if (resultCode == UniqueId.ACTIVITY_RESULT_RECREATE_NEEDED) {
-                    App.setNeedsRecreating();
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
+                    if (data.getBooleanExtra(UniqueId.BKEY_RECREATE_ACTIVITY, false)) {
+                        App.setNeedsRecreating();
+                    }
                 }
                 return;
 

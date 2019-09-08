@@ -28,7 +28,7 @@
   -->
 
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes “…”  - Regex to find wrong ones: („|‘|’|«|») -->
+<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
     <string name="pe_ui_theme_day_night">Gündüz / Gece</string>
@@ -151,7 +151,7 @@
     <string name="error_columns_are_blank">%1$s sütunlarının hepsi %2$d satırında boş</string>
     <string name="error_email_failed">E-posta gönderilemedi.</string>
     <string name="error_failed_x">Başarısız: %1$d</string>
-    <string name="error_google_play_missing">Google Play / Market yüklü değil</string>
+    <string name="error_google_play_store_missing">Google Play / Market yüklü değil</string>
     <string name="error_if_the_problem_persists">Eğer sorun sürerse lütfen ana seçkedeki “Ayarlar” bölümünden destek ile iletişime geçin.</string>
     <string name="error_import_failed">İçe aktarma başarısız.</string>
     <string name="error_network_timeout">Cevapsız. Tekrar deneyin.</string>
@@ -579,7 +579,9 @@
     <string name="warning_action_requires_isbn">Bu işlem geçerli bir ISBN gerektirir.</string>
     <string name="warning_author_already_in_list">Yazar zaten ekli</string>
     <string name="warning_backup_request">Veritabanınızı SD karta yedeklemek ister misiniz?</string>
-    <string name="warning_bad_scanner">Görünüşe göre var olan barkod tarayıcı uygulamanız &APP_NAME; ile uyumlu değil. Biz Zxing barkod tarayıcısını yüklemenizi öneriyoruz. Eğer zaten yüklüyse silip yeniden yüklemeniz yardımcı olabilir.</string>
+    <string name="warning_bad_scanner">Görünüşe göre var olan barkod tarayıcı uygulamanız &APP_NAME;
+        ile uyumlu değil.</string>
+    <string name="info_install_scanner_recommendation">Biz Zxing barkod tarayıcısını yüklemenizi öneriyoruz. Eğer zaten yüklüyse silip yeniden yüklemeniz yardımcı olabilir.</string>
     <string name="warning_book_no_longer_exists">Belirtilen kitap artık yok</string>
     <string name="warning_book_not_found">Aranan kitap bulunamadı. Bazen doğru barkodu kitap kapağının içinde bulabilirsiniz. Bulamazsanız, bilgileri elle giriniz.</string>
     <string name="warning_book_was_deleted_uc">BU BETİK SİLİNDİ</string>
@@ -624,5 +626,8 @@
     <string name="pt_bob_show_details_uses_task">Ekstra Kitap Detaylarını Almak</string>
     <string name="pt_bob_show_details_uses_task_on">gecikmiş</string>
     <string name="lbl_author_primary">yazar</string>
+    <string name="menu_search_local">Bölgesel arama</string>
+    <string name="pg_reformat">Yeniden biçimlendirme</string>
+    <string name="info_install_scanner_manually">Lütfen yükleyin: %1$s</string>
 
 </resources>

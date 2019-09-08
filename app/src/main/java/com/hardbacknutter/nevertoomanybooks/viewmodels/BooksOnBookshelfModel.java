@@ -250,6 +250,8 @@ public class BooksOnBookshelfModel
     }
 
     /**
+     * Construct the Bookshelf list to show in the Spinner.
+     *
      * @param context Current context.
      *
      * @return the position that reflects the current bookshelf.
@@ -307,6 +309,12 @@ public class BooksOnBookshelfModel
         return mCurrentBookshelf.getStyle(mDb);
     }
 
+    /**
+     * Set the style on the current bookshelf.
+     *
+     * @param context Current context
+     * @param style   to set
+     */
     public void setCurrentStyle(@NonNull final Context context,
                                 @NonNull final Locale userLocale,
                                 @NonNull final BooklistStyle style) {
@@ -317,6 +325,7 @@ public class BooksOnBookshelfModel
     /**
      * Set the style and position.
      *
+     * @param context  Current context
      * @param style    that was selected
      * @param topRow   the top row to store
      * @param listView used to derive the top row offset
@@ -427,7 +436,7 @@ public class BooksOnBookshelfModel
             blb.requireDomain(DBDefinitions.DOM_TITLE_OB,
                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE_OB),
                               true);
-
+            // The read flag
             blb.requireDomain(DBDefinitions.DOM_BOOK_READ,
                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
                               false);
@@ -912,7 +921,6 @@ public class BooksOnBookshelfModel
         private final BooklistPseudoCursor mCurrentListCursor;
         /** Resulting Cursor. */
         private BooklistPseudoCursor tempListCursor;
-
 
         /**
          * Constructor.

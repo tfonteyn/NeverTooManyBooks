@@ -121,7 +121,7 @@ public class IndexDefinition {
     /**
      * Drop the index, if it exists.
      *
-     * @param db Database to use.
+     * @param db      Database Access
      *
      * @return IndexDefinition (for chaining)
      */
@@ -134,7 +134,7 @@ public class IndexDefinition {
     /**
      * Create the index.
      *
-     * @param db Database to use.
+     * @param db SynchronizedDb Database
      */
     public void create(@NonNull final SynchronizedDb db) {
         db.execSQL(getSqlCreateStatement());

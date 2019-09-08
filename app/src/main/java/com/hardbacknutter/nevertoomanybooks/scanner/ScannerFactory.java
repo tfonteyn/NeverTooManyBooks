@@ -25,29 +25,60 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads;
+package com.hardbacknutter.nevertoomanybooks.scanner;
 
+import android.content.Context;
+
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import java.util.Map;
-
-public class GoodreadsShelves {
-
-    @NonNull
-    private final Map<String, GoodreadsShelf> mMap;
+/**
+ * Support for creating scanner objects on the fly without knowing which ones are available.
+ */
+public interface ScannerFactory {
 
     /**
-     * Constructor.
+     * Check if this scanner is available.
      *
-     * @param map of shelves
+     * @param context Current context
+     *
+     * @return {@code true} if this scanner is available.
      */
-    public GoodreadsShelves(@NonNull final Map<String, GoodreadsShelf> map) {
-        mMap = map;
-    }
+    boolean isAvailable(@NonNull Context context);
 
-    public boolean isExclusive(@Nullable final String name) {
-        GoodreadsShelf shelf = mMap.get(name);
-        return shelf != null && shelf.isExclusive();
-    }
+    /**
+     * @param context Current context
+     *
+     * @return a new scanner of the related type.
+     */
+    @NonNull
+    Scanner newInstance(@NonNull Context context);
+
+
+    /**
+     * Displayed to the user.
+     *
+     * @param context Current context
+     *
+     * @return name
+     */
+    @NonNull
+    String getLabel(@NonNull Context context);
+
+    /**
+     * Get a resource id that can be used in menus.
+     *
+     * @return resource id
+     */
+    @IdRes
+    int getMenuId();
+
+    /**
+     * Get the market url, or the empty string if not applicable.
+     * The caller must check on {@code }isEmpty()}.
+     *
+     * @return the market url, or "".
+     */
+    @NonNull
+    String getMarketUrl();
 }

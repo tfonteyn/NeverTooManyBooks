@@ -33,7 +33,6 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
     <PreferenceCategory
-        android:key="@string/pg_general"
         android:title="@string/pg_general"
         >
 
@@ -46,7 +45,7 @@
 
         <PreferenceScreen
             android:icon="@drawable/ic_format_list_bulleted"
-            android:key="@string/pg_groupings"
+            android:key="psk_style_groupings"
             android:title="@string/pg_groupings">
             <intent android:action="BooklistStyleGroups.EDIT"
                 />
@@ -54,7 +53,7 @@
 
         <PreferenceScreen
             android:icon="@drawable/ic_filter_list"
-            android:key="@string/pg_filters"
+            android:key="psk_style_filters"
             android:title="@string/pg_filters">
 
             <ListPreference
@@ -106,7 +105,7 @@
 
         <PreferenceScreen
             android:icon="@drawable/ic_details"
-            android:key="@string/pg_bob_show_details"
+            android:key="psk_style_show_details"
             android:title="@string/pg_bob_show_details"
             >
 
@@ -186,7 +185,6 @@
     <!-- technically speaking, thumbnails fall under 'Extra Book Details'
         But ths is more user-friendly. -->
     <PreferenceCategory
-        android:key="@string/pg_thumbnails"
         android:title="@string/pg_thumbnails"
         >
 
@@ -209,7 +207,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="@string/lbl_author"
+        android:key="psk_style_author"
         android:title="@string/lbl_author"
         >
 
@@ -225,7 +223,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="@string/lbl_series"
+        android:key="psk_style_series"
         android:title="@string/lbl_series"
         >
 

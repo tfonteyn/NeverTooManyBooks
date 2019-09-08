@@ -102,7 +102,7 @@ public class BRBaseModel
             String filename = PreferenceManager
                                       .getDefaultSharedPreferences(context)
                                       .getString(BackupManager.PREF_LAST_BACKUP_FILE,
-                                                 StorageUtils.getSharedStorage().getAbsolutePath());
+                                                 StorageUtils.getRootStoragePath());
             File rootDir = new File(Objects.requireNonNull(filename));
             // Turn the File into a directory if needed
             if (rootDir.isDirectory()) {
@@ -112,7 +112,7 @@ public class BRBaseModel
             }
             if (!rootDir.exists()) {
                 // fall back to default
-                rootDir = StorageUtils.getSharedStorage();
+                rootDir = new File(StorageUtils.getRootStoragePath());
             }
 
             // start the task to get the content

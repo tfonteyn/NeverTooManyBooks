@@ -42,7 +42,9 @@ import androidx.preference.PreferenceManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -132,6 +134,14 @@ public final class ImageUtils {
     }
 
     /**
+     * @return {@code true} if resized images are cached in a database.
+     */
+    public static boolean imagesAreCached() {
+        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                .getBoolean(Prefs.pk_images_cache_resized, false);
+    }
+
+    /**
      * Load the image file into the destination view.
      * Handles checking & storing in the cache.
      *
@@ -160,7 +170,7 @@ public final class ImageUtils {
         }
 
         // 2. Check if the file exists; if it does not set 'ic_broken_image' icon and exit.
-        File file = StorageUtils.getCoverFile(uuid);
+        File file = StorageUtils.getCoverForUuid(uuid);
         if (!file.exists() || file.length() < MIN_IMAGE_FILE_SIZE) {
             imageView.setImageResource(R.drawable.ic_broken_image);
             return false;
@@ -341,6 +351,7 @@ public final class ImageUtils {
      *
      * @return The bitmap, or {@code null} on failure
      */
+    @SuppressWarnings("WeakerAccess")
     @Nullable
     @AnyThread
     public static Bitmap forceScaleBitmap(@NonNull final String fileSpec,
@@ -441,12 +452,11 @@ public final class ImageUtils {
 
     /**
      * Given a URL, get an image and save to a file.
-     * <p>
-     * ENHANCE: unify the naming elements of the file.
      *
      * @param url    Image file URL
      * @param name   for the file.
-     * @param suffix optional suffix
+     * @param suffix suffix denoting the origin of the url
+     * @param size   (optional) extra suffix denoting the size of the image.
      *
      * @return Downloaded fileSpec, or {@code null} on failure
      */
@@ -454,9 +464,14 @@ public final class ImageUtils {
     @WorkerThread
     public static String saveImage(@NonNull final String url,
                                    @NonNull final String name,
-                                   @Nullable final String suffix) {
+                                   @NonNull final String suffix,
+                                   @Nullable final String size) {
 
-        final File file = StorageUtils.getTempCoverFile(name, suffix);
+        String fullName = name + suffix;
+        if (size != null) {
+            fullName += '_' + size;
+        }
+        File file = StorageUtils.getTempCoverFile(fullName);
 
         int bytesRead = 0;
         try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
@@ -538,21 +553,27 @@ public final class ImageUtils {
             return;
         }
 
-        cleanupImages(imageList);
+        String coverName = cleanupImages(imageList);
 
         // Finally, cleanup the data
         bookData.remove(UniqueId.BKEY_FILE_SPEC_ARRAY);
         // and indicate we got a file with the default name
-        bookData.putBoolean(UniqueId.BKEY_IMAGE, true);
+        bookData.putBoolean(UniqueId.BKEY_IMAGE, coverName != null);
+        if (coverName != null) {
+            bookData.putString(UniqueId.BKEY_COVER_NAME, coverName);
+        }
     }
 
     /**
      * If there are images, pick the largest one, rename it, and delete the others.
      *
      * @param imageList a list of images
+     *
+     * @return name of cover found (it will be in the covers directory), or {@code null} for none.
      */
     @AnyThread
-    private static void cleanupImages(@NonNull final ArrayList<String> imageList) {
+    @Nullable
+    private static String cleanupImages(@NonNull final ArrayList<String> imageList) {
 
         long bestFileSize = -1;
         int bestFileIndex = -1;
@@ -586,18 +607,111 @@ public final class ImageUtils {
             }
         }
         // Get the best file (if present) and rename it.
+        File destination = null;
         if (bestFileIndex >= 0) {
             File source = new File(imageList.get(bestFileIndex));
-            File destination = StorageUtils.getTempCoverFile();
+            destination = StorageUtils.getTempCoverFile();
             StorageUtils.renameFile(source, destination);
+        }
+
+        return destination != null ? destination.getName() : null;
+    }
+
+    /**
+     * Rotate the image. Reads from the passed file, and writes the result back to it.
+     *
+     * @param file  to read/write
+     * @param angle rotate by the specified amount
+     *
+     * @return {@code true} on success
+     */
+    public static boolean rotate(@NonNull final File file,
+                                 final long angle) {
+        if (!file.exists()) {
+            return false;
+        }
+
+        // sanity check
+        if (angle == 0) {
+            return true;
+        }
+
+        // We load the file and first scale it to scale 10 x the "standard" display size.
+        // Keep in mind this means it could be up- or downscaled from the original !
+        int imageSize = getMaxImageSize(10);
+
+        // we'll try it twice with a gc in between
+        int attempts = 2;
+        while (true) {
+            try {
+                Bitmap bm = forceScaleBitmap(file.getPath(),
+                                             imageSize, imageSize, true);
+                if (bm == null) {
+                    return false;
+                }
+
+                Matrix matrix = new Matrix();
+
+                // alternative code sets the pivot point.
+                // matrix.setRotate(angle, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
+                matrix.postRotate(angle);
+                Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0,
+                                                           bm.getWidth(), bm.getHeight(),
+                                                           matrix, true);
+                // if rotation worked, clean up the old one right now to save memory.
+                if (rotatedBitmap != bm) {
+                    bm.recycle();
+                }
+
+                // Write back to the file
+                try (OutputStream out = new FileOutputStream(file.getAbsoluteFile())) {
+                    rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+
+                } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
+                    Logger.error(ImageUtils.class, e);
+                    return false;
+                }
+
+                return true;
+
+            } catch (@NonNull final OutOfMemoryError e) {
+                attempts--;
+                if (attempts > 1) {
+                    System.gc();
+                } else {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
     /**
-     * @return {@code true} if resized images are cached in a database.
+     * Rotate the image. If successful, the input bitmap will be recycled.
+     * Otherwise we simply return the input bitmap as-is.
+     *
+     * @param bm    to rotate
+     * @param angle rotate by the specified amount
+     *
+     * @return the rotated bitmap.
      */
-    public static boolean imagesAreCached() {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                .getBoolean(Prefs.pk_images_cache_resized, false);
+    @SuppressWarnings("WeakerAccess")
+    public static Bitmap rotate(@NonNull final Bitmap bm,
+                                final int angle) {
+        // sanity check
+        if (angle == 0) {
+            return bm;
+        }
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0,
+                                                   bm.getWidth(), bm.getHeight(),
+                                                   matrix, true);
+        if (rotatedBitmap != bm) {
+            bm.recycle();
+            return rotatedBitmap;
+        } else {
+            return bm;
+        }
     }
 }

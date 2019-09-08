@@ -142,6 +142,7 @@ public class BookSearchByTextFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+
         mTitleView.setText(mBookSearchBaseModel.getTitleSearchText());
         mAuthorView.setText(mBookSearchBaseModel.getAuthorSearchText());
         mPublisherView.setText(mBookSearchBaseModel.getPublisherSearchText());
@@ -164,6 +165,9 @@ public class BookSearchByTextFragment
         });
 
         if (savedInstanceState == null) {
+            SearchSites.alertRegistrationBeneficial(getContext(), "search",
+                                                    mBookSearchBaseModel.getSearchSites());
+
             TipManager.display(getContext(), R.string.tip_book_search_by_text, null);
         }
     }

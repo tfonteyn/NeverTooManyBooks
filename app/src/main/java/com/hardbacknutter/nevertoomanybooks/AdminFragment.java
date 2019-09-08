@@ -262,7 +262,7 @@ public class AdminFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
-        // collect all data
+        // collect all data for passing to the calling Activity
         if (data != null) {
             mResultData.putExtras(data);
         }
@@ -271,7 +271,7 @@ public class AdminFragment
             case REQ_ARCHIVE_BACKUP:
             case REQ_ARCHIVE_RESTORE:
                 if (resultCode == Activity.RESULT_OK) {
-                    // no local action needed, pass results up
+                    // no local action needed, pass all results up the chain
                     //noinspection ConstantConditions
                     getActivity().setResult(resultCode, mResultData);
                 }
@@ -442,13 +442,11 @@ public class AdminFragment
 
         ArrayList<Uri> uris = new ArrayList<>();
         try {
-            File csvExportFile = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
+            File file = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
             @SuppressWarnings("ConstantConditions")
-            Uri coverURI = FileProvider.getUriForFile(getContext(),
-                                                      GenericFileProvider.AUTHORITY,
-                                                      csvExportFile);
+            Uri uri = FileProvider.getUriForFile(getContext(), GenericFileProvider.AUTHORITY, file);
+            uris.add(uri);
 
-            uris.add(coverURI);
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
             startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
         } catch (@NonNull final NullPointerException e) {

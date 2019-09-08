@@ -78,6 +78,9 @@ public final class Format {
         // MAPPER.put("gebonden, R.string.book_format_hardcover);
     }
 
+    private Format() {
+    }
+
     /**
      * Try to map website terminology to our own localised.
      * This should be / is used at 'edit' time (a formatter) and again at 'save' time

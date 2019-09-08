@@ -200,7 +200,7 @@ class ImportLegacyTask
      * Repeatedly request review pages until we are done.
      *
      * @param context Current context
-     * @param db      the database
+     * @param db Database Access
      *
      * @return {@code true} if all went well
      *
@@ -298,7 +298,7 @@ class ImportLegacyTask
      * Process one review (book).
      *
      * @param context    Current context
-     * @param db         the database
+     * @param db Database Access
      */
     private void processReview(@NonNull final Context context,
                                @NonNull final DAO db,
@@ -394,7 +394,7 @@ class ImportLegacyTask
      * Update the book using the Goodreads data.
      *
      * @param context    Current context
-     * @param db         the database
+     * @param db Database Access
      */
     private void updateBook(@NonNull final Context context,
                             @NonNull final DAO db,
@@ -424,7 +424,7 @@ class ImportLegacyTask
      * Create a new book.
      *
      * @param context    Current context
-     * @param db         the database
+     * @param db Database Access
      */
     private void insertBook(@NonNull final Context context,
                             @NonNull final DAO db,
@@ -438,7 +438,7 @@ class ImportLegacyTask
                 String uuid = db.getBookUuid(id);
                 // get the temporary downloaded file
                 File source = StorageUtils.getTempCoverFile();
-                File destination = StorageUtils.getCoverFile(uuid);
+                File destination = StorageUtils.getCoverForUuid(uuid);
                 // and rename it to the permanent UUID one.
                 StorageUtils.renameFile(source, destination);
             }
@@ -451,7 +451,7 @@ class ImportLegacyTask
      *
      *
      * @param context Current context
-     * @param db the database
+     * @param db Database Access
      *
      * @return bookData bundle
      */
@@ -634,25 +634,25 @@ class ImportLegacyTask
                                 bookData, DBDefinitions.KEY_DATE_ADDED);
 
             // fetch thumbnail
-            String thumbnail;
-            String size = "";
+            String coverUrl;
+            String sizeSuffix = "";
             String largeImage = review.getString(ReviewField.LARGE_IMAGE);
             String smallImage = review.getString(ReviewField.SMALL_IMAGE);
             if (GoodreadsTasks.hasCover(largeImage)) {
-                size = ReviewField.LARGE_IMAGE;
-                thumbnail = largeImage;
+                sizeSuffix = ReviewField.LARGE_IMAGE;
+                coverUrl = largeImage;
             } else if (GoodreadsTasks.hasCover(smallImage)) {
-                size = ListReviewsApiHandler.ReviewField.SMALL_IMAGE;
-                thumbnail = smallImage;
+                sizeSuffix = ReviewField.SMALL_IMAGE;
+                coverUrl = smallImage;
             } else {
-                thumbnail = null;
+                coverUrl = null;
             }
 
-            if (thumbnail != null) {
+            if (coverUrl != null) {
                 long grBookId = bookData.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
-                String fileSpec = ImageUtils.saveImage(thumbnail, String.valueOf(grBookId),
-                                                       GoodreadsManager.FILENAME_SUFFIX + '_'
-                                                       + size);
+                String fileSpec = ImageUtils.saveImage(coverUrl, String.valueOf(grBookId),
+                                                       GoodreadsManager.FILENAME_SUFFIX,
+                                                       sizeSuffix);
                 if (fileSpec != null) {
                     ArrayList<String> imageList = new ArrayList<>();
                     imageList.add(fileSpec);

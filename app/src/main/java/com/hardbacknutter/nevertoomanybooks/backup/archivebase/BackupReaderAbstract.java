@@ -99,8 +99,6 @@ public abstract class BackupReaderAbstract
             throws IOException, ImportException {
 
         mSettings = settings;
-        SharedPreferences prefs = PreferenceManager
-                                          .getDefaultSharedPreferences(App.getAppContext());
 
         // keep track of what we read from the archive
         int entitiesRead = Options.NOTHING;
@@ -110,6 +108,9 @@ public abstract class BackupReaderAbstract
         boolean incPrefs = (mSettings.what & Options.PREFERENCES) != 0;
         boolean incBooks = (mSettings.what & Options.BOOK_CSV) != 0;
         boolean incCovers = (mSettings.what & Options.COVERS) != 0;
+
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
 
         // progress counters
         int coverCount = 0;
@@ -167,7 +168,7 @@ public abstract class BackupReaderAbstract
                     Logger.debug(this, "restore", "entity=" + entity.getName());
                 }
                 switch (entity.getType()) {
-                    case Cover:
+                    case Cover: {
                         if (incCovers) {
                             progressListener.onProgressStep(1, mProcessCover);
                             restoreCover(entity);
@@ -175,8 +176,8 @@ public abstract class BackupReaderAbstract
                             // entitiesRead is set when all done
                         }
                         break;
-
-                    case Books:
+                    }
+                    case Books: {
                         if (incBooks) {
                             // a CSV file with all book data
                             try (Importer importer = new CsvImporter(context, mSettings)) {
@@ -188,8 +189,8 @@ public abstract class BackupReaderAbstract
                             incBooks = false;
                         }
                         break;
-
-                    case Preferences:
+                    }
+                    case Preferences: {
                         if (incPrefs) {
                             progressListener.onProgressStep(1, mProcessPreferences);
                             try (XmlImporter importer = new XmlImporter()) {
@@ -199,8 +200,8 @@ public abstract class BackupReaderAbstract
                             incPrefs = false;
                         }
                         break;
-
-                    case BooklistStyles:
+                    }
+                    case BooklistStyles: {
                         if (incStyles) {
                             progressListener.onProgressStep(1, mProcessBooklistStyles);
                             try (XmlImporter importer = new XmlImporter()) {
@@ -210,7 +211,7 @@ public abstract class BackupReaderAbstract
                             incStyles = false;
                         }
                         break;
-
+                    }
                     case XML:
                         // skip, future extension
                         break;
@@ -223,7 +224,7 @@ public abstract class BackupReaderAbstract
                         // skip, already handled
                         break;
 
-                    case PreferencesPreV200:
+                    case PreferencesPreV200: {
                         // pre-v200 format
                         if (incPrefs) {
                             progressListener.onProgressStep(1, mProcessPreferences);
@@ -236,7 +237,7 @@ public abstract class BackupReaderAbstract
                             entitiesRead |= Options.PREFERENCES;
                         }
                         break;
-
+                    }
                     case BooklistStylesPreV200:
                         // pre-v200 format was a serialized binary. No longer supported.
                         break;
@@ -291,21 +292,22 @@ public abstract class BackupReaderAbstract
     private void restoreCover(@NonNull final ReaderEntity cover)
             throws IOException {
 
-        // see if we have this file already
-        final File currentCover = StorageUtils.getRawCoverFile(cover.getName());
-        final Date covDate = cover.getDateModified();
+        Date coverDate = cover.getDateModified();
 
+        // see if we have this file already
+        File currentCover = new File(StorageUtils.getCoverStoragePath()
+                                     + File.separator + cover.getName());
         if ((mSettings.what & ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
             if (currentCover.exists()) {
                 Date currFileDate = new Date(currentCover.lastModified());
-                if (currFileDate.compareTo(covDate) >= 0) {
+                if (currFileDate.compareTo(coverDate) >= 0) {
                     return;
                 }
             }
         }
         // save (and overwrite)
-        cover.saveToDirectory(StorageUtils.getCoverStorage());
+        cover.saveToDirectory(new File(StorageUtils.getCoverStoragePath()));
         //noinspection ResultOfMethodCallIgnored
-        currentCover.setLastModified(covDate.getTime());
+        currentCover.setLastModified(coverDate.getTime());
     }
 }

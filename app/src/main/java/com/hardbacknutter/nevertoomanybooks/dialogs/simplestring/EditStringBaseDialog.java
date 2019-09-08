@@ -65,6 +65,8 @@ abstract class EditStringBaseDialog {
     /**
      * EditText.
      *
+     * @param context  Current context
+     * @param db       Database Access
      * @param listener Runnable to be started after user confirming
      */
     EditStringBaseDialog(@NonNull final Context context,
@@ -78,7 +80,8 @@ abstract class EditStringBaseDialog {
 
     /**
      * AutoCompleteTextView.
-     *
+     * @param context Current context
+     * @param db Database Access
      * @param list     for the AutoCompleteTextView
      * @param listener BookChangedListener
      */

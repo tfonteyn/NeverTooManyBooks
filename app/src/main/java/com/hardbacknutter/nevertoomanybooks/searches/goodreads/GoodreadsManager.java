@@ -353,15 +353,16 @@ public class GoodreadsManager
      *                   {@code false} it it would be beneficial.
      * @param prefSuffix String used to flag in preferences if we showed the alert from
      *                   that caller already or not yet.
+     *
+     * @return {@code true} if an alert is currently shown
      */
-    public static void alertRegistrationBeneficial(@NonNull final Context context,
-                                                   final boolean required,
-                                                   @NonNull final String prefSuffix) {
-        // if we have a key, just bail out. Otherwise bring up the dialog.
-        if (hasKey()) {
-            return;
+    public static boolean alertRegistrationBeneficial(@NonNull final Context context,
+                                                      final boolean required,
+                                                      @NonNull final String prefSuffix) {
+        if (!hasKey()) {
+            return alertRegistrationNeeded(context, required, prefSuffix);
         }
-        alertRegistrationNeeded(context, required, prefSuffix);
+        return false;
     }
 
     /**
@@ -372,11 +373,13 @@ public class GoodreadsManager
      *                   {@code false} it it would be beneficial.
      * @param prefSuffix String used to flag in preferences if we showed the alert from
      *                   that caller already or not yet.
+     *
+     * @return {@code true} if an alert is currently shown
      */
     @SuppressWarnings("WeakerAccess")
-    public static void alertRegistrationNeeded(@NonNull final Context context,
-                                               final boolean required,
-                                               @NonNull final String prefSuffix) {
+    public static boolean alertRegistrationNeeded(@NonNull final Context context,
+                                                  final boolean required,
+                                                  @NonNull final String prefSuffix) {
 
         final String prefName = PREFS_HIDE_ALERT + prefSuffix;
         boolean showAlert;
@@ -392,6 +395,8 @@ public class GoodreadsManager
             StandardDialogs.registrationDialog(context, R.string.goodreads,
                                                intent, required, prefName);
         }
+
+        return showAlert;
     }
 
     /**
@@ -605,7 +610,7 @@ public class GoodreadsManager
      * <p>
      * See {@link DAO#fetchBookForExportToGoodreads}
      *
-     * @param db         DB connection
+     * @param db         Database Access
      * @param bookCursor single book to send
      *
      * @return Disposition of book
@@ -886,6 +891,10 @@ public class GoodreadsManager
 
     /**
      * Wrapper to search for a book.
+     *
+     * @param context        Current context
+     * @param isbn           to search for
+     * @param fetchThumbnail Flag whether to get a thumbnail or not
      *
      * @return Bundle of GoodreadsWork objects
      *

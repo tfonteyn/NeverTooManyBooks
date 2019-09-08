@@ -392,7 +392,16 @@ public class IsfdbBook
                     final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
-        Element contentBox = mDoc.select("div.contentbox").first();
+        Elements allContentBoxes = mDoc.select("div.contentbox");
+        // sanity check
+        if (allContentBoxes == null) {
+            Logger.warn(this, "parseDoc",
+                        "no contentbox found",
+                        "mDoc.location()=" + mDoc.location());
+            return bookData;
+        }
+
+        Element contentBox = allContentBoxes.first();
         Element ul = contentBox.select("ul").first();
         Elements lis = ul.children();
 
@@ -756,12 +765,12 @@ public class IsfdbBook
                             @NonNull final Element contentBox) {
         Element img = contentBox.selectFirst("img");
         if (img != null) {
-            String url = img.attr("src");
+            String coverUrl = img.attr("src");
             String isbn = bookData.getString(DBDefinitions.KEY_ISBN, "");
             if (isbn.isEmpty()) {
                 isbn = bookData.getString(DBDefinitions.KEY_ISFDB_ID, "");
             }
-            String fileSpec = ImageUtils.saveImage(url, isbn, FILENAME_SUFFIX);
+            String fileSpec = ImageUtils.saveImage(coverUrl, isbn, FILENAME_SUFFIX, null);
 
             if (fileSpec != null) {
                 ArrayList<String> imageList =

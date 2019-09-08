@@ -28,7 +28,7 @@
   -->
 
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’) -->
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
 <!--suppress LongLine -->
 <resources>
     <string name="pe_ui_theme_day_night">Giornata / Notte</string>
@@ -152,7 +152,7 @@
     <string name="error_columns_are_blank">Tutte le colonne %1$s sono vuote alla riga %2$d</string>
     <string name="error_email_failed">L\'invio dell\'email non è riuscito.</string>
     <string name="error_failed_x">Non riuscito: %1$d</string>
-    <string name="error_google_play_missing">Google Play / Market non è installato</string>
+    <string name="error_google_play_store_missing">Google Play / Market non è installato</string>
     <string name="error_if_the_problem_persists">Se il problema persiste, contatta il supporto dalla voce «Amministratore» del menu principale.</string>
     <string name="error_import_failed">Importazione fallita.</string>
     <string name="error_network_timeout">Nessuna risposta, per favore riprova</string>
@@ -584,7 +584,8 @@
     <string name="warning_action_requires_isbn">Questa azione richiede un codice ISBN valido.</string>
     <string name="warning_author_already_in_list">L\'autore è già presente in elenco</string>
     <string name="warning_backup_request">Vuoi effettuare il backup del database nella scheda SD?</string>
-    <string name="warning_bad_scanner">L\'applicazione prescelta per la scansione dei codici a barre sembra incompatibile con &APP_NAME;. Ti raccomandiamo di utilizzare l\'applicazione Zxing, e, se è già installata, ti raccomandiamo di disinstallarla e installarla di nuovo.</string>
+    <string name="warning_bad_scanner">L\'applicazione prescelta per la scansione dei codici a barre sembra incompatibile con &APP_NAME;.</string>
+    <string name="info_install_scanner_recommendation">Ti raccomandiamo di utilizzare l\'applicazione Zxing, e, se è già installata, ti raccomandiamo di disinstallarla e installarla di nuovo.</string>
     <string name="warning_book_no_longer_exists">Il libro indicato non esiste più</string>
     <string name="warning_book_not_found">Il libro scansionato non è stato trovato. A volte il codice a barre corretto si trova all\'interno della copertina. Altrimenti inserisci i dati manualmente.</string>
     <string name="warning_book_was_deleted_uc">LIBRO CANCELLATO</string>
@@ -629,5 +630,8 @@
     <string name="pt_bob_show_details_uses_task">Recupero dei dettagli del libro extra</string>
     <string name="pt_bob_show_details_uses_task_on">ritardato</string>
     <string name="lbl_author_primary">scrittore</string>
+    <string name="menu_search_local">Ricerca locale</string>
+    <string name="pg_reformat">Riformattare</string>
+    <string name="info_install_scanner_manually">Installa: %1$s</string>
 
 </resources>

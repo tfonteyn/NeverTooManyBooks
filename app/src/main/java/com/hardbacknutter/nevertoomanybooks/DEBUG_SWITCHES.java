@@ -111,7 +111,7 @@ public final class DEBUG_SWITCHES {
     /** {@link IsfdbBook}. */
     public static final boolean ISFDB_SEARCH = false;
     /** {@link IsfdbBook}. */
-    public static final boolean ISFDB_LOAD_PAGE = false;
+    public static final boolean ISFDB_LOAD_PAGE = true;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager}. */
     public static final boolean OPEN_LIBRARY_SEARCH = false;
     /** {@link DAO}. Check for leaking instances. */

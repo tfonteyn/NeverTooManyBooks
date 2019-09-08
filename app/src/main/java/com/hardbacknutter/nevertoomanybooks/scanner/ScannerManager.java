@@ -30,53 +30,69 @@ package com.hardbacknutter.nevertoomanybooks.scanner;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.preference.PreferenceManager;
-import android.view.Menu;
+import android.provider.MediaStore;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 
 /**
- * FIXME: this is needlessly complicated now that we support Google Play Barcode scanning.
- * Given that the ZXing scanner app is no longer updated (since early 2019)on the Google store,
- * and the ZXing github site docs state the project in is maintenance mode,
- * it's probably best to simply remove all other scanners.
- *
  * Class to handle details of specific scanner interfaces and return a
  * Scanner object to the caller.
+ * <p>
+ * Pro and cons for the Scanners.
+ * <ul>
+ * <li>Google Play Services: near automatic install.<br>
+ * But won't work on devices without Google.<br>
+ * Decoding is done AFTER the picture was taken so might force the user to repeat.</li>
+ * <li>ZXing scanner app: user must install manually.<br>
+ * App is no longer updated (since early 2019)on the Google store,
+ * and the ZXing github site docs state the project in is maintenance mode.
+ * </li>
+ * <li>Pic2Shop: allegedly better then ZXing. Comments on the app not that good however.</li>
+ * </ul>
+ * <p>
+ * NEWKIND: adding a scanner
+ * - implement the {@link Scanner} interface
+ * - create a {@link ScannerFactory} for it and add to {@link #SCANNER_FACTORIES}
+ * - add to {@link #ALL_ACTIONS} and add a new identifier here below.
  */
 public final class ScannerManager {
 
-    /** Unique ID's to associate with each supported scanner intent. */
-    public static final int GOOGLE_PLAY_SERVICES = 0;
-    public static final int ZXING_COMPATIBLE = 1;
-    public static final int ZXING = 2;
-    public static final int PIC2SHOP = 3;
-
     /** All actions for the supported scanner variants. Only used by the debug report. */
     public static final String[] ALL_ACTIONS = new String[]{
-            GoogleBarcodeScanner.ACTION,
+            MediaStore.ACTION_IMAGE_CAPTURE,
             ZxingScanner.ACTION,
             Pic2ShopScanner.Free.ACTION,
             Pic2ShopScanner.Pro.ACTION,
             };
+
+    /** Unique ID's to associate with each supported scanner intent. */
+    public static final int GOOGLE_PLAY_SERVICES = 0;
+    public static final int DEFAULT = GOOGLE_PLAY_SERVICES;
+    public static final int ZXING_COMPATIBLE = 1;
+    public static final int ZXING = 2;
+    public static final int PIC2SHOP = 3;
 
     /** Collection of ScannerFactory objects. */
     @SuppressLint("UseSparseArrays")
@@ -88,7 +104,7 @@ public final class ScannerManager {
     static {
         // universal
         SCANNER_FACTORIES
-                .put(GOOGLE_PLAY_SERVICES, new GoogleBarcodeScanner.GooglePlayScannerFactory());
+                .put(GOOGLE_PLAY_SERVICES, new GoogleBarcodeScanner.GoogleBarcodeScannerFactory());
         // universal
         SCANNER_FACTORIES.put(ZXING_COMPATIBLE, new ZxingScanner.ZxingCompatibleScannerFactory());
         // the original ZXing (or ZXing+)
@@ -115,7 +131,6 @@ public final class ScannerManager {
         if (psf != null && psf.isAvailable(context)) {
             return psf.newInstance(context);
         }
-
         // Search all supported scanners; return first working one
         for (ScannerFactory sf : SCANNER_FACTORIES.values()) {
             if (sf != psf && sf.isAvailable(context)) {
@@ -126,169 +141,201 @@ public final class ScannerManager {
         return null;
     }
 
+    public static void openBarcodePreferences(@NonNull final Activity activity,
+                                              final int requestCode) {
+        Intent intent = new Intent(activity, SettingsActivity.class)
+                                .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
+                                          Prefs.psk_barcode_scanner);
+
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+//    /**
+//     * We don't have a scanner setup or it was bad. Prompt the user for installing one.
+//     *
+//     * @param activity   calling Activity
+//     * @param badScanner Set {@code true} if the scanner was bad
+//     *                   Set {@code false} for a simple install
+//     */
+//    public static void promptForScanner(@NonNull final Activity activity,
+//                                        final boolean badScanner,
+//                                        @NonNull final OnResultListener resultListener) {
+//
+//        // without the store, we can't do any automatic installs.
+//        if (!isGooglePlayStoreInstalled(activity)) {
+//            googlePlayStoreMissing(activity, resultListener);
+//            return;
+//        }
+//
+//        Menu menu = MenuPicker.createMenu(activity);
+//        // do not add the Google Play Services if they are not available on this device.
+//        for (ScannerFactory sf : SCANNER_FACTORIES.values()) {
+//            menu.add(Menu.NONE, sf.getMenuId(), 0, sf.getLabel(activity))
+//                .setIcon(R.drawable.ic_scanner);
+//        }
+//
+//        int messageId = badScanner ? R.string.info_install_scanner_recommendation
+//                                   : R.string.info_install_scanner;
+//
+//        new MenuPicker<Void>(activity, R.string.title_install_scan, messageId,
+//                             true, d -> resultListener.onResult(false),
+//                             menu, null, (menuItem, userObject) -> {
+//
+//            for (ScannerFactory sf : SCANNER_FACTORIES.values()) {
+//                if (menuItem.getItemId() == sf.getMenuId()) {
+//                    installScanner(activity, sf, resultListener);
+//                    return true;
+//                }
+//            }
+//            return true;
+//        }).show();
+//    }
+
     /**
-     * We don't have a scanner setup or it was bad.
-     * Prompt the user for installing one we know of; but the user is not limited to these as long
-     * as other scanners support a compatible intent.
+     * Checks and/or prompts to install the preferred Scanner.
      *
-     * @param activity  calling Activity
-     * @param noScanner Set {@code true} if there simply was no scanner
-     *                  Set {@code false} if the scanner was bad
+     * @param activity       Calling activity
+     * @param resultListener will be called with the outcome
      */
-    public static void promptForScanner(@NonNull final Activity activity,
-                                        final boolean noScanner) {
-
-        GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
-        boolean hasGooglePS = gApi.isGooglePlayServicesAvailable(activity)
-                              != ConnectionResult.SERVICE_INVALID;
-        if (!hasGooglePS) {
-            String msg = activity.getString(R.string.error_google_play_missing) + '\n'
-                         + activity.getString(R.string.info_install_scanner_manually,
-                                              activity.getString(
-                                                      R.string.pv_scanner_zxing_compatible));
-            new AlertDialog.Builder(activity)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setTitle(R.string.pg_barcode_scanner)
-                    .setMessage(msg)
-                    .setNegativeButton(android.R.string.cancel,
-                                       (d, which) -> {
-                                           activity.setResult(Activity.RESULT_CANCELED);
-                                           activity.finish();
-                                       })
-                    .create()
-                    .show();
-            return;
+    public static void installScanner(@NonNull final Activity activity,
+                                      @NonNull final OnResultListener resultListener) {
+        ScannerFactory sf = SCANNER_FACTORIES.get(getPreferredScanner());
+        //noinspection ConstantConditions
+        if (!sf.isAvailable(activity)) {
+            installScanner(activity, sf, resultListener);
+        } else {
+            resultListener.onResult(true);
         }
+    }
 
-        int messageId = noScanner ? R.string.info_install_scanner
-                                  : R.string.warning_bad_scanner;
+    /**
+     * Check/prompt to install the passed Scanner(Factory).
+     *
+     * @param activity       Calling activity
+     * @param sf             ScannerFactory for the desired scanner
+     * @param resultListener will be called with the outcome
+     */
+    private static void installScanner(@NonNull final Activity activity,
+                                       @NonNull final ScannerFactory sf,
+                                       @NonNull final OnResultListener resultListener) {
 
-        Menu menu = MenuPicker.createMenu(activity);
-        // do not add the Google Play Services if they are not available on this device.
-        for (ScannerFactory sf : SCANNER_FACTORIES.values()) {
-            menu.add(Menu.NONE, sf.getResId(), 0, sf.getLabel(activity))
-                .setIcon(R.drawable.ic_scanner);
-        }
+        // without the store, we can't do any automatic installs.
+        if (!isGooglePlayStoreInstalled(activity)) {
+            googlePlayStoreMissing(activity, resultListener);
 
-        new MenuPicker<Void>(activity, R.string.title_install_scan, messageId, true,
-                             menu, null, (menuItem, userObject) -> {
-
-            if (menuItem.getItemId() == R.id.MENU_SCANNER_GOOGLE_PLAY) {
-                GoogleBarcodeScanner.GooglePSInstall installResult =
-                        GoogleBarcodeScanner.installGooglePS(
-                                activity, d -> {
-                                    ScannerManager.setNextScannerAsDefault(activity);
-                                    activity.setResult(Activity.RESULT_CANCELED);
-                                    activity.finish();
-                                });
-
-                switch (installResult) {
-                    case Success:
-                        activity.setResult(Activity.RESULT_OK);
-                        activity.finish();
-                        return true;
-
-                    case PromptedUser:
-                        // just wait for the dialog to be done.
-                        // Either via the cancelListener above; or activity#onActivityResult
-                        return true;
-
-                    case NotAvailable:
-                        // should not happen, log but ignore.
-                        Logger.warn(ScannerManager.class, "promptForScanner",
-                                    "Google Play Services not available on this device");
-                        activity.setResult(Activity.RESULT_CANCELED);
-                        activity.finish();
-                        return true;
-                }
+        } else {
+            if (sf.getMenuId() == R.id.MENU_SCANNER_GOOGLE_PLAY) {
+                updateGooglePlayServices(activity, resultListener);
             } else {
-                for (ScannerFactory sf : SCANNER_FACTORIES.values()) {
-                    if (menuItem.getItemId() == sf.getResId()) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW,
-                                                   Uri.parse(sf.getMarketUrl()));
-                        try {
-                            activity.startActivity(intent);
-                        } catch (@NonNull final ActivityNotFoundException e) {
-                            // should not happen, log but ignore.
-                            Logger.warn(ScannerManager.class, "promptForScanner",
-                                        "Google Play Services not available on this device",
-                                        e);
-                        }
+                Uri uri = Uri.parse(sf.getMarketUrl());
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                try {
+                    activity.startActivity(intent);
+                    //URGENT: returning true is not a guarantee for the install working...
+                    resultListener.onResult(true);
 
-                        activity.setResult(Activity.RESULT_CANCELED);
-                        activity.finish();
-                        return true;
-                    }
+                } catch (@NonNull final ActivityNotFoundException e) {
+                    googlePlayStoreMissing(activity, resultListener);
                 }
             }
-            return true;
+        }
+    }
 
-        }).show();
+
+    /**
+     * Check if the device has Google Play Services.
+     * <p>
+     * If anything fails or the user cancels, we set the default scanner to ZXING_COMPATIBLE.
+     *
+     * @param activity       Calling activity
+     * @param resultListener will be called with the outcome
+     */
+    private static void updateGooglePlayServices(@NonNull final Activity activity,
+                                                 @NonNull final OnResultListener resultListener) {
+
+        GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
+        int status = gApi.isGooglePlayServicesAvailable(activity);
+
+        if (status == ConnectionResult.SUCCESS) {
+            // up-to-date, ready to use.
+            resultListener.onResult(true);
+
+        } else {
+            Dialog dialog = gApi.getErrorDialog(activity, status,
+                                                UniqueId.REQ_UPDATE_GOOGLE_PLAY_SERVICES,
+                                                d -> {
+                                                    setPreferredScanner(activity, ZXING_COMPATIBLE);
+                                                    resultListener.onResult(false);
+                                                });
+            // Paranoia...
+            if (dialog == null) {
+                resultListener.onResult(true);
+                return;
+            }
+
+            dialog.show();
+        }
+    }
+
+    /**
+     * Check if the device has Google Play Store.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if installed.
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private static boolean isGooglePlayStoreInstalled(@NonNull final Context context) {
+        try {
+            context.getPackageManager()
+                   .getPackageInfo(GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Inform the user their device does not support the Google Play Store and what
+     * to install manually.
+     *
+     * @param context        Current context
+     * @param resultListener will be called with the outcome
+     */
+    private static void googlePlayStoreMissing(@NonNull final Context context,
+                                               @NonNull final OnResultListener resultListener) {
+
+        String msg = context.getString(R.string.error_google_play_store_missing) + '\n'
+                     + context.getString(R.string.info_install_scanner_recommendation);
+
+        new AlertDialog.Builder(context)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.pg_barcode_scanner)
+                .setMessage(msg)
+                .setOnCancelListener(d -> resultListener.onResult(false))
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.cancel())
+                .create()
+                .show();
+    }
+
+    public static void setDefaultScanner(@NonNull final Context context) {
+        setPreferredScanner(context, DEFAULT);
     }
 
     private static void setPreferredScanner(@NonNull final Context context,
-                                            final int scanner) {
+                                            final int scannerId) {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
-                         .putString(Prefs.pk_scanner_preferred, String.valueOf(scanner))
+                         .putString(Prefs.pk_scanner_preferred, String.valueOf(scannerId))
                          .apply();
     }
 
-    private static void setNextScannerAsDefault(@NonNull final Context context) {
-        int scanner = getPreferredScanner();
-        setPreferredScanner(context, scanner + 1);
-    }
-
     private static int getPreferredScanner() {
-        return App.getListPreference(Prefs.pk_scanner_preferred, GOOGLE_PLAY_SERVICES);
+        return App.getListPreference(Prefs.pk_scanner_preferred, DEFAULT);
     }
 
-    /**
-     * Support for creating scanner objects on the fly without knowing which ones are available.
-     */
-    public interface ScannerFactory {
+    public interface OnResultListener {
 
-        /**
-         * Displayed to the user.
-         *
-         * @param context Current context
-         *
-         * @return name
-         */
-        @NonNull
-        String getLabel(@NonNull Context context);
-
-        /**
-         * Get a resource id that can be used in menus.
-         *
-         * @return resource id
-         */
-        @IdRes
-        int getResId();
-
-        /**
-         * Get the market url, or the empty string if not applicable.
-         * The caller must check on {@code }isEmpty()}.
-         *
-         * @return the market url, or "".
-         */
-        @NonNull
-        String getMarketUrl();
-
-        /**
-         * @param context Current context
-         *
-         * @return a new scanner of the related type.
-         */
-        @NonNull
-        Scanner newInstance(@NonNull Context context);
-
-        /**
-         * @param context Current context
-         *
-         * @return {@code true} if this scanner is available.
-         */
-        boolean isAvailable(@NonNull Context context);
-
+        void onResult(boolean success);
     }
 }

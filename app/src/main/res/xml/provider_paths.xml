@@ -26,9 +26,22 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+    https://developer.android.com/reference/kotlin/androidx/core/content/FileProvider
+
+    'path' attribute must stay in sync with utils/StorageUtils.java
+-->
 <paths>
-    <!-- 'path' attribute must stay in sync with utils/StorageUtils.java#EXT_ROOT_DIR -->
     <external-path
-        name="share"
+        name="external-path"
         path="./NeverTooManyBooks/" />
+
+    <external-cache-path
+        name="external-cache-path"
+        path="." />
+
+    <cache-path
+        name="cache-path"
+        path="." />
+
 </paths>

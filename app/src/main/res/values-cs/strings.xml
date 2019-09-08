@@ -28,7 +28,7 @@
   -->
 
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!-- Quotes „…“ - Regex to find wrong ones: (”|‘|’|«|») -->
+<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
     <string name="pe_ui_theme_day_night">Den / Noc</string>
@@ -152,7 +152,7 @@
     <string name="error_columns_are_blank">Sloupce %1$s jsou prázdné na řádku %2$d</string>
     <string name="error_email_failed">Odeslání e-mailu se nezdařilo.</string>
     <string name="error_failed_x">Nepodařilo se: %1$d</string>
-    <string name="error_google_play_missing">Google Play / Market není nainstalován</string>
+    <string name="error_google_play_store_missing">Google Play / Market není nainstalován</string>
     <string name="error_if_the_problem_persists">Pokud problémy přetrvají, kontaktujte správce.</string>
     <string name="error_import_failed">Import se nezdařil.</string>
     <string name="error_network_timeout">Žádná odpověď, zkuste to prosím znovu</string>
@@ -580,7 +580,8 @@
     <string name="warning_action_requires_isbn">Tato akce vyžaduje platné číslo ISBN.</string>
     <string name="warning_author_already_in_list">Autor je již v seznamu</string>
     <string name="warning_backup_request">Přejete si zálohovat Vaši databázi na SD kartu</string>
-    <string name="warning_bad_scanner">Vypadá to, že stávající aplikace čtečky čárových kódů není kompatibilní s &APP_NAME;. Doporučujeme nainstalovat aplikaci pro skenování čárových kódů Zxing a pokud je již nainstalována, doporučujeme odinstalovat a znovu nainstalovat.</string>
+    <string name="warning_bad_scanner">Vypadá to, že stávající aplikace čtečky čárových kódů není kompatibilní s &APP_NAME;.</string>
+    <string name="info_install_scanner_recommendation">Doporučujeme nainstalovat aplikaci pro skenování čárových kódů Zxing a pokud je již nainstalována, doporučujeme odinstalovat a znovu nainstalovat.</string>
     <string name="warning_book_no_longer_exists">Zadaná kniha již neexistuje</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt hledanou knihu. Zkuste prosím zadat potřebné údaje manuálně.</string>
     <string name="warning_book_was_deleted_uc">TATO KNIHA BYLA SMAZÁNA</string>
@@ -624,5 +625,8 @@
     <string name="pt_bob_show_details_uses_task">Načítání podrobností o knize</string>
     <string name="pt_bob_show_details_uses_task_on">zpožděné</string>
     <string name="pg_reformat">Přeformátovat</string>
+    <string name="menu_search_local">Místní vyhledávání</string>
+    <string name="info_install_scanner_manually">Nainstalujte prosím: %1$s</string>
+    <string name="lbl_edition_slipcase">Slipcase</string>
 
 </resources>

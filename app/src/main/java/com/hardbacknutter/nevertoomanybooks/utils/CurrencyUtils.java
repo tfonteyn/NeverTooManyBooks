@@ -57,8 +57,13 @@ public class CurrencyUtils {
      */
     private static final Map<String, String> CURRENCY_MAP = new HashMap<>();
 
+    private CurrencyUtils() {
+    }
+
     /**
      * Populate CURRENCY_MAP.
+     * The key in the map <strong>MUST be lowercase</strong>.
+     * The value in the map <strong>MUST be uppercase</strong>.
      *
      * <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language>
      * https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language</a>
@@ -68,7 +73,7 @@ public class CurrencyUtils {
         // allow re-creating
         CURRENCY_MAP.clear();
 
-        // key in map should always be lowercase
+        //
         CURRENCY_MAP.put("", "");
         CURRENCY_MAP.put("€", "EUR");
 

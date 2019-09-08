@@ -110,35 +110,6 @@ public class EditBookTocFragment
     private String mIsbn;
     /** primary author of the book. */
     private Author mBookAuthor;
-    private final ConfirmToc.ConfirmTocResults mConfirmTocResultsListener =
-            new ConfirmToc.ConfirmTocResults() {
-                /**
-                 * The user approved, so add the TOC to the list and refresh the screen
-                 * (still not saved to database).
-                 */
-                public void commitIsfdbData(final long tocBitMask,
-                                            @NonNull final List<TocEntry> tocEntries) {
-                    if (tocBitMask != 0) {
-                        Book book = mBookModel.getBook();
-                        book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-                        getField(R.id.cbx_is_anthology).setValueFrom(book);
-                        getField(R.id.cbx_multiple_authors).setValueFrom(book);
-                    }
-
-                    mList.addAll(tocEntries);
-                    mListAdapter.notifyDataSetChanged();
-                }
-
-                /**
-                 * Start a task to get the next edition of this book (that we know of).
-                 */
-                public void getNextEdition() {
-                    // remove the top one, and try again
-                    mIsfdbEditions.remove(0);
-                    new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
-                                         mIsfdbResultsListener).execute();
-                }
-            };
     /** the rows. */
     private ArrayList<TocEntry> mList;
     /** The adapter for the list. */
@@ -213,6 +184,35 @@ public class EditBookTocFragment
             }
         }
     };
+    private final ConfirmToc.ConfirmTocResults mConfirmTocResultsListener =
+            new ConfirmToc.ConfirmTocResults() {
+                /**
+                 * The user approved, so add the TOC to the list and refresh the screen
+                 * (still not saved to database).
+                 */
+                public void commitIsfdbData(final long tocBitMask,
+                                            @NonNull final List<TocEntry> tocEntries) {
+                    if (tocBitMask != 0) {
+                        Book book = mBookModel.getBook();
+                        book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
+                        getField(R.id.cbx_is_anthology).setValueFrom(book);
+                        getField(R.id.cbx_multiple_authors).setValueFrom(book);
+                    }
+
+                    mList.addAll(tocEntries);
+                    mListAdapter.notifyDataSetChanged();
+                }
+
+                /**
+                 * Start a task to get the next edition of this book (that we know of).
+                 */
+                public void getNextEdition() {
+                    // remove the top one, and try again
+                    mIsfdbEditions.remove(0);
+                    new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
+                                         mIsfdbResultsListener).execute();
+                }
+            };
     /** checkbox to hide/show the author edit field. */
     private CompoundButton mMultiAuthorsView;
     @Nullable
@@ -395,8 +395,7 @@ public class EditBookTocFragment
             .setIcon(R.drawable.ic_delete);
 
         String title = item.getTitle();
-        new MenuPicker<>(getContext(), title, null, false, menu, position,
-                         this::onContextItemSelected)
+        new MenuPicker<>(getContext(), title, null, menu, position, this::onContextItemSelected)
                 .show();
     }
 
