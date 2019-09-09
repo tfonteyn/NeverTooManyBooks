@@ -59,7 +59,7 @@ public class GlobalSettingsFragment
 
     @Override
     void prepareResult() {
-        // URGENT: make the response conditional, not all changes warrant a recreate!
+        // TODO: make the response conditional, not all changes warrant a recreate!
         Intent data = new Intent().putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
         //noinspection ConstantConditions
         getActivity().setResult(Activity.RESULT_OK, data);

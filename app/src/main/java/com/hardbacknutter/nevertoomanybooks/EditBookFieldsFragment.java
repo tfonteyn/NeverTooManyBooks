@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
@@ -255,6 +256,10 @@ public class EditBookFieldsFragment
 
     @Override
     protected void onLoadFieldsFromBook() {
+        // if the book has no cover, then make sure the temp cover is deleted.
+        if (!mBookModel.getBook().getBoolean(UniqueId.BKEY_IMAGE)) {
+            StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
+        }
         super.onLoadFieldsFromBook();
 
         //noinspection ConstantConditions

@@ -236,32 +236,18 @@ public final class ParseUtils {
         }
 
         try {
-            float value = parseFloat(Locale.getDefault(), source);
-            //TEST
-            if (source.equals(String.valueOf(value))) {
-                return value;
-            }
+            return parseFloat(Locale.getDefault(), source);
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
         }
 
         try {
-            float value = parseFloat(App.getSystemLocale(), source);
-            //TEST
-            if (source.equals(String.valueOf(value))) {
-                return value;
-            }
+            return parseFloat(App.getSystemLocale(), source);
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
         }
 
-        float value = parseFloat(Locale.US, source);
-        //TEST
-        if (source.equals(String.valueOf(value))) {
-            return value;
-        } else {
-            throw new NumberFormatException("not a float: " + source);
-        }
+        return parseFloat(Locale.US, source);
     }
 
     static float parseFloat(@NonNull final Locale locale,
@@ -298,32 +284,18 @@ public final class ParseUtils {
         }
 
         try {
-            double value = parseDouble(Locale.getDefault(), source);
-            //TEST
-            if (source.equals(String.valueOf(value))) {
-                return value;
-            }
+            return parseDouble(Locale.getDefault(), source);
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
         }
 
         try {
-            double value = parseDouble(App.getSystemLocale(), source);
-            //TEST
-            if (source.equals(String.valueOf(value))) {
-                return value;
-            }
+            return parseDouble(App.getSystemLocale(), source);
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
         }
 
-        double value = parseDouble(Locale.US, source);
-        //TEST
-        if (source.equals(String.valueOf(value))) {
-            return value;
-        } else {
-            throw new NumberFormatException("not a float: " + source);
-        }
+        return parseDouble(Locale.US, source);
     }
 
     public static double parseDouble(@NonNull final Locale locale,
@@ -333,7 +305,6 @@ public final class ParseUtils {
             NumberFormat nf = NumberFormat.getInstance(locale);
             return nf.parse(s).doubleValue();
         } catch (@NonNull final ParseException ignore) {
-            // ignore
         }
 
         throw new NumberFormatException("not a double: " + s);

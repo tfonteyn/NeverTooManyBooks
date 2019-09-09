@@ -58,7 +58,6 @@ import java.util.UUID;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.BitmaskFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.BooleanFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
@@ -150,7 +149,7 @@ public class BooklistStyle
                                              | EXTRAS_AUTHOR | EXTRAS_ISBN;
 
     /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_THUMBNAIL = 0x100;
+    public static final int EXTRAS_THUMBNAIL = 1 << 8;
 
 //    /** the amount of details to show in the header. */
 //    public static final Integer SUMMARY_HIDE = 0;
@@ -204,7 +203,7 @@ public class BooklistStyle
 
     /**
      * id if string representing name of this style.
-     * Used for standard system-defined styles
+     * Used for standard system-defined styles.
      * Always 0 for a user-defined style
      */
     @StringRes
@@ -212,9 +211,8 @@ public class BooklistStyle
 
     /**
      * Display name of this style.
-     * <p>
      * Used for user-defined styles.
-     * encapsulated value always {@code null} for a builtin style.
+     * Encapsulated value always {@code null} for a builtin style.
      */
     private PString mName;
 
@@ -233,7 +231,7 @@ public class BooklistStyle
      */
     private PInteger mScaleFontSize;
 
-    /** Use normal or large thumbnails. */
+    /** Scale factor to apply for thumbnails. */
     private PInteger mThumbnailScale;
 
     /**
@@ -245,39 +243,25 @@ public class BooklistStyle
     /** Sorting. */
     private PBoolean mSortAuthorGivenNameFirst;
 
-    /** Show a thumbnail on each book row in the list. */
-    private PBoolean mExtraShowThumbnails;
-    /** Extra info to show on each book row in the list. */
-    private PBoolean mExtraShowBookshelves;
-    private PBoolean mExtraShowLocation;
-    private PBoolean mExtraShowAuthor;
-    private PBoolean mExtraShowPublisher;
-    private PBoolean mExtraShowPubDate;
-    private PBoolean mExtraShowIsbn;
-    private PBoolean mExtraShowFormat;
-    /** Fetch the extras using ot task or not. */
-    private PBoolean mExtrasByTask;
-
     /** All groups in this style. */
     private PStyleGroups mStyleGroups;
 
+    /** Fetch the extras by using a task or not. */
+    private PBoolean mFetchExtrasByTask;
+
     /**
-     * All filters.
+     * All extra fields in an <strong>ordered</strong> map.
      * <p>
      * The key in the Map is the actual preference key.
      */
-    private Map<String, Filter> mFilters;
+    private Map<String, PBoolean> mAllExtras;
 
-    @SuppressWarnings("FieldNotUsedInToString")
-    private BooleanFilter mFilterRead;
-    @SuppressWarnings("FieldNotUsedInToString")
-    private BooleanFilter mFilterSigned;
-    @SuppressWarnings("FieldNotUsedInToString")
-    private BooleanFilter mFilterAnthology;
-    @SuppressWarnings("FieldNotUsedInToString")
-    private BooleanFilter mFilterLoaned;
-    @SuppressWarnings("FieldNotUsedInToString")
-    private BitmaskFilter mFilterEdition;
+    /**
+     * All filters in an <strong>ordered</strong> map.
+     * <p>
+     * The key in the Map is the actual preference key.
+     */
+    private Map<String, Filter> mAllFilters;
 
 
     /**
@@ -350,7 +334,6 @@ public class BooklistStyle
 
         // only init the prefs once we have a valid uuid
         initPrefs();
-
         mName.set(in);
 
         // create new clone ?
@@ -367,27 +350,16 @@ public class BooklistStyle
         mScaleFontSize.set(in);
         mThumbnailScale.set(in);
         mShowHeaderInfo.set(in);
-
+        mSortAuthorGivenNameFirst.set(in);
         mStyleGroups.set(in);
 
-        mExtraShowThumbnails.set(in);
-        mExtraShowBookshelves.set(in);
-        mExtraShowLocation.set(in);
-        mExtraShowAuthor.set(in);
-        mExtraShowPublisher.set(in);
-        mExtraShowPubDate.set(in);
-        mExtraShowIsbn.set(in);
-        mExtraShowFormat.set(in);
-
-        mExtrasByTask.set(in);
-
-        mSortAuthorGivenNameFirst.set(in);
-
-        mFilterRead.set(in);
-        mFilterSigned.set(in);
-        mFilterAnthology.set(in);
-        mFilterLoaned.set(in);
-        mFilterEdition.set(in);
+        mFetchExtrasByTask.set(in);
+        for (PBoolean extra : mAllExtras.values()) {
+            extra.set(in);
+        }
+        for (Filter filter : mAllFilters.values()) {
+            filter.set(in);
+        }
     }
 
     /**
@@ -508,60 +480,74 @@ public class BooklistStyle
         mThumbnailScale = new PInteger(Prefs.pk_bob_cover_size, mUuid, isUserDefined(),
                                        ImageUtils.SCALE_MEDIUM);
 
-        // all extra details for book-rows.
-        mExtraShowThumbnails = new PBoolean(Prefs.pk_bob_show_thumbnails, mUuid, isUserDefined(),
-                                            true);
-        mExtraShowBookshelves = new PBoolean(Prefs.pk_bob_show_bookshelves, mUuid, isUserDefined());
-        mExtraShowLocation = new PBoolean(Prefs.pk_bob_show_location, mUuid, isUserDefined());
-        mExtraShowAuthor = new PBoolean(Prefs.pk_bob_show_author, mUuid, isUserDefined());
-        mExtraShowPublisher = new PBoolean(Prefs.pk_bob_show_publisher, mUuid, isUserDefined());
-        mExtraShowPubDate = new PBoolean(Prefs.pk_bob_show_pub_date, mUuid, isUserDefined());
-        mExtraShowIsbn = new PBoolean(Prefs.pk_bob_show_isbn, mUuid, isUserDefined());
-        mExtraShowFormat = new PBoolean(Prefs.pk_bob_show_format, mUuid, isUserDefined());
+        mFetchExtrasByTask = new PBoolean(Prefs.pk_bob_use_task_for_extras, mUuid, isUserDefined(),
+                                          true);
 
-        mExtrasByTask = new PBoolean(Prefs.pk_bob_use_task_for_extras, mUuid, isUserDefined(),
-                                     true);
+        // all extra details for book-rows.
+        mAllExtras = new LinkedHashMap<>();
+
+        mAllExtras.put(Prefs.pk_bob_show_thumbnails,
+                       new PBoolean(Prefs.pk_bob_show_thumbnails, mUuid, isUserDefined(), true));
+
+        mAllExtras.put(Prefs.pk_bob_show_bookshelves,
+                       new PBoolean(Prefs.pk_bob_show_bookshelves, mUuid, isUserDefined()));
+
+        mAllExtras.put(Prefs.pk_bob_show_location,
+                       new PBoolean(Prefs.pk_bob_show_location, mUuid, isUserDefined()));
+
+        mAllExtras.put(Prefs.pk_bob_show_author,
+                       new PBoolean(Prefs.pk_bob_show_author, mUuid, isUserDefined()));
+
+        mAllExtras.put(Prefs.pk_bob_show_publisher,
+                       new PBoolean(Prefs.pk_bob_show_publisher, mUuid, isUserDefined()));
+
+        mAllExtras.put(Prefs.pk_bob_show_pub_date,
+                       new PBoolean(Prefs.pk_bob_show_pub_date, mUuid, isUserDefined()));
+
+        mAllExtras.put(Prefs.pk_bob_show_isbn,
+                       new PBoolean(Prefs.pk_bob_show_isbn, mUuid, isUserDefined()));
+
+        mAllExtras.put(Prefs.pk_bob_show_format,
+                       new PBoolean(Prefs.pk_bob_show_format, mUuid, isUserDefined()));
 
         // all filters
-        mFilters = new LinkedHashMap<>();
+        mAllFilters = new LinkedHashMap<>();
 
-        mFilterRead = new BooleanFilter(R.string.lbl_read,
-                                        Prefs.pk_bob_filter_read,
-                                        mUuid, isUserDefined(),
-                                        DBDefinitions.TBL_BOOKS,
-                                        DBDefinitions.DOM_BOOK_READ);
-        mFilters.put(mFilterRead.getKey(), mFilterRead);
+        mAllFilters.put(Prefs.pk_bob_filter_read,
+                        new BooleanFilter(R.string.lbl_read,
+                                          Prefs.pk_bob_filter_read,
+                                          mUuid, isUserDefined(),
+                                          DBDefinitions.TBL_BOOKS,
+                                          DBDefinitions.DOM_BOOK_READ));
 
-        mFilterSigned = new BooleanFilter(R.string.lbl_signed,
+        mAllFilters.put(Prefs.pk_bob_filter_signed,
+                        new BooleanFilter(R.string.lbl_signed,
                                           Prefs.pk_bob_filter_signed,
                                           mUuid, isUserDefined(),
                                           DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.DOM_BOOK_SIGNED);
-        mFilters.put(mFilterSigned.getKey(), mFilterSigned);
+                                          DBDefinitions.DOM_BOOK_SIGNED));
 
-        mFilterAnthology = new BooleanFilter(R.string.lbl_anthology,
-                                             Prefs.pk_bob_filter_anthology,
-                                             mUuid, isUserDefined(),
-                                             DBDefinitions.TBL_BOOKS,
-                                             DBDefinitions.DOM_BOOK_TOC_BITMASK);
-        mFilters.put(mFilterAnthology.getKey(), mFilterAnthology);
+        mAllFilters.put(Prefs.pk_bob_filter_anthology,
+                        new BooleanFilter(R.string.lbl_anthology,
+                                          Prefs.pk_bob_filter_anthology,
+                                          mUuid, isUserDefined(),
+                                          DBDefinitions.TBL_BOOKS,
+                                          DBDefinitions.DOM_BOOK_TOC_BITMASK));
 
-        mFilterLoaned = new BooleanFilter(R.string.lbl_loaned,
+        mAllFilters.put(Prefs.pk_bob_filter_loaned,
+                        new BooleanFilter(R.string.lbl_loaned,
                                           Prefs.pk_bob_filter_loaned,
                                           mUuid, isUserDefined(),
                                           DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.DOM_LOANEE);
-        mFilters.put(mFilterLoaned.getKey(), mFilterLoaned);
+                                          DBDefinitions.DOM_LOANEE));
 
-        mFilterEdition = new BitmaskFilter(R.string.lbl_edition,
-                                           Prefs.pk_bob_filter_editions,
-                                           mUuid, isUserDefined(),
-                                           DBDefinitions.TBL_BOOKS,
-                                           DBDefinitions.DOM_BOOK_EDITION_BITMASK);
-
-        mFilters.put(mFilterEdition.getKey(), mFilterEdition);
+        mAllFilters.put(Prefs.pk_bob_filter_editions,
+                        new BitmaskFilter(R.string.lbl_edition,
+                                          Prefs.pk_bob_filter_editions,
+                                          mUuid, isUserDefined(),
+                                          DBDefinitions.TBL_BOOKS,
+                                          DBDefinitions.DOM_BOOK_EDITION_BITMASK));
     }
-
 
     @SuppressWarnings("SameReturnValue")
     @Override
@@ -582,27 +568,16 @@ public class BooklistStyle
         mScaleFontSize.writeToParcel(dest);
         mThumbnailScale.writeToParcel(dest);
         mShowHeaderInfo.writeToParcel(dest);
-
+        mSortAuthorGivenNameFirst.writeToParcel(dest);
         mStyleGroups.writeToParcel(dest);
 
-        mExtraShowThumbnails.writeToParcel(dest);
-        mExtraShowBookshelves.writeToParcel(dest);
-        mExtraShowLocation.writeToParcel(dest);
-        mExtraShowAuthor.writeToParcel(dest);
-        mExtraShowPublisher.writeToParcel(dest);
-        mExtraShowPubDate.writeToParcel(dest);
-        mExtraShowIsbn.writeToParcel(dest);
-        mExtraShowFormat.writeToParcel(dest);
-
-        mExtrasByTask.writeToParcel(dest);
-
-        mSortAuthorGivenNameFirst.writeToParcel(dest);
-
-        mFilterRead.writeToParcel(dest);
-        mFilterSigned.writeToParcel(dest);
-        mFilterAnthology.writeToParcel(dest);
-        mFilterLoaned.writeToParcel(dest);
-        mFilterEdition.writeToParcel(dest);
+        mFetchExtrasByTask.writeToParcel(dest);
+        for (PBoolean extra : mAllExtras.values()) {
+            extra.writeToParcel(dest);
+        }
+        for (Filter filter : mAllFilters.values()) {
+            filter.writeToParcel(dest);
+        }
     }
 
     /**
@@ -723,16 +698,10 @@ public class BooklistStyle
         map.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
 
         // properties that can be shown as extra information for each line in the book list
-        map.put(mExtraShowThumbnails.getKey(), mExtraShowThumbnails);
-        map.put(mExtraShowBookshelves.getKey(), mExtraShowBookshelves);
-        map.put(mExtraShowLocation.getKey(), mExtraShowLocation);
-        map.put(mExtraShowAuthor.getKey(), mExtraShowAuthor);
-        map.put(mExtraShowPublisher.getKey(), mExtraShowPublisher);
-        map.put(mExtraShowPubDate.getKey(), mExtraShowPubDate);
-        map.put(mExtraShowIsbn.getKey(), mExtraShowIsbn);
-        map.put(mExtraShowFormat.getKey(), mExtraShowFormat);
-
-        map.put(mExtrasByTask.getKey(), mExtrasByTask);
+        for (PBoolean extra : mAllExtras.values()) {
+            map.put(extra.getKey(), extra);
+        }
+        map.put(mFetchExtrasByTask.getKey(), mFetchExtrasByTask);
 
         // sorting
         map.put(mSortAuthorGivenNameFirst.getKey(), mSortAuthorGivenNameFirst);
@@ -742,7 +711,7 @@ public class BooklistStyle
 
         if (all) {
             // all filters (both active and non-active)
-            for (Filter filter : mFilters.values()) {
+            for (Filter filter : mAllFilters.values()) {
                 map.put(filter.getKey(), (PPref) filter);
             }
 
@@ -790,7 +759,7 @@ public class BooklistStyle
      * @return {@code true} when a background task should be used.
      */
     public boolean extrasByTask() {
-        return mExtrasByTask.isTrue();
+        return mFetchExtrasByTask.isTrue();
     }
 
     /**
@@ -858,7 +827,8 @@ public class BooklistStyle
      * @return scale
      */
     public int getThumbnailScaleFactor() {
-        if (mExtraShowThumbnails.isFalse()) {
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_thumbnails).isFalse()) {
             return 0;
         }
 
@@ -866,55 +836,12 @@ public class BooklistStyle
     }
 
     /**
-     * A quicker way of getting the status of all extra-fields in one go instead of implementing
-     * individual getters for each.
-     *
-     * @return bitmask with the 'extra' fields that are in use (visible) for this style.
-     */
-    public int getExtraFieldsStatus() {
-        int extras = 0;
-
-        if (mExtraShowThumbnails.isTrue()) {
-            extras |= EXTRAS_THUMBNAIL;
-        }
-
-        if (mExtraShowBookshelves.isTrue()) {
-            extras |= EXTRAS_BOOKSHELVES;
-        }
-
-        if (mExtraShowLocation.isTrue()) {
-            extras |= EXTRAS_LOCATION;
-        }
-
-        if (mExtraShowPublisher.isTrue()) {
-            extras |= EXTRAS_PUBLISHER;
-        }
-
-        if (mExtraShowPubDate.isTrue()) {
-            extras |= EXTRAS_PUB_DATE;
-        }
-
-        if (mExtraShowIsbn.isTrue()) {
-            extras |= EXTRAS_ISBN;
-        }
-
-        if (mExtraShowFormat.isTrue()) {
-            extras |= EXTRAS_FORMAT;
-        }
-
-        if (mExtraShowAuthor.isTrue()) {
-            extras |= EXTRAS_AUTHOR;
-        }
-
-        return extras;
-    }
-
-    /**
      * Used by built-in styles only. Set by user via preferences screen.
      */
     @SuppressWarnings("SameParameterValue")
     private void setShowAuthor(final boolean show) {
-        mExtraShowAuthor.set(show);
+        //noinspection ConstantConditions
+        mAllExtras.get(Prefs.pk_bob_show_author).set(show);
     }
 
     /**
@@ -922,7 +849,8 @@ public class BooklistStyle
      */
     @SuppressWarnings("SameParameterValue")
     private void setShowThumbnails(final boolean show) {
-        mExtraShowThumbnails.set(show);
+        //noinspection ConstantConditions
+        mAllExtras.get(Prefs.pk_bob_show_thumbnails).set(show);
     }
 
     /**
@@ -1028,11 +956,21 @@ public class BooklistStyle
     }
 
     /**
+     * Used by built-in styles only. Set by user via preferences screen.
+     */
+    @SuppressWarnings("SameParameterValue")
+    private void setFilter(@NonNull final String key,
+                           final boolean value) {
+        //noinspection ConstantConditions
+        ((BooleanFilter) mAllFilters.get(key)).set(value);
+    }
+
+    /**
      * @return Filters (active and non-active)
      */
     @NonNull
     public Collection<Filter> getFilters() {
-        return mFilters.values();
+        return mAllFilters.values();
     }
 
     /**
@@ -1045,7 +983,7 @@ public class BooklistStyle
     public List<String> getFilterLabels(@NonNull final Context context,
                                         final boolean all) {
         List<String> labels = new ArrayList<>();
-        for (Filter filter : mFilters.values()) {
+        for (Filter filter : mAllFilters.values()) {
             if (filter.isActive() || all) {
                 labels.add(filter.getLabel(context));
             }
@@ -1055,13 +993,102 @@ public class BooklistStyle
     }
 
     /**
-     * Used by built-in styles only. Set by user via preferences screen.
+     * Get the list of in-use extra-field names in a human readable format.
+     * This is used to set the summary of the PreferenceScreen.
+     *
+     * @return list of labels, can be empty, but never {@code null}
      */
-    @SuppressWarnings("SameParameterValue")
-    private void setFilter(@NonNull final String key,
-                           final boolean value) {
+    @NonNull
+    public List<String> getExtraFieldsLabels(@NonNull final Context context) {
+        List<String> labels = new ArrayList<>();
+
         //noinspection ConstantConditions
-        ((BooleanFilter) mFilters.get(key)).set(value);
+        if (mAllExtras.get(Prefs.pk_bob_show_thumbnails).isTrue()) {
+            labels.add(context.getString(R.string.pt_bob_thumbnails_show));
+        }
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_bookshelves).isTrue()) {
+            labels.add(context.getString(R.string.lbl_bookshelves));
+        }
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_location).isTrue()) {
+            labels.add(context.getString(R.string.lbl_location));
+        }
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_author).isTrue()) {
+            labels.add(context.getString(R.string.lbl_author));
+        }
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_publisher).isTrue()) {
+            labels.add(context.getString(R.string.lbl_publisher));
+        }
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_pub_date).isTrue()) {
+            labels.add(context.getString(R.string.lbl_date_published));
+        }
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_isbn).isTrue()) {
+            labels.add(context.getString(R.string.lbl_isbn));
+        }
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_format).isTrue()) {
+            labels.add(context.getString(R.string.lbl_format));
+        }
+
+        Collections.sort(labels);
+        return labels;
+    }
+
+    /**
+     * A quicker way of getting the status of all extra-fields in one go instead of implementing
+     * individual getters for each.
+     *
+     * @return bitmask with the 'extra' fields that are in use (visible) for this style.
+     */
+    public int getExtraFieldsStatus() {
+        int extras = 0;
+
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_thumbnails).isTrue()) {
+            extras |= EXTRAS_THUMBNAIL;
+        }
+
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_bookshelves).isTrue()) {
+            extras |= EXTRAS_BOOKSHELVES;
+        }
+
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_location).isTrue()) {
+            extras |= EXTRAS_LOCATION;
+        }
+
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_publisher).isTrue()) {
+            extras |= EXTRAS_PUBLISHER;
+        }
+
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_pub_date).isTrue()) {
+            extras |= EXTRAS_PUB_DATE;
+        }
+
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_isbn).isTrue()) {
+            extras |= EXTRAS_ISBN;
+        }
+
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_format).isTrue()) {
+            extras |= EXTRAS_FORMAT;
+        }
+
+        //noinspection ConstantConditions
+        if (mAllExtras.get(Prefs.pk_bob_show_author).isTrue()) {
+            extras |= EXTRAS_AUTHOR;
+        }
+
+        return extras;
     }
 
     /**
@@ -1176,62 +1203,34 @@ public class BooklistStyle
                + "\nmScaleFontSize=" + mScaleFontSize
                + "\nmShowHeaderInfo=" + mShowHeaderInfo
                + "\nmSortAuthorGivenNameFirst=" + mSortAuthorGivenNameFirst
-               + "\nmExtraShowThumbnails=" + mExtraShowThumbnails
                + "\nmThumbnailScale=" + mThumbnailScale
-               + "\nmExtrasByTask=" + mExtrasByTask
-               + "\nmExtraShowBookshelves=" + mExtraShowBookshelves
-               + "\nmExtraShowLocation=" + mExtraShowLocation
-               + "\nmExtraShowAuthor=" + mExtraShowAuthor
-               + "\nmExtraShowPublisher=" + mExtraShowPublisher
-               + "\nmExtraShowPubDate=" + mExtraShowPubDate
-               + "\nmExtraShowIsbn=" + mExtraShowIsbn
-               + "\nmExtraShowFormat=" + mExtraShowFormat
                + "\nmStyleGroups=" + mStyleGroups
-               + "\nmFilters=\n" + mFilters
+
+               + "\nmFetchExtrasByTask=" + mFetchExtrasByTask
+               + "\nmAllExtras=" + mAllExtras
+               + "\nmAllFilters=\n" + mAllFilters
                + '}';
     }
 
     /**
-     * Check if a particular 'Extra' field is in use,
-     * or a particular group (the display-domain).
+     * Check if a particular 'Extra' field, or a particular group (the display-domain), is in use.
      *
      * @param key to check
      *
-     * @return {@code true} if in used
+     * @return {@code true} if in use
      */
     public boolean isUsed(@NonNull final String key) {
-        switch (key) {
-            case UniqueId.BKEY_IMAGE:
-                return App.isUsed(key) && mExtraShowThumbnails.isTrue();
+        if (mAllExtras.containsKey(key)) {
+            //noinspection ConstantConditions
+            return App.isUsed(key) && mAllExtras.get(key).isTrue();
 
-            case DBDefinitions.KEY_AUTHOR_FORMATTED:
-                return App.isUsed(key) && mExtraShowAuthor.isTrue();
-
-            case DBDefinitions.KEY_BOOKSHELF:
-                return App.isUsed(key) && mExtraShowBookshelves.isTrue();
-
-            case DBDefinitions.KEY_FORMAT:
-                return App.isUsed(key) && mExtraShowFormat.isTrue();
-
-            case DBDefinitions.KEY_ISBN:
-                return App.isUsed(key) && mExtraShowIsbn.isTrue();
-
-            case DBDefinitions.KEY_LOCATION:
-                return App.isUsed(key) && mExtraShowLocation.isTrue();
-
-            case DBDefinitions.KEY_PUBLISHER:
-                return App.isUsed(key) && mExtraShowPublisher.isTrue();
-
-            case DBDefinitions.KEY_DATE_PUBLISHED:
-                return App.isUsed(key) && mExtraShowPubDate.isTrue();
-
-            default:
-                for (BooklistGroup group : getGroups()) {
-                    if (group.getDisplayDomain().getName().equals(key)) {
-                        return true;
-                    }
+        } else {
+            for (BooklistGroup group : getGroups()) {
+                if (group.getDisplayDomain().getName().equals(key)) {
+                    return true;
                 }
-                return false;
+            }
+            return false;
         }
     }
 

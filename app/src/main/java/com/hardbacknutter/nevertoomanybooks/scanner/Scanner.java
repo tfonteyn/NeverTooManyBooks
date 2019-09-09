@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.scanner;
 
-import android.app.Activity;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
@@ -36,7 +35,6 @@ import androidx.fragment.app.Fragment;
 
 /**
  * Interface defining required methods for any external scanner interface.
- * Implementation must implement at least  one of the {@link #startActivityForResult} methods.
  */
 public interface Scanner {
 
@@ -48,23 +46,8 @@ public interface Scanner {
      *
      * @return {@code true} if we could start the activity.
      */
-    default boolean startActivityForResult(@NonNull Fragment fragment,
-                                           int requestCode) {
-        throw new IllegalStateException("must be implemented");
-    }
-
-    /**
-     * Start the activity with the passed request code.
-     *
-     * @param activity    calling activity
-     * @param requestCode which will be passed back to onActivityResult
-     *
-     * @return {@code true} if we could start the activity.
-     */
-    default boolean startActivityForResult(@NonNull Activity activity,
-                                           int requestCode) {
-        throw new IllegalStateException("must be implemented");
-    }
+    boolean startActivityForResult(@NonNull Fragment fragment,
+                                   int requestCode);
 
     /**
      * @return the barcode from the resulting intent of a scan action; or {@code null}

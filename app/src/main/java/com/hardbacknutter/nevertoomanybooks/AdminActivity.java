@@ -27,20 +27,21 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.AdminModel;
 
 /**
  * Hosting activity for admin functions.
- * <p>
- * <strong>Note:</strong> eventually these 'hosting' activities are meant to go.
- * The idea is to have ONE hosting/main activity, which swaps in fragments as needed.
  */
 public class AdminActivity
         extends BaseActivity {
@@ -64,5 +65,21 @@ public class AdminActivity
               .replace(R.id.main_fragment, frag, AdminFragment.TAG)
               .commit();
         }
+    }
+
+    /**
+     * Setting the result from the fragment with getActivity().setResult does not
+     * seem to be 100% fool proof when the 'back' key is used. Using this pattern is.
+     */
+    @Override
+    public void onBackPressed() {
+        AdminModel model = new ViewModelProvider(this).get(AdminModel.class);
+        Intent data = model.getResultData();
+        Bundle extras = data.getExtras();
+        if (extras != null && extras.size() > 0) {
+            setResult(Activity.RESULT_OK, data);
+        }
+
+        super.onBackPressed();
     }
 }

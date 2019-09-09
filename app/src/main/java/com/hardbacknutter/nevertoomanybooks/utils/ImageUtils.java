@@ -149,6 +149,8 @@ public final class ImageUtils {
      * @param uuid      UUID of book
      * @param maxWidth  Max width of resulting image
      * @param maxHeight Max height of resulting image
+     *
+     * @return {@code true} if we loaded a 'real' file.
      */
     @UiThread
     public static boolean setImageView(@NonNull final ImageView imageView,
@@ -210,6 +212,8 @@ public final class ImageUtils {
      * @param maxWidth  Maximum desired width of the image
      * @param maxHeight Maximum desired height of the image
      * @param upscale   use the maximum h/w also as the minimum; thereby forcing upscaling.
+     *
+     * @return {@code true} if we loaded a 'real' file.
      */
     @UiThread
     public static boolean setImageView(@NonNull final ImageView imageView,
@@ -236,6 +240,8 @@ public final class ImageUtils {
      * @param maxWidth  Maximum desired width of the image
      * @param maxHeight Maximum desired height of the image
      * @param upscale   use the maximum h/w also as the minimum; thereby forcing upscaling.
+     *
+     * @return {@code true} if we loaded a 'real' file.
      */
     @UiThread
     private static boolean setImageView(@NonNull final ImageView imageView,
@@ -557,11 +563,8 @@ public final class ImageUtils {
 
         // Finally, cleanup the data
         bookData.remove(UniqueId.BKEY_FILE_SPEC_ARRAY);
-        // and indicate we got a file with the default name
+        // and indicate we got a file with the default name (or not).
         bookData.putBoolean(UniqueId.BKEY_IMAGE, coverName != null);
-        if (coverName != null) {
-            bookData.putString(UniqueId.BKEY_COVER_NAME, coverName);
-        }
     }
 
     /**
@@ -607,14 +610,14 @@ public final class ImageUtils {
             }
         }
         // Get the best file (if present) and rename it.
-        File destination = null;
+        File downloadedFile = null;
         if (bestFileIndex >= 0) {
             File source = new File(imageList.get(bestFileIndex));
-            destination = StorageUtils.getTempCoverFile();
-            StorageUtils.renameFile(source, destination);
+            downloadedFile = StorageUtils.getTempCoverFile();
+            StorageUtils.renameFile(source, downloadedFile);
         }
 
-        return destination != null ? destination.getName() : null;
+        return downloadedFile != null ? downloadedFile.getName() : null;
     }
 
     /**

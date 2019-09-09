@@ -151,7 +151,7 @@
     <string name="error_columns_are_blank">%1$s sütunlarının hepsi %2$d satırında boş</string>
     <string name="error_email_failed">E-posta gönderilemedi.</string>
     <string name="error_failed_x">Başarısız: %1$d</string>
-    <string name="error_google_play_store_missing">Google Play / Market yüklü değil</string>
+    <string name="error_google_play_store_missing">Google Play Store yüklü değil</string>
     <string name="error_if_the_problem_persists">Eğer sorun sürerse lütfen ana seçkedeki “Ayarlar” bölümünden destek ile iletişime geçin.</string>
     <string name="error_import_failed">İçe aktarma başarısız.</string>
     <string name="error_network_timeout">Cevapsız. Tekrar deneyin.</string>
@@ -628,6 +628,5 @@
     <string name="lbl_author_primary">yazar</string>
     <string name="menu_search_local">Bölgesel arama</string>
     <string name="pg_reformat">Yeniden biçimlendirme</string>
-    <string name="info_install_scanner_manually">Lütfen yükleyin: %1$s</string>
 
 </resources>

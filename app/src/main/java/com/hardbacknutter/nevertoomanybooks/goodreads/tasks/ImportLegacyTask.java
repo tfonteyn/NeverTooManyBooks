@@ -435,12 +435,9 @@ class ImportLegacyTask
 
         if (id > 0) {
             if (book.getBoolean(UniqueId.BKEY_IMAGE)) {
-                String uuid = db.getBookUuid(id);
-                // get the temporary downloaded file
-                File source = StorageUtils.getTempCoverFile();
-                File destination = StorageUtils.getCoverForUuid(uuid);
-                // and rename it to the permanent UUID one.
-                StorageUtils.renameFile(source, destination);
+                File downloadedFile = StorageUtils.getTempCoverFile();
+                File destination = StorageUtils.getCoverForUuid(db.getBookUuid(id));
+                StorageUtils.renameFile(downloadedFile, destination);
             }
         }
     }

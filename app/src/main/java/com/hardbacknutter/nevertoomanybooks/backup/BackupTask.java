@@ -146,8 +146,7 @@ public class BackupTask
                 return mSettings;
             }
 
-            // success, delete any existing one for paranoia's sake.
-            StorageUtils.deleteFile(mOutputFile);
+            // success
             StorageUtils.renameFile(mTmpFile, mOutputFile);
 
             SharedPreferences.Editor ed = PreferenceManager

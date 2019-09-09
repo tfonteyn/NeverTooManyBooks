@@ -151,7 +151,7 @@
     <string name="error_columns_are_blank">В строке %2$d столбцы %1$s пусты</string>
     <string name="error_email_failed">Не удалось отправить электронное письмо.</string>
     <string name="error_failed_x">Не удалось: %1$d</string>
-    <string name="error_google_play_store_missing">Google Play / Market не установлен</string>
+    <string name="error_google_play_store_missing">Google Play Store не установлен</string>
     <string name="error_if_the_problem_persists">Если проблема осталась, свяжитесь с поддержкой через меню «Настройки» главного меню.</string>
     <string name="error_import_failed">Импорт не удался.</string>
     <string name="error_network_timeout">Нет ответа, пожалуйста, попробуйте еще раз</string>
@@ -626,6 +626,5 @@
     <string name="lbl_author_primary">писатель</string>
     <string name="menu_search_local">Локальный поиск</string>
     <string name="pg_reformat">переформатирующий</string>
-    <string name="info_install_scanner_manually">Пожалуйста, установите: %1$s</string>
 
 </resources>

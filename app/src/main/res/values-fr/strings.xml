@@ -154,7 +154,7 @@
     <string name="error_columns_are_blank">Les colonnes %1$s sont toutes vides à la ligne %2$d</string>
     <string name="error_email_failed">L\'envoi de l\'e-mail a échoué.</string>
     <string name="error_failed_x">Échec: %1$d</string>
-    <string name="error_google_play_store_missing">Google Play / Market n\'est pas installé</string>
+    <string name="error_google_play_store_missing">Google Play Store n\'est pas installé</string>
     <string name="error_if_the_problem_persists">Si le problème persiste, contactez le support via «Admin» du menu principal.</string>
     <string name="error_import_failed">Restauration échouée</string>
     <string name="error_network_timeout">Pas de réponse, veuillez réessayer</string>
@@ -639,6 +639,5 @@
     <string name="lbl_edition_slipcase">étui</string>
     <string name="menu_search_local">Recherche locale</string>
     <string name="pg_reformat">Reformater</string>
-    <string name="info_install_scanner_manually">S\'il vous plaît installer: %1$s</string>
 
 </resources>

@@ -54,7 +54,6 @@ public class CameraHelper {
     private boolean mUseFullSize = true;
 
     public CameraHelper() {
-        StorageUtils.deleteFile(StorageUtils.getTempCoverFile(CAMERA_FILENAME));
     }
 
     public void setRotationAngle(final int rotationAngle) {
@@ -73,6 +72,8 @@ public class CameraHelper {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (mUseFullSize) {
             File file = StorageUtils.getTempCoverFile(CAMERA_FILENAME);
+            StorageUtils.deleteFile(file);
+
             //noinspection ConstantConditions
             Uri uri = FileProvider.getUriForFile(fragment.getContext(),
                                                  GenericFileProvider.AUTHORITY,

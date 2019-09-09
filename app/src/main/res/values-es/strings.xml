@@ -154,7 +154,7 @@
     <string name="error_columns_are_blank">Las columnas %1$s tienen en blanco la fila %2$d</string>
     <string name="error_email_failed">El envío del correo electrónico falló.</string>
     <string name="error_failed_x">Falló: %1$d</string>
-    <string name="error_google_play_store_missing">Google Play / Market no está instalado</string>
+    <string name="error_google_play_store_missing">Google Play Store no está instalado</string>
     <string name="error_if_the_problem_persists">Si el problema persiste, contacte con soporte utilizando la opción de «Admin» del menú principal.</string>
     <string name="error_import_failed">La importación falló.</string>
     <string name="error_network_timeout">No hay respuesta, por favor intente de nuevo</string>
@@ -634,6 +634,5 @@
     <string name="lbl_edition_slipcase">Funda</string>
     <string name="menu_search_local">Busqueda local</string>
     <string name="pg_reformat">Reformatear</string>
-    <string name="info_install_scanner_manually">Por favor instale: %1$s</string>
 
 </resources>

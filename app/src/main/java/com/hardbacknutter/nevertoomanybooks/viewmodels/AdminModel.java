@@ -25,49 +25,24 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.scanner;
+package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import android.content.Context;
+import android.content.Intent;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
 
-/**
- * Support for creating scanner objects on the fly without knowing which ones are available.
- */
-public interface ScannerFactory {
+public class AdminModel
+        extends ViewModel {
 
-    /**
-     * Check if this scanner is available.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if this scanner is available.
-     */
-    boolean isAvailable(@NonNull Context context);
+    /** collected from all started activities, will be passed up the chain in our own setResult. */
+    private final Intent mResultData = new Intent();
 
-    /**
-     * @param context Current context
-     *
-     * @return a new scanner of the related type.
-     */
-    @NonNull
-    Scanner newInstance(@NonNull Context context);
+    public void addToResults(@NonNull final Intent data) {
+        mResultData.putExtras(data);
+    }
 
-    /**
-     * Get a resource id that can be used in menus.
-     *
-     * @return resource id
-     */
-    @IdRes
-    int getMenuId();
-
-    /**
-     * Get the market url, or the empty string if not applicable.
-     * The caller must check on {@code }isEmpty()}.
-     *
-     * @return the market url, or "".
-     */
-    @NonNull
-    String getMarketUrl();
+    public Intent getResultData() {
+        return mResultData;
+    }
 }

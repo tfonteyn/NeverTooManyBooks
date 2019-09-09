@@ -41,9 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
  * Searches the internet for book details based on:
  * - manually provided or scanned ISBN.
  * - Author/Title.
- * <p>
- * <strong>Note:</strong> eventually these 'hosting' activities are meant to go.
- * The idea is to have ONE hosting/main activity, which swaps in fragments as needed.
  */
 public class BookSearchActivity
         extends BaseActivityWithTasks {

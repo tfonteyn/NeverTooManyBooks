@@ -123,7 +123,7 @@
     </string>
     <string name="error_network_timeout">No response, please try again.</string>
     <string name="error_email_failed">Failed to send the email.</string>
-    <string name="error_google_play_store_missing">Google Play/Market is not installed.</string>
+    <string name="error_google_play_store_missing">Google Play Store is not installed.</string>
     <string name="error_search_configuration">
         Configuration error. Please open the Settings page and check your Search Site preferences.
     </string>
@@ -239,9 +239,6 @@
         We recommend installing the Zxing barcode scanner application, and if it is already
         installed, we recommend uninstalling it and reinstalling it.
     </string>
-
-    <!-- prompt to install a scanner. Shown if the device does not support Google APIs. -->
-    <string name="info_install_scanner_manually">Please install: %1$s</string>
 
     <string name="info_manage_fields">
         Selected fields are visible in the add/edit book screens. Unselected fields are hidden.

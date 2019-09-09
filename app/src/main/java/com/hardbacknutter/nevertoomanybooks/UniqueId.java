@@ -157,16 +157,17 @@ public final class UniqueId {
 
     /**
      * <ol>3 uses.
-     * <li>Indicate if we 'have' a thumbnail (in which case {@link StorageUtils#getTempCoverFile()}
+     * <li>Indicate if we 'have' a thumbnail in which case {@link StorageUtils#getTempCoverFile()}
      * will point to that image.</li>
      * <li>Flag to indicate we 'want' a thumbnail when downloading book information
      * from search sites.</li>
      * <li>User Visibility flag</li>
      * </ol>
      * <br>type: {@code boolean}
+     *
+     * <strong>Note:</strong> do not change the string. It's a key in the preferences.
      */
     public static final String BKEY_IMAGE = "thumbnail";
-    public static final String BKEY_COVER_NAME = "coverName";
 
     /**
      * A BooklistStyle.

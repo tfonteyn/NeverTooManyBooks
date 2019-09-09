@@ -91,7 +91,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
  */
 public class CoverHandler {
 
-    public static final String CROPPED_COVER_FILENAME = "Cropped";
+    private static final String CROPPED_COVER_FILENAME = "Cropped";
     /** The fragment hosting us. */
     @NonNull
     private final Fragment mFragment;
@@ -322,29 +322,14 @@ public class CoverHandler {
             case UniqueId.REQ_CROP_IMAGE_INTERNAL:
             case UniqueId.REQ_CROP_IMAGE_EXTERNAL: {
                 if (resultCode == Activity.RESULT_OK) {
-                    File outputFile = StorageUtils.getTempCoverFile(CROPPED_COVER_FILENAME);
-                    if (outputFile.exists()) {
-                        File destination = getCoverFile();
-                        StorageUtils.renameFile(outputFile, destination);
-                        // Update the ImageView with the new image
-                        refreshImageView();
-                    } else {
-                        if (BuildConfig.DEBUG /* always */) {
-                            Logger.debug(this, "onActivityResult",
-                                         "RESULT_OK, but no image file?",
-                                         "requestCode=" + requestCode,
-                                         "resultCode=" + resultCode);
-                        }
-                    }
-                } else {
-                    if (BuildConfig.DEBUG /* always */) {
-                        Logger.debug(this, "onActivityResult",
-                                     "FAILED",
-                                     "requestCode=" + requestCode,
-                                     "resultCode=" + resultCode);
-                    }
-                    StorageUtils.deleteFile(StorageUtils.getTempCoverFile(CROPPED_COVER_FILENAME));
+                    File source = StorageUtils.getTempCoverFile(CROPPED_COVER_FILENAME);
+                    File destination = getCoverFile();
+                    StorageUtils.renameFile(source, destination);
+                    refreshImageView();
+                    return true;
                 }
+
+                StorageUtils.deleteFile(StorageUtils.getTempCoverFile(CROPPED_COVER_FILENAME));
                 return true;
             }
             default:
@@ -370,12 +355,12 @@ public class CoverHandler {
     }
 
     /**
-     * Syntax sugar.
-     * <p>
-     * Put the cover image on screen.
+     * Put the cover image on screen, and update the book.
      */
     private void refreshImageView() {
-        ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
+        boolean isSet = ImageUtils.setImageView(mCoverView, getCoverFile(),
+                                                mMaxWidth, mMaxHeight, true);
+        mBook.putBoolean(UniqueId.BKEY_IMAGE, isSet);
     }
 
     /**
@@ -411,6 +396,25 @@ public class CoverHandler {
         refreshImageView();
     }
 
+    private void startCamera() {
+        if (mCameraHelper == null) {
+            mCameraHelper = new CameraHelper();
+            mCameraHelper.setRotationAngle(App.getListPreference(Prefs.pk_images_rotate_auto, 0));
+            mCameraHelper.setUseFullSize(true);
+        }
+        mCameraHelper.startCamera(mFragment, UniqueId.REQ_ACTION_IMAGE_CAPTURE);
+    }
+
+    private void processCameraResult(@NonNull final Intent data) {
+        //noinspection ConstantConditions
+        File file = mCameraHelper.getFile(data);
+        if (file != null && file.exists()) {
+            // the cropper will rename the file to what the rest of the code expects
+            // and will refresh the view.
+            startCropper(file);
+            mShowHintAboutRotating = true;
+        }
+    }
 
     /**
      * Use the isbn to fetch other possible images from the internet
@@ -424,7 +428,6 @@ public class CoverHandler {
         }
 
         String isbn = mIsbnView.getText().toString().trim();
-
         if (ISBN.isValid(isbn)) {
             FragmentManager fm = mFragment.getFragmentManager();
             // we must use the same fragment manager as the hosting fragment.
@@ -448,36 +451,13 @@ public class CoverHandler {
     private void processCoverBrowserResult(@NonNull final Intent data) {
         String fileSpec = data.getStringExtra(UniqueId.BKEY_FILE_SPEC);
         if (mCoverBrowser != null) {
-            // the new file we got
-            File newFile = new File(fileSpec);
-            // Get the current file we want to loose
-            File bookFile = getCoverFile();
-            // copy new file on top of old.
-            StorageUtils.renameFile(newFile, bookFile);
-            // Update the ImageView with the new image
+            File source = new File(fileSpec);
+            File destination = getCoverFile();
+            StorageUtils.renameFile(source, destination);
             refreshImageView();
             // all done, get rid of the browser fragment
             mCoverBrowser.dismiss();
             mCoverBrowser = null;
-        }
-    }
-
-    private void startCamera() {
-        if (mCameraHelper == null) {
-            mCameraHelper = new CameraHelper();
-            mCameraHelper.setRotationAngle(App.getListPreference(Prefs.pk_images_rotate_auto, 0));
-            //TEST:  with 'true'
-            mCameraHelper.setUseFullSize(false);
-        }
-        mCameraHelper.startCamera(mFragment, UniqueId.REQ_ACTION_IMAGE_CAPTURE);
-    }
-
-    private void processCameraResult(@NonNull final Intent data) {
-        //noinspection ConstantConditions
-        File file = mCameraHelper.getFile(data);
-        if (file != null && file.exists()) {
-            startCropper(file);
-            mShowHintAboutRotating = true;
         }
     }
 
@@ -527,30 +507,31 @@ public class CoverHandler {
     }
 
 
-    private void startCropper(@NonNull final File imageFile) {
+    private void startCropper(@NonNull final File inputFile) {
         boolean external = PreferenceManager.getDefaultSharedPreferences(mContext)
-                                            .getBoolean(Prefs.pk_images_external_cropper,
-                                                        false);
+                                            .getBoolean(Prefs.pk_images_external_cropper, false);
+
+        // Get the output file spec, and make sure it does not already exist.
+        File outputFile = StorageUtils.getTempCoverFile(CROPPED_COVER_FILENAME);
+        StorageUtils.deleteFile(outputFile);
+
         if (external) {
-            startExternalCropper(imageFile);
+            startExternalCropper(inputFile, outputFile);
         } else {
-            startInternalCropper(imageFile);
+            startInternalCropper(inputFile, outputFile);
         }
     }
 
     /**
      * Crop the image using our internal code in {@link CropImageActivity}.
      *
-     * @param inputFile to crop
+     * @param inputFile  to crop
+     * @param outputFile where to write the result
      */
-    private void startInternalCropper(@NonNull final File inputFile) {
+    private void startInternalCropper(@NonNull final File inputFile,
+                                      @NonNull final File outputFile) {
         boolean wholeImage = PreferenceManager.getDefaultSharedPreferences(mContext)
-                                              .getBoolean(Prefs.pk_images_crop_whole_image,
-                                                          false);
-
-        // Get the output file spec, and make sure it does not already exist.
-        File outputFile = StorageUtils.getTempCoverFile(CROPPED_COVER_FILENAME);
-        StorageUtils.deleteFile(outputFile);
+                                              .getBoolean(Prefs.pk_images_crop_whole_image, false);
 
         Intent intent = new Intent(mContext, CropImageActivity.class)
                                 .putExtra(CropImageActivity.BKEY_IMAGE_ABSOLUTE_PATH,
@@ -570,18 +551,17 @@ public class CoverHandler {
      * <p>
      * Code using hardcoded string on purpose as they are part of the Intent api.
      *
-     * @param inputFile to crop
+     * @param inputFile  to crop
+     * @param outputFile where to write the result
      */
-    private void startExternalCropper(@NonNull final File inputFile) {
+    private void startExternalCropper(@NonNull final File inputFile,
+                                      @NonNull final File outputFile) {
 
         Uri inputUri = FileProvider.getUriForFile(mContext, GenericFileProvider.AUTHORITY,
                                                   inputFile);
-        // Get the output file spec, and make sure it does not already exist.
-        File outputFile = StorageUtils.getTempCoverFile(CROPPED_COVER_FILENAME);
-        StorageUtils.deleteFile(outputFile);
-
-        Uri outputUri = Uri.fromFile(outputFile);
+        // using the provider is not needed. Leaving here as reminder.
         // FileProvider.getUriForFile(mContext, GenericFileProvider.AUTHORITY, outputFile);
+        Uri outputUri = Uri.fromFile(outputFile);
 
         //call the standard crop action intent (the device may not support it)
         Intent intent = new Intent("com.android.camera.action.CROP")
@@ -595,18 +575,18 @@ public class CoverHandler {
                                 //indicate we want to crop
                                 .putExtra("crop", true)
                                 // and allow scaling
-                                .putExtra("scale", true);
+                                .putExtra("scale", true)
+                                // Save output image in uri
+                                .putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
 
-        // other options not needed for now.
-//            //indicate aspect of desired crop
-//            intent.putExtra("aspectX", 1);
-//            intent.putExtra("aspectY", 1);
-//            //indicate output X and Y
-//            intent.putExtra("outputX", 256);
-//            intent.putExtra("outputY", 256);
+//                                // other options not needed for now.
+//                                //indicate aspect of desired crop
+//                                .putExtra("aspectX", 1)
+//                                .putExtra("aspectY", 1)
+//                                //indicate output X and Y
+//                                .putExtra("outputX", 256)
+//                                .putExtra("outputY", 256);
 
-        // Save output image in uri
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
 
         List<ResolveInfo> list = mContext.getPackageManager().queryIntentActivities(intent, 0);
         if (list.isEmpty()) {

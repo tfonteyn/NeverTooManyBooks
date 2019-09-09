@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * This is not so much a test, but code written to decipher some anomalies sees in how
+ * This is not so much a test, but code written to decipher some anomalies seen in how
  * Locales uses iso3, iso2 and display names ... and not in a consistent way.
  * <p>
  * Locale locales[] = Locale.getAvailableLocales();

@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.debug;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -74,15 +75,22 @@ public final class DebugReport {
      * Return the MD5 hash of the public key that signed this app, or a useful
      * text message if an error or other problem occurred.
      */
+    @SuppressLint("PackageManagerGetSignatures")
     public static String signedBy(@NonNull final Context context) {
         StringBuilder signedBy = new StringBuilder();
 
         try {
             // Get app info
             PackageManager manager = context.getPackageManager();
-            // deprecated... but replacing it fails entirely in API: 21. I presume doc-error.
-            PackageInfo appInfo = manager.getPackageInfo(context.getPackageName(),
-                                                         PackageManager.GET_SIGNATURES);
+            PackageInfo appInfo;
+            if (Build.VERSION.SDK_INT >= 28) {
+                appInfo = manager.getPackageInfo(context.getPackageName(),
+                                                 PackageManager.GET_SIGNING_CERTIFICATES);
+            } else {
+                // PackageManagerGetSignatures
+                appInfo = manager.getPackageInfo(context.getPackageName(),
+                                                 PackageManager.GET_SIGNATURES);
+            }
 
             // Each sig is a PK of the signer:
             //  https://groups.google.com/forum/?fromgroups=#!topic/android-developers/fPtdt6zDzns

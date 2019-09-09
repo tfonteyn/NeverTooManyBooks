@@ -79,7 +79,7 @@
     <string name="amazon_ellipsis" translatable="false">Amazon…</string>
 
     <string name="google_books" translatable="false">Google Books</string>
-    <string name="google_play_services" translatable="false">Google Play</string>
+    <string name="google_play_services" translatable="false">Google Play Services</string>
 
     <!-- Scanner names -->
     <string name="pv_scanner_zxing" translatable="false">Zxing</string>

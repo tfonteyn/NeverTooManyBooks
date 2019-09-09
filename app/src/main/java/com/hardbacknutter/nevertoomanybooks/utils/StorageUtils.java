@@ -88,7 +88,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * <strong>Note:</strong> we use the external cache directory, so a 'rename' works as is.
  * see {@link #renameFile(File, File)}
  * <p>
- * TODO: ExternalStorageException added were appropriate, but other then here are not caught
+ * TODO: ExternalStorageException added were appropriate, but other then here we don't catch them.
  */
 public final class StorageUtils {
 

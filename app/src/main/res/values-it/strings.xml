@@ -152,7 +152,7 @@
     <string name="error_columns_are_blank">Tutte le colonne %1$s sono vuote alla riga %2$d</string>
     <string name="error_email_failed">L\'invio dell\'email non è riuscito.</string>
     <string name="error_failed_x">Non riuscito: %1$d</string>
-    <string name="error_google_play_store_missing">Google Play / Market non è installato</string>
+    <string name="error_google_play_store_missing">Google Play Store non è installato</string>
     <string name="error_if_the_problem_persists">Se il problema persiste, contatta il supporto dalla voce «Amministratore» del menu principale.</string>
     <string name="error_import_failed">Importazione fallita.</string>
     <string name="error_network_timeout">Nessuna risposta, per favore riprova</string>
@@ -632,6 +632,5 @@
     <string name="lbl_author_primary">scrittore</string>
     <string name="menu_search_local">Ricerca locale</string>
     <string name="pg_reformat">Riformattare</string>
-    <string name="info_install_scanner_manually">Installa: %1$s</string>
 
 </resources>

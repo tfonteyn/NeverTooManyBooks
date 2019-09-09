@@ -309,8 +309,9 @@ public final class CoversDAO
         } catch (@NonNull final RuntimeException e) {
             // Assume exception means DB corrupt. Log, rename, and retry
             Logger.error(this, e, "Failed to open covers db");
-            if (!StorageUtils.renameFile(StorageUtils.getFile(COVERS_DATABASE_NAME),
-                                         StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"))) {
+            File source = StorageUtils.getFile(COVERS_DATABASE_NAME);
+            File destination = StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead");
+            if (!StorageUtils.renameFile(source, destination)) {
                 Logger.warn(this, "Failed to rename dead covers database");
             }
 

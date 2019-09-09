@@ -126,9 +126,9 @@ public class CropImageActivity
     /** Flag indicating if default crop rect is whole image. */
     private boolean mOptionCropWholeImage;
     private boolean mOptionScale;
-    private boolean mOptionScaleUp = true;
+    private boolean mOptionScaleUp;
     /** Disable face detection. */
-    private boolean mOptionNoFaceDetection = true;
+    private boolean mOptionNoFaceDetection;
     private CropImageView mImageView;
     private Bitmap mBitmap;
     /** runnable that does the actual face detection. */
@@ -171,11 +171,11 @@ public class CropImageActivity
                                faceRect.bottom - imageRect.bottom);
             }
 
+            boolean maintainAspectRatio = mOptionAspectX != 0 && mOptionAspectY != 0;
+
             CropHighlightView hv = new CropHighlightView(mImageView);
             hv.setup(CropImageActivity.this, mImageMatrix, imageRect, faceRect,
-                     mOptionCircleCrop,
-                     mOptionAspectX != 0 && mOptionAspectY != 0);
-
+                     mOptionCircleCrop, maintainAspectRatio);
             mImageView.add(hv);
         }
 
@@ -300,12 +300,6 @@ public class CropImageActivity
 
         Bundle args = getIntent().getExtras();
         if (args != null) {
-            if (args.getString(BKEY_CIRCLE_CROP) != null) {
-                mOptionCircleCrop = true;
-                mOptionAspectX = 1;
-                mOptionAspectY = 1;
-            }
-
             String imagePath = Objects.requireNonNull(args.getString(BKEY_IMAGE_ABSOLUTE_PATH));
             mBitmap = getBitmap(imagePath);
 
@@ -316,14 +310,25 @@ public class CropImageActivity
             }
             mOptionSaveUri = Uri.fromFile(new File(imgUri));
 
-            mOptionAspectX = args.getInt(BKEY_ASPECT_X);
-            mOptionAspectY = args.getInt(BKEY_ASPECT_Y);
-            mOptionOutputX = args.getInt(BKEY_OUTPUT_X);
-            mOptionOutputY = args.getInt(BKEY_OUTPUT_Y);
+            mOptionCropWholeImage = args.getBoolean(BKEY_WHOLE_IMAGE, false);
 
+            if (args.getString(BKEY_CIRCLE_CROP) != null) {
+                mOptionCircleCrop = true;
+                mOptionAspectX = 1;
+                mOptionAspectY = 1;
+            }
+
+            mOptionAspectX = args.getInt(BKEY_ASPECT_X, 0);
+            mOptionAspectY = args.getInt(BKEY_ASPECT_Y, 0);
+
+            // only set if the output needs to be an exact size.
+            mOptionOutputX = args.getInt(BKEY_OUTPUT_X, 0);
+            mOptionOutputY = args.getInt(BKEY_OUTPUT_Y, 0);
+            // (up)scaling is only taken into account if mOptionOutputX/mOptionOutputY are set.
             mOptionScale = args.getBoolean(BKEY_SCALE, true);
             mOptionScaleUp = args.getBoolean(BKEY_SCALE_UP_IF_NEEDED, true);
-            mOptionCropWholeImage = args.getBoolean(BKEY_WHOLE_IMAGE, false);
+
+            // don't do faces.
             mOptionNoFaceDetection = args.getBoolean(BKEY_NO_FACE_DETECTION, true);
         }
 
@@ -452,7 +457,6 @@ public class CropImageActivity
                     old.recycle();
                 }
             } else {
-
                 /*
                  * Don't SCALE the image crop it to the size requested. Create
                  * an new image with the cropped image in the center and the

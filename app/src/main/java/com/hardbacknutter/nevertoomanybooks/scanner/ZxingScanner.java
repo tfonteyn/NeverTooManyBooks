@@ -126,12 +126,6 @@ public class ZxingScanner
 
         @NonNull
         @Override
-        public String getLabel(@NonNull final Context context) {
-            return context.getString(R.string.pv_scanner_zxing);
-        }
-
-        @NonNull
-        @Override
         public Scanner newInstance(@NonNull final Context context) {
             return new ZxingScanner(true);
         }
@@ -154,12 +148,6 @@ public class ZxingScanner
         @Override
         public int getMenuId() {
             return R.id.MENU_SCANNER_ZXING_COMPATIBLE;
-        }
-
-        @NonNull
-        @Override
-        public String getLabel(@NonNull final Context context) {
-            return context.getString(R.string.pv_scanner_zxing_compatible);
         }
 
         @NonNull

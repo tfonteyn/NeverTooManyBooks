@@ -101,8 +101,7 @@ public class GoogleBarcodeScanner
 
         if (mCameraHelper == null) {
             mCameraHelper = new CameraHelper();
-            //TEST:  with 'true'
-            mCameraHelper.setUseFullSize(false);
+            mCameraHelper.setUseFullSize(true);
         }
         mCameraHelper.startCamera(fragment, requestCode);
         return true;
@@ -141,12 +140,6 @@ public class GoogleBarcodeScanner
         @Override
         public int getMenuId() {
             return R.id.MENU_SCANNER_GOOGLE_PLAY;
-        }
-
-        @NonNull
-        @Override
-        public String getLabel(@NonNull final Context context) {
-            return context.getString(R.string.google_play_services);
         }
 
         @NonNull

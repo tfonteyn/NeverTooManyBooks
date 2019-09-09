@@ -154,12 +154,6 @@ public class Pic2ShopScanner
 
         @NonNull
         @Override
-        public String getLabel(@NonNull final Context context) {
-            return context.getString(R.string.pv_scanner_pic2shop);
-        }
-
-        @NonNull
-        @Override
         public Scanner newInstance(@NonNull final Context context) {
             return new Pic2ShopScanner();
         }

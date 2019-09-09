@@ -152,7 +152,7 @@
     <string name="error_columns_are_blank">Kolommen %1$s zijn allemaal leeg op lijn %2$d</string>
     <string name="error_email_failed">Het verzenden van de e-mail is mislukt.</string>
     <string name="error_failed_x">Mislukt: %1$d</string>
-    <string name="error_google_play_store_missing">Google Play / Market is niet geïnstalleerd</string>
+    <string name="error_google_play_store_missing">Google Play Store is niet geïnstalleerd</string>
     <string name="error_if_the_problem_persists">Als het probleem aanhoud, maak dan contact met ondersteuning via de „Over deze App” optie.</string>
     <string name="error_import_failed">Import mislukt.</string>
     <string name="error_network_timeout">Geen antwoord, probeer opnieuw</string>
@@ -639,6 +639,5 @@
     <string name="lbl_edition_slipcase">Cassette</string>
     <string name="menu_search_local">Lokaal zoeken</string>
     <string name="pg_reformat">Herformatteren</string>
-    <string name="info_install_scanner_manually">Installeer: %1$s</string>
 
 </resources>

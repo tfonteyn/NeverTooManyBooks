@@ -84,12 +84,12 @@ public interface SearchEngine {
             ArrayList<String> imageList =
                     bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
             if (imageList != null && !imageList.isEmpty()) {
-                // simply get the first one.
-                File found = new File(imageList.get(0));
+                // simply get the first one found.
+                File downloadedFile = new File(imageList.get(0));
                 // let the system resolve any path variations
-                File coverFile = new File(found.getAbsolutePath());
-                StorageUtils.renameFile(found, coverFile);
-                return coverFile;
+                File destination = new File(downloadedFile.getAbsolutePath());
+                StorageUtils.renameFile(downloadedFile, destination);
+                return destination;
             }
         } catch (@NonNull final CredentialsException | IOException e) {
             Logger.error(SearchSites.class, e);

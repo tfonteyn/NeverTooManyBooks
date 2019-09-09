@@ -40,8 +40,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -179,7 +177,8 @@ public class StyleSettingsFragment
         // the 'extra' fields in use.
         preference = findPreference(Prefs.psk_style_show_details);
         if (preference != null) {
-            labels = getExtraFieldsLabels();
+            //noinspection ConstantConditions
+            labels = mStyle.getExtraFieldsLabels(getContext());
             if (labels.isEmpty()) {
                 preference.setSummary(getString(R.string.none));
             } else {
@@ -224,45 +223,6 @@ public class StyleSettingsFragment
 //        }
     }
 
-    /**
-     * Get the list of in-use extra-field names in a human readable format.
-     * This is used to set the summary of the PreferenceScreen.
-     *
-     * @return list of labels, can be empty, but never {@code null}
-     */
-    @NonNull
-    private List<String> getExtraFieldsLabels() {
-
-        int extraFields = mStyle.getExtraFieldsStatus();
-
-        List<String> labels = new ArrayList<>();
-        if ((extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
-            labels.add(getString(R.string.pt_bob_thumbnails_show));
-        }
-        if ((extraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
-            labels.add(getString(R.string.lbl_bookshelves));
-        }
-        if ((extraFields & BooklistStyle.EXTRAS_LOCATION) != 0) {
-            labels.add(getString(R.string.lbl_location));
-        }
-        if ((extraFields & BooklistStyle.EXTRAS_AUTHOR) != 0) {
-            labels.add(getString(R.string.lbl_author));
-        }
-        if ((extraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
-            labels.add(getString(R.string.lbl_publisher));
-        }
-        if ((extraFields & BooklistStyle.EXTRAS_PUB_DATE) != 0) {
-            labels.add(getString(R.string.lbl_date_published));
-        }
-        if ((extraFields & BooklistStyle.EXTRAS_ISBN) != 0) {
-            labels.add(getString(R.string.lbl_isbn));
-        }
-        if ((extraFields & BooklistStyle.EXTRAS_FORMAT) != 0) {
-            labels.add(getString(R.string.lbl_format));
-        }
-        Collections.sort(labels);
-        return labels;
-    }
 
     @Override
     public void onActivityResult(final int requestCode,

@@ -58,6 +58,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.scanner.Scanner;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
@@ -386,7 +389,7 @@ public class BookSearchByIsbnFragment
                 break;
             }
             case UniqueId.REQ_NAV_PANEL_SETTINGS: {
-                // go scan next book; the scanner will get tested again
+                // Make sure the scanner gets re-initialised.
                 mModel.setScanner(null);
                 startScannerActivity();
                 break;
@@ -554,12 +557,7 @@ public class BookSearchByIsbnFragment
             if (scanner == null) {
                 scanner = ScannerManager.getScanner(mActivity);
                 if (scanner == null) {
-                    // *none* of the scanners was available ?
-                    ScannerManager.openBarcodePreferences(mActivity,
-                                                          UniqueId.REQ_NAV_PANEL_SETTINGS);
-//                    ScannerManager.promptForScanner(mActivity, false,
-//                                                    this::onScannerInstallResult);
-                    mKeepAlive = true;
+                    noScanner();
                     return;
                 }
                 mModel.setScanner(scanner);
@@ -573,34 +571,32 @@ public class BookSearchByIsbnFragment
 
         } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
-            String msg = getString(R.string.warning_bad_scanner) + '\n'
-                         + getString(R.string.info_install_scanner_recommendation);
-            // TODO: add onDismiss listener that takes the user to the preferences?
-            //noinspection ConstantConditions
-            new AlertDialog.Builder(getContext())
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setTitle(R.string.pg_barcode_scanner)
-                    .setMessage(msg)
-                    .create()
-                    .show();
-            mKeepAlive = true;
+            noScanner();
         }
     }
 
     /**
-     * Called after the user was prompted to install a scanner.
-     *
-     * @param success {@code true} if a scanner was installed already.
+     * None of the scanners was available or working correctly.
+     * Tell the user, and take them to the preferences to select a scanner.
      */
-    private void onScannerInstallResult(final boolean success) {
-        if (success) {
-            // try again
-            startScannerActivity();
-        } else {
-            // that's the end of it
-            mKeepAlive = false;
-            scanFailedOrCancelled();
-        }
+    private void noScanner() {
+        String msg = getString(R.string.warning_bad_scanner) + '\n'
+                     + getString(R.string.info_install_scanner_recommendation);
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.pg_barcode_scanner)
+                .setMessage(msg)
+                .setOnDismissListener(dialog -> {
+                    Intent intent = new Intent(mActivity, SettingsActivity.class)
+                                            .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
+                                                      Prefs.psk_barcode_scanner);
+
+                    mActivity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
+                })
+                .create()
+                .show();
+        mKeepAlive = true;
     }
 
     /**

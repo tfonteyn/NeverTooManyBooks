@@ -376,15 +376,6 @@ public class Fields {
     /**
      * Reset all field visibility based on user preferences.
      */
-    public void resetVisibility() {
-        for (Field field : mAllFields.values()) {
-            field.resetVisibility();
-        }
-    }
-
-    /**
-     * Reset all field visibility based on user preferences.
-     */
     public void resetVisibility(final boolean hideIfEmpty) {
         for (Field field : mAllFields.values()) {
             field.resetVisibility(hideIfEmpty);
@@ -953,9 +944,7 @@ public class Fields {
         }
 
         public void setScale(final int scale) {
-
             int maxSize = ImageUtils.getMaxImageSize(scale);
-
             mMaxHeight = maxSize;
             mMaxWidth = maxSize;
         }
@@ -1053,55 +1042,6 @@ public class Fields {
                 return DateUtils.utcSqlDate(d);
             }
             return source;
-        }
-    }
-
-    /**
-     * Formatter for boolean fields. Displays "Yes" or "No" (localized).
-     * <p>
-     * Can be reused for multiple fields.
-     * <p>
-     * {@link #extract} throws Exception
-     */
-    public static class BinaryYesNoEmptyFormatter
-            implements FieldFormatter<String> {
-
-        @NonNull
-        private final String mYes;
-        @NonNull
-        private final String mNo;
-
-        /**
-         * @param context Current context
-         */
-        public BinaryYesNoEmptyFormatter(@NonNull final Context context) {
-            mYes = context.getString(R.string.yes);
-            mNo = context.getString(R.string.no);
-        }
-
-        /**
-         * Display as a human-friendly yes/no string.
-         */
-        @NonNull
-        @Override
-        public String format(@NonNull final Field<String> field,
-                             @Nullable final String source) {
-            if (source == null) {
-                return "";
-            }
-            try {
-                boolean val = ParseUtils.toBoolean(source, false);
-                return val ? mYes : mNo;
-            } catch (@NonNull final NumberFormatException e) {
-                return source;
-            }
-        }
-
-        @NonNull
-        @Override
-        public String extract(@NonNull final Field<String> field,
-                              @NonNull final String source) {
-            throw new IllegalStateException("not supported");
         }
     }
 
@@ -1669,14 +1609,6 @@ public class Fields {
         }
 
         /**
-         * Reset one fields visibility based on user preferences.
-         */
-        private void resetVisibility() {
-            mIsUsed = App.isUsed(group);
-            getView().setVisibility(mIsUsed ? View.VISIBLE : View.GONE);
-        }
-
-        /**
          * Set the visibility for the field.
          *
          * @param hideIfEmpty hide the field if it's empty
@@ -1845,7 +1777,6 @@ public class Fields {
                 return true;
             }
 
-            //TEST: this *should* be enough instead of a full toBoolean call.
             return "false".equalsIgnoreCase(value);
         }
 

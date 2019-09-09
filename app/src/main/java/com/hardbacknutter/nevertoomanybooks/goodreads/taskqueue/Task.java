@@ -35,7 +35,7 @@ import androidx.annotation.Nullable;
 import java.io.Serializable;
 
 /**
- * FIXME: child classes are mixing UI with background tasks. REDO.
+ * ENHANCE: child classes mixing UI with background tasks. Postponing to WorkManager implementation.
  * <p>
  * Abstract base class for all Tasks.
  * <p>

@@ -153,7 +153,7 @@
     <string name="error_columns_are_blank">Οι στήλες %1$s είναι όλες κενές στη σειρά %2$d</string>
     <string name="error_email_failed">Αποτυχία αποστολής του μηνύματος ηλεκτρονικού ταχυδρομείου.</string>
     <string name="error_failed_x">Αποτυχία: %1$d</string>
-    <string name="error_google_play_store_missing">Το Google Play / Market δεν είναι εγκατεστημένο</string>
+    <string name="error_google_play_store_missing">Το Google Play Store δεν είναι εγκατεστημένο</string>
     <string name="error_if_the_problem_persists">Εαν το πρόβλημα συνεχίζεται, επικοινωνήστε με την υποστήρηξη μέσω της «Διαχειριστής» στο κέντρικό μενού.</string>
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
     <string name="error_network_timeout">Δεν υπάρχει απάντηση, δοκιμάστε ξανά</string>
@@ -633,6 +633,5 @@
     <string name="lbl_author_primary">συγγραφέας</string>
     <string name="menu_search_local">Τοπική αναζήτηση</string>
     <string name="pg_reformat">Μεταρρύθμιση</string>
-    <string name="info_install_scanner_manually">Παρακαλώ εγκαταστήστε: %1$s</string>
 
 </resources>

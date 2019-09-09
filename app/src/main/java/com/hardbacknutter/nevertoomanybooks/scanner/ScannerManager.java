@@ -52,9 +52,7 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 
 /**
  * Class to handle details of specific scanner interfaces and return a
@@ -141,56 +139,6 @@ public final class ScannerManager {
         return null;
     }
 
-    public static void openBarcodePreferences(@NonNull final Activity activity,
-                                              final int requestCode) {
-        Intent intent = new Intent(activity, SettingsActivity.class)
-                                .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
-                                          Prefs.psk_barcode_scanner);
-
-        activity.startActivityForResult(intent, requestCode);
-    }
-
-//    /**
-//     * We don't have a scanner setup or it was bad. Prompt the user for installing one.
-//     *
-//     * @param activity   calling Activity
-//     * @param badScanner Set {@code true} if the scanner was bad
-//     *                   Set {@code false} for a simple install
-//     */
-//    public static void promptForScanner(@NonNull final Activity activity,
-//                                        final boolean badScanner,
-//                                        @NonNull final OnResultListener resultListener) {
-//
-//        // without the store, we can't do any automatic installs.
-//        if (!isGooglePlayStoreInstalled(activity)) {
-//            googlePlayStoreMissing(activity, resultListener);
-//            return;
-//        }
-//
-//        Menu menu = MenuPicker.createMenu(activity);
-//        // do not add the Google Play Services if they are not available on this device.
-//        for (ScannerFactory sf : SCANNER_FACTORIES.values()) {
-//            menu.add(Menu.NONE, sf.getMenuId(), 0, sf.getLabel(activity))
-//                .setIcon(R.drawable.ic_scanner);
-//        }
-//
-//        int messageId = badScanner ? R.string.info_install_scanner_recommendation
-//                                   : R.string.info_install_scanner;
-//
-//        new MenuPicker<Void>(activity, R.string.title_install_scan, messageId,
-//                             true, d -> resultListener.onResult(false),
-//                             menu, null, (menuItem, userObject) -> {
-//
-//            for (ScannerFactory sf : SCANNER_FACTORIES.values()) {
-//                if (menuItem.getItemId() == sf.getMenuId()) {
-//                    installScanner(activity, sf, resultListener);
-//                    return true;
-//                }
-//            }
-//            return true;
-//        }).show();
-//    }
-
     /**
      * Checks and/or prompts to install the preferred Scanner.
      *
@@ -219,28 +167,25 @@ public final class ScannerManager {
                                        @NonNull final ScannerFactory sf,
                                        @NonNull final OnResultListener resultListener) {
 
-        // without the store, we can't do any automatic installs.
-        if (!isGooglePlayStoreInstalled(activity)) {
-            googlePlayStoreMissing(activity, resultListener);
+        if (sf.getMenuId() == R.id.MENU_SCANNER_GOOGLE_PLAY) {
+            updateGooglePlayServices(activity, resultListener);
 
         } else {
-            if (sf.getMenuId() == R.id.MENU_SCANNER_GOOGLE_PLAY) {
-                updateGooglePlayServices(activity, resultListener);
-            } else {
+            // without the store, we can't do any automatic installs.
+            if (isGooglePlayStoreInstalled(activity)) {
                 Uri uri = Uri.parse(sf.getMarketUrl());
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 try {
                     activity.startActivity(intent);
-                    //URGENT: returning true is not a guarantee for the install working...
+                    // returning true is not a guarantee for the install working...
                     resultListener.onResult(true);
-
-                } catch (@NonNull final ActivityNotFoundException e) {
-                    googlePlayStoreMissing(activity, resultListener);
+                    return;
+                } catch (@NonNull final ActivityNotFoundException ignore) {
                 }
+                googlePlayStoreMissing(activity, resultListener);
             }
         }
     }
-
 
     /**
      * Check if the device has Google Play Services.

@@ -180,14 +180,11 @@ public class BookBaseFragmentModel
         if (mBook.getId() == 0) {
             long id = mDb.insertBook(context, mBook);
             if (id > 0) {
-                // if we got a cover while searching the internet, make it permanent
+                // if the user added a cover to the new book, make it permanent
                 if (mBook.getBoolean(UniqueId.BKEY_IMAGE)) {
-                    String uuid = mDb.getBookUuid(id);
-                    // get the temporary downloaded file
-                    File source = StorageUtils.getTempCoverFile();
-                    File destination = StorageUtils.getCoverForUuid(uuid);
-                    // and rename it to the permanent UUID one.
-                    StorageUtils.renameFile(source, destination);
+                    File downloadedFile = StorageUtils.getTempCoverFile();
+                    File destination = StorageUtils.getCoverForUuid(mDb.getBookUuid(id));
+                    StorageUtils.renameFile(downloadedFile, destination);
                 }
             }
         } else {
