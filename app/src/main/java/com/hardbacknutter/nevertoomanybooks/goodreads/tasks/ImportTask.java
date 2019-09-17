@@ -76,7 +76,7 @@ public class ImportTask
         Thread.currentThread().setName("GR.ImportTask");
 
         try {
-            if (!NetworkUtils.isNetworkAvailable()) {
+            if (NetworkUtils.networkUnavailable()) {
                 return R.string.error_no_internet_connection;
             }
             int msg = ImportLegacyTask.checkWeCanImport();

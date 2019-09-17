@@ -45,10 +45,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 /**
  * Manages the construction and closure of persisted SQLiteStatement objects.
  * <p>
- * TEST: As I understand it, the purpose is not the actual caching
- * of the statement for re-use in loops (Android does that anyhow),
- * but the handling of properly closing statements.
- * You do get extra caching across individual calls, but not sure if that makes any impact.
+ * The purpose is not the actual caching of the statement for re-use in loops
+ * (Android does that anyhow), but the handling of properly closing statements.
+ * You do get extra caching across individual calls,
+ * but not sure if that makes any impact.
  */
 public class SqlStatementManager
         implements AutoCloseable {

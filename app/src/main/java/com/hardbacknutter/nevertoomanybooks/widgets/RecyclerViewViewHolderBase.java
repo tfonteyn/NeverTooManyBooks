@@ -27,7 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -73,8 +73,11 @@ public class RecyclerViewViewHolderBase
     @Nullable
     final View mDeleteButton;
 
+    /** used while dragging. */
     @ColorInt
-    private final int mItemSelectedBackgroundColor;
+    private final int mItemDraggedBackgroundColor;
+    /** preserves the original background while dragging. */
+    private Drawable mOriginalItemSelectedBackground;
 
     protected RecyclerViewViewHolderBase(@NonNull final View itemView) {
         super(itemView);
@@ -90,17 +93,19 @@ public class RecyclerViewViewHolderBase
         mCheckableButton = itemView.findViewById(R.id.ROW_CHECKABLE_BTN);
         mDragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
 
-        mItemSelectedBackgroundColor = App.getColorInt(itemView.getContext(),
-                                                       R.attr.itemTouchHelper_onSelected_color);
+
+        mItemDraggedBackgroundColor = App.getColorInt(itemView.getContext(),
+                                                      R.attr.itemTouchHelper_onDragging_color);
     }
 
     @Override
-    public void onItemSelected() {
-        itemView.setBackgroundColor(mItemSelectedBackgroundColor);
+    public void onItemDragStarted() {
+        mOriginalItemSelectedBackground = itemView.getBackground();
+        itemView.setBackgroundColor(mItemDraggedBackgroundColor);
     }
 
     @Override
-    public void onItemClear() {
-        itemView.setBackgroundColor(Color.TRANSPARENT);
+    public void onItemDragFinished() {
+        itemView.setBackground(mOriginalItemSelectedBackground);
     }
 }

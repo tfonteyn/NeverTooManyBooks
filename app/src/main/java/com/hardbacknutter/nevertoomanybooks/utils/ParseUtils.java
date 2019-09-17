@@ -45,6 +45,109 @@ public final class ParseUtils {
     }
 
     /**
+     * Encode a string by 'escaping' all instances of:
+     * <ul>
+     * <li>any '\', \'r', '\n', '\t'</li>
+     * <li>any additional 'escapeChars'</li>
+     * </ul>
+     * The escape char is '\'.
+     *
+     * @param source      String to encode
+     * @param escapeChars additional characters to escape. Case sensitive.
+     *
+     * @return encoded string
+     */
+    public static String escape(@NonNull final String source,
+                                final char... escapeChars) {
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < source.length(); i++) {
+            char c = source.charAt(i);
+            switch (c) {
+                case '\\':
+                    sb.append("\\\\");
+                    break;
+
+                case '\r':
+                    sb.append("\\r");
+                    break;
+
+                case '\n':
+                    sb.append("\\n");
+                    break;
+
+                case '\t':
+                    sb.append("\\t");
+                    break;
+
+                default:
+                    for (char e : escapeChars) {
+                        if (c == e) {
+                            sb.append('\\');
+                            // break from the for (char e : escapeChars)
+                            break;
+                        }
+
+                    }
+                    sb.append(c);
+                    break;
+            }
+        }
+        return sb.toString().trim();
+    }
+
+    /**
+     * Decode a string by removing any escapes.
+     *
+     * @param source String to decode
+     *
+     * @return decoded string
+     */
+    public static String unEscape(@NonNull final String source) {
+        if (source.isEmpty()) {
+            return source;
+        }
+
+        boolean inEsc = false;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < source.length(); i++) {
+            char c = source.charAt(i);
+            if (inEsc) {
+                switch (c) {
+                    case '\\':
+                        sb.append('\\');
+                        break;
+
+                    case 'r':
+                        sb.append('\r');
+                        break;
+
+                    case 't':
+                        sb.append('\t');
+                        break;
+
+                    case 'n':
+                        sb.append('\n');
+                        break;
+
+                    default:
+                        sb.append(c);
+                        break;
+                }
+                inEsc = false;
+            } else {
+                if (c == '\\') {
+                    inEsc = true;
+                } else {
+                    // keep building the element string
+                    sb.append(c);
+                }
+            }
+        }
+        return sb.toString().trim();
+    }
+
+    /**
      * Translate the passed Object to a Long value.
      *
      * @param obj Object
@@ -255,7 +358,10 @@ public final class ParseUtils {
             throws NumberFormatException {
         try {
             NumberFormat nf = NumberFormat.getInstance(locale);
-            return nf.parse(source).floatValue();
+            Number number = nf.parse(source);
+            if (number != null) {
+                return number.floatValue();
+            }
         } catch (@NonNull final ParseException ignore) {
             // ignore
         }
@@ -303,7 +409,10 @@ public final class ParseUtils {
             throws NumberFormatException {
         try {
             NumberFormat nf = NumberFormat.getInstance(locale);
-            return nf.parse(s).doubleValue();
+            Number number = nf.parse(s);
+            if (number != null) {
+                return number.doubleValue();
+            }
         } catch (@NonNull final ParseException ignore) {
         }
 

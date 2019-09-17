@@ -50,7 +50,9 @@ public class CameraHelper {
 
     /** We use a single temporary file. */
     private static final String CAMERA_FILENAME = "Camera";
+    /** rotation angle to apply after a picture was taken. */
     private int mRotationAngle;
+    /** by default, we tell the camera to give us full-size pictures. */
     private boolean mUseFullSize = true;
 
     public CameraHelper() {
@@ -102,7 +104,7 @@ public class CameraHelper {
             bm = data.getParcelableExtra("data");
         }
 
-        if (mRotationAngle != 0) {
+        if (bm != null && mRotationAngle != 0) {
             bm = ImageUtils.rotate(bm, mRotationAngle);
         }
         return bm;
@@ -132,11 +134,11 @@ public class CameraHelper {
         } else {
             Objects.requireNonNull(data);
             Bitmap bm = data.getParcelableExtra("data");
-            if (mRotationAngle != 0) {
-                bm = ImageUtils.rotate(bm, mRotationAngle);
-            }
-
             if (bm != null) {
+                if (mRotationAngle != 0) {
+                    bm = ImageUtils.rotate(bm, mRotationAngle);
+                }
+
                 file = StorageUtils.getTempCoverFile(CAMERA_FILENAME);
                 try (OutputStream out = new FileOutputStream(file.getAbsoluteFile())) {
                     bm.compress(Bitmap.CompressFormat.PNG, 100, out);

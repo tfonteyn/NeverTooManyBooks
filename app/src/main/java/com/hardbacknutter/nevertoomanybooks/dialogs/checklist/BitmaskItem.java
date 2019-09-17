@@ -52,6 +52,7 @@ public class BitmaskItem
                 }
             };
 
+    /** resource id for the label to display. */
     @StringRes
     private final int mLabelId;
 

@@ -31,7 +31,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -62,66 +61,56 @@ public final class NetworkUtils {
     }
 
     /**
-     * Check if we have network access.
+     * Check if we have network access; taking into account whether the user permits
+     * metered (i.e. pay-per-usage) networks or not.
      *
-     * @return {@code true} if the application can access the internet
-     */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    @AnyThread
-    public static boolean isNetworkAvailable() {
-
-        Connectivity nc = getNetworkConnectivity();
-
-        if (isAllowMobileData()) {
-            return nc.has(Connectivity.Type.any);
-        } else {
-            return nc.has(Connectivity.Type.wifi);
-        }
-    }
-
-    private static boolean isAllowMobileData() {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                .getBoolean(Prefs.pk_network_mobile_data, false);
-    }
-
-    /**
-     * Use {@link NetworkCapabilities}
-     * * Check for un-metered access for example.
+     * @return {@code false} if the application can access the internet
      */
     @AnyThread
-    private static Connectivity getNetworkConnectivity() {
+    public static boolean networkUnavailable() {
+        Context context = App.getAppContext();
 
         ConnectivityManager connMgr =
-                (ConnectivityManager) App.getAppContext()
-                                         .getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connMgr != null) {
+            Network network = connMgr.getActiveNetwork();
+            if (network != null) {
+                NetworkCapabilities nc = connMgr.getNetworkCapabilities(network);
+                if (nc != null) {
+                    // we need internet access.
+                    boolean hasInternet =
+                            nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+                    // and we need internet access actually working!
+                    boolean isValidated =
+                            nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
 
-        Connectivity con = new Connectivity();
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+                        boolean notMetered =
+                                nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
 
-        for (Network network : connMgr.getAllNetworks()) {
-            NetworkInfo networkInfo = connMgr.getNetworkInfo(network);
-            switch (networkInfo.getType()) {
-                case ConnectivityManager.TYPE_ETHERNET:
-                    con.hasEthernet |= networkInfo.isConnected();
-                    break;
-                case ConnectivityManager.TYPE_WIFI:
-                    con.hasWifi |= networkInfo.isConnected();
-                    break;
-                case ConnectivityManager.TYPE_BLUETOOTH:
-                    con.hasBluetooth |= networkInfo.isConnected();
-                    break;
-                case ConnectivityManager.TYPE_MOBILE:
-                    con.hasMobile |= networkInfo.isConnected();
-                    break;
-                default:
-                    break;
+                        Logger.debug(NetworkUtils.class, "getNetworkConnectivity",
+                                     "notMetered=" + notMetered,
+                                     "hasInternet=" + hasInternet,
+                                     "isConnected=" + isValidated);
+                    }
+
+                    return !hasInternet || !isValidated
+                           || (connMgr.isActiveNetworkMetered() && !allowMeteredNetwork(context));
+
+                }
+            } else {
+                Logger.warn(NetworkUtils.class, "networkUnavailable",
+                            "no active network");
             }
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-            Logger.debug(NetworkUtils.class, "getNetworkConnectivity", con);
-        }
+        // network unavailable
+        return true;
+    }
 
-        return con;
+    private static boolean allowMeteredNetwork(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_network_allow_metered_data, false);
     }
 
     /**
@@ -145,18 +134,13 @@ public final class NetworkUtils {
         return isAlive(host, port);
     }
 
-    /**
-     * Check if Google DNS is reachable.
-     */
-    @SuppressWarnings("unused")
     @WorkerThread
-    public static boolean isGoogleAlive() {
-        return isAlive("8.8.8.8", 53);
-    }
+    private static boolean isAlive(@NonNull final String host,
+                                   final int port) {
+        if (networkUnavailable()) {
+            return false;
+        }
 
-    @WorkerThread
-    public static boolean isAlive(@NonNull final String host,
-                                  final int port) {
         try {
             long t;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
@@ -179,45 +163,6 @@ public final class NetworkUtils {
                              + e.getLocalizedMessage());
             }
             return false;
-        }
-    }
-
-    public static class Connectivity {
-
-        boolean hasEthernet;
-        boolean hasWifi;
-        boolean hasBluetooth;
-        boolean hasMobile;
-
-        boolean has(@NonNull final Type type) {
-            switch (type) {
-                case any:
-                    return hasEthernet || hasWifi || hasBluetooth || hasMobile;
-                case wifi:
-                    return hasEthernet || hasWifi;
-                case ethernet:
-                    return hasEthernet;
-                case bluetooth:
-                    return hasBluetooth;
-                case mobile:
-                    return hasMobile;
-            }
-            return false;
-        }
-
-        @Override
-        @NonNull
-        public String toString() {
-            return "Connectivity{"
-                   + "hasEthernet=" + hasEthernet
-                   + ", hasWifi=" + hasWifi
-                   + ", hasBluetooth=" + hasBluetooth
-                   + ", hasMobile=" + hasMobile
-                   + '}';
-        }
-
-        public enum Type {
-            any, wifi, ethernet, bluetooth, mobile
         }
     }
 }

@@ -303,9 +303,8 @@ public class EditBookFieldsFragment
         Book book = mBookModel.getBook();
 
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        //noinspection ConstantConditions
         if (!list.isEmpty()
-            && ItemWithFixableId.pruneList(getContext(), mBookModel.getDb(), list, userLocale)) {
+            && ItemWithFixableId.pruneList(list, getContext(), mBookModel.getDb(), userLocale)) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
@@ -329,7 +328,7 @@ public class EditBookFieldsFragment
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (!list.isEmpty()
             && ItemWithFixableId
-                       .pruneList(context, mBookModel.getDb(), list, book.getLocale(locale))) {
+                       .pruneList(list, context, mBookModel.getDb(), book.getLocale(locale))) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         }

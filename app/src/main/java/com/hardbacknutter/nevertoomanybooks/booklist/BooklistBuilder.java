@@ -33,9 +33,12 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
@@ -133,10 +137,15 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
 public class BooklistBuilder
         implements AutoCloseable {
 
-    /** id values for state preservation property. */
+    /** id values for state preservation property. See {@link ListRebuildMode}. */
     public static final int PREF_LIST_REBUILD_STATE_PRESERVED = 0;
     public static final int PREF_LIST_REBUILD_ALWAYS_EXPANDED = 1;
     public static final int PREF_LIST_REBUILD_ALWAYS_COLLAPSED = 2;
+    /** BookList Compatibility mode property values. See {@link CompatibilityMode}. */
+    public static final int PREF_MODE_DEFAULT = 0;
+    public static final int PREF_MODE_NESTED_TRIGGERS = 1;
+    public static final int PREF_MODE_FLAT_TRIGGERS = 2;
+    public static final int PREF_MODE_OLD_STYLE = 3;
 
     /** Counter for BooklistBuilder ID's. */
     @NonNull
@@ -147,11 +156,9 @@ public class BooklistBuilder
     /** DEBUG Instance counter. */
     @NonNull
     private static final AtomicInteger DEBUG_INSTANCE_COUNTER = new AtomicInteger();
-
     /** static SQL. */
     private static final String DELETE_BOOK_LIST_NODE_SETTINGS_BY_KIND =
             "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " WHERE " + DOM_BL_NODE_ROW_KIND + "=?";
-
     /** Statement names for caching. */
     private static final String STMT_GET_NODE_LEVEL = "GetNodeLevel";
     private static final String STMT_GET_NEXT_AT_SAME_LEVEL = "GetNextAtSameLevel";
@@ -169,11 +176,6 @@ public class BooklistBuilder
     private static final String STMT_NAV_IX_1 = "navIx1";
     private static final String STMT_NAV_IX_2 = "navIx2";
     private static final String STMT_IX_1 = "ix1";
-
-    // not in use for now
-    // List of columns for the group-by clause, including COLLATE clauses. Set by build() method.
-    //private String mGroupColumnList;
-
     /**
      * Collection of statements created by this Builder.
      * Private to this instance, hence no need to synchronize the statements.
@@ -181,35 +183,31 @@ public class BooklistBuilder
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final SqlStatementManager mStatements;
-
     /** Database Access. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final DAO mDb;
-
     /** The underlying database. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final SynchronizedDb mSyncedDb;
 
+    // not in use for now
+    // List of columns for the group-by clause, including COLLATE clauses. Set by build() method.
+    //private String mGroupColumnList;
     /** Internal ID. */
     private final int mBooklistBuilderId;
-
     /** Collection of 'extra' domains requested by caller. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Map<String, ExtraDomainDetails> mExtraDomains = new HashMap<>();
-
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Map<String, TableDefinition> mExtraJoins = new HashMap<>();
-
     /** Style to use in building the list. */
     @SuppressWarnings("FieldNotUsedInToString")
-
     @NonNull
     private final BooklistStyle mStyle;
-
     /**
      * Instance-based cursor factory so that the builder can be associated with the cursor
      * and the rowView. We could probably send less context, but in the first instance this
@@ -220,7 +218,6 @@ public class BooklistBuilder
             (db, masterQuery, editTable, query) ->
                     new BooklistCursor(masterQuery, editTable, query,
                                        DAO.getSynchronizer(), BooklistBuilder.this);
-
     /** The word 'UNKNOWN', used for year/month if those are (doh) unknown. */
     @SuppressWarnings("FieldNotUsedInToString")
     private final String mUnknown;
@@ -232,6 +229,10 @@ public class BooklistBuilder
      * Needs to be re-usable WITHOUT parameter binding.
      */
     private final ArrayList<SynchronizedStatement> mRebuildStmts = new ArrayList<>();
+    /** CompatibilityMode - Preferred: true. */
+    private boolean mUseTriggers;
+    /** CompatibilityMode - Preferred: true. */
+    private boolean mUseNestedTriggers;
     /** used in debug. */
     @SuppressWarnings("FieldNotUsedInToString")
     private boolean mDebugReferenceDecremented;
@@ -255,7 +256,6 @@ public class BooklistBuilder
     /** Object used in constructing the output table. */
     @SuppressWarnings("FieldNotUsedInToString")
     private SummaryBuilder mSummary;
-
     /** A bookshelf id to use as a filter; i.e. show only books on this bookshelf. */
     private long mFilterOnBookshelfId;
     /** DEBUG: Indicates close() has been called. */
@@ -290,6 +290,7 @@ public class BooklistBuilder
     /**
      * @return the current preferred rebuild state for the list.
      */
+    @ListRebuildMode
     public static int getPreferredListRebuildState() {
         return App.getListPreference(Prefs.pk_bob_list_state, PREF_LIST_REBUILD_STATE_PRESERVED);
     }
@@ -457,7 +458,7 @@ public class BooklistBuilder
      * @param preferredState           State to display: expanded, collapsed or remembered
      * @param previouslySelectedBookId id of book to remember, so we can scroll back to it
      */
-    public void build(final int preferredState,
+    public void build(@BooklistBuilder.ListRebuildMode final int preferredState,
                       final long previouslySelectedBookId) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             Logger.debugEnter(this, "build",
@@ -469,11 +470,11 @@ public class BooklistBuilder
         // Allow for the user preferences to override in case another build is broken.
         // 2019-01-20: v200 is targeting API 23, which would be SqLite 3.8
         //ENHANCE: time to remove sqlite pre-trigger use logic ?
-        final CompatibilityMode listMode = CompatibilityMode.get();
+        initCompatibilityMode();
 
         // Build a sort mask based on if triggers are used;
         // we can not reverse sort if they are not used.
-        final int sortDescendingMask = listMode.useTriggers
+        final int sortDescendingMask = mUseTriggers
                                        ? SummaryBuilder.FLAG_SORT_DESCENDING
                                        : SummaryBuilder.FLAG_NONE;
 
@@ -595,11 +596,11 @@ public class BooklistBuilder
             // We are good to go.
             SyncLock txLock = mSyncedDb.beginTransaction(true);
             try {
-                if (listMode.useTriggers) {
+                if (mUseTriggers) {
                     // If we are using triggers, then we insert them in order and rely on the
                     // triggers to build the summary rows in the correct place.
                     String tgt;
-                    if (listMode.nestedTriggers) {
+                    if (mUseNestedTriggers) {
                         // Nested triggers are compatible with Android 2.2+ and fast.
                         // (or at least relatively fast when there are a 'reasonable'
                         // number of headings to be inserted).
@@ -634,7 +635,7 @@ public class BooklistBuilder
                 final long t9_table_optimized = System.nanoTime();
 
                 // build the lookup aka navigation table
-                if (listMode.useTriggers) {
+                if (mUseTriggers) {
                     // the table is ordered at insert time, so the row id *is* the order.
                     populateNavigationTable(mListTable.dot(DOM_PK_ID), preferredState);
                 } else {
@@ -711,13 +712,12 @@ public class BooklistBuilder
      * @param preferredState State to display: expanded, collapsed or remembered
      */
     private void populateNavigationTable(@NonNull final String sortExpression,
-                                         final int preferredState) {
+                                         @BooklistBuilder.ListRebuildMode final int preferredState) {
 
         mNavTable.drop(mSyncedDb);
         mNavTable.create(mSyncedDb, true, false);
 
-        // TODO: Rebuild with state preserved is SLOWEST option
-        // Need a better way to preserve state.
+        // TODO: Rebuild with state preserved is SLOWEST option, need better way to preserve state.
         String insSql = mNavTable.getInsertInto(DOM_BL_REAL_ROW_ID,
                                                 DOM_BL_NODE_LEVEL,
                                                 DOM_BL_ROOT_KEY,
@@ -791,10 +791,14 @@ public class BooklistBuilder
                 }
                 break;
             }
-            default:
+
+            case PREF_LIST_REBUILD_STATE_PRESERVED:
                 // Use already-defined SQL for preserve state.
                 navStmt.execute();
                 break;
+
+            default:
+                throw new UnexpectedValueException(preferredState);
         }
     }
 
@@ -1722,6 +1726,8 @@ public class BooklistBuilder
     public String toString() {
         return "BooklistBuilder{"
                + "mBooklistBuilderId=" + mBooklistBuilderId
+               + ", mUseTriggers=" + mUseTriggers
+               + ", mUseNestedTriggers=" + mUseNestedTriggers
                + ", mCloseWasCalled=" + mCloseWasCalled
                + ", mRebuildStmts=" + mRebuildStmts
                + ", mFilters=" + mFilters
@@ -1771,49 +1777,44 @@ public class BooklistBuilder
         }
     }
 
-    public static final class CompatibilityMode {
+    private void initCompatibilityMode() {
+        @CompatibilityMode
+        int mode = App.getListPreference(Prefs.pk_bob_list_generation, PREF_MODE_DEFAULT);
+        // we'll always use triggers unless we're in 'ancient' mode
+        mUseTriggers = mode != PREF_MODE_OLD_STYLE;
 
-        /** BookList Compatibility mode property values. */
-        public static final int PREF_MODE_DEFAULT = 0;
-        public static final int PREF_MODE_NESTED_TRIGGERS = 1;
-        public static final int PREF_MODE_FLAT_TRIGGERS = 2;
-        public static final int PREF_MODE_OLD_STYLE = 3;
-        /** singleton. */
-        private static CompatibilityMode instance;
-        /** Preferred: true. */
-        final boolean useTriggers;
-        /** Preferred: true. */
-        final boolean nestedTriggers;
+        // mUseNestedTriggers is ignored unless mUseTriggers is set to true.
+        mUseNestedTriggers =
+                // The default/preferred mode is to use nested triggers
+                (mode == PREF_MODE_DEFAULT)
+                // or if the user explicitly asked for them
+                || (mode == PREF_MODE_NESTED_TRIGGERS);
 
-        /**
-         * Constructor.
-         */
-        private CompatibilityMode() {
-            int mode = App.getListPreference(Prefs.pk_bob_list_generation, PREF_MODE_DEFAULT);
-            // we'll always use triggers unless we're in 'ancient' mode
-            useTriggers = mode != PREF_MODE_OLD_STYLE;
-
-            // nestedTriggers is ignored unless useTriggers is set to true.
-            nestedTriggers =
-                    // The default/preferred mode is to use nested triggers
-                    (mode == PREF_MODE_DEFAULT)
-                    // or if the user explicitly asked for them
-                    || (mode == PREF_MODE_NESTED_TRIGGERS);
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.debug(this, "CompatibilityMode",
-                             "\nlistMode          : " + mode,
-                             "\nuseTriggers       : " + useTriggers,
-                             "\nnestedTriggers    : " + nestedTriggers);
-            }
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+            Logger.debug(this, "initCompatibilityMode",
+                         "\nlistMode          : " + mode,
+                         "\nmUseTriggers      : " + mUseTriggers,
+                         "\nmUseNestedTriggers: " + mUseNestedTriggers);
         }
+    }
 
-        static CompatibilityMode get() {
-            if (instance == null) {
-                instance = new CompatibilityMode();
-            }
-            return instance;
-        }
+    /** Define the list of accepted constants and declare the annotation. */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({PREF_LIST_REBUILD_STATE_PRESERVED,
+             PREF_LIST_REBUILD_ALWAYS_EXPANDED,
+             PREF_LIST_REBUILD_ALWAYS_COLLAPSED})
+    public @interface ListRebuildMode {
+
+    }
+
+    /** Define the list of accepted constants and declare the annotation. */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({PREF_MODE_DEFAULT,
+             PREF_MODE_NESTED_TRIGGERS,
+             PREF_MODE_FLAT_TRIGGERS,
+             PREF_MODE_OLD_STYLE})
+    public @interface CompatibilityMode {
+
     }
 
     /**
@@ -2672,7 +2673,7 @@ public class BooklistBuilder
                 // NEWKIND: RowKind.ROW_KIND_x
 
                 default:
-                    throw new IllegalStateException(String.valueOf(group.getKind()));
+                    throw new UnexpectedValueException(group.getKind());
             }
         }
 

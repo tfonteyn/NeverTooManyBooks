@@ -27,13 +27,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class ImportOptions
+public class ImportHelper
         extends Options {
 
     /**
@@ -42,15 +43,15 @@ public class ImportOptions
      */
     public static final int IMPORT_ONLY_NEW_OR_UPDATED = 1 << 16;
 
-    public static final Creator<ImportOptions> CREATOR = new Creator<ImportOptions>() {
+    public static final Creator<ImportHelper> CREATOR = new Creator<ImportHelper>() {
         @Override
-        public ImportOptions createFromParcel(@NonNull final Parcel source) {
-            return new ImportOptions(source);
+        public ImportHelper createFromParcel(@NonNull final Parcel source) {
+            return new ImportHelper(source);
         }
 
         @Override
-        public ImportOptions[] newArray(final int size) {
-            return new ImportOptions[size];
+        public ImportHelper[] newArray(final int size) {
+            return new ImportHelper[size];
         }
     };
     /** Options value to indicate all things should be exported. */
@@ -58,13 +59,14 @@ public class ImportOptions
     /**
      * all defined flags.
      */
-    static final int MASK = ALL | IMPORT_ONLY_NEW_OR_UPDATED;
+    private static final int MASK = ALL | IMPORT_ONLY_NEW_OR_UPDATED;
 
-    @Nullable
-    public Importer.Results results;
+    @NonNull
+    private final Importer.Results results = new Importer.Results();
 
-    public ImportOptions(final int what) {
-        this.what = what;
+    public ImportHelper(final int options,
+                        @Nullable final Uri uri) {
+        super(options, uri);
     }
 
     /**
@@ -72,16 +74,43 @@ public class ImportOptions
      *
      * @param in Parcel to construct the object from
      */
-    private ImportOptions(@NonNull final Parcel in) {
-        what = in.readInt();
+    protected ImportHelper(@NonNull final Parcel in) {
+        super(in);
+    }
+
+    @NonNull
+    public Importer.Results getResults() {
+        return results;
+    }
+
+    public void addResults(@NonNull final Importer.Results results) {
+        this.results.booksProcessed += results.booksProcessed;
+        this.results.booksCreated += results.booksCreated;
+        this.results.booksUpdated += results.booksUpdated;
+
+        this.results.coversProcessed += results.coversProcessed;
+        this.results.coversCreated += results.coversCreated;
+        this.results.coversUpdated += results.coversUpdated;
+    }
+
+    /**
+     * Will be called by {@link RestoreTask}.
+     */
+    public void validate() {
+        super.validate();
+
+        if ((options & MASK) == 0) {
+            throw new IllegalStateException("options not set");
+        }
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "ImportOptions{"
-               + ", what=0b" + Integer.toBinaryString(what)
+        return "ImportHelper{"
+               + ", options=0b" + Integer.toBinaryString(options)
                + ", results=" + results
                + '}';
     }
+
 }

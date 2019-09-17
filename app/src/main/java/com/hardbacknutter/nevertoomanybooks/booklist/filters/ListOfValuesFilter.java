@@ -60,7 +60,7 @@ public class ListOfValuesFilter<T>
 
         mCriteria = new StringList<>(new StringList.Factory<T>() {
             @Override
-            public char getListSeparator() {
+            public char getElementSeparator() {
                 return ',';
             }
 

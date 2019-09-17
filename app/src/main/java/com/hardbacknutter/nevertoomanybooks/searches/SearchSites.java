@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
  * Manages the setup of search engines/sites.
@@ -104,7 +105,6 @@ public final class SearchSites {
 
     /** ENHANCE: reliability order is not user configurable for now, but plumbing installed. */
     private static final List<Site> PREFERRED_RELIABILITY_ORDER;
-    private static final String UNEXPECTED_SEARCH_SOURCE_ERROR = "Unexpected search source: ";
 
     /** the users preferred search site order. */
     private static ArrayList<Site> sPreferredSearchOrder;
@@ -235,7 +235,7 @@ public final class SearchSites {
                 return "KBNL";
 
             default:
-                throw new IllegalStateException(UNEXPECTED_SEARCH_SOURCE_ERROR + id);
+                throw new UnexpectedValueException(id);
         }
     }
 
@@ -269,7 +269,7 @@ public final class SearchSites {
                 return new KbNlManager();
 
             default:
-                throw new IllegalStateException(UNEXPECTED_SEARCH_SOURCE_ERROR + id);
+                throw new UnexpectedValueException(id);
         }
     }
 

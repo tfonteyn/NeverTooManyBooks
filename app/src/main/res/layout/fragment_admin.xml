@@ -54,7 +54,7 @@
         <TextView
             android:id="@+id/lbl_backup"
             style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_save"
+            android:drawableStart="@drawable/ic_sd_storage"
             android:text="@string/lbl_backup_to_archive"
             />
 
@@ -68,7 +68,7 @@
         <TextView
             android:id="@+id/lbl_export"
             style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_save"
+            android:drawableStart="@drawable/ic_sd_storage"
             android:text="@string/lbl_export_to_csv"
             />
 
@@ -159,9 +159,16 @@
         <TextView
             android:id="@+id/lbl_copy_database"
             style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_save"
+            android:drawableStart="@drawable/ic_sd_storage"
             android:text="@string/lbl_copy_database"
             />
 
+        <TextView
+            android:id="@+id/lbl_copy_database_blurb"
+            style="@style/OptionRow.Blurb"
+            android:paddingStart="@dimen/indent_icon"
+            android:paddingEnd="0dp"
+            android:text="@string/lbl_copy_database_blurb"
+            />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

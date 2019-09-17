@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskFinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
 
@@ -42,22 +43,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
  */
 public final class GoodreadsTasks {
 
-    /** Task 'Results' code. A fake StringRes. */
-    static final int GR_RESULT_CODE_AUTHORIZED = 0;
-    /** Task 'Results' code. A fake StringRes. */
-    static final int GR_RESULT_CODE_AUTHORIZATION_NEEDED = -1;
-    /** Task 'Results' code. A fake StringRes. */
-    static final int GR_RESULT_CODE_AUTHORIZATION_FAILED = -2;
-
-    private GoodreadsTasks() {
-    }
-
     /**
      * When a typical Goodreads AsyncTask finishes, the 'result' will be a {@code StringRes}
      * to display to the user (or an exception),
      * or a specific code indicating authorization issues .
      * <p>
-     * This method provides handling for these outcomes.
+     * This method provides handling for those outcomes.
      *
      * @param context Current context
      *
@@ -82,7 +73,7 @@ public final class GoodreadsTasks {
             // caller should ask to register
             return null;
 
-        } else if (message.wasSuccessful) {
+        } else if (message.status == TaskListener.TaskStatus.Success) {
             // authenticated fine, just show info results.
             return context.getString(message.result);
 
@@ -98,6 +89,35 @@ public final class GoodreadsTasks {
             }
             return msg;
         }
+    }
+
+    /** Task 'Results' code. A fake StringRes. */
+    static final int GR_RESULT_CODE_AUTHORIZED = 0;
+    /** Task 'Results' code. A fake StringRes. */
+    static final int GR_RESULT_CODE_AUTHORIZATION_NEEDED = -1;
+    /** Task 'Results' code. A fake StringRes. */
+    static final int GR_RESULT_CODE_AUTHORIZATION_FAILED = -2;
+
+    private GoodreadsTasks() {
+    }
+
+    public enum Status {
+        AuthSuccess,
+        AuthFailed,
+        AuthNeeded,
+        CredentialsError,
+
+        TaskQueued,
+
+        BookSent,
+        NoIsbn,
+        BookNotFound,
+
+        Cancelled,
+
+        NoInternet,
+        IOError,
+        UnexpectedError
     }
 
     /**

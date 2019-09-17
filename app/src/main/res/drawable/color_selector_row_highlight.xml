@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ @Copyright 2019 HardBackNutter
   ~ @License GNU General Public License
@@ -26,15 +27,11 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--suppress LongLine -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:tint="?attr/colorControlNormal"
-    android:viewportWidth="400.0"
-    android:viewportHeight="400.0">
-
-    <path
-        android:fillColor="#FF000000"
-        android:pathData="m30 0.46c-17 7.1-33 23-30 43-1.6 105 1.3 209 2.1 313 3.4 26 29 44 54 40 102 0.57 204 0.92 305-0.51 26-5.6 40-34 36-59 1.2-103 2.7-205 1.2-308-7.2-16-23-32-42-28-109-1.1-218-1.1-328-0.2m179 51c24-2.2 49 27 58 34-4.3-18 3.9-38 25-29 9 14 1.1 35 3.8 52-0.29 54 1.5 108-0.59 162-2.5 32-20 65-52 75-29 9.1-62 8.1-90-3.1-21-9.3-39-29-41-53 16-14 35 0.56 38 17 20 22 55 23 82 15 25-9.4 36-37 36-62 2.3-12 2-41-10-18-34 38-101 29-130-9.7-22-28-24-67-18-101 6.4-40 39-75 80-79 7.6-1 15-1.1 23-0.15m-17 24c-36 3.2-59 40-59 73-3.7 35 9.2 76 45 89 31 12 69-3.7 81-35 15-34 12-78-11-108-14-16-34-22-55-20" />
-</vector>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <color android:color="?attr/colorControlHighlight" />
+    </item>
+    <item>
+        <color android:color="@android:color/transparent" />
+    </item>
+</selector>

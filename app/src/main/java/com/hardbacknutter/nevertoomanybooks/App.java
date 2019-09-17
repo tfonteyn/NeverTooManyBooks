@@ -360,7 +360,9 @@ public class App
     public static void hideKeyboard(@NonNull final View view) {
         InputMethodManager imm = (InputMethodManager)
                                          view.getContext().getSystemService(INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     /* ########################################################################################## */

@@ -55,7 +55,6 @@ public interface Importer
      * @throws IOException     on failure
      * @throws ImportException on failure
      */
-    @NonNull
     Results doBooks(@NonNull Context context,
                     @NonNull InputStream importStream,
                     @Nullable CoverFinder coverFinder,
@@ -82,16 +81,35 @@ public interface Importer
      */
     class Results {
 
+        /** The total #books that were present in the import data. */
         public int booksProcessed;
-        public int booksFailed;
-
+        /** #books we created. */
         public int booksCreated;
+        /** #books we updated. */
         public int booksUpdated;
-        public int coversImported;
 
-        public boolean nothing() {
-            return (booksCreated == 0) && (booksUpdated == 0) && (coversImported == 0);
+        /** The total #covers that were present in the import data. */
+        public int coversProcessed;
+        /** #covers we created. */
+        public int coversCreated;
+        /** #covers we updated. */
+        public int coversUpdated;
+
+        /** #styles we imported. */
+        public int styles;
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "Results{"
+                   + "booksProcessed=" + booksProcessed
+                   + ", booksCreated=" + booksCreated
+                   + ", booksUpdated=" + booksUpdated
+                   + ", coversProcessed=" + coversProcessed
+                   + ", coversCreated=" + coversCreated
+                   + ", coversUpdated=" + coversUpdated
+                   + ", styles=" + styles
+                   + '}';
         }
     }
-
 }

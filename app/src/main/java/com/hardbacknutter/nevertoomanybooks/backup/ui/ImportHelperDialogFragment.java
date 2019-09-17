@@ -39,14 +39,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 
-public class ImportOptionsDialogFragment
-        extends OptionsDialogBase {
+public class ImportHelperDialogFragment
+        extends OptionsDialogBase<ImportHelper> {
+
+    public static final String TAG = "ImportHelperDialogFragment";
+    private static final String BKEY_OPTIONS = TAG + ":options";
 
     private static final String BKEY_ARCHIVE_HAS_VALID_DATES = TAG + ":validDates";
 
-    private ImportOptions mOptions;
+    private ImportHelper mImportHelper;
+
     private boolean mArchiveHasValidDates;
 
     private Checkable cbxUpdatedBooks;
@@ -54,16 +58,16 @@ public class ImportOptionsDialogFragment
     /**
      * Constructor.
      *
-     * @param options import configuration
+     * @param importHelper import configuration
      *
      * @return Created fragment
      */
     @NonNull
-    public static ImportOptionsDialogFragment newInstance(@NonNull final ImportOptions options,
-                                                          final boolean archiveHasValidDates) {
-        ImportOptionsDialogFragment frag = new ImportOptionsDialogFragment();
+    public static ImportHelperDialogFragment newInstance(@NonNull final ImportHelper importHelper,
+                                                         final boolean archiveHasValidDates) {
+        ImportHelperDialogFragment frag = new ImportHelperDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(BKEY_OPTIONS, options);
+        args.putParcelable(BKEY_OPTIONS, importHelper);
         args.putBoolean(BKEY_ARCHIVE_HAS_VALID_DATES, archiveHasValidDates);
         frag.setArguments(args);
         return frag;
@@ -74,7 +78,7 @@ public class ImportOptionsDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
-        mOptions = currentArgs.getParcelable(BKEY_OPTIONS);
+        mImportHelper = currentArgs.getParcelable(BKEY_OPTIONS);
         mArchiveHasValidDates = currentArgs.getBoolean(BKEY_ARCHIVE_HAS_VALID_DATES);
     }
 
@@ -86,12 +90,14 @@ public class ImportOptionsDialogFragment
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View root = layoutInflater.inflate(R.layout.dialog_import_options, null);
 
-        initCommonCbx(mOptions, root);
+        initCommonCbx(mImportHelper, root);
+
+        boolean allBooks = (mImportHelper.options & ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED) == 0;
 
         Checkable cbxAllBooks = root.findViewById(R.id.radioAllBooks);
-        cbxAllBooks.setChecked((mOptions.what & ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED) == 0);
+        cbxAllBooks.setChecked(allBooks);
         cbxUpdatedBooks = root.findViewById(R.id.radioNewAndUpdatedBooks);
-        cbxUpdatedBooks.setChecked((mOptions.what & ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED) != 0);
+        cbxUpdatedBooks.setChecked(!allBooks);
 
         if (!mArchiveHasValidDates) {
             cbxAllBooks.setChecked(true);
@@ -108,7 +114,7 @@ public class ImportOptionsDialogFragment
                         .setTitle(R.string.import_options_dialog_title)
                         .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                         .setPositiveButton(android.R.string.ok,
-                                           (d, which) -> updateAndSend(mOptions))
+                                           (d, which) -> updateAndSend(mImportHelper))
                         .create();
         dialog.setCanceledOnTouchOutside(false);
         return dialog;
@@ -117,19 +123,19 @@ public class ImportOptionsDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(BKEY_OPTIONS, mOptions);
+        outState.putParcelable(BKEY_OPTIONS, mImportHelper);
     }
 
     /**
      * Read the checkboxes, and set the options accordingly.
      */
     protected void updateOptions() {
-        updateOptions(mOptions);
+        updateOptions(mImportHelper);
 
         if (cbxUpdatedBooks.isChecked()) {
-            mOptions.what |= ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED;
+            mImportHelper.options |= ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED;
         } else {
-            mOptions.what &= ~ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED;
+            mImportHelper.options &= ~ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED;
         }
     }
 }

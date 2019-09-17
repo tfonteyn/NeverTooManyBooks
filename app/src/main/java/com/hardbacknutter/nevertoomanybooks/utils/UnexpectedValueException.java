@@ -25,35 +25,19 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.ui;
+package com.hardbacknutter.nevertoomanybooks.utils;
 
 import androidx.annotation.Nullable;
 
-import java.io.File;
-
-import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.TaskModel;
-
 /**
- * See parent class doc.
- *
- * <strong>Note:</strong> a ViewModel must be "public" despite Android Studio
- * proposing "package-private".
- * The catch: it will work in the emulator, but fail on a real device.
+ * Usually used in switch() default: sections.
  */
-@SuppressWarnings("WeakerAccess")
-public class ExportOptionsTaskModel
-        extends TaskModel<ExportOptions> {
+public class UnexpectedValueException
+        extends IllegalStateException {
 
-    @Nullable
-    private File mFile;
+    private static final long serialVersionUID = -3264236171012098029L;
 
-    @Nullable
-    File getFile() {
-        return mFile;
-    }
-
-    void setFile(@Nullable final File file) {
-        mFile = file;
+    public UnexpectedValueException(@Nullable final Object value) {
+        super("Unexpected value: " + value);
     }
 }

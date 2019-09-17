@@ -85,7 +85,7 @@ public abstract class CropImageViewTouchBase
      * <p>
      * see {@link View#setLayerType(int, Paint)}
      */
-    public static final int LAYER_TYPE_USE_DEFAULT = -1;
+    private static final int LAYER_TYPE_USE_DEFAULT = -1;
 
     private static final float SCALE_RATE = 1.25F;
     /** Maximum upscaling for a viewed image. */
@@ -150,7 +150,7 @@ public abstract class CropImageViewTouchBase
 
         int type = App.getListPreference(Prefs.pk_images_cropper_layer_type,
                                          LAYER_TYPE_USE_DEFAULT);
-        if (type == -1) {
+        if (type == LAYER_TYPE_USE_DEFAULT) {
             return;
         }
         setLayerType(type, null);

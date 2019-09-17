@@ -132,21 +132,23 @@ public class SynchronizedDb {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
             System.gc();
             try {
-                Field f = SQLiteClosable.class.getDeclaredField("mReferenceCount");
-                f.setAccessible(true);
-                int refs = (Integer) f.get(db);
+                Field field = SQLiteClosable.class.getDeclaredField("mReferenceCount");
+                field.setAccessible(true);
+                Integer refs = (Integer) field.get(db);
                 if (message != null) {
                     Logger.debug(SynchronizedDb.class, "printRefCount",
                                  "DBRefs (" + message + "): " + refs);
 //                    if (refs < 100) {
 //                        Logger.debug(SynchronizedDb.class, "printRefCount",
-//                                     "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
+//                                     "DBRefs (" + message + "): " + refs
+//                                     + " <-- TOO LOW (< 100)!");
 //                    } else if (refs < 1001) {
 //                        Logger.debug(SynchronizedDb.class, "printRefCount",
-//                                     "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
+//                                     "DBRefs (" + message + "): " + refs
+//                                     + " <-- TOO LOW (< 1000)!");
 //                    } else {
 //                        Logger.debug(SynchronizedDb.class, "printRefCount",
-//                                     "DBRefs (" + msg + "): " + refs);
+//                                     "DBRefs (" + message + "): " + refs);
 //                    }
 
                 }
@@ -665,7 +667,7 @@ public class SynchronizedDb {
      * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
      * <p>
      * FIXME: Generalize code to allow for arbitrary changes to choice of collation.
-     *
+     * <p>
      * This method is supposed to return {@code false} in normal circumstances.
      */
     private boolean collationIsCaseSensitive() {

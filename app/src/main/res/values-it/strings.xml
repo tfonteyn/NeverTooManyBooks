@@ -73,9 +73,9 @@
     <string name="X_btn_set_authors">Imposta autori…</string>
     <string name="X_btn_set_series">Imposta serie…</string>
     <string name="X_error_file_must_contain_column">Il file deve contenere una colonna con nome %1$s</string>
-    <string name="X_info_no_authors_yet">Nessun autore inserito per questo libro. Aggiungine utilizzando l\'area di testo e il pulsante nella parte superiore dello schermo.</string>
-    <string name="X_info_no_books_yet">Non ci sono libri in questa libreria. Per aggiungerne utilizza il menù nella parte inferiore dello schermo.</string>
-    <string name="X_info_no_series_yet">Nessuna serie inserita per questo libro. Puoi aggiungerne utilizzando l\'area di testo e il pulsante nella parte superiore dello schermo.</string>
+    <string name="X_info_no_authors_yet">Nessun autore inserito per questo libro.\n Aggiungine utilizzando l\'area di testo e il pulsante nella parte superiore dello schermo.</string>
+    <string name="X_info_no_books_yet">Non ci sono libri in questa libreria.\n Per aggiungerne utilizza il menù nella parte inferiore dello schermo.</string>
+    <string name="X_info_no_series_yet">Nessuna serie inserita per questo libro.\n Puoi aggiungerne utilizzando l\'area di testo e il pulsante nella parte superiore dello schermo.</string>
     <string name="X_info_reset_tips">Ogni tanto questa applicazione può visualizzare messaggi riguardanti %1$s.\n Premi il pulsante qui sotto per ripristinare i messaggi eventualmente disattivati.</string>
     <string name="X_lbl_loan_book_available">Disponibile</string>
     <string name="X_lbl_select_fields_to_update">Seleziona i campi da aggiornare</string>
@@ -169,9 +169,9 @@
     <string name="error_storage_not_writable">Verifica che lo spazio di archiviazione sia scrivibile e che disponga di spazio sufficiente.</string>
     <string name="error_unexpected_error">Si è verificato un errore inatteso, per favore invia i dettagli all«Assistenza usando l»opzione «Amministratore» nel menu principale</string>
     <string name="error_unknown">Si è verificato un errore non identificato</string>
-    <string name="export_csv_email">Inviare il file di esportazione per email?</string>
+    <string name="confirm_email_export">Inviare il file di esportazione per email?</string>
     <string name="export_info_backup_all">Tutti i libri, copertine, impostazioni e stili personalizzati saranno esportati nell\'archivio.</string>
-    <string name="export_info_success_archive_details">Un %3$s file chiamato %2$s è stato creato nella cartella «%1$s».\n\nTi raccomandiamo di tenerne copia da qualche altra parte a protezione dei dati in caso il tuo apparecchio venga danneggiato, perso o rubato.</string>
+    <string name="X_export_info_success_archive_details">Un %3$s file chiamato %2$s è stato creato nella cartella «%1$s».\n\nTi raccomandiamo di tenerne copia da qualche altra parte a protezione dei dati in caso il tuo apparecchio venga danneggiato, perso o rubato.</string>
     <string name="export_option_books_since_date">Tutti i libri aggiunti o aggiornati dopo il giorno:</string>
     <string name="export_option_books_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall\'ultimo backup completo</string>
     <string name="export_option_info_books_since_date">In via opzionale, specifica una data da usare per selezionare libri e/o copertine da esportare:</string>
@@ -225,8 +225,7 @@
     <string name="hint_field_not_set">Non impostato</string>
     <string name="hint_field_not_set_with_brackets">(vuoto)</string>
     <string name="hint_search_text">Testo e/o ISBN</string>
-    <string name="import_error_csv_file_must_contain_any_column">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
-    <string name="import_error_csv_file_not_found">Nessun file di esportazione trovato</string>
+    <string name="error_csv_import_file_must_contain_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
     <string name="import_export_option_csv">Libri (*.csv)</string>
     <string name="import_export_option_xml">Tutti i dati in formato XML</string>
     <string name="import_export_option_xml_info">XML è solo esportazione, non importa.</string>
@@ -235,11 +234,10 @@
     <string name="import_option_new_and_changed_books">Libri nuovi ed aggiornati</string>
     <string name="import_options_dialog_title">Seleziona cosa verrà importato.</string>
     <string name="import_warning_old_archive">Questa opzione non è supportata per le versioni più vecchie dell\'archivio.</string>
-    <string name="import_warning_select_csv_file">È stato trovato più di un file; scegli un file da importare dall\'elenco qui sotto:</string>
     <string name="info_authorized">Autorizzato</string>
     <string name="info_cleanup_files_text">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD ad ogni aggiornamento, ad ogni backup del database o quando l«applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante »Invia informazioni\' prima di eliminarli.</string>
     <string name="info_displaying_n_books_in_m_entries">visualizzati %1$d libri, in %2$d voci</string>
-    <string name="info_install_scanner">Per scansionare i codici a barre ISBN, toccare di seguito per installare una di queste applicazioni per scanner di codici a barre.</string>
+    <string name="X_info_install_scanner">Per scansionare i codici a barre ISBN, toccare di seguito per installare una di queste applicazioni per scanner di codici a barre.</string>
     <string name="info_manage_fields">I campi selezionati sono visibili nella schermata aggiungi/modifica libro. Gli altri rimangono nascosti.</string>
     <string name="info_not_authorized">Non autorizzato</string>
     <string name="info_registration_benefits">Questa funzione beneficia della registrazione con %1$s.\nDesideri visualizzare ulteriori informazioni o disabilitare questo messaggio?\nPuoi trovare queste informazioni in un secondo momento nella sezione «Credenziali» nelle impostazioni.</string>
@@ -341,6 +339,7 @@
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_num">#</string>
     <string name="lbl_settings">Preferenze</string>
+    <string name="menu_settings">Preferenze</string>
     <string name="lbl_signed">Firmato</string>
     <string name="lbl_about_sourcecode">Codice sorgente:</string>
     <string name="lbl_about_special_thanks">Ringraziamenti speciali</string>
@@ -372,8 +371,8 @@
     <string name="menu_add_book_by_barcode_scan">Acquisisci codice a barre/ISBN</string>
     <string name="menu_add_book_by_isbn">Inserisci codice ISBN</string>
     <string name="menu_add_book_manually">Aggiungi Manualmente</string>
-    <string name="menu_administration">Amministratore</string>
-    <string name="title_administration">Funzioni amministratore</string>
+    <string name="menu_administration">Gestione…</string>
+    <string name="title_administration">Gestione</string>
     <string name="menu_amazon_books_by_author">Libri di questo autore</string>
     <string name="menu_amazon_books_by_author_in_series">Libri per autore / serie</string>
     <string name="menu_amazon_books_in_series">Libri in questa serie</string>
@@ -381,8 +380,8 @@
     <string name="menu_author_works_all">Mostra tutto</string>
     <string name="menu_author_works_book">Solo libri</string>
     <string name="menu_author_works_toc">Solo titoli di contenuti</string>
-    <string name="menu_booklist_styles">Stili elenco libri…</string>
-    <string name="menu_bookshelves">Librerie…</string>
+    <string name="menu_booklist_styles">Stili elenco libri</string>
+    <string name="menu_bookshelves">Librerie</string>
     <string name="menu_clear_search_filters">Cancella filtri</string>
     <string name="menu_collapse_all">Comprimi tutto</string>
     <string name="menu_cover_replace_from_camera">Dalla fotocamera…</string>
@@ -435,17 +434,17 @@
     <string name="progress_end_cancelled">Cancellato</string>
     <string name="progress_end_cancelled_info">Annullati - %1$s</string>
     <string name="progress_end_import_complete">Importazione Completata</string>
-    <string name="progress_end_num_books_searched">%d libri cercati</string>
+    <string name="progress_end_n_books_searched">%1$d libri cercati</string>
     <string name="progress_msg_adding_book">Aggiunta libro…</string>
-    <string name="progress_msg_backing_up">Creazione backup in corso…</string>
+    <string name="title_backing_up">Creazione backup in corso…</string>
     <string name="progress_msg_cancelling">Annullamento</string>
     <string name="progress_msg_connecting">Collegamento al sito web…</string>
-    <string name="progress_msg_covers_handled">%1$d copertine processate</string>
-    <string name="progress_msg_covers_handled_missing">%1$d copertine processate (%2$d mancanti)</string>
-    <string name="progress_msg_covers_handled_missing_skipped">%1$d copertine elaborate (%2$d mancanti, %3$d saltate)</string>
-    <string name="progress_msg_export_starting">Inizio esportazione…</string>
+    <string name="X_progress_msg_n_covers_processed">%1$d copertine elaborate</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d copertine elaborate (%2$d mancanti)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d copertine elaborate (%2$d mancanti, %3$d saltate)</string>
+    <string name="X_progress_msg_export_starting">Inizio esportazione…</string>
     <string name="progress_msg_finding_editions">Ricerca edizioni…</string>
-    <string name="progress_msg_importing">Importazione in corso…</string>
+    <string name="title_importing">Importazione in corso…</string>
     <string name="progress_msg_loading">Caricamento…</string>
     <string name="progress_msg_n_created_m_updated">%1$d creati, %2$d aggiornati</string>
     <string name="progress_msg_optimizing">Ottimizzazione archivi…</string>
@@ -453,7 +452,6 @@
     <string name="progress_msg_process_booklist_style">Stili della lista di libri…</string>
     <string name="progress_msg_process_cover">Copertine…</string>
     <string name="progress_msg_process_preferences">Preferenze…</string>
-    <string name="X_progress_msg_reading_directory">Ricerca nella cartella…</string>
     <string name="progress_msg_rebuilding_search_index">Ricostruzione indice di ricerca…</string>
     <string name="progress_msg_saving_image">Salvataggio dell\'immagine…</string>
     <string name="progress_msg_searching">Ricerca…</string>
@@ -547,7 +545,7 @@
     <string name="tip_view_only_book_details">Selezionando una voce in questo elenco, è ora disponibile una vista non modificabile dei dettagli del libro. Vedi «Altre Opzioni» per le regolazioni relative.</string>
     <string name="tip_view_only_help">Questa è la vista non modificabile dei dettagli del libro; puoi scorrere verso sinistra o verso destra per visualizzare altri libri, e puoi modificare il libro tramite il menu delle opzioni usando il pulsante del menu o l\'icona del menu di overflow.</string>
     <string name="title_add_book">Aggiungi libro</string>
-    <string name="title_backup">Backup</string>
+    <string name="X_title_backup">Backup</string>
     <string name="title_clone_style">Duplica stile</string>
     <string name="title_cover">Miniatura copertina</string>
     <string name="title_delete_book">Cancella libro</string>
@@ -559,9 +557,9 @@
     <string name="title_edit_bookshelf">Modifica libreria</string>
     <string name="title_edit_bookshelves">Gestisci librerie</string>
     <string name="title_edit_style">Modifica stile</string>
-    <string name="title_import">Importa</string>
+    <string name="X_title_import">Importa</string>
     <string name="title_import_book_data">Importa libri</string>
-    <string name="title_install_scan">Installa app per la scansione</string>
+    <string name="X_title_install_scan">Installa app per la scansione</string>
     <string name="title_registration">Registrazione su LibraryThing </string>
     <string name="title_scope_of_change">Intervallo modifica</string>
     <string name="title_search_for">Cerca per autore o titolo</string>
@@ -571,7 +569,6 @@
     <string name="title_select_style">Seleziona Stile</string>
     <string name="title_send_mail">Invia una email…</string>
     <string name="unknown">Sconosciuto</string>
-    <string name="up_folder">Su</string>
     <string name="vldt_blank_required_for_x">È richiesto un valore vuoto per «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">È previsto un valore booleano (0,1,t,f,true,false) for «%1$s»</string>
     <string name="vldt_date_expected_for_x">È prevista una data per «%1$s»</string>
@@ -588,11 +585,11 @@
     <string name="info_install_scanner_recommendation">Ti raccomandiamo di utilizzare l\'applicazione Zxing, e, se è già installata, ti raccomandiamo di disinstallarla e installarla di nuovo.</string>
     <string name="warning_book_no_longer_exists">Il libro indicato non esiste più</string>
     <string name="warning_book_not_found">Il libro scansionato non è stato trovato. A volte il codice a barre corretto si trova all\'interno della copertina. Altrimenti inserisci i dati manualmente.</string>
-    <string name="warning_book_was_deleted_uc">LIBRO CANCELLATO</string>
+    <string name="X_warning_book_was_deleted_uc">LIBRO CANCELLATO</string>
     <string name="warning_cannot_delete_1st_bs">Impossibile cancellare la prima libreria</string>
     <string name="warning_cover_copy_failed">Impossibile copiare l\'immagine</string>
     <string name="warning_cover_not_found">Immagine non trovata</string>
-    <string name="warning_enter_valid_filename">Si prega di inserire un nome di file valido.</string>
+    <string name="X_warning_enter_valid_filename">Si prega di inserire un nome di file valido.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Se si indica il giorno, occorre indicare anche mese ed anno.</string>
     <string name="warning_if_month_set_year_must_be">Se si indica il mese, occorre indicare anche l\'anno.</string>
     <string name="warning_immediate_global_changes">NOTA: Tutte le modifiche salvate si applicano istantaneamente e globalmente</string>
@@ -602,9 +599,8 @@
     <string name="warning_no_editions">Nessuna informazione aggiuntiva disponibile</string>
     <string name="warning_no_isbn_stored_for_book">Codice ISBN non memorizzato</string>
     <string name="warning_no_matching_book_found">Nessuna corrispondenza trovata</string>
-    <string name="warning_no_parent_directory_found">Nessuna directory superiore trovata</string>
     <string name="warning_required_at_least_one">Almeno un campo non deve essere vuoto</string>
-    <string name="warning_select_an_existing_file">Prego selezionare un file esistente</string>
+    <string name="X_warning_select_an_existing_file">Prego selezionare un file esistente</string>
     <string name="warning_select_min_1_field">Seleziona almeno un campo da aggiornare</string>
     <string name="warning_series_already_in_list">La serie è già presente in elenco</string>
     <string name="warning_toc_confirm">Conferma che i titoli di queste antologie sono in genere corretti</string>
@@ -632,5 +628,9 @@
     <string name="lbl_author_primary">scrittore</string>
     <string name="menu_search_local">Ricerca locale</string>
     <string name="pg_reformat">Riformattare</string>
+    <string name="progress_msg_n_books_processed">%1$d libri elaborati</string>
+    <string name="X_progress_end_n_books_exported">%1$d libri esportati</string>
+    <string name="warning_select_an_existing_folder">Seleziona una directory esistente.</string>
+    <string name="lbl_copy_database_blurb">Seleziona una directory in cui esportare.</string>
 
 </resources>

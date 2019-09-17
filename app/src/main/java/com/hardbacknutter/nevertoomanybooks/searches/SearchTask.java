@@ -233,28 +233,28 @@ public class SearchTask
     private void checkForSeriesNameInTitle() {
         String fullTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
         if (fullTitle != null) {
-            //TEST: new regex logic
-            Matcher matcher = Series.BOOK_SERIES_PATTERN.matcher(fullTitle);
+            Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
             if (matcher.find()) {
                 String bookTitle = matcher.group(1);
                 String seriesTitleWithNumber = matcher.group(2);
+                if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
+                    ArrayList<Series> seriesList =
+                            mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+                    if (seriesList == null) {
+                        seriesList = new ArrayList<>();
+                    }
+                    Series newSeries = Series.fromString(seriesTitleWithNumber);
 
-                ArrayList<Series> seriesList =
-                        mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-                if (seriesList == null) {
-                    seriesList = new ArrayList<>();
+                    // add to the TOP of the list. This is based on translated books/comics
+                    // on Goodreads where the series is in the original language, but the
+                    // series name embedded in the title is in the same language as the title.
+                    seriesList.add(0, newSeries);
+
+                    // store Series back
+                    mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
+                    // and store cleaned book title back
+                    mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
                 }
-                Series newSeries = Series.fromString(seriesTitleWithNumber);
-
-                // add to the TOP of the list. This is based on translated books/comics
-                // on Goodreads where the series is in the original language, but the
-                // series name embedded in the title is in the same language as the title.
-                seriesList.add(0, newSeries);
-
-                // store Series back
-                mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
-                // and store cleaned book title back
-                mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
             }
         }
     }

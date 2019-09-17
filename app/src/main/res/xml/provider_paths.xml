@@ -29,12 +29,12 @@
 <!--
     https://developer.android.com/reference/kotlin/androidx/core/content/FileProvider
 
-    'path' attribute must stay in sync with utils/StorageUtils.java
+    Rather rough... we make them all available.
 -->
 <paths>
     <external-path
         name="external-path"
-        path="./NeverTooManyBooks/" />
+        path="./" />
 
     <external-cache-path
         name="external-cache-path"

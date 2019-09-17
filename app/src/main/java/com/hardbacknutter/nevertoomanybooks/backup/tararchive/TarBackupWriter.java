@@ -35,7 +35,6 @@ import androidx.annotation.NonNull;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -43,6 +42,7 @@ import java.io.OutputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupWriterAbstract;
 
@@ -52,27 +52,30 @@ import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupWriterAbstr
 public class TarBackupWriter
         extends BackupWriterAbstract {
 
+    /** The archive container. */
     @NonNull
-    private final TarBackupContainer mContainer;
+    private final BackupContainer mContainer;
+    /** The data stream for the archive. */
     @NonNull
-    private final TarArchiveOutputStream mOutput;
+    private final TarArchiveOutputStream mOutputStream;
 
     /**
      * Constructor.
      *
      * @param context   Current context
-     * @param container Parent
+     * @param container The archive container.
      *
      * @throws IOException on failure
      */
     TarBackupWriter(@NonNull final Context context,
-                    @NonNull final TarBackupContainer container)
+                    @NonNull final BackupContainer container)
             throws IOException {
         super(context);
         mContainer = container;
-        // Open the archive for writing
-        OutputStream out = new FileOutputStream(container.getFile());
-        mOutput = new TarArchiveOutputStream(out);
+
+        OutputStream os = App.getAppContext().getContentResolver()
+                             .openOutputStream(mContainer.getUri());
+        mOutputStream = new TarArchiveOutputStream(os);
     }
 
     @NonNull
@@ -114,7 +117,7 @@ public class TarBackupWriter
         final TarArchiveEntry entry = new TarArchiveEntry(new File(name));
         entry.setModTime(file.lastModified());
         entry.setSize(file.length());
-        mOutput.putArchiveEntry(entry);
+        mOutputStream.putArchiveEntry(entry);
         final InputStream is = new FileInputStream(file);
         streamToArchive(is);
     }
@@ -144,7 +147,7 @@ public class TarBackupWriter
             throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry(name);
         entry.setSize(bytes.length);
-        mOutput.putArchiveEntry(entry);
+        mOutputStream.putArchiveEntry(entry);
         final InputStream is = new ByteArrayInputStream(bytes);
         streamToArchive(is);
     }
@@ -165,11 +168,11 @@ public class TarBackupWriter
                 if (cnt <= 0) {
                     break;
                 }
-                mOutput.write(buffer, 0, cnt);
+                mOutputStream.write(buffer, 0, cnt);
             }
         } finally {
             is.close();
-            mOutput.closeArchiveEntry();
+            mOutputStream.closeArchiveEntry();
         }
     }
 
@@ -177,7 +180,7 @@ public class TarBackupWriter
     @CallSuper
     public void close()
             throws IOException {
+        mOutputStream.close();
         super.close();
-        mOutput.close();
     }
 }

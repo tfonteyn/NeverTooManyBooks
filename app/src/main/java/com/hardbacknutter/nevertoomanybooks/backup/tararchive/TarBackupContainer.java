@@ -28,10 +28,10 @@
 package com.hardbacknutter.nevertoomanybooks.backup.tararchive;
 
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
@@ -93,22 +93,22 @@ public class TarBackupContainer
     private static final int VERSION_WRITTEN = 2;
     /** we can still read archives from this version and up to our current version. */
     private static final int VERSION_READ = 1;
-    /** Backup file spec. */
+    /** Uri to read from, or write to. */
     @NonNull
-    private final File mFile;
+    private final Uri mUri;
 
     /**
      * Constructor.
      *
-     * @param file to read from or write to.
+     * @param uri to read from or write to.
      */
-    public TarBackupContainer(@NonNull final File file) {
-        mFile = file;
+    public TarBackupContainer(@NonNull final Uri uri) {
+        mUri = uri;
     }
 
     @NonNull
-    public File getFile() {
-        return mFile;
+    public Uri getUri() {
+        return mUri;
     }
 
     @Override
@@ -139,7 +139,7 @@ public class TarBackupContainer
     }
 
     @Override
-    public boolean isValid(@NonNull final Context context) {
+    public boolean canRead(@NonNull final Context context) {
         // The reader will do basic validation.
         try (BackupReader reader = newReader(context)) {
             BackupInfo backupInfo = reader.getInfo();

@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -47,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Class to hold book-related series data.
@@ -71,56 +73,71 @@ public class Series
                     return new Series[size];
                 }
             };
-    /**
-     * Parse "bookTitle (seriesTitleAndNumber)" into "bookTitle" and "seriesTitleAndNumber".
-     * <p>
-     * We want a title that does not START with a bracket!
-     */
-    public static final Pattern BOOK_SERIES_PATTERN =
-            Pattern.compile("([^(]+.*)\\s\\((.*)\\).*",
-                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    /** {@link #TITLE_NUMBER_REGEXP}. */
-    static final int TITLE_GROUP = 1;
-    /** {@link #TITLE_NUMBER_REGEXP}. */
-    static final int NUMBER_GROUP = 4;
+    /**
+     * Parse "some text (some more text)" into "some text" and "some more text".
+     * <p>
+     * We want a "some text" that does not START with a bracket!
+     */
+    public static final Pattern TEXT1_BR_TEXT2_BR_PATTERN =
+            Pattern.compile("([^(]+.*)"
+                            + "\\s*"
+                            + "\\("
+                            + /* */ "(.*)"
+                            + "\\).*",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     private static final String NUMBER_REGEXP =
             // The possible prefixes to a number as seen in the wild.
-            "(,|#|,\\s*#|"
+            "(?:"
+            + /* */ ",|"
+            + /* */ "#|"
+            + /* */ ",\\s*#|"
             + /* */ "number|num|num.|no|no.|nr|nr.|"
             + /* */ "book|bk|bk.|"
             + /* */ "volume|vol|vol.|"
             + /* */ "tome|"
             + /* */ "part|pt.|"
-            + /* */ "deel|dl.|)"
-            // remove whitespace
+            + /* */ "deel|dl.|"
+                    /* or no prefix */
+            + ")"
+            // whitespace between prefix and actual number
             + "\\s*"
-            // The actual number; numeric/roman numerals and optional alpha numeric suffix.
-            + "([0-9.\\-]+\\S*?|[ivxlcm.\\-]+\\S*?)";
+            // Capture the number group
+            + "("
+            // numeric numerals allowing for .-_
+            + /* */ "[0-9.\\-_]+"
+            // optional alphanumeric suffix.
+            + /* */ "\\S*?"
+
+            + "|"
+
+            // roman numerals are accepted ONLY if they are prefixed by either '(' or a space
+            + /* */ "\\s[(]?"
+            // roman numerals allowing for .-_
+            + /* */ "[ivxlcm.\\-_]+"
+            // roman numerals are accepted ONLY if they are suffixed by either ')' or EOL
+            + /* */ "[)]?$"
+            // roman numerals do not support an alphanumeric suffixes.
+            + ")";
 
     /**
      * Parse a string into title + number. Used by {@link #fromString(String)}.
-     * Format: see unit test for this class.
-     * group(1) : name
-     * group(4) : number
+     * Formats supported: see unit test for this class.
      */
     private static final String TITLE_NUMBER_REGEXP =
-            // remove whitespace at the start
+            // whitespace at the start
             "^\\s*"
-            // the title group(1)
+            // Capture the title group(1)
             + "(.*?)"
-            // remove delimiter
-            // '('  ','  '#'  (each surrounded by whitespace) or a single whitespace
-            + "(\\s*[(,#]\\s*|\\s)"
-            // the number group(4)
-            + NUMBER_REGEXP
-            // remove potential whitespace and ')'
-            + "(\\s*\\)|)"
-            // remove whitespace to the end
+            // delimiter ',' and/or whitespace
+            + "\\s*[,]*\\s*"
+            // Capture the number group(2)
+            + /* */ NUMBER_REGEXP
+            // whitespace to the end
             + "\\s*$";
 
-    static final Pattern TITLE_NUMBER_PATTERN =
+    private static final Pattern TITLE_NUMBER_PATTERN =
             Pattern.compile(TITLE_NUMBER_REGEXP, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
@@ -129,9 +146,6 @@ public class Series
     private static final Pattern NUMBER_CLEANUP_PATTERN =
             Pattern.compile("^\\s*" + NUMBER_REGEXP + "\\s*$",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-
-    /** {@link #NUMBER_CLEANUP_PATTERN}. */
-    private static final int NUMBER_CLEANUP_GROUP = 2;
 
     /** Remove any leading zeros from series number. */
     private static final Pattern PURE_NUMERICAL_PATTERN = Pattern.compile("^[0-9]+$");
@@ -211,45 +225,71 @@ public class Series
      */
     @NonNull
     public static Series fromString(@NonNull final String fullTitle) {
-        Matcher matcher = TITLE_NUMBER_PATTERN.matcher(fullTitle);
+        // First check if we can simplify the decoding.
+        // This makes the pattern easier to maintain.
+        Matcher matcher = TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
         if (matcher.find()) {
-            Series newSeries = new Series(matcher.group(TITLE_GROUP));
-            String number = matcher.group(NUMBER_GROUP);
+            //noinspection ConstantConditions
+            return fromString(matcher.group(1), matcher.group(2));
+        }
+
+        // We now know that brackets do NOT separate the number part
+        matcher = TITLE_NUMBER_PATTERN.matcher(fullTitle);
+        if (matcher.find()) {
+
+            //noinspection ConstantConditions
+            String uTitle = ParseUtils.unEscape(matcher.group(1));
+            //noinspection ConstantConditions
+            String uNumber = ParseUtils.unEscape(matcher.group(2));
+
+            Series newSeries = new Series(uTitle);
             // If it's purely numeric, remove any leading zeros.
-            if (PURE_NUMERICAL_PATTERN.matcher(number).find()) {
-                number = String.valueOf(Long.parseLong(number));
+            if (PURE_NUMERICAL_PATTERN.matcher(uNumber).find()) {
+                uNumber = String.valueOf(Long.parseLong(uNumber));
             }
-            newSeries.setNumber(number);
+            newSeries.setNumber(uNumber);
             return newSeries;
 
         } else {
             // no number part found
-            return new Series(fullTitle.trim());
+            String uTitle = ParseUtils.unEscape(fullTitle.trim());
+            return new Series(uTitle);
         }
     }
 
     /**
      * Constructor that will attempt to parse a number.
      *
-     * @param title         for the series; used as is.
-     * @param numberToClean for the Series; will get cleaned up.
+     * @param title  for the series; used as is.
+     * @param number for the Series; will get cleaned up.
      *
      * @return the series
      */
     @NonNull
     public static Series fromString(@NonNull final String title,
-                                    @NonNull final String numberToClean) {
-        Series newSeries = new Series(title.trim());
-        if (!numberToClean.isEmpty()) {
-            Matcher matcher = NUMBER_CLEANUP_PATTERN.matcher(numberToClean.trim());
-            if (matcher.find()) {
-                String number = matcher.group(NUMBER_CLEANUP_GROUP);
+                                    @NonNull final String number) {
+        String uTitle = ParseUtils.unEscape(title);
+        String uNumber = ParseUtils.unEscape(number);
 
-                // If it's purely numeric, remove any leading zeros.
-                if (PURE_NUMERICAL_PATTERN.matcher(number).find()) {
-                    number = String.valueOf(Long.parseLong(number));
+        Series newSeries = new Series(uTitle);
+        if (!uNumber.isEmpty()) {
+            Matcher matcher = NUMBER_CLEANUP_PATTERN.matcher(uNumber);
+            if (matcher.find()) {
+                String cleanNumber = matcher.group(1);
+                if (cleanNumber != null && !cleanNumber.isEmpty()) {
+                    // If it's purely numeric, remove any leading zeros.
+                    if (PURE_NUMERICAL_PATTERN.matcher(cleanNumber).find()) {
+                        try {
+                            cleanNumber = String.valueOf(Long.parseLong(cleanNumber));
+                        } catch (NumberFormatException ignore) {
+                        }
+                    }
+                    newSeries.setNumber(cleanNumber);
+                } else {
+                    newSeries.setNumber(uNumber);
                 }
-                newSeries.setNumber(number);
+            } else {
+                newSeries.setNumber(uNumber);
             }
         }
 
@@ -266,45 +306,63 @@ public class Series
      * bill <-- delete
      * bill <-- delete
      * bill(1)
+     * fred(5) <-- delete
+     * fred(6)
      *
-     * @param list       to check
+     * @param list       to prune
+     * @param context    Current context
+     * @param db         Database Access; can be {@code null} in which case we use the id
+     *                   from the item directly. If set, then we call {@link #fixId} first.
      * @param bookLocale Locale to use if the item does not have a Locale of its own.
+     *
+     * @return {@code true} if the list was modified.
      */
-    public static void pruneSeriesList(@NonNull final List<Series> list,
-                                       @NonNull final Locale bookLocale) {
+    public static boolean pruneList(@NonNull final List<Series> list,
+                                    @Nullable final Context context,
+                                    @Nullable final DAO db,
+                                    @NonNull final Locale bookLocale) {
+        Map<String, Series> hashMap = new HashMap<>();
         List<Series> toDelete = new ArrayList<>();
-        Map<String, Series> index = new HashMap<>();
+        // will be set to true if we modify the list.
+        boolean modified = false;
+        Iterator<Series> it = list.iterator();
 
-        for (Series series : list) {
+        while (it.hasNext()) {
+            Series series = it.next();
+
             Locale locale = series.getLocale(bookLocale);
+            String title = series.getTitle().trim().toLowerCase(locale);
+            String number = series.getNumber().trim().toLowerCase(locale);
 
-            final String title = series.getTitle().trim().toLowerCase(locale);
-            final boolean emptyNum = series.getNumber().trim().isEmpty();
-
-            if (!index.containsKey(title)) {
+            if (!hashMap.containsKey(title)) {
                 // Not there, so just add and continue
-                index.put(title, series);
+                hashMap.put(title, series);
 
             } else {
                 // See if we can purge either one.
-                if (emptyNum) {
-                    // Always delete Series with empty numbers if an equally
-                    // or more specific one exists
-                    toDelete.add(series);
+                if (number.isEmpty()) {
+                    // Always delete Series with empty numbers
+                    // if an equal or more specific one exists
+                    it.remove();
+                    modified = true;
+
                 } else {
                     // See if the previous one also has a number
-                    Series previous = index.get(title);
+                    Series previous = hashMap.get(title);
                     //noinspection ConstantConditions
                     if (previous.getNumber().trim().isEmpty()) {
-                        // Replace with this Series, and mark previous Series for delete
-                        index.put(title, series);
+                        // it doesn't. Remove the previous; we keep the current one.
                         toDelete.add(previous);
+                        modified = true;
+                        // and update our map (replaces the previous one)
+                        hashMap.put(title, series);
+
                     } else {
                         // Both have numbers. See if they are the same.
-                        if (series.getNumber().trim().toLowerCase(locale)
-                                  .equals(previous.getNumber().trim().toLowerCase(locale))) {
+                        if (number.equals(previous.getNumber().trim().toLowerCase(locale))) {
                             // Same exact Series, delete this one
-                            toDelete.add(series);
+                            it.remove();
+                            modified = true;
                         }
                         //else {
                         // Nothing to do: this is a different series number, keep both
@@ -318,7 +376,10 @@ public class Series
             list.remove(s);
         }
 
-        toDelete.size();
+        // now repeat but taking the id into account.
+        // (the order in the || is important...
+        return ItemWithFixableId.pruneList(list, context, db, bookLocale)
+               || modified;
     }
 
     /**
@@ -460,27 +521,20 @@ public class Series
     }
 
     /**
-     * Uniqueness in a {@code List<Series>} includes the number.
-     *
-     * @return hash
-     */
-    @Override
-    public int uniqueHashCode() {
-        return Objects.hash(mId, mTitle, mNumber);
-    }
-
-    /**
-     * Equality: <strong>id, title</strong>.
+     * Equality: <strong>id, title, number</strong>.
+     * <ul>
+     * <li>The 'isComplete' is a user setting.</li>
+     * </ul>
      *
      * @return hash
      */
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mTitle);
+        return Objects.hash(mId, mTitle, mNumber);
     }
 
     /**
-     * Equality: <strong>id, title</strong>.
+     * Equality: <strong>id, title, number</strong>.
      * <p>
      * <li>it's the same Object</li>
      * <li>one or both of them are 'new' (e.g. id == 0) or have the same ID<br>
@@ -501,7 +555,8 @@ public class Series
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
-        return Objects.equals(mTitle, that.mTitle);
+        return Objects.equals(mTitle, that.mTitle)
+               && Objects.equals(mNumber, that.mNumber);
     }
 
     @Override

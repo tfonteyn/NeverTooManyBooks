@@ -61,7 +61,6 @@ import oauth.signpost.exception.OAuthNotAuthorizedException;
 import oauth.signpost.http.HttpParameters;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -1002,13 +1001,11 @@ public class GoodreadsManager
             throw new IllegalStateException(e);
         }
 
-        //TEST: double check if this ever gives issues!
+        // Some urls come back without a scheme, add it to make a valid URL for the parser
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
-            // Make a valid URL for the parser (some come back without a schema)
+            Logger.warn(this, "requestAuthorization",
+                        "no scheme for authUrl=" + authUrl);
             authUrl = "http://" + authUrl;
-            if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, "requestAuthorization", "replacing with: " + authUrl);
-            }
         }
 
         // Temporarily save the token; this GoodreadsManager object may be destroyed

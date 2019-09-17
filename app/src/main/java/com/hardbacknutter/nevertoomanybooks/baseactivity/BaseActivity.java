@@ -42,7 +42,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Objects;
@@ -71,9 +70,6 @@ public abstract class BaseActivity
     protected String mInitialLocaleSpec;
     /** Theme at {@link #onCreate} time. */
     protected int mInitialThemeId;
-
-    @Nullable
-    FloatingActionButton mFloatingActionButton;
 
     /** The side/navigation panel. */
     @Nullable
@@ -126,8 +122,6 @@ public abstract class BaseActivity
                 bar.setHomeAsUpIndicator(R.drawable.ic_menu);
             }
         }
-
-//        mFloatingActionButton = findViewById(R.id.fab);
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
 

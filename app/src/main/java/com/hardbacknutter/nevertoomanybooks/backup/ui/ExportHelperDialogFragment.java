@@ -39,15 +39,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
-public class ExportOptionsDialogFragment
-        extends OptionsDialogBase {
+public class ExportHelperDialogFragment
+        extends OptionsDialogBase<ExportHelper> {
 
-    private ExportOptions mOptions;
+    public static final String TAG = "ExportHelperDialogFragment";
+    private static final String BKEY_OPTIONS = TAG + ":options";
+
+    private ExportHelper mExportHelper;
 
     private Checkable mRadioSinceLastBackup;
     private Checkable mRadioSinceDate;
@@ -61,8 +64,8 @@ public class ExportOptionsDialogFragment
      * @return Created fragment
      */
     @NonNull
-    public static ExportOptionsDialogFragment newInstance(@NonNull final ExportOptions options) {
-        ExportOptionsDialogFragment frag = new ExportOptionsDialogFragment();
+    public static ExportHelperDialogFragment newInstance(@NonNull final ExportHelper options) {
+        ExportHelperDialogFragment frag = new ExportHelperDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(BKEY_OPTIONS, options);
         frag.setArguments(args);
@@ -74,7 +77,7 @@ public class ExportOptionsDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
-        mOptions = currentArgs.getParcelable(BKEY_OPTIONS);
+        mExportHelper = currentArgs.getParcelable(BKEY_OPTIONS);
     }
 
     @NonNull
@@ -85,7 +88,7 @@ public class ExportOptionsDialogFragment
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View root = layoutInflater.inflate(R.layout.dialog_export_options, null);
 
-        initCommonCbx(mOptions, root);
+        initCommonCbx(mExportHelper, root);
 
         mRadioSinceLastBackup = root.findViewById(R.id.radioSinceLastBackup);
         mRadioSinceDate = root.findViewById(R.id.radioSinceDate);
@@ -98,7 +101,7 @@ public class ExportOptionsDialogFragment
                         .setTitle(R.string.export_options_dialog_title)
                         .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                         .setPositiveButton(android.R.string.ok,
-                                           (d, which) -> updateAndSend(mOptions))
+                                           (d, which) -> updateAndSend(mExportHelper))
                         .create();
 
         dialog.setCanceledOnTouchOutside(false);
@@ -108,34 +111,34 @@ public class ExportOptionsDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(BKEY_OPTIONS, mOptions);
+        outState.putParcelable(BKEY_OPTIONS, mExportHelper);
     }
 
     /**
      * Read the checkboxes, and set the options accordingly.
      */
     protected void updateOptions() {
-        updateOptions(mOptions);
+        updateOptions(mExportHelper);
 
         if (mRadioSinceLastBackup.isChecked()) {
-            mOptions.what |= ExportOptions.EXPORT_SINCE;
+            mExportHelper.options |= ExportHelper.EXPORT_SINCE;
             // it's up to the Exporter to determine/set the last backup date.
-            mOptions.dateFrom = null;
+            mExportHelper.setDateFrom(null);
         } else {
-            mOptions.what &= ~ExportOptions.EXPORT_SINCE;
+            mExportHelper.options &= ~ExportHelper.EXPORT_SINCE;
         }
 
         if (mRadioSinceDate.isChecked()) {
             try {
-                mOptions.what |= ExportOptions.EXPORT_SINCE;
+                mExportHelper.options |= ExportHelper.EXPORT_SINCE;
                 String date = mDateSinceView.getText().toString().trim();
-                mOptions.dateFrom = DateUtils.parseDate(date);
+                mExportHelper.setDateFrom(DateUtils.parseDate(date));
             } catch (@NonNull final RuntimeException e) {
                 UserMessage.show(mDateSinceView, R.string.hint_date_not_set_with_brackets);
-                mOptions.what = Options.NOTHING;
+                mExportHelper.options = Options.NOTHING;
             }
         } else {
-            mOptions.what &= ~ExportOptions.EXPORT_SINCE;
+            mExportHelper.options &= ~ExportHelper.EXPORT_SINCE;
         }
     }
 }

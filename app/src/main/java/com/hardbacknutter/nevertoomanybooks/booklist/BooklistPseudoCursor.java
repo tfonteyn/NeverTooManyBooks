@@ -91,18 +91,22 @@ public class BooklistPseudoCursor
     private static final int MRU_LIST_SIZE = 8;
 
     /** Underlying BooklistBuilder object. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final BooklistBuilder mBuilder;
     /** Collection of current cursors. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Hashtable<Integer, BooklistCursor> mCursors;
     /** MRU ring buffer of cursors. */
     @NonNull
     private final int[] mMruList;
     /** Cached RowView for this cursor. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private BooklistMappedCursorRow mCursorRow;
     /** The cursor to use for the last onMove() event. */
+    @SuppressWarnings("FieldNotUsedInToString")
     private BooklistCursor mActiveCursor;
     /** Current MRU ring buffer position. */
     private int mMruListPos;
@@ -396,13 +400,9 @@ public class BooklistPseudoCursor
     @NonNull
     public String toString() {
         return "BooklistPseudoCursor{"
-               + ", mBuilder=" + mBuilder
-               + ", mActiveCursor=" + mActiveCursor
-               + ", mCursors=" + mCursors
                + ", mPseudoCount=" + mPseudoCount
                + ", mMruList=" + Arrays.toString(mMruList)
                + ", mMruListPos=" + mMruListPos
-               + ", mCursorRow=" + mCursorRow
                + ", " + super.toString()
                + '}';
     }

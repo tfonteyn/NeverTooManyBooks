@@ -25,26 +25,24 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.viewmodels;
+package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskFinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
 
 /**
- * ViewModel to keep hold of a task and a pass-through task listener.
+ * ViewModel to keep hold of a pass-through task listener.
  * <p>
  * A ViewModel can not actually have a parameter type. So, we use concrete classes, e.g.
  * <pre>
  *  {@code
- *      public class IntegerTaskModel
- *          extends TaskModel<Integer> {
+ *      public class VoidTaskModel
+ *          extends TaskModel<Void> {
  *      }
  *  }
  * </pre>
@@ -53,9 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessa
  */
 public abstract class TaskModel<Result>
         extends ViewModel {
-
-    private final MutableLiveData<TaskFinishedMessage<Result>>
-            mTaskCancelledMessage = new MutableLiveData<>();
 
     private final MutableLiveData<TaskFinishedMessage<Result>>
             mTaskFinishedMessage = new MutableLiveData<>();
@@ -70,26 +65,10 @@ public abstract class TaskModel<Result>
         }
 
         @Override
-        public void onTaskCancelled(@NonNull final TaskFinishedMessage<Result> message) {
-            mTaskCancelledMessage.setValue(message);
-        }
-
-        @Override
         public void onTaskProgress(@NonNull final TaskProgressMessage message) {
             mTaskProgressMessage.setValue(message);
         }
     };
-    @Nullable
-    private TaskBase mTask;
-
-    @Nullable
-    public TaskBase getTask() {
-        return mTask;
-    }
-
-    public void setTask(@Nullable final TaskBase task) {
-        mTask = task;
-    }
 
     public TaskListener<Result> getTaskListener() {
         return mTaskListener;
@@ -101,9 +80,5 @@ public abstract class TaskModel<Result>
 
     public MutableLiveData<TaskFinishedMessage<Result>> getTaskFinishedMessage() {
         return mTaskFinishedMessage;
-    }
-
-    public MutableLiveData<TaskFinishedMessage<Result>> getTaskCancelledMessage() {
-        return mTaskCancelledMessage;
     }
 }

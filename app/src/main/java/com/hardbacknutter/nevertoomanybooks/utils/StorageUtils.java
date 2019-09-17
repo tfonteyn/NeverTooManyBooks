@@ -28,7 +28,9 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.MediaStore;
@@ -37,29 +39,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
 import androidx.annotation.StringRes;
+import androidx.documentfile.provider.DocumentFile;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.ProtocolException;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -81,8 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * FIXME: implement the sample code for 'watching'  Environment.getExternalStorageDirectory()
  * and/or isExternalStorageRemovable()
  * <p>
- * <strong>Important:</strong> Any changes to the location of
- * {@link #EXT_ROOT_DIR} directory and the use of {@link Context#getExternalCacheDir()}
+ * <strong>Important:</strong> Any changes to the directories used
  * must be mirrored in "res/xml/provider_paths.xml"
  * <p>
  * <strong>Note:</strong> we use the external cache directory, so a 'rename' works as is.
@@ -97,79 +89,49 @@ public final class StorageUtils {
     /** buffer size for file copy operations. */
     private static final int FILE_COPY_BUFFER_SIZE = 32768;
 
-    /** Our root directory to be created on the 'external storage' aka Shared Storage. */
-    private static final String EXT_ROOT_DIR = "NeverTooManyBooks";
-
     /**
      * Filenames *STARTING* with this prefix are considered purgeable.
      */
     private static final String[] PURGEABLE_FILE_PREFIXES = new String[]{
-            "DbUpgrade", "DbExport", Logger.ERROR_LOG_FILE, "tmp"};
-    /**
-     * Loop all mount points for our directory and collect a list of all CSV files.
-     */
-    private static final Pattern MOUNT_POINT_PATH = Pattern.compile("^\\s*[^\\s]+\\s+([^\\s]+)");
+            "tmp", "DbUpgrade", "DbExport", Logger.ERROR_LOG_FILE};
 
     private StorageUtils() {
     }
 
     /**
-     * Don't log anything, we might not have a log file.
-     */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private static boolean createDir(@NonNull final String name)
-            throws SecurityException {
-        final File dir = new File(name);
-        return dir.isDirectory() || dir.mkdirs();
-    }
-
-    /**
-     * Make sure the Shared Storage directory exists.
-     * Logs failures only if we we're capable of creating a log directory!
-     * Abort if we don't get that far.
+     * Make sure the Shared Storage directories are accessible.
      * <p>
      * Only called from StartupActivity, after permissions have been granted.
+     *
+     * @return 0 for all ok, or a StringRes with the appropriate error.
      */
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     @StringRes
     public static int initSharedDirectories()
             throws SecurityException {
 
-        int msgId = StorageUtils.getMediaStateMessageId();
-        // tell user if needed.
-        if (msgId != 0) {
-            return msgId;
+        if (!isExternalStorageMounted()) {
+            return R.string.error_storage_not_accessible;
         }
 
         try {
-            // need root first (duh)
-            if (!createDir(getRootStoragePath())) {
-                return R.string.error_storage_not_writable;
-            }
-            // then log dir!
-            if (!createDir(getLogStoragePath())) {
-                return R.string.error_storage_not_writable;
-            }
+            // check we can get our root.
+            getRootDir();
 
-            // from here on, we have a log file and if we could create the log directory,
-            // this one should never fail... flw
-            if (!createDir(getCoverStoragePath())) {
-                Logger.warn(StorageUtils.class, "Failed to create covers directory="
-                                                + getCoverStoragePath());
+            // and create the log dir if needed.
+            File dir = getLogDir();
+            if (!(dir.isDirectory() || dir.mkdirs())) {
+                return R.string.error_storage_not_writable;
             }
 
             // Prevent thumbnails showing up in the device Image Gallery.
-
             //noinspection ResultOfMethodCallIgnored
-            new File(getRootStoragePath() + File.separator
-                     + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
-            //noinspection ResultOfMethodCallIgnored
-            new File(getCoverStoragePath() + File.separator
-                     + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
+            new File(getCoverDir(), MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
 
             return 0;
-        } catch (@NonNull final IOException e) {
-            Logger.error(StorageUtils.class, e, "Failed to create .nomedia files");
+
+        } catch (@NonNull final ExternalStorageException | IOException e) {
+            Logger.error(StorageUtils.class, e, "initSharedDirectories failed");
             return R.string.error_storage_not_writable;
         }
     }
@@ -180,7 +142,7 @@ public final class StorageUtils {
      */
     public static long getSharedStorageFreeSpace() {
         try {
-            StatFs stat = new StatFs(getRootStoragePath());
+            StatFs stat = new StatFs(getRootDir().getPath());
             return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
         } catch (@NonNull final IllegalArgumentException | ExternalStorageException e) {
             Logger.error(StorageUtils.class, e);
@@ -190,11 +152,8 @@ public final class StorageUtils {
 
     /**
      * Check the current state of the primary shared/external storage media.
-     *
-     * @return a string resource id matching the state; 0 for no issue found.
      */
-    @StringRes
-    public static int getMediaStateMessageId() {
+    public static boolean isExternalStorageMounted() {
         /*
          * Returns the current state of the primary Shared Storage media.
          *
@@ -205,16 +164,23 @@ public final class StorageUtils {
          *         {@link #MEDIA_MOUNTED_READ_ONLY}, {@link #MEDIA_SHARED},
          *         {@link #MEDIA_BAD_REMOVAL}, or {@link #MEDIA_UNMOUNTABLE}.
          */
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (Environment.getExternalStorageState()) {
-            case Environment.MEDIA_MOUNTED:
-                // all ok
-                return 0;
-            // should we check on other states ? do we care ?
+        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
+    }
 
-            default:
-                return R.string.error_storage_not_accessible;
+    /**
+     * Get the cache directory.
+     *
+     * @return File
+     *
+     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
+     */
+    public static File getCacheDir()
+            throws ExternalStorageException {
+        File dir = App.getAppContext().getExternalCacheDir();
+        if (dir == null) {
+            throw new ExternalStorageException();
         }
+        return dir;
     }
 
     /**
@@ -224,13 +190,13 @@ public final class StorageUtils {
      *
      * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
      */
-    public static String getRootStoragePath()
+    public static File getRootDir()
             throws ExternalStorageException {
-        File dir = Environment.getExternalStorageDirectory();
+        File dir = App.getAppContext().getExternalFilesDir(null);
         if (dir == null) {
             throw new ExternalStorageException();
         }
-        return dir + File.separator + EXT_ROOT_DIR;
+        return dir;
     }
 
     /**
@@ -240,9 +206,13 @@ public final class StorageUtils {
      *
      * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
      */
-    public static String getCoverStoragePath()
+    public static File getCoverDir()
             throws ExternalStorageException {
-        return getRootStoragePath() + File.separator + "covers";
+        File dir = App.getAppContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (dir == null) {
+            throw new ExternalStorageException();
+        }
+        return dir;
     }
 
     /**
@@ -252,25 +222,9 @@ public final class StorageUtils {
      *
      * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
      */
-    public static String getLogStoragePath()
+    public static File getLogDir()
             throws ExternalStorageException {
-        return getRootStoragePath() + File.separator + "log";
-    }
-
-
-    /**
-     * return a general purpose File, located in the Shared Storage path (or a sub directory).
-     * Don't use this for standard cover management.
-     *
-     * @param fileName the relative filename (including sub dirs) to the Shared Storage path
-     *
-     * @return the file
-     *
-     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
-     */
-    public static File getFile(@NonNull final String fileName)
-            throws ExternalStorageException {
-        return new File(getRootStoragePath() + File.separator + fileName);
+        return new File(getRootDir(), "log");
     }
 
     /**
@@ -284,14 +238,14 @@ public final class StorageUtils {
      * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
      */
     @NonNull
-    public static File getCoverForUuid(@NonNull final String uuid)
+    public static File getCoverFileForUuid(@NonNull final String uuid)
             throws ExternalStorageException {
-        final File jpg = new File(getCoverStoragePath() + File.separator + uuid + ".jpg");
+        final File jpg = new File(getCoverDir(), uuid + ".jpg");
         if (jpg.exists()) {
             return jpg;
         }
         // could be a png
-        final File png = new File(getCoverStoragePath() + File.separator + uuid + ".png");
+        final File png = new File(getCoverDir(), uuid + ".png");
         if (png.exists()) {
             return png;
         }
@@ -300,22 +254,6 @@ public final class StorageUtils {
         return jpg;
     }
 
-
-    /**
-     * Get the cache directory.
-     *
-     * @return File
-     *
-     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
-     */
-    private static File getCacheDir()
-            throws ExternalStorageException {
-        File dir = App.getAppContext().getExternalCacheDir();
-        if (dir == null) {
-            throw new ExternalStorageException();
-        }
-        return dir;
-    }
 
     /**
      * Get a 'standard' temporary file for the <strong>current</strong> cover being processed.
@@ -327,7 +265,7 @@ public final class StorageUtils {
      */
     public static File getTempCoverFile()
             throws ExternalStorageException {
-        return new File(getCacheDir() + File.separator + "tmp.jpg");
+        return new File(getCacheDir(), "tmp.jpg");
     }
 
     /**
@@ -342,7 +280,7 @@ public final class StorageUtils {
      */
     public static File getTempCoverFile(@NonNull final String name)
             throws ExternalStorageException {
-        return new File(getCacheDir() + File.separator + "tmp" + name + ".jpg");
+        return new File(getCacheDir(), "tmp" + name + ".jpg");
     }
 
 
@@ -358,9 +296,9 @@ public final class StorageUtils {
     public static long purgeFiles(final boolean reallyDelete) {
         long totalSize = 0;
         try {
-            totalSize += purgeDir(new File(getLogStoragePath()), reallyDelete);
-            totalSize += purgeDir(new File(getCoverStoragePath()), reallyDelete);
-            totalSize += purgeDir(new File(getRootStoragePath()), reallyDelete);
+            totalSize += purgeDir(getLogDir(), reallyDelete);
+            totalSize += purgeDir(getCoverDir(), reallyDelete);
+            totalSize += purgeDir(getRootDir(), reallyDelete);
             totalSize += purgeDir(getCacheDir(), reallyDelete);
 
         } catch (@NonNull final SecurityException | ExternalStorageException e) {
@@ -382,185 +320,23 @@ public final class StorageUtils {
                                  final boolean reallyDelete)
             throws ExternalStorageException {
         long totalSize = 0;
-        for (String name : dir.list()) {
-            for (String prefix : PURGEABLE_FILE_PREFIXES) {
-                if (name.startsWith(prefix)) {
-                    final File file = getFile(name);
-                    if (file.isFile()) {
-                        totalSize += file.length();
-                        if (reallyDelete) {
-                            deleteFile(file);
+        if (dir.isDirectory()) {
+            //noinspection ConstantConditions
+            for (String name : dir.list()) {
+                for (String prefix : PURGEABLE_FILE_PREFIXES) {
+                    if (name.startsWith(prefix)) {
+                        File file = new File(name);
+                        if (file.isFile()) {
+                            totalSize += file.length();
+                            if (reallyDelete) {
+                                deleteFile(file);
+                            }
                         }
                     }
                 }
             }
         }
         return totalSize;
-    }
-
-    /**
-     * Find all possible CSV files in all accessible filesystems which
-     * have a {@link #EXT_ROOT_DIR} directory.
-     * <p>
-     * ENHANCE: Allow for other files? Backups? || fl.endsWith(".csv.bak"));
-     *
-     * @return list of csv files
-     */
-    @NonNull
-    public static List<File> findCsvFiles() {
-        FilenameFilter csvFilter = (dir, name) ->
-                                           name.toLowerCase(App.getSystemLocale()).endsWith(".csv");
-        return findFiles(csvFilter);
-    }
-
-    /**
-     * Find all files in all accessible filesystems which match the given filter
-     * and have a {@link #EXT_ROOT_DIR} directory.
-     *
-     * @return list of csv files
-     */
-    @NonNull
-    private static List<File> findFiles(@NonNull final FilenameFilter filenameFilter) {
-        @SuppressWarnings("unused")
-        StringBuilder debugInfo;
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            debugInfo = new StringBuilder("Getting mounted file systems\n");
-        }
-
-        // Loop all mounted file systems
-        final List<File> dirs = new ArrayList<>();
-
-        //noinspection ImplicitDefaultCharsetUsage
-        try (BufferedReader in = new BufferedReader(
-                new InputStreamReader(new FileInputStream("/proc/mounts")), 1024)) {
-
-            String line;
-            while ((line = in.readLine()) != null) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                    debugInfo.append("   checking ").append(line).append('\n');
-                }
-                final Matcher matcher = MOUNT_POINT_PATH.matcher(line);
-                // Get the mount point
-                if (matcher.find()) {
-                    // See if it has our directory
-                    final File dir =
-                            new File(matcher.group(1) + File.separator + EXT_ROOT_DIR);
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                        debugInfo.append("       matched ")
-                                 .append(dir.getAbsolutePath())
-                                 .append('\n');
-                    }
-                    dirs.add(dir);
-                } else {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                        debugInfo.append("       NO match\n");
-                    }
-                }
-            }
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-            Logger.error(StorageUtils.class, e, "Failed to open/scan/read /proc/mounts");
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            debugInfo.append("Found ").append(dirs.size()).append(" directories\n");
-        }
-
-        // Sometimes (Android 6?) the /proc/mount search seems to fail,
-        // so we revert to environment vars
-        try {
-            final String loc1 = System.getenv("EXTERNAL_STORAGE");
-            if (loc1 != null) {
-                final File dir = new File(loc1 + File.separator + EXT_ROOT_DIR);
-                dirs.add(dir);
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                    debugInfo.append("EXTERNAL_STORAGE added ").append(
-                            dir.getAbsolutePath()).append('\n');
-                }
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                    debugInfo.append("EXTERNAL_STORAGE was null\n");
-                }
-            }
-
-            final String loc2 = System.getenv("SECONDARY_STORAGE");
-            if (loc2 != null && !loc2.equals(loc1)) {
-                final File dir = new File(loc2 + File.separator + EXT_ROOT_DIR);
-                dirs.add(dir);
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                    debugInfo.append("SECONDARY_STORAGE added ").append(
-                            dir.getAbsolutePath()).append('\n');
-                }
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                    debugInfo.append("SECONDARY_STORAGE ignored: ").append(loc2).append('\n');
-                }
-            }
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(StorageUtils.class, e,
-                         "Failed to get external storage from environment variables");
-        }
-
-        final Set<String> paths = new HashSet<>();
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            debugInfo.append("Looking for files in directories\n");
-        }
-
-        final List<File> filesFound = new ArrayList<>();
-        for (File dir : dirs) {
-            try {
-                if (dir.exists()) {
-                    final File[] files = dir.listFiles(filenameFilter);
-                    if (files != null) {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                            debugInfo.append("    found ")
-                                     .append(files.length)
-                                     .append(" in ").append(dir.getAbsolutePath()).append('\n');
-                        }
-
-                        for (File file : files) {
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                                debugInfo.append("Found: ").append(file.getAbsolutePath());
-                            }
-                            final String cp = file.getCanonicalPath();
-                            if (paths.contains(cp)) {
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                                    debugInfo.append("        already present as ")
-                                             .append(cp).append('\n');
-                                }
-                            } else {
-                                filesFound.add(file);
-                                paths.add(cp);
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                                    debugInfo.append("        added as ").append(cp).append('\n');
-                                }
-                            }
-                        }
-                    } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                            debugInfo.append("    null returned by listFiles() in ")
-                                     .append(dir.getAbsolutePath()).append('\n');
-                        }
-                    }
-                } else {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                        debugInfo.append("    ").append(dir.getAbsolutePath())
-                                 .append(" does not exist\n");
-                    }
-                }
-            } catch (@NonNull final IOException e) {
-                Logger.error(StorageUtils.class, e,
-                             "Failed to read directory " + dir.getAbsolutePath());
-            }
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            Logger.debug(StorageUtils.class, "findFiles", debugInfo);
-        }
-
-        // Sort descending based on modified date
-        Collections.sort(filesFound, new FileDateComparator(-1));
-        return filesFound;
     }
 
     /**
@@ -653,56 +429,80 @@ public final class StorageUtils {
     }
 
     /**
-     * Rename the source file to the destFilename; keeping 'copies' of the old file.
-     *
-     * @param source       file to rename
-     * @param destFilename name to use
-     * @param copies       #copies of the previous one to keep
+     * Convenience method to export all database files.
      */
-    public static void renameFileWithBackup(@NonNull final File source,
-                                            @NonNull final String destFilename,
-                                            final int copies)
-            throws ExternalStorageException {
-        // remove to oldest copy
-        File previous = getFile(destFilename + "." + copies);
-        deleteFile(previous);
+    public static void exportDatabaseFiles(@NonNull final Context context,
+                                           @NonNull final DocumentFile destinationDir)
+            throws IOException {
 
-        // now bump each copy up one index.
-        for (int i = copies - 1; i > 0; i--) {
-            File current = getFile(destFilename + "." + i);
-            renameFile(current, previous);
-            previous = current;
+        exportFile(context, DBHelper.getDatabasePath(context),
+                   "application/x-sqlite3", destinationDir);
+
+        File coversDb = CoversDAO.CoversDbHelper.getDatabasePath(context);
+        if (coversDb.exists()) {
+            exportFile(context, coversDb, "application/x-sqlite3", destinationDir);
         }
-
-        // Give the previous file an index.
-        File destination = getFile(destFilename);
-        renameFile(destination, previous);
-        // and write the new copy.
-        renameFile(source, destination);
     }
 
     /**
-     * Create a copy of the databases into the Shared Storage location.
+     * Export the source File to the destination directory specified by the DocumentFile.
+     *
+     * @throws IOException on failure
      */
-    public static void exportDatabaseFiles(@NonNull final Context context) {
-        exportFile(DBHelper.getDatabasePath(context), "DbExport.db");
-        exportFile(CoversDAO.CoversDbHelper.getDatabasePath(context), "DbExport-covers.db");
+    private static void exportFile(@NonNull final Context context,
+                                   @NonNull final File file,
+                                   @SuppressWarnings("SameParameterValue")
+                                   @NonNull final String mimeType,
+                                   @NonNull final DocumentFile destinationDir)
+            throws IOException {
+
+        DocumentFile destinationFile = destinationDir.createFile(mimeType, file.getName());
+        if (destinationFile == null) {
+            throw new IOException("destination file was NULL");
+        }
+
+        Uri destinationUri = destinationFile.getUri();
+        try (InputStream is = new FileInputStream(file);
+             OutputStream os = context.getContentResolver().openOutputStream(destinationUri)) {
+            if (os == null) {
+                throw new IOException("OutputStream was NULL");
+            }
+            copy(is, os);
+        }
+    }
+
+    /**
+     * Export the source File to the destination Uri.
+     *
+     * @param source      File
+     * @param destination Uri
+     *
+     * @throws IOException on failure
+     */
+    public static void exportFile(@NonNull final File source,
+                                  @NonNull final Uri destination)
+            throws IOException {
+        ContentResolver cr = App.getAppContext().getContentResolver();
+
+        try (InputStream is = new FileInputStream(source);
+             OutputStream os = cr.openOutputStream(destination)) {
+            if (os != null) {
+                copy(is, os);
+            }
+        }
     }
 
     /**
      * @param source          file to export
-     * @param destinationPath destination file name, will be stored in our directory
-     *                        in Shared Storage
+     * @param destinationFile destination file name
      */
-    public static void exportFile(@NonNull final File source,
-                                  @NonNull final String destinationPath) {
+    public static void copyFileWithBackup(@NonNull final File source,
+                                          @NonNull final File destinationFile) {
         try {
             // rename the previously copied file
-            renameFile(getFile(destinationPath),
-                       getFile(destinationPath + ".bak"));
-            // and create a new copy. Note that the source is a fully qualified name,
-            // so NOT using getFile()
-            copyFile(source, getFile(destinationPath));
+            renameFile(destinationFile, new File(destinationFile.getPath() + ".bak"));
+            // and create a new copy
+            copyFile(source, destinationFile);
 
         } catch (@NonNull final IOException e) {
             Logger.error(StorageUtils.class, e);
@@ -710,38 +510,69 @@ public final class StorageUtils {
     }
 
     /**
+     * Rename the source file to the destFilename; keeping 'copies' of the old file.
+     *
+     * @param source      file to rename
+     * @param destination final destination file
+     * @param copies      #copies of the previous one to keep
+     */
+    public static void copyFileWithBackup(@NonNull final File source,
+                                          @NonNull final File destination,
+                                          final int copies)
+            throws ExternalStorageException {
+
+        String parentDir = source.getParent();
+        // remove to oldest copy
+        File previous = new File(parentDir, destination + "." + copies);
+        deleteFile(previous);
+
+        // now bump each copy up one index.
+        for (int i = copies - 1; i > 0; i--) {
+            File current = new File(parentDir, destination + "." + i);
+            renameFile(current, previous);
+            previous = current;
+        }
+
+        // Give the previous file an index.
+        renameFile(destination, previous);
+        // and write the new copy.
+        renameFile(source, destination);
+    }
+
+
+    /**
+     * Private filesystem only - Copy the source File to the destination File.
+     *
      * @throws IOException on failure
      */
     public static void copyFile(@NonNull final File source,
                                 @NonNull final File destination)
             throws IOException {
-        try (InputStream is = new FileInputStream(source)) {
-            copyFile(is, FILE_COPY_BUFFER_SIZE, destination);
+        try (InputStream is = new FileInputStream(source);
+             OutputStream os = new FileOutputStream(destination)) {
+            copy(is, os);
         } catch (@NonNull final FileNotFoundException ignore) {
         }
     }
 
     /**
-     * @param is          InputStream, will NOT be closed here. Close it yourself !
-     * @param bufferSize  the read buffer
-     * @param destination destination file, will be properly closed.
+     * Copy the InputStream to the OutputStream.
+     * Neither stream is closed here.
+     *
+     * @param is InputStream
+     * @param os OutputStream
      *
      * @throws IOException on failure
      */
-    public static void copyFile(@NonNull final InputStream is,
-                                final int bufferSize,
-                                @NonNull final File destination)
+    public static void copy(@NonNull final InputStream is,
+                            @NonNull final OutputStream os)
             throws IOException {
-        try (OutputStream out = new FileOutputStream(destination)) {
-            byte[] buffer = new byte[bufferSize];
-            int nRead;
-            while ((nRead = is.read(buffer)) > 0) {
-                out.write(buffer, 0, nRead);
-            }
-            out.flush();
+        byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
+        int nRead;
+        while ((nRead = is.read(buffer)) > 0) {
+            os.write(buffer, 0, nRead);
         }
-        // let any IOException escape for the caller to deal with
-        //IMPORTANT: DO **NOT** CLOSE THE INPUT STREAM. IT WILL BREAK 'RESTORE BACKUP'
+        os.flush();
     }
 
     /**
@@ -797,6 +628,7 @@ public final class StorageUtils {
             return context.getString(R.string.megabytes, bytes / 1_000_000);
         }
     }
+
 
     /**
      * Compare two files based on date. Used for sorting file list by date.

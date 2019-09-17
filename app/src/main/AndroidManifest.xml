@@ -133,9 +133,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Data Import/Export -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.backup.ui.BackupActivity" />
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.backup.ui.RestoreActivity" />
         <!-- Update book Fields from the internet -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.UpdateFieldsFromInternetActivity" />
         <!-- Local Search -->

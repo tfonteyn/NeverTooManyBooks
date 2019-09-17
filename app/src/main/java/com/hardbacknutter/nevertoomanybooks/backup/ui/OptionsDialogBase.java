@@ -44,11 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
-public abstract class OptionsDialogBase
+public abstract class OptionsDialogBase<T extends Options>
         extends DialogFragment {
-
-    public static final String TAG = "OptionsDialogFragment";
-    static final String BKEY_OPTIONS = TAG + ":options";
 
     private Checkable cbxBooks;
     private Checkable cbxCovers;
@@ -56,28 +53,29 @@ public abstract class OptionsDialogBase
     /** optional. */
     private Checkable cbxXml;
 
-    private WeakReference<OptionsListener> mListener;
+    private WeakReference<OptionsListener<T>> mListener;
 
-    public void setListener(@NonNull final OptionsListener listener) {
+    public void setListener(@NonNull final OptionsListener<T> listener) {
         mListener = new WeakReference<>(listener);
     }
 
     void initCommonCbx(@NonNull final Options options,
                        @NonNull final View root) {
         cbxBooks = root.findViewById(R.id.cbx_books_csv);
-        cbxBooks.setChecked((options.what & Options.BOOK_CSV) != 0);
+        cbxBooks.setChecked((options.options & Options.BOOK_CSV) != 0);
         cbxCovers = root.findViewById(R.id.cbx_covers);
-        cbxCovers.setChecked((options.what & Options.COVERS) != 0);
+        cbxCovers.setChecked((options.options & Options.COVERS) != 0);
         cbxPrefs = root.findViewById(R.id.cbx_preferences);
-        cbxPrefs.setChecked((options.what & (Options.PREFERENCES | Options.BOOK_LIST_STYLES)) != 0);
+        cbxPrefs.setChecked(
+                (options.options & (Options.PREFERENCES | Options.BOOK_LIST_STYLES)) != 0);
 
         cbxXml = root.findViewById(R.id.cbx_xml_tables);
         if (cbxXml != null) {
-            cbxXml.setChecked((options.what & Options.XML_TABLES) != 0);
+            cbxXml.setChecked((options.options & Options.XML_TABLES) != 0);
         }
     }
 
-    void updateAndSend(@NonNull final Options options) {
+    void updateAndSend(@NonNull final T options) {
         updateOptions();
 
         if (mListener.get() != null) {
@@ -92,28 +90,28 @@ public abstract class OptionsDialogBase
 
     void updateOptions(@NonNull final Options options) {
         if (cbxBooks.isChecked()) {
-            options.what |= Options.BOOK_CSV;
+            options.options |= Options.BOOK_CSV;
         } else {
-            options.what &= ~Options.BOOK_CSV;
+            options.options &= ~Options.BOOK_CSV;
         }
 
         if (cbxCovers.isChecked()) {
-            options.what |= Options.COVERS;
+            options.options |= Options.COVERS;
         } else {
-            options.what &= ~Options.COVERS;
+            options.options &= ~Options.COVERS;
         }
 
         if (cbxPrefs.isChecked()) {
-            options.what |= Options.PREFERENCES | Options.BOOK_LIST_STYLES;
+            options.options |= Options.PREFERENCES | Options.BOOK_LIST_STYLES;
         } else {
-            options.what &= ~(Options.PREFERENCES | Options.BOOK_LIST_STYLES);
+            options.options &= ~(Options.PREFERENCES | Options.BOOK_LIST_STYLES);
         }
 
         if (cbxXml != null) {
             if (cbxXml.isChecked()) {
-                options.what |= Options.XML_TABLES;
+                options.options |= Options.XML_TABLES;
             } else {
-                options.what &= ~Options.XML_TABLES;
+                options.options &= ~Options.XML_TABLES;
             }
         }
     }

@@ -134,6 +134,7 @@ public class BooksOnBookshelfModel
      */
     private int mTopRowOffset;
     /** Preferred booklist state in next rebuild. */
+    @BooklistBuilder.ListRebuildMode
     private int mRebuildState;
     /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
     private int mTotalBooks;
@@ -152,7 +153,7 @@ public class BooksOnBookshelfModel
                     }
 
                     // Save a flag to say list was loaded at least once successfully (or not)
-                    mListHasBeenLoaded = message.wasSuccessful;
+                    mListHasBeenLoaded = message.status == TaskStatus.Success;
 
                     if (mListHasBeenLoaded) {
                         // always copy modified fields.
@@ -684,6 +685,7 @@ public class BooksOnBookshelfModel
         mCurrentBookshelf = Bookshelf.getBookshelf(context, mDb, true);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public boolean reloadCurrentBookshelf(@NonNull final Context context) {
         Bookshelf newBookshelf = Bookshelf.getBookshelf(context, mDb, true);
         if (!newBookshelf.equals(mCurrentBookshelf)) {
@@ -708,18 +710,24 @@ public class BooksOnBookshelfModel
 
                 @Override
                 public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
-                    String msg = GoodreadsTasks.handleResult(App.getLocalizedAppContext(), message);
-                    if (msg != null) {
-                        mUserMessage.setValue(msg);
-                    } else {
-                        // Need authorization
-                        mNeedsGoodreads.setValue(true);
+                    switch (message.status) {
+                        case Success:
+                        case Failed: {
+                            String msg = GoodreadsTasks.handleResult(App.getLocalizedAppContext(),
+                                                                     message);
+                            if (msg != null) {
+                                mUserMessage.setValue(msg);
+                            } else {
+                                // Need authorization
+                                mNeedsGoodreads.setValue(true);
+                            }
+                            break;
+                        }
+                        case Cancelled: {
+                            mUserMessage.setValue(R.string.progress_end_cancelled);
+                            break;
+                        }
                     }
-                }
-
-                @Override
-                public void onTaskCancelled(@NonNull final TaskFinishedMessage<Integer> message) {
-                    mUserMessage.setValue(R.string.progress_end_cancelled);
                 }
 
                 @Override
@@ -831,7 +839,7 @@ public class BooksOnBookshelfModel
             if (keywords == null || keywords.isEmpty() || ".".equals(keywords)) {
                 ftsKeywords = null;
             } else {
-                ftsKeywords = keywords;
+                ftsKeywords = keywords.trim();
             }
         }
 
@@ -937,7 +945,7 @@ public class BooksOnBookshelfModel
                         final boolean isFullRebuild,
                         @Nullable final BooklistPseudoCursor currentListCursor,
                         final long currentPositionedBookId,
-                        final int rebuildState,
+                        @BooklistBuilder.ListRebuildMode final int rebuildState,
                         final TaskListener<BuilderHolder> taskListener) {
             super(R.id.TASK_ID_GET_BOOKLIST, taskListener);
 
@@ -1113,7 +1121,7 @@ public class BooksOnBookshelfModel
         }
 
         @Override
-        protected void onCancelled(@Nullable final BuilderHolder result) {
+        protected void onCancelled(@NonNull final BuilderHolder result) {
             cleanup();
             super.onCancelled(result);
         }
@@ -1141,6 +1149,7 @@ public class BooksOnBookshelfModel
         /** input/output field. */
         long currentPositionedBookId;
         /** input/output field. */
+        @BooklistBuilder.ListRebuildMode
         int rebuildState;
 
         /**
@@ -1173,7 +1182,7 @@ public class BooksOnBookshelfModel
          * Constructor: these are the fields we need as input.
          */
         BuilderHolder(final long currentPositionedBookId,
-                      final int rebuildState) {
+                      @BooklistBuilder.ListRebuildMode final int rebuildState) {
             this.currentPositionedBookId = currentPositionedBookId;
             this.rebuildState = rebuildState;
         }

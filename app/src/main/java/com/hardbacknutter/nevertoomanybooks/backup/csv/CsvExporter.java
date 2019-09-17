@@ -34,21 +34,19 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
@@ -60,10 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 public class CsvExporter
         implements Exporter {
 
-    /** standard export file. */
-    public static final String EXPORT_FILE_NAME = "export.csv";
-    /** standard temp export file, first we write here, then rename to csv. */
-    static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_TOC = "anthology_titles";
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
@@ -73,8 +67,6 @@ public class CsvExporter
 
     private static final int BUFFER_SIZE = 32768;
 
-    /** backup copies to keep. */
-    private static final int COPIES = 5;
     /**
      * The order of the header MUST be the same as the order used to write the data (obvious eh?).
      * <p>
@@ -123,32 +115,23 @@ public class CsvExporter
             + '"' + DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE + "\""
             + '\n';
     @NonNull
-    private final ExportOptions mSettings;
+    private final ExportHelper mExportHelper;
     private final String mUnknownString;
 
     /**
      * Constructor.
      *
      * @param context  Current context
-     * @param settings {@link ExportOptions#EXPORT_SINCE} and
-     *                 {@link ExportOptions#dateFrom} are respected.
+     * @param exportHelper {@link ExportHelper#EXPORT_SINCE} and
+     *                 {@link ExportHelper#getDateFrom} are respected.
      *                 Other flags are ignored, as this method only
-     *                 handles {@link ExportOptions#BOOK_CSV} anyhow.
+     *                 handles {@link ExportHelper#BOOK_CSV} anyhow.
      */
     public CsvExporter(@NonNull final Context context,
-                       @NonNull final ExportOptions settings) {
+                       @NonNull final ExportHelper exportHelper) {
         mUnknownString = context.getString(R.string.unknown);
-        mSettings = settings;
-        settings.validate();
-    }
-
-    /**
-     * At the end of a successful export, rename the temp file to {@link #EXPORT_FILE_NAME}.
-     *
-     * @param tmpFile to rename
-     */
-    void onSuccess(@NonNull final File tmpFile) {
-        StorageUtils.renameFileWithBackup(tmpFile, EXPORT_FILE_NAME, COPIES);
+        mExportHelper = exportHelper;
+        mExportHelper.validate();
     }
 
     /**
@@ -163,27 +146,25 @@ public class CsvExporter
      */
     @Override
     @WorkerThread
-    public int doBooks(@NonNull final OutputStream outputStream,
-                       @NonNull final ProgressListener listener,
-                       final boolean includeCoverCount)
+    public Results doBooks(@NonNull final OutputStream outputStream,
+                           @NonNull final ProgressListener listener,
+                           final boolean includeCoverCount)
             throws IOException {
 
-        // Display startup message
-        listener.onProgress(0, R.string.progress_msg_export_starting);
+        Results results = new Results();
 
         long lastUpdate = 0;
-        int numberOfBooksExported = 0;
         final StringBuilder row = new StringBuilder();
 
         try (DAO db = new DAO();
-             BookCursor bookCursor = db.fetchBooksForExport(mSettings.dateFrom);
+             BookCursor bookCursor = db.fetchBooksForExport(mExportHelper.getDateFrom());
              OutputStreamWriter osw = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
              BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE)) {
 
             int progressMaxCount = bookCursor.getCount();
 
             if (listener.isCancelled()) {
-                return 0;
+                return results;
             }
 
             // assume each book will have a cover.
@@ -196,10 +177,10 @@ public class CsvExporter
 
             while (bookCursor.moveToNext()) {
                 if (listener.isCancelled()) {
-                    return 0;
+                    return results;
                 }
 
-                numberOfBooksExported++;
+                results.booksExported++;
                 long bookId = bookCursor.getId();
 
                 String authorStringList = CsvCoder.getAuthorCoder()
@@ -274,14 +255,14 @@ public class CsvExporter
 
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200) {
-                    listener.onProgress(numberOfBooksExported, title);
+                    listener.onProgress(results.booksExported, title);
                     lastUpdate = now;
                 }
             }
         } finally {
-            Logger.info(this, "doBooks", "books=" + numberOfBooksExported);
+            Logger.info(this, "doBooks", "results=" + results);
         }
-        return numberOfBooksExported;
+        return results;
     }
 
     @NonNull
@@ -340,5 +321,11 @@ public class CsvExporter
         } catch (@NonNull final NullPointerException e) {
             return "\"\",";
         }
+    }
+
+    @SuppressWarnings("RedundantThrows")
+    @Override
+    public void close()
+            throws IOException {
     }
 }

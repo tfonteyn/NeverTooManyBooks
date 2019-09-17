@@ -243,7 +243,7 @@ public class SearchCoordinator {
         }
 
         // Developer sanity check
-        if (!NetworkUtils.isNetworkAvailable()) {
+        if (NetworkUtils.networkUnavailable()) {
             throw new IllegalStateException("network should be checked before starting search");
         }
 

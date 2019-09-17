@@ -72,9 +72,9 @@
     <string name="X_btn_set_authors">Invullen auteurs…</string>
     <string name="X_btn_set_series">Invullen Serie…</string>
     <string name="X_error_file_must_contain_column">Import bestand moet een kolom met de naam „%1$s” bevatten.</string>
-    <string name="X_info_no_authors_yet">Er zijn geen auteurs voor dit boek. Je kan er een toevoegen met het tekstveld en de knop bovenin dit scherm.</string>
-    <string name="X_info_no_books_yet">Er staan geen boeken op deze boekenplank. Voeg er een paar toe via het menu onderaan dit scherm.</string>
-    <string name="X_info_no_series_yet">Er zijn geen series voor dit boek. Je kan er een toevoegen met het tekstveld en de knop bovenin dit scherm.</string>
+    <string name="X_info_no_authors_yet">Er zijn geen auteurs voor dit boek.\n Je kan er een toevoegen met het tekstveld en de knop bovenin dit scherm.</string>
+    <string name="X_info_no_books_yet">Er staan geen boeken op deze boekenplank.\n Voeg er een paar toe via het menu onderaan dit scherm.</string>
+    <string name="X_info_no_series_yet">Er zijn geen series voor dit boek.\n Je kan er een toevoegen met het tekstveld en de knop bovenin dit scherm.</string>
     <string name="X_info_reset_tips">Van tijd tot tijd kan deze toepassing optionele berichten weergeven over %1$s.\nDruk op de knop hieronder om alle berichten die zijn uitgeschakeld te herstellen.</string>
     <string name="X_lbl_loan_book_available">Beschikbaar</string>
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
@@ -169,9 +169,9 @@
     <string name="error_storage_not_writable">Controleer aub of opslag beschrijfbaar is en voldoende vrije ruimte heeft.</string>
     <string name="error_unexpected_error">Er is een onverwachte fout opgetreden. Zend ons aub de details via de „Admin” optie in het hoofdmenu.</string>
     <string name="error_unknown">Er is een onbekende fout opgetreden</string>
-    <string name="export_csv_email">Wilt u dit exportbestand als e-mail ergens heen sturen?</string>
+    <string name="confirm_email_export">Wilt u dit exportbestand als e-mail ergens heen sturen?</string>
     <string name="export_info_backup_all">Alle boeken, omslagafbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
-    <string name="export_info_success_archive_details">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” map.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
+    <string name="X_export_info_success_archive_details">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” map.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
     <string name="export_option_books_since_date">Alle boeken die zijn toegevoegd of bijgewerkt sinds:</string>
     <string name="export_option_books_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
     <string name="export_option_info_books_since_date">Specificeer desgewenst een datum voor de selectie van boeken en/of omslagen om te exporteren:</string>
@@ -231,8 +231,7 @@
     <string name="hint_field_not_set">Niet Ingevuld</string>
     <string name="hint_field_not_set_with_brackets">(leeg)</string>
     <string name="hint_search_text">Tekst en/of ISBN</string>
-    <string name="import_error_csv_file_must_contain_any_column">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
-    <string name="import_error_csv_file_not_found">Geen exportbestanden gevonden</string>
+    <string name="error_csv_import_file_must_contain_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
     <string name="import_export_option_csv">Boeken (*.csv)</string>
     <string name="import_export_option_xml">Alle gegevens in XML formaat</string>
     <string name="import_export_option_xml_info">XML is enkel export, geen import.</string>
@@ -241,11 +240,10 @@
     <string name="import_option_new_and_changed_books">Nieuwe en bijgewerkte boeken</string>
     <string name="import_options_dialog_title">Selecteer wat je wil importeren.</string>
     <string name="import_warning_old_archive">Deze optie wordt niet ondersteund voor oudere archief versies.</string>
-    <string name="import_warning_select_csv_file">Meer dan een bestand gevonden. Selecteer aub het gewenste bestand om te importeren:</string>
     <string name="info_authorized">Geautoriseerd</string>
     <string name="info_cleanup_files_text">Permanent te verwijderen bestanden nemen %1$s van uw SD kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD kaart. Als u veel crashes ondervindt of ander fouten, overweeg dan de  „Zend Informatie” knop eerst te gebruiken.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
-    <string name="info_install_scanner">Om ISBN-streepjescodes te scannen, tikt u hieronder om een van deze streepjescodescanner-applicaties te installeren.</string>
+    <string name="X_info_install_scanner">Om ISBN-streepjescodes te scannen, tikt u hieronder om een van deze streepjescodescanner-applicaties te installeren.</string>
     <string name="info_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
     <string name="info_not_authorized">Niet geautoriseerd</string>
     <string name="info_registration_benefits">Deze functie profiteert van registratie bij %1$s.\nWilt u meer informatie bekijken of dit bericht uitschakelen?\nU vindt deze informatie op een later tijdstip in de sectie „Inloggegevens” in de instellingen.</string>
@@ -347,6 +345,7 @@
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_num">nr.</string>
     <string name="lbl_settings">Instellingen</string>
+    <string name="menu_settings">Instellingen</string>
     <string name="lbl_signed">Gesigneerd</string>
     <string name="lbl_about_sourcecode">Broncode:</string>
     <string name="lbl_about_special_thanks">Speciale dankbetuiging</string>
@@ -378,8 +377,8 @@
     <string name="menu_add_book_by_barcode_scan">Scan streepjescode/ISBN</string>
     <string name="menu_add_book_by_isbn">Invullen ISBN</string>
     <string name="menu_add_book_manually">Handmatig toevoegen</string>
-    <string name="menu_administration">Beheer</string>
-    <string name="title_administration">Administratieve Functies</string>
+    <string name="menu_administration">Beheer…</string>
+    <string name="title_administration">Beheer</string>
     <string name="menu_amazon_books_by_author">Boeken van deze auteur</string>
     <string name="menu_amazon_books_by_author_in_series">Boeken per auteur/serie</string>
     <string name="menu_amazon_books_in_series">Boeken in deze serie</string>
@@ -387,8 +386,8 @@
     <string name="menu_author_works_all">Toon alles</string>
     <string name="menu_author_works_book">Alleen boeken</string>
     <string name="menu_author_works_toc">Alleen inhouds titels</string>
-    <string name="menu_booklist_styles">Boekenlijst Stijlen…</string>
-    <string name="menu_bookshelves">Boekenplanken…</string>
+    <string name="menu_booklist_styles">Boekenlijst Stijlen</string>
+    <string name="menu_bookshelves">Boekenplanken</string>
     <string name="menu_clear_search_filters">Filters verwijderen</string>
     <string name="menu_collapse_all">Alles inklappen</string>
     <string name="menu_cover_replace_from_camera">Van Camera…</string>
@@ -441,17 +440,17 @@
     <string name="progress_end_cancelled">Geannuleerd</string>
     <string name="progress_end_cancelled_info">Geannuleerd - %1$s</string>
     <string name="progress_end_import_complete">Import Compleet</string>
-    <string name="progress_end_num_books_searched">%1$d Boeken gezocht</string>
+    <string name="progress_end_n_books_searched">%1$d Boeken gezocht</string>
     <string name="progress_msg_adding_book">Boeken aan \'t toevoegen…</string>
-    <string name="progress_msg_backing_up">Aan \'t Back-uppen…</string>
+    <string name="title_backing_up">Aan \'t Back-uppen…</string>
     <string name="progress_msg_cancelling">Aan \'t Annuleren</string>
     <string name="progress_msg_connecting">Website contacteren…</string>
-    <string name="progress_msg_covers_handled">%1$d boekomslagen verwerkt</string>
-    <string name="progress_msg_covers_handled_missing">%1$d boekomslagen verwerkt (%2$d missend)</string>
-    <string name="progress_msg_covers_handled_missing_skipped">%1$d boekomslagen verwerkt (%2$d missend, %3$d overgeslagen)</string>
-    <string name="progress_msg_export_starting">Starten van Export…</string>
+    <string name="X_progress_msg_n_covers_processed">%1$d boekomslagen verwerkt</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d boekomslagen verwerkt (%2$d missend)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d boekomslagen verwerkt (%2$d missend, %3$d overgeslagen)</string>
+    <string name="X_progress_msg_export_starting">Starten van Export…</string>
     <string name="progress_msg_finding_editions">Zoeken naar uitgaven…</string>
-    <string name="progress_msg_importing">Importeren…</string>
+    <string name="title_importing">Importeren…</string>
     <string name="progress_msg_loading">Bezig met laden…</string>
     <string name="progress_msg_n_created_m_updated">%1$d toegevoegd, %2$d bijgewerkt</string>
     <string name="progress_msg_optimizing">Databases optimaliseren…</string>
@@ -459,7 +458,6 @@
     <string name="progress_msg_process_booklist_style">Boekenlijst stijlen…</string>
     <string name="progress_msg_process_cover">Omslagen…</string>
     <string name="progress_msg_process_preferences">Voorkeuren…</string>
-    <string name="X_progress_msg_reading_directory">Doorzoeken map…</string>
     <string name="progress_msg_rebuilding_search_index">Zoekindex opnieuw opbouwen…</string>
     <string name="progress_msg_saving_image">Scan wordt bewaard…</string>
     <string name="progress_msg_searching">Aan \'t zoeken…</string>
@@ -553,7 +551,7 @@
     <string name="tip_view_only_book_details">Wanneer u op een item in deze lijst tikt, kunt u nu kiezen naar een alleen-lezen detailoverzicht te gaan. Zie „Meer voorkeuren” voor de relevante instelling.</string>
     <string name="tip_view_only_help">Dit is het alleen-lezen detailoverzicht. Je kan naar link en rechts vegen om naar andere boeken te gaan en u kunt het boek bewerken via het opties menu door gebruik te maken van de menuknop of overvloeiend menu-pictogram.</string>
     <string name="title_add_book">Boek Toevoegen</string>
-    <string name="title_backup">Back-up</string>
+    <string name="X_title_backup">Back-up</string>
     <string name="title_clone_style">Stijl klonen</string>
     <string name="title_cover">Omslag miniatuur</string>
     <string name="title_delete_book">Boek verwijderen</string>
@@ -565,9 +563,9 @@
     <string name="title_edit_bookshelf">Boekenplank bewerken</string>
     <string name="title_edit_bookshelves">Boekenplank beheren</string>
     <string name="title_edit_style">Stijl bewerken</string>
-    <string name="title_import">Importeren</string>
+    <string name="X_title_import">Importeren</string>
     <string name="title_import_book_data">Boeken Importeren</string>
-    <string name="title_install_scan">Streepjescode Scanner Installeren</string>
+    <string name="X_title_install_scan">Streepjescode Scanner Installeren</string>
     <string name="title_registration">LibraryThing Registratie</string>
     <string name="title_scope_of_change">Omvang van de verandering</string>
     <string name="title_search_for">zoeken naar auteurs of titels</string>
@@ -577,7 +575,6 @@
     <string name="title_select_style">Selecteer een stijl</string>
     <string name="title_send_mail">Bericht versturen…</string>
     <string name="unknown">Onbekend</string>
-    <string name="up_folder">Omhoog</string>
     <string name="vldt_blank_required_for_x">Waardeveld moet leeg zijn voor „%1$s”</string>
     <string name="vldt_boolean_expected_for_x">Verwachtte een boolean waarde (0,1,t,f,true,false) voor „%1$s”</string>
     <string name="vldt_date_expected_for_x">Verwachtte een datum voor „%1$s”</string>
@@ -594,11 +591,11 @@
     <string name="info_install_scanner_recommendation">Wij kunnen de Zxing streepjescode scanner application aanbevelen. Als deze al is geïnstalleerd raden we aan deze te deïnstalleren en daarna weer opnieuw te installeren.</string>
     <string name="warning_book_no_longer_exists">Het gespecificeerde boek bestaat niet meer</string>
     <string name="warning_book_not_found">Het gescande boek is niet gevonden. Je kan de juiste streepjescode aan de achterkant van de omslag vinden. Vul anders de gegevens handmatig in.</string>
-    <string name="warning_book_was_deleted_uc">DIT BOEK IS VERWIJDERD</string>
+    <string name="X_warning_book_was_deleted_uc">DIT BOEK IS VERWIJDERD</string>
     <string name="warning_cannot_delete_1st_bs">De eerste boekenplank kan niet verwijderd worden</string>
     <string name="warning_cover_copy_failed">Afbeelding kon niet gekopiërt worden</string>
     <string name="warning_cover_not_found">Afbeelding niet gevonden</string>
-    <string name="warning_enter_valid_filename">Voer aub een geldige bestandsnaam in.</string>
+    <string name="X_warning_enter_valid_filename">Voer aub een geldige bestandsnaam in.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Als de dag is gespecificeerd dan moet ook de maand en het jaar ingevuld worden.</string>
     <string name="warning_if_month_set_year_must_be">Als de maand is gespecificeerd moet ook het jaar worden ingevuld.</string>
     <string name="warning_immediate_global_changes">Let op: Veranderingen worden direct en globaal toegepast!</string>
@@ -608,9 +605,8 @@
     <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar</string>
     <string name="warning_no_isbn_stored_for_book">Geen ISBN opgeslagen voor boek</string>
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
-    <string name="warning_no_parent_directory_found">Geen bovenliggende map gevonden</string>
     <string name="warning_required_at_least_one">Er moet op z\'n minst een veld ingevuld zijn</string>
-    <string name="warning_select_an_existing_file">Selecteer aub een bestaand bestand</string>
+    <string name="X_warning_select_an_existing_file">Selecteer aub een bestaand bestand</string>
     <string name="warning_select_min_1_field">Selecteer tenminste één veld om te updaten</string>
     <string name="warning_series_already_in_list">Serie staat al in de lijst</string>
     <string name="warning_toc_confirm">Bevestig dat deze titels (merendeels) correct zijn</string>
@@ -639,5 +635,9 @@
     <string name="lbl_edition_slipcase">Cassette</string>
     <string name="menu_search_local">Lokaal zoeken</string>
     <string name="pg_reformat">Herformatteren</string>
+    <string name="progress_msg_n_books_processed">%1$d boeken verwerkt</string>
+    <string name="X_progress_end_n_books_exported">%1$d boeken geëxporteerd</string>
+    <string name="warning_select_an_existing_folder">Selecteer een bestaande map.</string>
+    <string name="lbl_copy_database_blurb">Selecteer een map om naar te exporteren.</string>
 
 </resources>

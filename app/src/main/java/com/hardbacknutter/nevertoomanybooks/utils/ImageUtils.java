@@ -172,7 +172,7 @@ public final class ImageUtils {
         }
 
         // 2. Check if the file exists; if it does not set 'ic_broken_image' icon and exit.
-        File file = StorageUtils.getCoverForUuid(uuid);
+        File file = StorageUtils.getCoverFileForUuid(uuid);
         if (!file.exists() || file.length() < MIN_IMAGE_FILE_SIZE) {
             imageView.setImageResource(R.drawable.ic_broken_image);
             return false;

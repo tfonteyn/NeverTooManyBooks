@@ -275,10 +275,6 @@ public class CoverBrowserViewModel
             dest.writeParcelable(site, flags);
         }
 
-        public boolean hasFileSpec() {
-            return fileSpec != null && !fileSpec.isEmpty();
-        }
-
         @NonNull
         @Override
         public String toString() {
@@ -385,8 +381,11 @@ public class CoverBrowserViewModel
                 FileInfo fileInfo = mFiles.get(key);
 
                 // Do we already have a file and is it good ?
-                if ((fileInfo != null) && fileInfo.hasFileSpec() && isGood(
-                        new File(fileInfo.fileSpec))) {
+                if ((fileInfo != null)
+                    && fileInfo.fileSpec != null
+                    && !fileInfo.fileSpec.isEmpty()
+                    && isGood(new File(fileInfo.fileSpec))) {
+
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                         Logger.debug(this, "download", "FILESYSTEM", fileInfo);
                     }
@@ -474,7 +473,7 @@ public class CoverBrowserViewModel
                                 @NonNull final SearchEngine.ImageSize... sizes) {
             for (SearchEngine.ImageSize size : sizes) {
                 FileInfo fileInfo = mFiles.get(isbn + '_' + size);
-                if (fileInfo != null && fileInfo.hasFileSpec()) {
+                if (fileInfo != null && fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
                     return fileInfo;
                 }
             }
@@ -487,7 +486,9 @@ public class CoverBrowserViewModel
          */
         void purge() {
             for (FileInfo fileInfo : mFiles.values()) {
-                if (fileInfo != null && fileInfo.hasFileSpec()) {
+                if (fileInfo != null
+                    && fileInfo.fileSpec != null
+                    && !fileInfo.fileSpec.isEmpty()) {
                     StorageUtils.deleteFile(new File(fileInfo.fileSpec));
                 }
             }

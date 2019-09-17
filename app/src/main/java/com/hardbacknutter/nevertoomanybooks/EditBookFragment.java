@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
  * Fragment that hosts child fragments to edit a book.
@@ -178,7 +179,7 @@ public class EditBookFragment
         tabLayout.setupWithViewPager(mViewPager);
         // sanity check
         if (showTab > mPagerAdapter.getCount()) {
-            throw new IllegalStateException("tab=" + showTab);
+            throw new UnexpectedValueException(showTab);
         }
         mViewPager.setCurrentItem(showTab);
     }

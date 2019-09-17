@@ -244,7 +244,7 @@ public class Book
 
         // prepare the cover to post
         Uri uri = FileProvider.getUriForFile(context, GenericFileProvider.AUTHORITY,
-                                             StorageUtils.getCoverForUuid(uuid));
+                                             StorageUtils.getCoverFileForUuid(uuid));
 
         // so despite it being shown on the list it will not post any text unless the user types it.
         String text = context.getString(R.string.info_share_book_im_reading,
@@ -608,8 +608,10 @@ public class Book
             // so test it
             if (!LocaleUtils.isValid(bookLocale)) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.warn(this, "getLocale", "invalid locale",
-                                "lang=" + lang);
+                    Logger.warnWithStackTrace(this, "getLocale", "invalid locale",
+                                              "lang=" + lang,
+                                              "bookId=" + getId(),
+                                              "title=" + getTitle());
                 }
                 // invalid, use fallback.
                 bookLocale = userLocale;

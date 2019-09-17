@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -122,7 +122,7 @@ public class CsvImporter
     private final DAO mDb;
 
     @NonNull
-    private final ImportOptions mSettings;
+    private final ImportHelper mSettings;
     private final String mProgress_msg_n_created_m_updated;
 
     private final String mUnknownString;
@@ -130,17 +130,18 @@ public class CsvImporter
     private final Results mResults = new Results();
 
     private final Locale mUserLocale;
+
     /**
      * Constructor.
      *
      * @param context  Current context
-     * @param settings {@link ImportOptions#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
+     * @param settings {@link ImportHelper#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
      *                 Other flags are ignored, as this class only
-     *                 handles {@link ImportOptions#BOOK_CSV} anyhow.
+     *                 handles {@link ImportHelper#BOOK_CSV} anyhow.
      */
     @AnyThread
     public CsvImporter(@NonNull final Context context,
-                       @NonNull final ImportOptions settings) {
+                       @NonNull final ImportHelper settings) {
         mUnknownString = context.getString(R.string.unknown);
         mProgress_msg_n_created_m_updated =
                 context.getString(R.string.progress_msg_n_created_m_updated);
@@ -153,15 +154,14 @@ public class CsvImporter
 
     @Override
     @WorkerThread
-    @NonNull
     public Results doBooks(@NonNull final Context context,
-                           @NonNull final InputStream importStream,
+                           @NonNull final InputStream is,
                            @Nullable final CoverFinder coverFinder,
                            @NonNull final ProgressListener listener)
             throws IOException, ImportException {
 
         BufferedReader in = new BufferedReader(
-                new InputStreamReader(importStream, StandardCharsets.UTF_8), BUFFER_SIZE);
+                new InputStreamReader(is, StandardCharsets.UTF_8), BUFFER_SIZE);
 
         // We read the whole file/list into memory.
         List<String> importedList = new ArrayList<>();
@@ -227,7 +227,7 @@ public class CsvImporter
         requireColumnOrThrow(book, DBDefinitions.KEY_TITLE);
 
         final boolean updateOnlyIfNewer;
-        if ((mSettings.what & ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
+        if ((mSettings.options & ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
             if (!book.containsKey(DBDefinitions.KEY_DATE_LAST_UPDATED)) {
                 throw new IllegalArgumentException(
                         "Imported data does not contain " + DBDefinitions.KEY_DATE_LAST_UPDATED);
@@ -311,7 +311,8 @@ public class CsvImporter
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
                     String msg = String.format(mProgress_msg_n_created_m_updated,
-                                               mResults.booksCreated, mResults.booksUpdated);
+                                               mResults.booksCreated,
+                                               mResults.booksUpdated);
                     listener.onProgressStep(delta, msg);
                     delta = 0;
                     lastUpdate = now;
@@ -327,15 +328,16 @@ public class CsvImporter
             }
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            // minus 1 for the headers.
-            Logger.debugExit(this, "doBooks",
-                             "Csv Import successful: rows processed: " + (row - 1),
-                             "created:" + mResults.booksCreated,
-                             "updated: " + mResults.booksUpdated);
-        }
+        // minus 1 for the headers.
+        mResults.booksProcessed = row - 1;
 
-        mResults.booksProcessed = row;
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
+            Logger.debugExit(this, "doBooks",
+                             "Csv Import successful:",
+                             "processed=" + mResults.booksProcessed,
+                             "created=" + mResults.booksCreated,
+                             "updated=" + mResults.booksUpdated);
+        }
         return mResults;
     }
 
@@ -397,16 +399,12 @@ public class CsvImporter
                                                   DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                 if (rowsAffected == 1) {
                     mResults.booksUpdated++;
-                } else {
-                    mResults.booksFailed++;
                 }
             }
         } else {
             bids.bookId = mDb.insertBook(context, bids.bookId, book);
             if (bids.bookId != -1) {
                 mResults.booksCreated++;
-            } else {
-                mResults.booksFailed++;
             }
         }
 
@@ -445,10 +443,10 @@ public class CsvImporter
             encodedList = book.getString(LEGACY_BOOKSHELF_TEXT_COLUMN);
         }
 
-        ArrayList<Bookshelf> list = CsvCoder.getBookshelfCoder().decodeList(encodedList);
+        ArrayList<Bookshelf> list = CsvCoder.getBookshelfCoder().decode(encodedList);
         if (!list.isEmpty()) {
             // fix the ID's
-            ItemWithFixableId.pruneList(context, db, list, mUserLocale);
+            ItemWithFixableId.pruneList(list, context, db, mUserLocale);
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
         }
 
@@ -501,8 +499,8 @@ public class CsvImporter
         }
 
         // Now build the array for authors
-        ArrayList<Author> list = CsvCoder.getAuthorCoder().decodeList(encodedList);
-        ItemWithFixableId.pruneList(context, db, list, mUserLocale);
+        ArrayList<Author> list = CsvCoder.getAuthorCoder().decode(encodedList);
+        ItemWithFixableId.pruneList(list, context, db, mUserLocale);
         book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
     }
@@ -536,9 +534,8 @@ public class CsvImporter
 
         // Handle the series
         Locale bookLocale = book.getLocale(mUserLocale);
-        ArrayList<Series> list = CsvCoder.getSeriesCoder().decodeList(encodedList);
-        Series.pruneSeriesList(list, bookLocale);
-        ItemWithFixableId.pruneList(context, db, list, bookLocale);
+        ArrayList<Series> list = CsvCoder.getSeriesCoder().decode(encodedList);
+        Series.pruneList(list, context, db, bookLocale);
         book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_SERIES);
     }
@@ -559,10 +556,10 @@ public class CsvImporter
 
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
         if (!encodedList.isEmpty()) {
-            ArrayList<TocEntry> list = CsvCoder.getTocCoder().decodeList(encodedList);
+            ArrayList<TocEntry> list = CsvCoder.getTocCoder().decode(encodedList);
             if (!list.isEmpty()) {
                 // fix the ID's
-                ItemWithFixableId.pruneList(context, db, list, book.getLocale(mUserLocale));
+                ItemWithFixableId.pruneList(list, context, db, book.getLocale(mUserLocale));
                 book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
             }
         }
@@ -721,7 +718,7 @@ public class CsvImporter
             }
         }
 
-        throw new ImportException(R.string.import_error_csv_file_must_contain_any_column,
+        throw new ImportException(R.string.error_csv_import_file_must_contain_columns_x,
                                   TextUtils.join(",", names));
     }
 

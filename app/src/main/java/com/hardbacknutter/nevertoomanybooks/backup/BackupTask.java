@@ -28,16 +28,14 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.net.Uri;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
-import java.io.File;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -47,124 +45,102 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
+/**
+ * Writes to a fixed file {@link ExportHelper#getTempFile()},
+ * an on being successful, copies that file to the external Uri.
+ */
 public class BackupTask
-        extends TaskBase<ExportOptions> {
+        extends TaskBase<ExportHelper> {
 
-    /** We write to a temp file. */
+    /** what and how to export. */
     @NonNull
-    private final File mTmpFile;
-    /** What to write. */
-    @NonNull
-    private final ExportOptions mSettings;
-    /** Once writing was all done & a success, rename the temp file to the actual on. */
-    @NonNull
-    private File mOutputFile;
+    private final ExportHelper mExportHelper;
 
+    private final ProgressListener mProgressListener = new ProgressListenerBase() {
+
+        private int mPos;
+
+        @Override
+        public void onProgressStep(final int delta,
+                                   @Nullable final Object message) {
+            mPos += delta;
+            Object[] values = {message};
+            publishProgress(new TaskProgressMessage(mTaskId, getMax(), mPos, values));
+        }
+
+        @Override
+        public void onProgress(final int pos,
+                               @Nullable final Object message) {
+            mPos = pos;
+            Object[] values = {message};
+            publishProgress(new TaskProgressMessage(mTaskId, getMax(), mPos, values));
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return BackupTask.this.isCancelled();
+        }
+    };
 
     /**
      * Constructor.
      *
-     * @param file         File to write to
-     * @param settings     the export settings
+     * @param exportHelper the export settings
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public BackupTask(@NonNull final File file,
-                      @NonNull final ExportOptions /* in/out */ settings,
-                      @NonNull final TaskListener<ExportOptions> taskListener) {
+    public BackupTask(@NonNull final ExportHelper exportHelper,
+                      @NonNull final TaskListener<ExportHelper> taskListener) {
         super(R.id.TASK_ID_WRITE_TO_ARCHIVE, taskListener);
-        mOutputFile = file;
-        mSettings = settings;
-        // sanity checks
-        if ((mOutputFile == null) || ((mSettings.what & ExportOptions.MASK) == 0)) {
-            throw new IllegalArgumentException("Options must be specified: " + mSettings);
-        }
-
-        // Ensure the file key extension is what we want
-        if (!BackupManager.isArchive(mOutputFile)) {
-            mOutputFile = new File(mOutputFile.getAbsoluteFile()
-                                   + BackupManager.ARCHIVE_EXTENSION);
-        }
-
-        // we write to a temp file, and will rename it upon success (or delete on failure).
-        mTmpFile = new File(mOutputFile.getAbsolutePath() + ".tmp");
+        mExportHelper = exportHelper;
+        mExportHelper.validate();
     }
 
     @UiThread
     @Override
-    protected void onCancelled(@Nullable final ExportOptions result) {
+    protected void onCancelled(@NonNull final ExportHelper result) {
         cleanup();
         super.onCancelled(result);
     }
 
     @AnyThread
     private void cleanup() {
-        StorageUtils.deleteFile(mTmpFile);
+        StorageUtils.deleteFile(ExportHelper.getTempFile());
     }
 
     @Override
     @NonNull
     @WorkerThread
-    protected ExportOptions doInBackground(final Void... params) {
+    protected ExportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName("BackupTask");
 
         Context context = App.getLocalizedAppContext();
-        try (BackupWriter writer = BackupManager.getWriter(context, mTmpFile)) {
+        Uri uri = Uri.fromFile(ExportHelper.getTempFile());
+        try (BackupWriter writer = BackupManager.getWriter(context, uri)) {
 
-            writer.backup(context, mSettings, new ProgressListenerBase() {
+            writer.backup(context, mExportHelper, mProgressListener);
+            if (!isCancelled()) {
+                // the export was successful
+                //noinspection ConstantConditions
+                StorageUtils.exportFile(ExportHelper.getTempFile(), mExportHelper.uri);
 
-                private int mAbsPosition;
-
-                @Override
-                public void onProgressStep(final int delta,
-                                           @Nullable final Object message) {
-                    mAbsPosition += delta;
-                    Object[] values = {message};
-                    publishProgress(new TaskProgressMessage(mTaskId, getMax(),
-                                                            mAbsPosition, values));
+                // if the backup was a full one (not a 'since') remember that.
+                if ((mExportHelper.options & ExportHelper.EXPORT_SINCE) == 0) {
+                    BackupManager.setLastFullBackupDate(context);
                 }
 
-                @Override
-                public void onProgress(final int absPosition,
-                                       @Nullable final Object message) {
-                    mAbsPosition = absPosition;
-                    Object[] values = {message};
-                    publishProgress(new TaskProgressMessage(mTaskId, getMax(),
-                                                            mAbsPosition, values));
-                }
-
-                @Override
-                public boolean isCancelled() {
-                    return BackupTask.this.isCancelled();
-                }
-            });
-
-            if (isCancelled()) {
-                return mSettings;
             }
-
-            // success
-            StorageUtils.renameFile(mTmpFile, mOutputFile);
-
-            SharedPreferences.Editor ed = PreferenceManager
-                                                  .getDefaultSharedPreferences(context)
-                                                  .edit();
-            // if the backup was a full one (not a 'since') remember that.
-            if ((mSettings.what & ExportOptions.EXPORT_SINCE) == 0) {
-                ed.putString(BackupManager.PREF_LAST_BACKUP_DATE,
-                             DateUtils.utcSqlDateTimeForToday());
-            }
-            ed.putString(BackupManager.PREF_LAST_BACKUP_FILE, mOutputFile.getAbsolutePath());
-            ed.apply();
+            return mExportHelper;
 
         } catch (@NonNull final IOException e) {
             Logger.error(this, e);
             mException = e;
+            return mExportHelper;
+        } finally {
             cleanup();
         }
-        return mSettings;
     }
+
 }

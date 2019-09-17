@@ -111,7 +111,7 @@ public final class DEBUG_SWITCHES {
     /** {@link IsfdbBook}. */
     public static final boolean ISFDB_SEARCH = false;
     /** {@link IsfdbBook}. */
-    public static final boolean ISFDB_LOAD_PAGE = true;
+    public static final boolean ISFDB_LOAD_PAGE = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager}. */
     public static final boolean OPEN_LIBRARY_SEARCH = false;
     /** {@link DAO}. Check for leaking instances. */
@@ -190,8 +190,12 @@ public final class DEBUG_SWITCHES {
     public static final boolean DUMP_HTTP_RESPONSE = false;
     /** Enable strict mode reporting on network,disc,... usage. */
     static final boolean STRICT_MODE = false;
+
     /** {@link BooksOnBookshelf}#fixPositionWhenDrawn. */
     static final boolean BOB_FIX_POSITION = false;
+
+    public static final boolean PRUNE_LIST = false;
+
 
     private DEBUG_SWITCHES() {
     }

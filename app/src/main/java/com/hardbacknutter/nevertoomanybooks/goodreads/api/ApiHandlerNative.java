@@ -198,6 +198,7 @@ abstract class ApiHandlerNative {
             try (OutputStream os = request.getOutputStream();
                  OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  BufferedWriter writer = new BufferedWriter(osw)) {
+                //noinspection ConstantConditions
                 writer.write(query);
                 writer.flush();
             }

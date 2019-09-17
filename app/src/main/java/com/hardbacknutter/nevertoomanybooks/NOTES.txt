@@ -13,6 +13,11 @@ public void onStart()
     }
 }
 ----------------------------------------------------------------------------------------------------
+TODO: performance tuning.
+ * image caching from main preferences.
+ * book extra details task/immediate from style. Default on ? (but need to fix 'bookshelves')
+ * find some rule to switch task/immediate automatically depending on number of books ?
+
 TODO: New anthology stuff:
  * when to delete entries in ANTHOLOGY ? when last book is gone? or keep them for adding
    to new books / wish list?

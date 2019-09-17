@@ -39,6 +39,10 @@ import java.lang.ref.WeakReference;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskFinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
+
 
 /**
  * The base for a task with our standard setup.
@@ -46,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * @param <Result> the type of the result of the background computation.
  */
 public abstract class TaskBase<Result>
-        extends AsyncTask<Void, TaskListener.TaskProgressMessage, Result> {
+        extends AsyncTask<Void, TaskProgressMessage, Result> {
 
     /** id set at construction time, passed back in all messages. */
     protected final int mTaskId;
@@ -84,7 +88,7 @@ public abstract class TaskBase<Result>
 
     @Override
     @UiThread
-    protected void onProgressUpdate(@NonNull final TaskListener.TaskProgressMessage... values) {
+    protected void onProgressUpdate(@NonNull final TaskProgressMessage... values) {
         if (mTaskListener.get() != null) {
             mTaskListener.get().onTaskProgress(values[0]);
         } else {
@@ -97,11 +101,10 @@ public abstract class TaskBase<Result>
 
     @Override
     @CallSuper
-    protected void onCancelled(@Nullable final Result result) {
+    protected void onCancelled(@NonNull final Result result) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskCancelled(
-                    new TaskListener.TaskFinishedMessage<>(mTaskId, mException == null,
-                                                           result, mException));
+            mTaskListener.get().onTaskFinished(
+                    new TaskFinishedMessage<>(mTaskId, TaskStatus.Cancelled, result, mException));
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onCancelled",
@@ -114,9 +117,10 @@ public abstract class TaskBase<Result>
     @UiThread
     protected void onPostExecute(@NonNull final Result result) {
         if (mTaskListener.get() != null) {
+            TaskStatus status = mException == null ? TaskStatus.Success
+                                                   : TaskStatus.Failed;
             mTaskListener.get().onTaskFinished(
-                    new TaskListener.TaskFinishedMessage<>(mTaskId, mException == null,
-                                                           result, mException));
+                    new TaskFinishedMessage<>(mTaskId, status, result, mException));
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onPostExecute",

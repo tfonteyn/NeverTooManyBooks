@@ -34,13 +34,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListenerBase;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
@@ -49,87 +50,82 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessa
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 public class ExportCSVTask
-        extends TaskBase<Integer> {
+        extends TaskBase<ExportHelper> {
 
     @NonNull
     private final CsvExporter mExporter;
     @NonNull
-    private final File mTmpFile;
+    private final ExportHelper mExportHelper;
+
+    private final ProgressListener mProgressListener = new ProgressListenerBase() {
+
+        @Override
+        public void onProgress(final int pos,
+                               @Nullable final Object message) {
+            Object[] values = {message};
+            publishProgress(new TaskProgressMessage(mTaskId, getMax(), pos, values));
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return ExportCSVTask.this.isCancelled();
+        }
+    };
 
     /**
      * Constructor.
      *
      * @param context      Current context
-     * @param settings     the export settings
+     * @param exportHelper the export settings
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
     public ExportCSVTask(@NonNull final Context context,
-                         @NonNull final ExportOptions settings,
-                         @NonNull final TaskListener<Integer> taskListener) {
+                         @NonNull final ExportHelper exportHelper,
+                         @NonNull final TaskListener<ExportHelper> taskListener) {
         super(R.id.TASK_ID_CSV_EXPORT, taskListener);
-        mTmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
-        mExporter = new CsvExporter(context, settings);
+        mExportHelper = exportHelper;
+        mExporter = new CsvExporter(context, exportHelper);
     }
 
     @Override
     @UiThread
-    protected void onCancelled(final Integer result) {
+    protected void onCancelled(@NonNull final ExportHelper result) {
         cleanup();
         super.onCancelled(result);
     }
 
     private void cleanup() {
-        StorageUtils.deleteFile(mTmpFile);
+        StorageUtils.deleteFile(ExportHelper.getTempFile());
+        try {
+            mExporter.close();
+        } catch (@NonNull final IOException ignore) {
+        }
     }
 
     @Override
-    @Nullable
+    @NonNull
     @WorkerThread
-    protected Integer doInBackground(final Void... params) {
+    protected ExportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName("ExportTask");
 
-        try (OutputStream output = new FileOutputStream(mTmpFile)) {
-            // start the export
-            int total = mExporter.doBooks(output, new ProgressListenerBase() {
+        try (OutputStream fileOutputStream = new FileOutputStream(ExportHelper.getTempFile())) {
+            mExportHelper.addResults(mExporter.doBooks(fileOutputStream, mProgressListener, false));
 
-                @Override
-                public void onProgress(final int absPosition,
-                                       @Nullable final Object message) {
-                    Object[] values = {message};
-                    publishProgress(new TaskProgressMessage(mTaskId, getMax(),
-                                                            absPosition, values));
-                }
-
-                @Override
-                public boolean isCancelled() {
-                    return ExportCSVTask.this.isCancelled();
-                }
-            }, true);
-
-            if (isCancelled()) {
-                return null;
+            if (!isCancelled()) {
+                // send to user destination
+                Objects.requireNonNull(mExportHelper.uri);
+                StorageUtils.exportFile(ExportHelper.getTempFile(), mExportHelper.uri);
             }
-
-            return total;
+            return mExportHelper;
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
             Logger.error(this, e);
             mException = e;
+            return mExportHelper;
+        } finally {
             cleanup();
-            return null;
         }
     }
 
-    @Override
-    protected void onPostExecute(@NonNull final Integer result) {
-        // success
-        if (result > 0) {
-            mExporter.onSuccess(mTmpFile);
-        } else {
-            cleanup();
-        }
-
-        super.onPostExecute(result);
-    }
 }

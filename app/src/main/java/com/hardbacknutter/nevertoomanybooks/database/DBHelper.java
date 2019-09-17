@@ -295,8 +295,9 @@ public final class DBHelper
         }
 
         if (oldVersion != newVersion) {
-            StorageUtils.exportFile(new File(db.getPath()),
-                                    "DbUpgrade-" + oldVersion + '-' + newVersion);
+            StorageUtils.copyFileWithBackup(new File(db.getPath()),
+                                            new File(StorageUtils.getRootDir(),
+                                                     "DbUpgrade-" + oldVersion + '-' + newVersion));
         }
 
         int curVersion = oldVersion;

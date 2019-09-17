@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
@@ -77,6 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
  * <strong>WARNING: EXPERIMENTAL</strong> There are two types of XML here.
@@ -126,31 +127,38 @@ public class XmlExporter
     private final DAO mDb;
 
     @NonNull
-    private final ExportOptions mSettings;
+    private final ExportHelper mExportHelper;
 
     /**
      * Constructor.
+     *
+     * <strong>IMPORTANT:</strong> {@link ExportHelper#uri} is not used.
+     * We always use the passed in OutputStream.
      */
     public XmlExporter() {
         mDb = new DAO();
-        mSettings = new ExportOptions(ExportOptions.ALL);
+        mExportHelper = new ExportHelper(ExportHelper.ALL, null);
+        // no validation of settings obv.
     }
 
     /**
      * Constructor.
      * <p>
-     * {@link #doBooks} respects {@link ExportOptions#dateFrom}. All other flags are ignored.
+     * {@link #doBooks} respects {@link ExportHelper#getDateFrom}. All other flags are ignored.
      * <p>
-     * {@link #doAll} respects {@link ExportOptions#BOOK_LIST_STYLES}
-     * and {@link ExportOptions#PREFERENCES}. All other flags are ignored.
+     * {@link #doAll} respects {@link ExportHelper#BOOK_LIST_STYLES}
+     * and {@link ExportHelper#PREFERENCES}. All other flags are ignored.
+     * <p>
+     * <strong>IMPORTANT:</strong> {@link ExportHelper#uri} is not used.
+     * We always use the passed in OutputStream.
      *
-     * @param settings ExportOptions
+     * @param exportHelper ExportHelper
      */
     @UiThread
-    public XmlExporter(@NonNull final ExportOptions settings) {
+    public XmlExporter(@NonNull final ExportHelper exportHelper) {
         mDb = new DAO();
-        settings.validate();
-        mSettings = settings;
+        mExportHelper = exportHelper;
+        mExportHelper.validate();
     }
 
     private static String version(final long version) {
@@ -382,7 +390,7 @@ public class XmlExporter
                                Base64.encodeToString(convertToBytes(value), Base64.DEFAULT));
 
         } else {
-            throw new IllegalStateException(value.getClass().getCanonicalName());
+            throw new UnexpectedValueException(value.getClass().getCanonicalName());
         }
     }
 
@@ -493,22 +501,22 @@ public class XmlExporter
     /**
      * Write all supported item types to the output stream as XML.
      *
-     * @param outputStream Stream for writing data
+     * @param os Stream for writing data
      * @param listener     Progress and cancellation interface
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    public void doAll(@NonNull final OutputStream outputStream,
+    public void doAll(@NonNull final OutputStream os,
                       @NonNull final ProgressListener listener)
             throws IOException {
 
         int delta = 0;
 
-        boolean incStyles = (mSettings.what & Options.BOOK_LIST_STYLES) != 0;
-        boolean incPrefs = (mSettings.what & Options.PREFERENCES) != 0;
+        boolean incStyles = (mExportHelper.options & Options.BOOK_LIST_STYLES) != 0;
+        boolean incPrefs = (mExportHelper.options & Options.PREFERENCES) != 0;
 
-        try (OutputStreamWriter osw = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        try (OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE)) {
 
             out.append('<' + XmlTags.XML_ROOT)
@@ -554,7 +562,7 @@ public class XmlExporter
     /**
      * Write out {@link DBDefinitions#TBL_BOOKSHELF}.
      *
-     * @param out      writer
+     * @param writer      writer
      * @param listener Progress and cancellation interface
      *
      * @return number of items written
@@ -562,31 +570,31 @@ public class XmlExporter
      * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    private int doBookshelves(@NonNull final BufferedWriter out,
+    private int doBookshelves(@NonNull final BufferedWriter writer,
                               @NonNull final ProgressListener listener)
             throws IOException {
         int count = 0;
         List<Bookshelf> list = mDb.getBookshelves();
-        out.append('<' + XmlTags.XML_BOOKSHELF_LIST)
-           .append(version(XML_EXPORTER_BOOKSHELVES_VERSION))
-           .append(">\n");
+        writer.append('<' + XmlTags.XML_BOOKSHELF_LIST)
+              .append(version(XML_EXPORTER_BOOKSHELVES_VERSION))
+              .append(">\n");
 
         for (Bookshelf bookshelf : list) {
-            out.append('<' + XmlTags.XML_BOOKSHELF)
-               .append(id(bookshelf.getId()))
-               .append(attr(DBDefinitions.KEY_BOOKSHELF, bookshelf.getName()))
-               .append(attr(DBDefinitions.KEY_FK_STYLE, bookshelf.getStyleUuid()))
-               .append("/>\n");
+            writer.append('<' + XmlTags.XML_BOOKSHELF)
+                  .append(id(bookshelf.getId()))
+                  .append(attr(DBDefinitions.KEY_BOOKSHELF, bookshelf.getName()))
+                  .append(attr(DBDefinitions.KEY_FK_STYLE, bookshelf.getStyleUuid()))
+                  .append("/>\n");
             count++;
         }
-        out.append("</" + XmlTags.XML_BOOKSHELF_LIST + ">\n");
+        writer.append("</" + XmlTags.XML_BOOKSHELF_LIST + ">\n");
         return count;
     }
 
     /**
      * Write out {@link DBDefinitions#TBL_AUTHORS}.
      *
-     * @param out      writer
+     * @param writer      writer
      * @param listener Progress and cancellation interface
      *
      * @return number of items written
@@ -594,38 +602,38 @@ public class XmlExporter
      * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    private int doAuthors(@NonNull final BufferedWriter out,
+    private int doAuthors(@NonNull final BufferedWriter writer,
                           @NonNull final ProgressListener listener)
             throws IOException {
         int count = 0;
-        out.append('<' + XmlTags.XML_AUTHOR_LIST)
-           .append(version(XML_EXPORTER_AUTHORS_VERSION))
-           .append(">\n");
+        writer.append('<' + XmlTags.XML_AUTHOR_LIST)
+              .append(version(XML_EXPORTER_AUTHORS_VERSION))
+              .append(">\n");
 
         try (Cursor cursor = mDb.fetchAuthors()) {
             CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
-                out.append('<' + XmlTags.XML_AUTHOR)
-                   .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))
+                writer.append('<' + XmlTags.XML_AUTHOR)
+                      .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))
 
-                   .append(attr(DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
+                      .append(attr(DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
                                 mapper.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)))
-                   .append(attr(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES,
+                      .append(attr(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES,
                                 mapper.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES)))
-                   .append(attr(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
+                      .append(attr(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
                                 mapper.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)))
-                   .append("/>\n");
+                      .append("/>\n");
                 count++;
             }
         }
-        out.append("</" + XmlTags.XML_AUTHOR_LIST + ">\n");
+        writer.append("</" + XmlTags.XML_AUTHOR_LIST + ">\n");
         return count;
     }
 
     /**
      * Write out {@link DBDefinitions#TBL_SERIES}.
      *
-     * @param out      writer
+     * @param writer      writer
      * @param listener Progress and cancellation interface
      *
      * @return number of items written
@@ -633,27 +641,27 @@ public class XmlExporter
      * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    private int doSeries(@NonNull final BufferedWriter out,
+    private int doSeries(@NonNull final BufferedWriter writer,
                          @NonNull final ProgressListener listener)
             throws IOException {
         int count = 0;
-        out.append('<' + XmlTags.XML_SERIES_LIST)
-           .append(version(XML_EXPORTER_SERIES_VERSION))
-           .append(">\n");
+        writer.append('<' + XmlTags.XML_SERIES_LIST)
+              .append(version(XML_EXPORTER_SERIES_VERSION))
+              .append(">\n");
 
         try (Cursor cursor = mDb.fetchSeries()) {
             CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
-                out.append('<' + XmlTags.XML_SERIES)
-                   .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))
-                   .append(attr(DBDefinitions.KEY_SERIES_TITLE,
+                writer.append('<' + XmlTags.XML_SERIES)
+                      .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))
+                      .append(attr(DBDefinitions.KEY_SERIES_TITLE,
                                 mapper.getString(DBDefinitions.KEY_SERIES_TITLE)))
-                   .append(attr(DBDefinitions.KEY_SERIES_IS_COMPLETE,
+                      .append(attr(DBDefinitions.KEY_SERIES_IS_COMPLETE,
                                 mapper.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE)))
-                   .append("/>\n");
+                      .append("/>\n");
             }
         }
-        out.append("</" + XmlTags.XML_SERIES_LIST + ">\n");
+        writer.append("</" + XmlTags.XML_SERIES_LIST + ">\n");
         return count;
     }
 
@@ -664,23 +672,26 @@ public class XmlExporter
      */
     @Override
     @WorkerThread
-    public int doBooks(@NonNull final OutputStream outputStream,
-                       @NonNull final ProgressListener listener,
-                       final boolean includeCoverCount)
+    public Results doBooks(@NonNull final OutputStream os,
+                           @NonNull final ProgressListener listener,
+                           final boolean includeCoverCount)
             throws IOException {
 
-        int pos;
+        Results results = new Results();
 
-        try (OutputStreamWriter osw = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-             BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE)) {
+        try (OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+             BufferedWriter writer = new BufferedWriter(osw, BUFFER_SIZE)) {
 
-            out.append('<' + XmlTags.XML_ROOT)
+            writer.append('<' + XmlTags.XML_ROOT)
                .append(version(XML_EXPORTER_VERSION))
                .append(">\n");
-            pos = doBooks(out, listener);
-            out.append("</" + XmlTags.XML_ROOT + ">\n");
+            results.booksExported = doBooks(writer, listener);
+            writer.append("</" + XmlTags.XML_ROOT + ">\n");
         }
-        return pos;
+
+        results.booksProcessed = results.booksExported;
+
+        return results;
     }
 
     /**
@@ -688,121 +699,115 @@ public class XmlExporter
      * <p>
      * Write out {@link DBDefinitions#TBL_BOOKS}.
      *
-     * @param out      writer
+     * @param writer      writer
      * @param listener Progress and cancellation interface
      *
      * @return number of items written
      *
      * @throws IOException on failure
      */
-    private int doBooks(@NonNull final BufferedWriter out,
+    private int doBooks(@NonNull final BufferedWriter writer,
                         @NonNull final ProgressListener listener)
             throws IOException {
-        int count = 0;
-        out.append('<' + XmlTags.XML_BOOK_LIST)
+        int booksExported = 0;
+        writer.append('<' + XmlTags.XML_BOOK_LIST)
            .append(version(XML_EXPORTER_BOOKS_VERSION))
            .append(">\n");
 
-        try (BookCursor bookCursor = mDb.fetchBooksForExport(mSettings.dateFrom)) {
+        try (BookCursor bookCursor = mDb.fetchBooksForExport(mExportHelper.getDateFrom())) {
             while (bookCursor.moveToNext()) {
-                out.append('<' + XmlTags.XML_BOOK)
-                   .append(id(bookCursor.getLong(DBDefinitions.KEY_PK_ID)))
-                   .append(attr(DBDefinitions.KEY_TITLE,
+                writer.append('<' + XmlTags.XML_BOOK)
+                      .append(id(bookCursor.getLong(DBDefinitions.KEY_PK_ID)))
+                      .append(attr(DBDefinitions.KEY_TITLE,
                                 bookCursor.getString(DBDefinitions.KEY_TITLE)))
-                   .append(attr(DBDefinitions.KEY_ISBN,
+                      .append(attr(DBDefinitions.KEY_ISBN,
                                 bookCursor.getString(DBDefinitions.KEY_ISBN)))
-                   .append(attr(DBDefinitions.KEY_BOOK_UUID,
+                      .append(attr(DBDefinitions.KEY_BOOK_UUID,
                                 bookCursor.getString(DBDefinitions.KEY_BOOK_UUID)))
-                   .append(attr(DBDefinitions.KEY_DATE_ADDED,
+                      .append(attr(DBDefinitions.KEY_DATE_ADDED,
                                 bookCursor.getString(DBDefinitions.KEY_DATE_ADDED)))
-                   .append(attr(DBDefinitions.KEY_DATE_LAST_UPDATED,
+                      .append(attr(DBDefinitions.KEY_DATE_LAST_UPDATED,
                                 bookCursor.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
-                   .append(attr(DBDefinitions.KEY_READ,
+                      .append(attr(DBDefinitions.KEY_READ,
                                 bookCursor.getBoolean(DBDefinitions.KEY_READ)))
-                   .append(attr(DBDefinitions.KEY_READ_START,
+                      .append(attr(DBDefinitions.KEY_READ_START,
                                 bookCursor.getString(DBDefinitions.KEY_READ_START)))
-                   .append(attr(DBDefinitions.KEY_READ_END,
+                      .append(attr(DBDefinitions.KEY_READ_END,
                                 bookCursor.getString(DBDefinitions.KEY_READ_END)))
-                   .append("\n")
 
-                   .append(attr(DBDefinitions.KEY_PUBLISHER,
+                      .append(attr(DBDefinitions.KEY_PUBLISHER,
                                 bookCursor.getString(DBDefinitions.KEY_PUBLISHER)))
-                   .append(attr(DBDefinitions.KEY_DATE_PUBLISHED,
+                      .append(attr(DBDefinitions.KEY_DATE_PUBLISHED,
                                 bookCursor.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
-                   .append(attr(DBDefinitions.KEY_PRICE_LISTED,
+                      .append(attr(DBDefinitions.KEY_PRICE_LISTED,
                                 bookCursor.getString(DBDefinitions.KEY_PRICE_LISTED)))
-                   .append(attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                      .append(attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                                 bookCursor.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
-                   .append(attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                      .append(attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
                                 bookCursor.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
-                   .append(attr(DBDefinitions.KEY_FORMAT,
+                      .append(attr(DBDefinitions.KEY_FORMAT,
                                 bookCursor.getString(DBDefinitions.KEY_FORMAT)))
-                   .append(attr(DBDefinitions.KEY_PAGES,
+                      .append(attr(DBDefinitions.KEY_PAGES,
                                 bookCursor.getString(DBDefinitions.KEY_PAGES)))
-                   .append(attr(DBDefinitions.KEY_GENRE,
+                      .append(attr(DBDefinitions.KEY_GENRE,
                                 bookCursor.getString(DBDefinitions.KEY_GENRE)))
-                   .append(attr(DBDefinitions.KEY_LANGUAGE,
+                      .append(attr(DBDefinitions.KEY_LANGUAGE,
                                 bookCursor.getString(DBDefinitions.KEY_LANGUAGE)))
-                   .append(attr(DBDefinitions.KEY_TOC_BITMASK,
+                      .append(attr(DBDefinitions.KEY_TOC_BITMASK,
                                 bookCursor.getLong(DBDefinitions.KEY_TOC_BITMASK)))
-                   .append("\n")
 
-                   .append(attr(DBDefinitions.KEY_PRICE_PAID,
+                      .append(attr(DBDefinitions.KEY_PRICE_PAID,
                                 bookCursor.getString(DBDefinitions.KEY_PRICE_PAID)))
-                   .append(attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
+                      .append(attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
                                 bookCursor.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
-                   .append(attr(DBDefinitions.KEY_DATE_ACQUIRED,
+                      .append(attr(DBDefinitions.KEY_DATE_ACQUIRED,
                                 bookCursor.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
-                   .append(attr(DBDefinitions.KEY_LOCATION,
+                      .append(attr(DBDefinitions.KEY_LOCATION,
                                 bookCursor.getString(DBDefinitions.KEY_LOCATION)))
-                   .append(attr(DBDefinitions.KEY_RATING,
+                      .append(attr(DBDefinitions.KEY_RATING,
                                 bookCursor.getDouble(DBDefinitions.KEY_RATING)))
-                   .append(attr(DBDefinitions.KEY_SIGNED,
+                      .append(attr(DBDefinitions.KEY_SIGNED,
                                 bookCursor.getBoolean(DBDefinitions.KEY_SIGNED)))
-                   .append(attr(DBDefinitions.KEY_EDITION_BITMASK,
+                      .append(attr(DBDefinitions.KEY_EDITION_BITMASK,
                                 bookCursor.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
-                   .append("\n")
 
-                   // external ID's
-                   .append(attr(DBDefinitions.KEY_LIBRARY_THING_ID,
+                      // external ID's
+                      .append(attr(DBDefinitions.KEY_LIBRARY_THING_ID,
                                 bookCursor.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)))
-                   .append(attr(DBDefinitions.KEY_OPEN_LIBRARY_ID,
+                      .append(attr(DBDefinitions.KEY_OPEN_LIBRARY_ID,
                                 bookCursor.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
-                   .append(attr(DBDefinitions.KEY_ISFDB_ID,
+                      .append(attr(DBDefinitions.KEY_ISFDB_ID,
                                 bookCursor.getLong(DBDefinitions.KEY_ISFDB_ID)))
-                   .append(attr(DBDefinitions.KEY_GOODREADS_BOOK_ID,
+                      .append(attr(DBDefinitions.KEY_GOODREADS_BOOK_ID,
                                 bookCursor.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)))
-                   .append(attr(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE,
+                      .append(attr(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE,
                                 bookCursor.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE)))
-                   .append("\n")
 
-
-                   // cross-linked with the loanee table
-                   .append(attr(DBDefinitions.KEY_LOANEE,
+                      // cross-linked with the loanee table
+                      .append(attr(DBDefinitions.KEY_LOANEE,
                                 bookCursor.getString(DBDefinitions.KEY_LOANEE)))
-                   .append("\n")
 
-                   // close the tag
-                   .append(">")
+                      // close the tag
+                      .append(">\n")
 
-                   // last are the text field tags
-                   .append(tagWithCData(DBDefinitions.KEY_DESCRIPTION, null,
+                      // last are the text field tags
+                      .append(tagWithCData(DBDefinitions.KEY_DESCRIPTION, null,
                                         bookCursor.getString(DBDefinitions.KEY_DESCRIPTION)))
-                   .append(tagWithCData(DBDefinitions.KEY_NOTES, null,
+                      .append(tagWithCData(DBDefinitions.KEY_NOTES, null,
                                         bookCursor.getString(DBDefinitions.KEY_NOTES)))
 
-                   .append("</" + XmlTags.XML_BOOK + ">\n");
-                count++;
+                      .append("</" + XmlTags.XML_BOOK + ">\n");
+                booksExported++;
             }
         }
-        out.append("</" + XmlTags.XML_BOOK_LIST + ">\n");
-        return count;
+        writer.append("</" + XmlTags.XML_BOOK_LIST + ">\n");
+        return booksExported;
     }
 
     /**
      * Write out the user-defined styles using custom tags.
      *
-     * @param out      writer
+     * @param writer      writer
      * @param listener Progress and cancellation interface
      *
      * @return number of items written
@@ -810,7 +815,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    private int doStyles2(@NonNull final BufferedWriter out,
+    private int doStyles2(@NonNull final BufferedWriter writer,
                           @NonNull final ProgressListener listener)
             throws IOException {
         Collection<BooklistStyle> styles = BooklistStyle.Helper.getUserStyles(mDb).values();
@@ -818,77 +823,75 @@ public class XmlExporter
             return 0;
         }
 
-        out.append('<' + XmlTags.XML_STYLE_LIST)
-           .append(version(XML_EXPORTER_STYLES_VERSION_v2))
-           .append(">\n");
+        writer.append('<' + XmlTags.XML_STYLE_LIST)
+              .append(version(XML_EXPORTER_STYLES_VERSION_v2))
+              .append(">\n");
 
         for (BooklistStyle style : styles) {
-            out.append('<' + XmlTags.XML_STYLE)
-               .append(id(style.getId()))
-               .append(name(style.getUuid()))
-               .append(">\n");
+            writer.append('<' + XmlTags.XML_STYLE)
+                  .append(id(style.getId()))
+                  .append(name(style.getUuid()))
+                  .append(">\n");
 
             // All 'flat' Preferences for this style.
             for (PPref p : style.getPreferences(false).values()) {
-                out.append(typedTag(p.getKey(), p.get()));
+                writer.append(typedTag(p.getKey(), p.get()));
             }
 
             // Groups with their Preferences.
-            out.append('<' + XmlTags.XML_GROUP_LIST + '>');
+            writer.append('<' + XmlTags.XML_GROUP_LIST + '>');
             for (BooklistGroup group : style.getGroups()) {
-                out.append('<' + XmlTags.XML_GROUP)
-                   .append(id(group.getKind()))
-                   .append(">\n");
+                writer.append('<' + XmlTags.XML_GROUP)
+                      .append(id(group.getKind()))
+                      .append(">\n");
                 for (PPref p : group.getPreferences().values()) {
-                    out.append(typedTag(p.getKey(), p.get()));
+                    writer.append(typedTag(p.getKey(), p.get()));
                 }
-                out.append("</" + XmlTags.XML_GROUP + ">\n");
+                writer.append("</" + XmlTags.XML_GROUP + ">\n");
             }
-            out.append("</" + XmlTags.XML_GROUP_LIST + '>');
+            writer.append("</" + XmlTags.XML_GROUP_LIST + '>');
 
             // Active filters with their Preferences.
-            out.append('<' + XmlTags.XML_FILTER_LIST + '>');
+            writer.append('<' + XmlTags.XML_FILTER_LIST + '>');
             for (Filter filter : style.getFilters()) {
                 if (filter.isActive()) {
-                    out.append(tag(XmlTags.XML_FILTER, filter.getKey(), filter.get()));
+                    writer.append(tag(XmlTags.XML_FILTER, filter.getKey(), filter.get()));
                 }
             }
-            out.append("</" + XmlTags.XML_FILTER_LIST + '>');
+            writer.append("</" + XmlTags.XML_FILTER_LIST + '>');
 
             // close style tag.
-            out.append("</" + XmlTags.XML_STYLE + ">\n");
+            writer.append("</" + XmlTags.XML_STYLE + ">\n");
         }
 
-        out.append("</" + XmlTags.XML_STYLE_LIST + ">\n");
+        writer.append("</" + XmlTags.XML_STYLE_LIST + ">\n");
         return styles.size();
     }
 
     /**
      * Write out the user-defined styles.
      *
-     * @param out      writer
+     * @param writer      writer
      * @param listener Progress and cancellation interface
      *
      * @return number of items written
      *
      * @throws IOException on failure
      */
-    @SuppressWarnings("UnusedReturnValue")
-    public int doStyles(@NonNull final BufferedWriter out,
+    public int doStyles(@NonNull final BufferedWriter writer,
                         @NonNull final ProgressListener listener)
             throws IOException {
         Collection<BooklistStyle> styles = BooklistStyle.Helper.getUserStyles(mDb).values();
-        if (styles.isEmpty()) {
-            return 0;
+        if (!styles.isEmpty()) {
+            toXml(writer, new StylesWriter(styles));
         }
-        toXml(out, new StylesWriter(styles));
         return styles.size();
     }
 
     /**
      * Write out the user preferences.
      *
-     * @param out      writer
+     * @param writer      writer
      * @param listener Progress and cancellation interface
      *
      * @return number of items written
@@ -896,7 +899,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int doPreferences(@NonNull final BufferedWriter out,
+    public int doPreferences(@NonNull final BufferedWriter writer,
                              @NonNull final ProgressListener listener)
             throws IOException {
 
@@ -911,39 +914,39 @@ public class XmlExporter
                 it.remove();
             }
         }
-        toXml(out, new PreferencesWriter(all, null));
+        toXml(writer, new PreferencesWriter(all, null));
         return 1;
     }
 
     /**
      * Write out the standard archive info block.
      *
-     * @param out      writer
+     * @param writer      writer
      * @param listener Progress and cancellation interface
      *
      * @throws IOException on failure
      */
-    public void doBackupInfoBlock(@NonNull final BufferedWriter out,
+    public void doBackupInfoBlock(@NonNull final BufferedWriter writer,
                                   @NonNull final ProgressListener listener,
                                   @NonNull final BackupInfo info)
             throws IOException {
-        toXml(out, new InfoWriter(info));
+        toXml(writer, new InfoWriter(info));
     }
 
     /**
      * Internal routine to send the passed {@link EntityWriter} data to an XML file.
      *
-     * @param out      where to send the XML to
+     * @param writer      where to send the XML to
      * @param accessor which provides the input
      */
-    private void toXml(@NonNull final BufferedWriter out,
+    private void toXml(@NonNull final BufferedWriter writer,
                        @NonNull final EntityWriter<String> accessor)
             throws IOException {
 
         String listRoot = accessor.getListRoot();
-        out.append('<').append(listRoot)
-           .append(size(accessor.size()))
-           .append(">\n");
+        writer.append('<').append(listRoot)
+              .append(size(accessor.size()))
+              .append(">\n");
 
         // loop through all elements
         do {
@@ -955,25 +958,25 @@ public class XmlExporter
 
             // start with an element, optionally add a name attribute
             String nameAttr = accessor.getElementNameAttribute();
-            out.append('<')
-               .append(accessor.getElementRoot())
-               .append(version(accessor.getElementVersionAttribute()));
+            writer.append('<')
+                  .append(accessor.getElementRoot())
+                  .append(version(accessor.getElementVersionAttribute()));
             if (nameAttr != null) {
-                out.append(name(nameAttr));
+                writer.append(name(nameAttr));
             }
-            out.append(" >\n");
+            writer.append(" >\n");
 
             // loop through all keys of the element
             for (String name : keys) {
-                out.append(typedTag(name, accessor.get(name)));
+                writer.append(typedTag(name, accessor.get(name)));
             }
             // end of element.
-            out.append("</").append(accessor.getElementRoot()).append(">\n");
+            writer.append("</").append(accessor.getElementRoot()).append(">\n");
 
         } while (accessor.hasMore());
 
         // close the list.
-        out.append("</").append(listRoot).append(">\n");
+        writer.append("</").append(listRoot).append(">\n");
     }
 
 

@@ -41,6 +41,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
  * Class to represent a single title within an TOC(Anthology).
@@ -90,10 +91,10 @@ public class TocEntry
      */
     public TocEntry(@NonNull final Author author,
                     @NonNull final String title,
-                    @NonNull final String publicationDate) {
+                    @Nullable final String publicationDate) {
         mAuthor = author;
         mTitle = title.trim();
-        mFirstPublicationDate = publicationDate;
+        mFirstPublicationDate = publicationDate != null ? publicationDate : "";
         mType = Type.Toc;
         mBookCount = 1;
     }
@@ -111,13 +112,13 @@ public class TocEntry
     public TocEntry(final long id,
                     @NonNull final Author author,
                     @NonNull final String title,
-                    @NonNull final String publicationDate,
+                    @Nullable final String publicationDate,
                     final char type,
                     final int bookCount) {
         mId = id;
         mAuthor = author;
         mTitle = title.trim();
-        mFirstPublicationDate = publicationDate;
+        mFirstPublicationDate = publicationDate != null ? publicationDate : "";
         mType = Type.get(type);
         mBookCount = bookCount;
     }
@@ -355,7 +356,7 @@ public class TocEntry
                 case TYPE_BOOK:
                     return Book;
                 default:
-                    throw new IllegalStateException("c=" + c);
+                    throw new UnexpectedValueException(c);
             }
         }
 
@@ -366,7 +367,7 @@ public class TocEntry
                 case Book:
                     return TYPE_BOOK;
                 default:
-                    throw new IllegalStateException();
+                    throw new UnexpectedValueException(this);
             }
         }
     }

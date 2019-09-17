@@ -27,17 +27,19 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public abstract class Options
         implements Parcelable {
 
     /**
-     * options as to *what* should be imported/exported.
-     * These are the common lower 8 bits of the 'what'.
+     * options as to what should be imported/exported.
+     * These are the common lower 8 bits of the 'options'.
      */
     public static final int NOTHING = 0;
     public static final int BOOK_CSV = 1;
@@ -49,11 +51,38 @@ public abstract class Options
     //public static final int IMPORT_6 = 1 << 6;
     //public static final int IMPORT_7 = 1 << 7;
     //public static final int DATABASE = 1 << 8;
-
+    @Nullable
+    public final Uri uri;
     /**
      * Bitmask.
+     * Contains the user selected options before doing the import/export.
+     * After the import/export, reflects the entities actually imported/exported.
      */
-    public int what;
+    public int options;
+
+    /**
+     * Constructor.
+     *
+     * @param options what to import/export
+     * @param uri     to read/write. <strong>can be {@code null}</strong> if instead we read/write
+     *                to a stream
+     */
+    protected Options(final int options,
+                      @Nullable final Uri uri) {
+        this.options = options;
+        this.uri = uri;
+    }
+
+    protected Options(@NonNull final Parcel in) {
+        options = in.readInt();
+        uri = in.readParcelable(getClass().getClassLoader());
+    }
+
+    public void validate() {
+        if (uri == null) {
+            throw new IllegalStateException("Uri not set");
+        }
+    }
 
     @SuppressWarnings("SameReturnValue")
     @Override
@@ -64,6 +93,7 @@ public abstract class Options
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(what);
+        dest.writeInt(options);
+        dest.writeParcelable(uri, flags);
     }
 }

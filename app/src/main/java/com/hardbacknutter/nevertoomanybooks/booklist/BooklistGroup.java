@@ -27,12 +27,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IntRange;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -41,6 +42,8 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -57,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 
 /**
@@ -96,6 +100,7 @@ public class BooklistGroup
     @NonNull
     final String mUuid;
     /** The kind of row/group we represent, see {@link RowKind}. */
+    @RowKind.Kind
     private final int mKind;
     /**
      * The domains represented by this group.
@@ -111,7 +116,7 @@ public class BooklistGroup
      * @param uuid               of the style
      * @param isUserDefinedStyle {@code true} if the group properties should be persisted
      */
-    private BooklistGroup(@IntRange(from = 0, to = RowKind.ROW_KIND_MAX) final int kind,
+    private BooklistGroup(@RowKind.Kind final int kind,
                           @NonNull final String uuid,
                           final boolean isUserDefinedStyle) {
         this.mKind = kind;
@@ -146,16 +151,17 @@ public class BooklistGroup
      *
      * @return a group based on the passed in kind
      */
+    @SuppressLint("SwitchIntDef")
     @NonNull
-    public static BooklistGroup newInstance(
-            @IntRange(from = 0, to = RowKind.ROW_KIND_MAX) final int kind,
-            @NonNull final String uuid,
-            final boolean isUserDefinedStyle) {
+    public static BooklistGroup newInstance(@RowKind.Kind final int kind,
+                                            @NonNull final String uuid,
+                                            final boolean isUserDefinedStyle) {
         switch (kind) {
             case RowKind.AUTHOR:
                 return new BooklistAuthorGroup(uuid, isUserDefinedStyle);
             case RowKind.SERIES:
                 return new BooklistSeriesGroup(uuid, isUserDefinedStyle);
+
             default:
                 return new BooklistGroup(kind, uuid, isUserDefinedStyle);
         }
@@ -173,10 +179,13 @@ public class BooklistGroup
     public static List<BooklistGroup> getAllGroups(@NonNull final String uuid,
                                                    final boolean isUserDefinedStyle) {
         List<BooklistGroup> list = new ArrayList<>();
-        //skip BOOK KIND
-        for (int kind = 1; kind < RowKind.size(); kind++) {
+        for (@RowKind.Kind int kind : RowKind.getAllGroupKinds()) {
             list.add(newInstance(kind, uuid, isUserDefinedStyle));
         }
+//        //skip BOOK kind
+//        for (int kind = 1; kind < RowKind.size(); kind++) {
+//            list.add(newInstance(kind, uuid, isUserDefinedStyle));
+//        }
         return list;
     }
 
@@ -196,6 +205,7 @@ public class BooklistGroup
         // now the prefs for this class (none on this level for now)
     }
 
+    @RowKind.Kind
     public int getKind() {
         return mKind;
     }
@@ -510,6 +520,7 @@ public class BooklistGroup
         }
     }
 
+
     /**
      * Get a RowKind with the static method: {@link #get(int kind)}.
      * <p>
@@ -518,6 +529,7 @@ public class BooklistGroup
      */
     public static final class RowKind {
 
+        /** See {@link Kind}. */
         // The code relies on BOOK being == 0
         public static final int BOOK = 0;
         public static final int AUTHOR = 1;
@@ -548,11 +560,9 @@ public class BooklistGroup
         public static final int DATE_ACQUIRED_DAY = 26;
         public static final int DATE_FIRST_PUBLICATION_YEAR = 27;
         public static final int DATE_FIRST_PUBLICATION_MONTH = 28;
-
         // NEWKIND: ROW_KIND_x
         // the highest valid index of kinds  ALWAYS update after adding a row kind...
-        static final int ROW_KIND_MAX = 28;
-
+        private static final int ROW_KIND_MAX = 28;
         private static final Map<Integer, RowKind> ALL_KINDS = new UniqueMap<>();
 
         static {
@@ -684,12 +694,14 @@ public class BooklistGroup
             if (BuildConfig.DEBUG /* always */) {
                 // Developer sanity check (for() loop starting at 1)
                 if (BOOK != 0) {
-                    throw new IllegalStateException("BOOK was " + BOOK);
+                    throw new UnexpectedValueException(BOOK);
                 }
 
                 // Developer sanity check
                 Set<String> prefixes = new HashSet<>();
-                for (int kind = 0; kind <= ROW_KIND_MAX; kind++) {
+                for (
+                        @Kind
+                        int kind = 0; kind <= ROW_KIND_MAX; kind++) {
                     if (!ALL_KINDS.containsKey(kind)) {
                         throw new IllegalStateException("Missing kind " + kind);
                     }
@@ -703,15 +715,12 @@ public class BooklistGroup
             }
         }
 
-        @IntRange(from = 0, to = RowKind.ROW_KIND_MAX)
+        @Kind
         private final int mKind;
-
         @StringRes
         private final int mLabelId;
-
         @NonNull
         private final CompoundKey mCompoundKey;
-
         @SuppressWarnings("NullableProblems")
         @NonNull
         private DomainDefinition mDisplayDomain;
@@ -736,7 +745,7 @@ public class BooklistGroup
          * @param domains all underlying domains.
          *                The first element will be used as the displayDomain.
          */
-        private RowKind(@IntRange(from = 1, to = RowKind.ROW_KIND_MAX) final int kind,
+        private RowKind(@Kind final int kind,
                         @StringRes final int labelId,
                         @NonNull final String prefix,
                         @NonNull final DomainDefinition... domains) {
@@ -749,23 +758,27 @@ public class BooklistGroup
         }
 
         /**
-         * Don't use {@link #ROW_KIND_MAX} for code. Use this method.
-         *
-         * @return the number of row kinds
-         */
-        public static int size() {
-            return ALL_KINDS.size();
-        }
-
-        /**
          * @param kind to create
          *
          * @return a cached instance of a RowKind
          */
         @NonNull
-        public static RowKind get(@IntRange(from = 0, to = RowKind.ROW_KIND_MAX) final int kind) {
+        public static RowKind get(@Kind final int kind) {
             //noinspection ConstantConditions
             return ALL_KINDS.get(kind);
+        }
+
+        /**
+         * Get the set of all valid <strong>Group</strong> values.
+         * In other words: all valid kinds, <strong>except</strong> the BOOK.
+         *
+         * @return Set
+         */
+        @NonNull
+        static Set<Integer> getAllGroupKinds() {
+            Set<Integer> set = ALL_KINDS.keySet();
+            set.remove(BOOK);
+            return set;
         }
 
         /**
@@ -809,6 +822,48 @@ public class BooklistGroup
                    + ", mDisplayDomain=" + mDisplayDomain
                    + ", mCompoundKey=" + mCompoundKey
                    + '}';
+        }
+
+        @IntDef({
+                        RowKind.BOOK,
+
+                        RowKind.AUTHOR,
+                        RowKind.SERIES,
+                        RowKind.GENRE,
+                        RowKind.PUBLISHER,
+                        RowKind.READ_STATUS,
+
+                        RowKind.LOANED,
+                        RowKind.DATE_PUBLISHED_YEAR,
+                        RowKind.DATE_PUBLISHED_MONTH,
+                        RowKind.TITLE_LETTER,
+                        RowKind.DATE_ADDED_YEAR,
+
+                        RowKind.DATE_ADDED_MONTH,
+                        RowKind.DATE_ADDED_DAY,
+                        RowKind.DATE_READ_YEAR,
+                        RowKind.FORMAT,
+                        RowKind.DATE_READ_MONTH,
+
+                        RowKind.DATE_READ_DAY,
+                        RowKind.LOCATION,
+                        RowKind.LANGUAGE,
+                        RowKind.DATE_LAST_UPDATE_YEAR,
+                        RowKind.DATE_LAST_UPDATE_MONTH,
+
+                        RowKind.DATE_LAST_UPDATE_DAY,
+                        RowKind.RATING,
+                        RowKind.BOOKSHELF,
+                        RowKind.DATE_ACQUIRED_YEAR,
+                        RowKind.DATE_ACQUIRED_MONTH,
+
+                        RowKind.DATE_ACQUIRED_DAY,
+                        RowKind.DATE_FIRST_PUBLICATION_YEAR,
+                        RowKind.DATE_FIRST_PUBLICATION_MONTH,
+                })
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface Kind {
+
         }
     }
 

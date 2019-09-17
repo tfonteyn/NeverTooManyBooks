@@ -41,6 +41,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -138,11 +139,6 @@ public final class DebugReport {
      */
     public static boolean sendDebugInfo(@NonNull final Context context) {
 
-        // Create a temp file, set to auto-delete at app close
-        File tmpFile = StorageUtils.getFile("DbExport-tmp.db");
-        tmpFile.deleteOnExit();
-        StorageUtils.exportFile(DBHelper.getDatabasePath(context), tmpFile.getName());
-
         // Collect all info
         StringBuilder message = new StringBuilder();
 
@@ -235,61 +231,68 @@ public final class DebugReport {
             Logger.debug(DebugReport.class, "sendDebugInfo", message);
         }
 
-
-        // setup the mail message
-        String subject = '[' + context.getString(R.string.app_name) + "] "
-                         + context.getString(R.string.debug_subject);
-        String[] to = context.getString(R.string.email_debug).split(";");
-        Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
-                                .setType("plain/text")
-                                .putExtra(Intent.EXTRA_SUBJECT, subject)
-                                .putExtra(Intent.EXTRA_EMAIL, to);
-
-        ArrayList<String> extraText = new ArrayList<>();
-        extraText.add(message.toString());
-        intent.putExtra(Intent.EXTRA_TEXT, extraText);
-
         try {
-            // Find all files of interest to send, root and log dirs
-            List<String> files =
-                    collectFiles(new File(StorageUtils.getRootStoragePath()),
-                                 new File(StorageUtils.getLogStoragePath()));
+            // Copy the database from the internal protected area to the cache area.
+            File dbFile = new File(StorageUtils.getCacheDir(), "DbExport-tmp.db");
+            dbFile.deleteOnExit();
+            StorageUtils.copyFile(DBHelper.getDatabasePath(context), dbFile);
+
+            // Find all files of interest to send in the cache and log dirs
+            List<String> files = collectFiles(StorageUtils.getCacheDir(), StorageUtils.getLogDir());
 
             // Build the attachment list
-            ArrayList<Uri> attachmentUris = new ArrayList<>();
+            ArrayList<Uri> uriList = new ArrayList<>();
             for (String fileSpec : files) {
-                File file = StorageUtils.getFile(fileSpec);
+                File file = new File(fileSpec);
                 if (file.exists() && file.length() > 0) {
                     Uri uri = FileProvider.getUriForFile(context, GenericFileProvider.AUTHORITY,
                                                          file);
-                    attachmentUris.add(uri);
+                    uriList.add(uri);
                 }
             }
 
-            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachmentUris);
+            // setup the mail message
+            String subject = '[' + context.getString(R.string.app_name) + "] "
+                             + context.getString(R.string.debug_subject);
+            String[] to = context.getString(R.string.email_debug).split(";");
+            ArrayList<String> bodyText = new ArrayList<>();
+            bodyText.add(message.toString());
+            Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
+                                    .setType("plain/text")
+                                    .putExtra(Intent.EXTRA_SUBJECT, subject)
+                                    .putExtra(Intent.EXTRA_EMAIL, to)
+                                    .putExtra(Intent.EXTRA_TEXT, bodyText)
+                                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
             String chooserText = context.getString(R.string.title_send_mail);
             context.startActivity(Intent.createChooser(intent, chooserText));
             return true;
 
-        } catch (@NonNull final NullPointerException e) {
+        } catch (@NonNull final NullPointerException | IOException e) {
             Logger.error(DebugReport.class, e);
             return false;
         }
     }
 
+    /**
+     * Collect applicable files for the list of directories.
+     * Does <strong>not</strong> visit sub directories.
+     *
+     * @param dirs to walk
+     *
+     * @return list with absolute path names
+     */
     private static List<String> collectFiles(@NonNull final File... dirs) {
         List<String> files = new ArrayList<>();
         for (File dir : dirs) {
-            for (String name : dir.list()) {
-                boolean send = false;
-                for (String prefix : FILE_PREFIXES) {
-                    if (name.startsWith(prefix)) {
-                        send = true;
-                        break;
+            if (dir.isDirectory()) {
+                //noinspection ConstantConditions
+                for (String name : dir.list()) {
+                    for (String prefix : FILE_PREFIXES) {
+                        if (name.startsWith(prefix)) {
+                            files.add(new File(name).getAbsolutePath());
+                            break;
+                        }
                     }
-                }
-                if (send) {
-                    files.add(name);
                 }
             }
         }

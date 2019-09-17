@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class ISBN {
 
-    private static final String UNABLE_TO_CONVERT_ERROR = "Unable to convert invalid ISBN";
+    private static final String ERROR_UNABLE_TO_CONVERT = "Unable to convert invalid ISBN";
 
     /**
      * <a href="https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside">
@@ -334,7 +334,7 @@ public class ISBN {
     private String to10()
             throws NumberFormatException {
         if (!isValid()) {
-            throw new NumberFormatException(UNABLE_TO_CONVERT_ERROR);
+            throw new NumberFormatException(ERROR_UNABLE_TO_CONVERT);
         }
 
         // already in ISBN-10 format, just return
@@ -364,7 +364,7 @@ public class ISBN {
     private String to13()
             throws NumberFormatException {
         if (!isValid()) {
-            throw new NumberFormatException(UNABLE_TO_CONVERT_ERROR);
+            throw new NumberFormatException(ERROR_UNABLE_TO_CONVERT);
         }
 
         // already in ISBN-13 format, just return

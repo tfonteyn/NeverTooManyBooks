@@ -54,6 +54,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -96,7 +99,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
@@ -108,14 +110,13 @@ import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
 public class BooksOnBookshelf
         extends BaseActivity {
 
+    private static final int FAB_ITEMS = 4;
     /**
      * Views for the current row level-text.
      * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
      */
     private final TextView[] mHeaderTextView = new TextView[2];
-
     private TextView mFilterTextView;
-
     /** The View for the list. */
     private RecyclerView mListView;
     private LinearLayoutManager mLayoutManager;
@@ -161,7 +162,6 @@ public class BooksOnBookshelf
                     // Do Nothing
                 }
             };
-
     /**
      * Sure, this could al be condensed to initBookList,
      * but the intention is to make the rebuild fine grained.
@@ -195,7 +195,6 @@ public class BooksOnBookshelf
             }
         }
     };
-
     /**
      * Apply the style that a user has selected.
      */
@@ -212,9 +211,54 @@ public class BooksOnBookshelf
                     initBookList(true);
                 }
             };
-
+    /**
+     * Array with the submenu FAB buttons. Element 0 shows at the bottom.
+     * Check if the menu is open: {@code mFabMenuItems[0].isShown()}.
+     */
+    private final ExtendedFloatingActionButton[] mFabMenuItems =
+            new ExtendedFloatingActionButton[FAB_ITEMS];
+    /** Whether to show header texts - this depends on the current style. */
+    private boolean mShowHeaderTexts;
     /** Define a scroller to update header detail when the top row changes. */
-    private RecyclerView.OnScrollListener mOnScrollListener;
+    private final RecyclerView.OnScrollListener mUpdateHeaderScrollListener =
+            new RecyclerView.OnScrollListener() {
+                public void onScrolled(@NonNull final RecyclerView recyclerView,
+                                       final int dx,
+                                       final int dy) {
+                    int currentTopRow = mLayoutManager.findFirstVisibleItemPosition();
+                    // Need to check isDestroyed() because BooklistPseudoCursor misbehaves when
+                    // activity terminates and closes cursor
+                    if (mModel.getLastTopRow() != currentTopRow
+                        && !isDestroyed()
+                        && mShowHeaderTexts) {
+                        setHeaderText(currentTopRow);
+                    }
+                }
+            };
+    /** The normal FAB button; opens or closes the FAB menu. */
+    private FloatingActionButton mFab;
+    /** Define a scroller to show, or collapse/hide the FAB. */
+    private final RecyclerView.OnScrollListener mUpdateFABVisibility =
+            new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull final RecyclerView recyclerView,
+                                       final int dx,
+                                       final int dy) {
+                    if (dy > 0 || dy < 0 && mFab.isShown()) {
+                        hideFABMenu();
+                        mFab.hide();
+                    }
+                }
+
+                @Override
+                public void onScrollStateChanged(@NonNull final RecyclerView recyclerView,
+                                                 final int newState) {
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        mFab.show();
+                    }
+                    super.onScrollStateChanged(recyclerView, newState);
+                }
+            };
 
     @Override
     protected int getLayoutId() {
@@ -243,21 +287,26 @@ public class BooksOnBookshelf
         handleStandardSearchIntent();
 
         mProgressBar = findViewById(R.id.progressBar);
-        mListView = findViewById(android.R.id.list);
+
+        // Setup the list view.
         mLayoutManager = new LinearLayoutManager(this);
+        mListView = findViewById(android.R.id.list);
         mListView.setLayoutManager(mLayoutManager);
+        mListView.addOnScrollListener(mUpdateHeaderScrollListener);
+        mListView.addOnScrollListener(mUpdateFABVisibility);
         mListView.addItemDecoration(
                 new DividerItemDecoration(this, mLayoutManager.getOrientation()));
 
+        // see class docs for FastScrollerOverlay
         if (!(mListView instanceof CFSRecyclerView)) {
             mListView.addItemDecoration(
                     new FastScrollerOverlay(this, R.drawable.fast_scroll_overlay));
         }
 
-        // create and hookup the list adapter.
+        // create and hookup the list adapter; initially without a cursor (item list)
         initAdapter(null);
 
-        // details for the header of the list.
+        // details for the header.
         mFilterTextView = findViewById(R.id.search_text);
         mBookCountView = findViewById(R.id.book_count);
         mHeaderTextView[0] = findViewById(R.id.level_1_text);
@@ -273,12 +322,52 @@ public class BooksOnBookshelf
                 .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
 
+        // Setup the FAB button and the linked menu.
+        mFab = findViewById(R.id.fab);
+        mFab.setOnClickListener(v -> showFABMenu(!mFabMenuItems[0].isShown()));
+        // modify FAB_ITEMS if adding more options.
+        mFabMenuItems[0] = findViewById(R.id.fab1);
+        mFabMenuItems[0].setOnClickListener(v -> startAddByScan());
+        mFabMenuItems[1] = findViewById(R.id.fab2);
+        mFabMenuItems[1].setOnClickListener(v -> startAddBySearch(BookSearchByIsbnFragment.TAG));
+        mFabMenuItems[2] = findViewById(R.id.fab3);
+        mFabMenuItems[2].setOnClickListener(v -> startAddBySearch(BookSearchByTextFragment.TAG));
+        mFabMenuItems[3] = findViewById(R.id.fab4);
+        mFabMenuItems[3].setOnClickListener(v -> startAddManually());
+
+
         if (savedInstanceState == null) {
             TipManager.display(this, R.string.tip_book_list, null);
         }
 
-        // populating the spinner and loading the list is done in onResume.
         Tracker.exitOnCreate(this);
+    }
+
+    private void showFABMenu(final boolean show) {
+        if (show) {
+            mFab.setImageResource(R.drawable.ic_close);
+        } else {
+            mFab.setImageResource(R.drawable.ic_add);
+        }
+        showFABMenuItems(show, mFabMenuItems);
+    }
+
+    private void showFABMenuItems(final boolean show,
+                                  @NonNull final ExtendedFloatingActionButton... fabItems) {
+        // negative -> move them upwards.
+        float base = -getResources().getDimension(R.dimen.fab_menu_offset_base);
+        float offset = -getResources().getDimension(R.dimen.fab_menu_offset);
+
+        for (int i = 0; i < fabItems.length; i++) {
+            ExtendedFloatingActionButton fab = fabItems[i];
+            if (show) {
+                fab.show();
+                fab.animate().translationY(base + ((i + 1) * offset));
+            } else {
+                fab.animate().translationY(0);
+                fab.hide();
+            }
+        }
     }
 
     @Override
@@ -305,23 +394,24 @@ public class BooksOnBookshelf
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
-        SubMenu addBookSubMenu = menu.addSubMenu(R.id.SUBMENU_BOOK_ADD, R.id.SUBMENU_BOOK_ADD,
-                                                 0, R.string.menu_add_book)
-                                     .setIcon(R.drawable.ic_add);
-        addBookSubMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SCAN, 0,
-                           R.string.menu_add_book_by_barcode_scan)
-                      .setIcon(R.drawable.ic_add_a_photo);
-        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN, 0,
-                           R.string.menu_add_book_by_isbn)
-                      .setIcon(R.drawable.ic_zoom_in);
-        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, 0,
-                           R.string.menu_add_book_by_internet_search)
-                      .setIcon(R.drawable.ic_zoom_in);
-        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_MANUALLY, 0,
-                           R.string.menu_add_book_manually)
-                      .setIcon(R.drawable.ic_keyboard);
+        // Using a FAB now. Need to decide making a user option to use FAB or options menu.
+//        SubMenu addBookSubMenu = menu.addSubMenu(R.id.SUBMENU_BOOK_ADD, R.id.SUBMENU_BOOK_ADD,
+//                                                 0, R.string.menu_add_book)
+//                                     .setIcon(R.drawable.ic_add);
+//        addBookSubMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+//
+//        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SCAN, 0,
+//                           R.string.menu_add_book_by_barcode_scan)
+//                      .setIcon(R.drawable.ic_add_a_photo);
+//        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN, 0,
+//                           R.string.menu_add_book_by_isbn)
+//                      .setIcon(R.drawable.ic_zoom_in);
+//        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, 0,
+//                           R.string.menu_add_book_by_internet_search)
+//                      .setIcon(R.drawable.ic_zoom_in);
+//        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_MANUALLY, 0,
+//                           R.string.menu_add_book_manually)
+//                      .setIcon(R.drawable.ic_keyboard);
 
         menu.add(Menu.NONE, R.id.MENU_SORT, 0, R.string.menu_sort_and_style_ellipsis)
             .setIcon(R.drawable.ic_sort_by_alpha)
@@ -349,7 +439,6 @@ public class BooksOnBookshelf
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, R.string.lbl_style);
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, R.string.debug_history);
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TABLES, 0, R.string.debug_bob_tables);
-            debugSubMenu.add(Menu.NONE, R.id.MENU_EXPORT_DATABASE, 0, R.string.lbl_copy_database);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -358,17 +447,30 @@ public class BooksOnBookshelf
     @CallSuper
     public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
         menu.findItem(R.id.MENU_CLEAR_FILTERS).setEnabled(!mModel.getSearchCriteria().isEmpty());
+
+        hideFABMenu();
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    /**
+     * FIXME: calling hideFABMenu() from a dozen locations is not a good solution.
+     */
+    private void hideFABMenu() {
+        if (mFabMenuItems[0].isShown()) {
+            showFABMenu(false);
+        }
     }
 
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+
+        hideFABMenu();
+
         switch (item.getItemId()) {
 
             case R.id.MENU_SORT:
-                TipManager.display(this, R.string.tip_booklist_style_menu,
-                                   this::showStylePicker);
+                TipManager.display(this, R.string.tip_booklist_style_menu, this::showStylePicker);
                 return true;
 
             case R.id.MENU_EXPAND:
@@ -395,31 +497,19 @@ public class BooksOnBookshelf
             }
 
             case R.id.MENU_BOOK_ADD_BY_SCAN: {
-                Intent intent = new Intent(this, BookSearchActivity.class)
-                                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG,
-                                                  BookSearchByIsbnFragment.TAG)
-                                        .putExtra(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE,
-                                                  true);
-                startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+                startAddByScan();
                 return true;
             }
             case R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN: {
-                Intent intent = new Intent(this, BookSearchActivity.class)
-                                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG,
-                                                  BookSearchByIsbnFragment.TAG);
-                startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+                startAddBySearch(BookSearchByIsbnFragment.TAG);
                 return true;
             }
             case R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT: {
-                Intent intent = new Intent(this, BookSearchActivity.class)
-                                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG,
-                                                  BookSearchByTextFragment.TAG);
-                startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+                startAddBySearch(BookSearchByTextFragment.TAG);
                 return true;
             }
             case R.id.MENU_BOOK_ADD_MANUALLY: {
-                Intent intent = new Intent(this, EditBookActivity.class);
-                startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+                startAddManually();
                 return true;
             }
 
@@ -445,11 +535,6 @@ public class BooksOnBookshelf
                                          mModel.debugBuilderTables());
                             return true;
 
-                        case R.id.MENU_EXPORT_DATABASE:
-                            StorageUtils.exportDatabaseFiles(this);
-                            UserMessage.show(mListView, R.string.progress_end_backup_success);
-                            return true;
-
                         default:
                             break;
                     }
@@ -458,6 +543,26 @@ public class BooksOnBookshelf
                 return super.onOptionsItemSelected(item);
             }
         }
+    }
+
+    private void startAddByScan() {
+        Intent intent = new Intent(this, BookSearchActivity.class)
+                                .putExtra(UniqueId.BKEY_FRAGMENT_TAG,
+                                          BookSearchByIsbnFragment.TAG)
+                                .putExtra(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE,
+                                          true);
+        startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+    }
+
+    private void startAddBySearch(final String tag) {
+        Intent intent = new Intent(this, BookSearchActivity.class)
+                                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, tag);
+        startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+    }
+
+    private void startAddManually() {
+        Intent intent = new Intent(this, EditBookActivity.class);
+        startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
     }
 
     /** Syntax sugar. */
@@ -597,7 +702,6 @@ public class BooksOnBookshelf
                 if (resultCode == Activity.RESULT_OK) {
 
                     if ((data != null) && data.hasExtra(UniqueId.BKEY_IMPORT_RESULT)) {
-                        // RestoreActivity:
                         int options = data.getIntExtra(UniqueId.BKEY_IMPORT_RESULT,
                                                        Options.NOTHING);
                         if (options != 0) {
@@ -615,7 +719,6 @@ public class BooksOnBookshelf
                         }
                     }
                     //else if ((data != null) && data.hasExtra(UniqueId.BKEY_EXPORT_RESULT)) {
-                    // BackupActivity:
                     // int options = data.getIntExtra(UniqueId.BKEY_EXPORT_RESULT, Options.NOTHING);
                     // nothing to do
                     //}
@@ -770,6 +873,7 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public void onPause() {
+        hideFABMenu();
         if (mModel.getSearchCriteria().isEmpty()) {
             savePosition();
         }
@@ -777,18 +881,25 @@ public class BooksOnBookshelf
     }
 
     /**
+     * If the FAB is showing, hide it.
      * If the current list is has any search criteria enabled, clear them and rebuild the list.
+     * <p>
      * Otherwise handle the back-key as normal.
      */
     @Override
     public void onBackPressed() {
-        if (mModel.getSearchCriteria().isEmpty()) {
-            super.onBackPressed();
+        if (mFabMenuItems[0].isShown()) {
+            showFABMenu(false);
+            return;
+        }
 
-        } else {
+        if (!mModel.getSearchCriteria().isEmpty()) {
             mModel.getSearchCriteria().clear();
             initBookList(true);
+            return;
         }
+
+        super.onBackPressed();
     }
 
 
@@ -894,25 +1005,7 @@ public class BooksOnBookshelf
         }
 
         // setup the list header
-        final boolean showHeaderTexts = setupListHeader(count > 0);
-
-        // Define a scroller to update header detail when the top row changes
-        mListView.removeOnScrollListener(mOnScrollListener);
-        mOnScrollListener = new RecyclerView.OnScrollListener() {
-            public void onScrolled(@NonNull final RecyclerView recyclerView,
-                                   final int dx,
-                                   final int dy) {
-                int currentTopRow = mLayoutManager.findFirstVisibleItemPosition();
-                // Need to check isDestroyed() because BooklistPseudoCursor misbehaves when
-                // activity terminates and closes cursor
-                if (mModel.getLastTopRow() != currentTopRow
-                    && !isDestroyed()
-                    && showHeaderTexts) {
-                    setHeaderText(currentTopRow);
-                }
-            }
-        };
-        mListView.addOnScrollListener(mOnScrollListener);
+        mShowHeaderTexts = setupListHeader(count > 0);
 
         // all set, we can close the old list
         if (oldCursor != null) {
@@ -1147,7 +1240,7 @@ public class BooksOnBookshelf
 
                 menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS,
                          MenuHandler.ORDER_SEND_TO_GOODREADS, R.string.gr_menu_send_to_goodreads)
-                    .setIcon(R.drawable.ic_goodreads2);
+                    .setIcon(R.drawable.ic_goodreads);
 
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                          MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_fields)
@@ -1591,14 +1684,13 @@ public class BooksOnBookshelf
         String searchText = "";
         if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
             // Return the search results instead of all books (for the bookshelf)
-            searchText = getIntent().getStringExtra(SearchManager.QUERY).trim();
+            searchText = getIntent().getStringExtra(SearchManager.QUERY);
 
         } else if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
             // Handle a suggestions click (because the suggestions all use ACTION_VIEW)
             searchText = getIntent().getDataString();
         }
         mModel.getSearchCriteria().setKeywords(searchText);
-//        setFilterTextField();
     }
 
     /**
@@ -1633,7 +1725,7 @@ public class BooksOnBookshelf
     private boolean setupListHeader(final boolean listHasItems) {
         setFilterTextField();
         setBookCountField();
-        final boolean showHeaderTexts = setHeaderTextVisibility();
+        boolean showHeaderTexts = setHeaderTextVisibility();
         // Set the initial details to the current first visible row.
         if (listHasItems && showHeaderTexts) {
             setHeaderText(mModel.getTopRow());
@@ -1658,8 +1750,7 @@ public class BooksOnBookshelf
      * Display the number of books in the current list.
      */
     private void setBookCountField() {
-        int showHeaderFlags = mModel.getCurrentStyle().getShowHeaderInfo();
-        if ((showHeaderFlags & BooklistStyle.SUMMARY_SHOW_COUNT) != 0) {
+        if (mModel.getCurrentStyle().showBookCount()) {
             int totalBooks = mModel.getTotalBooks();
             int uniqueBooks = mModel.getUniqueBooks();
             String stringArgs;
@@ -1724,7 +1815,7 @@ public class BooksOnBookshelf
             BooklistPseudoCursor cursor = mModel.getListCursor();
             //noinspection ConstantConditions
             if (cursor.moveToPosition(mModel.getLastTopRow())) {
-                final BooklistMappedCursorRow row = cursor.getCursorRow();
+                BooklistMappedCursorRow row = cursor.getCursorRow();
 
                 String[] lines = row.getLevelText(this);
                 for (int i = 0; i < lines.length; i++) {

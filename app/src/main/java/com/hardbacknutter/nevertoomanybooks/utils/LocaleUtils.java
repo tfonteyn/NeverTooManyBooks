@@ -38,7 +38,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -83,10 +85,8 @@ public final class LocaleUtils {
      * in the default setting in the preference screen.
      */
     private static final String SYSTEM_LANGUAGE = "system";
-    /**
-     * TEST: We keep strong references. Check if this ever is an issue.
-     */
-    private static final List<OnLocaleChangedListener> sOnLocaleChangedListeners =
+
+    private static final List<WeakReference<OnLocaleChangedListener>> sOnLocaleChangedListeners =
             new ArrayList<>();
 
     /** Remember the current language to detect when language is switched. */
@@ -110,7 +110,8 @@ public final class LocaleUtils {
     }
 
     /**
-     * Test if the passed Locale is actually a 'real' Locale by checking ISO codes.
+     * Test if the passed Locale is actually a 'real' Locale
+     * by comparing the ISO3 code and the display name. If they are different we assume 'valid'
      *
      * @param locale to test
      *
@@ -121,8 +122,8 @@ public final class LocaleUtils {
             return false;
         }
         try {
-            return locale.getISO3Language() != null
-                   && locale.getISO3Country() != null;
+            String dl = locale.getDisplayLanguage();
+            return !dl.isEmpty() && !dl.equalsIgnoreCase(locale.getISO3Language());
 
         } catch (@NonNull final MissingResourceException e) {
             // log but ignore.
@@ -293,26 +294,49 @@ public final class LocaleUtils {
         }
     }
 
+    /** No protection against adding twice. */
     public static void registerOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
         synchronized (sOnLocaleChangedListeners) {
-            if (!sOnLocaleChangedListeners.contains(listener)) {
-                sOnLocaleChangedListeners.add(listener);
+            sOnLocaleChangedListeners.add(new WeakReference<>(listener));
+        }
+    }
+
+    /**
+     * Remove the specified listener (and any dead ones we come across).
+     *
+     * @param listener to remove
+     */
+    public static void unregisterOnLocaleChangedListener(
+            @NonNull final OnLocaleChangedListener listener) {
+        synchronized (sOnLocaleChangedListeners) {
+            Iterator<WeakReference<OnLocaleChangedListener>> it =
+                    sOnLocaleChangedListeners.iterator();
+            while (it.hasNext()) {
+                WeakReference<OnLocaleChangedListener> listenerRef = it.next();
+                if (listenerRef.get() == null || listenerRef.get().equals(listener)) {
+                    // remove dead listeners and the specified listener
+                    it.remove();
+                }
             }
         }
     }
 
-    public static void unregisterOnLocaleChangedListener(
-            @NonNull final OnLocaleChangedListener listener) {
-        synchronized (sOnLocaleChangedListeners) {
-            sOnLocaleChangedListeners.remove(listener);
-        }
-    }
-
+    /**
+     * Broadcast to registered listener. Dead listeners are removed.
+     */
     public static void onLocaleChanged() {
         synchronized (sOnLocaleChangedListeners) {
-            for (OnLocaleChangedListener listener : sOnLocaleChangedListeners) {
-                listener.onLocaleChanged();
+            Iterator<WeakReference<OnLocaleChangedListener>> it =
+                    sOnLocaleChangedListeners.iterator();
+            while (it.hasNext()) {
+                WeakReference<OnLocaleChangedListener> listenerRef = it.next();
+                if (listenerRef.get() != null) {
+                    listenerRef.get().onLocaleChanged();
+                } else {
+                    // remove dead listeners.
+                    it.remove();
+                }
             }
         }
     }

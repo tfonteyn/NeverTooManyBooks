@@ -33,7 +33,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -43,6 +42,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntity;
@@ -62,14 +62,17 @@ public class TarBackupReader
     private static final Pattern LEGACY_STYLES_PATTERN =
             Pattern.compile('^' + "style.blob." + "[0-9]*$",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /** The archive container. */
     @NonNull
-    private final TarBackupContainer mContainer;
-    /** The INFO data read from the start of the archive. */
-    @Nullable
-    private BackupInfo mInfo;
+    private final BackupContainer mContainer;
     /** The data stream for the archive. */
     @Nullable
     private TarArchiveInputStream mInputStream;
+
+    /** The INFO data read from the start of the archive. */
+    @Nullable
+    private BackupInfo mInfo;
     /** Used to allow 'peeking' at the input stream. */
     @Nullable
     private ReaderEntity mPushedEntity;
@@ -78,10 +81,10 @@ public class TarBackupReader
      * Constructor.
      *
      * @param context   Current context
-     * @param container Parent
+     * @param container The archive container.
      */
     TarBackupReader(@NonNull final Context context,
-                    @NonNull final TarBackupContainer container) {
+                    @NonNull final BackupContainer container) {
         super(context);
         mContainer = container;
     }
@@ -199,7 +202,10 @@ public class TarBackupReader
     }
 
     /**
-     * Get the input stream.
+     * Get the input stream; (re)creating as needed.
+     *
+     * <strong>Note:</strong> we don't access mInputStream directly for reading,
+     * as other code can set it to null when needed.
      *
      * @return the stream
      *
@@ -209,10 +215,14 @@ public class TarBackupReader
     private TarArchiveInputStream getInputStream()
             throws IOException {
         if (mInputStream == null) {
-            // Open the file and create the archive stream
-            FileInputStream is = new FileInputStream(mContainer.getFile());
+            InputStream is = App.getAppContext().getContentResolver()
+                                .openInputStream(mContainer.getUri());
+            if (is == null) {
+                throw new IOException("InputStream was NULL");
+            }
             mInputStream = new TarArchiveInputStream(is);
         }
+
         return mInputStream;
     }
 
@@ -229,8 +239,8 @@ public class TarBackupReader
     @CallSuper
     public void close()
             throws IOException {
-        super.close();
         reset();
+        super.close();
     }
 
     /**

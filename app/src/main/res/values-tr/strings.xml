@@ -73,9 +73,9 @@
     <string name="X_btn_set_authors">Yazar ekle…</string>
     <string name="X_btn_set_series">Seri ekle…</string>
     <string name="X_error_file_must_contain_column">Dosya adı %1$s adında bir sütun içermeli</string>
-    <string name="X_info_no_authors_yet">Bu kitap için hiçbir yazar eklenmemiş. Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak yazar ekleyin.</string>
-    <string name="X_info_no_books_yet">Bu kitaplıkta hiç kitap yok. Lütfen ekranın alt kısmındaki bölümü kullanarak kitap ekleyin.</string>
-    <string name="X_info_no_series_yet">Bu kitap için hiçbir seri eklenmemiş. Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak seri ekleyin.</string>
+    <string name="X_info_no_authors_yet">Bu kitap için hiçbir yazar eklenmemiş.\n Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak yazar ekleyin.</string>
+    <string name="X_info_no_books_yet">Bu kitaplıkta hiç kitap yok.\n Lütfen ekranın alt kısmındaki bölümü kullanarak kitap ekleyin.</string>
+    <string name="X_info_no_series_yet">Bu kitap için hiçbir seri eklenmemiş.\n Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak seri ekleyin.</string>
     <string name="X_info_reset_tips">Bazen bu uygulama %1$s\'den isteğe bağlı iletiler gösterebilir.\n Devre dışı kalmış olabilecek bu iletileri sıfırlamak için aşağıdaki düğmeye dokunun.</string>
     <string name="X_lbl_loan_book_available">Uygun</string>
     <string name="X_lbl_select_fields_to_update">Güncellenecek alanları seçin</string>
@@ -168,9 +168,9 @@
     <string name="error_storage_not_writable">Lütfen deponun yazılabilir olduğunu ve yeterli alana sahip olduğunu kontrol edin.</string>
     <string name="error_unexpected_error">Beklenmeyen bir hata oluştu, lütfen olayla ilgili ayrıntıları ana seçkedeki “Ayarlar” seçeneğinden bize gönderin</string>
     <string name="error_unknown">Bilinmeyen bir hata oluştu</string>
-    <string name="export_csv_email">Dışarı aktarılan veriyi e-posta ile göndermemizi ister misiniz?</string>
+    <string name="confirm_email_export">Dışarı aktarılan veriyi e-posta ile göndermemizi ister misiniz?</string>
     <string name="export_info_backup_all">Tüm kitaplar, kapaklar, ayarlar ve kişiselleştirilmiş biçemler arşive aktarılacaktır.</string>
-    <string name="export_info_success_archive_details">%2$s adında bir %3$s dosyası SD kartınızın “%1$s” dizininde oluşturuldu.\n\nBu dosyayı el ile başka bir yere yedeklemeniz aygıtınızın hasar görmesi, kaybolması veya çalınması durumunda verilerinizin korunması için tavsiye edilir.</string>
+    <string name="X_export_info_success_archive_details">%2$s adında bir %3$s dosyası SD kartınızın “%1$s” dizininde oluşturuldu.\n\nBu dosyayı el ile başka bir yere yedeklemeniz aygıtınızın hasar görmesi, kaybolması veya çalınması durumunda verilerinizin korunması için tavsiye edilir.</string>
     <string name="export_option_books_since_date">Şu günaydan bu yana eklenen veya güncellenen kitaplar:</string>
     <string name="export_option_books_since_last_full_backup">Son tüm yedeklemeden bu yana eklenen veya güncellenen kitaplar</string>
     <string name="export_option_info_books_since_date">Seçeneğe bağlı olarak, dışarı aktarılacak kitaplarda ve/veya kapak görsellerinde kullanılacak bir günay seçin:</string>
@@ -224,8 +224,7 @@
     <string name="hint_field_not_set">Ayarlı değil</string>
     <string name="hint_field_not_set_with_brackets">(boş)</string>
     <string name="hint_search_text">Metin ve/veya ISBN</string>
-    <string name="import_error_csv_file_must_contain_any_column">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
-    <string name="import_error_csv_file_not_found">Herhangi bir dışa aktarma dosyası bulunamadı</string>
+    <string name="error_csv_import_file_must_contain_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
     <string name="import_export_option_csv">Kitaplar (*.csv)</string>
     <string name="import_export_option_xml">Tüm veriler XML formatında</string>
     <string name="import_export_option_xml_info">Yalnızca XML dışa aktarma, içe aktarma yok.</string>
@@ -234,11 +233,10 @@
     <string name="import_option_new_and_changed_books">Yeni ve güncellenmiş kitaplar</string>
     <string name="import_options_dialog_title">Neyin içe aktarılacağını seçin</string>
     <string name="import_warning_old_archive">Bu seçenek eski arşiv sürümleri için geçerli değildir.</string>
-    <string name="import_warning_select_csv_file">Birden fazla dışa aktarma dosyası bulundu; lütfen içe aktarmak üzere aşağıdaki dışa aktarma dosyalarından birini seçin</string>
     <string name="info_authorized">Yetkilendirilmiş</string>
     <string name="info_cleanup_files_text">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle “Bilgi gönder” düğmesini kullanmayı deneyin.</string>
     <string name="info_displaying_n_books_in_m_entries">%2$d giride %1$d kitap görüntüleniyor</string>
-    <string name="info_install_scanner">ISBN barkodlarını taramak için, lütfen bu barkod tarayıcı uygulamalarından birini kurmak için aşağıya dokunun.</string>
+    <string name="X_info_install_scanner">ISBN barkodlarını taramak için, lütfen bu barkod tarayıcı uygulamalarından birini kurmak için aşağıya dokunun.</string>
     <string name="info_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="info_not_authorized">Yetkilendirilmemiş</string>
     <string name="info_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır.\n Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “Kimlik Bilgileri” bölümünün altında bulabilirsiniz.</string>
@@ -340,6 +338,7 @@
     <string name="lbl_series">Dizi</string>
     <string name="lbl_series_num">#</string>
     <string name="lbl_settings">Yeğlenenler</string>
+    <string name="menu_settings">Yeğlenenler</string>
     <string name="lbl_signed">İmzalanmış</string>
     <string name="lbl_about_sourcecode">Kaynak kodu</string>
     <string name="lbl_about_special_thanks">Teşekkürlerimizle</string>
@@ -371,8 +370,8 @@
     <string name="menu_add_book_by_barcode_scan">Barkod/ISBN tara</string>
     <string name="menu_add_book_by_isbn">ISBN gir</string>
     <string name="menu_add_book_manually">El ile ekle</string>
-    <string name="menu_administration">Ayarlar</string>
-    <string name="title_administration">Yönetim işlevleri</string>
+    <string name="menu_administration">Yönetim…</string>
+    <string name="title_administration">Yönetim</string>
     <string name="menu_amazon_books_by_author">Bu yazarın kitapları</string>
     <string name="menu_amazon_books_by_author_in_series">Yazara/diziye göre kitaplar</string>
     <string name="menu_amazon_books_in_series">Bu dizideki kitaplar</string>
@@ -380,8 +379,8 @@
     <string name="menu_author_works_all">Hepsini Göster ↓</string>
     <string name="menu_author_works_book">Sadece kitaplar</string>
     <string name="menu_author_works_toc">Yalnızca içerik başlıkları</string>
-    <string name="menu_booklist_styles">Kitap listesi stilleri…</string>
-    <string name="menu_bookshelves">Kitaplıkları…</string>
+    <string name="menu_booklist_styles">Kitap listesi stilleri</string>
+    <string name="menu_bookshelves">Kitaplıkları</string>
     <string name="menu_clear_search_filters">Filtreleri Temizle</string>
     <string name="menu_collapse_all">Hepsini gizle</string>
     <string name="menu_cover_replace_from_camera">Kameradan…</string>
@@ -433,17 +432,17 @@
     <string name="progress_end_cancelled">İptal edildi</string>
     <string name="progress_end_cancelled_info">İptal edildi - %1$s</string>
     <string name="progress_end_import_complete">İçe aktarma başarılı</string>
-    <string name="progress_end_num_books_searched">%1$d kitap arandı</string>
+    <string name="progress_end_n_books_searched">%1$d kitap arandı</string>
     <string name="progress_msg_adding_book">Kitap ekle…</string>
-    <string name="progress_msg_backing_up">Yedekleniyor…</string>
+    <string name="title_backing_up">Yedekleniyor…</string>
     <string name="progress_msg_cancelling">İptal ediliyor…</string>
     <string name="progress_msg_connecting">Ağ sayfasına bağlanılıyor…</string>
-    <string name="progress_msg_covers_handled">%1$d kapak işlendi</string>
-    <string name="progress_msg_covers_handled_missing">%1$d kapak işlendi (%2$d bulunamadı)</string>
-    <string name="progress_msg_covers_handled_missing_skipped">%1$d kapak işlendi (%2$d bulunamadı, %3$d atlandı)</string>
-    <string name="progress_msg_export_starting">Dışa aktarma başlıyor…</string>
+    <string name="X_progress_msg_n_covers_processed">%1$d kapak işlendi</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d kapak işlendi (%2$d bulunamadı)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d kapak işlendi (%2$d bulunamadı, %3$d atlandı)</string>
+    <string name="X_progress_msg_export_starting">Dışa aktarma başlıyor…</string>
     <string name="progress_msg_finding_editions">Sürümler bulunuyor…</string>
-    <string name="progress_msg_importing">İçe aktarılıyor…</string>
+    <string name="title_importing">İçe aktarılıyor…</string>
     <string name="progress_msg_loading">Yükleniyor…</string>
     <string name="progress_msg_n_created_m_updated">%1$d oluşturuldu, %2$d güncellendi</string>
     <string name="progress_msg_optimizing">Veritabanları eniyileniyor…</string>
@@ -451,7 +450,6 @@
     <string name="progress_msg_process_booklist_style">Kitap Listesi Stilleri…</string>
     <string name="progress_msg_process_cover">Kapaklar…</string>
     <string name="progress_msg_process_preferences">Tercihler…</string>
-    <string name="X_progress_msg_reading_directory">Dizin aranıyor…</string>
     <string name="progress_msg_rebuilding_search_index">Arama dizini yeniden oluşturuluyor…</string>
     <string name="progress_msg_saving_image">Resim kaydediliyor…</string>
     <string name="progress_msg_searching">Aranıyor…</string>
@@ -542,7 +540,7 @@
     <string name="tip_view_only_book_details">Bu dizelgedeki herhangi bir öğeye dokunduğunuzda artık salt okunur kitap ayrıntıları ekranına gidebilirsiniz. İlgili ayar için “Diğer yeğlenenler” bölümüne bakın.</string>
     <string name="tip_view_only_help">Bu ekran salt okunur kitap ayrıntıları ekranıdır; sağa/sola kaydırarak diğer kitaplara geçebilir, seçke düğmesi veya taşan seçke simgesini kullanıp seçenekler bölümünden kitabı düzenleyebilirsiniz.</string>
     <string name="title_add_book">Kitap ekle</string>
-    <string name="title_backup">Yedekle</string>
+    <string name="X_title_backup">Yedekle</string>
     <string name="title_clone_style">Biçemi çoğalt</string>
     <string name="title_cover">Kapak resmi</string>
     <string name="title_delete_book">Kitap sil</string>
@@ -554,9 +552,9 @@
     <string name="title_edit_bookshelf">Kitaplığı düzenle</string>
     <string name="title_edit_bookshelves">Kitaplıkları yönet</string>
     <string name="title_edit_style">Biçemi düzenle</string>
-    <string name="title_import">Ithal etmek</string>
+    <string name="X_title_import">Ithal etmek</string>
     <string name="title_import_book_data">Kitapları içe aktar</string>
-    <string name="title_install_scan">Barkod Tarayıcıyı yükleyin</string>
+    <string name="X_title_install_scan">Barkod Tarayıcıyı yükleyin</string>
     <string name="title_registration">LibraryThing Kayıt</string>
     <string name="title_scope_of_change">Değişiklik kapsamı</string>
     <string name="title_search_for">Yazar veya kitap adı ara</string>
@@ -566,7 +564,6 @@
     <string name="title_select_style">Biçem seç</string>
     <string name="title_send_mail">E-posta…</string>
     <string name="unknown">Bilinmeyen</string>
-    <string name="up_folder">Yukarı</string>
     <string name="vldt_blank_required_for_x">“%1$s” için boş değer gerekli</string>
     <string name="vldt_boolean_expected_for_x">“%1$s” için bir ikili (bool) değer gerekli (0,1,t,f,true,false)</string>
     <string name="vldt_date_expected_for_x">“%1$s” için bir tarih gerekli</string>
@@ -584,11 +581,11 @@
     <string name="info_install_scanner_recommendation">Biz Zxing barkod tarayıcısını yüklemenizi öneriyoruz. Eğer zaten yüklüyse silip yeniden yüklemeniz yardımcı olabilir.</string>
     <string name="warning_book_no_longer_exists">Belirtilen kitap artık yok</string>
     <string name="warning_book_not_found">Aranan kitap bulunamadı. Bazen doğru barkodu kitap kapağının içinde bulabilirsiniz. Bulamazsanız, bilgileri elle giriniz.</string>
-    <string name="warning_book_was_deleted_uc">BU BETİK SİLİNDİ</string>
+    <string name="X_warning_book_was_deleted_uc">BU BETİK SİLİNDİ</string>
     <string name="warning_cannot_delete_1st_bs">Birinci kitaplık silinemiyor</string>
     <string name="warning_cover_copy_failed">Resim eşlemlenemedi</string>
     <string name="warning_cover_not_found">Görsel bulunamadı</string>
-    <string name="warning_enter_valid_filename">Lütfen geçerli bir dosya adı giriniz.</string>
+    <string name="X_warning_enter_valid_filename">Lütfen geçerli bir dosya adı giriniz.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Eğer gün belirtmiş iseniz hem ay hem yıl bölümlerini de doldurmalısınız.</string>
     <string name="warning_if_month_set_year_must_be">Eğer bir ay belirtmiş iseniz yıl da belirtmelisiniz.</string>
     <string name="warning_immediate_global_changes">Not: Tüm kaydedilmiş değişiklikler anında ve genel olarak uygulanır</string>
@@ -598,9 +595,8 @@
     <string name="warning_no_editions">Ek yayın bilgisi yok</string>
     <string name="warning_no_isbn_stored_for_book">Bu kitap için bir ISBN depolanmamış</string>
     <string name="warning_no_matching_book_found">Eşleşen kitap bulunamadı</string>
-    <string name="warning_no_parent_directory_found">Daha üst bir dizin bulunamadı</string>
     <string name="warning_required_at_least_one">En az bir alan boş bırakılmamalıdır</string>
-    <string name="warning_select_an_existing_file">Var olan bir dosyayı seçin</string>
+    <string name="X_warning_select_an_existing_file">Var olan bir dosyayı seçin</string>
     <string name="warning_select_min_1_field">Güncellemek için en azından bir alan seçin</string>
     <string name="warning_series_already_in_list">Seri zaten ekli</string>
     <string name="warning_toc_confirm">Lütfen bu seçki adlarının doğru olduğunu onaylayın</string>
@@ -628,5 +624,9 @@
     <string name="lbl_author_primary">yazar</string>
     <string name="menu_search_local">Bölgesel arama</string>
     <string name="pg_reformat">Yeniden biçimlendirme</string>
+    <string name="progress_msg_n_books_processed">%1$d kitap işlendi</string>
+    <string name="X_progress_end_n_books_exported">%1$d kitap ihraç edildi</string>
+    <string name="warning_select_an_existing_folder">Lütfen varolan bir dizini seçin.</string>
+    <string name="lbl_copy_database_blurb">Dışa aktarılacak dizini seçin.</string>
 
 </resources>

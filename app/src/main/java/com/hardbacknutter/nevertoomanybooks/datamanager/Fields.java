@@ -985,7 +985,7 @@ public class Fields {
                     imageFile = StorageUtils.getTempCoverFile();
                 } else {
                     imageView.setTag(R.id.TAG_UUID, uuid);
-                    imageFile = StorageUtils.getCoverForUuid(uuid);
+                    imageFile = StorageUtils.getCoverFileForUuid(uuid);
                 }
                 ImageUtils.setImageView(imageView, imageFile, mMaxWidth, mMaxHeight, true);
             } else {
@@ -1366,7 +1366,6 @@ public class Fields {
     /**
      * Field definition contains all information and methods necessary to manage display and
      * extraction of data in a view.
-     * ENHANCE: make generic? and use an actual type
      */
     public static class Field<T> {
 

@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,75 +38,83 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * An entity (item) in the database which is capable of finding itself in the database
  * without using its id.
- * <p>
- * TODO: it seems the "isUniqueById" and the "uniqueHashCode" (formerly a unique 'name' was used)
- * is overly complicated.
  */
 public interface ItemWithFixableId {
 
     /**
-     * Passed a list of Objects, remove duplicates based on the
-     * {@link ItemWithFixableId#uniqueHashCode()} result.
+     * Passed a list of Objects, remove duplicates.
      * <p>
      * ENHANCE: Add {@link Author} aliases table to allow further pruning
      * (e.g. Joe Haldeman == Joe W Haldeman).
      * ENHANCE: Add {@link Series} aliases table to allow further pruning
      * (e.g. 'Amber Series' <==> 'Amber').
      *
-     * <strong>Note:</strong> the context and the fallbackLocale must both be null,
-     * or both be non-null.
+     * <strong>Note:</strong> if the db is null, then context and fallbackLocale are ignored.
+     * If the db is non-null, then context and fallbackLocale must be valid.
      *
      * @param <T>            ItemWithFixableId object
-     * @param context        Current context
-     * @param db             Database Access
      * @param list           List to clean up
-     * @param fallbackLocale Locale to use if the item has none set, can be set to {@code null}
-     *                       if <strong>the item does not support locales</strong>
-     *                       Note that if the locale is set, then the context must also be set.
+     * @param context        Current context
+     * @param db             Database Access; can be {@code null} in which case we use the id
+     *                       from the item directly. If set, then we call {@link #fixId} first.
+     * @param fallbackLocale Locale to use if the item has none set.
      *
      * @return {@code true} if the list was modified.
      */
-    static <T extends ItemWithFixableId> boolean pruneList(@NonNull final Context context,
-                                                           @NonNull final DAO db,
-                                                           @NonNull final List<T> list,
-                                                           @NonNull final Locale fallbackLocale) {
+    static <T extends ItemWithFixableId> boolean pruneList(@NonNull final List<T> list,
+                                                           @Nullable final Context context,
+                                                           @Nullable final DAO db,
+                                                           @Nullable final Locale fallbackLocale) {
         // weeding out duplicate ID's
         Set<Long> ids = new HashSet<>();
-        // weeding out duplicate unique hash codes.
+        // weeding out duplicate hash codes
         Set<Integer> hashCodes = new HashSet<>();
         // will be set to true if we modify the list.
         boolean modified = false;
-        LocaleUtils.insanityCheck(context);
+
         Iterator<T> it = list.iterator();
         while (it.hasNext()) {
             T item = it.next();
-
+            long itemId;
             // try to find the item.
-            long itemId = item.fixId(context, db, item.getLocale(fallbackLocale));
+            if (db != null) {
+                //noinspection ConstantConditions
+                itemId = item.fixId(context, db, item.getLocale(fallbackLocale));
+            } else {
+                itemId = item.getId();
+            }
 
-            Integer uniqueHashCode = item.uniqueHashCode();
-            if (ids.contains(itemId)
-                && !item.isUniqueById() && !hashCodes.contains(uniqueHashCode)) {
-                // The base object IS unique, but other "list-significant" fields are different.
+            Integer hashCode = item.hashCode();
+            if (ids.contains(itemId) && !item.isUniqueById() && !hashCodes.contains(hashCode)) {
+                // The base object(id) is unique, but other "list-significant" fields are different.
                 ids.add(itemId);
-                hashCodes.add(uniqueHashCode);
+                hashCodes.add(hashCode);
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.PRUNE_LIST) {
+                    Logger.debug(ItemWithFixableId.class, "pruneList",
+                                 "if-1", "item=" + item);
+                }
 
-            } else if (hashCodes.contains(uniqueHashCode)
-                       || (itemId != 0 && ids.contains(itemId))) {
+            } else if (hashCodes.contains(hashCode) || (itemId != 0 && ids.contains(itemId))) {
                 // Fully unique item already in the list, so remove.
                 it.remove();
                 modified = true;
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.PRUNE_LIST) {
+                    Logger.debug(ItemWithFixableId.class, "pruneList",
+                                 "if-2", "item=" + item);
+                }
 
             } else {
                 // Fully unique item and new to the list, add it.
                 ids.add(itemId);
-                hashCodes.add(uniqueHashCode);
+                hashCodes.add(hashCode);
             }
         }
 
@@ -140,6 +149,8 @@ public interface ItemWithFixableId {
                @NonNull DAO db,
                @NonNull Locale locale);
 
+    long getId();
+
     /**
      * Get the flag as used in {@link #pruneList}.
      *
@@ -147,28 +158,4 @@ public interface ItemWithFixableId {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isUniqueById();
-
-    /**
-     * The {@link Object#hashCode} and {@link Object#equals} our object define,
-     * look at the fields which define the object itself (e.g. Author: Family & given name).
-     * It does not include user-defined attributes, or linked-table attributes.
-     * Examples:
-     * - the isComplete flag in Authors and Series.
-     * - the number of a book in a Series.
-     * <p>
-     * In contrast, this method <strong>MUST</strong> return a hash code
-     * covering <strong>ALL FIELDS</strong>.
-     * <p>
-     * By default, this method assumes {@link #isUniqueById()} to return true and hence
-     * returns the normal {@link Object#hashCode()}.
-     * I.o.w. implement this method when the your object's isUniqueById() returns {@code false}.
-     *
-     * @return hash
-     */
-    default int uniqueHashCode() {
-        if (!isUniqueById()) {
-            throw new IllegalStateException("uniqueHashCode must be implemented");
-        }
-        return hashCode();
-    }
 }

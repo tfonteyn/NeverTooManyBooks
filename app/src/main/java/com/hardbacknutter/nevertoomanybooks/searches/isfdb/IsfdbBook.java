@@ -82,7 +82,6 @@ public class IsfdbBook
     /** ISFDB uses 00 for the day/month when unknown. We cut that out. */
     private static final Pattern UNKNOWN_M_D_PATTERN = Pattern.compile("-00", Pattern.LITERAL);
 
-
     /*
      * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
      *     http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type
@@ -345,7 +344,9 @@ public class IsfdbBook
      *         </ul>
      *       </td>
      *   </table>
-     * Cover art supplied by <a href="http://www.isfdb.org" target="_blank">ISFDB</a> on <a href="http://www.isfdb.org/wiki/index.php/Image:THDSFPRKPT1991.jpg" target="_blank">this Web page</a>
+     * Cover art supplied by <a href="http://www.isfdb.org" target="_blank">ISFDB</a> on
+     * <a href="http://www.isfdb.org/wiki/index.php/Image:THDSFPRKPT1991.jpg"
+     * target="_blank">this Web page</a>
      * </div>
      * }
      * </pre>
@@ -357,8 +358,10 @@ public class IsfdbBook
      * <li>
      *  <b>External IDs:</b>
      *  <ul class="noindent">
-     *    <li> <abbr class="template" title="Library of Congress Control Number">LCCN</abbr>:  <a href="http://lccn.loc.gov/85070137" target="_blank">85070137</a>
-     *    <li> <abbr class="template" title="Online Computer Library Center">OCLC/WorldCat</abbr>:  <a href="http://www.worldcat.org/oclc/13063516" target="_blank">13063516</a>
+     *    <li> <abbr class="template" title="Library of Congress Control Number">LCCN</abbr>:
+     *    <a href="http://lccn.loc.gov/85070137" target="_blank">85070137</a>
+     *    <li> <abbr class="template" title="Online Computer Library Center">OCLC/WorldCat</abbr>:
+     *    <a href="http://www.worldcat.org/oclc/13063516" target="_blank">13063516</a>
      *  </ul>
      * <li>
      * }
@@ -370,7 +373,8 @@ public class IsfdbBook
      * <div class="notes">
      *   <b>Notes:</b>
      *   <ul>
-     *     <li>Month from Amazon.co.uk and publisher's web site.<li>First print by full number line 1 3 5 7 9 10 8 6 4 2
+     *     <li>Month from Amazon.co.uk and publisher's web site.<li>First print by
+     *     full number line 1 3 5 7 9 10 8 6 4 2
      *     <li>Cover image: © Shutterstock<li>Design by www.blacksheep-uk.com
      *     <li>Author photo: Alastair Reynolds © Barbara Bella
      *     <li>Afterword on page [327]
@@ -658,9 +662,9 @@ public class IsfdbBook
      * <a href="https://www.amazon.com.mx/dp/B003ODIWEG" target="_blank">MX</a>
      * <a href="https://www.amazon.nl/dp/B003ODIWEG" target="_blank">NL</a>
      * <a href="https://www.amazon.co.uk/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-21"
-     *          target="_blank">UK</a>
+     * target="_blank">UK</a>
      * <a href="https://www.amazon.com/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-20&amp;
-     *          linkCode=as2&amp;camp=1789&amp;creative=9325" target="_blank">US</a>)
+     * linkCode=as2&amp;camp=1789&amp;creative=9325" target="_blank">US</a>)
      *
      * @param elements LI elements
      * @param bookData bundle to store the findings.
@@ -796,7 +800,8 @@ public class IsfdbBook
      *  </a> &#8226;
      *  [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?22461" dir="ltr">
      *      The Collected Stories of Philip K. Dick</a> &#8226; 4] &#8226; (1987) &#8226;
-     *      collection by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+     *      collection by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23"
+     *      dir="ltr">Philip K. Dick</a>
      *  <h2>Contents <a href="http://www.isfdb.org/cgi-bin/pl.cgi?230949+c">
      *      <span class="listingtext">(view Concise Listing)</span></a></h2>
      *  <ul>

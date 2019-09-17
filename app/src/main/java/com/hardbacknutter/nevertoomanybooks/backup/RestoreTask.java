@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.io.File;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -46,73 +45,67 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
 
 public class RestoreTask
-        extends TaskBase<ImportOptions> {
+        extends TaskBase<ImportHelper> {
 
+    /** what and how to import. */
     @NonNull
-    private final File mFile;
-    @NonNull
-    private final ImportOptions mSettings;
+    private final ImportHelper mImportHelper;
+    private final ProgressListener mProgressListener = new ProgressListenerBase() {
+
+        private int mPos;
+
+        @Override
+        public void onProgressStep(final int delta,
+                                   @Nullable final Object message) {
+            mPos += delta;
+            Object[] values = {message};
+            publishProgress(new TaskProgressMessage(mTaskId, getMax(), mPos, values));
+        }
+
+        @Override
+        public void onProgress(final int pos,
+                               @Nullable final Object message) {
+            mPos = pos;
+            Object[] values = {message};
+            publishProgress(new TaskProgressMessage(mTaskId, getMax(), mPos, values));
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return RestoreTask.this.isCancelled();
+        }
+    };
 
     /**
      * Constructor.
      *
-     * @param settings     the import settings
+     * @param importHelper the import settings
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public RestoreTask(@NonNull final File file,
-                       @NonNull final ImportOptions /* in/out */ settings,
-                       @NonNull final TaskListener<ImportOptions> taskListener) {
+    public RestoreTask(@NonNull final ImportHelper importHelper,
+                       @NonNull final TaskListener<ImportHelper> taskListener) {
         super(R.id.TASK_ID_READ_FROM_ARCHIVE, taskListener);
-        mFile = file;
-        mSettings = settings;
-
-        if (((mSettings.what & ImportOptions.MASK) == 0) || (mFile == null)) {
-            throw new IllegalArgumentException("Options must be specified");
-        }
+        mImportHelper = importHelper;
+        mImportHelper.validate();
     }
 
     @Override
     @NonNull
     @WorkerThread
-    protected ImportOptions doInBackground(final Void... params) {
+    protected ImportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName("RestoreTask");
 
         Context context = App.getLocalizedAppContext();
-        try (BackupReader reader = BackupManager.getReader(context, mFile)) {
+        //noinspection ConstantConditions
+        try (BackupReader reader = BackupManager.getReader(context, mImportHelper.uri)) {
 
-            reader.restore(context, mSettings, new ProgressListenerBase() {
-
-                private int mAbsPosition;
-
-                @Override
-                public void onProgressStep(final int delta,
-                                           @Nullable final Object message) {
-                    mAbsPosition += delta;
-                    Object[] values = {message};
-                    publishProgress(new TaskProgressMessage(mTaskId, getMax(),
-                                                            mAbsPosition, values));
-                }
-
-                @Override
-                public void onProgress(final int absPosition,
-                                       @Nullable final Object message) {
-                    mAbsPosition = absPosition;
-                    Object[] values = {message};
-                    publishProgress(new TaskProgressMessage(mTaskId, getMax(),
-                                                            mAbsPosition, values));
-                }
-
-                @Override
-                public boolean isCancelled() {
-                    return RestoreTask.this.isCancelled();
-                }
-            });
+            reader.restore(context, mImportHelper, mProgressListener);
 
         } catch (@NonNull final IOException | ImportException e) {
             Logger.error(this, e);
             mException = e;
         }
-        return mSettings;
+        return mImportHelper;
     }
 }

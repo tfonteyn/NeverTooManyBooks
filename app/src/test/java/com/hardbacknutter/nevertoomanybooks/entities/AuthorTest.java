@@ -32,6 +32,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * Test the regular expressions used by {@link Author#fromString}.
+ */
 class AuthorTest {
 
     @Test

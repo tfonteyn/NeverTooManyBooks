@@ -445,7 +445,7 @@ public class BookFragment
 
         menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS,
                  MenuHandler.ORDER_SEND_TO_GOODREADS, R.string.gr_menu_send_to_goodreads)
-            .setIcon(R.drawable.ic_goodreads2);
+            .setIcon(R.drawable.ic_goodreads);
 
         MenuHandler.addViewBookSubMenu(menu);
         MenuHandler.addAmazonSearchSubMenu(menu);
@@ -531,9 +531,8 @@ public class BookFragment
 
             case R.id.MENU_SHARE:
                 //noinspection ConstantConditions
-                Intent shareIntent = Intent.createChooser(book.getShareBookIntent(getContext()),
-                                                          getString(R.string.menu_share_this));
-                startActivity(shareIntent);
+                startActivity(Intent.createChooser(book.getShareBookIntent(getContext()),
+                                                   getString(R.string.menu_share_this)));
                 return true;
 
             case R.id.MENU_BOOK_SEND_TO_GOODREADS:

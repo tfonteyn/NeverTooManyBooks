@@ -300,7 +300,7 @@ abstract class SendBooksLegacyTaskBase
 
             String title = db.getBookTitle(mBookId);
             if (title == null) {
-                title = context.getString(R.string.warning_book_was_deleted_uc);
+                title = context.getString(R.string.warning_book_no_longer_exists);
             }
 
             holder.titleView.setText(title);

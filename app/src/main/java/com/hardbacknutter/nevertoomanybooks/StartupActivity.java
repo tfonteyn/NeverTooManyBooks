@@ -49,11 +49,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.lang.ref.WeakReference;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ui.BackupActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
@@ -159,7 +159,7 @@ public class StartupActivity
                 break;
 
             default:
-                throw new IllegalStateException("stage=" + mStartupStage);
+                throw new UnexpectedValueException(mStartupStage);
         }
     }
 
@@ -179,6 +179,7 @@ public class StartupActivity
             // any error, notify user and die.
             mModel.getTaskException().observe(this, e -> {
                 if (e != null) {
+                    //noinspection ConstantConditions
                     App.showNotification(this, getString(R.string.error_unknown),
                                          e.getLocalizedMessage());
                     finish();
@@ -256,7 +257,8 @@ public class StartupActivity
         startActivity(intent);
 
         if (mModel.isBackupRequired()) {
-            Intent backupIntent = new Intent(this, BackupActivity.class);
+            Intent backupIntent = new Intent(this, AdminActivity.class)
+                                          .putExtra(AdminFragment.BKEY_AUTO_START_BACKUP, true);
             startActivity(backupIntent);
         }
 

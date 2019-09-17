@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,58 +28,57 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupContainer;
+import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupReader;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.tararchive.TarBackupContainer;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 /**
  * Encapsulates the actual container used for backup/restore.
  */
 public final class BackupManager {
 
+    /** Only used for displaying to the user. */
+    public static final String EXTENSIONS = "*.ntmb/*.bcbk";
     /** Last full backup date. */
-    public static final String PREF_LAST_BACKUP_DATE = "Backup.LastDate";
-    /** Last full backup file path. */
-    public static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
-    /** see {@link #isArchive(File)}. */
-    public static final String ARCHIVE_EXTENSION = ".bcbk";
+    private static final String PREF_LAST_FULL_BACKUP_DATE = "Backup.LastDate";
+    /** Proposed extension for backup files. Not binding. */
+    private static final String ARCHIVE_EXTENSION = ".ntmb";
 
     /** Constructor. */
     private BackupManager() {
     }
 
     /**
-     * Create a BackupReader for the specified file.
+     * Create a BackupReader for the specified Uri.
      *
      * @param context Current context
-     * @param file    to read from
+     * @param uri     to read from
      *
      * @return a new reader
      *
      * @throws IOException on failure
      */
     @NonNull
-    public static BackupReader getReader(@NonNull final Context context,
-                                         @NonNull final File file)
+    static BackupReader getReader(@NonNull final Context context,
+                                  @NonNull final Uri uri)
             throws IOException {
-        if (!file.exists()) {
-            throw new FileNotFoundException("Attempt to open non-existent backup file");
-        }
 
-        // We only support one backup format; so we use that. In future we would need to
-        // explore the file to determine which format to use
-        BackupContainer bkp = new TarBackupContainer(file);
+        // We only support one backup format; so we use that.
+        BackupContainer bkp = new TarBackupContainer(uri);
         // Each format should provide a validator of some kind
-        if (!bkp.isValid(context)) {
+        if (!bkp.canRead(context)) {
             throw new IOException("not a valid archive");
         }
 
@@ -86,10 +86,10 @@ public final class BackupManager {
     }
 
     /**
-     * Create a BackupWriter for the specified file.
+     * Create a BackupWriter for the specified Uri.
      *
      * @param context Current context
-     * @param file    to read from
+     * @param uri     to write to
      *
      * @return a new writer
      *
@@ -97,27 +97,52 @@ public final class BackupManager {
      */
     @NonNull
     static BackupWriter getWriter(@NonNull final Context context,
-                                  @NonNull final File file)
+                                  @NonNull final Uri uri)
             throws IOException {
 
         // We only support one backup format; so we use that.
-        BackupContainer bkp = new TarBackupContainer(file);
+        BackupContainer bkp = new TarBackupContainer(uri);
 
         return bkp.newWriter(context);
     }
 
+    public static String getDefaultBackupFileName(@NonNull final Context context) {
+        return context.getString(R.string.app_name) + '-'
+               + DateUtils.localSqlDateForToday()
+                          .replace(" ", "-")
+                          .replace(":", "")
+               + ARCHIVE_EXTENSION;
+    }
+
     /**
-     * Simple check on the file being an archive.
+     * read the info block and check if we have valid dates.
      *
-     * @param file to check
-     *
-     * @return {@code true} if it's an archive
+     * @return {@code true} if the archive has (or is supposed to have) valid dates
      */
-    public static boolean isArchive(@NonNull final File file) {
-        String name = file.getName().toLowerCase(App.getSystemLocale());
-        // our own extension
-        return name.endsWith(ARCHIVE_EXTENSION)
-               // TarBackupContainer reads (duh) .tar files.
-               || name.endsWith(".tar");
+    public static boolean archiveHasValidDates(@NonNull final Context context,
+                                               @NonNull final Uri uri) {
+        boolean hasValidDates;
+        try (BackupReader reader = getReader(context, uri)) {
+            BackupInfo info = reader.getInfo();
+            reader.close();
+            hasValidDates = info.getAppVersionCode() >= 152;
+        } catch (@NonNull final IOException e) {
+            Logger.error(context, e);
+            hasValidDates = false;
+        }
+        return hasValidDates;
+    }
+
+    static void setLastFullBackupDate(@NonNull final Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .putString(PREF_LAST_FULL_BACKUP_DATE,
+                                    DateUtils.utcSqlDateTimeForToday())
+                         .apply();
+    }
+
+    static String getLastFullBackupDate(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(PREF_LAST_FULL_BACKUP_DATE, null);
     }
 }

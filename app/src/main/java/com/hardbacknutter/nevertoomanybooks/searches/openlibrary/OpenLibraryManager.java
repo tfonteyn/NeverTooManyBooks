@@ -119,7 +119,6 @@ public class OpenLibraryManager
 
     @NonNull
     public static String getBaseURL() {
-        //noinspection ConstantConditions
         return SearchEngine.getPref().getString(PREFS_HOST_URL, "https://openlibrary.org");
     }
 
@@ -158,6 +157,7 @@ public class OpenLibraryManager
             // get and store the result into a string.
             String response;
             try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
+                //noinspection ConstantConditions
                 BufferedReader streamReader = new BufferedReader(
                         new InputStreamReader(con.inputStream, StandardCharsets.UTF_8));
                 String inputStr;

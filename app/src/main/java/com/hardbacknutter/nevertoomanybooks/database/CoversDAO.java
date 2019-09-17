@@ -230,7 +230,7 @@ public final class CoversDAO
                 return null;
             }
 
-            File file = StorageUtils.getCoverForUuid(uuid);
+            File file = StorageUtils.getCoverFileForUuid(uuid);
             String dateStr = DateUtils.utcSqlDateTime(new Date(file.lastModified()));
             String cacheId = constructCacheId(uuid, maxWidth, maxHeight);
             try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE,
@@ -302,18 +302,14 @@ public final class CoversDAO
     }
 
     private void open() {
-        final SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(TRACKED_CURSOR_FACTORY);
+        SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(TRACKED_CURSOR_FACTORY);
         // Try to connect.
         try {
             sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
         } catch (@NonNull final RuntimeException e) {
-            // Assume exception means DB corrupt. Log, rename, and retry
+            // Assume exception means DB corrupt. Don't care, it's only a cache.
             Logger.error(this, e, "Failed to open covers db");
-            File source = StorageUtils.getFile(COVERS_DATABASE_NAME);
-            File destination = StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead");
-            if (!StorageUtils.renameFile(source, destination)) {
-                Logger.warn(this, "Failed to rename dead covers database");
-            }
+            App.getAppContext().deleteDatabase(COVERS_DATABASE_NAME);
 
             // retry...
             try {
@@ -477,7 +473,7 @@ public final class CoversDAO
     public static final class ImageCacheWriterTask
             extends AsyncTask<Void, Void, Void> {
 
-        private static final AtomicInteger runningTasks = new AtomicInteger();
+        private static final AtomicInteger RUNNING_TASKS = new AtomicInteger();
 
         /** Bitmap to store. */
         private final Bitmap mBitmap;
@@ -508,7 +504,7 @@ public final class CoversDAO
          */
         @UiThread
         public static boolean hasActiveTasks() {
-            return runningTasks.get() != 0;
+            return RUNNING_TASKS.get() != 0;
         }
 
         @Override
@@ -516,13 +512,13 @@ public final class CoversDAO
         protected Void doInBackground(final Void... params) {
             Thread.currentThread().setName("ImageCacheWriterTask");
 
-            runningTasks.incrementAndGet();
+            RUNNING_TASKS.incrementAndGet();
 
             try (CoversDAO coversDBAdapter = getInstance()) {
                 coversDBAdapter.saveFile(mUuid, mBitmap, mMaxWidth, mMaxHeight);
             }
 
-            runningTasks.decrementAndGet();
+            RUNNING_TASKS.decrementAndGet();
             return null;
         }
     }

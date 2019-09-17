@@ -51,7 +51,6 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
@@ -149,9 +148,9 @@ public class EditSeriesListActivity
                 // Number is not part of the Series table, but of the book_series table.
                 // so just update it and we're done here.
                 series.setNumber(newNumber);
-                Series.pruneSeriesList(mList, bookLocale);
-                ItemWithFixableId.pruneList(this, mModel.getDb(), mList, bookLocale);
-                mListAdapter.notifyDataSetChanged();
+                if (Series.pruneList(mList, this, mModel.getDb(), bookLocale)) {
+                    mListAdapter.notifyDataSetChanged();
+                }
             }
             return;
         }
@@ -168,9 +167,9 @@ public class EditSeriesListActivity
         if (mModel.isSingleUsage(nrOfReferences)) {
             // Use the original mSeries, but update its fields
             series.copyFrom(newSeries, true);
-            Series.pruneSeriesList(mList, bookLocale);
-            ItemWithFixableId.pruneList(this, mModel.getDb(), mList, bookLocale);
-            mListAdapter.notifyDataSetChanged();
+            if (Series.pruneList(mList, this, mModel.getDb(), bookLocale)) {
+                mListAdapter.notifyDataSetChanged();
+            }
             return;
         }
 
@@ -188,15 +187,15 @@ public class EditSeriesListActivity
                     mModel.setGlobalReplacementsMade(
                             mModel.getDb().globalReplace(this, series, newSeries, bookLocale));
                     series.copyFrom(newSeries, false);
-                    Series.pruneSeriesList(mList, bookLocale);
-                    ItemWithFixableId.pruneList(this, mModel.getDb(), mList, bookLocale);
-                    mListAdapter.notifyDataSetChanged();
+                    if (Series.pruneList(mList, this, mModel.getDb(), bookLocale)) {
+                        mListAdapter.notifyDataSetChanged();
+                    }
                 })
                 .setPositiveButton(R.string.btn_this_book, (d, which) -> {
                     series.copyFrom(newSeries, true);
-                    Series.pruneSeriesList(mList, bookLocale);
-                    ItemWithFixableId.pruneList(this, mModel.getDb(), mList, bookLocale);
-                    mListAdapter.notifyDataSetChanged();
+                    if (Series.pruneList(mList, this, mModel.getDb(), bookLocale)) {
+                        mListAdapter.notifyDataSetChanged();
+                    }
                 })
                 .create()
                 .show();

@@ -46,7 +46,7 @@ public class EditObjectListModel
         extends ViewModel {
 
     /** Database Access. */
-    protected DAO mDb;
+    private DAO mDb;
 
     /** Row ID... mainly used (if list is from a book) to know if the object is new. */
     private long mRowId;

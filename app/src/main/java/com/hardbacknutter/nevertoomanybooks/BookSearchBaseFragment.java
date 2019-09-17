@@ -90,7 +90,7 @@ public abstract class BookSearchBaseFragment
         mBookSearchBaseModel.init(requireArguments(), savedInstanceState);
 
         // Check general network connectivity. If none, warn the user.
-        if (!NetworkUtils.isNetworkAvailable()) {
+        if (NetworkUtils.networkUnavailable()) {
             //noinspection ConstantConditions
             UserMessage.show(getView(), R.string.error_no_internet_connection);
         }
@@ -191,7 +191,7 @@ public abstract class BookSearchBaseFragment
             return false;
         }
         // Don't start search if we have no approved network... FAIL.
-        if (!NetworkUtils.isNetworkAvailable()) {
+        if (NetworkUtils.networkUnavailable()) {
             //noinspection ConstantConditions
             UserMessage.show(getView(), R.string.error_no_internet_connection);
             return false;

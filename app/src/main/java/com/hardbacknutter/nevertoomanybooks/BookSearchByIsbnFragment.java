@@ -215,8 +215,9 @@ public class BookSearchByIsbnFragment
 
         //URGENT: find a solution for showing reg dialog AND starting a scan
 //        //noinspection ConstantConditions
-//        boolean alertShowing = SearchSites.alertRegistrationBeneficial(getContext(), "search",
-//                                                mBookSearchBaseModel.getSearchSites());
+//        boolean alertShowing =
+//                SearchSites.alertRegistrationBeneficial(getContext(), "search",
+//                                                        mBookSearchBaseModel.getSearchSites());
 
         // first check if we already have an isbn from somewhere
         if (!mBookSearchBaseModel.getIsbnSearchText().isEmpty()) {
@@ -359,7 +360,8 @@ public class BookSearchByIsbnFragment
                     if (BuildConfig.DEBUG) {
                         // detect emulator for testing
                         if (Build.PRODUCT.startsWith("sdk")) {
-                            File file = StorageUtils.getFile("barcode.jpg");
+                            // when used, the file must be in the root external app dir.
+                            File file = new File(StorageUtils.getRootDir(), "barcode.jpg");
                             if (file.exists()) {
                                 Bitmap dummy = BitmapFactory.decodeFile(file.getAbsolutePath());
                                 data.putExtra("data", dummy);
@@ -566,13 +568,37 @@ public class BookSearchByIsbnFragment
             // go scan
             if (!mModel.isScannerStarted()) {
                 mModel.setScannerStarted(true);
-                scanner.startActivityForResult(this, UniqueId.REQ_IMAGE_FROM_SCANNER);
+                if (!scanner.startActivityForResult(this, UniqueId.REQ_IMAGE_FROM_SCANNER)) {
+                    // the scanner was loaded, but refuses to start.
+                    scannerStartFailed();
+                }
             }
 
         } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
             noScanner();
         }
+    }
+
+    private void scannerStartFailed() {
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.pg_barcode_scanner)
+                .setMessage(R.string.warning_scanner_failed_to_start)
+                .setNeutralButton(R.string.lbl_settings, (d, w) -> {
+                    Intent intent = new Intent(mActivity, SettingsActivity.class)
+                                            .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
+                                                      Prefs.psk_barcode_scanner);
+
+                    mActivity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
+                })
+                .setPositiveButton(R.string.retry, (d, w) -> {
+
+                })
+                .create()
+                .show();
+        mKeepAlive = true;
     }
 
     /**
@@ -587,7 +613,7 @@ public class BookSearchByIsbnFragment
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)
-                .setOnDismissListener(dialog -> {
+                .setOnDismissListener(d -> {
                     Intent intent = new Intent(mActivity, SettingsActivity.class)
                                             .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                                       Prefs.psk_barcode_scanner);
@@ -604,10 +630,6 @@ public class BookSearchByIsbnFragment
      * Pass the last book we got back to our caller and finish here.
      */
     private void scanFailedOrCancelled() {
-        if (BuildConfig.DEBUG) {
-            Logger.warnWithStackTrace(this, "scanFailedOrCancelled",
-                                      "mScanner=" + mModel.getScanner());
-        }
         Intent lastBookData = mBookSearchBaseModel.getLastBookData();
         mActivity.setResult(lastBookData != null ? Activity.RESULT_OK : Activity.RESULT_CANCELED,
                             lastBookData);

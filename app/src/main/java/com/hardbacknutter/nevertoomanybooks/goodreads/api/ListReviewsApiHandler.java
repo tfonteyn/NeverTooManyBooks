@@ -466,13 +466,15 @@ public class ListReviewsApiHandler
 
         if (bundle.containsKey(key)) {
             String dateString = bundle.getString(key);
-            try {
-                Date date = UPDATE_DATE_FMT.parse(dateString);
-                if (date != null) {
-                    bundle.putString(key, DateUtils.utcSqlDateTime(date));
+            if (dateString != null && !dateString.isEmpty()) {
+                try {
+                    Date date = UPDATE_DATE_FMT.parse(dateString);
+                    if (date != null) {
+                        bundle.putString(key, DateUtils.utcSqlDateTime(date));
+                    }
+                } catch (@NonNull final ParseException e) {
+                    bundle.remove(key);
                 }
-            } catch (@NonNull final ParseException e) {
-                bundle.remove(key);
             }
         }
     }

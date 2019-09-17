@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
 
 import androidx.annotation.NonNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -75,13 +74,11 @@ public interface ReaderEntity {
             throws IOException;
 
     /**
-     * Save the data to a directory, using the original file name.
-     *
-     * @param name of the directory to save to.
+     * Save the data to a suitable directory, using the original file name.
      *
      * @throws IOException on failure
      */
-    void saveToDirectory(@NonNull File name)
+    void save()
             throws IOException;
 
     /** Supported entity types. */

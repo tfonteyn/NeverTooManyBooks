@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
  * Column info support. This is useful for auto-building queries from maps that have
@@ -158,7 +159,7 @@ public class ColumnInfo {
                 default:
                     // note that "" (empty) type is treated as TEXT.
                     // But we really should not allow our columns to be defined without a type.
-                    throw new IllegalStateException("columnType=`" + columnType + '`');
+                    throw new UnexpectedValueException(columnType);
             }
         }
     }

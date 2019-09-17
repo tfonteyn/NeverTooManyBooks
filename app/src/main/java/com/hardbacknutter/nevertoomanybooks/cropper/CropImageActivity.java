@@ -87,12 +87,12 @@ public class CropImageActivity
 
     private static final String TAG = "CropImageActivity";
 
-    public static final String BKEY_SCALE = TAG + ":scale";
-    public static final String BKEY_DATA = TAG + ":data";
     public static final String BKEY_IMAGE_ABSOLUTE_PATH = TAG + ":image-path";
     public static final String BKEY_OUTPUT_ABSOLUTE_PATH = TAG + ":output";
     public static final String BKEY_WHOLE_IMAGE = TAG + ":whole-image";
 
+    private static final String BKEY_DATA = TAG + ":data";
+    private static final String BKEY_SCALE = TAG + ":scale";
     private static final String BKEY_OUTPUT_X = TAG + ":outputX";
     private static final String BKEY_OUTPUT_Y = TAG + ":outputY";
     private static final String BKEY_SCALE_UP_IF_NEEDED = TAG + ":scaleUpIfNeeded";
@@ -105,7 +105,7 @@ public class CropImageActivity
     /** used to calculate free space on Shared Storage, 400kb per picture is a GUESS. */
     private static final long ESTIMATED_PICTURE_SIZE = 400_000L;
 
-    /** only used with mOptionSaveUri. */
+    /** only used with mOptionOutputUri. */
     private final Bitmap.CompressFormat defaultCompressFormat = Bitmap.CompressFormat.JPEG;
     private final Handler mHandler = new Handler();
     /** Whether the "save" button is already clicked. */
@@ -115,7 +115,7 @@ public class CropImageActivity
     boolean mWaitingToPickFace;
     /** These are various options can be specified in the intent. */
     @Nullable
-    private Uri mOptionSaveUri;
+    private Uri mOptionOutputUri;
     private int mOptionAspectX;
     private int mOptionAspectY;
     /** crop circle ? (default: rectangle). */
@@ -308,7 +308,7 @@ public class CropImageActivity
             if (imgUri == null) {
                 imgUri = imagePath;
             }
-            mOptionSaveUri = Uri.fromFile(new File(imgUri));
+            mOptionOutputUri = Uri.fromFile(new File(imgUri));
 
             mOptionCropWholeImage = args.getBoolean(BKEY_WHOLE_IMAGE, false);
 
@@ -405,8 +405,8 @@ public class CropImageActivity
     }
 
     /**
-     * TODO: this code needs to change to use the decode/crop/encode single
-     * step api so that we don't require that the whole (possibly large)
+     * TODO: this code needs to change to use the decode/crop/encode single step api
+     * so that we don't require that the whole (possibly large)
      * bitmap doesn't have to be read into memory.
      */
     private void onSaveClicked() {
@@ -509,13 +509,13 @@ public class CropImageActivity
 
     private void saveOutput(@NonNull final Bitmap croppedImage) {
         Bundle data = new Bundle();
-        if (mOptionSaveUri == null) {
+        if (mOptionOutputUri == null) {
             // we were not asked to save anything, but we're ok with that
             setResult(Activity.RESULT_OK);
         } else {
-            Intent intent = new Intent(mOptionSaveUri.toString()).putExtras(data);
-            try (OutputStream outputStream = getContentResolver().openOutputStream(
-                    mOptionSaveUri)) {
+            Intent intent = new Intent(mOptionOutputUri.toString()).putExtras(data);
+            try (OutputStream outputStream = getContentResolver()
+                                                     .openOutputStream(mOptionOutputUri)) {
                 if (outputStream != null) {
                     croppedImage.compress(defaultCompressFormat, 75, outputStream);
                 }
@@ -535,13 +535,11 @@ public class CropImageActivity
     @StringRes
     private int checkStorage() {
         @StringRes
-        int msgId = StorageUtils.getMediaStateMessageId();
-        if (msgId == 0) {
-            // stat the filesystem
+        int msgId = R.string.error_storage_not_accessible;
+
+        if (StorageUtils.isExternalStorageMounted()) {
             long freeSpace = StorageUtils.getSharedStorageFreeSpace();
-            if (freeSpace == StorageUtils.ERROR_CANNOT_STAT) {
-                msgId = R.string.error_storage_not_accessible;
-            } else {
+            if (freeSpace != StorageUtils.ERROR_CANNOT_STAT) {
                 // make an educated guess how many pics we can store.
                 if (freeSpace / ESTIMATED_PICTURE_SIZE < 1) {
                     msgId = R.string.error_storage_no_space_left;

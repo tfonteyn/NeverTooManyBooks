@@ -150,7 +150,7 @@ public class EditAuthorListActivity
              * TODO: simplify / don't orphan?
              */
             author.copyFrom(newAuthorData, true);
-            ItemWithFixableId.pruneList(this, mModel.getDb(), mList, locale);
+            ItemWithFixableId.pruneList(mList, this, mModel.getDb(), locale);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -193,7 +193,7 @@ public class EditAuthorListActivity
             mModel.setGlobalReplacementsMade(mModel.getDb().globalReplace(this, locale,
                                                                           author, newAuthorData));
             author.copyFrom(newAuthorData, false);
-            ItemWithFixableId.pruneList(this, mModel.getDb(), mList, locale);
+            ItemWithFixableId.pruneList(mList, this, mModel.getDb(), locale);
             mListAdapter.notifyDataSetChanged();
         });
 
@@ -217,7 +217,7 @@ public class EditAuthorListActivity
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
                          (d, which) -> {
                              author.copyFrom(newAuthorData, true);
-                             ItemWithFixableId.pruneList(this, mModel.getDb(), mList, locale);
+                             ItemWithFixableId.pruneList(mList, this, mModel.getDb(), locale);
                              mListAdapter.notifyDataSetChanged();
                          });
 

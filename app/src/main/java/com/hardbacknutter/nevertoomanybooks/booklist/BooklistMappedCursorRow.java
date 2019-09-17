@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
  * CursorRow object for the BooklistCursor.
@@ -162,9 +163,9 @@ public class BooklistMappedCursorRow {
             return formatRowGroup(context, level, text);
 
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
+            //DO NOT add this.toString() ... will recursively throw CursorIndexOutOfBoundsException
             Logger.error(this, e, "level=" + level,
-                         "columnIndex=" + columnIndex,
-                         this.toString());
+                         "columnIndex=" + columnIndex);
             return null;
         }
     }
@@ -201,8 +202,9 @@ public class BooklistMappedCursorRow {
         Locale locale = LocaleUtils.getLocale(context);
 
         int index = level - 1;
-
-        switch (mStyle.getGroupKindAt(index)) {
+        @BooklistGroup.RowKind.Kind
+        int kind = mStyle.getGroupKindAt(index);
+        switch (kind) {
             case BooklistGroup.RowKind.READ_STATUS: {
                 switch (source) {
                     case "0":
@@ -210,14 +212,12 @@ public class BooklistMappedCursorRow {
                     case "1":
                         return context.getString(R.string.lbl_read);
                     default:
-                        Logger.warnWithStackTrace(this, "source=" + source);
                         break;
                 }
-                return source;
+                break;
             }
             case BooklistGroup.RowKind.LANGUAGE: {
-                LanguageUtils.getDisplayName(locale, source);
-                break;
+                return LanguageUtils.getDisplayName(locale, source);
             }
             case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
             case BooklistGroup.RowKind.DATE_ADDED_MONTH:
@@ -247,10 +247,39 @@ public class BooklistMappedCursorRow {
                 }
                 break;
             }
-            default:
+
+            case BooklistGroup.RowKind.AUTHOR:
+            case BooklistGroup.RowKind.BOOKSHELF:
+            case BooklistGroup.RowKind.BOOK:
+            case BooklistGroup.RowKind.DATE_ACQUIRED_DAY:
+            case BooklistGroup.RowKind.DATE_ACQUIRED_YEAR:
+            case BooklistGroup.RowKind.DATE_ADDED_DAY:
+            case BooklistGroup.RowKind.DATE_ADDED_YEAR:
+            case BooklistGroup.RowKind.DATE_FIRST_PUBLICATION_MONTH:
+            case BooklistGroup.RowKind.DATE_FIRST_PUBLICATION_YEAR:
+            case BooklistGroup.RowKind.DATE_LAST_UPDATE_DAY:
+            case BooklistGroup.RowKind.DATE_LAST_UPDATE_YEAR:
+            case BooklistGroup.RowKind.DATE_PUBLISHED_YEAR:
+            case BooklistGroup.RowKind.DATE_READ_DAY:
+            case BooklistGroup.RowKind.DATE_READ_YEAR:
+            case BooklistGroup.RowKind.FORMAT:
+            case BooklistGroup.RowKind.GENRE:
+            case BooklistGroup.RowKind.LOANED:
+            case BooklistGroup.RowKind.LOCATION:
+            case BooklistGroup.RowKind.PUBLISHER:
+            case BooklistGroup.RowKind.SERIES:
+            case BooklistGroup.RowKind.TITLE_LETTER:
                 // no special formatting needed.
-                break;
+                return source;
+
+            default:
+                throw new UnexpectedValueException(kind);
+
         }
+        Logger.warnWithStackTrace(this, "formatRowGroup",
+                                  "source=" + source,
+                                  "level=" + level,
+                                  "kind=" + kind);
         return source;
     }
 

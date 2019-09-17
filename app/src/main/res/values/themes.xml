@@ -52,7 +52,7 @@
         <item name="border_color">@color/blue_grey_600</item>
         <item name="checked_icon_tint">@color/green_a700</item>
         <item name="completed_icon_tint">@color/amber_a700</item>
-        <item name="itemTouchHelper_onSelected_color">@color/grey_400</item>
+        <item name="itemTouchHelper_onDragging_color">@color/grey_200</item>
 
         <!-- ============================ -->
         <!-- Theme Color palette -->
@@ -76,7 +76,7 @@
         <item name="border_color">@color/grey_200</item>
         <item name="checked_icon_tint">@color/light_green_a700</item>
         <item name="completed_icon_tint">@color/amber_a700</item>
-        <item name="itemTouchHelper_onSelected_color">@color/grey_400</item>
+        <item name="itemTouchHelper_onDragging_color">@color/grey_200</item>
 
         <!--  =========================== -->
         <!-- Theme Color palette -->
@@ -100,7 +100,7 @@
         <item name="border_color">@color/blue_grey_600</item>
         <item name="checked_icon_tint">@color/green_a700</item>
         <item name="completed_icon_tint">@color/amber_a700</item>
-        <item name="itemTouchHelper_onSelected_color">@color/grey_400</item>
+        <item name="itemTouchHelper_onDragging_color">@color/grey_200</item>
 
         <!-- ============================ -->
         <!-- Theme Color palette -->

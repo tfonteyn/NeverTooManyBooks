@@ -231,7 +231,7 @@ public class UpdateFieldsFromInternetTask
         switch (usage.fieldId) {
             // - If it's a thumbnail, then see if it's missing or empty.
             case UniqueId.BKEY_IMAGE:
-                File file = StorageUtils.getCoverForUuid(mCurrentUuid);
+                File file = StorageUtils.getCoverFileForUuid(mCurrentUuid);
                 if (!file.exists() || file.length() == 0) {
                     fieldUsages.put(usage.fieldId, usage);
                 }
@@ -367,7 +367,7 @@ public class UpdateFieldsFromInternetTask
             // Tell our listener they can clear the progress message.
             mTaskManager.sendHeaderUpdate(null);
             // Create the final message for them (user message, not a Progress message)
-            mFinalMessage = context.getString(R.string.progress_end_num_books_searched,
+            mFinalMessage = context.getString(R.string.progress_end_n_books_searched,
                                               progressCounter);
             if (isCancelled()) {
                 mFinalMessage = context.getString(R.string.progress_end_cancelled_info,
@@ -408,7 +408,7 @@ public class UpdateFieldsFromInternetTask
                     boolean copyThumb = false;
                     switch (usage.getUsage()) {
                         case CopyIfBlank:
-                            File file = StorageUtils.getCoverForUuid(mCurrentUuid);
+                            File file = StorageUtils.getCoverFileForUuid(mCurrentUuid);
                             copyThumb = !file.exists() || file.length() == 0;
                             break;
 
@@ -427,7 +427,7 @@ public class UpdateFieldsFromInternetTask
 
                     File downloadedFile = StorageUtils.getTempCoverFile();
                     if (copyThumb) {
-                        File destination = StorageUtils.getCoverForUuid(mCurrentUuid);
+                        File destination = StorageUtils.getCoverFileForUuid(mCurrentUuid);
                         StorageUtils.renameFile(downloadedFile, destination);
                     } else {
                         StorageUtils.deleteFile(downloadedFile);

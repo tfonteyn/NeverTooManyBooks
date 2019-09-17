@@ -107,6 +107,8 @@ public class BackupInfo {
                                   final boolean hasStyles,
                                   final boolean hasPrefs) {
         Bundle infoBundle = new Bundle();
+        infoBundle.putInt(INFO_ARCHIVER_VERSION, container.getVersion());
+
         if (bookCount > 0) {
             infoBundle.putInt(INFO_NUMBER_OF_BOOKS, bookCount);
         }
@@ -116,7 +118,6 @@ public class BackupInfo {
         infoBundle.putBoolean(INFO_HAS_PREFERENCES, hasPrefs);
         infoBundle.putBoolean(INFO_HAS_BOOKLIST_STYLES, hasStyles);
 
-        infoBundle.putInt(INFO_ARCHIVER_VERSION, container.getVersion());
 
         infoBundle.putInt(INFO_SDK, Build.VERSION.SDK_INT);
         infoBundle.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);

@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.viewmodels;
+package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
 
 /**
  * See parent class doc.

@@ -30,7 +30,9 @@ package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
 import androidx.annotation.NonNull;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
@@ -39,9 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  */
 public abstract class ReaderEntityAbstract
         implements ReaderEntity {
-
-    /** Buffer size for buffered streams. */
-    private static final int BUFFER_SIZE = 32768;
 
     /** Entity type. */
     @NonNull
@@ -63,16 +62,13 @@ public abstract class ReaderEntityAbstract
     }
 
     @Override
-    public void saveToDirectory(@NonNull final File name)
+    public void save()
             throws IOException {
-        if (!name.isDirectory()) {
-            throw new IllegalArgumentException("Not a directory");
-        }
 
         // Build the new File and save
-        File destFile = new File(name.getAbsoluteFile() + File.separator + getName());
-        try {
-            StorageUtils.copyFile(getInputStream(), BUFFER_SIZE, destFile);
+        File destFile = new File(StorageUtils.getCoverDir(), getName());
+        try (OutputStream os = new FileOutputStream(destFile)) {
+            StorageUtils.copy(getInputStream(), os);
         } finally {
             if (destFile.exists()) {
                 //noinspection ResultOfMethodCallIgnored

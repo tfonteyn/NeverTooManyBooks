@@ -81,7 +81,7 @@ public class SendOneBookTask
 
         GoodreadsManager.ExportResult result = null;
         try {
-            if (!NetworkUtils.isNetworkAvailable()) {
+            if (NetworkUtils.networkUnavailable()) {
                 return R.string.error_no_internet_connection;
             }
 

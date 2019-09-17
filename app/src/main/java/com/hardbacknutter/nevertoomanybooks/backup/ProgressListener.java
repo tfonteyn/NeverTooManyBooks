@@ -66,10 +66,10 @@ public interface ProgressListener {
     /**
      * Report progress in absolute position.
      *
-     * @param absPosition absolute position for the progress counter
-     * @param message     to display, either a String or a StringRes
+     * @param pos     absolute position for the progress counter
+     * @param message to display, either a String or a StringRes
      */
-    void onProgress(int absPosition,
+    void onProgress(int pos,
                     @Nullable Object message);
 
     /**

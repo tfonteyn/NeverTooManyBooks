@@ -210,10 +210,6 @@
         <item name="android:layout_margin">@dimen/border2</item>
     </style>
 
-    <style name="EditText.FileName">
-        <item name="android:inputType">text</item>
-    </style>
-
     <!-- An editable CheckBox. We basically want this to be the same height as EditText fields. -->
     <style name="CheckboxEntry">
         <item name="android:layout_width">0dp</item>
@@ -304,13 +300,13 @@
     <!-- row, button and blurb for 'options' in a an option list (e.g. on a dialog) -->
     <!-- *************************************************************************************** -->
 
-    <!-- Clickable row in a list. Flashes when clicked. -->
+    <!-- Clickable row in a list. -->
     <style name="OptionRow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <!-- Menu label for options in a list -->
+    <!-- Menu label for options in a list. Flashes when clicked. -->
     <style name="OptionRow.Menu">
         <item name="android:padding">@dimen/border2</item>
         <item name="android:drawablePadding">@dimen/border4</item>
@@ -318,7 +314,8 @@
         <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
     </style>
 
-    <!-- Option in the list shown as a Checkable (RadioButton, Checkbox ...) -->
+    <!-- Option in the list shown as a Checkable (RadioButton, Checkbox ...).
+         Flashes when clicked.  -->
     <style name="OptionRow.Checkable">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
@@ -468,15 +465,6 @@
         <item name="android:button">@drawable/ic_selector_multiple_books</item>
     </style>
 
-    <!-- file info fields for a File selection screen -->
-    <style name="FileInfo">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textIsSelectable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:focusableInTouchMode">false</item>
-    </style>
-
     <!-- clickable URL -->
     <style name="Url">
         <item name="android:layout_width">wrap_content</item>
@@ -534,6 +522,12 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|end</item>
         <item name="android:layout_margin">@dimen/fab_margin</item>
+    </style>
+
+    <style name="FloatingActionButton.Menu">
+        <item name="android:visibility">gone</item>
+        <item name="android:layout_margin">@dimen/fab_menu_margin</item>
+        <item name="android:translationX">@dimen/fab_menu_translationX</item>
     </style>
 
     <!-- Keys on the isbn search keyboard.

@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
@@ -321,8 +322,10 @@ public class Author
      * @return Author
      */
     @NonNull
-    public static Author fromString(@NonNull String name) {
-        List<String> tmp = new StringList<String>().decodeList(name, NAME_SEPARATOR, true);
+    public static Author fromString(@NonNull final String name) {
+        String uName = ParseUtils.unEscape(name);
+
+        List<String> tmp = StringList.newInstance().decode(uName, NAME_SEPARATOR, true);
         if (tmp.size() > 1) {
             Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(tmp.get(1));
             if (!matchSuffix.find()) {
@@ -330,11 +333,11 @@ public class Author
                 return new Author(tmp.get(0), tmp.get(1));
             } else {
                 // concatenate without the comma. Further processing will take care of the suffix.
-                name = tmp.get(0) + ' ' + tmp.get(1);
+                uName = tmp.get(0) + ' ' + tmp.get(1);
             }
         }
 
-        String[] names = name.split(" ");
+        String[] names = uName.split(" ");
         // two easy cases
         switch (names.length) {
             case 1:

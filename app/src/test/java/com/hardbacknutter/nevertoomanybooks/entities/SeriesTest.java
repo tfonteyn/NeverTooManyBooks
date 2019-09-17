@@ -32,6 +32,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * Test the regular expressions used by {@link Series#fromString}.
+ */
 class SeriesTest {
 
     @Test
@@ -65,6 +68,59 @@ class SeriesTest {
         assertEquals("34", series.getNumber());
     }
 
+    @Test
+    void fromString04() {
+        Series series = Series.fromString("Series Title");
+        assertNotNull(series);
+        assertEquals("Series Title", series.getTitle());
+        assertEquals("", series.getNumber());
+    }
+
+    /**
+     * <strong>single</strong> word with a roman numeral embedded
+     */
+    @Test
+    void fromString05() {
+        Series series = Series.fromString("bill");
+        assertNotNull(series);
+        assertEquals("bill", series.getTitle());
+        assertEquals("", series.getNumber());
+    }
+
+    @Test
+    void fromString05a() {
+        Series series = Series.fromString("bill", "");
+        assertNotNull(series);
+        assertEquals("bill", series.getTitle());
+        assertEquals("", series.getNumber());
+    }
+
+    /**
+     * <strong>single</strong> word starting with a roman numeral.
+     */
+    @Test
+    void fromString06() {
+        Series series = Series.fromString("illegal");
+        assertNotNull(series);
+        assertEquals("illegal", series.getTitle());
+        assertEquals("", series.getNumber());
+    }
+
+    @Test
+    void fromString06a() {
+        Series series = Series.fromString("illegal", "");
+        assertNotNull(series);
+        assertEquals("illegal", series.getTitle());
+        assertEquals("", series.getNumber());
+    }
+
+    @Test
+    void fromString07() {
+        Series series = Series.fromString("illegal 5");
+        assertNotNull(series);
+        assertEquals("illegal", series.getTitle());
+        assertEquals("5", series.getNumber());
+    }
 
     @Test
     void fromString11() {
@@ -322,6 +378,62 @@ class SeriesTest {
         assertEquals("34", series.getNumber());
     }
 
+    /**
+     * Use a roman numeral 'C' as the start of the last part.
+     */
+    @Test
+    void fromString201() {
+        Series series = Series.fromString("Jerry Cornelius");
+        assertNotNull(series);
+        assertEquals("Jerry Cornelius", series.getTitle());
+        assertEquals("", series.getNumber());
+    }
+
+    @Test
+    void fromString202() {
+        Series series = Series.fromString("Jerry Cornelius 2");
+        assertNotNull(series);
+        assertEquals("Jerry Cornelius", series.getTitle());
+        assertEquals("2", series.getNumber());
+    }
+
+    @Test
+    void fromString203() {
+        Series series = Series.fromString("Jerry Cornelius xii");
+        assertNotNull(series);
+        assertEquals("Jerry Cornelius", series.getTitle());
+        assertEquals("xii", series.getNumber());
+    }
+
+    /**
+     * FAILS
+     */
+    @Test
+    void fromString204() {
+        Series series = Series.fromString("Jerry Cornelius xii|bla");
+        assertNotNull(series);
+        assertEquals("Jerry Cornelius", series.getTitle());
+        assertEquals("xii|bla", series.getNumber());
+    }
+
+    @Test
+    void fromString205() {
+        Series series = Series.fromString(
+                "Cornelius Chronicles, The (8\\|8 as includes The Alchemist's Question)");
+        assertNotNull(series);
+        assertEquals("Cornelius Chronicles, The", series.getTitle());
+        assertEquals("8|8 as includes The Alchemist's Question", series.getNumber());
+    }
+
+    @Test
+    void fromString206() {
+        Series series = Series.fromString(
+                "Eternal Champion, The (984\\|Jerry Cornelius Calendar 4 as includes The Alchemist's Question)");
+        assertNotNull(series);
+        assertEquals("Eternal Champion, The", series.getTitle());
+        assertEquals("984|Jerry Cornelius Calendar 4 as includes The Alchemist's Question",
+                     series.getNumber());
+    }
 
     @Test
     void fromString1001() {
@@ -347,8 +459,6 @@ class SeriesTest {
         assertEquals("4omnibus", series.getNumber());
     }
 
-
-    // FAILS
     @Test
     void fromString1004() {
         Series series = Series.fromString("This is #title, subtitle (omnibus)");
@@ -357,12 +467,118 @@ class SeriesTest {
         assertEquals("omnibus", series.getNumber());
     }
 
-    // FAILS
     @Test
     void fromString1005() {
         Series series = Series.fromString("This is #title, subtitle (omnibus)");
         assertNotNull(series);
         assertEquals("This is #title, subtitle", series.getTitle());
         assertEquals("omnibus", series.getNumber());
+    }
+
+    @Test
+    void from2String00() {
+        Series series = Series.fromString("This is the series title", "");
+        assertNotNull(series);
+        assertEquals("This is the series title", series.getTitle());
+        assertEquals("", series.getNumber());
+    }
+
+    @Test
+    void from2String01() {
+        Series series = Series.fromString("This is the series title", "34");
+        assertNotNull(series);
+        assertEquals("This is the series title", series.getTitle());
+        assertEquals("34", series.getNumber());
+    }
+
+
+    @Test
+    void from2String03() {
+        Series series = Series.fromString("This is the series title", " 34");
+        assertNotNull(series);
+        assertEquals("This is the series title", series.getTitle());
+        assertEquals("34", series.getNumber());
+    }
+
+    @Test
+    void from2String11() {
+        Series series = Series.fromString("This is the series title", "iv");
+        assertNotNull(series);
+        assertEquals("This is the series title", series.getTitle());
+        assertEquals("iv", series.getNumber());
+    }
+
+
+    @Test
+    void from2String13() {
+        Series series = Series.fromString("This is the series title", " iv");
+        assertNotNull(series);
+        assertEquals("This is the series title", series.getTitle());
+        assertEquals("iv", series.getNumber());
+    }
+
+    @Test
+    void from2String41() {
+        Series series = Series.fromString("This is the series title, subtitle", "part 1");
+        assertNotNull(series);
+        assertEquals("This is the series title, subtitle", series.getTitle());
+        assertEquals("1", series.getNumber());
+    }
+
+    @Test
+    void from2String42() {
+        Series series = Series.fromString("This is the series title, subtitle ", " deel  2");
+        assertNotNull(series);
+        assertEquals("This is the series title, subtitle", series.getTitle());
+        assertEquals("2", series.getNumber());
+    }
+
+    @Test
+    void from2String43() {
+        Series series = Series.fromString("This is the series title, subtitle ", " vol. 3");
+        assertNotNull(series);
+        assertEquals("This is the series title, subtitle", series.getTitle());
+        assertEquals("3", series.getNumber());
+    }
+
+
+    @Test
+    void from2String51() {
+        Series series = Series.fromString("This is the series title, subtitle", "part1");
+        assertNotNull(series);
+        assertEquals("This is the series title, subtitle", series.getTitle());
+        assertEquals("1", series.getNumber());
+    }
+
+    @Test
+    void from2String61() {
+        Series series = Series.fromString("This is the series title, subtitle", "34|omnibus");
+        assertNotNull(series);
+        assertEquals("This is the series title, subtitle", series.getTitle());
+        assertEquals("34|omnibus", series.getNumber());
+    }
+
+    @Test
+    void from2String71() {
+        Series series = Series.fromString("This is the series title, subtitle", "iii|omnibus");
+        assertNotNull(series);
+        assertEquals("This is the series title, subtitle", series.getTitle());
+        assertEquals("iii|omnibus", series.getNumber());
+    }
+
+    @Test
+    void from2String81() {
+        Series series = Series.fromString("This is the series title", "#34");
+        assertNotNull(series);
+        assertEquals("This is the series title", series.getTitle());
+        assertEquals("34", series.getNumber());
+    }
+
+    @Test
+    void from2String82() {
+        Series series = Series.fromString("This is the series title, subtitle", " # 34 ");
+        assertNotNull(series);
+        assertEquals("This is the series title, subtitle", series.getTitle());
+        assertEquals("34", series.getNumber());
     }
 }

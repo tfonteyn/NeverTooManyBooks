@@ -51,70 +51,80 @@ class LanguageUtilsTest {
                            + " " + en.getLanguage()
                            + " " + en.getISO3Language()
                            + " " + en.getDisplayLanguage()
-                           + " " + en.getDisplayName());
+                           + " " + en.getDisplayName()
+                           + " " + LocaleUtils.isValid(en));
 
         Locale eng = new Locale("eng");
         System.out.println("eng:"
                            + " " + eng.getLanguage()
                            + " " + eng.getISO3Language()
                            + " " + eng.getDisplayLanguage()
-                           + " " + eng.getDisplayName());
+                           + " " + eng.getDisplayName()
+                           + " " + LocaleUtils.isValid(eng));
 
         Locale de = new Locale("de");
         System.out.println(" de:"
                            + " " + de.getLanguage()
                            + " " + de.getISO3Language()
                            + " " + de.getDisplayLanguage()
-                           + " " + de.getDisplayName());
+                           + " " + de.getDisplayName()
+                           + " " + LocaleUtils.isValid(de));
 
         Locale ger = new Locale("ger");
         System.out.println("ger:"
                            + " " + ger.getLanguage()
                            + " " + ger.getISO3Language()
                            + " " + ger.getDisplayLanguage()
-                           + " " + ger.getDisplayName());
+                           + " " + ger.getDisplayName()
+                           + " " + LocaleUtils.isValid(ger));
 
         Locale deu = new Locale("deu");
         System.out.println("deu:"
                            + " " + deu.getLanguage()
                            + " " + deu.getISO3Language()
                            + " " + deu.getDisplayLanguage()
-                           + " " + deu.getDisplayName());
+                           + " " + deu.getDisplayName()
+                           + " " + LocaleUtils.isValid(deu));
 
         Locale fr = new Locale("fr");
         System.out.println(" fr: "
                            + " " + fr.getLanguage()
                            + " " + fr.getISO3Language()
                            + " " + fr.getDisplayLanguage()
-                           + " " + fr.getDisplayName());
+                           + " " + fr.getDisplayName()
+                           + " " + LocaleUtils.isValid(fr));
 
         Locale fre = new Locale("fre");
         System.out.println("fre: "
                            + " " + fre.getLanguage()
                            + " " + fre.getISO3Language()
                            + " " + fre.getDisplayLanguage()
-                           + " " + fre.getDisplayName());
+                           + " " + fre.getDisplayName()
+                           + " " + LocaleUtils.isValid(fre));
 
         Locale fra = new Locale("fra");
         System.out.println("fra: "
                            + " " + fra.getLanguage()
                            + " " + fra.getISO3Language()
                            + " " + fra.getDisplayLanguage()
-                           + " " + fra.getDisplayName());
+                           + " " + fra.getDisplayName()
+                           + " " + LocaleUtils.isValid(fra));
 
         Locale it = new Locale("it");
         System.out.println(" it: "
                            + " " + it.getLanguage()
                            + " " + it.getISO3Language()
                            + " " + it.getDisplayLanguage()
-                           + " " + it.getDisplayName());
+                           + " " + it.getDisplayName()
+                           + " " + LocaleUtils.isValid(it));
 
         Locale ita = new Locale("ita");
         System.out.println("ita: "
                            + " " + ita.getLanguage()
                            + " " + ita.getISO3Language()
                            + " " + ita.getDisplayLanguage()
-                           + " " + ita.getDisplayName());
+                           + " " + ita.getDisplayName()
+                           + " " + LocaleUtils.isValid(ita));
 
         // en: en eng English English    => getISO3Language CAN be used to create the locale
         //eng: eng eng English English

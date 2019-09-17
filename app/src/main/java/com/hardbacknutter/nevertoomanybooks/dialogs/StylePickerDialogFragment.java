@@ -132,7 +132,10 @@ public class StylePickerDialogFragment
                        .setTitle(R.string.title_select_style)
                        .setView(root)
                        .setNeutralButton(R.string.btn_customize, (d, w) -> {
-                           Intent intent = new Intent(getContext(), PreferredStylesActivity.class);
+                           Intent intent = new Intent(getContext(), PreferredStylesActivity.class)
+                                                   .putExtra(
+                                                           PreferredStylesActivity.BKEY_STYLE_UUID,
+                                                           mCurrentStyle.getUuid());
                            // use the activity so we get the results there.
                            getActivity().startActivityForResult(intent,
                                                                 UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
@@ -156,8 +159,7 @@ public class StylePickerDialogFragment
     private void loadStyles() {
         try (DAO db = new DAO()) {
             mBooklistStyles.clear();
-            mBooklistStyles.addAll(
-                    BooklistStyle.Helper.getStyles(db, mShowAllStyles).values());
+            mBooklistStyles.addAll(BooklistStyle.Helper.getStyles(db, mShowAllStyles).values());
         }
     }
 

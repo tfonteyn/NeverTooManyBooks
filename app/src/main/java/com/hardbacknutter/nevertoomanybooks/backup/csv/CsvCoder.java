@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * <strong>Note:</strong> In the format definition, the " * {json}" suffix is optional
  * and can be missing.
  */
-final class CsvCoder {
+public final class CsvCoder {
 
     /**
      * Find the publication year in a string like "some title (1978-04-22)".
@@ -99,15 +99,15 @@ final class CsvCoder {
      *
      * @return StringList factory
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
-    static StringList<Author> getAuthorCoder() {
+    public static StringList<Author> getAuthorCoder() {
         if (sAuthorUtils == null) {
             sAuthorUtils = new StringList<>(new StringList.Factory<Author>() {
                 @Override
                 @NonNull
                 public Author decode(@NonNull final String encodedString) {
-                    List<String> elements =
-                            new StringList<String>().decodeElementList(encodedString);
+                    List<String> elements = StringList.newInstance().decodeElement(encodedString);
                     Author author = Author.fromString(elements.get(0));
                     if (elements.size() > 1) {
                         try {
@@ -125,9 +125,10 @@ final class CsvCoder {
                 public String encode(@NonNull final Author author) {
                     // Note the use of Author.NAME_SEPARATOR between family and given-names,
                     // i.e. the names are considered ONE field with a private separator.
-                    String s = escapeListItem(author.getFamilyName(), Author.NAME_SEPARATOR, ' ')
-                               + Author.NAME_SEPARATOR + ' '
-                               + escapeListItem(author.getGivenNames(), Author.NAME_SEPARATOR);
+                    String result =
+                            escape(author.getFamilyName(), Author.NAME_SEPARATOR, ' ')
+                            + Author.NAME_SEPARATOR + ' '
+                            + escape(author.getGivenNames(), Author.NAME_SEPARATOR);
 
                     JSONObject details = new JSONObject();
                     try {
@@ -141,9 +142,10 @@ final class CsvCoder {
                         throw new IllegalStateException(e);
                     }
                     if (details.length() != 0) {
-                        s += ' ' + String.valueOf(getFieldSeparator()) + ' ' + details.toString();
+                        result += ' ' + String.valueOf(getObjectSeparator())
+                                  + ' ' + details.toString();
                     }
-                    return s;
+                    return result;
                 }
             });
         }
@@ -162,14 +164,13 @@ final class CsvCoder {
      * @return StringList factory
      */
     @NonNull
-    static StringList<Series> getSeriesCoder() {
+    public static StringList<Series> getSeriesCoder() {
         if (sSeriesUtils == null) {
             sSeriesUtils = new StringList<>(new StringList.Factory<Series>() {
                 @Override
                 @NonNull
                 public Series decode(@NonNull final String encodedString) {
-                    List<String> elements =
-                            new StringList<String>().decodeElementList(encodedString);
+                    List<String> elements = StringList.newInstance().decodeElement(encodedString);
                     Series series = Series.fromString(elements.get(0));
                     if (elements.size() > 1) {
                         try {
@@ -184,17 +185,13 @@ final class CsvCoder {
                 @NonNull
                 @Override
                 public String encode(@NonNull final Series series) {
-                    String numberStr;
+                    String result = escape(series.getTitle(), '(');
+
                     if (!series.getNumber().isEmpty()) {
                         // start with a space for readability
                         // the surrounding () are NOT escaped as they are part of the format.
-                        numberStr = " ("
-                                    + escapeListItem(series.getNumber(), '(')
-                                    + ')';
-                    } else {
-                        numberStr = "";
+                        result += " (" + escape(series.getNumber(), '(') + ')';
                     }
-                    String s = escapeListItem(series.getTitle(), '(') + numberStr;
 
                     JSONObject details = new JSONObject();
                     try {
@@ -205,9 +202,10 @@ final class CsvCoder {
                         throw new IllegalStateException(e);
                     }
                     if (details.length() != 0) {
-                        s += ' ' + String.valueOf(getFieldSeparator()) + ' ' + details.toString();
+                        result += ' ' + String.valueOf(getObjectSeparator())
+                                  + ' ' + details.toString();
                     }
-                    return s;
+                    return result;
                 }
             });
         }
@@ -225,8 +223,9 @@ final class CsvCoder {
      *
      * @return StringList factory
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
-    static StringList<TocEntry> getTocCoder() {
+    public static StringList<TocEntry> getTocCoder() {
         if (sTocUtils == null) {
             sTocUtils = new StringList<>(new StringList.Factory<TocEntry>() {
                 /**
@@ -247,14 +246,14 @@ final class CsvCoder {
                 @Override
                 @NonNull
                 public TocEntry decode(@NonNull final String encodedString) {
-                    List<String> elements =
-                            new StringList<String>().decodeElementList(encodedString);
+                    List<String> elements = StringList.newInstance().decodeElement(encodedString);
                     String title = elements.get(0);
                     Author author = Author.fromString(elements.get(1));
 
                     Matcher matcher = DATE_PATTERN.matcher(title);
                     if (matcher.find()) {
                         // strip out the found pattern (including the brackets)
+                        //noinspection ConstantConditions
                         title = title.replace(matcher.group(0), "").trim();
                         return new TocEntry(author, title, matcher.group(1));
                     } else {
@@ -265,17 +264,16 @@ final class CsvCoder {
                 @NonNull
                 @Override
                 public String encode(@NonNull final TocEntry tocEntry) {
-                    String yearStr;
+                    String result = escape(tocEntry.getTitle(), '(');
+
                     if (!tocEntry.getFirstPublication().isEmpty()) {
                         // start with a space for readability
-                        yearStr = " (" + tocEntry.getFirstPublication() + ')';
-                    } else {
-                        yearStr = "";
+                        // the surrounding () are NOT escaped as they are part of the format.
+                        result += " (" + tocEntry.getFirstPublication() + ')';
                     }
-                    return escapeListItem(tocEntry.getTitle(), '(')
-                           + yearStr
-                           + ' ' + String.valueOf(getFieldSeparator()) + ' '
-                           + getAuthorCoder().encodeElement(tocEntry.getAuthor());
+
+                    return result + ' ' + String.valueOf(getObjectSeparator())
+                           + ' ' + getAuthorCoder().encodeElement(tocEntry.getAuthor());
                 }
             });
         }
@@ -290,8 +288,9 @@ final class CsvCoder {
      *
      * @return StringList factory
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
-    static StringList<Bookshelf> getBookshelfCoder() {
+    public static StringList<Bookshelf> getBookshelfCoder() {
         if (sBookshelfUtils == null) {
             sBookshelfUtils = new StringList<>(new StringList.Factory<Bookshelf>() {
 
@@ -299,15 +298,14 @@ final class CsvCoder {
                  * Backwards compatibility rules ',' (not using the default '|').
                  */
                 @Override
-                public char getListSeparator() {
+                public char getElementSeparator() {
                     return ',';
                 }
 
                 @Override
                 @NonNull
                 public Bookshelf decode(@NonNull final String encodedString) {
-                    List<String> elements =
-                            new StringList<String>().decodeElementList(encodedString);
+                    List<String> elements = StringList.newInstance().decodeElement(encodedString);
                     String name = elements.get(0);
                     String uuid = null;
                     if (elements.size() > 1) {
@@ -332,7 +330,7 @@ final class CsvCoder {
                 @NonNull
                 @Override
                 public String encode(@NonNull final Bookshelf bookshelf) {
-                    String s = escapeListItem(bookshelf.getName());
+                    String s = escape(bookshelf.getName());
 
                     JSONObject details = new JSONObject();
                     try {
@@ -344,7 +342,7 @@ final class CsvCoder {
                     }
 
                     if (details.length() != 0) {
-                        s += ' ' + String.valueOf(getFieldSeparator()) + ' ' + details.toString();
+                        s += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details.toString();
                     }
                     return s;
                 }

@@ -224,8 +224,9 @@ public final class Logger {
     private static void writeToLog(@NonNull final String type,
                                    @NonNull final String message,
                                    @Nullable final Throwable e) {
+        File logFile = new File(StorageUtils.getLogDir(), ERROR_LOG_FILE);
         //noinspection ImplicitDefaultCharsetUsage
-        try (FileWriter fw = new FileWriter(getErrorLog(), true);
+        try (FileWriter fw = new FileWriter(logFile, true);
              BufferedWriter out = new BufferedWriter(fw)) {
             String exMsg;
             if (e != null) {
@@ -256,21 +257,6 @@ public final class Logger {
             Log.d(tag(object), buf.toString("UTF-8"));
         } catch (IOException e) {
             Log.d(tag(object), "dumping failed: ", e);
-        }
-    }
-
-    /**
-     * Clear the log each time the app is started; preserve previous if non-empty.
-     */
-    public static void clearLog() {
-        try {
-            File logFile = new File(getErrorLog());
-            if (logFile.exists() && logFile.length() > 0) {
-                File backup = new File(getErrorLog() + ".bak");
-                StorageUtils.renameFile(logFile, backup);
-            }
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
-            // Ignore all backup failure...
         }
     }
 
@@ -318,8 +304,18 @@ public final class Logger {
         return sb.toString();
     }
 
-    private static String getErrorLog()
-            throws SecurityException {
-        return StorageUtils.getLogStoragePath() + File.separator + ERROR_LOG_FILE;
+    /**
+     * Clear the log each time the app is started; preserve previous if non-empty.
+     */
+    public static void clearLog() {
+        try {
+            File logFile = new File(StorageUtils.getLogDir(), ERROR_LOG_FILE);
+            if (logFile.exists() && logFile.length() > 0) {
+                File backup = new File(logFile.getPath() + ".bak");
+                StorageUtils.renameFile(logFile, backup);
+            }
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
+            // Ignore all backup failure...
+        }
     }
 }

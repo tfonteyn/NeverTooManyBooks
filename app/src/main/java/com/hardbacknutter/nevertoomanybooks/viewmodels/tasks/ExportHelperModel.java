@@ -25,35 +25,17 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.ui;
+package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
 
-import androidx.annotation.Nullable;
-
-import java.io.File;
-
-import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.TaskModel;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 
 /**
  * See parent class doc.
  *
- * <strong>Note:</strong> a ViewModel must be "public" despite Android Studio proposing
- * "package-private".
+ * <strong>Note:</strong> a ViewModel must be "public" despite Android Studio
+ * proposing "package-private".
  * The catch: it will work in the emulator, but fail on a real device.
  */
-@SuppressWarnings("WeakerAccess")
-public class ImportOptionsTaskModel
-        extends TaskModel<ImportOptions> {
-
-    @Nullable
-    private File mFile;
-
-    @Nullable
-    File getFile() {
-        return mFile;
-    }
-
-    void setFile(@Nullable final File file) {
-        mFile = file;
-    }
+public class ExportHelperModel
+        extends TaskModel<ExportHelper> {
 }

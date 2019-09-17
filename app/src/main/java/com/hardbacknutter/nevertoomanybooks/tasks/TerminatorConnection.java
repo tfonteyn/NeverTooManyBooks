@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * This is the replacement for the old Terminator class. Uses a simple Thread/Runnable for closing
  * connections instead of the full-blown queue based system with 'SimpleTask'.
  * <p>
- * Note that the Goodreads classes and image download used the Apache Commons Http classes
+ * Note that the Goodreads classes and image download used to use the Apache Commons Http classes
  * instead. Apache is now removed, and they use the standard HttpURLConnection directly.
  * TODO: either make all places use this class, or perhaps remove this class?
  */
@@ -107,8 +107,8 @@ public final class TerminatorConnection
      *
      * @throws IOException on failure
      */
-    public TerminatorConnection(@NonNull final String urlStr,
-                                final boolean redirect)
+    private TerminatorConnection(@NonNull final String urlStr,
+                                 final boolean redirect)
             throws IOException {
 
         final URL url = new URL(urlStr);
@@ -158,6 +158,7 @@ public final class TerminatorConnection
      *
      * @throws IOException on failure
      */
+    @SuppressWarnings("unused")
     @WorkerThread
     @NonNull
     public static TerminatorConnection openConnection(@NonNull final String urlStr,

@@ -36,7 +36,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 
 /**
@@ -59,7 +59,7 @@ public interface BackupReader
      * @throws ImportException on failure
      */
     void restore(@NonNull Context context,
-                 @NonNull ImportOptions settings,
+                 @NonNull ImportHelper settings,
                  @NonNull ProgressListener progressListener)
             throws IOException, ImportException;
 

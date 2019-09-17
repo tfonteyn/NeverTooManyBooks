@@ -305,7 +305,7 @@ public class CoverBrowserFragment
             Logger.debug(this, "setGalleryImage", fileInfo);
         }
 
-        if (fileInfo.hasFileSpec()) {
+        if (fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
             // Load the temp file and apply to the gallery view
             File tmpFile = new File(fileInfo.fileSpec);
             if (tmpFile.exists()) {
@@ -342,7 +342,7 @@ public class CoverBrowserFragment
             Logger.debug(this, "setSwitcherImage", "fileInfo=" + fileInfo);
         }
 
-        if (fileInfo.hasFileSpec()) {
+        if (fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
             // Load the temp file and apply to the switcher
             File file = new File(fileInfo.fileSpec);
             if (file.exists() && file.length() > ImageUtils.MIN_IMAGE_FILE_SIZE) {
@@ -429,7 +429,7 @@ public class CoverBrowserFragment
             }
 
             File imageFile = null;
-            if (holder.fileInfo.hasFileSpec()) {
+            if (holder.fileInfo.fileSpec != null && !holder.fileInfo.fileSpec.isEmpty()) {
                 imageFile = new File(holder.fileInfo.fileSpec);
             }
 
@@ -459,12 +459,13 @@ public class CoverBrowserFragment
             // image from gallery clicked -> load it into the larger preview (imageSwitcher).
             holder.imageView.setOnClickListener(v -> {
                 // check if we actually have a preview in the gallery
-                if (holder.fileInfo.hasFileSpec()) {
+                String fileSpec = holder.fileInfo.fileSpec;
+                if (fileSpec != null && !fileSpec.isEmpty()) {
                     //noinspection ConstantConditions
                     if (holder.fileInfo.size.equals(SearchEngine.ImageSize.Large)) {
                         // no need to search, just load it.
                         ImageUtils.setImageView(holder.imageView,
-                                                new File(holder.fileInfo.fileSpec),
+                                                new File(fileSpec),
                                                 mWidth, mHeight, true);
                     } else {
                         // see if we can get a larger image.

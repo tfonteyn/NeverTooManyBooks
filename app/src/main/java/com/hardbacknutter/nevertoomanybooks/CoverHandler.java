@@ -91,7 +91,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
  */
 public class CoverHandler {
 
+    /** The cropper uses a single file. */
     private static final String CROPPED_COVER_FILENAME = "Cropped";
+    private static final String IMAGE_MIME_TYPE = "image/*";
+
     /** The fragment hosting us. */
     @NonNull
     private final Fragment mFragment;
@@ -376,7 +379,7 @@ public class CoverHandler {
         if (mBook.getId() == 0) {
             return StorageUtils.getTempCoverFile();
         }
-        return StorageUtils.getCoverForUuid(getUuid());
+        return StorageUtils.getCoverFileForUuid(getUuid());
     }
 
     /**
@@ -450,7 +453,7 @@ public class CoverHandler {
      */
     private void processCoverBrowserResult(@NonNull final Intent data) {
         String fileSpec = data.getStringExtra(UniqueId.BKEY_FILE_SPEC);
-        if (mCoverBrowser != null) {
+        if (mCoverBrowser != null && fileSpec != null && !fileSpec.isEmpty()) {
             File source = new File(fileSpec);
             File destination = getCoverFile();
             StorageUtils.renameFile(source, destination);
@@ -466,7 +469,7 @@ public class CoverHandler {
      */
     private void startChooser() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
-                                .setType("image/*");
+                                .setType(IMAGE_MIME_TYPE);
         mFragment.startActivityForResult(
                 Intent.createChooser(intent, mContext.getString(R.string.title_select_image)),
                 UniqueId.REQ_ACTION_GET_CONTENT);
@@ -566,7 +569,7 @@ public class CoverHandler {
         //call the standard crop action intent (the device may not support it)
         Intent intent = new Intent("com.android.camera.action.CROP")
                                 // image Uri and type
-                                .setDataAndType(inputUri, "image/*")
+                                .setDataAndType(inputUri, IMAGE_MIME_TYPE)
                                 // not interested in faces
                                 .putExtra("noFaceDetection", true)
                                 // {@code true} to return a Bitmap,

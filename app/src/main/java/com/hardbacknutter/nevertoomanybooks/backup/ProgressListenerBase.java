@@ -41,5 +41,4 @@ public abstract class ProgressListenerBase
     public void setMax(final int maxPosition) {
         mMaxPosition = maxPosition;
     }
-
 }

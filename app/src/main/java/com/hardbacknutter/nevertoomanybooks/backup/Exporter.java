@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -37,7 +39,8 @@ import java.io.OutputStream;
  * <p>
  * Interface definition for an exporter.
  */
-public interface Exporter {
+public interface Exporter
+        extends Closeable {
 
     /**
      * Export Books to an OutputStream.
@@ -47,13 +50,48 @@ public interface Exporter {
      * @param includeCoverCount If set, the progress count will be doubled to (presumably)
      *                          cover the fact that each book has a cover.
      *
-     * @return number of books exported
+     * @return {@link Results}
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    int doBooks(@NonNull OutputStream outputStream,
-                @NonNull ProgressListener listener,
-                boolean includeCoverCount)
+    Results doBooks(@NonNull OutputStream outputStream,
+                    @NonNull ProgressListener listener,
+                    boolean includeCoverCount)
             throws IOException;
+
+    /**
+     * Value class to report back what was exported.
+     */
+    class Results {
+
+        /** The total #books that were considered for export. */
+        public int booksProcessed;
+        /** #books we exported. */
+        public int booksExported;
+        /**
+         * The total #covers that were considered for exporting.
+         * This is the sum of exported + missing + skipped.
+         */
+        public int coversProcessed;
+        /** #covers exported. */
+        public int coversExported;
+        /** #books that did not have a cover. */
+        public int coversMissing;
+        /** #styles we exported. */
+        public int styles;
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "Results{"
+                   + "booksProcessed=" + booksProcessed
+                   + ", booksExported=" + booksExported
+                   + ", coversProcessed=" + coversProcessed
+                   + ", coversExported=" + coversExported
+                   + ", coversMissing=" + coversMissing
+                   + ", styles=" + styles
+                   + '}';
+        }
+    }
 }

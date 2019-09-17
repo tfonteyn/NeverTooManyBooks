@@ -886,6 +886,7 @@ public class DAO
     /**
      * Add or update the passed {@link Author}, depending whether author.id == 0.
      *
+     * @param context    Current context
      * @param userLocale the locale the user is running the app in.
      * @param author     object to insert or update. Will be updated with the id.
      *
@@ -967,6 +968,9 @@ public class DAO
      * changed the Author.
      * <p>
      * Will NOT insert a new Author if not found.
+     *
+     * @param context Current context
+     * @param author  to refresh
      */
     public void refreshAuthor(@NonNull final Context context,
                               @NonNull final Locale userLocale,
@@ -990,6 +994,10 @@ public class DAO
     }
 
     /**
+     * @param context Current context
+     * @param from    Author to replace
+     * @param to      Author to use
+     *
      * @return {@code true} for success.
      */
     public boolean globalReplace(@NonNull final Context context,
@@ -1138,6 +1146,7 @@ public class DAO
     }
 
     /**
+     * @param context Current context
      * @param userLocale the locale the user is running the app in.
      * @param author     to retrieve
      *
@@ -1158,6 +1167,7 @@ public class DAO
     }
 
     /**
+     * @param context Current context
      * @param userLocale the locale the user is running the app in.
      * @param author     to count the TocEntries of
      *
@@ -1180,6 +1190,7 @@ public class DAO
     /**
      * Examine the values and make any changes necessary before writing the data.
      *
+     * @param context Current context
      * @param book  A collection with the columns to be set. May contain extra data.
      * @param isNew indicates if the book is new
      */
@@ -1380,6 +1391,8 @@ public class DAO
 
     /**
      * Needed for reading from legacy archive versions... I think?
+     *
+     * @param context Current context
      */
     private void preprocessLegacyAuthor(@NonNull final Context context,
                                         @NonNull final Book book) {
@@ -1583,7 +1596,7 @@ public class DAO
     private void deleteThumbnail(@Nullable final String uuid) {
         if (uuid != null) {
             // remove from file system
-            StorageUtils.deleteFile(StorageUtils.getCoverForUuid(uuid));
+            StorageUtils.deleteFile(StorageUtils.getCoverFileForUuid(uuid));
             // remove from cache
             if (!uuid.isEmpty()) {
                 CoversDAO.delete(uuid);
@@ -2165,6 +2178,7 @@ public class DAO
      * Note that {@link DBDefinitions#DOM_BOOK_AUTHOR_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
+     * @param context Current context
      * @param userLocale the locale the user is running the app in.
      * @param bookId     of the book
      * @param book       A collection with the columns to be set. May contain extra data.
@@ -2982,6 +2996,7 @@ public class DAO
     /**
      * Add or update the passed Bookshelf, depending whether bookshelf.id == 0.
      *
+     * @param context Current context
      * @param bookshelf object to insert or update. Will be updated with the id.
      *
      * @return {@code true} for success

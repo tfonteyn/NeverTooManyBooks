@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Show context menu on a view.
- *
+ * <p>
  * TODO: create a Builder to avoid long param list in constructors.
  *
  * @param <T> type of the actual Object that is represented by a row in the selection list.
@@ -90,7 +90,8 @@ public class MenuPicker<T>
      *
      * @param context          Current context
      * @param titleId          (optional, 0 for none) Resource id for the dialog/menu
-     * @param messageId        (optional, 0 for none) Resource id for a message to display above the menu
+     * @param messageId        (optional, 0 for none) Resource id for a message to display
+     *                         above the menu
      * @param showCancel       set to {@code true} to show a 'cancel' button.
      * @param onCancelListener (optional) listener for cancel events
      * @param menu             the menu options to show

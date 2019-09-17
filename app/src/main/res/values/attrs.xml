@@ -39,6 +39,6 @@
     <attr name="border_color" format="reference|color" />
 
     <!-- ItemTouchHelper uses this for background color while a row is being dragged. -->
-    <attr name="itemTouchHelper_onSelected_color" format="reference|color" />
+    <attr name="itemTouchHelper_onDragging_color" format="reference|color" />
 
 </resources>

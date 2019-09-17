@@ -324,7 +324,7 @@
             android:key="BookList.CompatibilityMode"
             android:title="@string/pt_booklist_generation" />
 
-        <!-- default BooklistBuilder.CompatibilityMode.PREF_MODE_DEFAULT == 0 -->
+        <!-- default BooklistBuilder.CompatibilitySettings.PREF_MODE_DEFAULT == 0 -->
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_edit"
@@ -435,7 +435,7 @@
     <PreferenceCategory
         android:title="@string/lbl_credentials">
         <PreferenceScreen
-            android:icon="@drawable/ic_goodreads2"
+            android:icon="@drawable/ic_goodreads"
             android:key="psk_goodreads"
             android:title="@string/goodreads">
             <intent android:action="goodreads.credentials.EDIT" />

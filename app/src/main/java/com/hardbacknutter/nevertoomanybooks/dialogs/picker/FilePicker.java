@@ -56,11 +56,11 @@ public class FilePicker
     /**
      * Constructor.
      *
-     * @param context    Current context
-     * @param title    for the dialog
-     * @param message  optional message
-     * @param files    list to choose from
-     * @param handler  which will receive the selected row item
+     * @param context Current context
+     * @param title   for the dialog
+     * @param message optional message
+     * @param files   list to choose from
+     * @param handler which will receive the selected row item
      */
     public FilePicker(@NonNull final Context context,
                       @Nullable final String title,
@@ -94,7 +94,7 @@ public class FilePicker
         /**
          * Constructor.
          *
-         * @param context    Current context
+         * @param context  Current context
          * @param list     List of items
          * @param listener called upon user selection
          */

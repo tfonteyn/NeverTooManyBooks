@@ -34,7 +34,7 @@ apply plugin: 'com.android.application'
 //}
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     //  May 7, 2019.: https://developer.android.com/about/dashboards/
     //  A       API     %
@@ -45,12 +45,10 @@ android {
     //  7.1     25      46.5
     //  7       24      57.9
     //  6       23      74.8‬
-    //  5.1     22      86.3
-    //  5.0     21      89.3
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
         minSdkVersion 23
-        targetSdkVersion 28
+        targetSdkVersion 29
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -66,7 +64,7 @@ android {
     }
 
     lintOptions {
-        disable 'MissingTranslation'
+        //disable 'MissingTranslation'
     }
 
     compileOptions {
@@ -84,7 +82,6 @@ android {
             }
         }
     }
-
     packagingOptions {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.md'
@@ -103,19 +100,19 @@ android {
 dependencies {
     //
     implementation 'androidx.annotation:annotation:1.1.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
     implementation 'androidx.drawerlayout:drawerlayout:1.1.0-alpha03'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha03'
-    implementation 'androidx.core:core:1.2.0-alpha03'
-    implementation 'androidx.fragment:fragment:1.2.0-alpha02'
-    implementation 'androidx.preference:preference:1.1.0-rc01'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta03'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha04'
+    implementation 'androidx.core:core:1.2.0-alpha04'
+    implementation 'androidx.fragment:fragment:1.2.0-alpha03'
+    implementation 'androidx.preference:preference:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta04'
     // com.google.android.material.tabs.TabLayout does not support ViewPager2 (yet?)
     implementation 'androidx.viewpager:viewpager:1.0.0'
 //    implementation 'androidx.viewpager2:viewpager2:1.0.0-beta03'
     //
-    implementation 'com.google.android.material:material:1.1.0-alpha09'
+    implementation 'com.google.android.material:material:1.1.0-alpha10'
 
     // barcode decoder using https://developers.google.com/android/guides/setup
     implementation 'com.google.android.gms:play-services-vision:18.0.0'
@@ -136,7 +133,8 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.11.3'
 
     testImplementation 'org.mockito:mockito-core:3.0.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
+    implementation 'androidx.documentfile:documentfile:1.0.1'
 }
 
 

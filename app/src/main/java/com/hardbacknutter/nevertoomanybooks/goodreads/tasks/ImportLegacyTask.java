@@ -436,7 +436,7 @@ class ImportLegacyTask
         if (id > 0) {
             if (book.getBoolean(UniqueId.BKEY_IMAGE)) {
                 File downloadedFile = StorageUtils.getTempCoverFile();
-                File destination = StorageUtils.getCoverForUuid(db.getBookUuid(id));
+                File destination = StorageUtils.getCoverFileForUuid(db.getBookUuid(id));
                 StorageUtils.renameFile(downloadedFile, destination);
             }
         }
@@ -558,27 +558,30 @@ class ImportLegacyTask
          */
         if (bookData.containsKey(DBDefinitions.KEY_TITLE)) {
             String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
+            if (fullTitle != null && !fullTitle.isEmpty()) {
+                Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
+                if (matcher.find()) {
+                    String bookTitle = matcher.group(1);
+                    String seriesTitleWithNumber = matcher.group(2);
+                    if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
+                        ArrayList<Series> seriesList;
+                        if (bookCursor == null) {
+                            // It's a new book. Start a clean list.
+                            seriesList = new ArrayList<>();
+                        } else {
+                            // it's an update. Get current Series.
+                            seriesList = db.getSeriesByBookId(
+                                    bookCursor.getLong(DBDefinitions.KEY_PK_ID));
+                        }
 
-            Matcher matcher = Series.BOOK_SERIES_PATTERN.matcher(fullTitle);
-            if (matcher.find()) {
-                String bookTitle = matcher.group(1);
-                String seriesTitleWithNumber = matcher.group(2);
+                        Series newSeries = Series.fromString(seriesTitleWithNumber);
+                        seriesList.add(newSeries);
+                        bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
 
-                ArrayList<Series> seriesList;
-                if (bookCursor == null) {
-                    // It's a new book. Start a clean list.
-                    seriesList = new ArrayList<>();
-                } else {
-                    // it's an update. Get current Series.
-                    seriesList = db.getSeriesByBookId(bookCursor.getLong(DBDefinitions.KEY_PK_ID));
+                        Series.pruneList(seriesList, context, db, bookLocale);
+                        bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
+                    }
                 }
-
-                Series newSeries = Series.fromString(seriesTitleWithNumber);
-                seriesList.add(newSeries);
-                bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
-
-                Series.pruneSeriesList(seriesList, bookLocale);
-                bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
             }
         }
 
@@ -616,7 +619,7 @@ class ImportLegacyTask
             }
             //TEST see above
             //--- begin 2019-02-04 ---
-            ItemWithFixableId.pruneList(context, db, bsList, locale);
+            ItemWithFixableId.pruneList(bsList, context, db, locale);
             //--- end 2019-02-04 ---
 
             bookData.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);

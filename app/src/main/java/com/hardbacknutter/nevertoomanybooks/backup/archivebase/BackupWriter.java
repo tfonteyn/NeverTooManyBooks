@@ -36,7 +36,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportOptions;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 
 /**
@@ -51,19 +51,19 @@ public interface BackupWriter
      * See BackupWriterAbstract for a default implementation.
      *
      * @param context          Current context
-     * @param settings         the import settings
+     * @param exportHelper         the import settings
      * @param progressListener Listener to receive progress information.
      *
      * @throws IOException on failure
      */
     @WorkerThread
     void backup(@NonNull Context context,
-                @NonNull ExportOptions settings,
+                @NonNull ExportHelper exportHelper,
                 @NonNull ProgressListener progressListener)
             throws IOException;
 
     /**
-     * Get the containing archive.
+     * Get the archive container.
      *
      * @return the container
      */

@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 
 /**
@@ -213,7 +214,7 @@ public class DataManager {
                     break;
 
                 default:
-                    throw new IllegalStateException(String.valueOf(cursor.getType(i)));
+                    throw new UnexpectedValueException(cursor.getType(i));
             }
         }
 

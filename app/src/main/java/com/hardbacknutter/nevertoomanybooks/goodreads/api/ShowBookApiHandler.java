@@ -341,27 +341,28 @@ public abstract class ShowBookApiHandler
         // Example: "<title>The Anome (Durdane, #1)</title>"
         if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
             String fullTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
-
-            //TEST: new regex logic
-            Matcher matcher = Series.BOOK_SERIES_PATTERN.matcher(fullTitle);
-            if (matcher.find()) {
-                String bookTitle = matcher.group(1);
-                String seriesTitleWithNumber = matcher.group(2);
-
-                if (mSeries == null) {
-                    mSeries = new ArrayList<>();
+            if (fullTitle != null && !fullTitle.isEmpty()) {
+                Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
+                if (matcher.find()) {
+                    String bookTitle = matcher.group(1);
+                    String seriesTitleWithNumber = matcher.group(2);
+                    if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
+                        if (mSeries == null) {
+                            mSeries = new ArrayList<>();
+                        }
+                        Series newSeries = Series.fromString(seriesTitleWithNumber);
+                        mSeries.add(newSeries);
+                        // It's tempting to replace KEY_TITLE with ORIG_TITLE, but that does
+                        // bad things to translations (it uses the original language)
+                        mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
+//                        if (mBookData.containsKey(ShowBookFieldName.ORIG_TITLE)) {
+//                            mBookData.putString(DBDefinitions.KEY_TITLE,
+//                                              mBookData.getString(ShowBookFieldName.ORIG_TITLE));
+//                        } else {
+//                            mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
+//                        }
+                    }
                 }
-                Series newSeries = Series.fromString(seriesTitleWithNumber);
-                mSeries.add(newSeries);
-                // It's tempting to replace KEY_TITLE with ORIG_TITLE, but that does
-                // bad things to translations (it uses the original language)
-                mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
-//                if (mBookData.containsKey(ShowBookFieldName.ORIG_TITLE)) {
-//                    mBookData.putString(DBDefinitions.KEY_TITLE,
-//                                        mBookData.getString(ShowBookFieldName.ORIG_TITLE));
-//                } else {
-//                    mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
-//                }
             }
 
         } else if (mBookData.containsKey(ShowBookFieldName.ORIG_TITLE)) {

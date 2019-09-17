@@ -75,7 +75,6 @@ public final class GoogleBooksManager
 
     @NonNull
     public static String getBaseURL() {
-        //noinspection ConstantConditions
         return SearchEngine.getPref().getString(PREFS_HOST_URL, "https://books.google.com");
     }
 

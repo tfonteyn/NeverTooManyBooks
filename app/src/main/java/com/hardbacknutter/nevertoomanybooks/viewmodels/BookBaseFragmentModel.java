@@ -183,7 +183,7 @@ public class BookBaseFragmentModel
                 // if the user added a cover to the new book, make it permanent
                 if (mBook.getBoolean(UniqueId.BKEY_IMAGE)) {
                     File downloadedFile = StorageUtils.getTempCoverFile();
-                    File destination = StorageUtils.getCoverForUuid(mDb.getBookUuid(id));
+                    File destination = StorageUtils.getCoverFileForUuid(mDb.getBookUuid(id));
                     StorageUtils.renameFile(downloadedFile, destination);
                 }
             }
@@ -347,18 +347,24 @@ public class BookBaseFragmentModel
 
                 @Override
                 public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
-                    String msg = GoodreadsTasks.handleResult(App.getLocalizedAppContext(), message);
-                    if (msg != null) {
-                        mUserMessage.setValue(msg);
-                    } else {
-                        // Need authorization
-                        mNeedsGoodreads.setValue(true);
+                    switch (message.status) {
+                        case Success:
+                        case Failed: {
+                            String msg = GoodreadsTasks.handleResult(App.getLocalizedAppContext(),
+                                                                     message);
+                            if (msg != null) {
+                                mUserMessage.setValue(msg);
+                            } else {
+                                // Need authorization
+                                mNeedsGoodreads.setValue(true);
+                            }
+                            break;
+                        }
+                        case Cancelled: {
+                            mUserMessage.setValue(R.string.progress_end_cancelled);
+                            break;
+                        }
                     }
-                }
-
-                @Override
-                public void onTaskCancelled(@NonNull final TaskFinishedMessage<Integer> message) {
-                    mUserMessage.setValue(R.string.progress_end_cancelled);
                 }
 
                 @Override

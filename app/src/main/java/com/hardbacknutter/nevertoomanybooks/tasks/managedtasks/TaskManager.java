@@ -443,22 +443,22 @@ public class TaskManager {
     public static class TaskProgressMessage
             implements Message<TaskManagerListener> {
 
-        private final int mAbsPosition;
+        private final int mPos;
         private final int mMax;
         @NonNull
         private final String mMessage;
 
-        TaskProgressMessage(final int absPosition,
+        TaskProgressMessage(final int pos,
                             final int max,
                             @NonNull final String message) {
-            mAbsPosition = absPosition;
+            mPos = pos;
             mMax = max;
             mMessage = message;
         }
 
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
-            listener.onTaskProgress(mAbsPosition, mMax, mMessage);
+            listener.onTaskProgress(mPos, mMax, mMessage);
             return false;
         }
 
@@ -466,7 +466,7 @@ public class TaskManager {
         @NonNull
         public String toString() {
             return "TaskProgressMessage{"
-                   + "mAbsPosition=" + mAbsPosition
+                   + "mPos=" + mPos
                    + ", mMax=" + mMax
                    + ", mMessage=`" + mMessage + '`'
                    + '}';

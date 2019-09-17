@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +76,9 @@ import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
  * <strong>
  * The current code in this app checks on the view NOT being a CFSRecyclerView
  * before it adds the decorator.
- * So switching between the two solutions is limited to editing the XML.
+ * <p>
+ * So switching between the two solutions is limited to editing the XML and making sure
+ * {@link #___COMPILE_WITH_CFS_SUPPORT} is set to 'true'
  * </strong>
  * <p>
  * The text size is hardcoded to Large/Medium and the color to textColorPrimary
@@ -83,7 +86,11 @@ import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
 public class FastScrollerOverlay
         extends RecyclerView.ItemDecoration {
 
-    private static final boolean ___COMPILE_WITH_CFS_SUPPORT = false;
+    /**
+     * false: we only support standard RecyclerView.
+     * true: we support BOTH standard RecyclerView and CFSRecyclerView.
+     */
+    private static final boolean ___COMPILE_WITH_CFS_SUPPORT = true;
 
     /**
      * The overlay size is based on SIZE_MULTIPLIER * mPrimaryTextSize.
@@ -254,11 +261,6 @@ public class FastScrollerOverlay
         if (sectionIndexerV2 == null) {
             return;
         }
-
-        // this is the RecyclerView itself !! and not the FastScroller.... so not usable.
-//        if (parent.getScrollState() != RecyclerView.SCROLL_STATE_DRAGGING) {
-//            return;
-//        }
 
         if (___COMPILE_WITH_CFS_SUPPORT) {
             if (!fastScrollerIsDragging(parent) && (!(parent instanceof CFSRecyclerView))) {

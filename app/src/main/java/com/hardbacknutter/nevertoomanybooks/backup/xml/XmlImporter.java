@@ -78,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -90,7 +91,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 public class XmlImporter
         implements Importer {
 
-    private static final String UNABLE_TO_PROCESS_XML_ENTITY_ERROR =
+    private static final String ERROR_UNABLE_TO_PROCESS_XML_ENTITY =
             "Unable to process XML entity ";
 
     private static final int BUFFER_SIZE = 32768;
@@ -162,13 +163,16 @@ public class XmlImporter
      *
      * @throws IOException on failure
      */
-    public void doStyles(@NonNull final ReaderEntity entity,
-                         @Nullable final ProgressListener listener)
+    public int doStyles(@NonNull final ReaderEntity entity,
+                        @Nullable final ProgressListener listener)
             throws IOException {
         InputStreamReader reader = new InputStreamReader(entity.getInputStream(),
                                                          StandardCharsets.UTF_8);
         BufferedReader in = new BufferedReaderNoClose(reader, BUFFER_SIZE);
-        fromXml(in, new StylesReader(mDb), listener);
+        StylesReader stylesReader = new StylesReader(mDb);
+        fromXml(in, stylesReader, listener);
+
+        return stylesReader.getStylesRead();
     }
 
     /**
@@ -386,7 +390,7 @@ public class XmlImporter
                 mTag = mTagStack.pop();
 
             } catch (@NonNull final RuntimeException e) {
-                throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag.name
+                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_ENTITY + mTag.name
                                            + '(' + mTag.type + ')', e);
             }
         };
@@ -482,7 +486,7 @@ public class XmlImporter
                 mTag = mTagStack.pop();
 
             } catch (@NonNull final RuntimeException e) {
-                throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag, e);
+                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_ENTITY + mTag, e);
             }
         };
 
@@ -563,11 +567,11 @@ public class XmlImporter
                                  break;
 
                              default:
-                                 throw new IllegalStateException(mTag.type);
+                                 throw new UnexpectedValueException(mTag.type);
                          }
 
                      } catch (@NonNull final NumberFormatException e) {
-                         throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag, e);
+                         throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_ENTITY + mTag, e);
                      }
                  });
     }
@@ -630,17 +634,17 @@ public class XmlImporter
 
         default void putFloat(@NonNull final K key,
                               final float value) {
-            throw new IllegalStateException("Float, key=" + key);
+            throw new UnexpectedValueException("Float, key=" + key);
         }
 
         default void putLong(@NonNull final K key,
                              final long value) {
-            throw new IllegalStateException("Long, key=" + key);
+            throw new UnexpectedValueException("Long, key=" + key);
         }
 
         default void putDouble(@NonNull final K key,
                                final double value) {
-            throw new IllegalStateException("Double, key=" + key);
+            throw new UnexpectedValueException("Double, key=" + key);
         }
 
         /**
@@ -649,7 +653,7 @@ public class XmlImporter
          */
         default void putStringSet(@NonNull final K key,
                                   @NonNull final Iterable<String> value) {
-            throw new IllegalStateException("StringSet, key=" + key);
+            throw new UnexpectedValueException("StringSet, key=" + key);
         }
 
         /**
@@ -658,12 +662,12 @@ public class XmlImporter
          */
         default void putStringList(@NonNull final K key,
                                    @NonNull final Iterable<String> value) {
-            throw new IllegalStateException("StringList, key=" + key);
+            throw new UnexpectedValueException("StringList, key=" + key);
         }
 
         default void putSerializable(@NonNull final K key,
                                      @NonNull final Serializable value) {
-            throw new IllegalStateException("Serializable, key=" + key);
+            throw new UnexpectedValueException("Serializable, key=" + key);
         }
     }
 
@@ -918,6 +922,8 @@ public class XmlImporter
         /** a collection of all Preferences (including from *all* groups). */
         private Map<String, PPref> mStylePrefs;
 
+        private int mStylesRead;
+
         /**
          * Constructor.
          *
@@ -925,6 +931,10 @@ public class XmlImporter
          */
         StylesReader(@NonNull final DAO db) {
             mDb = db;
+        }
+
+        public int getStylesRead() {
+            return mStylesRead;
         }
 
         @Override
@@ -983,6 +993,8 @@ public class XmlImporter
 
             // the prefs are written on the fly, but we still need the db entry saved.
             mStyle.insert(mDb);
+
+            mStylesRead++;
         }
 
         @Override

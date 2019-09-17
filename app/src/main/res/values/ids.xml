@@ -193,7 +193,6 @@
     <item name="MENU_DEBUG_STYLE" type="id" />
     <item name="MENU_DEBUG_TRACKER" type="id" />
     <item name="MENU_DEBUG_TABLES" type="id" />
-    <item name="MENU_EXPORT_DATABASE" type="id" />
 
     <!-- END predefined menu items -->
 

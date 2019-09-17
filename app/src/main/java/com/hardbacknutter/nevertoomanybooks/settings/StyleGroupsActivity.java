@@ -71,7 +71,7 @@ public class StyleGroupsActivity
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_style_edit_group_list;
+        return R.layout.activity_edit_style_groups;
     }
 
     @Override
@@ -164,7 +164,7 @@ public class StyleGroupsActivity
                                          final int viewType) {
 
             View view = getLayoutInflater()
-                                .inflate(R.layout.row_edit_booklist_style, parent, false);
+                                .inflate(R.layout.row_edit_style_groups, parent, false);
             return new Holder(view);
         }
 
