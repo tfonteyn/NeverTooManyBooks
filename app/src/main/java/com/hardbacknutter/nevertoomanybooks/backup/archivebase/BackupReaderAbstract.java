@@ -130,7 +130,6 @@ public abstract class BackupReaderAbstract
                     estimatedSteps *= 2;
                 }
             }
-
             progressListener.setMax(estimatedSteps);
 
             // Seek the styles entity first.

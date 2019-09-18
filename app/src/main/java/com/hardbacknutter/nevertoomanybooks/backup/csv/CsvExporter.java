@@ -121,11 +121,11 @@ public class CsvExporter
     /**
      * Constructor.
      *
-     * @param context  Current context
+     * @param context      Current context
      * @param exportHelper {@link ExportHelper#EXPORT_SINCE} and
-     *                 {@link ExportHelper#getDateFrom} are respected.
-     *                 Other flags are ignored, as this method only
-     *                 handles {@link ExportHelper#BOOK_CSV} anyhow.
+     *                     {@link ExportHelper#getDateFrom} are respected.
+     *                     Other flags are ignored, as this method only
+     *                     handles {@link ExportHelper#BOOK_CSV} anyhow.
      */
     public CsvExporter(@NonNull final Context context,
                        @NonNull final ExportHelper exportHelper) {
@@ -135,10 +135,8 @@ public class CsvExporter
     }
 
     /**
-     * @param outputStream      Stream for writing data
-     * @param listener          Progress and cancellation interface
-     * @param includeCoverCount If set, the progress count will be doubled to (presumably)
-     *                          cover the fact that each book has a cover.
+     * @param os               Stream for writing data
+     * @param progressListener Progress and cancellation interface
      *
      * @return total number of books exported, or 0 upon cancellation
      *
@@ -146,9 +144,8 @@ public class CsvExporter
      */
     @Override
     @WorkerThread
-    public Results doBooks(@NonNull final OutputStream outputStream,
-                           @NonNull final ProgressListener listener,
-                           final boolean includeCoverCount)
+    public Results doBooks(@NonNull final OutputStream os,
+                           @NonNull final ProgressListener progressListener)
             throws IOException {
 
         Results results = new Results();
@@ -158,25 +155,20 @@ public class CsvExporter
 
         try (DAO db = new DAO();
              BookCursor bookCursor = db.fetchBooksForExport(mExportHelper.getDateFrom());
-             OutputStreamWriter osw = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+             OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE)) {
 
-            int progressMaxCount = bookCursor.getCount();
+            int progressMaxCount = progressListener.getMax() + bookCursor.getCount();
+            progressListener.setMax(progressMaxCount);
 
-            if (listener.isCancelled()) {
+            // Before we start, make sure we're not cancelled already.
+            if (progressListener.isCancelled()) {
                 return results;
             }
 
-            // assume each book will have a cover.
-            if (includeCoverCount) {
-                progressMaxCount *= 2;
-            }
-            listener.setMax(progressMaxCount);
-
             out.write(EXPORT_FIELD_HEADERS);
-
             while (bookCursor.moveToNext()) {
-                if (listener.isCancelled()) {
+                if (progressListener.isCancelled()) {
                     return results;
                 }
 
@@ -255,7 +247,7 @@ public class CsvExporter
 
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200) {
-                    listener.onProgress(results.booksExported, title);
+                    progressListener.onProgress(results.booksExported, title);
                     lastUpdate = now;
                 }
             }

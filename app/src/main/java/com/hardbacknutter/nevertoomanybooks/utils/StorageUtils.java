@@ -344,29 +344,22 @@ public final class StorageUtils {
      * We first write to a temporary file, so an existing 'out' file is not destroyed
      * if the stream somehow fails.
      *
-     * @param is  InputStream to read
-     * @param out File to write to
+     * @param is   InputStream to read
+     * @param file File to write to
      *
      * @return number of bytes read; -1 on failure but could be 0 on if the stream was empty.
      */
     public static int saveInputStreamToFile(@Nullable final InputStream is,
-                                            @NonNull final File out) {
+                                            @NonNull final File file) {
         Objects.requireNonNull(is);
 
         File tmpFile = getTempCoverFile("is");
         try {
-            OutputStream tempFos = new FileOutputStream(tmpFile);
-            // Copy from input to temp file
-            byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
-            int total = 0;
-            int len;
-            while ((len = is.read(buffer)) >= 0) {
-                tempFos.write(buffer, 0, len);
-                total += len;
-            }
-            tempFos.close();
+            OutputStream os = new FileOutputStream(tmpFile);
+            int total = copy(is, os);
+            os.close();
             // All OK, so rename to real output file
-            renameFile(tmpFile, out);
+            renameFile(tmpFile, file);
             return total;
 
         } catch (@NonNull final ProtocolException e) {
@@ -562,17 +555,23 @@ public final class StorageUtils {
      * @param is InputStream
      * @param os OutputStream
      *
+     * @return total number of bytes copied.
+     *
      * @throws IOException on failure
      */
-    public static void copy(@NonNull final InputStream is,
-                            @NonNull final OutputStream os)
+    public static int copy(@NonNull final InputStream is,
+                           @NonNull final OutputStream os)
             throws IOException {
         byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
+        int total = 0;
         int nRead;
         while ((nRead = is.read(buffer)) > 0) {
             os.write(buffer, 0, nRead);
+            total += nRead;
         }
         os.flush();
+
+        return total;
     }
 
     /**
@@ -585,10 +584,10 @@ public final class StorageUtils {
     private static void copyFile2(@NonNull final File source,
                                   @NonNull final File destination)
             throws IOException {
-        FileInputStream fis = new FileInputStream(source);
-        FileOutputStream fos = new FileOutputStream(destination);
-        FileChannel inChannel = fis.getChannel();
-        FileChannel outChannel = fos.getChannel();
+        FileInputStream is = new FileInputStream(source);
+        FileOutputStream os = new FileOutputStream(destination);
+        FileChannel inChannel = is.getChannel();
+        FileChannel outChannel = os.getChannel();
 
         try {
             inChannel.transferTo(0, inChannel.size(), outChannel);
@@ -597,8 +596,8 @@ public final class StorageUtils {
                 inChannel.close();
             }
             outChannel.close();
-            fis.close();
-            fos.close();
+            is.close();
+            os.close();
         }
     }
 

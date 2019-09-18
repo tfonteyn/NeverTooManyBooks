@@ -125,6 +125,7 @@ public abstract class BackupWriterAbstract
             // If we are doing covers, get the exact number by counting them
             if (!mProgressListener.isCancelled() && incCovers) {
                 doCovers(true);
+                mProgressListener.setMax(mExportHelper.results.coversExported);
             }
 
             // If we are doing books, generate the CSV file first, so we have the #books
@@ -136,16 +137,14 @@ public abstract class BackupWriterAbstract
 
                 Exporter mExporter = new CsvExporter(context, mExportHelper);
                 try (OutputStream os = new FileOutputStream(tmpBookCsvFile)) {
-                    // we know the # of covers...
-                    // but getting the progress 100% right is not really important
-                    mExportHelper.addResults(mExporter.doBooks(os, mProgressListener, incCovers));
+                    mExportHelper.addResults(mExporter.doBooks(os, mProgressListener));
                 }
             }
 
             // we now have a known number of books; add the covers and we've more or less have an
-            // exact number of steps. Added arbitrary 5 for the other entities we might do
+            // exact number of steps. Added arbitrary 10 for the other entities we might do
             mProgressListener.setMax(mExportHelper.results.booksExported
-                                     + mExportHelper.results.coversExported + 5);
+                                     + mExportHelper.results.coversExported + 10);
 
             // Process each component of the Archive, unless we are cancelled.
             if (!mProgressListener.isCancelled()) {

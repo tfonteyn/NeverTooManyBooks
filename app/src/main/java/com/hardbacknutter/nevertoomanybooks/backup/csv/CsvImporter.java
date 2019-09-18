@@ -157,7 +157,7 @@ public class CsvImporter
     public Results doBooks(@NonNull final Context context,
                            @NonNull final InputStream is,
                            @Nullable final CoverFinder coverFinder,
-                           @NonNull final ProgressListener listener)
+                           @NonNull final ProgressListener progressListener)
             throws IOException, ImportException {
 
         BufferedReader in = new BufferedReader(
@@ -174,8 +174,8 @@ public class CsvImporter
         }
 
         // not perfect, but good enough
-        if (listener.getMax() < importedList.size()) {
-            listener.setMax(importedList.size() - 1);
+        if (progressListener.getMax() < importedList.size()) {
+            progressListener.setMax(importedList.size());
         }
 
         final Book book = new Book();
@@ -246,7 +246,7 @@ public class CsvImporter
         // Iterate through each imported row
         SyncLock txLock = null;
         try {
-            while (row < importedList.size() && !listener.isCancelled()) {
+            while (row < importedList.size() && !progressListener.isCancelled()) {
                 // every 10 inserted, we commit the transaction
                 if (mDb.inTransaction() && txRowCount > 10) {
                     mDb.setTransactionSuccessful();
@@ -309,11 +309,11 @@ public class CsvImporter
 
                 // limit the amount of progress updates, otherwise this will cause a slowdown.
                 long now = System.currentTimeMillis();
-                if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
+                if ((now - lastUpdate) > 200 && !progressListener.isCancelled()) {
                     String msg = String.format(mProgress_msg_n_created_m_updated,
                                                mResults.booksCreated,
                                                mResults.booksUpdated);
-                    listener.onProgressStep(delta, msg);
+                    progressListener.onProgressStep(delta, msg);
                     delta = 0;
                     lastUpdate = now;
                 }

@@ -51,7 +51,7 @@ public interface BackupWriter
      * See BackupWriterAbstract for a default implementation.
      *
      * @param context          Current context
-     * @param exportHelper         the import settings
+     * @param exportHelper     the import settings
      * @param progressListener Listener to receive progress information.
      *
      * @throws IOException on failure

@@ -502,13 +502,13 @@ public class XmlExporter
      * Write all supported item types to the output stream as XML.
      *
      * @param os Stream for writing data
-     * @param listener     Progress and cancellation interface
+     * @param progressListener     Progress and cancellation interface
      *
      * @throws IOException on failure
      */
     @WorkerThread
     public void doAll(@NonNull final OutputStream os,
-                      @NonNull final ProgressListener listener)
+                      @NonNull final ProgressListener progressListener)
             throws IOException {
 
         int delta = 0;
@@ -523,36 +523,36 @@ public class XmlExporter
                .append(version(XML_EXPORTER_VERSION))
                .append(">\n");
 
-            if (!listener.isCancelled()) {
-                listener.onProgressStep(delta++, R.string.lbl_bookshelves);
-                doBookshelves(out, listener);
+            if (!progressListener.isCancelled()) {
+                progressListener.onProgressStep(delta++, R.string.lbl_bookshelves);
+                doBookshelves(out, progressListener);
             }
 
-            if (!listener.isCancelled()) {
-                listener.onProgress(delta++, R.string.lbl_author);
-                doAuthors(out, listener);
+            if (!progressListener.isCancelled()) {
+                progressListener.onProgress(delta++, R.string.lbl_author);
+                doAuthors(out, progressListener);
             }
 
-            if (!listener.isCancelled()) {
-                listener.onProgress(delta++, R.string.lbl_series);
-                doSeries(out, listener);
+            if (!progressListener.isCancelled()) {
+                progressListener.onProgress(delta++, R.string.lbl_series);
+                doSeries(out, progressListener);
             }
 
-            if (!listener.isCancelled()) {
-                listener.onProgress(delta++, R.string.lbl_book);
-                doBooks(out, listener);
+            if (!progressListener.isCancelled()) {
+                progressListener.onProgress(delta++, R.string.lbl_book);
+                doBooks(out, progressListener);
             }
 
-            if (!listener.isCancelled() && incStyles) {
-                listener.onProgress(delta++, R.string.lbl_styles);
-                doStyles(out, listener);
-                doStyles2(out, listener);
+            if (!progressListener.isCancelled() && incStyles) {
+                progressListener.onProgress(delta++, R.string.lbl_styles);
+                doStyles(out, progressListener);
+                doStyles2(out, progressListener);
             }
 
-            if (!listener.isCancelled() && incPrefs) {
+            if (!progressListener.isCancelled() && incPrefs) {
                 //noinspection UnusedAssignment
-                listener.onProgress(delta++, R.string.lbl_settings);
-                doPreferences(out, listener);
+                progressListener.onProgress(delta++, R.string.lbl_settings);
+                doPreferences(out, progressListener);
             }
 
             out.append("</" + XmlTags.XML_ROOT + ">\n");
@@ -563,7 +563,7 @@ public class XmlExporter
      * Write out {@link DBDefinitions#TBL_BOOKSHELF}.
      *
      * @param writer      writer
-     * @param listener Progress and cancellation interface
+     * @param progressListener Progress and cancellation interface
      *
      * @return number of items written
      *
@@ -571,7 +571,7 @@ public class XmlExporter
      */
     @SuppressWarnings("UnusedReturnValue")
     private int doBookshelves(@NonNull final BufferedWriter writer,
-                              @NonNull final ProgressListener listener)
+                              @NonNull final ProgressListener progressListener)
             throws IOException {
         int count = 0;
         List<Bookshelf> list = mDb.getBookshelves();
@@ -595,7 +595,7 @@ public class XmlExporter
      * Write out {@link DBDefinitions#TBL_AUTHORS}.
      *
      * @param writer      writer
-     * @param listener Progress and cancellation interface
+     * @param progressListener Progress and cancellation interface
      *
      * @return number of items written
      *
@@ -603,7 +603,7 @@ public class XmlExporter
      */
     @SuppressWarnings("UnusedReturnValue")
     private int doAuthors(@NonNull final BufferedWriter writer,
-                          @NonNull final ProgressListener listener)
+                          @NonNull final ProgressListener progressListener)
             throws IOException {
         int count = 0;
         writer.append('<' + XmlTags.XML_AUTHOR_LIST)
@@ -634,7 +634,7 @@ public class XmlExporter
      * Write out {@link DBDefinitions#TBL_SERIES}.
      *
      * @param writer      writer
-     * @param listener Progress and cancellation interface
+     * @param progressListener Progress and cancellation interface
      *
      * @return number of items written
      *
@@ -642,7 +642,7 @@ public class XmlExporter
      */
     @SuppressWarnings("UnusedReturnValue")
     private int doSeries(@NonNull final BufferedWriter writer,
-                         @NonNull final ProgressListener listener)
+                         @NonNull final ProgressListener progressListener)
             throws IOException {
         int count = 0;
         writer.append('<' + XmlTags.XML_SERIES_LIST)
@@ -673,8 +673,7 @@ public class XmlExporter
     @Override
     @WorkerThread
     public Results doBooks(@NonNull final OutputStream os,
-                           @NonNull final ProgressListener listener,
-                           final boolean includeCoverCount)
+                           @NonNull final ProgressListener progressListener)
             throws IOException {
 
         Results results = new Results();
@@ -685,7 +684,7 @@ public class XmlExporter
             writer.append('<' + XmlTags.XML_ROOT)
                .append(version(XML_EXPORTER_VERSION))
                .append(">\n");
-            results.booksExported = doBooks(writer, listener);
+            results.booksExported = doBooks(writer, progressListener);
             writer.append("</" + XmlTags.XML_ROOT + ">\n");
         }
 
@@ -700,14 +699,14 @@ public class XmlExporter
      * Write out {@link DBDefinitions#TBL_BOOKS}.
      *
      * @param writer      writer
-     * @param listener Progress and cancellation interface
+     * @param progressListener Progress and cancellation interface
      *
      * @return number of items written
      *
      * @throws IOException on failure
      */
     private int doBooks(@NonNull final BufferedWriter writer,
-                        @NonNull final ProgressListener listener)
+                        @NonNull final ProgressListener progressListener)
             throws IOException {
         int booksExported = 0;
         writer.append('<' + XmlTags.XML_BOOK_LIST)
@@ -808,7 +807,7 @@ public class XmlExporter
      * Write out the user-defined styles using custom tags.
      *
      * @param writer      writer
-     * @param listener Progress and cancellation interface
+     * @param progressListener Progress and cancellation interface
      *
      * @return number of items written
      *
@@ -816,7 +815,7 @@ public class XmlExporter
      */
     @SuppressWarnings("UnusedReturnValue")
     private int doStyles2(@NonNull final BufferedWriter writer,
-                          @NonNull final ProgressListener listener)
+                          @NonNull final ProgressListener progressListener)
             throws IOException {
         Collection<BooklistStyle> styles = BooklistStyle.Helper.getUserStyles(mDb).values();
         if (styles.isEmpty()) {
@@ -872,14 +871,14 @@ public class XmlExporter
      * Write out the user-defined styles.
      *
      * @param writer      writer
-     * @param listener Progress and cancellation interface
+     * @param progressListener Progress and cancellation interface
      *
      * @return number of items written
      *
      * @throws IOException on failure
      */
     public int doStyles(@NonNull final BufferedWriter writer,
-                        @NonNull final ProgressListener listener)
+                        @NonNull final ProgressListener progressListener)
             throws IOException {
         Collection<BooklistStyle> styles = BooklistStyle.Helper.getUserStyles(mDb).values();
         if (!styles.isEmpty()) {
@@ -892,7 +891,7 @@ public class XmlExporter
      * Write out the user preferences.
      *
      * @param writer      writer
-     * @param listener Progress and cancellation interface
+     * @param progressListener Progress and cancellation interface
      *
      * @return number of items written
      *
@@ -900,7 +899,7 @@ public class XmlExporter
      */
     @SuppressWarnings("UnusedReturnValue")
     public int doPreferences(@NonNull final BufferedWriter writer,
-                             @NonNull final ProgressListener listener)
+                             @NonNull final ProgressListener progressListener)
             throws IOException {
 
         Map<String, ?> all = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
@@ -922,12 +921,12 @@ public class XmlExporter
      * Write out the standard archive info block.
      *
      * @param writer      writer
-     * @param listener Progress and cancellation interface
+     * @param progressListener Progress and cancellation interface
      *
      * @throws IOException on failure
      */
     public void doBackupInfoBlock(@NonNull final BufferedWriter writer,
-                                  @NonNull final ProgressListener listener,
+                                  @NonNull final ProgressListener progressListener,
                                   @NonNull final BackupInfo info)
             throws IOException {
         toXml(writer, new InfoWriter(info));

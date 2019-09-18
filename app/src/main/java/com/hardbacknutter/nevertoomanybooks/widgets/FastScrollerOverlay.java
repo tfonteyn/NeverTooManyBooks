@@ -246,6 +246,10 @@ public class FastScrollerOverlay
     /**
      * Draw the overlay.
      *
+     * @param c      Canvas to draw into
+     * @param parent RecyclerView this ItemDecoration is drawing into
+     * @param state  The current state of RecyclerView.
+     *
      * @throws ClassCastException   if the adapter does not implement {@link SectionIndexerV2}
      *                              or if the LayoutManager is not a LinearLayoutManager.
      * @throws NullPointerException if the LayoutManager is not set.
@@ -264,10 +268,12 @@ public class FastScrollerOverlay
 
         if (___COMPILE_WITH_CFS_SUPPORT) {
             if (!fastScrollerIsDragging(parent) && (!(parent instanceof CFSRecyclerView))) {
+                parent.smoothScrollBy(0, 1);
                 return;
             }
         } else {
             if (!fastScrollerIsDragging(parent)) {
+                parent.smoothScrollBy(0, 1);
                 return;
             }
         }
@@ -346,7 +352,7 @@ public class FastScrollerOverlay
     }
 
     /**
-     * Using reflection, get what we need.
+     * Using reflection, find the decorator we need and enable access to it.
      *
      * @param recyclerView to zen.
      *

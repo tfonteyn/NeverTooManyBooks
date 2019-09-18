@@ -339,7 +339,6 @@ public class BooklistGroup
          * Preference UI support.
          * <p>
          * Add the Preference objects that this group will contribute to a Style.
-         * TODO: could/should do this from xml instead I suppose.
          *
          * @param screen to add the prefs to
          */
@@ -470,7 +469,6 @@ public class BooklistGroup
          * Preference UI support.
          * <p>
          * Add the Preference objects that this group will contribute to a Style.
-         * TODO: could/should do this from xml instead I suppose.
          *
          * @param screen to add the prefs to
          */

@@ -159,18 +159,18 @@ public class XmlImporter
      * Read Styles from an XML stream.
      *
      * @param entity   to read
-     * @param listener Progress and cancellation provider
+     * @param progressListener Progress and cancellation provider
      *
      * @throws IOException on failure
      */
     public int doStyles(@NonNull final ReaderEntity entity,
-                        @Nullable final ProgressListener listener)
+                        @Nullable final ProgressListener progressListener)
             throws IOException {
         InputStreamReader reader = new InputStreamReader(entity.getInputStream(),
                                                          StandardCharsets.UTF_8);
         BufferedReader in = new BufferedReaderNoClose(reader, BUFFER_SIZE);
         StylesReader stylesReader = new StylesReader(mDb);
-        fromXml(in, stylesReader, listener);
+        fromXml(in, stylesReader, progressListener);
 
         return stylesReader.getStylesRead();
     }
@@ -183,19 +183,19 @@ public class XmlImporter
      *
      * @param entity   to read
      * @param prefs    object to populate
-     * @param listener Progress and cancellation provider
+     * @param progressListener Progress and cancellation provider
      *
      * @throws IOException on failure
      */
     public void doPreferences(@NonNull final ReaderEntity entity,
                               @NonNull final SharedPreferences prefs,
-                              @Nullable final ProgressListener listener)
+                              @Nullable final ProgressListener progressListener)
             throws IOException {
         InputStreamReader reader = new InputStreamReader(entity.getInputStream(),
                                                          StandardCharsets.UTF_8);
         BufferedReader in = new BufferedReaderNoClose(reader, BUFFER_SIZE);
         SharedPreferences.Editor editor = prefs.edit();
-        fromXml(in, new PreferencesReader(editor), listener);
+        fromXml(in, new PreferencesReader(editor), progressListener);
         editor.apply();
     }
 
@@ -209,7 +209,7 @@ public class XmlImporter
     public Results doBooks(@NonNull final Context context,
                            @NonNull final InputStream importStream,
                            @Nullable final CoverFinder coverFinder,
-                           @NonNull final ProgressListener listener) {
+                           @NonNull final ProgressListener progressListener) {
         throw new UnsupportedOperationException();
     }
 
@@ -239,13 +239,13 @@ public class XmlImporter
     /**
      * Internal routine to update the passed EntityAccessor from an XML file.
      *
-     * @param listener (optional) Progress and cancellation provider
+     * @param progressListener (optional) Progress and cancellation provider
      *
      * @throws IOException on failure
      */
     private void fromXml(@NonNull final BufferedReader in,
                          @NonNull final EntityReader<String> accessor,
-                         @Nullable final ProgressListener listener)
+                         @Nullable final ProgressListener progressListener)
             throws IOException {
 
         // we need an uber-root to hang our tree on.

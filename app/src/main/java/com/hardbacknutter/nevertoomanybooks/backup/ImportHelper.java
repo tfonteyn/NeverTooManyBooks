@@ -91,6 +91,8 @@ public class ImportHelper
         this.results.coversProcessed += results.coversProcessed;
         this.results.coversCreated += results.coversCreated;
         this.results.coversUpdated += results.coversUpdated;
+
+        this.results.styles += results.styles;
     }
 
     /**

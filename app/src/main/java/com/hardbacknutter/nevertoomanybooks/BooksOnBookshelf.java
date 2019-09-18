@@ -116,6 +116,10 @@ public class BooksOnBookshelf
      * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
      */
     private final TextView[] mHeaderTextView = new TextView[2];
+    /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
+    private final ExtendedFloatingActionButton[] mFabMenuItems =
+            new ExtendedFloatingActionButton[FAB_ITEMS];
+
     private TextView mFilterTextView;
     /** The View for the list. */
     private RecyclerView mListView;
@@ -211,12 +215,6 @@ public class BooksOnBookshelf
                     initBookList(true);
                 }
             };
-    /**
-     * Array with the submenu FAB buttons. Element 0 shows at the bottom.
-     * Check if the menu is open: {@code mFabMenuItems[0].isShown()}.
-     */
-    private final ExtendedFloatingActionButton[] mFabMenuItems =
-            new ExtendedFloatingActionButton[FAB_ITEMS];
     /** Whether to show header texts - this depends on the current style. */
     private boolean mShowHeaderTexts;
     /** Define a scroller to update header detail when the top row changes. */
@@ -237,6 +235,9 @@ public class BooksOnBookshelf
             };
     /** The normal FAB button; opens or closes the FAB menu. */
     private FloatingActionButton mFab;
+    /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
+    private View mFabOverlay;
+
     /** Define a scroller to show, or collapse/hide the FAB. */
     private final RecyclerView.OnScrollListener mUpdateFABVisibility =
             new RecyclerView.OnScrollListener() {
@@ -253,7 +254,12 @@ public class BooksOnBookshelf
                 @Override
                 public void onScrollStateChanged(@NonNull final RecyclerView recyclerView,
                                                  final int newState) {
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    //FIXME: when using CFSRecyclerView/CFSFastScroller,
+                    // this is not called by the fast scroller.
+                    // despite the CFSFastScroller being updated to the latest 1.1 beta 04
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE
+                        || newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        showFABMenu(false);
                         mFab.show();
                     }
                     super.onScrollStateChanged(recyclerView, newState);
@@ -270,9 +276,6 @@ public class BooksOnBookshelf
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
-        // set the search capability to local (application) search
-        setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-
         mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);
         mModel.init(this, getIntent().getExtras(), savedInstanceState);
 
@@ -283,12 +286,33 @@ public class BooksOnBookshelf
         // listen for the booklist being ready to display.
         mModel.getBuilderResult().observe(this, this::builderResultsAreReadyToDisplay);
 
+        // set the search capability to local (application) search
+        setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
         // check & get search text coming from a system search intent
         handleStandardSearchIntent();
 
         mProgressBar = findViewById(R.id.progressBar);
 
         // Setup the list view.
+        initListView();
+        // create and hookup the list adapter; initially without a cursor (item list)
+        initAdapter(null);
+        // details for the header.
+        initHeader();
+        // Setup the FAB button and the linked menu.
+        initFAB();
+
+        if (savedInstanceState == null) {
+            TipManager.display(this, R.string.tip_book_list, null);
+        }
+
+        Tracker.exitOnCreate(this);
+    }
+
+    /**
+     * Called from {@link #onCreate}
+     */
+    private void initListView() {
         mLayoutManager = new LinearLayoutManager(this);
         mListView = findViewById(android.R.id.list);
         mListView.setLayoutManager(mLayoutManager);
@@ -302,11 +326,12 @@ public class BooksOnBookshelf
             mListView.addItemDecoration(
                     new FastScrollerOverlay(this, R.drawable.fast_scroll_overlay));
         }
+    }
 
-        // create and hookup the list adapter; initially without a cursor (item list)
-        initAdapter(null);
-
-        // details for the header.
+    /**
+     * Called from {@link #onCreate}
+     */
+    private void initHeader() {
         mFilterTextView = findViewById(R.id.search_text);
         mBookCountView = findViewById(R.id.book_count);
         mHeaderTextView[0] = findViewById(R.id.level_1_text);
@@ -321,10 +346,15 @@ public class BooksOnBookshelf
         mBookshelfSpinnerAdapter
                 .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
+    }
 
-        // Setup the FAB button and the linked menu.
+    /**
+     * Called from {@link #onCreate}
+     */
+    private void initFAB() {
         mFab = findViewById(R.id.fab);
         mFab.setOnClickListener(v -> showFABMenu(!mFabMenuItems[0].isShown()));
+        mFabOverlay = findViewById(R.id.fabOverlay);
         // modify FAB_ITEMS if adding more options.
         mFabMenuItems[0] = findViewById(R.id.fab1);
         mFabMenuItems[0].setOnClickListener(v -> startAddByScan());
@@ -334,32 +364,32 @@ public class BooksOnBookshelf
         mFabMenuItems[2].setOnClickListener(v -> startAddBySearch(BookSearchByTextFragment.TAG));
         mFabMenuItems[3] = findViewById(R.id.fab4);
         mFabMenuItems[3].setOnClickListener(v -> startAddManually());
-
-
-        if (savedInstanceState == null) {
-            TipManager.display(this, R.string.tip_book_list, null);
-        }
-
-        Tracker.exitOnCreate(this);
     }
 
+    /**
+     * When the user clicks the FAB button, we open/close the FAB menu and change the FAB icon.
+     *
+     * @param show flag
+     */
     private void showFABMenu(final boolean show) {
         if (show) {
             mFab.setImageResource(R.drawable.ic_close);
+            // Overlap the whole screen and intercept clicks.
+            // This does not include the ToolBar.
+            mFabOverlay.setVisibility(View.VISIBLE);
+            mFabOverlay.setOnClickListener(v -> hideFABMenu());
         } else {
             mFab.setImageResource(R.drawable.ic_add);
+            mFabOverlay.setVisibility(View.GONE);
+            mFabOverlay.setOnClickListener(null);
         }
-        showFABMenuItems(show, mFabMenuItems);
-    }
 
-    private void showFABMenuItems(final boolean show,
-                                  @NonNull final ExtendedFloatingActionButton... fabItems) {
         // negative -> move them upwards.
         float base = -getResources().getDimension(R.dimen.fab_menu_offset_base);
         float offset = -getResources().getDimension(R.dimen.fab_menu_offset);
 
-        for (int i = 0; i < fabItems.length; i++) {
-            ExtendedFloatingActionButton fab = fabItems[i];
+        for (int i = 0; i < mFabMenuItems.length; i++) {
+            ExtendedFloatingActionButton fab = mFabMenuItems[i];
             if (show) {
                 fab.show();
                 fab.animate().translationY(base + ((i + 1) * offset));
@@ -453,7 +483,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * FIXME: calling hideFABMenu() from a dozen locations is not a good solution.
+     * Hide the FAB menu if it's showing. Does not affect the FAB button itself.
      */
     private void hideFABMenu() {
         if (mFabMenuItems[0].isShown()) {
@@ -464,7 +494,6 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-
         hideFABMenu();
 
         switch (item.getItemId()) {
@@ -1028,6 +1057,7 @@ public class BooksOnBookshelf
     private void initAdapter(@Nullable final Cursor cursor) {
 
         //This turned out not to work, or at least not reliably.
+
         // make sure any old views with potentially incorrect layout are removed
 //        mListView.getRecycledViewPool().clear();
 //        // (re)set the adapter with the current style

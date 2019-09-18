@@ -45,19 +45,16 @@ public interface Exporter
     /**
      * Export Books to an OutputStream.
      *
-     * @param outputStream      Stream for writing data
-     * @param listener          Progress and cancellation interface
-     * @param includeCoverCount If set, the progress count will be doubled to (presumably)
-     *                          cover the fact that each book has a cover.
+     * @param os       Stream for writing data
+     * @param listener Progress and cancellation interface
      *
      * @return {@link Results}
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    Results doBooks(@NonNull OutputStream outputStream,
-                    @NonNull ProgressListener listener,
-                    boolean includeCoverCount)
+    Results doBooks(@NonNull OutputStream os,
+                    @NonNull ProgressListener listener)
             throws IOException;
 
     /**

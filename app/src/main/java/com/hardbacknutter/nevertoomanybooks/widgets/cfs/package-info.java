@@ -31,7 +31,7 @@
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView} extends RecyclerView.
  * <p>
- * FastScroller initialisation code lifted from "recyclerview-1.1.0-alpha01-sources.jar"
+ * FastScroller initialisation code lifted from "recyclerview-1.1.0-beta04-sources.jar"
  * <br>
  * <br>1. xml attributes to enable the fast-scroller (and set the thumb etc)
  * <br>2. xml attribute to set the Overlay drawable; this does not enable it!

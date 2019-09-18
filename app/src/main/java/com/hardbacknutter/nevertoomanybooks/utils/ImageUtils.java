@@ -667,8 +667,8 @@ public final class ImageUtils {
                 }
 
                 // Write back to the file
-                try (OutputStream out = new FileOutputStream(file.getAbsoluteFile())) {
-                    rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                try (OutputStream os = new FileOutputStream(file.getAbsoluteFile())) {
+                    rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
 
                 } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
                     Logger.error(ImageUtils.class, e);

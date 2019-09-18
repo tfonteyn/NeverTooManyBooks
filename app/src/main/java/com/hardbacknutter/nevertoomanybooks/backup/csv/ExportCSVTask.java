@@ -109,8 +109,8 @@ public class ExportCSVTask
     protected ExportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName("ExportTask");
 
-        try (OutputStream fileOutputStream = new FileOutputStream(ExportHelper.getTempFile())) {
-            mExportHelper.addResults(mExporter.doBooks(fileOutputStream, mProgressListener, false));
+        try (OutputStream os = new FileOutputStream(ExportHelper.getTempFile())) {
+            mExportHelper.addResults(mExporter.doBooks(os, mProgressListener));
 
             if (!isCancelled()) {
                 // send to user destination

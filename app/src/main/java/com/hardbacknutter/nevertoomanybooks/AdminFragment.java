@@ -702,18 +702,15 @@ public class AdminFragment
                                  getString(R.string.progress_msg_n_created_m_updated,
                                            results.coversCreated, results.coversUpdated)));
         }
-
-        if ((importHelper.options & Options.PREFERENCES) != 0) {
-            msg.append("\n• ").append(getString(R.string.lbl_settings));
-        }
         if ((importHelper.options & Options.BOOK_LIST_STYLES) != 0) {
             msg.append("\n• ").append(getString(R.string.name_colon_value,
                                                 getString(R.string.lbl_styles),
                                                 String.valueOf(results.styles)));
         }
-        if (msg.length() == 0) {
-            msg.append("\n• ").append(getString(R.string.done));
+        if ((importHelper.options & Options.PREFERENCES) != 0) {
+            msg.append("\n• ").append(getString(R.string.lbl_settings));
         }
+
         return msg.toString();
     }
 
@@ -933,7 +930,6 @@ public class AdminFragment
                                  results.coversExported, results.coversMissing));
         }
 
-
         if ((exportHelper.options & Options.BOOK_LIST_STYLES) != 0) {
             msg.append("\n• ").append(getString(R.string.name_colon_value,
                                                 getString(R.string.lbl_styles),
@@ -942,9 +938,7 @@ public class AdminFragment
         if ((exportHelper.options & Options.PREFERENCES) != 0) {
             msg.append("\n• ").append(getString(R.string.lbl_settings));
         }
-        if (msg.length() == 0) {
-            msg.append("\n• ").append(getString(R.string.done));
-        }
+
         return msg.toString();
     }
 

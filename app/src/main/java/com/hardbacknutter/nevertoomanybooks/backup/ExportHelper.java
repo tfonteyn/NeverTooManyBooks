@@ -128,6 +128,8 @@ public class ExportHelper
         this.results.coversProcessed += results.coversProcessed;
         this.results.coversExported += results.coversExported;
         this.results.coversMissing += results.coversMissing;
+
+        this.results.styles += results.styles;
     }
 
     @NonNull

@@ -712,7 +712,8 @@ public class BooklistBuilder
      * @param preferredState State to display: expanded, collapsed or remembered
      */
     private void populateNavigationTable(@NonNull final String sortExpression,
-                                         @BooklistBuilder.ListRebuildMode final int preferredState) {
+                                         @BooklistBuilder.ListRebuildMode
+                                         final int preferredState) {
 
         mNavTable.drop(mSyncedDb);
         mNavTable.create(mSyncedDb, true, false);
@@ -2466,10 +2467,11 @@ public class BooklistBuilder
                 case BooklistGroup.RowKind.LOANED: {
                     // Saved for later to indicate group was present
                     buildInfoHolder.setJoinLoaned();
-                    addDomain(DOM_LOANEE_AS_BOOLEAN, DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN,
+
+                    addDomain(group.getDisplayDomain(), DAO.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY,
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 
-                    addDomain(DOM_LOANEE, DAO.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY,
+                    addDomain(DOM_LOANEE_AS_BOOLEAN, DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN,
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                     break;
                 }
@@ -2664,8 +2666,7 @@ public class BooklistBuilder
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
                               | sortDescendingMask);
 
-                    addDomain(DOM_DATE_LAST_UPDATED,
-                              null,
+                    addDomain(DOM_DATE_LAST_UPDATED, null,
                               SummaryBuilder.FLAG_SORTED | sortDescendingMask);
                     break;
                 }

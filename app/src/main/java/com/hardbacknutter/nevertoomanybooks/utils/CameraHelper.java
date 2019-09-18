@@ -140,8 +140,8 @@ public class CameraHelper {
                 }
 
                 file = StorageUtils.getTempCoverFile(CAMERA_FILENAME);
-                try (OutputStream out = new FileOutputStream(file.getAbsoluteFile())) {
-                    bm.compress(Bitmap.CompressFormat.PNG, 100, out);
+                try (OutputStream os = new FileOutputStream(file.getAbsoluteFile())) {
+                    bm.compress(Bitmap.CompressFormat.PNG, 100, os);
                     return file;
 
                 } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {

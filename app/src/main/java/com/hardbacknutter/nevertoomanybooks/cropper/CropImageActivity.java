@@ -404,11 +404,6 @@ public class CropImageActivity
                 }, mHandler);
     }
 
-    /**
-     * TODO: this code needs to change to use the decode/crop/encode single step api
-     * so that we don't require that the whole (possibly large)
-     * bitmap doesn't have to be read into memory.
-     */
     private void onSaveClicked() {
         if (mIsSaving) {
             return;
