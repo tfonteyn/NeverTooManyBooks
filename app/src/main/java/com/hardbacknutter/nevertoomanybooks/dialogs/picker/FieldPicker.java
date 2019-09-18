@@ -64,7 +64,7 @@ public class FieldPicker<T>
      */
     public FieldPicker(@NonNull final Context context,
                        @Nullable final String title,
-                       @NonNull final Field field,
+                       @NonNull final Field<T> field,
                        @NonNull final List<T> list) {
         super(context, title, null, false, null);
 
@@ -85,7 +85,7 @@ public class FieldPicker<T>
         private final LayoutInflater mInflater;
 
         @NonNull
-        private final Field mField;
+        private final Field<T> mField;
         @NonNull
         private final PickListener<T> mListener;
         private int mPreSelectedPosition = -1;
@@ -99,7 +99,7 @@ public class FieldPicker<T>
          * @param listener where to send the result back to
          */
         FieldListAdapter(@NonNull final Context context,
-                         @NonNull final Field field,
+                         @NonNull final Field<T> field,
                          @NonNull final List<T> items,
                          @NonNull final PickListener<T> listener) {
 
@@ -141,7 +141,7 @@ public class FieldPicker<T>
                                      final int position) {
 
             T item = mItems.get(position);
-            holder.textView.setText(mField.format(item.toString()));
+            holder.textView.setText(mField.format(item));
 
             // onClick on the whole view.
             holder.itemView.setOnClickListener(v -> mListener.onPicked(item));

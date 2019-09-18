@@ -189,7 +189,7 @@ public abstract class EditBookBaseFragment<T>
      * @param fieldButtonId field/button to bind the PickListener to (can be same as fieldId)
      * @param list          list of strings to choose from.
      */
-    void initValuePicker(@NonNull final Field field,
+    void initValuePicker(@NonNull final Field<String> field,
                          @StringRes final int dialogTitleId,
                          @IdRes final int fieldButtonId,
                          @NonNull final List<String> list) {
@@ -254,7 +254,7 @@ public abstract class EditBookBaseFragment<T>
      * @param listGetter    {@link CheckListDialogFragment.CheckListEditorListGetter}
      *                      interface to get the *current* list
      */
-    void initCheckListEditor(@NonNull final Field field,
+    void initCheckListEditor(@NonNull final Field<String> field,
                              @StringRes final int dialogTitleId,
                              @NonNull final CheckListDialogFragment
                                                     .CheckListEditorListGetter<T> listGetter) {

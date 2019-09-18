@@ -177,6 +177,7 @@ public class Fields {
     private void afterFieldChange(@NonNull final Field field,
                                   @Nullable final Object newValue) {
         if (mAfterFieldChangeListener != null) {
+            //noinspection unchecked
             mAfterFieldChangeListener.afterFieldChange(field, newValue);
         }
     }
@@ -385,10 +386,10 @@ public class Fields {
     /**
      * added to the Fields collection with (2018-11-11) a simple call to setDirty(true).
      */
-    public interface AfterFieldChangeListener {
+    public interface AfterFieldChangeListener<T> {
 
-        void afterFieldChange(@NonNull Field field,
-                              @Nullable Object newValue);
+        void afterFieldChange(@NonNull Field<T> field,
+                              @Nullable T newValue);
     }
 
     /**
@@ -971,7 +972,7 @@ public class Fields {
         /**
          * Populates the view and sets the UUID (incoming value) as a tag on the view.
          *
-         * @param uuid the book UUID
+         * @param uuid   the book UUID
          * @param target Field to set the value on
          */
         @Override
@@ -1133,7 +1134,7 @@ public class Fields {
         // is not available in android.icu.* so you still would need to bundle the full ICU lib
         // For now, this is to much overkill.
 //        @TargetApi(28)
-//        private String icuFormat(@NonNull final Field field,
+//        private String icuFormat(@NonNull final Field<String> field,
 //                                @NonNull final Object source) {
 //            https://github.com/unicode-org/icu/blob/master/icu4j/main/classes/core/src/
 //            com/ibm/icu/number/NumberFormatter.java
@@ -1653,7 +1654,7 @@ public class Fields {
             //TODO: We need to introduce a better way to handle this.
             view.setOnTouchListener((v, event) -> {
                 if (MotionEvent.ACTION_UP == event.getAction()) {
-                    mFields.get().afterFieldChange(Field.this, null);
+                    mFields.get().afterFieldChange(this, null);
                 }
                 return false;
             });
@@ -1814,7 +1815,7 @@ public class Fields {
          * @return The formatted value. Or "" if the source is {@code null}.
          */
         @NonNull
-        public String format(@Nullable final String source) {
+        public String format(@Nullable final T source) {
             if (source == null) {
                 return "";
             }

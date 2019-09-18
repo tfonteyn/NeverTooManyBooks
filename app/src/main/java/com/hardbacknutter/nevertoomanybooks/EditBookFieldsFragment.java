@@ -139,11 +139,11 @@ public class EditBookFieldsFragment
                 fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
                       .setScale(ImageUtils.SCALE_MEDIUM);
 
-        mCoverHandler = new CoverHandler(this, mBookModel.getDb(),
-                                         book, isbnField.getView(),
-                                         coverField.getView(), ImageUtils.SCALE_MEDIUM);
+        mCoverHandler = new CoverHandler(this, mBookModel.getDb(), book,
+                                         isbnField.getView(), coverField.getView(),
+                                         ImageUtils.SCALE_MEDIUM);
 
-        Field field;
+        Field<String> field;
 
         field = fields.add(R.id.genre, DBDefinitions.KEY_GENRE)
                       .setRelatedFieldIds(R.id.lbl_genre);

@@ -179,8 +179,7 @@ public abstract class BookBaseFragment
         onLoadFieldsFromBook();
         // get dirty...
         mBookModel.setDirty(wasDirty);
-        getFields().setAfterFieldChangeListener(
-                (field, newValue) -> mBookModel.setDirty(true));
+        getFields().setAfterFieldChangeListener((field, newValue) -> mBookModel.setDirty(true));
 
         // this is a good place to do this, as we use data from the book for the title.
         setActivityTitle();
