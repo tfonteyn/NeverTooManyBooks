@@ -268,12 +268,10 @@ public class FastScrollerOverlay
 
         if (___COMPILE_WITH_CFS_SUPPORT) {
             if (!fastScrollerIsDragging(parent) && (!(parent instanceof CFSRecyclerView))) {
-                parent.smoothScrollBy(0, 1);
                 return;
             }
         } else {
             if (!fastScrollerIsDragging(parent)) {
-                parent.smoothScrollBy(0, 1);
                 return;
             }
         }
