@@ -95,7 +95,6 @@ public class UpdateFieldsFromInternetFragment
 
     /** the ViewGroup where we'll add the list of fields. */
     private ViewGroup mFieldListView;
-
     /** senderId of the update task. */
     private long mUpdateSenderId;
     private final ManagedTaskListener mManagedTaskListener = new ManagedTaskListener() {
@@ -175,10 +174,11 @@ public class UpdateFieldsFromInternetFragment
         }
 
         // FAB lives in Activity layout.
-        FloatingActionButton fab = activity.findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_cloud_download);
-        fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(v -> handleConfirm());
+        FloatingActionButton fabButton = activity.findViewById(R.id.fab);
+        fabButton.setAlpha(0.50f);
+        fabButton.setImageResource(R.drawable.ic_cloud_download);
+        fabButton.setVisibility(View.VISIBLE);
+        fabButton.setOnClickListener(v -> handleConfirm());
 
         initFields();
         populateFields();

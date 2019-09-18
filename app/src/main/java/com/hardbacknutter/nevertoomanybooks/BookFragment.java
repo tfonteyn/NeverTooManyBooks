@@ -54,6 +54,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -187,6 +189,12 @@ public class BookFragment
         mFlattenedBooklistModel = new ViewModelProvider(this).get(FlattenedBooklistModel.class);
         mFlattenedBooklistModel.init(getArguments(), mBookModel.getBook().getId());
 
+        FloatingActionButton fabButton = mActivity.findViewById(R.id.fab);
+        fabButton.setImageResource(R.drawable.ic_edit);
+        fabButton.setVisibility(View.VISIBLE);
+        fabButton.setAlpha(0.50f);
+        fabButton.setOnClickListener(v -> startEditBook());
+
         // ENHANCE: could probably be replaced by a ViewPager
         // enable the listener for flings
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
@@ -196,6 +204,18 @@ public class BookFragment
         if (savedInstanceState == null) {
             TipManager.display(getContext(), R.string.tip_view_only_help, null);
         }
+    }
+
+    @Override
+    @CallSuper
+    public void onPause() {
+        ((BookDetailsActivity) mActivity).unregisterOnTouchListener(mOnTouchListener);
+
+        //  set the current visible book id as the result data.
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, mBookModel.getBook().getId());
+        mActivity.setResult(Activity.RESULT_OK, data);
+
+        super.onPause();
     }
 
     @CallSuper
@@ -213,6 +233,28 @@ public class BookFragment
         ((BookDetailsActivity) mActivity).registerOnTouchListener(mOnTouchListener);
 
         Tracker.exitOnResume(this);
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+        switch (requestCode) {
+            case UniqueId.REQ_BOOK_DUPLICATE:
+            case UniqueId.REQ_BOOK_EDIT:
+                if (resultCode == Activity.RESULT_OK) {
+                    mBookModel.reload();
+                    // onResume will display the changed book.
+                }
+                break;
+
+            default:
+                // handle any cover image request codes
+                if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
+                    super.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
+        }
     }
 
     @Override
@@ -377,48 +419,14 @@ public class BookFragment
                                   R.id.lbl_location);
     }
 
-
-    @Override
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        switch (requestCode) {
-            case UniqueId.REQ_BOOK_DUPLICATE:
-            case UniqueId.REQ_BOOK_EDIT:
-                if (resultCode == Activity.RESULT_OK) {
-                    mBookModel.reload();
-                    // onResume will display the changed book.
-                }
-                break;
-
-            default:
-                // handle any cover image request codes
-                if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
-                    super.onActivityResult(requestCode, resultCode, data);
-                }
-                break;
-        }
-    }
-
-    @Override
-    @CallSuper
-    public void onPause() {
-        ((BookDetailsActivity) mActivity).unregisterOnTouchListener(mOnTouchListener);
-
-        //  set the current visible book id as the result data.
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, mBookModel.getBook().getId());
-        mActivity.setResult(Activity.RESULT_OK, data);
-
-        super.onPause();
-    }
-
     @Override
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-            .setIcon(R.drawable.ic_edit)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        // using FAB now
+//        menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
+//            .setIcon(R.drawable.ic_edit)
+//            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
         menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
@@ -474,7 +482,6 @@ public class BookFragment
 
         super.onPrepareOptionsMenu(menu);
     }
-
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -484,9 +491,7 @@ public class BookFragment
         switch (item.getItemId()) {
 
             case R.id.MENU_EDIT:
-                Intent editIntent = new Intent(getContext(), EditBookActivity.class)
-                                            .putExtra(DBDefinitions.KEY_PK_ID, book.getId());
-                startActivityForResult(editIntent, UniqueId.REQ_BOOK_EDIT);
+                startEditBook();
                 return true;
 
             case R.id.MENU_DELETE:
@@ -503,7 +508,7 @@ public class BookFragment
 
             case R.id.MENU_BOOK_DUPLICATE:
                 Intent dupIntent = new Intent(getContext(), EditBookActivity.class)
-                                           .putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
+                        .putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
                 startActivityForResult(dupIntent, UniqueId.REQ_BOOK_DUPLICATE);
                 return true;
 
@@ -554,6 +559,12 @@ public class BookFragment
                 // MENU_BOOK_UPDATE_FROM_INTERNET handled in super
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void startEditBook() {
+        Intent editIntent = new Intent(getContext(), EditBookActivity.class)
+                .putExtra(DBDefinitions.KEY_PK_ID, mBookModel.getBook().getId());
+        startActivityForResult(editIntent, UniqueId.REQ_BOOK_EDIT);
     }
 
     @Override

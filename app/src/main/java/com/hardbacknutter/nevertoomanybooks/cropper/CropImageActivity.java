@@ -66,6 +66,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -336,7 +338,9 @@ public class CropImageActivity
             // Make UI fullscreen.
             //getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             // the FAB button saves the image, use 'back' to cancel.
-            findViewById(R.id.fab).setOnClickListener(v -> onSaveClicked());
+            FloatingActionButton fabButton = findViewById(R.id.fab);
+            fabButton.setAlpha(0.50f);
+            fabButton.setOnClickListener(v -> onSaveClicked());
             startFaceDetection();
         } else {
             setResult(Activity.RESULT_CANCELED);

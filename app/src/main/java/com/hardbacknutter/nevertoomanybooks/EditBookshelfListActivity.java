@@ -47,6 +47,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
@@ -99,9 +101,10 @@ public class EditBookshelfListActivity
         mList = mDb.getBookshelves();
         mAdapter = new BookshelfAdapter(this);
 
-        findViewById(R.id.fab).setOnClickListener(
-                v -> editItem(new Bookshelf("",
-                                            BooklistStyle.getDefaultStyle(mDb))));
+        FloatingActionButton fabButton = findViewById(R.id.fab);
+        fabButton.setAlpha(0.50f);
+        fabButton.setOnClickListener(v -> editItem(
+                new Bookshelf("", BooklistStyle.getDefaultStyle(mDb))));
 
         RecyclerView listView = findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

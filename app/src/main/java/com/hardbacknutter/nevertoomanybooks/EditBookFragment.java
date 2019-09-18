@@ -48,6 +48,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -106,45 +107,6 @@ public class EditBookFragment
         return view;
     }
 
-
-    /**
-     * Add the menu items which are common to all child fragments.
-     */
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-
-        int saveOrAddText = mBookModel.isExistingBook() ? R.string.btn_confirm_save
-                                                        : R.string.btn_confirm_add;
-        //noinspection ConstantConditions
-        LocaleUtils.insanityCheck(getContext());
-        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD, MenuHandler.ORDER_HIDE_KEYBOARD,
-                 R.string.menu_hide_keyboard)
-            .setIcon(R.drawable.ic_keyboard_hide)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        menu.add(Menu.NONE, R.id.MENU_SAVE, MenuHandler.ORDER_SAVE, saveOrAddText)
-            .setIcon(R.drawable.ic_save)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, MenuHandler.ORDER_UPDATE_FIELDS,
-                 R.string.menu_update_fields)
-            .setIcon(R.drawable.ic_cloud_download);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    /**
-     * Set visibility of menu items as appropriate.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        menu.findItem(R.id.MENU_UPDATE_FROM_INTERNET).setVisible(mBookModel.isExistingBook());
-    }
-
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
@@ -173,7 +135,12 @@ public class EditBookFragment
 
         mViewPager.setAdapter(mPagerAdapter);
 
-        // note that the tab bar lives in the activity layout inside the AppBarLayout!
+        // The FAB lives in the activity.
+        FloatingActionButton fabButton = mActivity.findViewById(R.id.fab);
+        fabButton.setAlpha(0.50f);
+        fabButton.setOnClickListener(v -> doSave());
+
+        // The tab bar lives in the activity layout inside the AppBarLayout!
         TabLayout tabLayout = mActivity.findViewById(R.id.tab_panel);
 
         tabLayout.setupWithViewPager(mViewPager);
@@ -182,6 +149,46 @@ public class EditBookFragment
             throw new UnexpectedValueException(showTab);
         }
         mViewPager.setCurrentItem(showTab);
+    }
+
+    /**
+     * Add the menu items which are common to all child fragments.
+     */
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+
+
+        //noinspection ConstantConditions
+        LocaleUtils.insanityCheck(getContext());
+        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD, MenuHandler.ORDER_HIDE_KEYBOARD,
+                 R.string.menu_hide_keyboard)
+            .setIcon(R.drawable.ic_keyboard_hide)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        // sing FAB now
+//        int saveOrAddText = mBookModel.isExistingBook() ? R.string.btn_confirm_save
+//                                                        : R.string.btn_confirm_add;
+//        menu.add(Menu.NONE, R.id.MENU_SAVE, MenuHandler.ORDER_SAVE, saveOrAddText)
+//            .setIcon(R.drawable.ic_save)
+//            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, MenuHandler.ORDER_UPDATE_FIELDS,
+                 R.string.menu_update_fields)
+            .setIcon(R.drawable.ic_cloud_download);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    /**
+     * Set visibility of menu items as appropriate.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.MENU_UPDATE_FROM_INTERNET).setVisible(mBookModel.isExistingBook());
     }
 
     @Override

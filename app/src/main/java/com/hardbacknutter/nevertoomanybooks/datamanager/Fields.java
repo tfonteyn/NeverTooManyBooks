@@ -830,6 +830,9 @@ public class Fields {
 
     /**
      * Checkable accessor.
+     *
+     * When set to {@code false} we make it {@code View.GONE} as well.
+     *
      * <ul>{@link Checkable} covers more then just a Checkbox:
      * <li>CheckBox, RadioButton, Switch</li>
      * <li>ToggleButton extend CompoundButton</li>
@@ -859,6 +862,7 @@ public class Fields {
                              @NonNull final Field<Boolean> target) {
             Checkable cb = target.getView();
             if (source != null) {
+                ((View) cb).setVisibility(source ? View.VISIBLE : View.GONE);
                 cb.setChecked(source);
             } else {
                 cb.setChecked(false);

@@ -256,8 +256,8 @@ public abstract class EditBookBaseFragment<T>
      */
     void initCheckListEditor(@NonNull final Field<String> field,
                              @StringRes final int dialogTitleId,
-                             @NonNull final CheckListDialogFragment
-                                                    .CheckListEditorListGetter<T> listGetter) {
+                             @NonNull final
+                             CheckListDialogFragment.CheckListEditorListGetter<T> listGetter) {
         // only bother when it's in use
         if (field.isUsed()) {
             field.getView().setOnClickListener(v -> {

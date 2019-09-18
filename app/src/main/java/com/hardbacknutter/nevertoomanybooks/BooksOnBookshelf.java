@@ -234,7 +234,7 @@ public class BooksOnBookshelf
                 }
             };
     /** The normal FAB button; opens or closes the FAB menu. */
-    private FloatingActionButton mFab;
+    private FloatingActionButton mFabButton;
     /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
     private View mFabOverlay;
 
@@ -245,22 +245,20 @@ public class BooksOnBookshelf
                 public void onScrolled(@NonNull final RecyclerView recyclerView,
                                        final int dx,
                                        final int dy) {
-                    if (dy > 0 || dy < 0 && mFab.isShown()) {
+                    if (dy > 0 || dy < 0 && mFabButton.isShown()) {
                         hideFABMenu();
-                        mFab.hide();
+                        mFabButton.hide();
                     }
                 }
 
                 @Override
                 public void onScrollStateChanged(@NonNull final RecyclerView recyclerView,
                                                  final int newState) {
-                    //FIXME: when using CFSRecyclerView/CFSFastScroller,
-                    // this is not called by the fast scroller.
-                    // despite the CFSFastScroller being updated to the latest 1.1 beta 04
+                    //URGENT: this is not called when the fast scroller stops scrolling
                     if (newState == RecyclerView.SCROLL_STATE_IDLE
                         || newState == RecyclerView.SCROLL_STATE_SETTLING) {
                         showFABMenu(false);
-                        mFab.show();
+                        mFabButton.show();
                     }
                     super.onScrollStateChanged(recyclerView, newState);
                 }
@@ -352,8 +350,9 @@ public class BooksOnBookshelf
      * Called from {@link #onCreate}
      */
     private void initFAB() {
-        mFab = findViewById(R.id.fab);
-        mFab.setOnClickListener(v -> showFABMenu(!mFabMenuItems[0].isShown()));
+        mFabButton = findViewById(R.id.fab);
+        mFabButton.setAlpha(0.50f);
+        mFabButton.setOnClickListener(v -> showFABMenu(!mFabMenuItems[0].isShown()));
         mFabOverlay = findViewById(R.id.fabOverlay);
         // modify FAB_ITEMS if adding more options.
         mFabMenuItems[0] = findViewById(R.id.fab1);
@@ -373,13 +372,13 @@ public class BooksOnBookshelf
      */
     private void showFABMenu(final boolean show) {
         if (show) {
-            mFab.setImageResource(R.drawable.ic_close);
+            mFabButton.setImageResource(R.drawable.ic_close);
             // Overlap the whole screen and intercept clicks.
             // This does not include the ToolBar.
             mFabOverlay.setVisibility(View.VISIBLE);
             mFabOverlay.setOnClickListener(v -> hideFABMenu());
         } else {
-            mFab.setImageResource(R.drawable.ic_add);
+            mFabButton.setImageResource(R.drawable.ic_add);
             mFabOverlay.setVisibility(View.GONE);
             mFabOverlay.setOnClickListener(null);
         }
@@ -520,7 +519,7 @@ public class BooksOnBookshelf
                 // We pass the book ID's for the currently displayed list.
                 ArrayList<Long> bookIds = mModel.getCurrentBookIdList();
                 Intent intent = new Intent(this, UpdateFieldsFromInternetActivity.class)
-                                        .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
+                        .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
                 startActivityForResult(intent, UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
                 return true;
             }
@@ -576,16 +575,14 @@ public class BooksOnBookshelf
 
     private void startAddByScan() {
         Intent intent = new Intent(this, BookSearchActivity.class)
-                                .putExtra(UniqueId.BKEY_FRAGMENT_TAG,
-                                          BookSearchByIsbnFragment.TAG)
-                                .putExtra(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE,
-                                          true);
+                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
+                .putExtra(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE, true);
         startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
     }
 
     private void startAddBySearch(final String tag) {
         Intent intent = new Intent(this, BookSearchActivity.class)
-                                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, tag);
+                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, tag);
         startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
     }
 
@@ -961,8 +958,8 @@ public class BooksOnBookshelf
      *
      * @param holder the results to display.
      */
-    private void builderResultsAreReadyToDisplay(@Nullable final BooksOnBookshelfModel
-                                                                         .BuilderHolder holder) {
+    private void builderResultsAreReadyToDisplay(
+            @Nullable final BooksOnBookshelfModel.BuilderHolder holder) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Logger.debugEnter(this, "builderResultsAreReadyToDisplay",
                               "holder=" + holder);
@@ -1169,7 +1166,7 @@ public class BooksOnBookshelf
 
                 } else {
                     final Intent intent = new Intent(this, EditBookActivity.class)
-                                                  .putExtra(DBDefinitions.KEY_PK_ID, bookId);
+                            .putExtra(DBDefinitions.KEY_PK_ID, bookId);
                     startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 }
                 break;
@@ -1452,7 +1449,7 @@ public class BooksOnBookshelf
             case R.id.MENU_BOOK_EDIT: {
                 bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
                 Intent intent = new Intent(this, EditBookActivity.class)
-                                        .putExtra(DBDefinitions.KEY_PK_ID, bookId);
+                        .putExtra(DBDefinitions.KEY_PK_ID, bookId);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 return true;
             }
@@ -1572,8 +1569,8 @@ public class BooksOnBookshelf
 
             case R.id.MENU_AUTHOR_WORKS: {
                 Intent intent = new Intent(this, AuthorWorksActivity.class)
-                                        .putExtra(DBDefinitions.KEY_PK_ID,
-                                                  row.getLong(DBDefinitions.KEY_FK_AUTHOR));
+                        .putExtra(DBDefinitions.KEY_PK_ID,
+                                  row.getLong(DBDefinitions.KEY_FK_AUTHOR));
                 startActivityForResult(intent, UniqueId.REQ_AUTHOR_WORKS);
                 return true;
             }
