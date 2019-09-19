@@ -175,7 +175,6 @@ public class UpdateFieldsFromInternetFragment
 
         // FAB lives in Activity layout.
         FloatingActionButton fabButton = activity.findViewById(R.id.fab);
-        fabButton.setAlpha(0.50f);
         fabButton.setImageResource(R.drawable.ic_cloud_download);
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> handleConfirm());

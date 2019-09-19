@@ -137,7 +137,6 @@ public class EditBookFragment
 
         // The FAB lives in the activity.
         FloatingActionButton fabButton = mActivity.findViewById(R.id.fab);
-        fabButton.setAlpha(0.50f);
         fabButton.setOnClickListener(v -> doSave());
 
         // The tab bar lives in the activity layout inside the AppBarLayout!

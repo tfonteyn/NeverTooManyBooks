@@ -339,7 +339,6 @@ public class CropImageActivity
             //getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             // the FAB button saves the image, use 'back' to cancel.
             FloatingActionButton fabButton = findViewById(R.id.fab);
-            fabButton.setAlpha(0.50f);
             fabButton.setOnClickListener(v -> onSaveClicked());
             startFaceDetection();
         } else {

@@ -102,7 +102,6 @@ public class EditBookshelfListActivity
         mAdapter = new BookshelfAdapter(this);
 
         FloatingActionButton fabButton = findViewById(R.id.fab);
-        fabButton.setAlpha(0.50f);
         fabButton.setOnClickListener(v -> editItem(
                 new Bookshelf("", BooklistStyle.getDefaultStyle(mDb))));
 

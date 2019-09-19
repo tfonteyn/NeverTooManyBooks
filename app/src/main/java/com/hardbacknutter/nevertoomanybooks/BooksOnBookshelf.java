@@ -351,7 +351,6 @@ public class BooksOnBookshelf
      */
     private void initFAB() {
         mFabButton = findViewById(R.id.fab);
-        mFabButton.setAlpha(0.50f);
         mFabButton.setOnClickListener(v -> showFABMenu(!mFabMenuItems[0].isShown()));
         mFabOverlay = findViewById(R.id.fabOverlay);
         // modify FAB_ITEMS if adding more options.
@@ -373,7 +372,7 @@ public class BooksOnBookshelf
     private void showFABMenu(final boolean show) {
         if (show) {
             mFabButton.setImageResource(R.drawable.ic_close);
-            // Overlap the whole screen and intercept clicks.
+            // mFabOverlay overlaps the whole screen and intercepts clicks.
             // This does not include the ToolBar.
             mFabOverlay.setVisibility(View.VISIBLE);
             mFabOverlay.setOnClickListener(v -> hideFABMenu());
