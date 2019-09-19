@@ -91,17 +91,17 @@ public class StartupActivity
     }
 
     /**
-     * apply the user-preferred Locale/Theme before onCreate is called.
+     * apply the user-preferred Locale before onCreate is called.
      */
     protected void attachBaseContext(@NonNull final Context base) {
-        Context context = LocaleUtils.applyLocale(base);
-        App.applyTheme(context);
-
-        super.attachBaseContext(context);
+        super.attachBaseContext(LocaleUtils.applyLocale(base));
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
+        // apply the user-preferred Theme before super.onCreate is called.
+        App.applyTheme(this);
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_startup);

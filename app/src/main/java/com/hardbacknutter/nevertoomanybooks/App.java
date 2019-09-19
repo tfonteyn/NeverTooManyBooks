@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -127,6 +128,8 @@ public class App
 
     /** don't assume / allow the day-night theme to have a different integer ID. */
     private static final int THEME_DAY_NIGHT = 0;
+    private static final int THEME_DARK = 1;
+    private static final int THEME_LIGHT = 2;
 
     /** we really only use the one. */
     private static final int NOTIFICATION_ID = 0;
@@ -149,7 +152,8 @@ public class App
      * <p>
      * DEFAULT_THEME: the default to use.
      */
-    private static final int DEFAULT_THEME = 0;
+    private static final int DEFAULT_THEME = THEME_DAY_NIGHT;
+
 
     /**
      * As defined in res/themes.xml.
@@ -269,20 +273,20 @@ public class App
         }
 
         Intent intent = new Intent(context, StartupActivity.class)
-                                .setAction(Intent.ACTION_MAIN)
-                                .addCategory(Intent.CATEGORY_LAUNCHER);
+                .setAction(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_LAUNCHER);
 
         // The PendingIntent to launch our activity if the user selects this notification
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         Notification notification = new Notification.Builder(context)
-                                            .setSmallIcon(R.drawable.ic_info_outline)
-                                            .setContentTitle(title)
-                                            .setContentText(message)
-                                            .setWhen(System.currentTimeMillis())
-                                            .setAutoCancel(true)
-                                            .setContentIntent(pendingIntent)
-                                            .build();
+                .setSmallIcon(R.drawable.ic_info_outline)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .build();
 
         sNotifier.notify(NOTIFICATION_ID, notification);
     }
@@ -359,7 +363,7 @@ public class App
      */
     public static void hideKeyboard(@NonNull final View view) {
         InputMethodManager imm = (InputMethodManager)
-                                         view.getContext().getSystemService(INPUT_METHOD_SERVICE);
+                view.getContext().getSystemService(INPUT_METHOD_SERVICE);
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
@@ -453,125 +457,127 @@ public class App
     /* ########################################################################################## */
 
     /**
-     * Get the current Theme id (NOT the actual resource id).
-     *
-     * @return theme id
-     */
-    public static int getThemeId() {
-        if (sCurrentThemeId < 0) {
-            sCurrentThemeId = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
-        }
-        return sCurrentThemeId;
-    }
-
-    /**
      * Test if the Theme has changed.
      *
      * @return {@code true} if the theme was changed
      */
     public static boolean isThemeChanged(final int themeId) {
+        // always reload from prefs.
         sCurrentThemeId = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
         return themeId != sCurrentThemeId;
     }
 
     /**
-     * Apply the user's preferred Theme. MODE_NIGHT_FOLLOW_SYSTEM
+     * Apply the user's preferred Theme.
+     * <p>
+     * The one and only place where this should get called is in {@code Activity.onCreate}
+     * <pre>
+     * {@code
+     *          public void onCreate(@Nullable final Bundle savedInstanceState) {
+     *              // apply the user-preferred Theme before super.onCreate is called.
+     *              App.applyTheme(this);
      *
-     * @param context Current context to apply the theme to.
+     *              super.onCreate(savedInstanceState);
+     *          }
+     * }
+     * </pre>
+     *
+     * @param activity Current Activity to apply the theme to.
+     *
+     * @return the applied theme id.
      */
-    public static void applyTheme(@NonNull final Context context) {
-        int themeId = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
-        if (themeId != sCurrentThemeId) {
-            sCurrentThemeId = themeId;
-            if (sCurrentThemeId == THEME_DAY_NIGHT) {
-                if (Build.VERSION.SDK_INT >= 29) {
-                    AppCompatDelegate
-                            .setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                } else {
-                    AppCompatDelegate
-                            .setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
-                }
+    public static int applyTheme(@NonNull final Activity activity) {
+        // Always read from prefs.
+        sCurrentThemeId = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
 
+        // Reminder: ***ALWAYS*** set the mode.
+        if (sCurrentThemeId == THEME_DAY_NIGHT) {
+            if (Build.VERSION.SDK_INT >= 29) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
             } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_UNSPECIFIED);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
             }
-
-            context.setTheme(APP_THEMES[sCurrentThemeId]);
-
-            if (BuildConfig.DEBUG) {
-                dumpDayNightMode(sCurrentThemeId);
-            }
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_UNSPECIFIED);
         }
+
+        // Reminder: ***ALWAYS*** set the theme.
+        activity.setTheme(APP_THEMES[sCurrentThemeId]);
+
+        if (BuildConfig.DEBUG) {
+            dumpDayNightMode(sCurrentThemeId);
+        }
+
+        return sCurrentThemeId;
     }
 
     /**
      * DEBUG only.
      */
-    private static void dumpDayNightMode(final int theme) {
-        String method = "dumpDayNightMode";
-        String currentTheme = "sCurrentThemeId";
-        switch (theme) {
-            case 0:
-                Logger.debug(App.class, method, currentTheme + "=THEME_DAY_NIGHT");
+    private static void dumpDayNightMode(final int themeId) {
+        StringBuilder sb = new StringBuilder();
+
+        String varName = "sCurrentThemeId";
+        switch (themeId) {
+            case THEME_DAY_NIGHT:
+                sb.append(varName).append("=THEME_DAY_NIGHT");
                 break;
-            case 1:
-                Logger.debug(App.class, method, currentTheme + "=THEME_DARK");
+            case THEME_DARK:
+                sb.append(varName).append("=THEME_DARK");
                 break;
-            case 2:
-                Logger.debug(App.class, method, currentTheme + "=THEME_LIGHT");
+            case THEME_LIGHT:
+                sb.append(varName).append("=THEME_LIGHT");
                 break;
             default:
-                Logger.debug(App.class, method, currentTheme + "=eh? " + theme);
+                sb.append(varName).append("=eh? ").append(themeId);
                 break;
         }
 
-
-        int defNightMode = AppCompatDelegate.getDefaultNightMode();
-
-        String mode = "getDefaultNightMode";
-        switch (defNightMode) {
+        varName = "getDefaultNightMode";
+        switch (AppCompatDelegate.getDefaultNightMode()) {
             case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
-                Logger.debug(App.class, method, mode + "=MODE_NIGHT_FOLLOW_SYSTEM");
+                sb.append("|").append(varName).append("=MODE_NIGHT_FOLLOW_SYSTEM");
                 break;
             //noinspection deprecation
             case AppCompatDelegate.MODE_NIGHT_AUTO_TIME:
-                Logger.debug(App.class, method, mode + "=MODE_NIGHT_AUTO_TIME");
+                sb.append("|").append(varName).append("=MODE_NIGHT_AUTO_TIME");
                 break;
             case AppCompatDelegate.MODE_NIGHT_NO:
-                Logger.debug(App.class, method, mode + "=MODE_NIGHT_NO");
+                sb.append("|").append(varName).append("=MODE_NIGHT_NO");
                 break;
             case AppCompatDelegate.MODE_NIGHT_YES:
-                Logger.debug(App.class, method, mode + "=MODE_NIGHT_YES");
+                sb.append("|").append(varName).append("=MODE_NIGHT_YES");
                 break;
             case AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY:
-                Logger.debug(App.class, method, mode + "=MODE_NIGHT_AUTO_BATTERY");
+                sb.append("|").append(varName).append("=MODE_NIGHT_AUTO_BATTERY");
                 break;
             case AppCompatDelegate.MODE_NIGHT_UNSPECIFIED:
-                Logger.debug(App.class, method, mode + "=MODE_NIGHT_UNSPECIFIED");
+                sb.append("|").append(varName).append("=MODE_NIGHT_UNSPECIFIED");
                 break;
             default:
-                Logger.debug(App.class, method, mode + "=Twilight Zone");
+                sb.append("|").append(varName).append("=Twilight Zone");
                 break;
-
         }
+
         int currentNightMode = sInstance.getApplicationContext().getResources().getConfiguration()
                                        .uiMode & Configuration.UI_MODE_NIGHT_MASK;
-
-        String currentMode = "currentNightMode";
+        varName = "currentNightMode";
         switch (currentNightMode) {
             case Configuration.UI_MODE_NIGHT_NO:
-                Logger.debug(App.class, method, currentMode + "=UI_MODE_NIGHT_NO");
+                sb.append("|").append(varName).append("=UI_MODE_NIGHT_NO");
                 break;
             case Configuration.UI_MODE_NIGHT_YES:
-                Logger.debug(App.class, method, currentMode + "=UI_MODE_NIGHT_YES");
+                sb.append("|").append(varName).append("=UI_MODE_NIGHT_YES");
                 break;
             case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                Logger.debug(App.class, method, currentMode + "=UI_MODE_NIGHT_UNDEFINED");
+                sb.append("|").append(varName).append("=UI_MODE_NIGHT_UNDEFINED");
                 break;
             default:
-                Logger.debug(App.class, method, currentMode + "=Twilight Zone");
+                sb.append("|").append(varName).append("=Twilight Zone");
                 break;
         }
+
+        Logger.debug(App.class, "dumpDayNightMode", sb);
     }
 
     /* ########################################################################################## */

@@ -85,21 +85,21 @@ public abstract class BaseActivity
     }
 
     /**
-     * apply the user-preferred Locale/Theme before onCreate is called.
+     * apply the user-preferred Locale before onCreate is called.
      */
     protected void attachBaseContext(@NonNull final Context base) {
-        Context context = LocaleUtils.applyLocale(base);
-        App.applyTheme(context);
-
-        super.attachBaseContext(context);
-
+        super.attachBaseContext(LocaleUtils.applyLocale(base));
         // preserve, so we can check for changes in onResume.
         mInitialLocaleSpec = LocaleUtils.getPersistedLocaleSpec();
-        mInitialThemeId = App.getThemeId();
+
     }
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
+        // apply the user-preferred Theme before super.onCreate is called.
+        // We preserve it, so we can check for changes in onResume.
+        mInitialThemeId = App.applyTheme(this);
+
         super.onCreate(savedInstanceState);
 
         int layoutId = getLayoutId();

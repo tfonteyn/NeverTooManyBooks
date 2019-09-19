@@ -192,7 +192,6 @@ public class BookFragment
         FloatingActionButton fabButton = mActivity.findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_edit);
         fabButton.setVisibility(View.VISIBLE);
-        fabButton.setAlpha(0.50f);
         fabButton.setOnClickListener(v -> startEditBook());
 
         // ENHANCE: could probably be replaced by a ViewPager
