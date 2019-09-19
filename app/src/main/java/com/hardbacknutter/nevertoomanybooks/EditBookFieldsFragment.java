@@ -103,11 +103,11 @@ public class EditBookFieldsFragment
             ArrayList<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
             Intent intent = new Intent(getContext(), EditAuthorListActivity.class)
-                                    .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
-                                    .putExtra(DBDefinitions.KEY_TITLE, title)
-                                    .putExtra(DBDefinitions.KEY_LANGUAGE,
-                                              book.getString(DBDefinitions.KEY_LANGUAGE))
-                                    .putExtra(UniqueId.BKEY_AUTHOR_ARRAY, authors);
+                    .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
+                    .putExtra(DBDefinitions.KEY_TITLE, title)
+                    .putExtra(DBDefinitions.KEY_LANGUAGE,
+                              book.getString(DBDefinitions.KEY_LANGUAGE))
+                    .putExtra(UniqueId.BKEY_AUTHOR_ARRAY, authors);
             startActivityForResult(intent, REQ_EDIT_AUTHORS);
         });
 
@@ -121,11 +121,11 @@ public class EditBookFieldsFragment
             ArrayList<Series> series = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
             Intent intent = new Intent(getContext(), EditSeriesListActivity.class)
-                                    .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
-                                    .putExtra(DBDefinitions.KEY_TITLE, title)
-                                    .putExtra(DBDefinitions.KEY_LANGUAGE,
-                                              book.getString(DBDefinitions.KEY_LANGUAGE))
-                                    .putExtra(UniqueId.BKEY_SERIES_ARRAY, series);
+                    .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
+                    .putExtra(DBDefinitions.KEY_TITLE, title)
+                    .putExtra(DBDefinitions.KEY_LANGUAGE,
+                              book.getString(DBDefinitions.KEY_LANGUAGE))
+                    .putExtra(UniqueId.BKEY_SERIES_ARRAY, series);
             startActivityForResult(intent, REQ_EDIT_SERIES);
         });
 
@@ -328,7 +328,7 @@ public class EditBookFieldsFragment
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (!list.isEmpty()
             && ItemWithFixableId
-                       .pruneList(list, context, mBookModel.getDb(), book.getLocale(locale))) {
+                    .pruneList(list, context, mBookModel.getDb(), book.getLocale(locale))) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         }

@@ -26,7 +26,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
@@ -51,16 +51,15 @@
 
     <!-- Spacing either for all around, or for bottom/top.
     But NOT for start/end, for the latter use 'indent' -->
+    <dimen name="border0">2dp</dimen>
     <dimen name="border1">4dp</dimen>
     <dimen name="border2">8dp</dimen>
-    <dimen name="border3" tools:keep="@dimen/border3">12dp</dimen>
-    <dimen name="border4">16dp</dimen>
+    <dimen name="border3">16dp</dimen>
 
     <!-- indent, usually start only, but can be used for end as well. -->
     <dimen name="indent1">4dp</dimen>
     <dimen name="indent2">8dp</dimen>
-    <dimen name="indent3">12dp</dimen>
-    <dimen name="indent4">16dp</dimen>
+    <dimen name="indent3">16dp</dimen>
 
     <!-- top margin for the top-level rows; also known as "fat_finger_spacer" -->
     <dimen name="booklist_row_spacer">4dp</dimen>

@@ -148,7 +148,7 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/indent1</item>
-        <item name="android:layout_marginEnd">@dimen/indent3</item>
+        <item name="android:layout_marginEnd">@dimen/indent2</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
@@ -309,7 +309,7 @@
     <!-- Menu label for options in a list. Flashes when clicked. -->
     <style name="OptionRow.Menu">
         <item name="android:padding">@dimen/border2</item>
-        <item name="android:drawablePadding">@dimen/border4</item>
+        <item name="android:drawablePadding">@dimen/border3</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
     </style>
@@ -353,17 +353,18 @@
     <!-- Single use / specialised styles -->
     <!-- *************************************************************************************** -->
 
-    <!-- Booklist; not to be used directly in layouts -->
     <style name="BooklistBook">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/indent1</item>
-        <item name="android:layout_marginEnd">@dimen/indent1</item>
+    </style>
+
+    <!-- Booklist; not to be used directly in layouts -->
+    <style name="BooklistBook.Header">
         <item name="android:textIsSelectable">false</item>
     </style>
 
     <!-- the header on the booklist activity -->
-    <style name="BooklistBook.Header">
+    <style name="BooklistBook.Header.Text">
         <item name="android:layout_marginStart">@dimen/indent2</item>
         <item name="android:layout_marginEnd">@dimen/indent2</item>
         <item name="android:singleLine">true</item>
@@ -372,7 +373,7 @@
     </style>
 
     <!-- the header on the booklist activity -->
-    <style name="BooklistBook.Header.Small">
+    <style name="BooklistBook.Header.Text.Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
@@ -493,10 +494,14 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">?android:attr/actionBarSize</item>
-        <!--<item name="android:background">?android:attr/colorPrimary</item>-->
-        <!-- gradient, looks nicer -->
-        <item name="android:background">@drawable/side_nav_bar</item>
+        <item name="android:background">?android:attr/colorPrimary</item>
         <item name="android:elevation">4dp</item>
+    </style>
+
+    <style name="TabBar" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="tabIndicatorColor">?attr/colorPrimary</item>
+        <item name="tabTextColor">@color/tab_text_color_selector</item>
     </style>
 
     <!-- the outer frame (e.g. 'root') for a Dialog -->
@@ -517,22 +522,27 @@
         <item name="android:background">?android:attr/colorBackgroundFloating</item>
     </style>
 
-    <style name="FloatingActionButton">
+    <!-- generic FAB button. -->
+    <style name="FAB" parent="Widget.Design.FloatingActionButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|end</item>
         <item name="android:layout_margin">@dimen/fab_margin</item>
     </style>
 
-    <style name="FloatingActionButton.Menu">
-        <item name="android:visibility">gone</item>
+    <!-- FAB buttons that appear as a menu above the actual FAB button. -->
+    <style name="FABMenu" parent="Widget.MaterialComponents.ExtendedFloatingActionButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:visibility">invisible</item>
         <item name="android:layout_margin">@dimen/fab_menu_margin</item>
         <item name="android:translationX">@dimen/fab_menu_translationX</item>
     </style>
 
     <!-- Keys on the isbn search keyboard.
      Must extend system style so Button/ImageButton (the 'del' key below) looks the same -->
-    <style name="IsbnSearchKey" parent="@style/Widget.MaterialComponents.Button">
+    <style name="IsbnSearchKey" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">75dp</item>
         <item name="android:layout_marginTop">@dimen/border1</item>

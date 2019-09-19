@@ -80,7 +80,7 @@ public class EditBookActivity
         StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
 
         BookBaseFragmentModel model = new ViewModelProvider(this)
-                                              .get(BookBaseFragmentModel.class);
+                .get(BookBaseFragmentModel.class);
 
         Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
         //ENHANCE: global changes not detected, so assume they happened.

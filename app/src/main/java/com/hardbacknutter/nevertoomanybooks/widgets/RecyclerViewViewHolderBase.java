@@ -93,9 +93,8 @@ public class RecyclerViewViewHolderBase
         mCheckableButton = itemView.findViewById(R.id.ROW_CHECKABLE_BTN);
         mDragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
 
-
         mItemDraggedBackgroundColor = App.getColorInt(itemView.getContext(),
-                                                      R.attr.itemTouchHelper_onDragging_color);
+                                                      android.R.attr.colorPrimary);
     }
 
     @Override

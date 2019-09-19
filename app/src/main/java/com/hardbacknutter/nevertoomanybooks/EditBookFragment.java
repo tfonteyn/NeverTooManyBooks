@@ -157,7 +157,6 @@ public class EditBookFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-
         //noinspection ConstantConditions
         LocaleUtils.insanityCheck(getContext());
         menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD, MenuHandler.ORDER_HIDE_KEYBOARD,

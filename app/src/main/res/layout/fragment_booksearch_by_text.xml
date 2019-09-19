@@ -43,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/indent4"
+        app:layout_constraintGuide_begin="@dimen/indent3"
         />
 
     <TextView
@@ -127,7 +127,7 @@
         android:id="@+id/btn_search"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/border4"
+        android:layout_marginTop="@dimen/border3"
         android:text="@string/btn_search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

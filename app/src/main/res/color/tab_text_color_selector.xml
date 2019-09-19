@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ @Copyright 2019 HardBackNutter
   ~ @License GNU General Public License
@@ -27,14 +27,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="?android:attr/colorBackground" />
-    <stroke
-        android:width="@dimen/border0"
-        android:color="?attr/colorSecondary" />
-    <padding
-        android:bottom="@dimen/border0"
-        android:left="@dimen/border0"
-        android:right="@dimen/border0"
-        android:top="@dimen/border0" />
-</shape>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="?attr/colorPrimary" android:state_selected="true" />
+    <item android:alpha="0.60" android:color="?attr/colorOnSurface" />
+</selector>

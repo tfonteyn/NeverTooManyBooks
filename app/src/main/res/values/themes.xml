@@ -42,25 +42,30 @@
     <!-- ================ -->
     <!-- Day/Night theme. -->
     <!-- ================ -->
-    <!--<style name="AppTheme.DayNight" parent="Theme.AppCompat.DayNight.NoActionBar">-->
     <style name="AppTheme.DayNight" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
+        <!-- gradient used in the Navigation side bar. -->
+        <item name="nav_bar_start_color">@color/primaryDarkColor</item>
+        <item name="nav_bar_center_color">@color/primaryColor</item>
+        <item name="nav_bar_end_color">@color/primaryLightColor</item>
 
-        <item name="border_color">@color/blue_grey_600</item>
         <item name="checked_icon_tint">@color/green_a700</item>
         <item name="completed_icon_tint">@color/amber_a700</item>
-        <item name="itemTouchHelper_onDragging_color">@color/grey_200</item>
 
         <!-- ============================ -->
         <!-- Theme Color palette -->
         <!-- ============================ -->
+        <item name="colorPrimary">@color/primaryLightColor</item>
+        <item name="colorPrimaryDark">@color/primaryColor</item>
+        <item name="colorOnPrimary">@color/primaryTextColor</item>
 
-        <item name="colorPrimary">@color/blue_500</item>
-        <item name="colorPrimaryDark">@color/blue_700</item>
-        <item name="colorAccent">@color/blue_a200</item>
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorOnSecondary">@color/secondaryTextColor</item>
+
+        <item name="colorAccent">@color/accentLightColor</item>
 
     </style>
 
@@ -72,19 +77,25 @@
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
+        <!-- gradient used in the Navigation side bar. -->
+        <item name="nav_bar_start_color">@color/primaryDarkColor</item>
+        <item name="nav_bar_center_color">@color/primaryColor</item>
+        <item name="nav_bar_end_color">@color/primaryLightColor</item>
 
-        <item name="border_color">@color/grey_200</item>
         <item name="checked_icon_tint">@color/light_green_a700</item>
         <item name="completed_icon_tint">@color/amber_a700</item>
-        <item name="itemTouchHelper_onDragging_color">@color/grey_200</item>
 
         <!--  =========================== -->
         <!-- Theme Color palette -->
         <!--  =========================== -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorOnPrimary">@color/primaryTextColor</item>
 
-        <item name="colorPrimary">@color/blue_500</item>
-        <item name="colorPrimaryDark">@color/blue_700</item>
-        <item name="colorAccent">@color/blue_a200</item>
+        <item name="colorSecondary">@color/secondaryDarkColor</item>
+        <item name="colorOnSecondary">@color/secondaryTextColor</item>
+
+        <item name="colorAccent">@color/accentDarkColor</item>
 
     </style>
 
@@ -96,19 +107,25 @@
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
+        <!-- gradient used in the Navigation side bar. -->
+        <item name="nav_bar_start_color">@color/primaryDarkColor</item>
+        <item name="nav_bar_center_color">@color/primaryColor</item>
+        <item name="nav_bar_end_color">@color/primaryLightColor</item>
 
-        <item name="border_color">@color/blue_grey_600</item>
         <item name="checked_icon_tint">@color/green_a700</item>
         <item name="completed_icon_tint">@color/amber_a700</item>
-        <item name="itemTouchHelper_onDragging_color">@color/grey_200</item>
 
         <!-- ============================ -->
         <!-- Theme Color palette -->
         <!-- ============================ -->
+        <item name="colorPrimary">@color/primaryLightColor</item>
+        <item name="colorPrimaryDark">@color/primaryColor</item>
+        <item name="colorOnPrimary">@color/primaryTextColor</item>
 
-        <item name="colorPrimary">@color/blue_500</item>
-        <item name="colorPrimaryDark">@color/blue_700</item>
-        <item name="colorAccent">@color/blue_a200</item>
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorOnSecondary">@color/secondaryTextColor</item>
+
+        <item name="colorAccent">@color/accentLightColor</item>
 
     </style>
 </resources>
