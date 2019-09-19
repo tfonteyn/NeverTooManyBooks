@@ -49,7 +49,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
-import java.util.Objects;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
@@ -355,7 +356,7 @@ public class BookSearchByIsbnFragment
             case UniqueId.REQ_IMAGE_FROM_SCANNER: {
                 mModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                    //reminder: data will be null if we get a full size pic.
 
                     if (BuildConfig.DEBUG) {
                         // detect emulator for testing
@@ -364,7 +365,15 @@ public class BookSearchByIsbnFragment
                             File file = new File(StorageUtils.getRootDir(), "barcode.jpg");
                             if (file.exists()) {
                                 Bitmap dummy = BitmapFactory.decodeFile(file.getAbsolutePath());
-                                data.putExtra("data", dummy);
+                                if (data != null) {
+                                    data.putExtra("data", dummy);
+                                } else {
+                                    try {
+                                        StorageUtils.copyFile(file, CameraHelper.getDefaultFile());
+                                    } catch (@NonNull final IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                             }
                         }
                     }

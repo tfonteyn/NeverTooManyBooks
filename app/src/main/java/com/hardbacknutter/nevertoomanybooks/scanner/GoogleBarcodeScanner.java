@@ -109,7 +109,7 @@ public class GoogleBarcodeScanner
 
     @Nullable
     @Override
-    public String getBarcode(@NonNull final Intent data) {
+    public String getBarcode(@Nullable final Intent data) {
         //noinspection ConstantConditions
         Bitmap bm = mCameraHelper.getBitmap(data);
         if (bm != null) {

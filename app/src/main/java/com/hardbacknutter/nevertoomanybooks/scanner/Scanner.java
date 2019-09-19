@@ -53,5 +53,5 @@ public interface Scanner {
      * @return the barcode from the resulting intent of a scan action; or {@code null}
      */
     @Nullable
-    String getBarcode(@NonNull Intent data);
+    String getBarcode(@Nullable Intent data);
 }

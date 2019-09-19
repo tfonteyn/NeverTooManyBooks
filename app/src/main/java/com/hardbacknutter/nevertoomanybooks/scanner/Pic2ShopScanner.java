@@ -37,6 +37,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
@@ -98,7 +99,9 @@ public class Pic2ShopScanner
 
     @Override
     @Nullable
-    public String getBarcode(@NonNull final Intent data) {
+    public String getBarcode(@Nullable final Intent data) {
+        Objects.requireNonNull(data);
+
         String barcode = data.getStringExtra(BARCODE);
         // only for Pro:
         String barcodeFormat = data.getStringExtra(Pro.FORMAT);

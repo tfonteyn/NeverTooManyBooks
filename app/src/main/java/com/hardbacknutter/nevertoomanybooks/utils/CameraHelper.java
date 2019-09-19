@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class CameraHelper {
@@ -150,6 +151,18 @@ public class CameraHelper {
             }
         }
         return null;
+    }
+
+    /**
+     * DEBUG only
+     *
+     * @return the default camera file.
+     */
+    public static File getDefaultFile() {
+        if (BuildConfig.DEBUG) {
+            return StorageUtils.getTempCoverFile(CAMERA_FILENAME);
+        }
+        throw new IllegalStateException();
     }
 
     @Override

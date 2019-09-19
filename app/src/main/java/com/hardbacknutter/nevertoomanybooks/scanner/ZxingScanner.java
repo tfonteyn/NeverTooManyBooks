@@ -35,6 +35,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -98,7 +100,8 @@ public class ZxingScanner
 
     @Nullable
     @Override
-    public String getBarcode(@NonNull final Intent data) {
+    public String getBarcode(@Nullable final Intent data) {
+        Objects.requireNonNull(data);
         return data.getStringExtra(SCAN_RESULT);
     }
 
