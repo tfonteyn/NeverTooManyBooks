@@ -272,7 +272,8 @@ public final class CsvCoder {
                         result += " (" + tocEntry.getFirstPublication() + ')';
                     }
 
-                    return result + ' ' + String.valueOf(getObjectSeparator())
+                    return result
+                           + ' ' + getObjectSeparator()
                            + ' ' + getAuthorCoder().encodeElement(tocEntry.getAuthor());
                 }
             });

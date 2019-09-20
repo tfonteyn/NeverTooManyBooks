@@ -125,7 +125,7 @@ public abstract class Task
         return mRetryDelay;
     }
 
-    protected void setRetryDelay(final int delay) {
+    protected void setRetryDelay(@SuppressWarnings("SameParameterValue") final int delay) {
         mRetryDelay = delay;
     }
 

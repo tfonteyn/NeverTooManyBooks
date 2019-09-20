@@ -396,6 +396,8 @@ public class Fields {
     /**
      * Interface for view-specific accessors. One of these must be implemented for
      * each view type that is supported.
+     *
+     * @param <T> type of Field
      */
     public interface FieldDataAccessor<T> {
 
@@ -945,6 +947,7 @@ public class Fields {
          *
          * @param scale to apply
          */
+        @SuppressWarnings("SameParameterValue")
         ImageViewAccessor(final int scale) {
             setScale(scale);
         }
@@ -1746,19 +1749,14 @@ public class Fields {
             return locale != null ? locale : Locale.ENGLISH;
         }
 
-        @NonNull
-        public FieldDataAccessor<T> getFieldDataAccessor() {
-            return mFieldDataAccessor;
-        }
-
         /**
          * Return the current value of this field.
          *
          * @return Current value in native form.
          */
         @NonNull
-        public Object getValue() {
-            return mFieldDataAccessor.getValue(this);
+        public T getValue() {
+            return (T) mFieldDataAccessor.getValue(this);
         }
 
         /**

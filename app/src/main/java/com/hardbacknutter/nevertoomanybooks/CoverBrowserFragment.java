@@ -393,6 +393,7 @@ public class CoverBrowserFragment
         /**
          * Constructor.
          */
+        @SuppressWarnings("SameParameterValue")
         GalleryAdapter(final int scale) {
             int maxSize = ImageUtils.getMaxImageSize(scale);
             mWidth = maxSize;

@@ -65,6 +65,7 @@ public abstract class KbNlHandlerBase
      *
      * @return stripped string
      */
+    @SuppressWarnings("SameParameterValue")
     @Nullable
     protected String digits(@Nullable final String s,
                             final boolean isIsbn) {

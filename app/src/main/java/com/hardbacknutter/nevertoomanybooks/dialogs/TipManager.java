@@ -216,6 +216,7 @@ public final class TipManager {
          *
          * @param layoutId to use
          */
+        @SuppressWarnings("SameParameterValue")
         private Tip(@NonNull final String key,
                     @LayoutRes final int layoutId) {
             mKey = PREF_TIP + key;

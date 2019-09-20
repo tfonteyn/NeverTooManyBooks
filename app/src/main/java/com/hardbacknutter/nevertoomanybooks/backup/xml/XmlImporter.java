@@ -933,7 +933,7 @@ public class XmlImporter
             mDb = db;
         }
 
-        public int getStylesRead() {
+        int getStylesRead() {
             return mStylesRead;
         }
 

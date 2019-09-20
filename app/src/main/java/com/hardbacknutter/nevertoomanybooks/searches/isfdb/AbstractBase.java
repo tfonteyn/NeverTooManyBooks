@@ -234,7 +234,7 @@ abstract class AbstractBase {
     }
 
     String stripString(@NonNull final String url,
-                       final char last) {
+                       @SuppressWarnings("SameParameterValue") final char last) {
         int index = url.lastIndexOf(last) + 1;
         if (index == 0) {
             return "";

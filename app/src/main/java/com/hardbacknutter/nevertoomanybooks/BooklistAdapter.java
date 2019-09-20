@@ -1086,6 +1086,7 @@ public class BooklistAdapter
          * @param columnIndex index in SQL result set
          * @param noDataId    String id to use when data is blank
          */
+        @SuppressWarnings("SameParameterValue")
         RatingHolder(@NonNull final View itemView,
                      final int columnIndex,
                      @StringRes final int noDataId) {
@@ -1127,6 +1128,7 @@ public class BooklistAdapter
          * @param columnIndex index in SQL result set
          * @param noDataId    String id to use when data is blank
          */
+        @SuppressWarnings("SameParameterValue")
         LanguageHolder(@NonNull final View itemView,
                        final int columnIndex,
                        @StringRes final int noDataId) {
@@ -1160,6 +1162,7 @@ public class BooklistAdapter
          * @param columnIndex index in SQL result set
          * @param noDataId    String id to use when data is blank
          */
+        @SuppressWarnings("SameParameterValue")
         ReadUnreadHolder(@NonNull final View itemView,
                          final int columnIndex,
                          @StringRes final int noDataId) {
@@ -1193,6 +1196,7 @@ public class BooklistAdapter
          * @param columnIndex index in SQL result set
          * @param noDataId    String id to use when data is blank
          */
+        @SuppressWarnings("SameParameterValue")
         MonthHolder(@NonNull final View itemView,
                     final int columnIndex,
                     @StringRes final int noDataId) {
@@ -1238,6 +1242,7 @@ public class BooklistAdapter
          * @param isLockedSource Column name to use for the boolean 'lock' status
          * @param noDataId       String id to use when data is blank
          */
+        @SuppressWarnings("SameParameterValue")
         CheckableStringHolder(@NonNull final View itemView,
                               final int columnIndex,
                               @NonNull final String isLockedSource,

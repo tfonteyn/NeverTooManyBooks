@@ -237,7 +237,7 @@ public abstract class EditBookBaseFragment<T>
             field.getView().setOnClickListener(v -> {
                 FragmentManager fm = getChildFragmentManager();
                 if (fm.findFragmentByTag(PartialDatePickerDialogFragment.TAG) == null) {
-                    String value = field.getFieldDataAccessor().getValue(field);
+                    String value = field.getValue();
                     PartialDatePickerDialogFragment
                             .newInstance(field.id, value, dialogTitleId, todayIfNone)
                             .show(fm, PartialDatePickerDialogFragment.TAG);

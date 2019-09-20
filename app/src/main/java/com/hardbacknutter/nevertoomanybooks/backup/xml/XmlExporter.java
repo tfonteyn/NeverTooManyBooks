@@ -228,6 +228,7 @@ public class XmlExporter
      *
      * @return string representation of the attribute, with leading space; or an empty string.
      */
+    @SuppressWarnings("SameParameterValue")
     private static String attr(@NonNull final String attr,
                                final double value) {
         if (value != 0) {

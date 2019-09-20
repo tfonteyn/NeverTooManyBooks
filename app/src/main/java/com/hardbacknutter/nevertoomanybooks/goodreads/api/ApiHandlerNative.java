@@ -150,7 +150,7 @@ abstract class ApiHandlerNative {
      */
     void executePost(@NonNull final String url,
                      @Nullable final Map<String, String> parameterMap,
-                     final boolean requiresSignature,
+                     @SuppressWarnings("SameParameterValue") final boolean requiresSignature,
                      @Nullable final DefaultHandler requestHandler)
             throws CredentialsException, BookNotFoundException, IOException {
 
