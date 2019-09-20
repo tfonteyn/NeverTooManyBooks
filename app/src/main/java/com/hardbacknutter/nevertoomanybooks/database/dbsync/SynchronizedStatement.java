@@ -372,9 +372,10 @@ public class SynchronizedStatement
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE_INSERT) {
                 Logger.debug(this, "executeInsert",
                              mStatement, "id=" + id);
-            }
-            if (id == -1) {
-                Logger.warnWithStackTrace(this, "Insert failed");
+
+                if (id == -1) {
+                    Logger.warnWithStackTrace(this, "Insert failed");
+                }
             }
             return id;
 //        } catch (@NonNull final SQLException e) {

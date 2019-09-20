@@ -364,7 +364,7 @@ public class EditBookFragment
                         break;
 
                     default:
-                        throw new IllegalArgumentException("tag=" + tag);
+                        throw new UnexpectedValueException(tag);
                 }
             }
         }

@@ -504,7 +504,7 @@ public class App
         // Reminder: ***ALWAYS*** set the theme.
         activity.setTheme(APP_THEMES[sCurrentThemeId]);
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.THEME) {
             dumpDayNightMode(sCurrentThemeId);
         }
 

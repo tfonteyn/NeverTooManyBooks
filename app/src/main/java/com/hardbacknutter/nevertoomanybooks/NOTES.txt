@@ -1,18 +1,3 @@
-Coding reminder:
-When using DialogFragment, force the outer frame with:
-@Override
-public void onStart()
-{
-    super.onStart();
-    Dialog dialog = getDialog();
-    if (dialog != null)
-    {
-        int width = ViewGroup.LayoutParams.MATCH_PARENT; // WRAP_CONTENT
-        int height = ViewGroup.LayoutParams.MATCH_PARENT; // WRAP_CONTENT
-        dialog.getWindow().setLayout(width, height);
-    }
-}
-----------------------------------------------------------------------------------------------------
 TODO: performance tuning.
  * image caching from main preferences.
  * book extra details task/immediate from style. Default on ? (but need to fix 'bookshelves')

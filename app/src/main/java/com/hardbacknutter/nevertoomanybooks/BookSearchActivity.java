@@ -36,6 +36,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
  * Searches the internet for book details based on:
@@ -78,7 +79,7 @@ public class BookSearchActivity
         } else if (BookSearchByTextFragment.TAG.equals(tag)) {
             return new BookSearchByTextFragment();
         } else {
-            throw new IllegalArgumentException("tag=" + tag);
+            throw new UnexpectedValueException(tag);
         }
     }
 }

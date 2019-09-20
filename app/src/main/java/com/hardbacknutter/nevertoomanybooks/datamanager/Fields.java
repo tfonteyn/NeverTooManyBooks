@@ -70,6 +70,7 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Format;
@@ -532,7 +533,7 @@ public class Fields {
             // extract to native value
             String value = field.extract(s.toString().trim());
 
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_FORMATTER) {
                 Logger.debug(this, "afterTextChanged",
                              "s=`" + s.toString() + '`',
                              "extract=`" + value + '`'

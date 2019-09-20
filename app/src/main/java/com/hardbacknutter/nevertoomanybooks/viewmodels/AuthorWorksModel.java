@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 public class AuthorWorksModel
         extends ViewModel {
@@ -126,7 +127,7 @@ public class AuthorWorksModel
                 break;
 
             default:
-                throw new IllegalArgumentException("type=" + item.getType());
+                throw new UnexpectedValueException(item.getType());
         }
     }
 

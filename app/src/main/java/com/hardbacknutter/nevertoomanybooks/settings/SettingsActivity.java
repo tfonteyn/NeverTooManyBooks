@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
  * Hosting activity for Preference editing.
@@ -107,7 +108,7 @@ public class SettingsActivity
         } else if (StyleSettingsFragment.TAG.equals(tag)) {
             return new StyleSettingsFragment();
         } else {
-            throw new IllegalArgumentException("tag=" + tag);
+            throw new UnexpectedValueException(tag);
         }
     }
 

@@ -194,7 +194,7 @@ public class SynchronizedDb {
             Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
             try {
                 SQLiteDatabase db = opener.getWritableDatabase();
-                if (BuildConfig.DEBUG /* always */) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
                     Logger.debug(this, "openWithRetries",
                                  db.getPath(), "retriesLeft=" + retriesLeft);
                     debugDumpInfo(db);

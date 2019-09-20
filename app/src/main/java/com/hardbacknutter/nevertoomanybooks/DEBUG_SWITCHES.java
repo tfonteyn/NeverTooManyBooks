@@ -188,6 +188,9 @@ public final class DEBUG_SWITCHES {
     public static final boolean DUMP_HTTP_URL = false;
     /** Dump entire HTTP response to System.out. WARNING: can abort the function it's in. */
     public static final boolean DUMP_HTTP_RESPONSE = false;
+    public static final boolean FIELD_FORMATTER = false;
+
+    static final boolean THEME = false;
     /** Enable strict mode reporting on network,disc,... usage. */
     static final boolean STRICT_MODE = false;
 

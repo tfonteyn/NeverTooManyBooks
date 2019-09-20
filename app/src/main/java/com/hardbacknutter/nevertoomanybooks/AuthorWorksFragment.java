@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
@@ -223,10 +224,7 @@ public class AuthorWorksFragment
                 break;
 
             default:
-                if (BuildConfig.DEBUG) {
-                    throw new IllegalArgumentException("" + menuItem.getItemId());
-                }
-                break;
+                throw new UnexpectedValueException(menuItem.getItemId());
         }
 
         return false;
@@ -245,29 +243,29 @@ public class AuthorWorksFragment
                 // story in one book, goto that book.
                 if (bookIds.size() == 1) {
                     intent = new Intent(getContext(), BookDetailsActivity.class)
-                                     .putExtra(DBDefinitions.KEY_PK_ID, bookIds.get(0));
+                            .putExtra(DBDefinitions.KEY_PK_ID, bookIds.get(0));
                     startActivity(intent);
 
                 } else {
                     // multiple books, go to the list, filtering on the books.
                     intent = new Intent(getContext(), BooksOnBookshelf.class)
-                                     // clear the back-stack.
-                                     // We want to keep BooksOnBookshelf on top
-                                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                                     // bring up list, filtered on the book ID's
-                                     .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
-                                     // if we don't expand, then you often end up
-                                     // with the author as a single line, and no books shown
-                                     // which is quite confusing to the user.
-                                     .putExtra(BooksOnBookshelfModel.BKEY_LIST_STATE,
-                                               BooklistBuilder.PREF_LIST_REBUILD_ALWAYS_EXPANDED);
+                            // clear the back-stack.
+                            // We want to keep BooksOnBookshelf on top
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                            // bring up list, filtered on the book ID's
+                            .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
+                            // if we don't expand, then you often end up
+                            // with the author as a single line, and no books shown
+                            // which is quite confusing to the user.
+                            .putExtra(BooksOnBookshelfModel.BKEY_LIST_STATE,
+                                      BooklistBuilder.PREF_LIST_REBUILD_ALWAYS_EXPANDED);
                     startActivity(intent);
                 }
                 break;
 
             case Book:
                 intent = new Intent(getContext(), BookDetailsActivity.class)
-                                 .putExtra(DBDefinitions.KEY_PK_ID, item.getId());
+                        .putExtra(DBDefinitions.KEY_PK_ID, item.getId());
                 startActivity(intent);
                 break;
         }
@@ -333,7 +331,7 @@ public class AuthorWorksFragment
                     itemView = mInflater.inflate(R.layout.row_toc_entry_book, parent, false);
                     break;
                 default:
-                    throw new IllegalArgumentException("type=" + viewType);
+                    throw new UnexpectedValueException(viewType);
             }
 
             return new Holder(itemView);
@@ -357,7 +355,7 @@ public class AuthorWorksFragment
                     holder.firstPublicationView.setVisibility(View.GONE);
                 } else {
                     String fp = holder.firstPublicationView
-                                        .getContext().getString(R.string.brackets, date);
+                            .getContext().getString(R.string.brackets, date);
                     holder.firstPublicationView.setText(fp);
                     holder.firstPublicationView.setVisibility(View.VISIBLE);
                 }

@@ -137,7 +137,7 @@ public class StartupActivity
         // onCreate being stage 0
         mStartupStage++;
 
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
             Logger.debug(this, "startNextStage", "stage=" + mStartupStage);
         }
 
@@ -258,7 +258,7 @@ public class StartupActivity
 
         if (mModel.isBackupRequired()) {
             Intent backupIntent = new Intent(this, AdminActivity.class)
-                                          .putExtra(AdminFragment.BKEY_AUTO_START_BACKUP, true);
+                    .putExtra(AdminFragment.BKEY_AUTO_START_BACKUP, true);
             startActivity(backupIntent);
         }
 

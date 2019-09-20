@@ -99,6 +99,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB;
@@ -1101,7 +1102,7 @@ public class DAO
                 return getColumnAsList(SqlSelectFullTable.AUTHORS_FORMATTED_NAMES_GIVEN_FIRST, key);
 
             default:
-                throw new IllegalArgumentException("key=" + key);
+                throw new UnexpectedValueException(key);
         }
     }
 
