@@ -577,7 +577,7 @@
     <string name="warning_action_requires_isbn">Tato akce vyžaduje platné číslo ISBN.</string>
     <string name="warning_author_already_in_list">Autor je již v seznamu</string>
     <string name="warning_backup_request">Přejete si zálohovat Vaši databázi na SD kartu</string>
-    <string name="warning_bad_scanner">Vypadá to, že stávající aplikace čtečky čárových kódů není kompatibilní s &APP_NAME;.</string>
+    <string name="info_bad_scanner">Vypadá to, že stávající aplikace čtečky čárových kódů není kompatibilní s &APP_NAME;.</string>
     <string name="info_install_scanner_recommendation">Doporučujeme nainstalovat aplikaci pro skenování čárových kódů Zxing a pokud je již nainstalována, doporučujeme odinstalovat a znovu nainstalovat.</string>
     <string name="warning_book_no_longer_exists">Zadaná kniha již neexistuje</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt hledanou knihu. Zkuste prosím zadat potřebné údaje manuálně.</string>
@@ -627,5 +627,8 @@
     <string name="X_progress_end_n_books_exported">Bylo exportováno %1$d knih</string>
     <string name="warning_select_an_existing_folder">Vyberte existující složku.</string>
     <string name="lbl_copy_database_blurb">Vyberte adresář, do kterého chcete exportovat.</string>
+    <string name="info_waiting_for_scanner">Čekání na skener / fotoaparát</string>
+    <string name="warning_scanner_failed_to_start">Skener se nepodařilo spustit.</string>
+    <string name="warning_scanner_retry_install">Doporučujeme zkusit to znovu jako první, ale pokud problém přetrvává, nainstalujte znovu skener nebo nainstalujte jiný skener.</string>
 
 </resources>

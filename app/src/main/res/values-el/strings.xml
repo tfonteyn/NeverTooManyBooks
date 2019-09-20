@@ -582,7 +582,7 @@
     <string name="warning_action_requires_isbn">Αυτή η ενέργεια απαιτεί έγκυρο ISBN.</string>
     <string name="warning_author_already_in_list">Ο συγγραφέας βρίσκεται ήδη στη λίστα</string>
     <string name="warning_backup_request">Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;</string>
-    <string name="warning_bad_scanner">Η εφαρμογή για σκανάρισμα barcode που έχετε δεν είναι συμβατή με το &APP_NAME;.</string>
+    <string name="info_bad_scanner">Η εφαρμογή για σκανάρισμα barcode που έχετε δεν είναι συμβατή με το &APP_NAME;.</string>
     <string name="info_install_scanner_recommendation">Προτείνουμε να εγκαταστήσετε την εφαρμογή Zxing barcode scanner, και αν είναι ήδη εγκατεστημένη, προτείνουμε να την απεγκαταστήσετε και να την ξαναεγκαταστήσετε.</string>
     <string name="warning_book_no_longer_exists">Το συγκεκριμένο βιβλίο δεν υπάρχει πλέον.</string>
     <string name="warning_book_not_found">Το βιβλίο που σαρώθηκε δεν βρέθηκε. Κάποιες φορές το σωστό barcode βρίσκεται στο εσωτερικό του εξωφύλλου. Αλλιώς εισάγετε τις λεπτομέρειες χειροκίνητα.</string>
@@ -633,5 +633,8 @@
     <string name="X_progress_end_n_books_exported">%1$d βιβλία που εξήχθησαν</string>
     <string name="warning_select_an_existing_folder">Επιλέξτε έναν υπάρχοντα φάκελο.</string>
     <string name="lbl_copy_database_blurb">Επιλέξτε έναν κατάλογο για την εξαγωγή σε.</string>
+    <string name="info_waiting_for_scanner">Αναμονή για σαρωτή / κάμερα</string>
+    <string name="warning_scanner_failed_to_start">Ο σαρωτής απέτυχε να ξεκινήσει.</string>
+    <string name="warning_scanner_retry_install">Προτείνουμε να προσπαθήσετε πρώτα, αλλά εάν συνεχίσει να αποτυγχάνει, παρακαλούμε εγκαταστήστε ξανά το σαρωτή ή εγκαταστήστε άλλο σαρωτή.</string>
 
 </resources>

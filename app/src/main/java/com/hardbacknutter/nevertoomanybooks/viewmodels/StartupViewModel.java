@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.UpgradeDatabase;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
@@ -191,8 +192,9 @@ public class StartupViewModel
             Locale locale = LocaleUtils.getLocale(context);
 
             int taskId = 0;
-            // start this unconditionally
+            // start these unconditionally
             startTask(new BuildLanguageMappingsTask(++taskId, locale, mTaskListener));
+            startTask(new PreloadGoogleScanner(++taskId, mTaskListener));
 
             // this is not critical, once every so often is fine
             if (mDoPeriodicAction) {
@@ -305,6 +307,39 @@ public class StartupViewModel
                 Logger.error(this, e);
                 mException = e;
                 return false;
+            }
+            return true;
+        }
+    }
+
+    /**
+     * If the Google barcode scanner can be loaded, create a dummy instance to
+     * force it to download the native library if not done already.
+     * <p>
+     * This can be seen in the device logs as:
+     * <p>
+     * I/Vision: Loading library libbarhopper.so
+     * I/Vision: Library not found: /data/user/0/com.google.android.gms/app_vision/barcode/
+     * libs/x86/libbarhopper.so
+     * I/Vision: libbarhopper.so library load status: false
+     * Request download for engine barcode
+     */
+    static class PreloadGoogleScanner
+            extends TaskBase<Boolean> {
+
+        protected PreloadGoogleScanner(final int taskId,
+                                       @NonNull final TaskListener<Boolean> taskListener) {
+            super(taskId, taskListener);
+        }
+
+        @Override
+        protected Boolean doInBackground(final Void... voids) {
+            Context context = App.getAppContext();
+
+            GoogleBarcodeScanner.GoogleBarcodeScannerFactory factory =
+                    new GoogleBarcodeScanner.GoogleBarcodeScannerFactory();
+            if (factory.isAvailable(context)) {
+                factory.newInstance(context);
             }
             return true;
         }

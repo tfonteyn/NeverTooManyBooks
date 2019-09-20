@@ -197,20 +197,13 @@
 
     <!-- The user selected a folder, but we can't actually read/open it. -->
     <string name="warning_select_an_existing_folder">Please select an existing folder.</string>
-    <!-- The user selected a file to import, but it has an unknown extension.
-        So we *might* be able to import it, but it's uncertain. -->
-    <string name="warning_potentially_not_an_archive">
-        This is potentially not a readable file (%1$s extension).
-        \nAre you sure you wish to proceed?
-    </string>
 
     <!-- A scanner was installed and loaded, but refused to actually start. -->
-    <string name="warning_scanner_failed_to_start">
-        The scanner failed to start.\n\n
+    <string name="warning_scanner_failed_to_start">The scanner failed to start.</string>
+    <string name="warning_scanner_retry_install">
         We suggest you retry first, but if it keeps failing please reinstall your scanner,
         or install another scanner.
     </string>
-
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
     <!-- ####################################################################################### -->
@@ -235,7 +228,9 @@
         Selected fields will be updated from the internet. Unselected fields will remain unchanged.
     </string>
 
-    <string name="warning_bad_scanner">
+    <string name="info_waiting_for_scanner">Waiting for scanner/camera</string>
+
+    <string name="info_bad_scanner">
         It looks like your existing barcode scanner app is not compatible with &APP_NAME;.
     </string>
 

@@ -577,7 +577,7 @@
     <string name="warning_action_requires_isbn">Ta akcja wymaga prawidłowego numeru ISBN.</string>
     <string name="warning_author_already_in_list">Autor jest już na liście</string>
     <string name="warning_backup_request">Czy chcesz wykonac kopię zapasową na karcie SD?</string>
-    <string name="warning_bad_scanner">Wygląda na to, że istniejąca aplikacja skanera kodów kreskowych nie jest kompatybilna z &APP_NAME;.</string>
+    <string name="info_bad_scanner">Wygląda na to, że istniejąca aplikacja skanera kodów kreskowych nie jest kompatybilna z &APP_NAME;.</string>
     <string name="info_install_scanner_recommendation">Zalecamy zainstalowanie aplikacji skanera kodów kreskowych Zxing, a jeśli jest już zainstalowana, zalecamy odinstalowanie i ponowne zainstalowanie.</string>
     <string name="warning_book_no_longer_exists">Określona książka już nie istnieje</string>
     <string name="warning_book_not_found">Zeskanowana książka nie została odnaleziona. Spóbuj ponownie z kodem, który może znajdować się w środku okładki lub wprowadź dane ręcznie.</string>
@@ -628,4 +628,7 @@
     <string name="X_progress_end_n_books_exported">"%1$d książek wyeksportowanych   "</string>
     <string name="warning_select_an_existing_folder">Wybierz istniejący katalog.</string>
     <string name="lbl_copy_database_blurb">Wybierz katalog do wyeksportowania.</string>
+    <string name="info_waiting_for_scanner">Oczekiwanie na skaner / aparat</string>
+    <string name="warning_scanner_failed_to_start">Nie można uruchomić skanera.</string>
+    <string name="warning_scanner_retry_install">Sugerujemy, aby spróbować ponownie, ale jeśli problem nadal występuje, zainstaluj ponownie skaner lub zainstaluj inny skaner.</string>
 </resources>

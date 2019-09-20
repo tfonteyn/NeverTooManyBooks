@@ -587,7 +587,7 @@
     <string name="warning_action_requires_isbn">Cette action nécessite un ISBN valide.</string>
     <string name="warning_author_already_in_list">L\'auteur est déjà dans la liste</string>
     <string name="warning_backup_request">Voulez-vous sauvegarder votre base de données sur la carte SD ?</string>
-    <string name="warning_bad_scanner">Votre scanner de code barre ne semble pas être compatible avec &APP_NAME;.</string>
+    <string name="info_bad_scanner">Votre scanner de code barre ne semble pas être compatible avec &APP_NAME;.</string>
     <string name="info_install_scanner_recommendation">Nous vous recommandons d\'installer le scanner de code barre de Zxing et, s\'il est déjà installé, de le désinstaller puis le réinstaller.</string>
     <string name="warning_book_no_longer_exists">Le livre demandé n\'existe plus</string>
     <string name="warning_book_not_found">Le livre n\'a pas été trouvé. Il est parfois possible de trouver le code barre à l\'intérieur de la première page de couverture. Sinon merci d\'entrer les détails manuellement.</string>
@@ -639,5 +639,8 @@
     <string name="X_progress_end_n_books_exported">%1$d livres exportés</string>
     <string name="warning_select_an_existing_folder">Veuillez sélectionner un dossier existant.</string>
     <string name="lbl_copy_database_blurb">Sélectionnez un répertoire vers lequel exporter.</string>
+    <string name="info_waiting_for_scanner">En attente de scanner / caméra</string>
+    <string name="warning_scanner_failed_to_start">Le scanner n\'a pas pu démarrer.</string>
+    <string name="warning_scanner_retry_install">Nous vous suggérons d’essayer d’abord, mais si le problème persiste, réinstallez le scanner ou installez-en un autre.</string>
 
 </resources>

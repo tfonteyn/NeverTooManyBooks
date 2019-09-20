@@ -44,10 +44,24 @@ public interface Scanner {
      * @param fragment    calling fragment
      * @param requestCode which will be passed back to onActivityResult
      *
+     * When receiving a {@code false}, the caller <strong>should not</strong> retry.
+     *
      * @return {@code true} if we could start the activity.
      */
     boolean startActivityForResult(@NonNull Fragment fragment,
                                    int requestCode);
+
+    /**
+     * Optional to implement. Meant specifically for the Google Play barcode scanner.
+     * This makes coding access to a scanner uniform.
+     * <p>
+     * When receiving a {@code false}, the caller <strong>should</strong> retry.
+     *
+     * @return {@code true} if the scanner instance is ready for work.
+     */
+    default boolean isOperational() {
+        return true;
+    }
 
     /**
      * @return the barcode from the resulting intent of a scan action; or {@code null}

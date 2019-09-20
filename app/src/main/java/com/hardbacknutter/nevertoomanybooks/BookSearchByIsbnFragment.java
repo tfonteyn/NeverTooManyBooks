@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.scanner.Scanner;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
@@ -123,6 +124,10 @@ public class BookSearchByIsbnFragment
             Pattern.compile("[abcdefghijklmnopqrstuvwyz]",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
+    /** wait for the scanner; milliseconds. */
+    private static final long SCANNER_WAIT = 1_000;
+    /** repeat waiting for the scanner 3 times before reporting failure. */
+    private static final int SCANNER_RETRY = 3;
     /**
      * Flag to indicate the Activity should not call 'finish()' after a failure.
      */
@@ -214,21 +219,23 @@ public class BookSearchByIsbnFragment
             initUI(root);
         }
 
-        //URGENT: find a solution for showing reg dialog AND starting a scan
-//        //noinspection ConstantConditions
-//        boolean alertShowing =
-//                SearchSites.alertRegistrationBeneficial(getContext(), "search",
-//                                                        mBookSearchBaseModel.getSearchSites());
-
         // first check if we already have an isbn from somewhere
         if (!mBookSearchBaseModel.getIsbnSearchText().isEmpty()) {
             prepareSearch();
             return;
         }
+
         // scan mode ?
-        if (mModel.isScanMode() && mModel.isFirstStart()) {
-            mModel.clearFirstStart();
-            startScannerActivity();
+        if (mModel.isScanMode()) {
+            if (mModel.isFirstStart()) {
+                mModel.clearFirstStart();
+                startScannerActivity();
+            }
+        } else {
+            //URGENT: find a solution for showing reg dialog AND starting a scan
+            //noinspection ConstantConditions
+            SearchSites.alertRegistrationBeneficial(getContext(), "search",
+                                                    mBookSearchBaseModel.getSearchSites());
         }
     }
 
@@ -574,13 +581,30 @@ public class BookSearchByIsbnFragment
                 mModel.setScanner(scanner);
             }
 
-            // go scan
-            if (!mModel.isScannerStarted()) {
-                mModel.setScannerStarted(true);
-                if (!scanner.startActivityForResult(this, UniqueId.REQ_IMAGE_FROM_SCANNER)) {
-                    // the scanner was loaded, but refuses to start.
-                    scannerStartFailed();
+            // this is really for the Google barcode library which is loaded on first access.
+            // We're very conservative/paranoid here, as we already triggered a load during startup.
+            int retry = SCANNER_RETRY;
+            while (!scanner.isOperational() && retry > 0) {
+                //noinspection ConstantConditions
+                UserMessage.show(getView(), R.string.info_waiting_for_scanner);
+                try {
+                    Thread.sleep(SCANNER_WAIT);
+                } catch (InterruptedException ignore) {
                 }
+                if (scanner.isOperational()) {
+                    break;
+                }
+                retry--;
+            }
+
+            // ready or not, go scan
+            if (!mModel.isScannerStarted()) {
+                if (!scanner.startActivityForResult(this, UniqueId.REQ_IMAGE_FROM_SCANNER)) {
+                    // the scanner was loaded, but (still) refuses to start.
+                    scannerStartFailed();
+                    return;
+                }
+                mModel.setScannerStarted(true);
             }
 
         } catch (@NonNull final RuntimeException e) {
@@ -590,11 +614,15 @@ public class BookSearchByIsbnFragment
     }
 
     private void scannerStartFailed() {
+        String msg = getString(R.string.warning_scanner_failed_to_start)
+                     + "\n\n"
+                     + getString(R.string.warning_scanner_retry_install);
+
         //noinspection ConstantConditions
         new AlertDialog.Builder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.pg_barcode_scanner)
-                .setMessage(R.string.warning_scanner_failed_to_start)
+                .setMessage(msg)
                 .setNeutralButton(R.string.lbl_settings, (d, w) -> {
                     Intent intent = new Intent(mActivity, SettingsActivity.class)
                                             .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
@@ -615,7 +643,7 @@ public class BookSearchByIsbnFragment
      * Tell the user, and take them to the preferences to select a scanner.
      */
     private void noScanner() {
-        String msg = getString(R.string.warning_bad_scanner) + '\n'
+        String msg = getString(R.string.info_bad_scanner) + '\n'
                      + getString(R.string.info_install_scanner_recommendation);
         //noinspection ConstantConditions
         new AlertDialog.Builder(getContext())

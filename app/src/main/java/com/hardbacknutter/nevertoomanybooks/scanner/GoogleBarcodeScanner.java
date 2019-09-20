@@ -66,7 +66,7 @@ public class GoogleBarcodeScanner
      *
      * @param context Current context
      */
-    private GoogleBarcodeScanner(@NonNull final Context context) {
+    public GoogleBarcodeScanner(@NonNull final Context context) {
         mDetector = new BarcodeDetector.Builder(context.getApplicationContext())
                             .setBarcodeFormats(Barcode.ISBN
                                                | Barcode.EAN_13 | Barcode.EAN_8
@@ -89,8 +89,15 @@ public class GoogleBarcodeScanner
         return null;
     }
 
+    @Override
+    public boolean isOperational() {
+        return mDetector.isOperational();
+    }
+
     /**
      * Start the camera to get an image.
+     *
+     * {@inheritDoc}
      */
     @Override
     public boolean startActivityForResult(@NonNull final Fragment fragment,
@@ -128,7 +135,7 @@ public class GoogleBarcodeScanner
                + '}';
     }
 
-    static class GoogleBarcodeScannerFactory
+    public static class GoogleBarcodeScannerFactory
             implements ScannerFactory {
 
         @NonNull

@@ -575,7 +575,7 @@
     <string name="warning_action_requires_isbn">Для этого действия требуется действительный ISBN.</string>
     <string name="warning_author_already_in_list">Автор уже есть в списке</string>
     <string name="warning_backup_request">Вы хотите создать резервную копию базы данных на SD-карте?</string>
-    <string name="warning_bad_scanner">Возможно, ваше приложение-сканер не совместимо с &APP_NAME;.</string>
+    <string name="info_bad_scanner">Возможно, ваше приложение-сканер не совместимо с &APP_NAME;.</string>
     <string name="info_install_scanner_recommendation">Мы рекомендуем установить Zxing сканер, или если он уже установлен, удалите его, затем снова установите.</string>
     <string name="warning_book_no_longer_exists">Указанная книга больше не существует</string>
     <string name="warning_book_not_found">Не найдена книга, соответствующая отсканированному штрих-коду. Возможно правильный штрих-код находится внутри книги. Иначе, пожалуйста, введите детализированную информацию о книге вручную.</string>
@@ -626,5 +626,8 @@
     <string name="X_progress_end_n_books_exported">%1$d книг на экспорт</string>
     <string name="warning_select_an_existing_folder">Пожалуйста, выберите существующую папку.</string>
     <string name="lbl_copy_database_blurb">Выберите каталог для экспорта.</string>
+    <string name="info_waiting_for_scanner">В ожидании сканера / камеры</string>
+    <string name="warning_scanner_failed_to_start">Сканер не запустился.</string>
+    <string name="warning_scanner_retry_install">Мы рекомендуем сначала повторить попытку, но если она не работает, переустановите сканер или установите другой сканер.</string>
 
 </resources>

@@ -587,7 +587,7 @@
     <string name="warning_action_requires_isbn">Voor deze actie is een geldig ISBN-nummer vereist.</string>
     <string name="warning_author_already_in_list">Auteur staat al in de lijst</string>
     <string name="warning_backup_request">Wilt u  een back-up van uw database op uw SD kaart maken?</string>
-    <string name="warning_bad_scanner">Het lijkt er op dat de door u gebruikt streepjescode scanner app niet compatibel is met &APP_NAME;.</string>
+    <string name="info_bad_scanner">Het lijkt er op dat de door u gebruikt streepjescode scanner app niet compatibel is met &APP_NAME;.</string>
     <string name="info_install_scanner_recommendation">Wij kunnen de Zxing streepjescode scanner application aanbevelen. Als deze al is geïnstalleerd raden we aan deze te deïnstalleren en daarna weer opnieuw te installeren.</string>
     <string name="warning_book_no_longer_exists">Het gespecificeerde boek bestaat niet meer</string>
     <string name="warning_book_not_found">Het gescande boek is niet gevonden. Je kan de juiste streepjescode aan de achterkant van de omslag vinden. Vul anders de gegevens handmatig in.</string>
@@ -639,5 +639,8 @@
     <string name="X_progress_end_n_books_exported">%1$d boeken geëxporteerd</string>
     <string name="warning_select_an_existing_folder">Selecteer een bestaande map.</string>
     <string name="lbl_copy_database_blurb">Selecteer een map om naar te exporteren.</string>
+    <string name="info_waiting_for_scanner">Wachten op scanner / camera</string>
+    <string name="warning_scanner_failed_to_start">De scanner kan niet worden gestart.</string>
+    <string name="warning_scanner_retry_install">We raden u aan het opnieuw te proberen, maar als het blijft mislukken, installeer de scanner opnieuw of installeer een andere scanner.</string>
 
 </resources>

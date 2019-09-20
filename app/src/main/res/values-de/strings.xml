@@ -583,7 +583,7 @@
     <string name="warning_action_requires_isbn">Diese Aktion erfordert eine gültige ISBN.</string>
     <string name="warning_author_already_in_list">Der Autor befindet sich bereits in der Liste</string>
     <string name="warning_backup_request">Möchten Sie ihre Datenbank auf SD-Karte sichern?</string>
-    <string name="warning_bad_scanner">Anscheinend ist Ihre derzeitige Scanner-App nicht mit &APP_NAME;
+    <string name="info_bad_scanner">Anscheinend ist Ihre derzeitige Scanner-App nicht mit &APP_NAME;
         kompatible.</string>
     <string name="info_install_scanner_recommendation">Wir empfehlen, die App „Zxing Barcode Scanner“ zu installieren. Falls sie bereits installiert ist, empfehlen wir eine Deinstalltion und erneute Installation.</string>
     <string name="warning_book_no_longer_exists">Das gewünschte Buch existiert nicht mehr</string>
@@ -634,4 +634,7 @@
     <string name="X_progress_end_n_books_exported">%1$d Bücher exportiert</string>
     <string name="warning_select_an_existing_folder">Bitte wählen Sie einen vorhandenen Verzeichnis.</string>
     <string name="lbl_copy_database_blurb">Wählen Sie ein Verzeichnis aus, in das exportiert werden soll.</string>
+    <string name="info_waiting_for_scanner">Warten auf Scanner / Kamera</string>
+    <string name="warning_scanner_failed_to_start">Der Scanner konnte nicht gestartet werden.</string>
+    <string name="warning_scanner_retry_install">Wir empfehlen, dass Sie es zuerst erneut versuchen. Wenn dies jedoch weiterhin fehlschlägt, installieren Sie den Scanner erneut oder installieren Sie einen anderen Scanner.</string>
 </resources>
