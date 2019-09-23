@@ -1100,8 +1100,7 @@ public final class DBDefinitions {
     static {
         DOM_PK_DOCID = new DomainDefinition("docid");
 
-        TBL_BOOKS_FTS =
-                new TableDefinition("books_fts").setType(TableTypes.FTS3);
+        TBL_BOOKS_FTS = new TableDefinition("books_fts").setType(TableTypes.FTS3);
 
         DOM_FTS_AUTHOR_NAME =
                 new DomainDefinition("author_name", ColumnInfo.TYPE_TEXT, true);
@@ -1113,6 +1112,7 @@ public final class DBDefinitions {
          */
         TBL_BOOKS_FTS.addDomains(DOM_FTS_AUTHOR_NAME,
                                  DOM_TITLE,
+                                 DOM_SERIES_TITLE,
                                  DOM_BOOK_ISBN,
 
                                  DOM_BOOK_DESCRIPTION,
