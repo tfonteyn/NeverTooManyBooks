@@ -126,7 +126,7 @@ public class CheckListDialogFragment<T>
 
         // Takes the list of items and create a list of checkboxes in the display.
         ViewGroup body = root.findViewById(R.id.content);
-        for (final CheckListItem item : mList) {
+        for (CheckListItem item : mList) {
             CompoundButton buttonView = new CheckBox(getContext());
             buttonView.setChecked(item.isChecked());
             //noinspection ConstantConditions

@@ -38,17 +38,10 @@
 
     <include layout="@layout/inc_appbar" />
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        >
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/border1"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             >
 
             <androidx.constraintlayout.widget.Guideline
@@ -112,16 +105,13 @@
                 tools:ignore="Autofill"
                 />
 
-            <Button
-                android:id="@+id/confirm"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_confirm_save"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dev_key"
-                />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.core.widget.NestedScrollView>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        style="@style/FAB"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

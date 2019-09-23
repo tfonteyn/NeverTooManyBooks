@@ -38,7 +38,6 @@ import androidx.preference.PreferenceManager;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -205,9 +204,11 @@ public class Bookshelf
 
     /**
      * Set this bookshelf as the current/preferred.
+     *
+     * @param context Current context
      */
-    public void setAsPreferred() {
-        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+    public void setAsPreferred(@NonNull final Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context)
                          .edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
     }
 
@@ -221,7 +222,7 @@ public class Bookshelf
     }
 
     @Override
-    public String getLabel() {
+    public String getLabel(@NonNull final Context context) {
         return mName;
     }
 

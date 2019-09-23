@@ -160,7 +160,7 @@ class IsfdbBookTest {
         assertEquals(2, authors.size());
         assertEquals("Russell", authors.get(0).getFamilyName());
         assertEquals("Eric Frank", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_GENERIC, authors.get(0).getType());
+        assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
 
         assertEquals("Oakes", authors.get(1).getFamilyName());
         assertEquals("Terry", authors.get(1).getGivenNames());

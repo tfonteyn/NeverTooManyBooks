@@ -63,10 +63,13 @@ public class PInteger
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            // Use a workaround for the real default value not being a String.
+            // reminder: Integer is stored as a String
             String value = getPrefs().getString(getKey(), null);
             if (value == null || value.isEmpty()) {
-                return mDefaultValue;
+                value = getGlobal().getString(getKey(), null);
+                if (value == null || value.isEmpty()) {
+                    return mDefaultValue;
+                }
             }
             return Integer.parseInt(value);
         }

@@ -87,7 +87,7 @@ abstract class AbstractBase {
     }
 
     @VisibleForTesting
-    AbstractBase(final Document doc) {
+    AbstractBase(@Nullable final Document doc) {
         mDoc = doc;
     }
 

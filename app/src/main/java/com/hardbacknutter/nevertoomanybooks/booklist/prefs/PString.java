@@ -58,7 +58,14 @@ public class PString
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            return getPrefs().getString(getKey(), mDefaultValue);
+            String value = getPrefs().getString(getKey(), null);
+            if (value == null || value.isEmpty()) {
+                value = getGlobal().getString(getKey(), null);
+                if (value == null || value.isEmpty()) {
+                    return mDefaultValue;
+                }
+            }
+            return value;
         }
     }
 

@@ -477,6 +477,7 @@ public final class CoversDAO
 
         /** Bitmap to store. */
         private final Bitmap mBitmap;
+        /** Book UUID. */
         @NonNull
         private final String mUuid;
         private final int mMaxWidth;
@@ -486,6 +487,7 @@ public final class CoversDAO
          * Create a task that will compress the passed bitmap and write it to the database,
          * it will also be recycled if flag is set.
          *
+         * @param uuid   the book UUID, i.e. the filename for the cover
          * @param source Raw bitmap to store
          */
         @UiThread

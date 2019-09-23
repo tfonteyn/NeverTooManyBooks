@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -135,8 +136,8 @@ public class AuthorWorksModel
         return mAtLeastOneBookDeleted;
     }
 
-    public String getScreenTitle() {
+    public String getScreenTitle(@NonNull final Context context) {
         //noinspection ConstantConditions
-        return mAuthor.getLabel() + " [" + getTocEntries().size() + ']';
+        return mAuthor.getLabel(context) + " [" + getTocEntries().size() + ']';
     }
 }

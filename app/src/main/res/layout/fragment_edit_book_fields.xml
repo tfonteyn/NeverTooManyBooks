@@ -168,14 +168,6 @@
             app:layout_constraintTop_toTopOf="@id/genre"
             />
 
-        <View
-            android:id="@+id/notes_divider"
-            style="@style/HorizontalDivider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/genre"
-            />
-
         <TextView
             android:id="@+id/lbl_description"
             style="@style/Label.Field"
@@ -183,7 +175,7 @@
             android:labelFor="@id/description"
             android:text="@string/lbl_description"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/notes_divider"
+            app:layout_constraintTop_toBottomOf="@id/genre"
             />
 
         <EditText

@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +48,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.EditSeriesListActivity;
+import com.hardbacknutter.nevertoomanybooks.EditBookSeriesActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -59,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 /**
  * Dialog to edit an existing single series.
  * <p>
- * Calling point is a List; see {@link EditSeriesListActivity} for book
+ * Calling point is a List; see {@link EditBookSeriesActivity} for book
  */
 public class EditSeriesDialogFragment
         extends DialogFragment {
@@ -70,13 +71,17 @@ public class EditSeriesDialogFragment
     /** Database Access. */
     private DAO mDb;
 
+    private WeakReference<BookChangedListener> mBookChangedListener;
+
     private AutoCompleteTextView mNameView;
     private Checkable mIsCompleteView;
 
+    /** The Series we're editing. */
     private Series mSeries;
+    /** Current edit. */
     private String mName;
+    /** Current edit. */
     private boolean mIsComplete;
-    private WeakReference<BookChangedListener> mBookChangedListener;
 
     /**
      * Constructor.
@@ -88,7 +93,7 @@ public class EditSeriesDialogFragment
     public static EditSeriesDialogFragment newInstance(@NonNull final Series series) {
         EditSeriesDialogFragment frag = new EditSeriesDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(DBDefinitions.KEY_SERIES_TITLE, series);
+        args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
         frag.setArguments(args);
         return frag;
     }
@@ -99,13 +104,13 @@ public class EditSeriesDialogFragment
 
         mDb = new DAO();
 
-        mSeries = requireArguments().getParcelable(DBDefinitions.KEY_SERIES_TITLE);
+        mSeries = requireArguments().getParcelable(DBDefinitions.KEY_FK_SERIES);
         Objects.requireNonNull(mSeries);
         if (savedInstanceState == null) {
             mName = mSeries.getTitle();
             mIsComplete = mSeries.isComplete();
         } else {
-            mName = savedInstanceState.getString(DBDefinitions.KEY_SERIES_TITLE);
+            mName = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
             mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
         }
     }
@@ -118,11 +123,14 @@ public class EditSeriesDialogFragment
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View root = layoutInflater.inflate(R.layout.dialog_edit_series, null);
 
+        Context context = getContext();
+
         @SuppressWarnings("ConstantConditions")
         ArrayAdapter<String> mAdapter =
-                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
-                                   mDb.getAllSeriesNames());
+                new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
+                                   mDb.getSeriesTitles());
 
+        // the dialog fields != screen fields.
         mNameView = root.findViewById(R.id.name);
         mNameView.setText(mName);
         mNameView.setAdapter(mAdapter);
@@ -130,44 +138,47 @@ public class EditSeriesDialogFragment
         mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
         mIsCompleteView.setChecked(mIsComplete);
 
-        return new AlertDialog.Builder(getContext())
-                       .setIcon(R.drawable.ic_edit)
-                       .setView(root)
-                       .setTitle(R.string.lbl_series)
-                       .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                       .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
-                           mName = mNameView.getText().toString().trim();
-                           if (mName.isEmpty()) {
-                               UserMessage.show(mNameView, R.string.warning_missing_name);
-                               return;
-                           }
-                           mIsComplete = mIsCompleteView.isChecked();
-                           dismiss();
+        return new AlertDialog.Builder(context)
+                .setIcon(R.drawable.ic_edit)
+                .setView(root)
+                .setTitle(R.string.title_edit_series)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
+                    mName = mNameView.getText().toString().trim();
+                    if (mName.isEmpty()) {
+                        UserMessage.show(mNameView, R.string.warning_missing_name);
+                        return;
+                    }
+                    mIsComplete = mIsCompleteView.isChecked();
 
-                           if (mSeries.getTitle().equals(mName)
-                               && mSeries.isComplete() == mIsComplete) {
-                               return;
-                           }
-                           mSeries.setTitle(mName);
-                           mSeries.setComplete(mIsComplete);
-                           // There is no book involved here, so use the users Locale instead
-                           Locale bookLocale = LocaleUtils.getLocale(getContext());
-                           mDb.updateOrInsertSeries(getContext(), mSeries, bookLocale);
+                    // anything actually changed ?
+                    if (mSeries.getTitle().equals(mName)
+                        && mSeries.isComplete() == mIsComplete) {
+                        return;
+                    }
 
-                           Bundle data = new Bundle();
-                           data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());
-                           if (mBookChangedListener.get() != null) {
-                               mBookChangedListener.get().onBookChanged(0,
-                                                                        BookChangedListener.SERIES,
-                                                                        data);
-                           } else {
-                               if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                                   Logger.debug(this, "onBookChanged",
-                                                Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
-                               }
-                           }
-                       })
-                       .create();
+                    // this is a global update, so just set and update.
+                    mSeries.setTitle(mName);
+                    mSeries.setComplete(mIsComplete);
+                    // There is no book involved here, so use the users Locale instead
+                    Locale bookLocale = LocaleUtils.getLocale(context);
+                    // and store the changes
+                    mDb.updateOrInsertSeries(context, bookLocale, mSeries);
+
+                    // and spread the news of the changes.
+                    Bundle data = new Bundle();
+                    data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());
+                    if (mBookChangedListener.get() != null) {
+                        mBookChangedListener.get()
+                                            .onBookChanged(0, BookChangedListener.SERIES, data);
+                    } else {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                            Logger.debug(this, "onBookChanged",
+                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                        }
+                    }
+                })
+                .create();
     }
 
     @Override

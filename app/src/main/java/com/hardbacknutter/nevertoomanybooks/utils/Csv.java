@@ -53,7 +53,7 @@ public final class Csv {
 //     * @param delimiter  e.g. "," or ", " etc...
 //     * @param collection collection
 //     *
-//     * @return csv string, can be empty, never {@code null}.
+//     * @return csv string, can be empty, but never {@code null}.
 //     */
 //    @NonNull
 //    public static <E> String join(@NonNull final CharSequence delimiter,
@@ -71,7 +71,7 @@ public final class Csv {
      * @param collection collection
      * @param formatter  (optional) formatter to use on each element, or {@code null} for none.
      *
-     * @return csv string, can be empty, never {@code null}.
+     * @return csv string, can be empty, but never {@code null}.
      */
     @NonNull
     public static <E> String join(@NonNull final CharSequence delimiter,
@@ -94,7 +94,7 @@ public final class Csv {
      *                     Caller is responsible to add spaces if desired.
      * @param formatter    (optional) formatter to use on each element, or {@code null} for none.
      *
-     * @return csv string, can be empty, never {@code null}.
+     * @return csv string, can be empty, but never {@code null}.
      */
     @NonNull
     public static <E> String join(@NonNull final CharSequence delimiter,
@@ -135,7 +135,7 @@ public final class Csv {
 
     /**
      * Not strictly a Csv method, but closely related as it's usually (always?) followed
-     * by sending the list to a join method here.
+     * by sending the list to a join method.
      *
      * @param context Current context
      * @param map     Map with bits mapped to resource IDs

@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -112,15 +113,17 @@ public class LendBookDialogFragment
     /**
      * Constructor.
      *
-     * @param book to lend
+     * @param context Current context
+     * @param book    to lend
      *
      * @return the instance
      */
-    public static LendBookDialogFragment newInstance(@NonNull final Book book) {
+    public static LendBookDialogFragment newInstance(@NonNull final Context context,
+                                                     @NonNull final Book book) {
         LendBookDialogFragment frag = new LendBookDialogFragment();
         Bundle args = new Bundle();
         args.putLong(DBDefinitions.KEY_PK_ID, book.getId());
-        args.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, book.getPrimaryAuthor());
+        args.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, book.getPrimaryAuthor(context));
         args.putString(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE));
         frag.setArguments(args);
         return frag;
@@ -142,7 +145,8 @@ public class LendBookDialogFragment
             // if not, we must have the ID.
             if (mAuthorName == null) {
                 //noinspection ConstantConditions
-                mAuthorName = mDb.getAuthor(args.getLong(DBDefinitions.KEY_FK_AUTHOR)).getLabel();
+                mAuthorName = mDb.getAuthor(args.getLong(DBDefinitions.KEY_FK_AUTHOR))
+                                 .getLabel(getContext());
             }
             mLoanee = mDb.getLoaneeByBookId(mBookId);
         } else {
@@ -174,59 +178,59 @@ public class LendBookDialogFragment
 
         //noinspection ConstantConditions
         return new AlertDialog.Builder(getContext())
-                       .setIcon(R.drawable.ic_edit)
-                       .setView(root)
-                       .setTitle(R.string.lbl_lend_to)
-                       .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                       .setNeutralButton(R.string.btn_loan_returned, (d, which) -> {
-                           // the book was returned (inspect it for sub-nano damage),
-                           // remove the loan data
-                           dismiss();
-                           mDb.deleteLoan(mBookId);
-                           if (mBookChangedListener.get() != null) {
-                               mBookChangedListener.get()
-                                                   .onBookChanged(0,
-                                                                  BookChangedListener.BOOK_LOANEE,
-                                                                  null);
-                           } else {
-                               if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                                   Logger.debug(this, "onBookChanged",
-                                                Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
-                               }
-                           }
-                       })
-                       .setPositiveButton(android.R.string.ok, (d, which) -> {
-                           String newName = mLoaneeView.getText().toString().trim();
-                           if (newName.isEmpty()) {
-                               UserMessage.show(mLoaneeView, R.string.warning_missing_name);
-                               return;
-                           }
-                           dismiss();
+                .setIcon(R.drawable.ic_edit)
+                .setView(root)
+                .setTitle(R.string.lbl_lend_to)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
+                .setNeutralButton(R.string.btn_loan_returned, (d, which) -> {
+                    // the book was returned (inspect it for sub-nano damage),
+                    // remove the loan data
+                    dismiss();
+                    mDb.deleteLoan(mBookId);
+                    if (mBookChangedListener.get() != null) {
+                        mBookChangedListener.get()
+                                            .onBookChanged(0,
+                                                           BookChangedListener.BOOK_LOANEE,
+                                                           null);
+                    } else {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                            Logger.debug(this, "onBookChanged",
+                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                        }
+                    }
+                })
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    String newName = mLoaneeView.getText().toString().trim();
+                    if (newName.isEmpty()) {
+                        UserMessage.show(mLoaneeView, R.string.warning_missing_name);
+                        return;
+                    }
+                    dismiss();
 
-                           // check if there was something changed at all.
-                           if (newName.equals(mLoanee)) {
-                               return;
-                           }
-                           mLoanee = newName;
+                    // check if there was something changed at all.
+                    if (newName.equals(mLoanee)) {
+                        return;
+                    }
+                    mLoanee = newName;
 
-                           // lend book, reluctantly...
-                           mDb.updateOrInsertLoan(mBookId, mLoanee);
+                    // lend book, reluctantly...
+                    mDb.updateOrInsertLoan(mBookId, mLoanee);
 
-                           Bundle data = new Bundle();
-                           data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
-                           if (mBookChangedListener.get() != null) {
-                               mBookChangedListener.get()
-                                                   .onBookChanged(0,
-                                                                  BookChangedListener.BOOK_LOANEE,
-                                                                  data);
-                           } else {
-                               if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                                   Logger.debug(this, "onBookChanged",
-                                                Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
-                               }
-                           }
-                       })
-                       .create();
+                    Bundle data = new Bundle();
+                    data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
+                    if (mBookChangedListener.get() != null) {
+                        mBookChangedListener.get()
+                                            .onBookChanged(0,
+                                                           BookChangedListener.BOOK_LOANEE,
+                                                           data);
+                    } else {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                            Logger.debug(this, "onBookChanged",
+                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                        }
+                    }
+                })
+                .create();
     }
 
     @Override

@@ -95,7 +95,7 @@ class KbNlBookHandler
 
             case "Author":
             case "Auteur":
-                processAuthor(currentData, Author.TYPE_PRIMARY);
+                processAuthor(currentData, Author.TYPE_WRITER);
                 break;
             case "Collaborator":
             case "Medewerker":
@@ -103,7 +103,7 @@ class KbNlBookHandler
                 break;
             case "Artist":
             case "Kunstenaar":
-                processAuthor(currentData, Author.TYPE_ARTIST_PRIMARY);
+                processAuthor(currentData, Author.TYPE_ARTIST);
                 break;
 
             case "Colorist":

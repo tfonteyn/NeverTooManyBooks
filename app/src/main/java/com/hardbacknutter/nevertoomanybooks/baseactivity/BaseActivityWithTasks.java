@@ -145,7 +145,7 @@ public abstract class BaseActivityWithTasks
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main_with_legacy_tasks;
+        return R.layout.activity_main_nav_legacy_tasks;
     }
 
     @Override

@@ -98,6 +98,7 @@ public class MenuPicker<T>
      * @param userObject       (optional) a reference free to set/use by the caller
      * @param listener         callback handler with the MenuItem the user chooses + the position
      */
+    @SuppressWarnings("unused")
     public MenuPicker(@NonNull final Context context,
                       @StringRes final int titleId,
                       @StringRes final int messageId,
@@ -127,15 +128,14 @@ public class MenuPicker<T>
      * @param userObject       (optional) a reference free to set/use by the caller
      * @param listener         callback handler with the MenuItem the user chooses + the position
      */
-    @SuppressWarnings("WeakerAccess")
-    public MenuPicker(@NonNull final Context context,
-                      @Nullable final String title,
-                      @Nullable final String message,
-                      final boolean showCancel,
-                      @Nullable final DialogInterface.OnCancelListener onCancelListener,
-                      @NonNull final Menu menu,
-                      @Nullable final T userObject,
-                      @NonNull final ContextItemSelected<T> listener) {
+    private MenuPicker(@NonNull final Context context,
+                       @Nullable final String title,
+                       @Nullable final String message,
+                       final boolean showCancel,
+                       @Nullable final DialogInterface.OnCancelListener onCancelListener,
+                       @NonNull final Menu menu,
+                       @Nullable final T userObject,
+                       @NonNull final ContextItemSelected<T> listener) {
         super(context, title, message, showCancel, onCancelListener);
 
         mAdapter = new MenuItemListAdapter(context, menu, menuItem -> {

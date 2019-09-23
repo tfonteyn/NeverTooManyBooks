@@ -290,7 +290,7 @@ abstract class SendBooksLegacyTaskBase
             ArrayList<Author> authors = db.getAuthorsByBookId(mBookId);
             String author;
             if (!authors.isEmpty()) {
-                author = authors.get(0).getLabel();
+                author = authors.get(0).getLabel(context);
                 if (authors.size() > 1) {
                     author = author + ' ' + context.getString(R.string.and_others);
                 }

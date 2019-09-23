@@ -59,9 +59,8 @@
         Please take the time to briefly describe the problem you are experiencing.
     </string>
     <string name="debug_send_info_text">
-        Tap on the button below to gather information about any recent crashes or other
-        errors and send it to one of our developers. This will create a backup copy of your
-        entire database as well as any log files. If you do not wish to send any of these files,
+        This will create a backup copy of your database as well as any log files and
+        send it to the developers. If you do not wish to send any of these files,
         delete it from the mail attachments before sending.
     </string>
 
@@ -296,13 +295,13 @@
         Warning, this may take a long time.
     </string>
     <string name="confirm_apply_author_changed">
-        You have changed the author from:\n “%1$s” to \n “%2$s”\n
-        How do you wish to apply this change?\n
+        You have changed the author from:\n\n “%1$s” to “%2$s”\n\n
+        How do you wish to apply this change?\n\n
         Note: The choice “%3$s” will be applied instantly.
     </string>
     <string name="confirm_apply_series_changed">
-        You have changed the series from:\n “%1$s” to \n “%2$s”\n
-        How do you wish to apply this change?\n
+        You have changed the series from:\n\n “%1$s” to “%2$s”\n\n
+        How do you wish to apply this change?\n\n
         Note: The choice “%3$s” will be applied instantly.
     </string>
     <!-- offer to send the exported file as an email attachment -->
@@ -381,8 +380,10 @@
         %1$d covers processed (%2$d missing, %3$d skipped)
     </string>
 
-    <!-- Progress message displayed when importing books/covers. -->
-    <string name="progress_msg_n_created_m_updated">%1$d created, %2$d updated</string>
+    <!-- Progress message displayed when importing books/covers.
+        param 1: what, e.g. Books,Covers.
+        -->
+    <string name="progress_msg_n_created_m_updated">%1$s: %2$d created, %3$d updated</string>
 
     <!-- progress final message - all data was imported. -->
     <string name="progress_end_import_complete">Import complete</string>
@@ -456,16 +457,9 @@
         If you find yourself always rotating camera images in the same direction,
         try changing the application preferences to specify a rotation to apply automatically.
     </string>
-    <!-- Tip text displayed when user enters the book list view -->
-    <string name="tip_view_only_book_details">
-        When you tap on an item in this list, you can now choose to go to non-editable book
-        details view. See Settings for the relevant switch.
-    </string>
     <!-- Tip text displayed when user enters the 'read-only' book view -->
     <string name="tip_view_only_help">
-        This is the non-editable book details screen; you can swipe left or right to navigate
-        to other books, and you can edit the book via the options menu using the menu button
-        or overflow menu icon.
+        You can swipe left or right to navigate to other books.
     </string>
     <!-- Tip text displayed when user enters the book list -->
     <string name="tip_book_list">
@@ -489,7 +483,7 @@
     <!-- ####################################################################################### -->
     <string name="lt_info">
         This application is enhanced by using LibraryThing as a source of information about
-        book series, as well as a source of alternate covers.\n To use these features you need
+        book series, as well as a source of alternate covers. To use these features you need
         to register with LibraryThing (free) and request a LibraryThing developer key (also free).
     </string>
     <string name="lt_url_text_register">Register with LibraryThing</string>
@@ -1389,6 +1383,7 @@
         To scan ISBN bar codes, please tap below to install one of these barcode scanner applications.
     </string>
 
+    <!-- translations out of sync. -->
     <string name="X_info_no_books_yet">
         There are no books on this Bookshelf.\n
         Please add some using the button at the bottom of this screen.
@@ -1437,7 +1432,11 @@
 
     <!-- Shown in lists. Whether a book is available to be loaned out. Should be short -->
     <string name="X_lbl_loan_book_available">Available</string>
+
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
+
+    <string name="X_lbl_author_other">Other</string>
+    <string name="X_lbl_author_secondary">co-author</string>
 
     <string name="X_updated">Updated</string>
     <string name="X_size">Size</string>
@@ -1457,27 +1456,17 @@
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
 
-    <!-- happy -->
     <string name="lbl_author_type">Author type</string>
-    <string name="lbl_author_translator">Translator</string>
-    <string name="lbl_author_editor">Editor</string>
-    <string name="lbl_author_contributor">Contributor</string>
-    <string name="lbl_artist_colorist">Colorist</string>
-    <string name="lbl_author_other">Other</string>
-
-
-    <!-- art / illustrations -->
-    <string name="lbl_artist_primary">art</string>
-    <!-- Cover art / Cover illustration ?-->
-    <string name="lbl_artist_cover">Cover art</string>
-    <!-- ? -->
-    <string name="lbl_artist_cover_colorist">Cover colorist</string>
-
-    <!-- Not happy; needs changing-->
-    <string name="lbl_author_primary">writer</string>
-    <string name="lbl_author_secondary">co-author</string>
-    <string name="lbl_author_introduction">Fore/Afterword</string>
-    <string name="lbl_artist_secondary">More art</string>
-    <string name="lbl_artist_other">Other art</string>
+    <string name="lbl_author_type_writer">writer</string>
+    <string name="lbl_author_type_translator">translator</string>
+    <string name="lbl_author_type_editor">editor</string>
+    <string name="lbl_author_type_contributor">contributor</string>
+    <string name="lbl_author_type_intro">Introduction etc.</string>
+    <!-- Interior art / illustrations -->
+    <string name="lbl_author_type_artist">illustrations</string>
+    <string name="lbl_author_type_colorist">colorist</string>
+    <!-- Cover art / Cover illustration -->
+    <string name="lbl_author_type_cover_artist">Cover art</string>
+    <string name="lbl_author_type_cover_colorist">Cover colorist</string>
 
 </resources>

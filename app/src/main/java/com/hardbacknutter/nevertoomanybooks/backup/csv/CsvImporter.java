@@ -123,9 +123,10 @@ public class CsvImporter
 
     @NonNull
     private final ImportHelper mSettings;
-    private final String mProgress_msg_n_created_m_updated;
 
-    private final String mUnknownString;
+    private final String mUnknownText;
+    private final String mBooksText;
+    private final String mProgress_msg_n_created_m_updated;
 
     private final Results mResults = new Results();
 
@@ -142,7 +143,8 @@ public class CsvImporter
     @AnyThread
     public CsvImporter(@NonNull final Context context,
                        @NonNull final ImportHelper settings) {
-        mUnknownString = context.getString(R.string.unknown);
+        mUnknownText = context.getString(R.string.unknown);
+        mBooksText = context.getString(R.string.lbl_books);
         mProgress_msg_n_created_m_updated =
                 context.getString(R.string.progress_msg_n_created_m_updated);
 
@@ -197,9 +199,9 @@ public class CsvImporter
 
         // Make sure required fields in Book bundle are present.
         // ENHANCE: Rationalize import to allow updates using 1 or 2 columns.
-        // For now we require some id column + author/title
-        // ENHANCE: Do a search if mandatory columns missing (e.g. allow 'import' of ISBNs).
-        // ENHANCE: Only make some columns mandatory if the id is not in import, or not in DB
+        // - For now we require some id column + author/title
+        // - Do a search if mandatory columns missing (e.g. allow 'import' of ISBNs).
+        // - Only make some columns mandatory if the id is not in import, or not in DB
         // (i.e. if not an update)
 
         // need either UUID or ID
@@ -212,7 +214,6 @@ public class CsvImporter
                              DBDefinitions.KEY_PK_ID);
 
         // need some type of author name.
-        // ENHANCE: We should accept UPDATED books where the incoming row does not have a author.
         requireColumnOrThrow(book,
                              // aka author_details: preferred one as used in latest versions
                              CsvExporter.CSV_COLUMN_AUTHORS,
@@ -223,7 +224,6 @@ public class CsvImporter
                             );
 
         // need a title.
-        // ENHANCE: We should accept UPDATED books where the incoming row does not have a title.
         requireColumnOrThrow(book, DBDefinitions.KEY_TITLE);
 
         final boolean updateOnlyIfNewer;
@@ -311,6 +311,7 @@ public class CsvImporter
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200 && !progressListener.isCancelled()) {
                     String msg = String.format(mProgress_msg_n_created_m_updated,
+                                               mBooksText,
                                                mResults.booksCreated,
                                                mResults.booksUpdated);
                     progressListener.onProgressStep(delta, msg);
@@ -495,7 +496,7 @@ public class CsvImporter
         // (it seems a 'book' record gets written without an 'author' record; should not happen)
         // so we allow blank author_details and fill in a localised version of "Unknown, Unknown"
         if (encodedList.isEmpty()) {
-            encodedList = mUnknownString + ", " + mUnknownString;
+            encodedList = mUnknownText + ", " + mUnknownText;
         }
 
         // Now build the array for authors

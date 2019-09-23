@@ -68,35 +68,10 @@ public class FTSSearchActivity
     /** create timer to tick every 250ms. */
     private static final int TIMER_TICK = 250;
     /** Handle inter-thread messages. */
-    private final Handler mSCHandler = new Handler();
+    private final Handler mHandler = new Handler();
     /** Database Access. */
     private DAO mDb;
-
-    private String mAuthorSearchText;
-    private String mTitleSearchText;
-    private String mKeywordsSearchText;
-
-    /** search field. */
-    private EditText mAuthorView;
-    /** search field. */
-    private EditText mTitleView;
-    /** search field. */
-    private EditText mKeywordsView;
-    /** show the number of results. */
-    private TextView mBooksFound;
-    /** The results list. */
-    private ArrayList<Long> mBookIdsFound;
-    /** Indicates user has changed something since the last search. */
-    private boolean mSearchIsDirty;
-    /** Timer reset each time the user clicks, in order to detect an idle time. */
-    private long mIdleStart;
-    /** Timer object for background idle searches. */
-    @Nullable
-    private Timer mTimer;
-
-    /**
-     * Detect text changes and call userIsActive(...).
-     */
+    /** Detect text changes and call userIsActive(...). */
     private final TextWatcher mTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(@NonNull final CharSequence s,
@@ -117,6 +92,35 @@ public class FTSSearchActivity
             userIsActive(true);
         }
     };
+    /** User entered search text. */
+    private String mAuthorSearchText;
+    /** User entered search text. */
+    private String mTitleSearchText;
+    /** User entered search text. */
+    private String mSeriesTitleSearchText;
+
+    /** search field. */
+    private EditText mAuthorView;
+    /** search field. */
+    private EditText mTitleView;
+    /** User entered search text. */
+    private String mKeywordsSearchText;
+    /** search field. */
+    private EditText mKeywordsView;
+
+    /** show the number of results. */
+    private TextView mBooksFound;
+    /** The results list. */
+    private ArrayList<Long> mBookIdsFound;
+    /** Indicates user has changed something since the last search. */
+    private boolean mSearchIsDirty;
+    /** Timer reset each time the user clicks, in order to detect an idle time. */
+    private long mIdleStart;
+    /** Timer object for background idle searches. */
+    @Nullable
+    private Timer mTimer;
+    /** search field. */
+    private EditText mSeriesTitleView;
 
     @Override
     protected int getLayoutId() {
@@ -128,16 +132,20 @@ public class FTSSearchActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mDb = new DAO();
+
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState
                                                         : getIntent().getExtras();
         if (currentArgs != null) {
             mAuthorSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_AUTHOR);
             mTitleSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_TITLE);
+            mSeriesTitleSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_SERIES_TITLE);
             mKeywordsSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_TEXT);
         }
 
         mAuthorView = findViewById(R.id.author);
         mTitleView = findViewById(R.id.title);
+        mSeriesTitleView = findViewById(R.id.series);
         mKeywordsView = findViewById(R.id.keywords);
 
         if (mAuthorSearchText != null) {
@@ -146,34 +154,37 @@ public class FTSSearchActivity
         if (mTitleSearchText != null) {
             mTitleView.setText(mTitleSearchText);
         }
+        if (mSeriesTitleSearchText != null) {
+            mSeriesTitleView.setText(mSeriesTitleSearchText);
+        }
         if (mKeywordsSearchText != null) {
             mKeywordsView.setText(mKeywordsSearchText);
         }
 
-        mDb = new DAO();
-
         mBooksFound = findViewById(R.id.books_found);
 
-        // Detect when user touches something, just so we know they are 'busy'.
+        // Detect when user touches something.
         findViewById(R.id.root).setOnTouchListener((v, event) -> {
             userIsActive(false);
             return false;
         });
 
-        // If the user changes any text, it's not idle
+        // Detect when user types something.
         mAuthorView.addTextChangedListener(mTextWatcher);
         mTitleView.addTextChangedListener(mTextWatcher);
+        mSeriesTitleView.addTextChangedListener(mTextWatcher);
         mKeywordsView.addTextChangedListener(mTextWatcher);
 
-        // Handle the 'Search' button.
-        findViewById(R.id.btn_search).setOnClickListener(v -> {
+        // When the show results buttons is tapped, go show the resulting booklist.
+        findViewById(R.id.fab).setOnClickListener(v -> {
             Intent data = new Intent()
-                                  // pass these for displaying to the user
-                                  .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText)
-                                  .putExtra(UniqueId.BKEY_SEARCH_TITLE, mTitleSearchText)
-                                  .putExtra(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText)
-                                  // pass the book ID's for the list
-                                  .putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
+                    // pass these for displaying to the user
+                    .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText)
+                    .putExtra(UniqueId.BKEY_SEARCH_TITLE, mTitleSearchText)
+                    .putExtra(UniqueId.BKEY_SEARCH_SERIES_TITLE, mSeriesTitleSearchText)
+                    .putExtra(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText)
+                    // pass the book ID's for the list
+                    .putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
             setResult(Activity.RESULT_OK, data);
             finish();
         });
@@ -181,20 +192,51 @@ public class FTSSearchActivity
         // Timer will be started in OnResume().
     }
 
-    // reminder: when converting to a fragment, don't forget this:
-//    @Override
-//    public void onCreate(@Nullable final Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        // Mandatory
-//        setHasOptionsMenu(true);
-//    }
+    /**
+     * When activity resumes, set search as dirty + start the timer.
+     */
+    @Override
+    @CallSuper
+    protected void onResume() {
+        super.onResume();
+        userIsActive(true);
+    }
+
+    /**
+     * When activity pauses, stop timer and get the search fields.
+     */
+    @Override
+    @CallSuper
+    protected void onPause() {
+        stopIdleTimer();
+        // Get search criteria
+        getTextFromFields();
+
+        super.onPause();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+
+        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
+                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
+            .setIcon(R.drawable.ic_keyboard_hide)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.rebuild_fts)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
+            case R.id.MENU_HIDE_KEYBOARD:
+                App.hideKeyboard(getWindow().getDecorView());
+                return true;
+
             case R.id.MENU_REBUILD_FTS:
                 mDb.rebuildFts(LocaleUtils.getLocale(this));
                 return true;
@@ -205,36 +247,16 @@ public class FTSSearchActivity
     }
 
     /**
-     * When activity resumes, set search as dirty.
-     */
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-        userIsActive(true);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.rebuild_fts)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    /**
      * Called in the timer thread, this code will run the search then queue the UI
      * updates to the main thread.
      */
     private void doSearch() {
-        mAuthorSearchText = mAuthorView.getText().toString().trim();
-        mTitleSearchText = mTitleView.getText().toString().trim();
-        mKeywordsSearchText = mKeywordsView.getText().toString().trim();
+        getTextFromFields();
 
         String tmpMsg = null;
-        try (Cursor cursor = mDb.searchFts(LocaleUtils.getLocale(this),
-                                           mAuthorSearchText,
+        try (Cursor cursor = mDb.searchFts(mAuthorSearchText,
                                            mTitleSearchText,
+                                           mSeriesTitleSearchText,
                                            mKeywordsSearchText)) {
             // Null return means searchFts thought the parameters were effectively blank.
             if (cursor != null) {
@@ -252,7 +274,14 @@ public class FTSSearchActivity
         final String message = (tmpMsg != null) ? tmpMsg : "";
 
         // Update the UI in main thread.
-        mSCHandler.post(() -> mBooksFound.setText(message));
+        mHandler.post(() -> mBooksFound.setText(message));
+    }
+
+    private void getTextFromFields() {
+        mAuthorSearchText = mAuthorView.getText().toString().trim();
+        mTitleSearchText = mTitleView.getText().toString().trim();
+        mSeriesTitleSearchText = mSeriesTitleView.getText().toString().trim();
+        mKeywordsSearchText = mKeywordsView.getText().toString().trim();
     }
 
     /**
@@ -261,7 +290,7 @@ public class FTSSearchActivity
      * @param dirty Indicates the user action made the last search invalid
      */
     private void userIsActive(final boolean dirty) {
-        synchronized (FTSSearchActivity.this) {
+        synchronized (this) {
             // Mark search dirty if necessary
             mSearchIsDirty = mSearchIsDirty || dirty;
             // Reset the idle timer since the user did something
@@ -273,19 +302,13 @@ public class FTSSearchActivity
         }
     }
 
-    /**
-     * When activity pauses, stop timer and get the search fields.
-     */
     @Override
-    @CallSuper
-    protected void onPause() {
-        stopIdleTimer();
-        // Get search criteria
-        mAuthorSearchText = mAuthorView.getText().toString().trim();
-        mTitleSearchText = mTitleView.getText().toString().trim();
-        mKeywordsSearchText = mKeywordsView.getText().toString().trim();
-
-        super.onPause();
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
+        outState.putString(UniqueId.BKEY_SEARCH_TITLE, mTitleSearchText);
+        outState.putString(UniqueId.BKEY_SEARCH_SERIES_TITLE, mSeriesTitleSearchText);
+        outState.putString(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText);
     }
 
     @Override
@@ -299,20 +322,12 @@ public class FTSSearchActivity
         super.onDestroy();
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
-        outState.putString(UniqueId.BKEY_SEARCH_TITLE, mTitleSearchText);
-        outState.putString(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText);
-    }
-
     /**
      * start the idle timer.
      */
     private void startIdleTimer() {
         // Synchronize since this is relevant to more than 1 thread.
-        synchronized (FTSSearchActivity.this) {
+        synchronized (this) {
             if (mTimer != null) {
                 return;
             }
@@ -327,14 +342,14 @@ public class FTSSearchActivity
      * Stop the timer.
      */
     private void stopIdleTimer() {
-        Timer tmr;
+        Timer timer;
         // Synchronize since this is relevant to more than 1 thread.
-        synchronized (FTSSearchActivity.this) {
-            tmr = mTimer;
+        synchronized (this) {
+            timer = mTimer;
             mTimer = null;
         }
-        if (tmr != null) {
-            tmr.cancel();
+        if (timer != null) {
+            timer.cancel();
         }
     }
 
@@ -350,10 +365,10 @@ public class FTSSearchActivity
         public void run() {
             boolean doSearch = false;
             // Synchronize since this is relevant to more than 1 thread.
-            synchronized (FTSSearchActivity.this) {
+            synchronized (this) {
                 boolean idle = (System.nanoTime() - mIdleStart) > 1_000_000;
                 if (idle) {
-                    // Stop the timer, it will be restarted if the user changes something
+                    // Stop the timer, it will be restarted when the user changes something
                     stopIdleTimer();
                     if (mSearchIsDirty) {
                         doSearch = true;

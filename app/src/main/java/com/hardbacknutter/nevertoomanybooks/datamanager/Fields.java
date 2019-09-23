@@ -34,10 +34,9 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.util.Linkify;
+import android.text.method.LinkMovementMethod;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -78,6 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
@@ -677,10 +677,14 @@ public class Fields {
             mRawValue = source.trim();
             TextView view = target.getView();
             if (mFormatHtml) {
-                view.setText(Html.fromHtml(format(target, mRawValue)));
+                String body = format(target, mRawValue);
+
+                view.setText(LinkifyUtils.html(body));
+                view.setMovementMethod(LinkMovementMethod.getInstance());
+
                 view.setFocusable(true);
                 view.setTextIsSelectable(true);
-                view.setAutoLinkMask(Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
+
             } else {
                 view.setText(format(target, mRawValue));
             }

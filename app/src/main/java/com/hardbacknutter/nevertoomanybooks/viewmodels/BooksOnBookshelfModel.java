@@ -74,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * First attempt to split of into a model for BoB.
@@ -286,7 +285,7 @@ public class BooksOnBookshelfModel
                                     @NonNull final String name) {
 
         mCurrentBookshelf = Bookshelf.getBookshelf(context, mDb, name, true);
-        mCurrentBookshelf.setAsPreferred();
+        mCurrentBookshelf.setAsPreferred(context);
     }
 
     @NonNull
@@ -339,7 +338,7 @@ public class BooksOnBookshelfModel
         Objects.requireNonNull(mCurrentBookshelf);
 
         // save the new bookshelf/style combination
-        mCurrentBookshelf.setAsPreferred();
+        mCurrentBookshelf.setAsPreferred(context);
         mCurrentBookshelf.setStyle(context, userLocale, mDb, style);
 
         // Set the rebuild state like this is the first time in, which it sort of is,
@@ -414,8 +413,6 @@ public class BooksOnBookshelfModel
                              final boolean isFullRebuild) {
         Objects.requireNonNull(mCurrentBookshelf);
 
-        Locale locale = LocaleUtils.getLocale(context);
-
         BooklistBuilder blb;
 
         if (mCursor != null && !isFullRebuild) {
@@ -457,12 +454,12 @@ public class BooksOnBookshelfModel
                               false);
 
             /*
-             * URGENT: experimental... {@link BooklistStyle#extrasByTask()}.
+             * URGENT: experimental... {@link BooklistStyle#useTaskForExtras()}.
              * When set to false, "extra" field bookshelves (if selected) will not be populated.
              * Depending on the device speed, and user habits, BOTH methods can be advantageous.
              * ==> now a preference <strong>per style</strong>
              */
-            if (!style.extrasByTask()) {
+            if (!style.useTaskForExtras()) {
                 //ENHANCE:  see DAO#fetchBookExtrasById ... this needs work.
 //                if (style.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
 //                    blb.requireDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
@@ -517,13 +514,13 @@ public class BooksOnBookshelfModel
                 blb.setFilterOnBookshelfId(mCurrentBookshelf.getId());
 
                 // Criteria supported by FTS
-                blb.setFilter(locale,
-                              mSearchCriteria.ftsAuthor,
+                blb.setFilter(mSearchCriteria.ftsAuthor,
                               mSearchCriteria.ftsTitle,
+                              mSearchCriteria.series,
                               mSearchCriteria.ftsKeywords);
 
                 // non-FTS
-                blb.setFilterOnSeriesName(mSearchCriteria.series);
+                //blb.setFilterOnSeriesName(mSearchCriteria.series);
                 blb.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
             }
         }
@@ -619,17 +616,19 @@ public class BooksOnBookshelfModel
     /**
      * Return the 'human readable' version of the name (e.g. 'Isaac Asimov').
      *
-     * @param mapper cursor row with book data
+     * @param context Current context
+     * @param mapper  cursor row with book data
      *
      * @return formatted Author name
      */
     @Nullable
-    public String getAuthorFromRow(@NonNull final CursorMapper mapper) {
+    public String getAuthorFromRow(@NonNull final Context context,
+                                   @NonNull final CursorMapper mapper) {
         if (mapper.contains(DBDefinitions.KEY_FK_AUTHOR)
             && mapper.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0) {
             Author author = mDb.getAuthor(mapper.getLong(DBDefinitions.KEY_FK_AUTHOR));
             if (author != null) {
-                return author.getLabel();
+                return author.getLabel(context);
             }
 
         } else if (mapper.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)
@@ -637,7 +636,7 @@ public class BooksOnBookshelfModel
             List<Author> authors = mDb.getAuthorsByBookId(
                     mapper.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!authors.isEmpty()) {
-                return authors.get(0).getLabel();
+                return authors.get(0).getLabel(context);
             }
         }
         return null;
@@ -781,15 +780,15 @@ public class BooksOnBookshelfModel
         String ftsTitle;
 
         /**
-         * Series to use in search query.
-         * Supported in the builder, but not user-settable yet.
+         * Series to use in FTS search query.
+         * Supported in the builder, but not yet user-settable.
          */
         @Nullable
         String series;
 
         /**
          * Name of the person we loaned books to, to use in search query.
-         * Supported in the builder, but not user-settable yet.
+         * Supported in the builder, but not yet user-settable.
          */
         @Nullable
         String loanee;
@@ -817,7 +816,7 @@ public class BooksOnBookshelfModel
         /**
          * Get a single string with all search words, for displaying.
          *
-         * @return csv string, can be empty, never {@code null}.
+         * @return csv string, can be empty, but never {@code null}.
          */
         @NonNull
         public String getDisplayString() {

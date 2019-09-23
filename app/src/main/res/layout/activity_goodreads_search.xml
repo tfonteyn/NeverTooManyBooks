@@ -27,7 +27,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -36,153 +36,160 @@
     tools:context=".searches.goodreads.GoodreadsSearchActivity"
     >
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        style="@style/Toolbar"
-        android:layout_width="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+    <include layout="@layout/inc_appbar" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/indent_fields"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/indent3"
-        />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/original_details"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="lbl_author,author,lbl_title,title,lbl_isbn,isbn,list_divider"
-        />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/indent_fields"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/indent3"
+            />
 
-    <TextView
-        android:id="@+id/lbl_author"
-        style="@style/Label.Field"
-        android:labelFor="@id/author"
-        android:text="@string/lbl_author"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        />
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/original_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="lbl_author,author,lbl_title,title,lbl_isbn,isbn,list_divider"
+            />
 
-    <TextView
-        android:id="@+id/author"
-        style="@style/TextDetail"
-        android:hint="@string/lbl_author"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
-        app:layout_constraintTop_toBottomOf="@id/lbl_author"
-        />
+        <TextView
+            android:id="@+id/lbl_author"
+            style="@style/Label.Field"
+            android:labelFor="@id/author"
+            android:text="@string/lbl_author"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
-    <TextView
-        android:id="@+id/lbl_title"
-        style="@style/Label.Field"
-        android:labelFor="@id/title"
-        android:text="@string/lbl_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author"
-        />
+        <TextView
+            android:id="@+id/author"
+            style="@style/TextDetail"
+            android:hint="@string/lbl_author"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_author"
+            />
 
-    <TextView
-        android:id="@+id/title"
-        style="@style/TextDetail"
-        android:hint="@string/lbl_title"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
-        app:layout_constraintTop_toBottomOf="@id/lbl_title"
-        />
+        <TextView
+            android:id="@+id/lbl_title"
+            style="@style/Label.Field"
+            android:labelFor="@id/title"
+            android:text="@string/lbl_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/author"
+            />
 
-    <TextView
-        android:id="@+id/lbl_isbn"
-        style="@style/Label.Field"
-        android:labelFor="@id/isbn"
-        android:text="@string/lbl_isbn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        />
+        <TextView
+            android:id="@+id/title"
+            style="@style/TextDetail"
+            android:hint="@string/lbl_title"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            />
 
-    <TextView
-        android:id="@+id/isbn"
-        style="@style/TextDetail"
-        android:hint="@string/lbl_isbn"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
-        app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
-        />
+        <TextView
+            android:id="@+id/lbl_isbn"
+            style="@style/Label.Field"
+            android:labelFor="@id/isbn"
+            android:text="@string/lbl_isbn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            />
 
-    <TextView
-        android:id="@+id/lbl_search_text"
-        style="@style/Label.Field"
-        android:text="@string/lbl_search_criteria"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/isbn"
-        />
+        <TextView
+            android:id="@+id/isbn"
+            style="@style/TextDetail"
+            android:hint="@string/lbl_isbn"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
+            />
 
-    <EditText
-        android:id="@+id/search_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/hint_search_text"
-        android:inputType="textMultiLine"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
-        app:layout_constraintTop_toBottomOf="@id/lbl_search_text"
-        tools:ignore="Autofill"
-        />
+        <TextView
+            android:id="@+id/lbl_search_text"
+            style="@style/Label.Field"
+            android:text="@string/lbl_search_criteria"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/isbn"
+            />
 
-    <Button
-        android:id="@+id/btn_search"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:focusable="false"
-        android:text="@string/btn_search"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_text"
-        />
+        <EditText
+            android:id="@+id/search_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_search_text"
+            android:inputType="textMultiLine"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_search_text"
+            tools:ignore="Autofill"
+            />
 
-    <View
-        android:id="@+id/list_divider"
-        style="@style/HorizontalDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_search"
-        />
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:text="@string/btn_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/search_text"
+            />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@android:id/list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/footer_divider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/list_divider"
-        app:layout_constraintVertical_weight="1"
-        tools:listitem="@layout/row_goodreads_work_item"
-        />
+        <View
+            android:id="@+id/list_divider"
+            style="@style/HorizontalDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_search"
+            />
 
-    <View
-        android:id="@+id/footer_divider"
-        style="@style/HorizontalDivider"
-        app:layout_constraintBottom_toTopOf="@id/works_found"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@android:id/list"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/footer_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/list_divider"
+            app:layout_constraintVertical_weight="1"
+            tools:listitem="@layout/row_goodreads_work_item"
+            />
 
-    <!-- not used for now -->
-    <TextView
-        android:id="@+id/works_found"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textIsSelectable="true"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
+        <View
+            android:id="@+id/footer_divider"
+            style="@style/HorizontalDivider"
+            app:layout_constraintBottom_toTopOf="@id/works_found"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- not used for now -->
+        <TextView
+            android:id="@+id/works_found"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textIsSelectable="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+    <!--        android:id="@+id/fab"-->
+    <!--        style="@style/FAB"-->
+    <!--        android:src="@drawable/ic_add"-->
+    <!--        />-->
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

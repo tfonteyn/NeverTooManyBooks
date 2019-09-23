@@ -48,7 +48,7 @@ class PruneListTest {
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
 
     /**
-     * URGENT: add authors with an id==0
+     * TEST: add authors with an id==0
      */
     @Test
     void pruneAuthorList() {
@@ -110,7 +110,7 @@ class PruneListTest {
         // isComplete matching the first author in the list with this id.
         assertFalse(author.isComplete());
         // type is ignored
-        assertEquals(Author.TYPE_GENERIC, author.getType());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
 
         author = authorList.get(1);
         assertEquals(200, author.getId());
@@ -119,11 +119,11 @@ class PruneListTest {
         // isComplete matching the first author in the list with this id.
         assertTrue(author.isComplete());
         // type is ignored
-        assertEquals(Author.TYPE_GENERIC, author.getType());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
     }
 
     /**
-     * URGENT: add series with an id!=0
+     * TEST: add series with an id!=0
      */
     @Test
     void pruneSeriesList() {

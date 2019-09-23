@@ -38,167 +38,165 @@
 
     <include layout="@layout/inc_appbar" />
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/border1"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/border1"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             >
 
-            <LinearLayout
-                android:id="@+id/header"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/app_name"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textStyle="bold"
-                    tools:text="The app name"
-                    />
-
-                <TextView
-                    android:id="@+id/version"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/indent1"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textIsSelectable="true"
-                    android:textStyle="bold"
-                    tools:text="6.0.0"
-                    />
-            </LinearLayout>
+                android:text="@string/app_name"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textStyle="bold"
+                tools:text="The app name"
+                />
 
             <TextView
-                android:id="@+id/beta_build"
+                android:id="@+id/version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/header"
-                tools:ignore="SelectableText"
-                tools:text="beta build"
-                tools:visibility="visible"
+                android:layout_marginStart="@dimen/indent1"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textIsSelectable="true"
+                android:textStyle="bold"
+                tools:text="6.0.0"
                 />
+        </LinearLayout>
 
-            <TextView
-                android:id="@+id/sourcecode6"
-                style="@style/Url"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/beta_build"
-                tools:ignore="SelectableText"
-                tools:text="sourcecode url"
-                />
+        <TextView
+            android:id="@+id/beta_build"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/header"
+            tools:ignore="SelectableText"
+            tools:text="beta build"
+            tools:visibility="visible"
+            />
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/indents"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_begin="@dimen/indent3"
-                />
+        <TextView
+            android:id="@+id/sourcecode6"
+            style="@style/Url"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/beta_build"
+            tools:ignore="SelectableText"
+            tools:text="sourcecode url"
+            />
 
-            <TextView
-                android:id="@+id/contacts"
-                style="@style/Label.Header"
-                android:text="@string/lbl_about_contacts"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sourcecode6"
-                />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/indents"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/indent3"
+            />
 
-            <TextView
-                android:id="@+id/contact1"
-                style="@style/Url"
-                android:text="@string/email_contact1"
-                app:layout_constraintStart_toEndOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/contacts"
-                />
+        <TextView
+            android:id="@+id/contacts"
+            style="@style/Label.Header"
+            android:text="@string/lbl_about_contacts"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sourcecode6"
+            />
 
-            <TextView
-                android:id="@+id/contact2"
-                style="@style/Url"
-                android:text="@string/email_contact2"
-                app:layout_constraintStart_toEndOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/contact1"
-                />
+        <TextView
+            android:id="@+id/contact1"
+            style="@style/Url"
+            android:text="@string/email_contact1"
+            app:layout_constraintStart_toEndOf="@id/indents"
+            app:layout_constraintTop_toBottomOf="@id/contacts"
+            />
 
-            <TextView
-                android:id="@+id/lbl_creators"
-                style="@style/Label.Header"
-                android:text="@string/lbl_about_creators"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contact2"
-                />
+        <TextView
+            android:id="@+id/contact2"
+            style="@style/Url"
+            android:text="@string/email_contact2"
+            app:layout_constraintStart_toEndOf="@id/indents"
+            app:layout_constraintTop_toBottomOf="@id/contact1"
+            />
 
-            <TextView
-                android:id="@+id/creators"
-                style="@style/Blurb.Small"
-                android:text="@string/original_creators"
-                app:layout_constraintStart_toStartOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/lbl_creators"
-                />
+        <TextView
+            android:id="@+id/lbl_creators"
+            style="@style/Label.Header"
+            android:text="@string/lbl_about_creators"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/contact2"
+            />
 
-            <TextView
-                android:id="@+id/website"
-                style="@style/Url"
-                app:layout_constraintStart_toStartOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/creators"
-                tools:ignore="SelectableText"
-                tools:text="website url"
-                />
+        <TextView
+            android:id="@+id/creators"
+            style="@style/Blurb.Small"
+            android:text="@string/original_creators"
+            app:layout_constraintStart_toStartOf="@id/indents"
+            app:layout_constraintTop_toBottomOf="@id/lbl_creators"
+            />
 
-            <TextView
-                android:id="@+id/sourcecode"
-                style="@style/Url"
-                app:layout_constraintStart_toStartOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/website"
-                tools:ignore="SelectableText"
-                tools:text="sourcecode url"
-                />
+        <TextView
+            android:id="@+id/website"
+            style="@style/Url"
+            app:layout_constraintStart_toStartOf="@id/indents"
+            app:layout_constraintTop_toBottomOf="@id/creators"
+            tools:ignore="SelectableText"
+            tools:text="website url"
+            />
 
-            <TextView
-                android:id="@+id/thanks"
-                style="@style/Label.Header"
-                android:text="@string/lbl_about_special_thanks"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sourcecode"
-                />
+        <TextView
+            android:id="@+id/sourcecode"
+            style="@style/Url"
+            app:layout_constraintStart_toStartOf="@id/indents"
+            app:layout_constraintTop_toBottomOf="@id/website"
+            tools:ignore="SelectableText"
+            tools:text="sourcecode url"
+            />
 
-            <TextView
-                android:id="@+id/b1"
-                style="@style/Blurb.Small"
-                android:text="@string/lbl_about_translators"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/thanks"
-                />
+        <TextView
+            android:id="@+id/thanks"
+            style="@style/Label.Header"
+            android:text="@string/lbl_about_special_thanks"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sourcecode"
+            />
 
-            <TextView
-                android:id="@+id/translators"
-                style="@style/Blurb.Small"
-                android:text="@string/translators"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/b1"
-                />
+        <TextView
+            android:id="@+id/b1"
+            style="@style/Blurb.Small"
+            android:text="@string/lbl_about_translators"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indents"
+            app:layout_constraintTop_toBottomOf="@id/thanks"
+            />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/translators"
+            style="@style/Blurb.Small"
+            android:text="@string/translators"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indents"
+            app:layout_constraintTop_toBottomOf="@id/b1"
+            />
 
-    </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+    <!--        android:id="@+id/fab"-->
+    <!--        style="@style/FAB"-->
+    <!--        android:src="@drawable/ic_add"-->
+    <!--        />-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

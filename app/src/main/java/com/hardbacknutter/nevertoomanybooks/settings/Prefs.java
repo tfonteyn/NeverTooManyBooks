@@ -266,4 +266,27 @@ public final class Prefs {
         }
     }
 
+    /**
+     * Get the global default for this preference.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if we want "given-names last-name" formatted authors.
+     */
+    public static boolean displayAuthorGivenNameFirst(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(pk_bob_format_author_name, false);
+    }
+
+    /**
+     * Get the global default for this preference.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if we want "given-names last-name" sorted authors.
+     */
+    public static boolean sortAuthorGivenNameFirst(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(pk_bob_sort_author_name, false);
+    }
 }

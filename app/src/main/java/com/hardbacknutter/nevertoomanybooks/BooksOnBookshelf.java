@@ -76,7 +76,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
@@ -404,7 +403,7 @@ public class BooksOnBookshelf
             ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
 
         } else if (EditAuthorDialogFragment.TAG.equals(fragment.getTag())) {
-            ((EditAuthorBaseDialogFragment) fragment).setListener(mBookChangedListener);
+            ((EditAuthorDialogFragment) fragment).setListener(mBookChangedListener);
 
         } else if (EditPublisherDialogFragment.TAG.equals(fragment.getTag())) {
             ((EditPublisherDialogFragment) fragment).setListener(mBookChangedListener);
@@ -416,7 +415,6 @@ public class BooksOnBookshelf
             ((LendBookDialogFragment) fragment).setListener(mBookChangedListener);
         }
     }
-
 
     @Override
     @CallSuper
@@ -579,7 +577,7 @@ public class BooksOnBookshelf
         startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
     }
 
-    private void startAddBySearch(final String tag) {
+    private void startAddBySearch(@NonNull final String tag) {
         Intent intent = new Intent(this, BookSearchActivity.class)
                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG, tag);
         startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
@@ -773,7 +771,7 @@ public class BooksOnBookshelf
                         BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                         if (style != null) {
                             // save the new bookshelf/style combination
-                            mModel.getCurrentBookshelf().setAsPreferred();
+                            mModel.getCurrentBookshelf().setAsPreferred(this);
                             mModel.setCurrentStyle(this, LocaleUtils.getLocale(this), style);
                         }
                         mModel.setFullRebuild(true);
@@ -1661,7 +1659,7 @@ public class BooksOnBookshelf
                 return false;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
-                AmazonManager.openWebsite(this, mModel.getAuthorFromRow(row), null);
+                AmazonManager.openWebsite(this, mModel.getAuthorFromRow(this, row), null);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
@@ -1670,7 +1668,7 @@ public class BooksOnBookshelf
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
                 AmazonManager.openWebsite(this,
-                                          mModel.getAuthorFromRow(row),
+                                          mModel.getAuthorFromRow(this, row),
                                           mModel.getSeriesFromRow(row));
                 return true;
             }

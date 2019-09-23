@@ -31,8 +31,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-
 /**
  * An item (entity) in a database table always has an id and some user-friendly label
  * aka 'displayName'.
@@ -48,24 +46,10 @@ public interface Entity {
 
     /**
      * Get the label to use.
-     * <p>
-     * TODO: this should be the optional method and call getLabel(Context)
-     * but currently we have only one use of {@link BooklistStyle#getLabel(Context)},
-     * while the non-context variant is used multiple time.
-     *
-     * @return the label.
-     */
-    String getLabel();
-
-    /**
-     * Optional.
      *
      * @param context Current context
      *
      * @return the label to use.
      */
-    default String getLabel(@NonNull final Context context) {
-        return getLabel();
-    }
-
+    String getLabel(@NonNull final Context context);
 }

@@ -46,6 +46,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -297,6 +298,7 @@ public class DAO
     private static final Pattern ENCODE_STRING = Pattern.compile("'", Pattern.LITERAL);
     /** any non-word character. */
     private static final Pattern ENCODE_ORDERBY_PATTERN = Pattern.compile("\\W");
+    private static final Pattern ASCII_REGEX = Pattern.compile("[^\\p{ASCII}]");
     /** Actual SQLiteOpenHelper. */
     private static DBHelper sDbHelper;
     /** Synchronization wrapper around the real database. */
@@ -446,121 +448,6 @@ public class DAO
     }
 
     /**
-     * Cleanup a search string to remove all quotes etc.
-     * <p>
-     * Remove punctuation from the search string to TRY to match the tokenizer.
-     * The only punctuation we allow is a hyphen preceded by a space.
-     * Everything else is translated to a space.
-     *
-     * @param search Search criteria to clean
-     *
-     * @return Clean string, or {@code null} on empty input
-     */
-    @Nullable
-    private static String cleanupFtsCriterion(@NonNull final Locale locale,
-                                              @Nullable String search) {
-        if (search == null || search.isEmpty()) {
-            return null;
-        }
-
-        // Because FTS does not understand locales in all android up to 4.2,
-        // we do case folding here using the user preferred locale.
-        //TEST: is this really needed? was done in BooklistBuilder, but not in #searchFts
-        search = search.toLowerCase(locale);
-
-        // Output buffer
-        final StringBuilder out = new StringBuilder();
-        // Array (convenience)
-        final char[] chars = search.toCharArray();
-        // Cached length
-        final int len = chars.length;
-        // Initial position
-        int pos = 0;
-        // Dummy 'previous' character
-        char prev = ' ';
-
-        // Loop over array
-        while (pos < len) {
-            char current = chars[pos];
-            // If current is letter or ...use it.
-            if (Character.isLetterOrDigit(current)) {
-                out.append(current);
-            } else if (current == '-' && Character.isWhitespace(prev)) {
-                // Allow negation if preceded by space
-                out.append(current);
-            } else {
-                // Everything else is whitespace
-                current = ' ';
-                if (!Character.isWhitespace(prev)) {
-                    // If prev character was non-ws, and not negation, make wildcard
-                    if (prev != '-') {
-                        // Make every token a wildcard
-                        out.append('*');
-                    }
-                    // Append a whitespace only when last char was not a whitespace
-                    out.append(' ');
-                }
-            }
-            prev = current;
-            pos++;
-        }
-        if (!Character.isWhitespace(prev) && (prev != '-')) {
-            // Make every token a wildcard
-            out.append('*');
-        }
-        return out.toString();
-    }
-
-    /**
-     * @param author   Author-related keywords to find
-     * @param title    Title-related keywords to find
-     * @param keywords Keywords to find anywhere in book
-     *
-     * @return an SQL query string suited to search FTS for the specified parameters,
-     * or {@code null} if all input was empty
-     */
-    public static String getFtsSearchSQL(@NonNull final Locale locale,
-                                         @Nullable String author,
-                                         @Nullable String title,
-                                         @Nullable String keywords) {
-
-        StringBuilder parameters = new StringBuilder();
-
-        keywords = cleanupFtsCriterion(locale, keywords);
-        if (keywords != null && !keywords.isEmpty()) {
-            parameters.append(keywords);
-        }
-
-        author = cleanupFtsCriterion(locale, author);
-        if (author != null && !author.isEmpty()) {
-            for (String w : author.split(" ")) {
-                if (!w.isEmpty()) {
-                    parameters.append(' ').append(DOM_FTS_AUTHOR_NAME).append(':').append(w);
-                }
-            }
-        }
-
-        title = cleanupFtsCriterion(locale, title);
-        if (title != null && !title.isEmpty()) {
-            for (String w : title.split(" ")) {
-                if (!w.isEmpty()) {
-                    parameters.append(' ').append(DOM_TITLE).append(':').append(w);
-                }
-            }
-        }
-
-        // do we have anything to search for?
-        if (parameters.length() == 0) {
-            return null;
-        }
-
-        return "SELECT " + DOM_PK_DOCID
-               + " FROM " + TBL_BOOKS_FTS
-               + " WHERE " + TBL_BOOKS_FTS
-               + " MATCH '" + parameters.toString().trim() + '\'';
-    }
-
-    /**
      * Cuts of a trailing ", text" part of the passed in String.
      * <p>
      * The intention is to undo what {@link ItemWithTitle#preprocessTitle} does,
@@ -582,6 +469,118 @@ public class DAO
         } else {
             return title;
         }
+    }
+
+    /**
+     * Cleanup a search string to remove all quotes etc.
+     * <p>
+     * Remove punctuation from the search string to TRY to match the tokenizer.
+     * The only punctuation we allow is a hyphen preceded by a space => negate the next word.
+     * Everything else is translated to a space.
+     *
+     * @param searchText Search criteria to clean
+     * @param domain     (optional) domain to prefix the searchText or {@code null} for none
+     *
+     * @return Clean string
+     */
+    @NonNull
+    private String cleanupFtsCriterion(@Nullable final String searchText,
+                                       @Nullable final DomainDefinition domain) {
+
+        if (searchText == null || searchText.isEmpty()) {
+            return "";
+        }
+
+        // Convert the text to pure ASCII. We'll use an array to loop over it.
+        final char[] chars = toAscii(searchText).toCharArray();
+        // Cached length
+        final int len = chars.length;
+        // Initial position
+        int pos = 0;
+        // Dummy 'previous' character
+        char prev = ' ';
+
+        // Output buffer
+        final StringBuilder parameter = new StringBuilder();
+
+        // Loop over array
+        while (pos < len) {
+            char current = chars[pos];
+            // If current is letter or ...use it.
+            if (Character.isLetterOrDigit(current)) {
+                parameter.append(current);
+            } else if (current == '-' && Character.isWhitespace(prev)) {
+                // Allow negation if preceded by space
+                parameter.append(current);
+            } else {
+                // Everything else is whitespace
+                current = ' ';
+                if (!Character.isWhitespace(prev)) {
+                    // If prev character was non-ws, and not negation, make wildcard
+                    if (prev != '-') {
+                        // Make every token a wildcard
+                        parameter.append('*');
+                    }
+                    // Append a whitespace only when last char was not a whitespace
+                    parameter.append(' ');
+                }
+            }
+            prev = current;
+            pos++;
+        }
+        if (!Character.isWhitespace(prev) && (prev != '-')) {
+            // Make every token a wildcard
+            parameter.append('*');
+        }
+
+        String cleanedText = parameter.toString().trim();
+
+        // finally create the actual parameter String optionally with the domain name.
+        if (domain == null) {
+            return cleanedText;
+
+        } else {
+            StringBuilder result = new StringBuilder();
+            for (String word : cleanedText.split(" ")) {
+                if (!word.isEmpty()) {
+                    result.append(' ').append(domain).append(':').append(word);
+                }
+            }
+            return result.toString();
+        }
+    }
+
+
+    /**
+     * @param author      Author related keywords to find
+     * @param title       Title related keywords to find
+     * @param seriesTitle Series title related keywords to find
+     * @param keywords    Keywords to find anywhere in book; this includes titles and authors
+     *
+     * @return an SQL query string suited to search FTS for the specified parameters,
+     * or {@code null} if all input was empty
+     */
+    @Nullable
+    public String getFtsSearchSQL(@Nullable final String author,
+                                  @Nullable final String title,
+                                  @Nullable final String seriesTitle,
+                                  @Nullable final String keywords) {
+
+        StringBuilder parameters = new StringBuilder()
+                .append(cleanupFtsCriterion(keywords, null))
+                .append(cleanupFtsCriterion(author, DOM_FTS_AUTHOR_NAME))
+                .append(cleanupFtsCriterion(title, DOM_TITLE))
+                .append(cleanupFtsCriterion(seriesTitle, DOM_SERIES_TITLE));
+
+        // do we have anything to search for?
+        if (parameters.length() == 0) {
+            return null;
+        }
+
+        return "SELECT " + DOM_PK_DOCID
+               + " FROM " + TBL_BOOKS_FTS
+               + " WHERE " + TBL_BOOKS_FTS
+               + " MATCH '" + parameters.toString().trim() + '\'';
     }
 
     public void recreateTriggers() {
@@ -995,9 +994,12 @@ public class DAO
     }
 
     /**
-     * @param context Current context
-     * @param from    Author to replace
-     * @param to      Author to use
+     * Globally replace the Author data. This does <strong>not</strong> copy book related fields.
+     *
+     * @param context    Current context
+     * @param userLocale the Locale to use if the "from" Author has none set
+     * @param from       Author to replace
+     * @param to         Author to use
      *
      * @return {@code true} for success.
      */
@@ -1147,15 +1149,15 @@ public class DAO
     }
 
     /**
-     * @param context Current context
-     * @param userLocale the locale the user is running the app in.
+     * @param context    Current context
      * @param author     to retrieve
+     * @param userLocale the locale the user is running the app in.
      *
      * @return the number of {@link Book} this {@link Author} has
      */
     public long countBooksByAuthor(@NonNull final Context context,
-                                   @NonNull final Locale userLocale,
-                                   @NonNull final Author author) {
+                                   @NonNull final Author author,
+                                   @NonNull final Locale userLocale) {
         if (author.getId() == 0 && author.fixId(context, this, userLocale) == 0) {
             return 0;
         }
@@ -1168,15 +1170,15 @@ public class DAO
     }
 
     /**
-     * @param context Current context
-     * @param userLocale the locale the user is running the app in.
+     * @param context    Current context
      * @param author     to count the TocEntries of
+     * @param userLocale the locale the user is running the app in.
      *
      * @return the number of {@link TocEntry} this {@link Author} has
      */
     public long countTocEntryByAuthor(@NonNull final Context context,
-                                      @NonNull final Locale userLocale,
-                                      @NonNull final Author author) {
+                                      @NonNull final Author author,
+                                      @NonNull final Locale userLocale) {
         if (author.getId() == 0 && author.fixId(context, this, userLocale) == 0) {
             return 0;
         }
@@ -1192,8 +1194,8 @@ public class DAO
      * Examine the values and make any changes necessary before writing the data.
      *
      * @param context Current context
-     * @param book  A collection with the columns to be set. May contain extra data.
-     * @param isNew indicates if the book is new
+     * @param book    A collection with the columns to be set. May contain extra data.
+     * @param isNew   indicates if the book is new
      */
     private void preprocessBook(@NonNull final Context context,
                                 @NonNull final Book book,
@@ -1230,7 +1232,7 @@ public class DAO
 
         // Map website formats to standard ones if enabled by the user.
         if (book.containsKey(DBDefinitions.KEY_FORMAT)
-            && PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+            && PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(Prefs.pk_reformat_formats, false)) {
             String format = Format.map(context, locale,
                                        book.getString(DBDefinitions.KEY_FORMAT));
@@ -2179,7 +2181,7 @@ public class DAO
      * Note that {@link DBDefinitions#DOM_BOOK_AUTHOR_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
-     * @param context Current context
+     * @param context    Current context
      * @param userLocale the locale the user is running the app in.
      * @param bookId     of the book
      * @param book       A collection with the columns to be set. May contain extra data.
@@ -2729,11 +2731,11 @@ public class DAO
     @NonNull
     public BookCursor fetchBookById(final long bookId) {
         return (BookCursor)
-                       sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                                                     getBookSql(
-                                                             TBL_BOOKS.dot(DOM_PK_ID) + "=?"),
-                                                     new String[]{String.valueOf(bookId)},
-                                                     "");
+                sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
+                                              getBookSql(
+                                                      TBL_BOOKS.dot(DOM_PK_ID) + "=?"),
+                                              new String[]{String.valueOf(bookId)},
+                                              "");
     }
 
     /**
@@ -2997,7 +2999,7 @@ public class DAO
     /**
      * Add or update the passed Bookshelf, depending whether bookshelf.id == 0.
      *
-     * @param context Current context
+     * @param context   Current context
      * @param bookshelf object to insert or update. Will be updated with the id.
      *
      * @return {@code true} for success
@@ -3465,15 +3467,15 @@ public class DAO
      * Add or update the passed Series, depending whether series.id == 0.
      *
      * @param context    Current context
-     * @param series     object to insert or update. Will be updated with the id.
      * @param bookLocale Locale to use if the item has none set
+     * @param series     object to insert or update. Will be updated with the id.
      *
      * @return {@code true} for success.
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsertSeries(@NonNull final Context context,
-                                        @NonNull final /* in/out */ Series series,
-                                        @NonNull final Locale bookLocale) {
+                                        @NonNull final Locale bookLocale,
+                                        @NonNull final /* in/out */ Series series) {
 
         if (series.getId() != 0) {
             return updateSeries(context, series, bookLocale) > 0;
@@ -3606,18 +3608,22 @@ public class DAO
     }
 
     /**
+     * Globally replace the Series data. This does <strong>not</strong> copy book related fields.
+     *
      * @param context    Current context
      * @param bookLocale the Locale to use if the "from" Series has none set
+     * @param from       Series to replace
+     * @param to         Series to use
      *
      * @return {@code true} for success.
      */
     public boolean globalReplace(@NonNull final Context context,
+                                 @NonNull final Locale bookLocale,
                                  @NonNull final Series from,
-                                 @NonNull final Series to,
-                                 @NonNull final Locale bookLocale) {
+                                 @NonNull final Series to) {
 
         // process the destination Series.
-        if (!updateOrInsertSeries(context, to, bookLocale)) {
+        if (!updateOrInsertSeries(context, bookLocale, to)) {
             Logger.warnWithStackTrace(this, "Could not update", "series=" + to);
             return false;
         }
@@ -3686,7 +3692,7 @@ public class DAO
      * @return the list
      */
     @NonNull
-    public ArrayList<String> getAllSeriesNames() {
+    public ArrayList<String> getSeriesTitles() {
         return getColumnAsList(SqlSelectFullTable.SERIES_NAME, DOM_SERIES_TITLE.getName());
     }
 
@@ -3949,7 +3955,7 @@ public class DAO
      * Send the book details from the cursor to the passed fts query.
      * <p>
      * <strong>Note:</strong> This assumes a specific order for query parameters.
-     * If modified, then update {@link #insertFts} , {@link #updateFts} and {@link #rebuildFts}
+     * If modified, then update {@link SqlFTS#INSERT_BODY}, {@link SqlFTS#UPDATE}
      *
      * @param bookCursor Cursor of books to update
      * @param stmt       Statement to execute (insert or update)
@@ -3964,10 +3970,11 @@ public class DAO
 
         // Accumulator for author names for each book
         StringBuilder authorText = new StringBuilder();
-        // Accumulator for series names for each book
+        // Accumulator for series titles for each book
         StringBuilder seriesText = new StringBuilder();
-        // Accumulator for title names for each anthology
+        // Accumulator for titles for each anthology
         StringBuilder titleText = new StringBuilder();
+
         // Indexes of fields in cursor, -2 for 'not initialised yet'
         int colGivenNames = -2;
         int colFamilyName = -2;
@@ -3981,6 +3988,9 @@ public class DAO
             authorText.setLength(0);
             seriesText.setLength(0);
             titleText.setLength(0);
+
+            titleText.append(bookCursor.getString(DOM_TITLE.getName())).append(";");
+
             // Get list of authors
             try (Cursor authors = sSyncedDb.rawQuery(
                     SqlFTS.GET_AUTHORS_BY_BOOK_ID,
@@ -4029,7 +4039,6 @@ public class DAO
                     colTOCEntryInfo =
                             tocEntries.getColumnIndexOrThrow(SqlFTS.DOM_TOC_ENTRY_TITLE);
                 }
-                // Append each series
                 while (tocEntries.moveToNext()) {
                     authorText.append(tocEntries.getString(colTOCEntryAuthorInfo));
                     authorText.append(';');
@@ -4038,35 +4047,40 @@ public class DAO
                 }
             }
 
+            if (!userLocale.equals(Locale.getDefault())) {
+                Logger.debug(this, "RAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            }
+
             // Be cautious; other threads may use the cached stmt, and set parameters.
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
-                // Set the parameters and call
-                bindStringOrNull(stmt, 1, authorText.toString(), userLocale);
-                // Titles should only contain title, not SERIES
-                bindStringOrNull(stmt, 2,
-                                 bookCursor.getString(DOM_TITLE.getName()) + "; " + titleText,
-                                 userLocale);
-                // We could add a 'series' column, or just add it as part of the description
-                bindStringOrNull(stmt, 3,
-                                 bookCursor.getString(DOM_BOOK_DESCRIPTION.getName()) + seriesText,
-                                 userLocale);
-                bindStringOrNull(stmt, 4, bookCursor.getString(DOM_BOOK_NOTES.getName()),
-                                 userLocale);
-                bindStringOrNull(stmt, 5, bookCursor.getString(DOM_BOOK_PUBLISHER.getName()),
-                                 userLocale);
-                bindStringOrNull(stmt, 6, bookCursor.getString(DOM_BOOK_GENRE.getName()),
-                                 userLocale);
-                bindStringOrNull(stmt, 7, bookCursor.getString(DOM_BOOK_LOCATION.getName()),
-                                 userLocale);
-                bindStringOrNull(stmt, 8, bookCursor.getString(DOM_BOOK_ISBN.getName()),
-                                 userLocale);
+                bindStringOrNull(stmt, 1, authorText.toString());
+                bindStringOrNull(stmt, 2, titleText.toString());
+                bindStringOrNull(stmt, 3, seriesText.toString());
+                bindStringOrNull(stmt, 4, bookCursor.getString(DOM_BOOK_DESCRIPTION.getName()));
+                bindStringOrNull(stmt, 5, bookCursor.getString(DOM_BOOK_NOTES.getName()));
+                bindStringOrNull(stmt, 6, bookCursor.getString(DOM_BOOK_PUBLISHER.getName()));
+                bindStringOrNull(stmt, 7, bookCursor.getString(DOM_BOOK_GENRE.getName()));
+                bindStringOrNull(stmt, 8, bookCursor.getString(DOM_BOOK_LOCATION.getName()));
+                bindStringOrNull(stmt, 9, bookCursor.getString(DOM_BOOK_ISBN.getName()));
                 // DOM_PK_DOCID
-                stmt.bindLong(9, bookCursor.getLong(DOM_PK_ID.getName()));
+                stmt.bindLong(10, bookCursor.getLong(DOM_PK_ID.getName()));
 
                 stmt.execute();
             }
         }
+    }
+
+    /**
+     * Normalize a given string to contain only ASCII characters so we can easily text searches.
+     *
+     * @param text to normalize
+     *
+     * @return ascii text
+     */
+    private String toAscii(@NonNull final CharSequence text) {
+        return ASCII_REGEX.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
+                          .replaceAll("");
     }
 
     /**
@@ -4077,14 +4091,11 @@ public class DAO
      */
     private void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
                                   final int position,
-                                  @Nullable final String s,
-                                  @NonNull final Locale locale) {
-        if (s == null) {
+                                  @Nullable final String text) {
+        if (text == null) {
             stmt.bindNull(position);
         } else {
-            // Because FTS does not understand locales in all android up to 4.2,
-            //TEST: check if still true: we do case folding here using the user preferred locale.
-            stmt.bindString(position, s.toLowerCase(locale));
+            stmt.bindString(position, toAscii(text));
         }
     }
 
@@ -4207,21 +4218,20 @@ public class DAO
 
     /**
      * Search the FTS table and return a cursor.
-     * <p>
-     * ENHANCE: Integrate with existing search code, if we keep it.
      *
-     * @param author   Author-related keywords to find
-     * @param title    Title-related keywords to find
-     * @param keywords Keywords to find anywhere in book
+     * @param author      Author related keywords to find
+     * @param title       Title related keywords to find
+     * @param seriesTitle Series title related keywords to find
+     * @param keywords    Keywords to find anywhere in book; this includes titles and authors
      *
      * @return a cursor, or {@code null} if all input was empty
      */
     @Nullable
-    public Cursor searchFts(@NonNull final Locale locale,
-                            @NonNull final String author,
-                            @NonNull final String title,
-                            @NonNull final String keywords) {
-        String sql = getFtsSearchSQL(locale, author, title, keywords);
+    public Cursor searchFts(@Nullable final String author,
+                            @Nullable final String title,
+                            @Nullable final String seriesTitle,
+                            @Nullable final String keywords) {
+        String sql = getFtsSearchSQL(author, title, seriesTitle, keywords);
         if (sql == null) {
             return null;
         }
@@ -5319,6 +5329,7 @@ public class DAO
         static final String INSERT_BODY =
                 " (" + DOM_FTS_AUTHOR_NAME
                 + ',' + DOM_TITLE
+                + ',' + DOM_SERIES_TITLE
                 + ',' + DOM_BOOK_DESCRIPTION
                 + ',' + DOM_BOOK_NOTES
                 + ',' + DOM_BOOK_PUBLISHER
@@ -5326,7 +5337,7 @@ public class DAO
                 + ',' + DOM_BOOK_LOCATION
                 + ',' + DOM_BOOK_ISBN
                 + ',' + DOM_PK_DOCID
-                + ") VALUES (?,?,?,?,?,?,?,?,?)";
+                + ") VALUES (?,?,?,?,?,?,?,?,?,?)";
 
         // The parameter order MUST match the order expected in UPDATE.
         static final String INSERT = "INSERT INTO " + TBL_BOOKS_FTS + INSERT_BODY;
@@ -5336,6 +5347,7 @@ public class DAO
                 "UPDATE " + TBL_BOOKS_FTS
                 + " SET " + DOM_FTS_AUTHOR_NAME + "=?"
                 + ',' + DOM_TITLE + "=?"
+                + ',' + DOM_SERIES_TITLE + "=?"
                 + ',' + DOM_BOOK_DESCRIPTION + "=?"
                 + ',' + DOM_BOOK_NOTES + "=?"
                 + ',' + DOM_BOOK_PUBLISHER + "=?"

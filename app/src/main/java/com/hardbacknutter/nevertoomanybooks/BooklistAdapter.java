@@ -403,7 +403,7 @@ public class BooklistAdapter
      * Doing this in a background task keeps the booklist cursor simple and small.
      * Used by {@link BookHolder}.
      * <p>
-     * See {@link BooklistStyle#extrasByTask()}
+     * See {@link BooklistStyle#useTaskForExtras()}
      */
     private static class GetBookExtrasTask
             extends AsyncTask<Void, Void, Boolean> {
@@ -854,7 +854,7 @@ public class BooklistAdapter
                 }
             }
 
-            if (!style.extrasByTask()) {
+            if (!style.useTaskForExtras()) {
                 if (mBookshelfIsUsed && rowData.contains(DBDefinitions.KEY_BOOKSHELF_CSV)) {
                     showOrHide(mBookshelvesView,
                                rowData.getString(DBDefinitions.KEY_BOOKSHELF_CSV));

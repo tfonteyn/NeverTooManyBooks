@@ -105,8 +105,6 @@ public final class TipManager {
 
         ALL.put(R.string.tip_autorotate_camera_images,
                 new Tip("autorotate_camera_images"));
-        ALL.put(R.string.tip_view_only_book_details,
-                new Tip("view_only_book_details"));
         ALL.put(R.string.tip_view_only_help,
                 new Tip("view_only_help"));
         ALL.put(R.string.tip_book_list,
@@ -135,11 +133,12 @@ public final class TipManager {
     /**
      * Reset a sub set of tips, all starting (in preferences) with the given prefix.
      *
-     * @param prefix to match
+     * @param context Current context
+     * @param prefix  to match
      */
-    public static void reset(@NonNull final String prefix) {
-        SharedPreferences prefs = PreferenceManager
-                                          .getDefaultSharedPreferences(App.getAppContext());
+    public static void reset(@NonNull final Context context,
+                             @NonNull final String prefix) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor ed = prefs.edit();
         for (String key : prefs.getAll().keySet()) {
             if (key.toLowerCase(App.getSystemLocale())
@@ -228,8 +227,8 @@ public final class TipManager {
          */
         private boolean shouldBeShown(@NonNull final Context context) {
             return !mHasBeenDisplayed && PreferenceManager
-                                                 .getDefaultSharedPreferences(context)
-                                                 .getBoolean(mKey, true);
+                    .getDefaultSharedPreferences(context)
+                    .getBoolean(mKey, true);
         }
 
         /**

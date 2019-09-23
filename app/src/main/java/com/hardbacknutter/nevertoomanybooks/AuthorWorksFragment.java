@@ -106,27 +106,29 @@ public class AuthorWorksFragment
         mModel = new ViewModelProvider(getActivity()).get(AuthorWorksModel.class);
         mModel.init(requireArguments());
 
-        getActivity().setTitle(mModel.getScreenTitle());
+        Context context = getContext();
+
+        //noinspection ConstantConditions
+        getActivity().setTitle(mModel.getScreenTitle(context));
 
         //noinspection ConstantConditions
         RecyclerView listView = getView().findViewById(android.R.id.list);
         listView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         listView.setLayoutManager(linearLayoutManager);
-        //noinspection ConstantConditions
         listView.addItemDecoration(
-                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
+                new DividerItemDecoration(context, linearLayoutManager.getOrientation()));
 
         if (!(listView instanceof CFSRecyclerView)) {
             listView.addItemDecoration(
-                    new FastScrollerOverlay(getContext(), R.drawable.fast_scroll_overlay));
+                    new FastScrollerOverlay(context, R.drawable.fast_scroll_overlay));
         }
 
-        mAdapter = new TocAdapter(getContext());
+        mAdapter = new TocAdapter(context);
         listView.setAdapter(mAdapter);
 
         if (savedInstanceState == null) {
-            TipManager.display(getContext(), R.string.tip_authors_works, null);
+            TipManager.display(context, R.string.tip_authors_works, null);
         }
     }
 
@@ -346,7 +348,8 @@ public class AuthorWorksFragment
             holder.titleView.setText(tocEntry.getTitle());
             // optional
             if (holder.authorView != null) {
-                holder.authorView.setText(tocEntry.getAuthor().getLabel());
+                //noinspection ConstantConditions
+                holder.authorView.setText(tocEntry.getAuthor().getLabel(getContext()));
             }
             // optional
             if (holder.firstPublicationView != null) {

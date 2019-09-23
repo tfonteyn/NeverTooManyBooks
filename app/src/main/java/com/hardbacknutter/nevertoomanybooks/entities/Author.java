@@ -31,6 +31,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,6 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -84,14 +87,14 @@ public class Author
      * NEWKIND: author type
      * Never change the bit value!
      */
-    /** Generic Author; the default. Can be considered equal to TYPE_PRIMARY. */
-    public static final int TYPE_GENERIC = 0b0000_0000_0000_0000;
-    /** primary author. */
-    public static final int TYPE_PRIMARY = 0b0000_0000_0000_0001;
-    /** secondary author aka 'collaborator'. */
-    public static final int TYPE_SECONDARY = 0b0000_0000_0000_0010;
-    /** 'other' author. */
-    public static final int TYPE_OTHER = TYPE_PRIMARY | TYPE_SECONDARY;
+    /**
+     * Generic Author; the default. When we basically have a single person who created the book.
+     * They could be just the writer, or they might in addition have done illustrations etc...
+     */
+    public static final int TYPE_UNKNOWN = 0b0000_0000_0000_0000;
+
+    /** primary or only writer. i.e. in contrast to any of the below. */
+    public static final int TYPE_WRITER = 0b0000_0000_0000_0001;
 
     /** translator. */
     public static final int TYPE_TRANSLATOR = 0b0000_0000_0001_0000;
@@ -102,37 +105,28 @@ public class Author
     /** generic collaborator. */
     public static final int TYPE_CONTRIBUTOR = 0b0000_0000_1000_0000;
 
-
     /** cover artist. */
     public static final int TYPE_COVER_ARTIST = 0b0000_0001_0000_0000;
     /** cover colorist. */
-    public static final int TYPE_COVER_COLORIST = 0b0000_0010_0000_0000;
+    public static final int TYPE_COVER_COLORIST = 0b0000_1000_0000_0000;
 
-    /**
-     * Internal art work; could be illustrations, or the pages of a comic.
-     * Internal primary artist.
-     */
-    public static final int TYPE_ARTIST_PRIMARY = 0b0001_0000_0000_0000;
-    /** internal secondary artist. */
-    public static final int TYPE_ARTIST_SECONDARY = 0b0010_0000_0000_0000;
-    /** 'other' artist. */
-    public static final int TYPE_ARTIST_OTHER = TYPE_ARTIST_PRIMARY | TYPE_ARTIST_SECONDARY;
-
+    /** Internal art work; could be illustrations, or the pages of a comic. */
+    public static final int TYPE_ARTIST = 0b0001_0000_0000_0000;
     /** internal colorist. */
     public static final int TYPE_COLORIST = 0b1000_0000_0000_0000;
+
 
     /** String encoding use: separator between family name and given-names. */
     public static final char NAME_SEPARATOR = ',';
     @SuppressLint("UseSparseArrays")
-    public static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
+    private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
     /** All valid bits for the type. */
-    private static final int TYPE_MASK = TYPE_GENERIC
-                                         | TYPE_PRIMARY | TYPE_SECONDARY
+    private static final int TYPE_MASK = TYPE_UNKNOWN
+                                         | TYPE_WRITER
                                          | TYPE_TRANSLATOR | TYPE_INTRODUCTION
                                          | TYPE_EDITOR | TYPE_CONTRIBUTOR
                                          | TYPE_COVER_ARTIST | TYPE_COVER_COLORIST
-                                         | TYPE_ARTIST_PRIMARY | TYPE_ARTIST_SECONDARY
-                                         | TYPE_COLORIST;
+                                         | TYPE_ARTIST | TYPE_COLORIST;
     /**
      * ENHANCE: author middle name; needs internationalisation ?
      * <p>
@@ -184,51 +178,45 @@ public class Author
      * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
      */
     static {
-        TYPES.put(TYPE_PRIMARY, R.string.lbl_author_primary);
-        TYPES.put(TYPE_SECONDARY, R.string.lbl_author_secondary);
-        TYPES.put(TYPE_PRIMARY | TYPE_SECONDARY, R.string.lbl_author_other);
+        TYPES.put(TYPE_WRITER, R.string.lbl_author_type_writer);
 
-        TYPES.put(TYPE_TRANSLATOR, R.string.lbl_author_translator);
-        TYPES.put(TYPE_INTRODUCTION, R.string.lbl_author_introduction);
-        TYPES.put(TYPE_EDITOR, R.string.lbl_author_editor);
-        TYPES.put(TYPE_CONTRIBUTOR, R.string.lbl_author_contributor);
+        TYPES.put(TYPE_TRANSLATOR, R.string.lbl_author_type_translator);
+        TYPES.put(TYPE_INTRODUCTION, R.string.lbl_author_type_intro);
+        TYPES.put(TYPE_EDITOR, R.string.lbl_author_type_editor);
+        TYPES.put(TYPE_CONTRIBUTOR, R.string.lbl_author_type_contributor);
 
-        TYPES.put(TYPE_COVER_ARTIST, R.string.lbl_artist_cover);
-        TYPES.put(TYPE_COVER_COLORIST, R.string.lbl_artist_cover_colorist);
-
-        TYPES.put(TYPE_ARTIST_PRIMARY, R.string.lbl_artist_primary);
-        TYPES.put(TYPE_ARTIST_SECONDARY, R.string.lbl_artist_secondary);
-        TYPES.put(TYPE_ARTIST_PRIMARY | TYPE_ARTIST_SECONDARY, R.string.lbl_artist_other);
-
-        TYPES.put(TYPE_COLORIST, R.string.lbl_artist_colorist);
+        TYPES.put(TYPE_ARTIST, R.string.lbl_author_type_artist);
+        TYPES.put(TYPE_COLORIST, R.string.lbl_author_type_colorist);
+        TYPES.put(TYPE_COVER_ARTIST, R.string.lbl_author_type_cover_artist);
+        TYPES.put(TYPE_COVER_COLORIST, R.string.lbl_author_type_cover_colorist);
     }
 
     static {
         // English
-        TYPES_MAPPER.put("Illustrator", TYPE_ARTIST_PRIMARY);
-        TYPES_MAPPER.put("Illustrations", TYPE_ARTIST_PRIMARY);
+        TYPES_MAPPER.put("Illustrator", TYPE_ARTIST);
+        TYPES_MAPPER.put("Illustrations", TYPE_ARTIST);
         TYPES_MAPPER.put("Colorist", TYPE_COLORIST);
         TYPES_MAPPER.put("Editor", TYPE_EDITOR);
         TYPES_MAPPER.put("Contributor", TYPE_CONTRIBUTOR);
         TYPES_MAPPER.put("Translator", TYPE_TRANSLATOR);
 
         // French, unless listed above
-        TYPES_MAPPER.put("Text", TYPE_PRIMARY);
-        TYPES_MAPPER.put("Scénario", TYPE_PRIMARY);
-        TYPES_MAPPER.put("Dessins", TYPE_ARTIST_PRIMARY);
-        TYPES_MAPPER.put("Dessin", TYPE_ARTIST_PRIMARY);
+        TYPES_MAPPER.put("Text", TYPE_WRITER);
+        TYPES_MAPPER.put("Scénario", TYPE_WRITER);
+        TYPES_MAPPER.put("Dessins", TYPE_ARTIST);
+        TYPES_MAPPER.put("Dessin", TYPE_ARTIST);
         TYPES_MAPPER.put("Avec la contribution de", TYPE_CONTRIBUTOR);
         TYPES_MAPPER.put("Contribution", TYPE_CONTRIBUTOR);
         TYPES_MAPPER.put("Couleurs", TYPE_COLORIST);
 
         // Dutch, unless listed above
-        TYPES_MAPPER.put("Scenario", TYPE_PRIMARY);
-        TYPES_MAPPER.put("Tekeningen", TYPE_ARTIST_PRIMARY);
+        TYPES_MAPPER.put("Scenario", TYPE_WRITER);
+        TYPES_MAPPER.put("Tekeningen", TYPE_ARTIST);
         TYPES_MAPPER.put("Inkleuring", TYPE_COLORIST);
 
         // Italian, unless listed above
-        TYPES_MAPPER.put("Testi", TYPE_PRIMARY);
-        TYPES_MAPPER.put("Disegni", TYPE_ARTIST_PRIMARY);
+        TYPES_MAPPER.put("Testi", TYPE_WRITER);
+        TYPES_MAPPER.put("Disegni", TYPE_ARTIST);
     }
 
     /** Row ID. */
@@ -243,7 +231,7 @@ public class Author
     private boolean mIsComplete;
 
     /** Bitmask. */
-    private int mType = TYPE_GENERIC;
+    private int mType = TYPE_UNKNOWN;
 
     /**
      * Constructor.
@@ -399,7 +387,7 @@ public class Author
 
     public void setType(@NonNull final String type) {
         if (type.isEmpty()) {
-            mType = TYPE_GENERIC;
+            mType = TYPE_UNKNOWN;
         } else {
             Integer mapped = TYPES_MAPPER.get(type);
             if (mapped != null) {
@@ -453,15 +441,56 @@ public class Author
     /**
      * Return the 'human readable' version of the name (e.g. 'Isaac Asimov').
      *
+     * @param context Current context
+     *
      * @return formatted Author name
      */
     @NonNull
-    public String getLabel() {
+    public String getLabel(@NonNull final Context context) {
         if (!mGivenNames.isEmpty()) {
             return mGivenNames + ' ' + mFamilyName;
         } else {
             return mFamilyName;
         }
+    }
+
+    /**
+     * Return the name in a sortable form (e.g. 'Asimov, Isaac').
+     *
+     * @param context Current context
+     *
+     * @return formatted name
+     */
+    @NonNull
+    public String getSorting(@NonNull final Context context) {
+        if (!mGivenNames.isEmpty()) {
+            if (Prefs.sortAuthorGivenNameFirst(context)) {
+                return mGivenNames + ' ' + mFamilyName;
+            } else {
+                return mFamilyName + ", " + mGivenNames;
+            }
+        } else {
+            return mFamilyName;
+        }
+    }
+
+    /**
+     * Get a CSV string with the type of this author; or the empty string if no specific types
+     * are set.
+     *
+     * @param context Current context
+     *
+     * @return csv string, can be empty, but never {@code null}.
+     */
+    @NonNull
+    public String getTypeLabels(@NonNull final Context context) {
+        if (mType != TYPE_UNKNOWN) {
+            List<String> list = Csv.bitmaskToList(context, TYPES, mType);
+            if (!list.isEmpty()) {
+                return context.getString(R.string.brackets, TextUtils.join(", ", list));
+            }
+        }
+        return "";
     }
 
     /**
@@ -503,21 +532,7 @@ public class Author
     }
 
     /**
-     * Return the name in a sortable form (e.g. 'Asimov, Isaac').
-     *
-     * @return formatted name
-     */
-    @NonNull
-    public String getSortName() {
-        if (!mGivenNames.isEmpty()) {
-            return mFamilyName + ", " + mGivenNames;
-        } else {
-            return mFamilyName;
-        }
-    }
-
-    /**
-     * TEST: Replace local details from another author.
+     * Replace local details from another author.
      *
      * @param source            Author to copy from
      * @param includeBookFields Flag to force copying the Book related fields as well

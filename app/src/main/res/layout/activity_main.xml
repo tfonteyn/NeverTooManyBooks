@@ -49,6 +49,7 @@
         android:id="@+id/fab"
         style="@style/FAB"
         android:visibility="invisible"
+        tools:visibility="visible"
         />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

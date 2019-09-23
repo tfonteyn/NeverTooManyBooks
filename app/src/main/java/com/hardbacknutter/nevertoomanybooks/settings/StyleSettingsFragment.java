@@ -71,7 +71,15 @@ public class StyleSettingsFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
 
-        mStyle = Objects.requireNonNull(requireArguments().getParcelable(UniqueId.BKEY_STYLE));
+        Bundle args = getArguments();
+        if (args != null) {
+            mStyle = args.getParcelable(UniqueId.BKEY_STYLE);
+        }
+        if (mStyle == null) {
+            // we're doing the global preferences it seems
+            mStyle = new BooklistStyle();
+        }
+
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
             Logger.debugEnter(this, "onCreatePreferences", mStyle);
         }

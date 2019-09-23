@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -276,7 +275,8 @@ public class BooklistBuilder
         // Allocate ID
         mBooklistBuilderId = ID_COUNTER.incrementAndGet();
 
-        mUnknown = context.getString(R.string.unknown).toUpperCase(LocaleUtils.getLocale(context));
+        mUnknown = context.getString(R.string.unknown)
+                          .toUpperCase(LocaleUtils.getLocale(context));
 
         // Save the requested style
         mStyle = style;
@@ -365,18 +365,25 @@ public class BooklistBuilder
      * <p>
      * An empty filter will silently be rejected.
      *
-     * @param author   Author-related keywords to find
-     * @param title    Title-related keywords to find
-     * @param keywords Keywords to find anywhere in book
+     * @param author   Author related keywords to find
+     * @param title    Title related keywords to find
+     * @param seriesTitle    Series title related keywords to find
+     * @param keywords Keywords to find anywhere in book; this includes titles and authors
      */
-    public void setFilter(@NonNull final Locale locale,
-                          @Nullable final String author,
+    public void setFilter(@Nullable final String author,
                           @Nullable final String title,
+                          @Nullable final String seriesTitle,
                           @Nullable final String keywords) {
-        if (keywords != null && !keywords.trim().isEmpty()) {
+
+        // need at least one.
+        if ((author != null && !author.trim().isEmpty())
+            || (title != null && !title.trim().isEmpty())
+            || (seriesTitle != null && !seriesTitle.trim().isEmpty())
+            || (keywords != null && !keywords.trim().isEmpty())) {
+
             mFilters.add(() -> '(' + TBL_BOOKS.dot(DOM_PK_ID)
-                               + " IN (" + DAO.getFtsSearchSQL(locale, author, title, keywords)
-                               + ")");
+                               + " IN (" + mDb.getFtsSearchSQL(author, title, seriesTitle, keywords)
+                               + ')');
         }
     }
 
@@ -615,7 +622,7 @@ public class BooklistBuilder
                     String sql = baseBuild.getSql(tgt);
 
                     //experimental, so debug it
-                    if (BuildConfig.DEBUG && !mStyle.extrasByTask()) {
+                    if (BuildConfig.DEBUG && !mStyle.useTaskForExtras()) {
                         Logger.debug(this, "", "sql=" + sql);
                     }
 
@@ -1877,8 +1884,8 @@ public class BooklistBuilder
             // Otherwise, start with the BOOKS table.
             if (buildInfoHolder.isJoinBookshelves() || filterOnBookshelf) {
                 join = new Joiner(TBL_BOOKSHELF)
-                               .join(TBL_BOOK_BOOKSHELF)
-                               .join(TBL_BOOKS);
+                        .join(TBL_BOOK_BOOKSHELF)
+                        .join(TBL_BOOKS);
             } else {
                 join = new Joiner(TBL_BOOKS);
             }

@@ -27,10 +27,29 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- views will be added to this layout in code -->
-<LinearLayout
+<com.google.android.material.appbar.AppBarLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/content"
-    style="@style/DialogFrame"
-    android:orientation="vertical"
-    />
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_bar_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:showIn="@layout/activity_main_nav_tabs"
+    >
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/Toolbar"
+        app:layout_scrollFlags="scroll|enterAlways"
+        />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_panel"
+        style="@style/TabBar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        app:tabGravity="fill"
+        app:tabMode="scrollable"
+        />
+
+</com.google.android.material.appbar.AppBarLayout>

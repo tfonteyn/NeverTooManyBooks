@@ -84,10 +84,10 @@ public abstract class KbNlHandlerBase
     }
 
     @Override
-    public void startElement(final String uri,
-                             final String localName,
-                             final String qName,
-                             final Attributes attributes) {
+    public void startElement(@NonNull final String uri,
+                             @NonNull final String localName,
+                             @NonNull final String qName,
+                             @NonNull final Attributes attributes) {
         switch (qName) {
             case XML_LABEL:
                 mCurrentLabel = null;
@@ -114,9 +114,9 @@ public abstract class KbNlHandlerBase
     }
 
     @Override
-    public void endElement(final String uri,
-                           final String localName,
-                           final String qName) {
+    public void endElement(@NonNull final String uri,
+                           @NonNull final String localName,
+                           @NonNull final String qName) {
         switch (qName) {
             case XML_LABEL:
                 inLabel = false;

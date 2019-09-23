@@ -250,9 +250,9 @@ public class Book
         String text = context.getString(R.string.info_share_book_im_reading,
                                         title, author, series, ratingString);
         return new Intent(Intent.ACTION_SEND)
-                       .setType("text/plain")
-                       .putExtra(Intent.EXTRA_TEXT, text)
-                       .putExtra(Intent.EXTRA_STREAM, uri);
+                .setType("text/plain")
+                .putExtra(Intent.EXTRA_TEXT, text)
+                .putExtra(Intent.EXTRA_STREAM, uri);
     }
 
     /**
@@ -498,12 +498,14 @@ public class Book
     /**
      * Get the name of the first author in the list of authors for this book.
      *
+     * @param context Current context
+     *
      * @return the name or {@code null} if none
      */
     @Nullable
-    public String getPrimaryAuthor() {
+    public String getPrimaryAuthor(@NonNull final Context context) {
         ArrayList<Author> authors = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        return authors.isEmpty() ? null : authors.get(0).getLabel();
+        return authors.isEmpty() ? null : authors.get(0).getLabel(context);
     }
 
     /**
@@ -519,7 +521,7 @@ public class Book
         if (list.isEmpty()) {
             return "";
         } else {
-            String newText = list.get(0).getLabel();
+            String newText = list.get(0).getLabel(context);
             if (list.size() > 1) {
                 newText += ' ' + context.getString(R.string.and_others);
             }

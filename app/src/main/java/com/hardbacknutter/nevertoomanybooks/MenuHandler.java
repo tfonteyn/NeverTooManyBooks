@@ -202,7 +202,7 @@ public final class MenuHandler {
                 return false;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
-                AmazonManager.openWebsite(context, book.getPrimaryAuthor(), null);
+                AmazonManager.openWebsite(context, book.getPrimaryAuthor(context), null);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
@@ -211,7 +211,7 @@ public final class MenuHandler {
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
                 AmazonManager.openWebsite(context,
-                                          book.getPrimaryAuthor(), book.getPrimarySeries());
+                                          book.getPrimaryAuthor(context), book.getPrimarySeries());
                 return true;
 
             default:

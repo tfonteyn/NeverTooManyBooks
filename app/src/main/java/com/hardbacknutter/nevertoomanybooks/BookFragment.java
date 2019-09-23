@@ -481,6 +481,7 @@ public class BookFragment
 
         super.onPrepareOptionsMenu(menu);
     }
+
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -523,7 +524,8 @@ public class BookFragment
                 LendBookDialogFragment lendBookDialogFragment =
                         (LendBookDialogFragment) fm.findFragmentByTag(LendBookDialogFragment.TAG);
                 if (lendBookDialogFragment == null) {
-                    lendBookDialogFragment = LendBookDialogFragment.newInstance(book);
+                    //noinspection ConstantConditions
+                    lendBookDialogFragment = LendBookDialogFragment.newInstance(getContext(), book);
                     lendBookDialogFragment.show(fm, LendBookDialogFragment.TAG);
                 }
                 return true;
@@ -588,7 +590,20 @@ public class BookFragment
         Book book = mBookModel.getBook();
 
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        getField(R.id.author).setValue(Csv.join(", ", list, Author::getLabel));
+        getField(R.id.author).setValue(Csv.join(", ", list,
+                                                author -> {
+                                                    final Context context = getContext();
+                                                    //noinspection ConstantConditions
+                                                    String authorLabel = author.getLabel(context);
+                                                    if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
+                                                        String t = author.getTypeLabels(context);
+                                                        if (!t.isEmpty()) {
+                                                            authorLabel += ' ' + t;
+                                                        }
+                                                    }
+
+                                                    return authorLabel;
+                                                }));
     }
 
     /**
@@ -599,7 +614,9 @@ public class BookFragment
         Book book = mBookModel.getBook();
 
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-        getField(R.id.series).setValue(Csv.join("\n", list, false, "• ", Series::getLabel));
+        //noinspection ConstantConditions
+        getField(R.id.series).setValue(Csv.join("\n", list, false, "• ",
+                                                series -> series.getLabel(getContext())));
     }
 
     /**
@@ -699,7 +716,8 @@ public class BookFragment
 
                 // optional
                 if (authorView != null) {
-                    authorView.setText(item.getAuthor().getLabel());
+                    //noinspection ConstantConditions
+                    authorView.setText(item.getAuthor().getLabel(context));
                 }
                 // optional
                 if (firstPubView != null) {

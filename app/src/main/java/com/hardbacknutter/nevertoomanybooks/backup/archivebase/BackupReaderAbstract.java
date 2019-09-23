@@ -68,7 +68,9 @@ public abstract class BackupReaderAbstract
     /** progress message. */
     private final String mProcessPreferences;
     /** progress message. */
-    private final String mProcessCover;
+    private final String mCoversText;
+    /** progress message. */
+    private final String mProgress_covers_n_created_m_updated;
     /** progress message. */
     private final String mProcessBooklistStyles;
 
@@ -86,8 +88,11 @@ public abstract class BackupReaderAbstract
     protected BackupReaderAbstract(@NonNull final Context context) {
         mDb = new DAO();
         mProcessPreferences = context.getString(R.string.progress_msg_process_preferences);
-        mProcessCover = context.getString(R.string.progress_msg_process_cover);
         mProcessBooklistStyles = context.getString(R.string.progress_msg_process_booklist_style);
+
+        mCoversText = context.getString(R.string.lbl_covers);
+        mProgress_covers_n_created_m_updated =
+                context.getString(R.string.progress_msg_n_created_m_updated);
     }
 
     /**
@@ -103,7 +108,6 @@ public abstract class BackupReaderAbstract
 
         mSettings = settings;
         mResults = new Importer.Results();
-
 
         // keep track of what we read from the archive
         int entitiesRead = Options.NOTHING;
@@ -172,8 +176,12 @@ public abstract class BackupReaderAbstract
                 switch (entity.getType()) {
                     case Cover: {
                         if (incCovers) {
-                            progressListener.onProgressStep(1, mProcessCover);
                             importCover(entity);
+                            String msg = String.format(mProgress_covers_n_created_m_updated,
+                                                       mCoversText,
+                                                       mResults.coversCreated,
+                                                       mResults.coversUpdated);
+                            progressListener.onProgressStep(1, msg);
                             mResults.coversProcessed++;
                             // entitiesRead is set when all done
                         }

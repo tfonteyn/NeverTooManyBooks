@@ -45,6 +45,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -77,10 +78,9 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected ArrayAdapter<String> mAutoCompleteAdapter;
     /** The adapter for the list. */
     protected RecyclerViewAdapterBase mListAdapter;
+    protected EditObjectListModel mModel;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
-
-    protected EditObjectListModel mModel;
 
     /**
      * Constructor.
@@ -145,11 +145,11 @@ public abstract class EditObjectListActivity<T extends Parcelable>
                 setResult(Activity.RESULT_OK, data);
                 finish();
             });
+        } else {
+            // no current edit, so we're good to go.
+            setResult(Activity.RESULT_OK, data);
+            finish();
         }
-
-        // no current edit, so we're good to go.
-        setResult(Activity.RESULT_OK, data);
-        finish();
     }
 
     /**
@@ -170,6 +170,30 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * @param target The view that was clicked ('add' button).
      */
     protected abstract void onAdd(@NonNull View target);
+
+    /**
+     * Handle the edits.
+     *
+     * <strong>Note:</strong> this method is only to enforce a pattern
+     *
+     * @param item    the original data.
+     * @param newData a holder for the edited data.
+     */
+    protected abstract void processChanges(@NonNull final T item,
+                                           @NonNull final T newData);
+
+    /**
+     * Update the item for <strong>this</strong> book.
+     *
+     * <strong>Note:</strong> this method is only to enforce a pattern
+     *
+     * @param item           the original data.
+     * @param newData        a holder for the edited data.
+     * @param fallbackLocale Locale to use if the item has none set.
+     */
+    protected abstract void updateItem(@NonNull final T item,
+                                       @NonNull final T newData,
+                                       final Locale fallbackLocale);
 
     /**
      * Ensure that the list is saved.

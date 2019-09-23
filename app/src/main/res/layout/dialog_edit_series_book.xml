@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2019 HardBackNutter
   ~ @License GNU General Public License
@@ -27,42 +28,45 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.drawerlayout.widget.DrawerLayout
+<!-- Edit the Series details.
+    Title: global
+    isComplete: global
+
+    Number: book
+    -->
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/DialogFrame"
     >
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-
-        <include layout="@layout/inc_appbar_with_tabs" />
-
-        <FrameLayout
-            android:id="@+id/main_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            style="@style/FAB"
-            android:src="@drawable/ic_save"
-            />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        style="@style/NavigationView"
-        app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/nav_view"
+    <AutoCompleteTextView
+        android:id="@+id/series"
+        style="@style/titleTextEntryAutoComplete"
+        android:hint="@string/lbl_series"
+        app:layout_constraintEnd_toStartOf="@id/series_num"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
-</androidx.drawerlayout.widget.DrawerLayout>
+    <CheckBox
+        android:id="@+id/cbx_is_complete"
+        style="@style/CheckboxEntry"
+        android:text="@string/lbl_is_complete"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/series"
+        />
+
+    <EditText
+        android:id="@+id/series_num"
+        style="@style/EditText.SeriesNumber"
+        app:layout_constraintBaseline_toBaselineOf="@id/series"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@id/series"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="Autofill,LabelFor"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

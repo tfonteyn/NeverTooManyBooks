@@ -132,8 +132,8 @@
     <string name="btn_this_book">Tato kniha</string>
     <string name="bytes">%.0fB</string>
     <string name="clear">Jasné</string>
-    <string name="confirm_apply_author_changed">Změnil jste autora z:\n „%1$s“ na\n „%2$s“\nJak si přejete aplikovat tuto změnu?\nUpozornění: Volba „%3$s“ bude aplikována okamžitě.</string>
-    <string name="confirm_apply_series_changed">Změnil jste sérii z:\n „%1$s“ na\n „%2$s“\nJak si přejete aplikovat tuto změnu?\nUpozornění: Volba „%3$s“ bude aplikována okamžitě.</string>
+    <string name="confirm_apply_author_changed">Změnil jste autora z:\n\n „%1$s“ na „%2$s“\n\nJak si přejete aplikovat tuto změnu?\n\nUpozornění: Volba „%3$s“ bude aplikována okamžitě.</string>
+    <string name="confirm_apply_series_changed">Změnil jste sérii z:\n\n „%1$s“ na „%2$s“\n\nJak si přejete aplikovat tuto změnu?\n\nUpozornění: Volba „%3$s“ bude aplikována okamžitě.</string>
     <string name="confirm_delete_book">Tímto kompletně odstraníte knihu „%1$s“ od %2$s. Určitě chcete pokračovat?</string>
     <string name="confirm_delete_series">Opravdu chcete smazat série „%1$s“?\n\nSamotná kniha nebude smazána.\n\nZvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
     <string name="confirm_delete_toc_entry">Odstraňte název „%1$s“ (z %2$s)? Bude odstraněn ze všech knih, ve kterých je uveden. Samotné knihy nebudou smazány.</string>
@@ -141,7 +141,7 @@
     <string name="confirm_merge_bookshelves">Knihovna, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_overwrite_thumbnail">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.\n\nChcete přepsat všechny existující náhledy? Pozor, může to chvíli trvat…</string>
     <string name="debug_body">Věnujte prosím čas přesnému popisu problému, se kterým máte zkušenost.</string>
-    <string name="debug_send_info_text">Stiskněte tlačítko níže pro získání informací o nedávných chybách nebo problémech s aplikací a jejich následné zaslání jednomu z našich vývojářů. Bude vytvořena záložní kopie Vaší databáze a všech logovacích souborů. Pokud si nepřejete poslat některý z těchto souborů, odstraňte jej z přílohy mailu ještě před jeho odesláním.</string>
+    <string name="debug_send_info_text">Tím vytvoříte záložní kopii vaší databáze a všechny soubory protokolu a odešlete ji vývojářům. Pokud si nepřejete poslat některý z těchto souborů, odstraňte jej z přílohy mailu ještě před jeho odesláním.</string>
     <string name="debug_subject">Shromáždit informace o debugování</string>
     <string name="done">Hotovo</string>
     <string name="edit">Upravit</string>
@@ -359,7 +359,7 @@
     <string name="lbl_x_pages">%1$d stran</string>
     <string name="lbl_year">Rok</string>
     <string name="list_and">a</string>
-    <string name="lt_info">Tato aplikace může využít LibraryThing jako další zdroj informací o knihách.\n K využití této funkce je nutná Vaše registrace na LibraryThing (zdarma) a rovněž získání vývojářského klíče od LibraryThing (také zdarma).</string>
+    <string name="lt_info">Tato aplikace může využít LibraryThing jako další zdroj informací o knihách. K využití této funkce je nutná Vaše registrace na LibraryThing (zdarma) a rovněž získání vývojářského klíče od LibraryThing (také zdarma).</string>
     <string name="lt_key_is_correct">Váš vývojářský klíč LibraryThing je platný.</string>
     <string name="lt_key_is_incorrect">Váš vývojářský klíč LibraryThing je neplatný, nebo není k dispozici připojení k internetu nutné k jeho ověření.</string>
     <string name="lt_lbl_key">Až získáte svůj vývojářský klíč, jednoduše jej vložte níže, aby mohl být použit pro získání extra informací.</string>
@@ -445,7 +445,7 @@
     <string name="progress_msg_finding_editions">Hledání edicí…</string>
     <string name="title_importing">Import…</string>
     <string name="progress_msg_loading">Načítání…</string>
-    <string name="progress_msg_n_created_m_updated">%1$d vytvořeno, %2$d aktualizováno</string>
+    <string name="progress_msg_n_created_m_updated">%1$s: %2$d vytvořeno, %3$d aktualizováno</string>
     <string name="progress_msg_optimizing">Optimalizování databáze…</string>
     <string name="progress_msg_please_wait">Prosím, čekejte…</string>
     <string name="progress_msg_process_booklist_style">Styly seznamu…</string>
@@ -538,8 +538,7 @@
     <string name="tip_reset_all">Obnovit rady</string>
     <string name="tip_reset_done">Rady byly obnoveny</string>
     <string name="tip_series_book_may_appear_more_than_once">Při zobrazení pod každou sérií se může stát, že jedna kniha se objeví v seznamu vícekrát - pokud však v takovém případě odstraníte kterýkoli z těchto záznamů, budou odstraněny všechny.</string>
-    <string name="tip_view_only_book_details">Když klepnete na položku v tomto seznamu, můžete se nyní rozhodnout pro zobrazení podrobností o neupravitelných podrobnostech knihy. Viz Nastavení příslušného spínače.</string>
-    <string name="tip_view_only_help">Toto je obrazovka s neupravitelnými podrobnostmi knihy; můžete posouvat doleva nebo doprava a přejít k dalším knihám a knihu můžete upravit pomocí nabídky možností pomocí tlačítka nabídky nebo ikony přetékající nabídky.</string>
+    <string name="tip_view_only_help">Můžete posouvat doleva nebo doprava a přejít k dalším knihám.</string>
     <string name="title_add_book">Přidat knihu</string>
     <string name="X_title_backup">Zálohovat</string>
     <string name="title_clone_style">Klonovat styl</string>
@@ -608,13 +607,13 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">„%1$s“ není platné číslo ISBN nebo ASIN</string>
     <string name="x_of_y">%1$d z %2$d</string>
     <string name="yes">Ano</string>
-    <string name="lbl_author_translator">Překladatel</string>
-    <string name="lbl_author_other">jiný</string>
-    <string name="lbl_author_editor">Editor</string>
-    <string name="lbl_author_contributor">Spolupracovník</string>
-    <string name="lbl_artist_colorist">Barvivo</string>
+    <string name="lbl_author_type_translator">Překladatel</string>
+    <string name="X_lbl_author_other">jiný</string>
+    <string name="lbl_author_type_editor">Editor</string>
+    <string name="lbl_author_type_contributor">Spolupracovník</string>
+    <string name="lbl_author_type_colorist">Barvivo</string>
     <string name="tip_update_fields_from_internet">Externí odkazy na stránky jsou zpracovány pouze v případě, že je web skutečně kontaktován. Výsledkem je, že nabídka „Výhled na…“ také ukáže pouze to, co je k dispozici.</string>
-    <string name="lbl_author_secondary">spoluautor</string>
+    <string name="X_lbl_author_secondary">spoluautor</string>
     <string name="lbl_author_type">Typ autora</string>
     <string name="pt_bob_show_details_uses_task_off">ihned</string>
     <string name="progress_end_import_partially_complete">Částečný import byl dokončen</string>

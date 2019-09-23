@@ -379,6 +379,26 @@ class SeriesTest {
     }
 
     /**
+     * 2019-09-23: FAILS for obvious reasons... the rebels...
+     */
+    @Test
+    void fromString100() {
+        Series series = Series.fromString("Blake's 7");
+        assertNotNull(series);
+        assertEquals("Blake's 7", series.getTitle());
+        assertEquals("", series.getNumber());
+    }
+
+    @Test
+    void fromString101() {
+        Series series = Series.fromString("Stephen Baxter: Non-Fiction");
+        assertNotNull(series);
+        assertEquals("Stephen Baxter: Non-Fiction", series.getTitle());
+        assertEquals("", series.getNumber());
+    }
+
+
+    /**
      * Use a roman numeral 'C' as the start of the last part.
      */
     @Test
@@ -406,7 +426,7 @@ class SeriesTest {
     }
 
     /**
-     * FAILS
+     * 2019-09-23: FAILS: can't deal with alphanumeric suffix.
      */
     @Test
     void fromString204() {
@@ -474,6 +494,7 @@ class SeriesTest {
         assertEquals("This is #title, subtitle", series.getTitle());
         assertEquals("omnibus", series.getNumber());
     }
+
 
     @Test
     void from2String00() {

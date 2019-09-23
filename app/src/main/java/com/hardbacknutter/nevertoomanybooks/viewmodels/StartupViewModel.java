@@ -327,8 +327,8 @@ public class StartupViewModel
     static class PreloadGoogleScanner
             extends TaskBase<Boolean> {
 
-        protected PreloadGoogleScanner(final int taskId,
-                                       @NonNull final TaskListener<Boolean> taskListener) {
+        PreloadGoogleScanner(final int taskId,
+                             @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
         }
 
@@ -339,6 +339,7 @@ public class StartupViewModel
             GoogleBarcodeScanner.GoogleBarcodeScannerFactory factory =
                     new GoogleBarcodeScanner.GoogleBarcodeScannerFactory();
             if (factory.isAvailable(context)) {
+                // trigger the download if needed.
                 factory.newInstance(context);
             }
             return true;

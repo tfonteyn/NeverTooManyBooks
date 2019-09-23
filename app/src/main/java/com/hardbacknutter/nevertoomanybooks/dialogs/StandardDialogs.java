@@ -111,7 +111,7 @@ public final class StandardDialogs {
                 .setTitle(R.string.title_delete_toc_entry)
                 .setMessage(context.getString(R.string.confirm_delete_toc_entry,
                                               tocEntry.getTitle(),
-                                              tocEntry.getAuthor().getLabel()))
+                                              tocEntry.getAuthor().getLabel(context)))
                 .setCancelable(false)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
@@ -144,14 +144,14 @@ public final class StandardDialogs {
                    .append('>');
         } else {
             // "a1, a2 and a3"
-            authors.append(authorList.get(0).getLabel());
+            authors.append(authorList.get(0).getLabel(context));
             for (int i = 1; i < authorList.size() - 1; i++) {
-                authors.append(", ").append(authorList.get(i).getLabel());
+                authors.append(", ").append(authorList.get(i).getLabel(context));
             }
 
             if (authorList.size() > 1) {
                 authors.append(' ').append(context.getString(R.string.list_and)).append(' ')
-                       .append(authorList.get(authorList.size() - 1).getLabel());
+                       .append(authorList.get(authorList.size() - 1).getLabel(context));
             }
         }
 

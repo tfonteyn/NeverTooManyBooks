@@ -90,7 +90,7 @@ public final class LegacyPreferences {
         String styleName;
 
         // note that strings could be empty. Check if needed
-        for (final Map.Entry<String, ?> entry : oldMap.entrySet()) {
+        for (Map.Entry<String, ?> entry : oldMap.entrySet()) {
             Object oldValue = entry.getValue();
             if (oldValue == null) {
                 continue;

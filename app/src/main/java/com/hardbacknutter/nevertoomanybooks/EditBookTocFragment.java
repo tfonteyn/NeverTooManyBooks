@@ -647,7 +647,7 @@ public class EditBookTocFragment
             final TocEntry item = getItem(position);
 
             holder.titleView.setText(item.getTitle());
-            holder.authorView.setText(item.getAuthor().getLabel());
+            holder.authorView.setText(item.getAuthor().getLabel(getContext()));
 
             String year = item.getFirstPublication();
             if (year.isEmpty()) {

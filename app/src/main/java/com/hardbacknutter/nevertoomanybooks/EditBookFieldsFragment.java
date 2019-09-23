@@ -102,7 +102,7 @@ public class EditBookFieldsFragment
             String title = fields.getField(R.id.title).getValue().toString();
             ArrayList<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
-            Intent intent = new Intent(getContext(), EditAuthorListActivity.class)
+            Intent intent = new Intent(getContext(), EditBookAuthorsActivity.class)
                     .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
                     .putExtra(DBDefinitions.KEY_TITLE, title)
                     .putExtra(DBDefinitions.KEY_LANGUAGE,
@@ -120,7 +120,7 @@ public class EditBookFieldsFragment
             String title = fields.getField(R.id.title).getValue().toString();
             ArrayList<Series> series = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
-            Intent intent = new Intent(getContext(), EditSeriesListActivity.class)
+            Intent intent = new Intent(getContext(), EditBookSeriesActivity.class)
                     .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
                     .putExtra(DBDefinitions.KEY_TITLE, title)
                     .putExtra(DBDefinitions.KEY_LANGUAGE,
@@ -337,7 +337,8 @@ public class EditBookFieldsFragment
         if (list.isEmpty()) {
             result = "";
         } else {
-            result = list.get(0).getLabel();
+            //noinspection ConstantConditions
+            result = list.get(0).getLabel(getContext());
             if (list.size() > 1) {
                 result += ' ' + getString(R.string.and_others);
             }
@@ -353,6 +354,8 @@ public class EditBookFieldsFragment
         Book book = mBookModel.getBook();
 
         ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-        getField(R.id.bookshelves).setValue(Csv.join(", ", list, Bookshelf::getLabel));
+        //noinspection ConstantConditions
+        getField(R.id.bookshelves)
+                .setValue(Csv.join(", ", list, bookshelf -> bookshelf.getLabel(getContext())));
     }
 }

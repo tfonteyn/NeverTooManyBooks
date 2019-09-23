@@ -100,10 +100,12 @@ public final class UniqueId {
 
     /** generic search text. */
     public static final String BKEY_SEARCH_TEXT = "searchText";
-    /** author search text. */
+    /** Author search text. */
     public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
-    /** title search text. */
+    /** Title search text. */
     public static final String BKEY_SEARCH_TITLE = "searchTitle";
+    /** Series title search text. */
+    public static final String BKEY_SEARCH_SERIES_TITLE = "searchSeriesTitle";
 
     /**
      * Search site flags as in {@link com.hardbacknutter.nevertoomanybooks.searches.SearchSites}.

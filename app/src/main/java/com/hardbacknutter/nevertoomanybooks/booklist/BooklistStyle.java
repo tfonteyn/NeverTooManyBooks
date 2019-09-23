@@ -191,6 +191,8 @@ public class BooklistStyle
     private long mId;
     /**
      * The uuid based SharedPreference name.
+     * <p>
+     * When set to the empty string, the global preferences will be used.
      */
     @NonNull
     private String mUuid;
@@ -247,6 +249,18 @@ public class BooklistStyle
      * <strong>IMPORTANT:</strong> The key in the Map is the actual preference key itself.
      */
     private Map<String, Filter> mAllFilters;
+
+    /**
+     * Global defaults constructor.
+     */
+    public BooklistStyle() {
+        mId = Integer.MIN_VALUE;
+        // empty indicates global
+        mUuid = "";
+        // must have a name res id to indicate it's not a user defined style.
+        mNameResId = android.R.string.untitled;
+        initPrefs();
+    }
 
     /**
      * Constructor for system-defined styles.
@@ -603,11 +617,6 @@ public class BooklistStyle
         mId = id;
     }
 
-    @Override
-    public String getLabel() {
-        throw new IllegalStateException("Use getLabel(Context)");
-    }
-
     /**
      * @param context Current context
      *
@@ -616,7 +625,7 @@ public class BooklistStyle
     @NonNull
     public String getLabel(@NonNull final Context context) {
         if (mNameResId != 0) {
-            return context.getString(mNameResId);
+            return App.getLocalizedAppContext().getString(mNameResId);
         } else {
             return mName.get();
         }
@@ -748,7 +757,7 @@ public class BooklistStyle
      * @return {@code true} when a background task should be used.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean extrasByTask() {
+    public boolean useTaskForExtras() {
         return mFetchExtrasByTask.isTrue();
     }
 
@@ -1096,6 +1105,11 @@ public class BooklistStyle
      */
     @NonNull
     public BooklistStyle clone(@NonNull final Context context) {
+        // sanity check
+        if (mUuid.isEmpty()) {
+            throw new IllegalStateException("mUuid.isEmpty()");
+        }
+
         Parcel parcel = Parcel.obtain();
         writeToParcel(parcel, 0);
         byte[] bytes = parcel.marshall();
@@ -1122,6 +1136,10 @@ public class BooklistStyle
         if (!isUserDefined()) {
             throw new IllegalStateException("Builtin Style cannot be saved to database");
         }
+        // sanity check
+        if (mUuid.isEmpty()) {
+            throw new IllegalStateException("mUuid.isEmpty()");
+        }
 
         // check if the style already exists.
         long existingId = db.getStyleIdByUuid(mUuid);
@@ -1144,6 +1162,10 @@ public class BooklistStyle
         // cannot delete a builtin or a 'new' style(id==0)
         if (mId == 0 || !isUserDefined()) {
             throw new IllegalArgumentException("Builtin Style cannot be deleted");
+        }
+        // sanity check
+        if (mUuid.isEmpty()) {
+            throw new IllegalStateException("mUuid.isEmpty()");
         }
 
         Helper.S_USER_STYLES.remove(mUuid);
@@ -1178,7 +1200,6 @@ public class BooklistStyle
 
         BooklistStyle that = (BooklistStyle) obj;
 
-        // should never happen, famous last words...
         if (mUuid.isEmpty() || that.mUuid.isEmpty()) {
             return false;
         }
@@ -1228,11 +1249,12 @@ public class BooklistStyle
             return App.isUsed(key) && mAllExtras.get(key).isTrue();
         }
 
-        return false;
+        // Convenience fallback
+        return App.isUsed(key);
     }
 
     /**
-     * Wrapper that gets the showAuthorGivenNameFirst flag from the Author group if we have it,
+     * Wrapper that gets the displayAuthorGivenNameFirst flag from the Author group if we have it,
      * or from the global defaults.
      *
      * @param context Current context
@@ -1249,7 +1271,7 @@ public class BooklistStyle
             }
         }
         // return the global default.
-        return BooklistGroup.BooklistAuthorGroup.globalShowGivenNameFirst(context);
+        return Prefs.displayAuthorGivenNameFirst(context);
     }
 
     @IntDef(flag = true, value = {

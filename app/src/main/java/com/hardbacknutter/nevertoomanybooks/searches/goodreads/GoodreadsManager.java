@@ -239,8 +239,8 @@ public class GoodreadsManager
     }
 
     @SuppressWarnings("unused")
-    static void resetTips() {
-        TipManager.reset(PREFS_HIDE_ALERT);
+    static void resetTips(@NonNull final Context context) {
+        TipManager.reset(context, PREFS_HIDE_ALERT);
     }
 
     /**

@@ -95,7 +95,8 @@ public interface BackupContainer {
      *
      * @param context Current context
      *
-     * @return {@code true} if valid
+     * @throws IOException on failure
      */
-    boolean canRead(@NonNull Context context);
+    void validate(@NonNull Context context)
+            throws IOException;
 }

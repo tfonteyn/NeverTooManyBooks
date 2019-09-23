@@ -38,7 +38,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 
@@ -96,7 +95,11 @@ public class BooklistGroup
 
     /** Flag indicating the style is user-defined -> our prefs must be persisted. */
     final boolean mIsUserDefinedStyle;
-    /** The name of the Preference file (comes from the style that contains this group. */
+    /**
+     * The name of the Preference file (comes from the style that contains this group.
+     * <p>
+     * When set to the empty string, the global preferences will be used.
+     */
     @NonNull
     final String mUuid;
     /** The kind of row/group we represent, see {@link RowKind}. */
@@ -419,18 +422,6 @@ public class BooklistGroup
             super(in);
             mAllAuthors.set(in);
             mGivenNameFirst.set(in);
-        }
-
-        /**
-         * Get the global default for this preference.
-         *
-         * @param context Current context
-         *
-         * @return {@code true} if we want "given-names last-name" formatted authors.
-         */
-        static boolean globalShowGivenNameFirst(@NonNull final Context context) {
-            return PreferenceManager.getDefaultSharedPreferences(context)
-                                    .getBoolean(Prefs.pk_bob_format_author_name, false);
         }
 
         @Override

@@ -34,6 +34,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.IOException;
 import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -168,7 +169,17 @@ public class BackupInfo {
     }
 
     public long getAppVersionCode() {
-        return mBundle.getLong(INFO_APP_VERSION_CODE);
+        // old archives used an Integer, newer use Long.
+        Object vo = mBundle.get(INFO_APP_VERSION_CODE);
+        if (vo == null) {
+            return 0;
+        } else {
+            try {
+                return (long) vo;
+            } catch (@NonNull final ClassCastException e) {
+                return 0;
+            }
+        }
     }
 
     /**
@@ -270,13 +281,17 @@ public class BackupInfo {
      * This is partially a debug method and partially a basic check to see if the info
      * block looks more or less correct.
      *
-     * @return {@code true} if valid
+     * @throws IOException on failure
      */
-    public boolean isValid() {
+    public void validate()
+            throws IOException {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Logger.debug(this, "isValid", mBundle.toString());
+            Logger.debug(this, "validate", mBundle.toString());
         }
+
         // extremely simple check: we assume that if one field is present, the rest will be there.
-        return mBundle.containsKey(INFO_ARCHIVER_VERSION);
+        if (!mBundle.containsKey(INFO_ARCHIVER_VERSION)) {
+            throw new IOException("info block lacks version field");
+        }
     }
 }

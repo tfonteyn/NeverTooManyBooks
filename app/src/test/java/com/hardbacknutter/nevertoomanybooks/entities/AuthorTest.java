@@ -54,6 +54,14 @@ class AuthorTest {
     }
 
     @Test
+    void fromString09() {
+        Author author = Author.fromString("James Tiptree, Jr.");
+        assertNotNull(author);
+        assertEquals("Tiptree Jr.", author.getFamilyName());
+        assertEquals("James", author.getGivenNames());
+    }
+
+    @Test
     void fromString10() {
         Author author = Author.fromString("Ursula Le Guin");
         assertNotNull(author);

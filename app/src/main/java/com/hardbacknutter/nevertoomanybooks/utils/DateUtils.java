@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * FIXME: Migrate to java.time.* ... which required Android 8.0 (API 26)
+ * ENHANCE: Migrate to java.time.* ... which required Android 8.0 (API 26)
  * or use this backport: https://github.com/JakeWharton/ThreeTenABP
  */
 public final class DateUtils {

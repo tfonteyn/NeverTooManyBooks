@@ -179,6 +179,7 @@ public class AdminFragment
         // Import from Archive
         root.findViewById(R.id.lbl_import_from_archive)
             .setOnClickListener(v -> {
+                // or should we use Intent.ACTION_OPEN_DOCUMENT ?
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                                         .addCategory(Intent.CATEGORY_OPENABLE)
                                         .setType("*/*");
@@ -206,6 +207,7 @@ public class AdminFragment
                         .setMessage(R.string.warning_import_be_cautious)
                         .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, which) -> {
+                            // or should we use Intent.ACTION_OPEN_DOCUMENT ?
                             Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                                                     .addCategory(Intent.CATEGORY_OPENABLE)
                                                     // Android bug? When using "text/csv"
@@ -604,6 +606,7 @@ public class AdminFragment
                         break;
                     }
                     case Failed: {
+                        // URGENT: when the user selects a bogus archive.. -> needs better err msg
                         String msg = getString(R.string.error_storage_not_readable) + "\n\n"
                                      + getString(R.string.error_if_the_problem_persists);
 
@@ -690,17 +693,15 @@ public class AdminFragment
 
         if (results.booksCreated > 0 || results.booksUpdated > 0) {
             msg.append("\n• ")
-               .append(getString(R.string.name_colon_value,
+               .append(getString(R.string.progress_msg_n_created_m_updated,
                                  getString(R.string.lbl_books),
-                                 getString(R.string.progress_msg_n_created_m_updated,
-                                           results.booksCreated, results.booksUpdated)));
+                                 results.booksCreated, results.booksUpdated));
         }
         if (results.coversCreated > 0 || results.coversUpdated > 0) {
             msg.append("\n• ")
-               .append(getString(R.string.name_colon_value,
+               .append(getString(R.string.progress_msg_n_created_m_updated,
                                  getString(R.string.lbl_covers),
-                                 getString(R.string.progress_msg_n_created_m_updated,
-                                           results.coversCreated, results.coversUpdated)));
+                                 results.coversCreated, results.coversUpdated));
         }
         if ((importHelper.options & Options.BOOK_LIST_STYLES) != 0) {
             msg.append("\n• ").append(getString(R.string.name_colon_value,

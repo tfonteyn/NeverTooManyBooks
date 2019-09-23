@@ -262,7 +262,7 @@ public class LibraryThingManager
     }
 
     /**
-     * @return the dev key, CAN BE EMPTY but won't be {@code null}
+     * @return the dev key, CAN BE EMPTY but never {@code null}
      */
     @NonNull
     private static String getDevKey() {
@@ -274,8 +274,8 @@ public class LibraryThingManager
     }
 
     @SuppressWarnings("unused")
-    static void resetTips() {
-        TipManager.reset(PREFS_HIDE_ALERT);
+    static void resetTips(@NonNull final Context context) {
+        TipManager.reset(context, PREFS_HIDE_ALERT);
     }
 
     /**

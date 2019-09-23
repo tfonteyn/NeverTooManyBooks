@@ -134,8 +134,8 @@
     <string name="btn_this_book">Dieses Buch</string>
     <string name="bytes">%.0fB</string>
     <string name="clear">Klar</string>
-    <string name="confirm_apply_author_changed">Der Autor wurde geändert von\n„%1$s“ in\n„%2$s“\nWie wollen Sie diese Änderung übernehmen?\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen.</string>
-    <string name="confirm_apply_series_changed">Die Serie wurde geändert von\n„%1$s“ in\n„%2$s“\nWie wollen Sie diese Änderung übernehmen?\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen.</string>
+    <string name="confirm_apply_author_changed">Der Autor wurde geändert von\n\n „%1$s“ in „%2$s“\n\nWie wollen Sie diese Änderung übernehmen?\n\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen.</string>
+    <string name="confirm_apply_series_changed">Die Serie wurde geändert von\n\n „%1$s“ in „%2$s“\n\nWie wollen Sie diese Änderung übernehmen?\n\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen.</string>
     <string name="confirm_delete_book">Dieser Vorgang löscht das Buch mit dem Titel „%1$s“ von „%2$s“ vollständig. Wollen Sie das Buch löschen?</string>
     <string name="confirm_delete_series">Soll die Serie „%1$s“ gelöscht werden?\n\nDie Bücher werden nicht gelöscht.\n\n Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können, um die Daten der Serie zu behalten.</string>
     <string name="confirm_delete_toc_entry">Den Eintrag „%1$s“ (von %2$s) wirklich löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
@@ -143,7 +143,7 @@
     <string name="confirm_merge_bookshelves">Das Regal, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
     <string name="confirm_overwrite_thumbnail">Die ausgewählten Felder werden wie gezeigt aktualisiert. Die Cover-Bilder können optional für ALLE Bücher heruntergeladen werden.\n\nSollen alle bestehenden Cover-Bilder überschrieben werden? Warnung, die Aktualisierung kann lange dauern.</string>
     <string name="debug_body">Bitte nehmen Sie sich Zeit, das aufgetretene Problem zu beschreiben.</string>
-    <string name="debug_send_info_text">Klicken Sie auf den Button unten, um Informationen über die letzten Abstürze der App zu sammeln und an einen der Entwickler zu schicken. Dieser Vorgang erstellt eine Sicherheitskopie Ihrer gesamten Datenbank und der Log-Dateien. Wenn Sie eine dieser Dateien nicht verschicken wollen, löschen Sie diese vor dem Senden aus dem Anhang.</string>
+    <string name="debug_send_info_text">Dieser Vorgang erstellt eine Sicherheitskopie Ihrer gesamten Datenbank sowie aller Protokolldateien erstellt und an die Entwickler gesendet. Wenn Sie eine dieser Dateien nicht verschicken wollen, löschen Sie diese vor dem Senden aus dem Anhang.</string>
     <string name="debug_subject">Gesammelte Debug-Informationen</string>
     <string name="done">Erledigt</string>
     <string name="edit">Bearbeiten</string>
@@ -361,7 +361,7 @@
     <string name="lbl_x_pages">%1$d seiten</string>
     <string name="lbl_year">Jahr</string>
     <string name="list_and">und</string>
-    <string name="lt_info">Diese App nutzt LibraryThing als Quelle für Buchinformationen und alternative Cover.\n Um diese Funktionalitäten nutzen zu können, müssen Sie sich bei LibraryThing registrieren (kostenlos) und einen Entwicklerschlüssel anfordern (ebenfalls kostenlos).</string>
+    <string name="lt_info">Diese App nutzt LibraryThing als Quelle für Buchinformationen und alternative Cover. Um diese Funktionalitäten nutzen zu können, müssen Sie sich bei LibraryThing registrieren (kostenlos) und einen Entwicklerschlüssel anfordern (ebenfalls kostenlos).</string>
     <string name="lt_key_is_correct">Ihr LibraryThing-Entwicklerschlüssel ist gültig.</string>
     <string name="lt_key_is_incorrect">Der eingegebene LibraryThing-Entwicklerschlüssel war falsch, oder es konnte keine Netzwerkverbindung zur Verifizierung hergestellt werden.</string>
     <string name="lt_lbl_key">Nachdem Sie einen Entwicklerschlüssel erhalten haben, geben Sie diesen unten ein.</string>
@@ -448,7 +448,7 @@
     <string name="progress_msg_finding_editions">Suche Ausgaben…</string>
     <string name="title_importing">Importiere…</string>
     <string name="progress_msg_loading">Lade…</string>
-    <string name="progress_msg_n_created_m_updated">%1$d erzeugt, %2$d aktualisiert</string>
+    <string name="progress_msg_n_created_m_updated">%1$s: %2$d erzeugt, %3$d aktualisiert</string>
     <string name="progress_msg_optimizing">Datenbanken werden optimiert…</string>
     <string name="progress_msg_please_wait">Warten Sie mal…</string>
     <string name="progress_msg_process_booklist_style">Bücherlistenstile…</string>
@@ -544,8 +544,7 @@
     <string name="tip_reset_all">Hinweise zurücksetzen</string>
     <string name="tip_reset_done">Hinweise wurden zurückgesetzt</string>
     <string name="tip_series_book_may_appear_more_than_once">Ein Buch kann mehrfach in einer Liste erscheinen, wenn es bei jeder Serie angezeigt wird. In diesem Fall führt das Löschen eines Buchs zum Löschen aller Vorkommen von der Liste.</string>
-    <string name="tip_view_only_book_details">Nach einem Klick auf einen Eintrag in dieser Liste können Sie zu einer schreibgeschützten Ansicht der Buchdetails wechseln. Siehe „Weitere Einstellungen“ für die relevante Einstellung.</string>
-    <string name="tip_view_only_help">Das ist die schreibgeschützte Ansicht der Buchdetails; Sie können nach links oder rechts wischen, um zu anderen Büchern zu wechseln, und ein Buch über das Menü „Einstellungen“ mit Hilfe des Menü-Buttons oder des Menü-Symbols bearbeiten.</string>
+    <string name="tip_view_only_help">Sie können nach links oder rechts wischen, um zu anderen Büchern zu wechseln</string>
     <string name="title_add_book">Buch hinzufügen</string>
     <string name="X_title_backup">Sicherungskopie</string>
     <string name="title_clone_style">Stil klonen</string>
@@ -616,13 +615,13 @@
     <string name="x_of_y">%1$d von %2$d</string>
     <string name="yes">Ja</string>
     <string name="lbl_edition_slipcase">Schuber</string>
-    <string name="lbl_author_translator">Übersetzer</string>
-    <string name="lbl_author_other">Andere</string>
-    <string name="lbl_author_editor">Editor</string>
-    <string name="lbl_author_contributor">Mitarbeiter</string>
-    <string name="lbl_artist_colorist">Farbe</string>
+    <string name="lbl_author_type_translator">Übersetzer</string>
+    <string name="X_lbl_author_other">Andere</string>
+    <string name="lbl_author_type_editor">Editor</string>
+    <string name="lbl_author_type_contributor">Mitarbeiter</string>
+    <string name="lbl_author_type_colorist">Farbe</string>
     <string name="tip_update_fields_from_internet">Externe Site-Links werden nur verarbeitet, wenn die Site tatsächlich kontaktiert wird. Infolgedessen zeigt das Menü „Anschauen auf…“ ebenfalls nur, was verfügbar ist.</string>
-    <string name="lbl_author_secondary">Mitverfasser</string>
+    <string name="X_lbl_author_secondary">Mitverfasser</string>
     <string name="lbl_author_type">Autorentyp</string>
     <string name="pt_bob_show_details_uses_task_off">sofort</string>
     <string name="progress_end_import_partially_complete">Teilweise importiert</string>

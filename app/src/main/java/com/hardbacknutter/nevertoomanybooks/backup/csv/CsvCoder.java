@@ -191,7 +191,10 @@ public final class CsvCoder {
                         // start with a space for readability
                         // the surrounding () are NOT escaped as they are part of the format.
                         result += " (" + escape(series.getNumber(), '(') + ')';
-                    }
+                    } // else {
+                    //     // Adding an empty number makes an import more fool proof.
+                    //     result += " ()";
+                    // }
 
                     JSONObject details = new JSONObject();
                     try {

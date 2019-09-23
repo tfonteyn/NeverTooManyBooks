@@ -181,6 +181,9 @@ public abstract class BaseActivity
 
         switch (item.getItemId()) {
             case R.id.nav_search:
+                //FIXME: onSearchRequested only functional when current Activity is BoB
+                // i.o.w. it works because BoB overrides it... and not 'thanks' to the search API.
+                // https://developer.android.com/guide/topics/search/search-dialog
                 onSearchRequested();
                 return true;
 

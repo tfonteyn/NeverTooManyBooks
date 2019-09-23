@@ -155,7 +155,7 @@ public class GoodreadsSearchActivity
         }
     }
 
-    private void onBookNoLongerExists(final Boolean flag) {
+    private void onBookNoLongerExists(@NonNull final Boolean flag) {
         if (flag) {
             UserMessage.show(mSearchTextView, R.string.warning_book_no_longer_exists);
         }
@@ -194,7 +194,7 @@ public class GoodreadsSearchActivity
         mModel.search(mSearchTextView.getText().toString().trim());
     }
 
-    private void onSearchResult(final List<GoodreadsWork> goodreadsWorks) {
+    private void onSearchResult(@Nullable final List<GoodreadsWork> goodreadsWorks) {
         mWorks.clear();
         if (goodreadsWorks != null && !goodreadsWorks.isEmpty()) {
             mWorks.addAll(goodreadsWorks);

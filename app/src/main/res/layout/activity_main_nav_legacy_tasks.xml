@@ -51,6 +51,16 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             />
 
+        <FrameLayout
+            android:id="@+id/progressOverlay"
+            style="@style/ProgressOverlay"
+            android:layout_gravity="center"
+            tools:visibility="visible"
+            >
+
+            <include layout="@layout/dialog_task_progress" />
+        </FrameLayout>
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             style="@style/FAB"

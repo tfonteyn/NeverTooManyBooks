@@ -350,9 +350,49 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- Single use / specialised styles -->
+    <!-- Flags == Read-only "CheckBox" with custom 'check/invisible' icon in our custom color. -->
     <!-- *************************************************************************************** -->
 
+    <!-- Base Flag; not to be used directly in layouts -->
+    <style name="Flag">
+        <!-- Using 'Theme.AppCompat' a wrap_content/wrap_content worked fine.
+             Since using 'Theme.MaterialComponents' it had to be set to 24/24 (i.e. icon size) -->
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:enabled">false</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+    </style>
+
+    <!-- Generic Indicator. -->
+    <style name="Flag.Generic">
+        <item name="android:button">@drawable/ic_selector_check</item>
+        <item name="android:buttonTint">?attr/checked_icon_tint</item>
+    </style>
+
+    <!-- Indicator a book has been read. -->
+    <style name="Flag.Read">
+        <item name="android:button">@drawable/ic_selector_read</item>
+        <item name="android:buttonTint">?attr/checked_icon_tint</item>
+    </style>
+
+    <!-- Indicator a book has been lend out. -->
+    <style name="Flag.OnLoan">
+        <item name="android:button">@drawable/ic_selector_on_loan</item>
+        <item name="android:buttonTint">?attr/colorError</item>
+    </style>
+
+    <!-- Indicator a story (TOC entry) is present in multiple books -->
+    <style name="Flag.MultipleBooks">
+        <item name="android:button">@drawable/ic_selector_multiple_books</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+    <!-- BooklistBook various -->
+    <!-- *************************************************************************************** -->
+
+    <!-- Booklist; not to be used directly in layouts -->
     <style name="BooklistBook">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -431,40 +471,9 @@
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <!-- Read-only "CheckBox" with custom 'check/invisible' icon in our custom color. -->
-    <style name="Flag">
-        <!-- Using 'Theme.AppCompat' a wrap_content/wrap_content worked fine.
-             Since using 'Theme.MaterialComponents' it had to be set to 24/24 (i.e. icon size) -->
-        <item name="android:layout_width">24dp</item>
-        <item name="android:layout_height">24dp</item>
-        <item name="android:enabled">false</item>
-        <item name="android:clickable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:focusableInTouchMode">false</item>
-    </style>
-
-    <!-- Generic Indicator. -->
-    <style name="Flag.Generic">
-        <item name="android:button">@drawable/ic_selector_check</item>
-        <item name="android:buttonTint">?attr/checked_icon_tint</item>
-    </style>
-
-    <!-- Indicator a book has been read. -->
-    <style name="Flag.Read">
-        <item name="android:button">@drawable/ic_selector_read</item>
-        <item name="android:buttonTint">?attr/checked_icon_tint</item>
-    </style>
-
-    <!-- Indicator a book has been lend out. -->
-    <style name="Flag.OnLoan">
-        <item name="android:button">@drawable/ic_selector_on_loan</item>
-        <item name="android:buttonTint">?attr/colorError</item>
-    </style>
-
-    <!-- Indicator a story (TOC entry) is present in multiple books -->
-    <style name="Flag.MultipleBooks">
-        <item name="android:button">@drawable/ic_selector_multiple_books</item>
-    </style>
+    <!-- *************************************************************************************** -->
+    <!-- Single use / specialised styles -->
+    <!-- *************************************************************************************** -->
 
     <!-- clickable URL -->
     <style name="Url">
@@ -490,10 +499,9 @@
         <item name="android:fitsSystemWindows">true</item>
     </style>
 
-    <style name="Toolbar">
+    <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minHeight">?android:attr/actionBarSize</item>
         <item name="android:background">?android:attr/colorPrimary</item>
         <item name="android:elevation">4dp</item>
     </style>
@@ -522,8 +530,16 @@
         <item name="android:background">?android:attr/colorBackgroundFloating</item>
     </style>
 
+    <!-- A button as wide as the screen. -->
+    <style name="WideButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_margin">@dimen/border2</item>
+    </style>
+
     <!-- generic FAB button. -->
-    <style name="FAB" parent="Widget.Design.FloatingActionButton">
+    <style name="FAB" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|end</item>
@@ -540,8 +556,7 @@
         <item name="android:translationX">@dimen/fab_menu_translationX</item>
     </style>
 
-    <!-- Keys on the isbn search keyboard.
-     Must extend system style so Button/ImageButton (the 'del' key below) looks the same -->
+    <!-- Keys on the isbn search keyboard. -->
     <style name="IsbnSearchKey" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">75dp</item>
@@ -555,6 +570,7 @@
         <item name="android:src">@drawable/ic_backspace</item>
         <item name="android:tint">?attr/colorOnPrimary</item>
     </style>
+
 
     <!-- *************************************************************************************** -->
 </resources>

@@ -99,14 +99,14 @@ public class GoodreadsRegistrationActivity
 
         // Forget credentials
         View blurb = findViewById(R.id.forget_blurb);
-        View blurbButton = findViewById(R.id.btn_delete_credentials);
+        View removeButton = findViewById(R.id.btn_delete_credentials);
         if (GoodreadsManager.hasCredentials()) {
             blurb.setVisibility(View.VISIBLE);
-            blurbButton.setVisibility(View.VISIBLE);
-            blurbButton.setOnClickListener(v -> GoodreadsManager.resetCredentials());
+            removeButton.setVisibility(View.VISIBLE);
+            removeButton.setOnClickListener(v -> GoodreadsManager.resetCredentials());
         } else {
             blurb.setVisibility(View.GONE);
-            blurbButton.setVisibility(View.GONE);
+            removeButton.setVisibility(View.GONE);
         }
     }
 

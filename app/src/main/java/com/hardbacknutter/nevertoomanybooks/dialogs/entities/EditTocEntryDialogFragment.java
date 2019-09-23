@@ -139,7 +139,8 @@ public class EditTocEntryDialogFragment
                                        mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
             mAuthorTextView.setAdapter(authorAdapter);
 
-            mAuthorTextView.setText(mTocEntry.getAuthor().getLabel());
+            mAuthorTextView.setText(mTocEntry.getAuthor().getLabel(getContext()));
+            mAuthorTextView.selectAll();
             mAuthorTextView.setVisibility(View.VISIBLE);
         } else {
             mAuthorTextView.setVisibility(View.GONE);

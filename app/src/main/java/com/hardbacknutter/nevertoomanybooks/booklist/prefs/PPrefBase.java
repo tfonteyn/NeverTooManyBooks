@@ -33,6 +33,7 @@ import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 
@@ -52,13 +53,17 @@ public abstract class PPrefBase<T>
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     final T mDefaultValue;
+
     /**
      * Copy of the style uuid this Preference belongs to.
      * Convenience only and not locally preserved.
      * Must be set in the constructor.
+     *
+     * When set to the empty string, the global preferences will be used.
      */
     @NonNull
     private final String mUuid;
+
     /** key for the Preference. */
     @NonNull
     private final String mKey;
@@ -84,8 +89,28 @@ public abstract class PPrefBase<T>
         mDefaultValue = defaultValue;
     }
 
+    /**
+     * Get the style preferences, or if the UUID is not set, the global preferences.
+     *
+     * @return preferences
+     */
+    @NonNull
     SharedPreferences getPrefs() {
-        return App.getAppContext().getSharedPreferences(mUuid, Context.MODE_PRIVATE);
+        if (mUuid.isEmpty()) {
+            return PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+        } else {
+            return App.getAppContext().getSharedPreferences(mUuid, Context.MODE_PRIVATE);
+        }
+    }
+
+    /**
+     * Get the global preferences to get the global default values.
+     *
+     * @return global preferences
+     */
+    @NonNull
+    SharedPreferences getGlobal() {
+        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
     }
 
     /**

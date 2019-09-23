@@ -108,7 +108,10 @@ public class PBitmask
         } else {
             Set<String> value = getPrefs().getStringSet(getKey(), null);
             if (value == null || value.isEmpty()) {
-                return mDefaultValue;
+                value = getGlobal().getStringSet(getKey(), null);
+                if (value == null || value.isEmpty()) {
+                    return mDefaultValue;
+                }
             }
             return Prefs.toInteger(value);
         }

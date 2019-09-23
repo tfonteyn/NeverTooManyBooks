@@ -335,7 +335,7 @@ public class PartialDatePickerDialogFragment
         private final NumberPicker.OnValueChangeListener mOnValueChangeListener =
                 new NumberPicker.OnValueChangeListener() {
                     @Override
-                    public void onValueChange(final NumberPicker picker,
+                    public void onValueChange(@NonNull final NumberPicker picker,
                                               final int oldVal,
                                               final int newVal) {
                         switch (picker.getId()) {

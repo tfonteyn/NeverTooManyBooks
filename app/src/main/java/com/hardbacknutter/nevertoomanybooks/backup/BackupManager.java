@@ -78,9 +78,7 @@ public final class BackupManager {
         // We only support one backup format; so we use that.
         BackupContainer bkp = new TarBackupContainer(uri);
         // Each format should provide a validator of some kind
-        if (!bkp.canRead(context)) {
-            throw new IOException("not a valid archive");
-        }
+        bkp.validate(context);
 
         return bkp.newReader(context);
     }
@@ -136,8 +134,7 @@ public final class BackupManager {
     static void setLastFullBackupDate(@NonNull final Context context) {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
-                         .putString(PREF_LAST_FULL_BACKUP_DATE,
-                                    DateUtils.utcSqlDateTimeForToday())
+                         .putString(PREF_LAST_FULL_BACKUP_DATE, DateUtils.utcSqlDateTimeForToday())
                          .apply();
     }
 

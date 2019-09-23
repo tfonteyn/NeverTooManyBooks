@@ -43,38 +43,32 @@
         android:layout_height="match_parent"
         >
 
+        <include layout="@layout/inc_appbar" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             >
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                style="@style/Toolbar"
-                android:layout_width="0dp"
-                app:layout_constraintEnd_toEndOf="parent"
+            <!-- the header with the Bookshelf Spinner and information lines -->
+            <TextView
+                android:id="@+id/book_count"
+                style="@style/BooklistBook.Header.Text.Small"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/bookshelf_name"
+                app:layout_constraintBottom_toBottomOf="@id/bookshelf_name"
+                tools:text="@string/info_displaying_n_books_in_m_entries"
                 />
 
-            <!-- the header with the Bookshelf Spinner and information lines -->
             <Spinner
                 android:id="@+id/bookshelf_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/book_count"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toolbar"
-                />
-
-            <TextView
-                android:id="@+id/book_count"
-                style="@style/BooklistBook.Header.Text.Small"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/book_count"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/bookshelf_name"
-                app:layout_constraintBottom_toBottomOf="@id/bookshelf_name"
-                tools:text="@string/info_displaying_n_books_in_m_entries"
                 />
 
             <TextView

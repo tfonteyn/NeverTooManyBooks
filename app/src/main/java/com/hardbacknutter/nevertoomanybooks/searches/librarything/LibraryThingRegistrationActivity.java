@@ -30,12 +30,15 @@ package com.hardbacknutter.nevertoomanybooks.searches.librarything;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 
@@ -67,7 +70,7 @@ public class LibraryThingRegistrationActivity
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_admin_librarything;
+        return R.layout.activity_librarything_register;
     }
 
     @Override
@@ -90,7 +93,10 @@ public class LibraryThingRegistrationActivity
         String key = SearchEngine.getPref().getString(LibraryThingManager.PREFS_DEV_KEY, "");
         mDevKeyView.setText(key);
 
-        findViewById(R.id.confirm).setOnClickListener(v -> {
+        FloatingActionButton fabButton = findViewById(R.id.fab);
+        fabButton.setImageResource(R.drawable.ic_save);
+        fabButton.setVisibility(View.VISIBLE);
+        fabButton.setOnClickListener(v -> {
             String devKey = mDevKeyView.getText().toString().trim();
             SearchEngine.getPref()
                         .edit()

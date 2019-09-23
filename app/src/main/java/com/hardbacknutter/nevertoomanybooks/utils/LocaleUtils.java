@@ -108,7 +108,6 @@ public final class LocaleUtils {
         return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                                 .getString(Prefs.pk_ui_language, SYSTEM_LANGUAGE);
     }
-
     /**
      * Test if the passed Locale is actually a 'real' Locale
      * by comparing the ISO3 code and the display name. If they are different we assume 'valid'

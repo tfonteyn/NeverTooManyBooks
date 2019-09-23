@@ -105,8 +105,8 @@ public class Series
             + "\\s*"
             // Capture the number group
             + "("
-            // numeric numerals allowing for .-_
-            + /* */ "[0-9.\\-_]+"
+            // numeric numerals allowing for .-_ but must start with a digit.
+            + /* 2019-09-23: */ "[0-9][0-9.\\-_]*"
             // optional alphanumeric suffix.
             + /* */ "\\S*?"
 
@@ -124,6 +124,9 @@ public class Series
     /**
      * Parse a string into title + number. Used by {@link #fromString(String)}.
      * Formats supported: see unit test for this class.
+     *
+     * FAIL: "Blake's 7" and similar Series titles will fail UNLESS there is an actual number:
+     * i.e. "Blake's 7 1" should give "Blake's 7" and number 1
      */
     private static final String TITLE_NUMBER_REGEXP =
             // whitespace at the start
@@ -231,6 +234,11 @@ public class Series
         if (matcher.find()) {
             //noinspection ConstantConditions
             return fromString(matcher.group(1), matcher.group(2));
+        }
+
+        // HORRENDOUS, HORRIBLE HACK...
+        if (fullTitle.equalsIgnoreCase("Blake's 7")) {
+            return new Series(fullTitle);
         }
 
         // We now know that brackets do NOT separate the number part
@@ -426,7 +434,7 @@ public class Series
      * @return User visible title; consisting of "title" or "title (nr)"
      */
     @NonNull
-    public String getLabel() {
+    public String getLabel(@NonNull final Context context) {
         if (!mNumber.isEmpty()) {
             return mTitle + " (" + mNumber + ')';
         } else {
@@ -438,8 +446,12 @@ public class Series
      * @return the title suitable for sorting (on screen)
      */
     @NonNull
-    public String getSortingTitle() {
-        return getLabel();
+    public String getSorting() {
+        if (!mNumber.isEmpty()) {
+            return mTitle + " (" + mNumber + ')';
+        } else {
+            return mTitle;
+        }
     }
 
     /**
@@ -473,7 +485,7 @@ public class Series
     }
 
     /**
-     * TEST: Replace local details from another series.
+     * Replace local details from another series.
      *
      * @param source            Series to copy from
      * @param includeBookFields Flag to force copying the Book related fields as well

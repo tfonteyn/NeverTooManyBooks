@@ -27,117 +27,134 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FTSSearchActivity"
     >
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        style="@style/Toolbar"
-        android:layout_width="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+    <include layout="@layout/inc_appbar" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/indent_fields"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/indent3"
+            />
+
+        <TextView
+            android:id="@+id/lbl_author"
+            style="@style/Label.Field"
+            android:text="@string/lbl_author"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <!-- no style used on purpose -->
+        <EditText
+            android:id="@+id/author"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/lbl_author"
+            android:inputType="textMultiLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_author"
+            tools:ignore="Autofill"
+            />
+
+        <TextView
+            android:id="@+id/lbl_title"
+            style="@style/Label.Field"
+            android:text="@string/lbl_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/author"
+            />
+
+        <!-- no style used on purpose -->
+        <EditText
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/lbl_title"
+            android:inputType="textMultiLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            tools:ignore="Autofill"
+            />
+
+        <TextView
+            android:id="@+id/lbl_series"
+            style="@style/Label.Field"
+            android:text="@string/lbl_series"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            />
+
+        <!-- no style used on purpose -->
+        <EditText
+            android:id="@+id/series"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/lbl_series"
+            android:inputType="textMultiLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_series"
+            tools:ignore="Autofill"
+            />
+
+        <TextView
+            android:id="@+id/lbl_keywords"
+            style="@style/Label.Field"
+            android:text="@string/lbl_keywords"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/series"
+            />
+
+        <!-- no style used on purpose -->
+        <EditText
+            android:id="@+id/keywords"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/lbl_keywords"
+            android:inputType="textMultiLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_keywords"
+            tools:ignore="Autofill"
+            />
+
+        <TextView
+            android:id="@+id/books_found"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textIsSelectable="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/keywords"
+            tools:text="# books found"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        style="@style/FAB"
+        android:src="@drawable/ic_search"
         />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/indent_fields"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/indent3"
-        />
-
-    <TextView
-        android:id="@+id/lbl_author"
-        style="@style/Label.Field"
-        android:text="@string/lbl_author"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        />
-
-    <!-- no style used on purpose -->
-    <EditText
-        android:id="@+id/author"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/lbl_author"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
-        app:layout_constraintTop_toBottomOf="@id/lbl_author"
-        tools:ignore="Autofill"
-        />
-
-    <TextView
-        android:id="@+id/lbl_title"
-        style="@style/Label.Field"
-        android:text="@string/lbl_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author"
-        />
-
-    <!-- no style used on purpose -->
-    <EditText
-        android:id="@+id/title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/lbl_title"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
-        app:layout_constraintTop_toBottomOf="@id/lbl_title"
-        tools:ignore="Autofill"
-        />
-
-    <TextView
-        android:id="@+id/lbl_keywords"
-        style="@style/Label.Field"
-        android:text="@string/lbl_keywords"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        />
-
-    <!-- no style used on purpose -->
-    <EditText
-        android:id="@+id/keywords"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/lbl_keywords"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
-        app:layout_constraintTop_toBottomOf="@id/lbl_keywords"
-        tools:ignore="Autofill"
-        />
-
-    <TextView
-        android:id="@+id/books_found"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textIsSelectable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/keywords"
-        tools:text="# books found"
-        />
-
-    <Button
-        android:id="@+id/btn_search"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/border3"
-        android:text="@string/btn_show_results"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/books_found"
-        />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

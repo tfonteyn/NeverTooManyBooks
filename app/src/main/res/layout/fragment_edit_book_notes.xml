@@ -233,21 +233,13 @@
             tools:checked="true"
             />
 
-        <View
-            android:id="@+id/notes_divider"
-            style="@style/HorizontalDivider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cbx_signed"
-            />
-
         <TextView
             android:id="@+id/lbl_notes"
             style="@style/Label.Field"
             android:labelFor="@id/notes"
             android:text="@string/lbl_personal_notes"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/notes_divider"
+            app:layout_constraintTop_toBottomOf="@id/cbx_signed"
             />
 
         <EditText

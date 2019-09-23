@@ -489,7 +489,7 @@ public class DataManager {
         boolean isOk = true;
         mValidationExceptions.clear();
 
-        for (final Map.Entry<String, DataValidator> entry : mValidatorsMap.entrySet()) {
+        for (Map.Entry<String, DataValidator> entry : mValidatorsMap.entrySet()) {
             try {
                 entry.getValue().validate(this, entry.getKey());
             } catch (@NonNull final ValidatorException e) {

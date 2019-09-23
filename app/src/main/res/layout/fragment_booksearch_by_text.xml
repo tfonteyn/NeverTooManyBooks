@@ -27,111 +27,119 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/topScroller"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/border1"
+    android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".BookSearchActivity"
     >
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/indent_fields"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/indent3"
-        />
+        android:layout_margin="@dimen/border1"
+        >
 
-    <TextView
-        android:id="@+id/lbl_author"
-        style="@style/Label.Field"
-        android:text="@string/lbl_author"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/indent_fields"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/indent3"
+            />
 
-    <AutoCompleteTextView
-        android:id="@+id/author"
-        style="@style/personalNameTextEntry"
-        android:hint="@string/lbl_author"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
-        app:layout_constraintTop_toBottomOf="@id/lbl_author"
-        />
+        <TextView
+            android:id="@+id/lbl_author"
+            style="@style/Label.Field"
+            android:text="@string/lbl_author"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
-    <TextView
-        android:id="@+id/lbl_title"
-        style="@style/Label.Field"
-        android:text="@string/lbl_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author"
-        />
+        <AutoCompleteTextView
+            android:id="@+id/author"
+            style="@style/personalNameTextEntry"
+            android:hint="@string/lbl_author"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_author"
+            />
 
-    <EditText
-        android:id="@+id/title"
-        style="@style/titleTextEntry"
-        android:hint="@string/lbl_title"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
-        app:layout_constraintTop_toBottomOf="@id/lbl_title"
-        tools:ignore="Autofill"
-        />
+        <TextView
+            android:id="@+id/lbl_title"
+            style="@style/Label.Field"
+            android:text="@string/lbl_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/author"
+            />
 
-    <!-- made visible from code if applicable -->
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/publisher_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="lbl_publisher,publisher_info,publisher"
-        />
+        <EditText
+            android:id="@+id/title"
+            style="@style/titleTextEntry"
+            android:hint="@string/lbl_title"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            tools:ignore="Autofill"
+            />
 
-    <TextView
-        android:id="@+id/lbl_publisher"
-        style="@style/Label.Field"
-        android:text="@string/lbl_publisher"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        />
+        <!-- made visible from code if applicable -->
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/publisher_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="lbl_publisher,publisher_info,publisher"
+            />
 
-    <TextView
-        android:id="@+id/publisher_info"
-        style="@style/Label.Field"
-        android:paddingStart="@dimen/border2"
-        android:text="@string/warning_isfdb_only"
-        android:visibility="gone"
-        app:layout_constraintStart_toEndOf="@id/lbl_publisher"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        tools:ignore="RtlSymmetry"
-        />
+        <TextView
+            android:id="@+id/lbl_publisher"
+            style="@style/Label.Field"
+            android:text="@string/lbl_publisher"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            />
 
-    <EditText
-        android:id="@+id/publisher"
-        style="@style/personalNameTextEntry"
-        android:hint="@string/lbl_publisher"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
-        app:layout_constraintTop_toBottomOf="@id/publisher_info"
-        tools:ignore="Autofill"
-        />
+        <TextView
+            android:id="@+id/publisher_info"
+            style="@style/Label.Field"
+            android:paddingStart="@dimen/border2"
+            android:text="@string/warning_isfdb_only"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/lbl_publisher"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:ignore="RtlSymmetry"
+            />
 
-    <Button
-        android:id="@+id/btn_search"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/border3"
-        android:text="@string/btn_search"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/publisher"
-        />
+        <EditText
+            android:id="@+id/publisher"
+            style="@style/personalNameTextEntry"
+            android:hint="@string/lbl_publisher"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/publisher_info"
+            tools:ignore="Autofill"
+            />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/border3"
+            android:text="@string/btn_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/publisher"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

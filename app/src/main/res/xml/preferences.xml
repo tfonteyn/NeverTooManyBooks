@@ -307,6 +307,15 @@
 
     <PreferenceCategory
         android:title="@string/pg_booklist">
+        <!-- edit the global defaults for styles.
+        WORK IN PROGRESS, HAS ISSUES, CRASHES due to not passing 'extras' with the tag name -->
+        <!--        <PreferenceScreen-->
+        <!--       android:fragment="com.hardbacknutter.nevertoomanybooks.settings.StyleSettingsFragment"-->
+        <!--            android:icon="@drawable/ic_details"-->
+        <!--            android:key="psk_styles"-->
+        <!--            android:title="@string/lbl_styles"-->
+        <!--            />-->
+
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_state"

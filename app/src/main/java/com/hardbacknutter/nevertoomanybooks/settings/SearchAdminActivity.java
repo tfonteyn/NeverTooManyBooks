@@ -85,7 +85,7 @@ public class SearchAdminActivity
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_admin_search;
+        return R.layout.activity_main_tabs;
     }
 
     @Override

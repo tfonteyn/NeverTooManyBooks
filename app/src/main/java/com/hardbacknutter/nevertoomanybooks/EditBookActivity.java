@@ -51,7 +51,7 @@ public class EditBookActivity
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_edit_book;
+        return R.layout.activity_main_nav_tabs;
     }
 
     @Override

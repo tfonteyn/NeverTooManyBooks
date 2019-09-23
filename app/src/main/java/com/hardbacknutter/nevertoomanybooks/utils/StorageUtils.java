@@ -81,6 +81,12 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * see {@link #renameFile(File, File)}
  * <p>
  * TODO: ExternalStorageException added were appropriate, but other then here we don't catch them.
+ *
+ * ENHANCE: using the private directories was an improvement (and mandatory to target Android 10)
+ * but would be nice to use the contentResolver API and keep our covers in a sub directory
+ * of the users Pictures folder.
+ * PRO: preserved on uninstall; user has full access.
+ * CON: added to the user media, which could be overload.
  */
 public final class StorageUtils {
 

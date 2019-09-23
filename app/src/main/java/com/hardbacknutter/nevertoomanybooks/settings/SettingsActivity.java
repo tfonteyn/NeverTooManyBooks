@@ -105,8 +105,10 @@ public class SettingsActivity
     private Fragment createFragment(@NonNull final String tag) {
         if (GlobalSettingsFragment.TAG.equals(tag)) {
             return new GlobalSettingsFragment();
+
         } else if (StyleSettingsFragment.TAG.equals(tag)) {
             return new StyleSettingsFragment();
+
         } else {
             throw new UnexpectedValueException(tag);
         }
