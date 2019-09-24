@@ -121,37 +121,36 @@ public class EditPublisherDialogFragment
         mNameView.setAdapter(mAdapter);
 
         return new AlertDialog.Builder(getContext())
-                       .setIcon(R.drawable.ic_edit)
-                       .setView(root)
-                       .setTitle(R.string.lbl_publisher)
-                       .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                       .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
-                           mName = mNameView.getText().toString().trim();
-                           if (mName.isEmpty()) {
-                               UserMessage.show(mNameView, R.string.warning_missing_name);
-                               return;
-                           }
-                           dismiss();
+                .setIcon(R.drawable.ic_edit)
+                .setView(root)
+                .setTitle(R.string.lbl_publisher)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
+                    mName = mNameView.getText().toString().trim();
+                    if (mName.isEmpty()) {
+                        UserMessage.show(mNameView, R.string.warning_missing_name);
+                        return;
+                    }
+                    dismiss();
 
-                           if (mPublisher.getName().equals(mName)) {
-                               return;
-                           }
-                           mDb.updatePublisher(mPublisher.getName(), mName);
+                    if (mPublisher.getName().equals(mName)) {
+                        return;
+                    }
+                    mDb.updatePublisher(mPublisher.getName(), mName);
 
-                           Bundle data = new Bundle();
-                           data.putString(DBDefinitions.KEY_PUBLISHER, mPublisher.getName());
-                           if (mBookChangedListener.get() != null) {
-                               mBookChangedListener.get()
-                                                   .onBookChanged(0, BookChangedListener.PUBLISHER,
-                                                                  data);
-                           } else {
-                               if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                                   Logger.debug(this, "onBookChanged",
-                                                Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
-                               }
-                           }
-                       })
-                       .create();
+                    Bundle data = new Bundle();
+                    data.putString(DBDefinitions.KEY_PUBLISHER, mPublisher.getName());
+                    if (mBookChangedListener.get() != null) {
+                        mBookChangedListener.get().onBookChanged(0, BookChangedListener.PUBLISHER,
+                                                                 data);
+                    } else {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                            Logger.debug(this, "onBookChanged",
+                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                        }
+                    }
+                })
+                .create();
     }
 
     @Override

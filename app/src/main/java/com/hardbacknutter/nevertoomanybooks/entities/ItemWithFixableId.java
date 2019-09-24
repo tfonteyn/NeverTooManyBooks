@@ -122,7 +122,7 @@ public interface ItemWithFixableId {
     }
 
     /**
-     * Get the locale of the actual item; e.g. a book written in Spanish should
+     * Get the Locale of the actual item; e.g. a book written in Spanish should
      * return an Spanish Locale even if for example the user runs the app in German,
      * and the device in Danish.
      *

@@ -175,8 +175,7 @@ public class EditBookshelfDialogFragment
         } else {
             long styleId = mBookshelf.getStyle(mDb).getId();
             //noinspection ConstantConditions
-            Locale locale = LocaleUtils.getLocale(getContext());
-            if (mDb.updateOrInsertBookshelf(getContext(), locale, mBookshelf, styleId)) {
+            if (mDb.updateOrInsertBookshelf(getContext(), mBookshelf, styleId)) {
                 if (mListener.get() != null) {
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
                 } else {

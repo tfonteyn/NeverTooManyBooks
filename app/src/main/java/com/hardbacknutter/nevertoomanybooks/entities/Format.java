@@ -72,10 +72,11 @@ public final class Format {
 
         // KBNL, not already listed above.
         MAPPER.put("geb.", R.string.book_format_hardcover);
+        MAPPER.put("gebonden", R.string.book_format_hardcover);
 
-        // Seen elsewhere, not activated for now.
-        // MAPPER.put("hardback, R.string.book_format_hardcover);
-        // MAPPER.put("gebonden, R.string.book_format_hardcover);
+        // Others as seen in the wild
+        MAPPER.put("hardback", R.string.book_format_hardcover);
+
     }
 
     private Format() {
@@ -91,10 +92,9 @@ public final class Format {
      * @return localized equivalent, or the source if no mapping exists.
      */
     public static String map(@NonNull final Context context,
-                             @NonNull final Locale locale,
                              @NonNull final String source) {
         LocaleUtils.insanityCheck(context);
-        Integer resId = MAPPER.get(source.toLowerCase(locale));
+        Integer resId = MAPPER.get(source.toLowerCase(Locale.getDefault()));
         return resId != null ? context.getString(resId) : source;
     }
 }

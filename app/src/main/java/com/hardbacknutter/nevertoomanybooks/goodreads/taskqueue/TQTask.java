@@ -93,8 +93,6 @@ public abstract class TQTask
         TaskHolder holder = (TaskHolder) view.getTag(R.id.TAG_GR_TASK_HOLDER);
         TasksCursor tasksCursor = (TasksCursor) cursor;
 
-        Locale locale = LocaleUtils.getLocale(context);
-
         // Update task info binding
         holder.description.setText(getDescription(context));
         String statusCode = tasksCursor.getStatusCode().toUpperCase(Locale.ENGLISH);
@@ -114,7 +112,7 @@ public abstract class TQTask
 
             case STATUS_QUEUED:
                 statusText = context.getString(R.string.gr_tq_queued);
-                String date = DateUtils.toPrettyDateTime(locale, tasksCursor.getRetryDate());
+                String date = DateUtils.toPrettyDateTime(tasksCursor.getRetryDate());
                 holder.retry_info.setText(context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
                                                             getRetries(), getRetryLimit(), date));
                 holder.retry_info.setVisibility(View.VISIBLE);
@@ -140,7 +138,7 @@ public abstract class TQTask
             holder.error.setVisibility(View.GONE);
         }
         //"Job id 123, Queued at 20 Jul 2012 17:50:23 GMT"
-        String date = DateUtils.toPrettyDateTime(locale, tasksCursor.getQueuedDate());
+        String date = DateUtils.toPrettyDateTime(tasksCursor.getQueuedDate());
         holder.job_info.setText(context.getString(R.string.gr_tq_generic_task_info, getId(), date));
     }
 

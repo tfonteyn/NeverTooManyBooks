@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.baseactivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -40,7 +39,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public class EditObjectListModel
         extends ViewModel {
@@ -53,7 +51,7 @@ public class EditObjectListModel
     /** Displayed for user reference only. */
     @Nullable
     private String mBookTitle;
-    /** Used for the series default locale. */
+    /** Used for the Series default Locale. */
     private Locale mBookLocale;
 
     /** flag indicating global changes were made. Used in setResult. */
@@ -69,11 +67,9 @@ public class EditObjectListModel
     /**
      * Pseudo constructor.
      *
-     * @param context Current context
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Context context,
-                     @NonNull final Bundle args) {
+    public void init(@NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO();
 
@@ -84,7 +80,8 @@ public class EditObjectListModel
             if (bookLang != null && !bookLang.isEmpty()) {
                 mBookLocale = new Locale(bookLang);
             } else {
-                mBookLocale = LocaleUtils.getLocale(context);
+                // fallback
+                mBookLocale = Locale.getDefault();
             }
         }
     }

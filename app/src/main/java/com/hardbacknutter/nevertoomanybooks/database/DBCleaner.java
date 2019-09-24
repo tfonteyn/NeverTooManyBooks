@@ -131,11 +131,11 @@ public class DBCleaner {
     /**
      * Do a mass update of any languages not yet converted to ISO codes.
      */
-    public void updateLanguages(@NonNull final Locale userLocale) {
+    public void updateLanguages() {
         List<String> names = mDb.getLanguageCodes();
         for (String name : names) {
             if (name != null && name.length() > 3) {
-                String iso = LanguageUtils.getIso3fromDisplayName(name, userLocale);
+                String iso = LanguageUtils.getIso3fromDisplayName(name, Locale.getDefault());
                 Logger.debug(this, "updateLanguages",
                              "Global language update of `" + name + "` to `" + iso + '`');
                 if (!iso.equals(name)) {

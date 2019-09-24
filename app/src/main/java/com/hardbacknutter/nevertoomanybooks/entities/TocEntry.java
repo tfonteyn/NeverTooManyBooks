@@ -252,11 +252,13 @@ public class TocEntry
     }
 
     /**
-     * ENHANCE: The locale of the TocEntry should be based on either a specific language
-     * setting for the TocEntry itself, or on the locale of the <strong>primary</strong> book.
+     * ENHANCE: The Locale of the TocEntry should be based on either a specific language
+     * setting for the TocEntry itself, or on the Locale of the <strong>primary</strong> book.
      * For now, we always use the passed fallback which <strong>should be the BOOK Locale</strong>
      *
-     * @return the locale of the TocEntry
+     * @param bookLocale Locale to use if the Series does not have a Locale of its own.
+     *
+     * @return the Locale of the TocEntry
      */
     @NonNull
     @Override
@@ -268,8 +270,8 @@ public class TocEntry
     public long fixId(@NonNull final Context context,
                       @NonNull final DAO db,
                       @NonNull final Locale bookLocale) {
-        // don't use the bookLocale for the Author; translated books would have the wrong locale.
-        mAuthor.fixId(context, db, LocaleUtils.getLocale(context));
+        // don't use the bookLocale for the Author; translated books would have the wrong Locale.
+        mAuthor.fixId(context, db, Locale.getDefault());
         mId = db.getTocEntryId(context, this, bookLocale);
         LocaleUtils.insanityCheck(context);
         return mId;

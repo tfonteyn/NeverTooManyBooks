@@ -123,7 +123,7 @@ class PruneListTest {
     }
 
     /**
-     * TEST: add series with an id!=0
+     * TEST: add Series with an id!=0
      */
     @Test
     void pruneSeriesList() {

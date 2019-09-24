@@ -182,9 +182,8 @@ public class EditAuthorDialogFragment
                     mAuthor.setName(mFamilyName, mGivenNames);
                     mAuthor.setComplete(mIsComplete);
                     // There is no book involved here, so use the users Locale instead
-                    Locale bookLocale = LocaleUtils.getLocale(context);
                     // and store the changes
-                    mDb.updateOrInsertAuthor(context, bookLocale, mAuthor);
+                    mDb.updateOrInsertAuthor(context, mAuthor);
 
                     // and spread the news of the changes.
                     Bundle data = new Bundle();

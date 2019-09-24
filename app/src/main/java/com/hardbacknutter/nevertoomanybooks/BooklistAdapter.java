@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
 
 /**
- * Handles all views in a multi-type list showing books, authors, series etc.
+ * Handles all views in a multi-type list showing Book, Author, Series etc.
  * <p>
  * Each row(level) needs to have a layout like:
  * <pre>
@@ -420,10 +420,6 @@ public class BooklistAdapter
         @NonNull
         private final DAO mDb;
 
-        /** Locale to use for formatting. */
-        @NonNull
-        private final Locale mLocale;
-
         /** The book id to fetch. */
         private final long mBookId;
         /** Bit mask with the fields that should be fetched. */
@@ -449,7 +445,6 @@ public class BooklistAdapter
                           @NonNull final GetBookExtrasTaskFinishedListener taskListener,
                           @BooklistStyle.ExtraOption final int extraFields) {
 
-            mLocale = LocaleUtils.getLocale(context);
             mDb = db;
             mBookId = bookId;
             mTaskListener = new WeakReference<>(taskListener);
@@ -476,6 +471,9 @@ public class BooklistAdapter
                     tmp = mapper.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
                     if (!tmp.isEmpty()) {
                         mResults.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, tmp);
+                        // no author type for now.
+//                        mResults.putInt(DBDefinitions.KEY_AUTHOR_TYPE,
+//                                        mapper.getInt(DBDefinitions.KEY_AUTHOR_TYPE));
                     }
                 }
 
@@ -538,14 +536,14 @@ public class BooklistAdapter
                 } else if (tmpPubDate.length() > 4) {
                     // parse/format the date
                     tmp = String.format(mX_bracket_Y_bracket, tmp,
-                                        DateUtils.toPrettyDate(mLocale, tmpPubDate));
+                                        DateUtils.toPrettyDate(tmpPubDate));
                 }
             } else if (tmpPubDate != null) {
                 // there was no publisher, just use the date
                 if (tmpPubDate.length() == 4) {
                     tmp = tmpPubDate;
                 } else if (tmpPubDate.length() > 4) {
-                    tmp = DateUtils.toPrettyDate(mLocale, tmpPubDate);
+                    tmp = DateUtils.toPrettyDate(tmpPubDate);
                 }
             }
 
@@ -622,10 +620,6 @@ public class BooklistAdapter
         @NonNull
         private final DAO mDb;
 
-        /** Cached Locale. */
-        @NonNull
-        private final Locale mLocale;
-
         /** Bookshelves label resource string. */
         @NonNull
         private final String mShelvesLabel;
@@ -680,9 +674,9 @@ public class BooklistAdapter
         /** View that stores the related book field. */
         private final ImageView mCoverView;
 
-        /** View that stores the series number when it is a short piece of text. */
+        /** View that stores the Series number when it is a short piece of text. */
         private final TextView mSeriesNumView;
-        /** View that stores the series number when it is a long piece of text. */
+        /** View that stores the Series number when it is a long piece of text. */
         private final TextView mSeriesNumLongView;
 
         /** View that stores the related book field. */
@@ -737,8 +731,7 @@ public class BooklistAdapter
             mDb = db;
 
             Context context = itemView.getContext();
-            mLocale = LocaleUtils.getLocale(context);
-
+            LocaleUtils.insanityCheck(itemView.getContext());
             // fetch once and re-use later.
             mName_colon_value = context.getString(R.string.name_colon_value);
             mX_bracket_Y_bracket = context.getString(R.string.a_bracket_b_bracket);
@@ -920,14 +913,14 @@ public class BooklistAdapter
                 } else if (tmpPubDate.length() > 4) {
                     // parse/format the date
                     tmp = String.format(mX_bracket_Y_bracket, tmp,
-                                        DateUtils.toPrettyDate(mLocale, tmpPubDate));
+                                        DateUtils.toPrettyDate(tmpPubDate));
                 }
             } else if (tmpPubDate != null) {
                 // there was no publisher, just use the date
                 if (tmpPubDate.length() == 4) {
                     tmp = tmpPubDate;
                 } else if (tmpPubDate.length() > 4) {
-                    tmp = DateUtils.toPrettyDate(mLocale, tmpPubDate);
+                    tmp = DateUtils.toPrettyDate(tmpPubDate);
                 }
             }
 
@@ -1142,8 +1135,7 @@ public class BooklistAdapter
 
             String iso = rowData.getString(mSourceCol);
             if (iso != null && !iso.isEmpty()) {
-                iso = LanguageUtils
-                              .getDisplayName(LocaleUtils.getLocale(itemView.getContext()), iso);
+                iso = LanguageUtils.getDisplayName(Locale.getDefault(), iso);
             }
             setText(iso, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
         }
@@ -1184,7 +1176,7 @@ public class BooklistAdapter
 
     /**
      * Holder for a row that displays a 'month'.
-     * This code turns a month number into a locale-based month name.
+     * This code turns a month number into a Locale based month name.
      */
     public static class MonthHolder
             extends GenericStringHolder {
@@ -1210,12 +1202,11 @@ public class BooklistAdapter
 
             String s = rowData.getString(mSourceCol);
             if (s != null) {
-                Locale locale = LocaleUtils.getLocale(itemView.getContext());
                 try {
                     int i = Integer.parseInt(s);
                     // If valid, get the short name
                     if (i > 0 && i <= 12) {
-                        s = DateUtils.getMonthName(locale, i, false);
+                        s = DateUtils.getMonthName(i, false);
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     Logger.error(this, e);

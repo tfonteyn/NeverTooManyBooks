@@ -98,11 +98,11 @@ public final class DateUtils {
     private static final ArrayList<SimpleDateFormat> PARSE_DATE_FORMATS = new ArrayList<>(25);
 
     static {
-        // This set of formats are locale agnostic;
+        // This set of formats are Locale agnostic;
         // but we must make sure these use the real system Locale.
         Locale systemLocale = App.getSystemLocale();
 
-        // Used for formatting *user* dates, in the locale timezone, for SQL. e.g. date read...
+        // Used for formatting *user* dates, in the Locale timezone, for SQL. e.g. date read...
         LOCAL_SQL_DATE = new SimpleDateFormat("yyyy-MM-dd", systemLocale);
 
         // Used for formatting *non-user* dates for SQL. e.g. publication dates...
@@ -143,7 +143,7 @@ public final class DateUtils {
         addParseDateFormat("dd-MM-yyyy HH:mm", locale, false);
         addParseDateFormat("dd-MM-yyyy", locale, false);
 
-        // SQL date formats, locale agnostic.
+        // SQL date formats, Locale agnostic.
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_TIME_HH_MM_SS);
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_TIME_HH_MM);
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_YYYY_MM_DD);
@@ -178,7 +178,7 @@ public final class DateUtils {
      * Optionally add English Locale as well.
      *
      * @param format     date format to add
-     * @param locale     locale to use
+     * @param locale     Locale to use
      * @param addEnglish if set, also add Locale.ENGLISH
      */
     private static void addParseDateFormat(@NonNull final String format,
@@ -287,22 +287,24 @@ public final class DateUtils {
     /**
      * Pretty format a (potentially partial) SQL date;  Locale based.
      *
-     * @param locale     to use
      * @param dateString SQL formatted date.
      *
      * @return human readable date string
      *
      * @throws NumberFormatException on failure to parse
      */
-    public static String toPrettyDate(@NonNull final Locale locale,
-                                      @NonNull final String dateString)
+    public static String toPrettyDate(@NonNull final String dateString)
             throws NumberFormatException {
+
+        LocaleUtils.insanityCheck(App.getLocalizedAppContext());
+        LocaleUtils.insanityCheck(App.getAppContext());
+
         switch (dateString.length()) {
             case 10:
                 // YYYY-MM-DD
                 Date date = parseDate(dateString);
                 if (date != null) {
-                    return DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date);
+                    return DateFormat.getDateInstance(DateFormat.MEDIUM).format(date);
                 }
                 // failed to parse
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
@@ -314,7 +316,7 @@ public final class DateUtils {
                 // input: YYYY-MM
                 int month = Integer.parseInt(dateString.substring(5));
                 // just swap: MMM YYYY
-                return getMonthName(locale, month, true) + ' ' + dateString.substring(0, 4);
+                return getMonthName(month, true) + ' ' + dateString.substring(0, 4);
 
             case 4:
                 // input: YYYY
@@ -330,15 +332,12 @@ public final class DateUtils {
     }
 
     /**
-     * Pretty format a datetime; Locale based.
-     *
-     * @param locale to use
+     * Pretty format a datetime.
      * @param date   to format
      */
     @NonNull
-    public static String toPrettyDateTime(@NonNull final Locale locale,
-                                          @NonNull final Date date) {
-        return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale)
+    public static String toPrettyDateTime(@NonNull final Date date) {
+        return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM)
                          .format(date);
     }
 
@@ -388,26 +387,24 @@ public final class DateUtils {
     }
 
     /**
-     * @param locale    to use
      * @param month     1-12 based month number
      * @param shortName {@code true} to get the abbreviated name instead of the full name.
      *
      * @return localised name of Month
      */
     @NonNull
-    public static String getMonthName(@NonNull final Locale locale,
-                                      @IntRange(from = 1, to = 12) final int month,
+    public static String getMonthName(@IntRange(from = 1, to = 12) final int month,
                                       final boolean shortName) {
 
-        String iso = locale.getISO3Language();
+        String iso = Locale.getDefault().getISO3Language();
         String[] longNames = MONTH_LONG_NAMES.get(iso);
         String[] shortNames = MONTH_SHORT_NAMES.get(iso);
 
         if (longNames == null) {
-            // Build the cache for this locale.
-            Calendar calendar = Calendar.getInstance(locale);
-            SimpleDateFormat longNameFormatter = new SimpleDateFormat("MMMM", locale);
-            SimpleDateFormat shortNameFormatter = new SimpleDateFormat("MMM", locale);
+            // Build the cache for this Locale.
+            Calendar calendar = Calendar.getInstance(Locale.getDefault());
+            SimpleDateFormat longNameFormatter = new SimpleDateFormat("MMMM", Locale.getDefault());
+            SimpleDateFormat shortNameFormatter = new SimpleDateFormat("MMM", Locale.getDefault());
 
             longNames = new String[12];
             shortNames = new String[12];

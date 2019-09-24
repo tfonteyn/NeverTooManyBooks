@@ -69,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 public abstract class ShowBookApiHandler
         extends ApiHandler {
 
-    // Current series being processed
+    // Current Series being processed
     // private int mCurrSeriesId = 0;
     private final XmlHandler mHandleSeriesStart = context -> {
 //        mCurrSeries = new Series();
@@ -208,11 +208,11 @@ public abstract class ShowBookApiHandler
         }
     };
     private final XmlHandler mHandleAuthorRole = context -> mCurrAuthorRole = context.getBody();
-    /** Current series being processed. */
+    /** Current Series being processed. */
     @Nullable
     private String mCurrSeriesName;
     private final XmlHandler mHandleSeriesName = context -> mCurrSeriesName = context.getBody();
-    /** Current series being processed. */
+    /** Current Series being processed. */
     @Nullable
     private Integer mCurrSeriesPosition;
     private final XmlHandler mHandleSeriesEnd = context -> {
@@ -337,7 +337,7 @@ public abstract class ShowBookApiHandler
             }
         }
 
-        // Cleanup the title by removing series name, if present
+        // Cleanup the title by removing Series name, if present
         // Example: "<title>The Anome (Durdane, #1)</title>"
         if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
             String fullTitle = mBookData.getString(DBDefinitions.KEY_TITLE);

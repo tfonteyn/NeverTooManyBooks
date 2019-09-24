@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
- * Dialog to edit an existing single series.
+ * Dialog to edit an existing single Series.
  * <p>
  * Calling point is a List; see {@link EditBookSeriesActivity} for book
  */
@@ -161,9 +161,8 @@ public class EditSeriesDialogFragment
                     mSeries.setTitle(mName);
                     mSeries.setComplete(mIsComplete);
                     // There is no book involved here, so use the users Locale instead
-                    Locale bookLocale = LocaleUtils.getLocale(context);
                     // and store the changes
-                    mDb.updateOrInsertSeries(context, bookLocale, mSeries);
+                    mDb.updateOrInsertSeries(context, Locale.getDefault(), mSeries);
 
                     // and spread the news of the changes.
                     Bundle data = new Bundle();

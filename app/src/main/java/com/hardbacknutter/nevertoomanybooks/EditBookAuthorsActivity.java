@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -125,7 +124,7 @@ public class EditBookAuthorsActivity
 
         Author newAuthor = Author.fromString(name);
         // see if it already exists
-        newAuthor.fixId(this, mModel.getDb(), LocaleUtils.getLocale(this));
+        newAuthor.fixId(this, mModel.getDb(), Locale.getDefault());
         // and check it's not already in the list.
         if (mList.contains(newAuthor)) {
             UserMessage.show(mAutoCompleteTextView, R.string.warning_author_already_in_list);
@@ -143,8 +142,6 @@ public class EditBookAuthorsActivity
     protected void processChanges(@NonNull final Author author,
                                   @NonNull final Author newAuthorData) {
 
-        Locale userLocale = LocaleUtils.getLocale(this);
-
         // anything other then the type changed ?
         if (author.getFamilyName().equals(newAuthorData.getFamilyName())
             && author.getGivenNames().equals(newAuthorData.getGivenNames())
@@ -153,7 +150,7 @@ public class EditBookAuthorsActivity
             // Type is not part of the Author table, but of the book_author table.
             if (author.getType() != newAuthorData.getType()) {
                 author.setType(newAuthorData.getType());
-                ItemWithFixableId.pruneList(mList, this, mModel.getDb(), userLocale);
+                ItemWithFixableId.pruneList(mList, this, mModel.getDb(), Locale.getDefault());
                 mListAdapter.notifyDataSetChanged();
             }
             // nothing or only the type was different, so we're done here.
@@ -161,8 +158,8 @@ public class EditBookAuthorsActivity
         }
 
         // See if the old one is used by any other books.
-        long nrOfReferences = mModel.getDb().countBooksByAuthor(this, author, userLocale)
-                              + mModel.getDb().countTocEntryByAuthor(this, author, userLocale);
+        long nrOfReferences = mModel.getDb().countBooksByAuthor(this, author)
+                              + mModel.getDb().countTocEntryByAuthor(this, author);
 
         // if it's not, then we can simply re-use the old object.
         if (mModel.isSingleUsage(nrOfReferences)) {
@@ -173,7 +170,7 @@ public class EditBookAuthorsActivity
              * The 'old' author will be orphaned.
              * TODO: simplify / don't orphan?
              */
-            updateItem(author, newAuthorData, userLocale);
+            updateItem(author, newAuthorData, Locale.getDefault());
             return;
         }
 
@@ -216,8 +213,8 @@ public class EditBookAuthorsActivity
          */
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL, allBooks, (d, which) -> {
             mModel.setGlobalReplacementsMade(
-                    mModel.getDb().globalReplace(this, userLocale, author, newAuthorData));
-            updateItem(author, newAuthorData, userLocale);
+                    mModel.getDb().globalReplace(this, author, newAuthorData));
+            updateItem(author, newAuthorData, Locale.getDefault());
         });
 
         /*
@@ -239,7 +236,7 @@ public class EditBookAuthorsActivity
          */
         dialog.setButton(DialogInterface.BUTTON_POSITIVE,
                          getString(R.string.btn_this_book), (d, which) ->
-                                 updateItem(author, newAuthorData, userLocale));
+                                 updateItem(author, newAuthorData, Locale.getDefault()));
 
         dialog.show();
     }

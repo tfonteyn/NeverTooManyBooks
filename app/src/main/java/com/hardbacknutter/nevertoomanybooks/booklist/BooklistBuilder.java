@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -275,8 +276,8 @@ public class BooklistBuilder
         // Allocate ID
         mBooklistBuilderId = ID_COUNTER.incrementAndGet();
 
-        mUnknown = context.getString(R.string.unknown)
-                          .toUpperCase(LocaleUtils.getLocale(context));
+        mUnknown = context.getString(R.string.unknown).toUpperCase(Locale.getDefault());
+        LocaleUtils.insanityCheck(context);
 
         // Save the requested style
         mStyle = style;
@@ -365,10 +366,10 @@ public class BooklistBuilder
      * <p>
      * An empty filter will silently be rejected.
      *
-     * @param author   Author related keywords to find
-     * @param title    Title related keywords to find
-     * @param seriesTitle    Series title related keywords to find
-     * @param keywords Keywords to find anywhere in book; this includes titles and authors
+     * @param author      Author related keywords to find
+     * @param title       Title related keywords to find
+     * @param seriesTitle Series title related keywords to find
+     * @param keywords    Keywords to find anywhere in book; this includes titles and authors
      */
     public void setFilter(@Nullable final String author,
                           @Nullable final String title,
@@ -405,11 +406,11 @@ public class BooklistBuilder
     }
 
     /**
-     * Set the filter for only books in named series with added wildcards.
+     * Set the filter for only books in named Series with added wildcards.
      * <p>
      * An empty filter will silently be rejected.
      *
-     * @param filter the series to limit the search for.
+     * @param filter the Series to limit the search for.
      */
     public void setFilterOnSeriesName(@Nullable final String filter) {
         if (filter != null && !filter.trim().isEmpty()) {
@@ -623,7 +624,7 @@ public class BooklistBuilder
 
                     //experimental, so debug it
                     if (BuildConfig.DEBUG && !mStyle.useTaskForExtras()) {
-                        Logger.debug(this, "", "sql=" + sql);
+                        Logger.debug(this, "not using a task for extras", "sql=" + sql);
                     }
 
                     SynchronizedStatement baseStmt = mStatements.add(STMT_BASE_BUILD, sql);

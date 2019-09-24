@@ -77,7 +77,7 @@ public class About
         }
 
         view = findViewById(R.id.sourcecode6);
-        view.setText(LinkifyUtils.html(
+        view.setText(LinkifyUtils.fromHtml(
                 getString(R.string.url_sourcecode6, getString(R.string.lbl_about_sourcecode))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -90,12 +90,12 @@ public class About
 
         // Information to original creators site.
         view = findViewById(R.id.website);
-        view.setText(LinkifyUtils.html(
+        view.setText(LinkifyUtils.fromHtml(
                 getString(R.string.url_website, getString(R.string.lbl_about_website))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         view = findViewById(R.id.sourcecode);
-        view.setText(LinkifyUtils.html(
+        view.setText(LinkifyUtils.fromHtml(
                 getString(R.string.url_sourcecode, getString(R.string.lbl_about_sourcecode))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
     }

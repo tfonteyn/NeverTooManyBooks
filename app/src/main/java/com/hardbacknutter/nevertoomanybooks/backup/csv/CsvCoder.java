@@ -237,7 +237,7 @@ public final class CsvCoder {
                  * <li>(YYYY)</li>
                  * <li>(YYYY-MM)</li>
                  * <li>(YYYY-MM-DD)</li>
-                 * <li>(YYYY-DD-MM) might work depending on the user's locale. Not tested.</li>
+                 * <li>(YYYY-DD-MM) might work depending on the user's Locale. Not tested.</li>
                  * </ul>
                  * v82 had no dates: Giants In The Sky * Blish, James
                  * <ul>V200+ also accepts:

@@ -89,8 +89,7 @@ public final class LanguageUtils {
      */
     @NonNull
     public static String getIso3fromDisplayName(@NonNull final String displayName) {
-        return getIso3fromDisplayName(displayName,
-                                      LocaleUtils.getLocale(App.getLocalizedAppContext()));
+        return getIso3fromDisplayName(displayName, Locale.getDefault());
     }
 
     /**
@@ -103,7 +102,7 @@ public final class LanguageUtils {
      * {@code new Locale("ger")} needs "ger". So once again {@link #iso3ToBibliographic} is needed.
      *
      * @param displayName the string as normally produced by {@link Locale#getDisplayLanguage}
-     * @param userLocale  the locale the user is running the app in.
+     * @param userLocale  the Locale the user is running the app in.
      *
      * @return the ISO code, or if conversion failed, the input string
      */
@@ -394,14 +393,14 @@ public final class LanguageUtils {
     }
 
     /**
-     * Generate language mappings for a given locale.
+     * Generate language mappings for a given Locale.
      *
      * @param prefs      the preferences 'file' used as our language names cache.
-     * @param userLocale the locale the user is running the app in.
+     * @param userLocale the Locale the user is running the app in.
      */
     private static void createLanguageMappingCache(@NonNull final SharedPreferences prefs,
                                                    @NonNull final Locale userLocale) {
-        // just return if already done for this locale.
+        // just return if already done for this Locale.
         if (prefs.getBoolean(userLocale.getISO3Language(), false)) {
             return;
         }
@@ -410,7 +409,7 @@ public final class LanguageUtils {
             ed.putString(loc.getDisplayLanguage(userLocale).toLowerCase(userLocale),
                          loc.getISO3Language());
         }
-        // signal this locale was done
+        // signal this Locale was done
         ed.putBoolean(userLocale.getISO3Language(), true);
         ed.apply();
     }
@@ -429,7 +428,7 @@ public final class LanguageUtils {
         }
 
         Locale systemLocale = App.getSystemLocale();
-        Locale prefLocale = LocaleUtils.getLocale(context);
+        Locale prefLocale = Locale.getDefault();
 
         return ""
                + "\nsSystemInitialLocale       : " + systemLocale.getDisplayName()

@@ -45,6 +45,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -238,7 +239,7 @@ public class FTSSearchActivity
                 return true;
 
             case R.id.MENU_REBUILD_FTS:
-                mDb.rebuildFts(LocaleUtils.getLocale(this));
+                mDb.rebuildFts();
                 return true;
 
             default:

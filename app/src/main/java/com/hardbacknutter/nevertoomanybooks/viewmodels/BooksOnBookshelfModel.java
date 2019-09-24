@@ -316,10 +316,9 @@ public class BooksOnBookshelfModel
      * @param style   to set
      */
     public void setCurrentStyle(@NonNull final Context context,
-                                @NonNull final Locale userLocale,
                                 @NonNull final BooklistStyle style) {
         Objects.requireNonNull(mCurrentBookshelf);
-        mCurrentBookshelf.setStyle(context, userLocale, mDb, style);
+        mCurrentBookshelf.setStyle(context, mDb, style);
     }
 
     /**
@@ -331,7 +330,6 @@ public class BooksOnBookshelfModel
      * @param listView used to derive the top row offset
      */
     public void onStyleChanged(@NonNull final Context context,
-                               @NonNull final Locale userLocale,
                                @NonNull final BooklistStyle style,
                                final int topRow,
                                @NonNull final RecyclerView listView) {
@@ -339,14 +337,14 @@ public class BooksOnBookshelfModel
 
         // save the new bookshelf/style combination
         mCurrentBookshelf.setAsPreferred(context);
-        mCurrentBookshelf.setStyle(context, userLocale, mDb, style);
+        mCurrentBookshelf.setStyle(context, mDb, style);
 
         // Set the rebuild state like this is the first time in, which it sort of is,
         // given we are changing style.
         mRebuildState = BooklistBuilder.getPreferredListRebuildState();
 
         /* There is very little ability to preserve position when going from
-         * a list sorted by author/series to on sorted by unread/addedDate/publisher.
+         * a list sorted by Author/Series to on sorted by unread/addedDate/publisher.
          * Keeping the current row/pos is probably the most useful thing we can
          * do since we *may* come back to a similar list.
          */
@@ -470,6 +468,7 @@ public class BooksOnBookshelfModel
 //                    blb.requireJoin(DBDefinitions.TBL_BOOKSHELF);
 //                }
 
+                // we fetch ONLY the primary author
                 if (style.isUsed(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
                     blb.requireDomain(DBDefinitions.DOM_AUTHOR_FORMATTED,
                                       style.showAuthorGivenNameFirst(context)
@@ -477,6 +476,14 @@ public class BooksOnBookshelfModel
                                       : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
                                       false);
                 }
+                // and for now, don't get the author type.
+//                if (style.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
+//                    blb.requireDomain(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
+//                                      DBDefinitions.TBL_BOOK_AUTHOR
+//                                              .dot(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK),
+//                                      false);
+//                }
+
                 if (style.isUsed(DBDefinitions.KEY_PUBLISHER)) {
                     blb.requireDomain(DBDefinitions.DOM_BOOK_PUBLISHER,
                                       DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_PUBLISHER),

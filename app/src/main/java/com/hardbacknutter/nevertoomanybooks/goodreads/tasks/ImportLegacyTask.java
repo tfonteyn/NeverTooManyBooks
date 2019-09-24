@@ -73,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -355,8 +354,7 @@ class ImportLegacyTask
      */
     @Nullable
     private String translateBookshelf(@NonNull final DAO db,
-                                      @Nullable final String grShelfName,
-                                      @NonNull final Locale locale) {
+                                      @Nullable final String grShelfName) {
 
         if (grShelfName == null) {
             return null;
@@ -365,12 +363,12 @@ class ImportLegacyTask
             List<Bookshelf> bookshelves = db.getBookshelves();
             mBookshelfLookup = new HashMap<>(bookshelves.size());
             for (Bookshelf bookshelf : bookshelves) {
-                mBookshelfLookup.put(GoodreadsShelf.canonicalizeName(bookshelf.getName(), locale),
+                mBookshelfLookup.put(GoodreadsShelf.canonicalizeName(bookshelf.getName()),
                                      bookshelf.getName());
             }
         }
 
-        String lcGrShelfName = grShelfName.toLowerCase(locale);
+        String lcGrShelfName = grShelfName.toLowerCase(Locale.getDefault());
         if (mBookshelfLookup.containsKey(lcGrShelfName)) {
             return mBookshelfLookup.get(lcGrShelfName);
         } else {
@@ -458,10 +456,9 @@ class ImportLegacyTask
                                @Nullable final BookCursor bookCursor,
                                @NonNull final Bundle review) {
 
-        Locale locale = LocaleUtils.getLocale(context);
-        // The ListReviewsApi does not return the book language
-        //noinspection UnnecessaryLocalVariable
-        Locale bookLocale = locale;
+        // The ListReviewsApi does not return the Book language. We explicitly name the Locale
+        // here to make it clear this *should* be the books Locale.
+        Locale bookLocale = Locale.getDefault();
 
         Bundle bookData = new Bundle();
 
@@ -610,16 +607,15 @@ class ImportLegacyTask
 
             for (Bundle shelfBundle : grShelves) {
                 String bsName = shelfBundle.getString(ListReviewsApiHandler.ReviewField.SHELF);
-                bsName = translateBookshelf(db, bsName, locale);
+                bsName = translateBookshelf(db, bsName);
 
                 if (bsName != null && !bsName.isEmpty()) {
-                    bsList.add(new Bookshelf(bsName, BooklistStyle
-                                                             .getDefaultStyle(db)));
+                    bsList.add(new Bookshelf(bsName, BooklistStyle.getDefaultStyle(db)));
                 }
             }
             //TEST see above
             //--- begin 2019-02-04 ---
-            ItemWithFixableId.pruneList(bsList, context, db, locale);
+            ItemWithFixableId.pruneList(bsList, context, db, Locale.getDefault());
             //--- end 2019-02-04 ---
 
             bookData.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);

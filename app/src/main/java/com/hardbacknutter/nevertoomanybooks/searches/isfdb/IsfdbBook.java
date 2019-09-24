@@ -139,7 +139,7 @@ public class IsfdbBook
     /** accumulate all authors for this book. */
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
-    /** accumulate all series for this book. */
+    /** accumulate all Series for this book. */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
     private String mPath;
@@ -866,8 +866,8 @@ public class IsfdbBook
             (variant of <i><a href="http://www.isfdb.org/cgi-bin/title.cgi?50798" dir="ltr">—That Thou Art Mindful of Him!</a></i>)
 
 
-            A book belonging to a series will have one content entry with the same title as the book.
-            And potentially have the series/nr in it:
+            A book belonging to a Series will have one content entry with the same title as the book.
+            And potentially have the Series/nr in it:
 
             <a href="http://www.isfdb.org/cgi-bin/title.cgi?2210372" dir="ltr">The Delirium Brief</a>
             &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?23081" dir="ltr">Laundry Files</a> &#8226; 8]
@@ -907,13 +907,13 @@ public class IsfdbBook
                            && href.contains(IsfdbManager.URL_PE_CGI)) {
                     String series = a.text();
 //                    String seriesNum = "";
-//                    // check for the number; series don't always have a number
+//                    // check for the number; Series don't always have a number
 //                    int start = liAsString.indexOf('[');
 //                    int end = liAsString.indexOf(']');
 //                    if (start > 1 && end > start) {
 //                        String tmp = liAsString.substring(start, end);
 //                        String[] data = DOT_PATTERN.split(tmp);
-//                        // check if there really was a series number
+//                        // check if there really was a Series number
 //                        if (data.length > 1) {
 //                            seriesNum = Series.cleanupSeriesNumber(data[1]);
 //                        }

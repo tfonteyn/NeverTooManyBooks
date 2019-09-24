@@ -97,7 +97,7 @@
     <!-- Generic TextView with user-data in 3 sizes -->
     <!-- *************************************************************************************** -->
 
-    <!-- 'medium' detail text field; for example series title, ... -->
+    <!-- 'medium' detail text field; for example Series title, ... -->
     <style name="TextDetail">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

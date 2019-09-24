@@ -239,7 +239,6 @@ public class Bookshelf
      * @param style   to set
      */
     public void setStyle(@NonNull final Context context,
-                         @NonNull final Locale userLocale,
                          @NonNull final DAO db,
                          @NonNull final BooklistStyle style) {
 
@@ -247,7 +246,7 @@ public class Bookshelf
 
         mStyleUuid = style.getUuid();
         long styleId = getStyle(db).getId();
-        db.updateOrInsertBookshelf(context, userLocale, this, styleId);
+        db.updateOrInsertBookshelf(context, this, styleId);
     }
 
     /**
@@ -313,6 +312,14 @@ public class Bookshelf
         dest.writeString(mStyleUuid);
     }
 
+    /**
+     * Kludge / dummy method.
+     * A Bookshelf does not have a Locale, but we need to implement {@link ItemWithFixableId}.
+     *
+     * @param fallbackLocale Locale to use
+     *
+     * @return fallbackLocale as passed in
+     */
     @NonNull
     @Override
     public Locale getLocale(@NonNull final Locale fallbackLocale) {

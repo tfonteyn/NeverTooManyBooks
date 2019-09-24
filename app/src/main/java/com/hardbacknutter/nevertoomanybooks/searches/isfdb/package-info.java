@@ -56,7 +56,7 @@
  * <ul>
  * <li>ea.cgi - This displays the ISFDB bibliography for one author.</li>
  * <li>title.cgi - This displays bibliographic information for one title.</li>
- * <li>pe.cgi - This displays titles associated with a particular series. </li>
+ * <li>pe.cgi - This displays titles associated with a particular Series. </li>
  * <li>pl.cgi - This displays the bibliographic information for one publication.</li>
  * </ul>
  * <p>

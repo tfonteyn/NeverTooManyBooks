@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.os.Build;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -38,9 +39,17 @@ import androidx.annotation.NonNull;
 
 /**
  * LinkifyUtils.
+ * <p>
+ * Linkify partial HTML. Linkify methods remove all spans before building links,
+ * this method preserves them.
+ * <p>
+ * See:
+ * <a href="http://stackoverflow.com/questions/14538113/using-linkify-addlinks-combine-with-html-fromhtml">
+ * http://stackoverflow.com/questions/14538113/using-linkify-addlinks-combine-with-html-fromhtml</a>
+ *
  * <pre>
  *     {@code
- *          view.setText(LinkifyUtils.html(body));
+ *          view.setText(LinkifyUtils.fromHtml(body));
  *          view.setMovementMethod(LinkMovementMethod.getInstance());
  *     }
  * </pre>
@@ -54,21 +63,23 @@ public final class LinkifyUtils {
     }
 
     /**
-     * Linkify partial HTML. Linkify methods remove all spans before building links,
-     * this method preserves them.
-     * <p>
-     * See:
-     * <a href="http://stackoverflow.com/questions/14538113/using-linkify-addlinks-combine-with-html-fromhtml">
-     * http://stackoverflow.com/questions/14538113/using-linkify-addlinks-combine-with-html-fromhtml</a>
+     * Linkify partial HTML.
      *
      * @param html Partial HTML
      *
      * @return Spannable with all links
      */
     @NonNull
-    public static Spannable html(@NonNull final String html) {
+    public static Spannable fromHtml(@NonNull final String html) {
         // Get the spannable HTML
-        Spanned text = Html.fromHtml(html);
+        Spanned text;
+        if (Build.VERSION.SDK_INT >= 24) {
+            // FROM_HTML_MODE_LEGACY is the behaviour that was used for versions below android N
+            text = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            text = Html.fromHtml(html);
+        }
+
         // Save the span details for later restoration
         URLSpan[] currentSpans = text.getSpans(0, text.length(), URLSpan.class);
 

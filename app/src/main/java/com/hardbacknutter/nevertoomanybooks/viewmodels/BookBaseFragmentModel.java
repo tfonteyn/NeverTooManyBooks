@@ -226,9 +226,8 @@ public class BookBaseFragmentModel
         return mBook.setRead(mDb, !mBook.getBoolean(Book.IS_READ));
     }
 
-    public void refreshAuthorList(@NonNull final Context context,
-                                  @NonNull final Locale userLocale) {
-        mBook.refreshAuthorList(context, userLocale, mDb);
+    public void refreshAuthorList(@NonNull final Context context) {
+        mBook.refreshAuthorList(context, mDb);
     }
 
     public void refreshSeriesList(@NonNull final Context context) {

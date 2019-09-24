@@ -126,18 +126,18 @@ class LanguageUtilsTest {
                            + " " + ita.getDisplayName()
                            + " " + LocaleUtils.isValid(ita));
 
-        // en: en eng English English    => getISO3Language CAN be used to create the locale
+        // en: en eng English English    => getISO3Language CAN be used to create the Locale
         //eng: eng eng English English
 
-        // de: de deu German German      => getISO3Language CANNOT be used to create the locale
+        // de: de deu German German      => getISO3Language CANNOT be used to create the Locale
         //ger: ger ger German German
         //deu: deu deu deu deu
 
-        // fr:  fr fra French French     => getISO3Language CANNOT be used to create the locale
+        // fr:  fr fra French French     => getISO3Language CANNOT be used to create the Locale
         //fre:  fre fre French French
         //fra:  fra fra fra fra
 
-        //  it:  it ita Italian Italian  => getISO3Language CAN be used to create the locale
+        //  it:  it ita Italian Italian  => getISO3Language CAN be used to create the Locale
         //ita:  ita ita Italian Italian
     }
 

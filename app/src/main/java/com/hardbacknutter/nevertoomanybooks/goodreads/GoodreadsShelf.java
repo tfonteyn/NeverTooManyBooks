@@ -57,10 +57,9 @@ public class GoodreadsShelf {
      *
      * @return blessed name
      */
-    public static String canonicalizeName(@NonNull final String name,
-                                          @NonNull final Locale locale) {
+    public static String canonicalizeName(@NonNull final String name) {
         StringBuilder canonical = new StringBuilder();
-        String lcName = name.toLowerCase(locale);
+        String lcName = name.toLowerCase(Locale.getDefault());
         for (int i = 0; i < lcName.length(); i++) {
             char c = lcName.charAt(i);
             if (Character.isLetterOrDigit(c)) {

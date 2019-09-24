@@ -201,7 +201,7 @@ public class SearchTask
             //ENHANCE: it seems most implementations can return multiple book bundles quite easily.
             mBookData = mSearchEngine.search(mIsbn, mAuthor, mTitle, mPublisher, mFetchThumbnail);
             if (!mBookData.isEmpty()) {
-                // Look for series name in the book title and clean KEY_TITLE
+                // Look for Series name in the book title and clean KEY_TITLE
                 checkForSeriesNameInTitle();
             }
 
@@ -228,7 +228,7 @@ public class SearchTask
     }
 
     /**
-     * Look for a title; if present try to get a series name from it and clean the title.
+     * Look for a title; if present try to get a Series name from it and clean the title.
      */
     private void checkForSeriesNameInTitle() {
         String fullTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
@@ -246,8 +246,8 @@ public class SearchTask
                     Series newSeries = Series.fromString(seriesTitleWithNumber);
 
                     // add to the TOP of the list. This is based on translated books/comics
-                    // on Goodreads where the series is in the original language, but the
-                    // series name embedded in the title is in the same language as the title.
+                    // on Goodreads where the Series is in the original language, but the
+                    // Series name embedded in the title is in the same language as the title.
                     seriesList.add(0, newSeries);
 
                     // store Series back

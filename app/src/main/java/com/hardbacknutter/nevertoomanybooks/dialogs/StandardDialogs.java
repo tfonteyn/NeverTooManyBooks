@@ -37,12 +37,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public final class StandardDialogs {
 
@@ -139,8 +139,7 @@ public final class StandardDialogs {
         StringBuilder authors = new StringBuilder();
         if (authorList.isEmpty()) {
             authors.append('<')
-                   .append(context.getString(R.string.unknown)
-                                  .toUpperCase(LocaleUtils.getLocale(context)))
+                   .append(context.getString(R.string.unknown).toUpperCase(Locale.getDefault()))
                    .append('>');
         } else {
             // "a1, a2 and a3"
@@ -193,16 +192,16 @@ public final class StandardDialogs {
         }
 
         AlertDialog dialog = new AlertDialog.Builder(context)
-                                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                                     .setTitle(R.string.title_registration)
-                                     .setMessage(message)
-                                     .setNegativeButton(android.R.string.cancel,
-                                                        (d, which) -> d.dismiss())
-                                     .setPositiveButton(R.string.btn_tell_me_more, (d, which) -> {
-                                         context.startActivity(intent);
-                                         d.dismiss();
-                                     })
-                                     .create();
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.title_registration)
+                .setMessage(message)
+                .setNegativeButton(android.R.string.cancel,
+                                   (d, which) -> d.dismiss())
+                .setPositiveButton(R.string.btn_tell_me_more, (d, which) -> {
+                    context.startActivity(intent);
+                    d.dismiss();
+                })
+                .create();
 
         if (!required) {
             dialog.setButton(DialogInterface.BUTTON_NEUTRAL,

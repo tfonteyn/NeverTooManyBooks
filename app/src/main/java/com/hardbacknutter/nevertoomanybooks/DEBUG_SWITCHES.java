@@ -118,7 +118,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean DAO_INSTANCE_COUNT = false;
 
     /* ****************************************************************************************** */
-    /** Global replace author/series/... */
+    /** Global replace Author/Series/... */
     public static final boolean DAO_GLOBAL_REPLACE = false;
     /** Insert & update TOC entries. */
     public static final boolean DAO_TOC = false;

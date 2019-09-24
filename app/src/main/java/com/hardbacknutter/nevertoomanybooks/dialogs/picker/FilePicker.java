@@ -44,7 +44,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -80,8 +79,6 @@ public class FilePicker
             extends RecyclerView.Adapter<Holder> {
 
         @NonNull
-        private final Locale mLocale;
-        @NonNull
         private final List<File> mList;
         @NonNull
         private final LayoutInflater mInflater;
@@ -105,7 +102,6 @@ public class FilePicker
             mContext = context;
             mInflater = LayoutInflater.from(mContext);
             mListener = listener;
-            mLocale = LocaleUtils.getLocale(mContext);
             mList = list;
         }
 
@@ -127,7 +123,7 @@ public class FilePicker
             holder.pathView.setText(item.getParent());
             holder.sizeView.setText(StorageUtils.formatFileSize(mContext, item.length()));
             holder.lastModDateView
-                    .setText(DateUtils.toPrettyDateTime(mLocale, new Date(item.lastModified())));
+                    .setText(DateUtils.toPrettyDateTime(new Date(item.lastModified())));
 
             // onClick on the whole view.
             holder.itemView.setOnClickListener(v -> mListener.onPicked(item));

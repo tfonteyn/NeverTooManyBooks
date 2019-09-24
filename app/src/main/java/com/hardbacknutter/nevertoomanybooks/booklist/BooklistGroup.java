@@ -285,7 +285,7 @@ public class BooklistGroup
                     }
                 };
 
-        /** Show book under each series it appears in. */
+        /** Show a book under each Series it appears in. */
         private PBoolean mAllSeries;
 
         /**

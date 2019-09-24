@@ -570,8 +570,8 @@ public final class DBDefinitions {
 
     /**
      * {@link #TBL_BOOK_SERIES}.
-     * The Series position is the order the series show up in a book. Particularly important
-     * for "primary series" and in lists where 'all' series are shown.
+     * The Series position is the order the Series show up in a book. Particularly important
+     * for "primary series" and in lists where 'all' Series are shown.
      */
     public static final DomainDefinition DOM_BOOK_SERIES_POSITION;
 

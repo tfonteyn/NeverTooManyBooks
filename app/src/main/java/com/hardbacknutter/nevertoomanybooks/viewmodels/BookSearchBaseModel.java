@@ -189,20 +189,19 @@ public class BookSearchBaseModel
     }
 
     @NonNull
-    public ArrayList<String> getAuthorNames(@NonNull final ArrayList<String> authorNames,
-                                            @NonNull final Locale locale) {
+    public ArrayList<String> getAuthorNames(@NonNull final ArrayList<String> authorNames) {
 
         ArrayList<String> authors = mDb.getAuthorNames(
                 DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
         final Set<String> uniqueNames = new HashSet<>(authors.size());
         for (String s : authors) {
-            uniqueNames.add(s.toLowerCase(locale));
+            uniqueNames.add(s.toLowerCase(Locale.getDefault()));
         }
 
         // Add the names the user has already tried (to handle errors and mistakes)
         for (String s : authorNames) {
-            if (!uniqueNames.contains(s.toLowerCase(locale))) {
+            if (!uniqueNames.contains(s.toLowerCase(Locale.getDefault()))) {
                 authors.add(s);
             }
         }

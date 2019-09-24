@@ -85,7 +85,7 @@ public class IsfdbManager
     static final String URL_PL_CGI = "pl.cgi";
     /** ISFDB bibliography for one author. */
     static final String URL_EA_CGI = "ea.cgi";
-    /** titles associated with a particular series. */
+    /** titles associated with a particular Series. */
     static final String URL_PE_CGI = "pe.cgi";
     /** Search by type; e.g.  arg=%s&type=ISBN. */
     static final String URL_SE_CGI = "se.cgi";

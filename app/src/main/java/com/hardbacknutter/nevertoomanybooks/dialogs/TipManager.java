@@ -252,7 +252,7 @@ public final class TipManager {
             if (messageView != null) {
                 String tipText = context.getString(stringId, args);
                 // allow links
-                messageView.setText(LinkifyUtils.html(tipText));
+                messageView.setText(LinkifyUtils.fromHtml(tipText));
                 // clicking a link, start a browser (or whatever)
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());
             }

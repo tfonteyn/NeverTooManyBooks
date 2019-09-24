@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
- * Class to hold book-related series data.
+ * Class to hold book-related Series data.
  * <p>
  * <strong>Note:</strong> the Series "number" is a column of {@link DBDefinitions#TBL_BOOK_SERIES}
  * So this class does not strictly represent a Series, but a "BookInSeries"
@@ -124,7 +124,7 @@ public class Series
     /**
      * Parse a string into title + number. Used by {@link #fromString(String)}.
      * Formats supported: see unit test for this class.
-     *
+     * <p>
      * FAIL: "Blake's 7" and similar Series titles will fail UNLESS there is an actual number:
      * i.e. "Blake's 7 1" should give "Blake's 7" and number 1
      */
@@ -144,28 +144,28 @@ public class Series
             Pattern.compile(TITLE_NUMBER_REGEXP, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
-     * Remove extraneous text from series number. Used by {@link #fromString(String, String)}.
+     * Remove extraneous text from Series number. Used by {@link #fromString(String, String)}.
      */
     private static final Pattern NUMBER_CLEANUP_PATTERN =
             Pattern.compile("^\\s*" + NUMBER_REGEXP + "\\s*$",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    /** Remove any leading zeros from series number. */
+    /** Remove any leading zeros from Series number. */
     private static final Pattern PURE_NUMERICAL_PATTERN = Pattern.compile("^[0-9]+$");
 
     private long mId;
     @NonNull
     private String mTitle;
-    /** whether we have all we want from this Series / if the series is finished. */
+    /** whether we have all we want from this Series / if the Series is finished. */
     private boolean mIsComplete;
-    /** number (alphanumeric) of a book in this series. */
+    /** number (alphanumeric) of a book in this Series. */
     @NonNull
     private String mNumber;
 
     /**
      * Constructor.
      *
-     * @param title of the series
+     * @param title of the Series
      */
     public Series(@NonNull final String title) {
         mTitle = title;
@@ -175,7 +175,7 @@ public class Series
     /**
      * Constructor.
      *
-     * @param title      of the series
+     * @param title      of the Series
      * @param isComplete whether a Series is completed, i.e if the user has all
      *                   they want from this Series.
      */
@@ -224,7 +224,7 @@ public class Series
      *
      * @param fullTitle string to decode
      *
-     * @return the series
+     * @return the Series
      */
     @NonNull
     public static Series fromString(@NonNull final String fullTitle) {
@@ -268,10 +268,10 @@ public class Series
     /**
      * Constructor that will attempt to parse a number.
      *
-     * @param title  for the series; used as is.
+     * @param title  for the Series; used as is.
      * @param number for the Series; will get cleaned up.
      *
-     * @return the series
+     * @return the Series
      */
     @NonNull
     public static Series fromString(@NonNull final String title,
@@ -305,7 +305,7 @@ public class Series
     }
 
     /**
-     * Remove series from the list where the titles are the same, but one entry has a
+     * Remove Series from the list where the titles are the same, but one entry has a
      * {@code null} or empty number.
      * e.g. the following list should be processed as indicated:
      * <p>
@@ -373,7 +373,7 @@ public class Series
                             modified = true;
                         }
                         //else {
-                        // Nothing to do: this is a different series number, keep both
+                        // Nothing to do: this is a different Series number, keep both
                         //}
                     }
                 }
@@ -391,16 +391,16 @@ public class Series
     }
 
     /**
-     * @return {@code true} if the series is complete
+     * @return {@code true} if the Series is complete
      */
     public boolean isComplete() {
         return mIsComplete;
     }
 
     /**
-     * Sets the 'complete' status of the series.
+     * Sets the 'complete' status of the Series.
      *
-     * @param isComplete Flag indicating the user considers this series to be 'complete'
+     * @param isComplete Flag indicating the user considers this Series to be 'complete'
      */
     public void setComplete(final boolean isComplete) {
         mIsComplete = isComplete;
@@ -485,7 +485,7 @@ public class Series
     }
 
     /**
-     * Replace local details from another series.
+     * Replace local details from another Series.
      *
      * @param source            Series to copy from
      * @param includeBookFields Flag to force copying the Book related fields as well
@@ -500,11 +500,14 @@ public class Series
     }
 
     /**
-     * ENHANCE: The locale of the Series should be based on either a specific language
-     * setting for the Series itself, or on the locale of the <strong>primary</strong> book.
+     * ENHANCE: The Locale of the Series should be based on either a specific language
+     * setting for the Series itself, or on the Locale of the <strong>primary</strong> book.
+     * <p>
      * For now, we always use the passed fallback which <strong>should be the BOOK Locale</strong>
      *
-     * @return the locale of the Series
+     * @param bookLocale Locale to use if the Series does not have a Locale of its own.
+     *
+     * @return the Locale of the Series
      */
     @NonNull
     @Override

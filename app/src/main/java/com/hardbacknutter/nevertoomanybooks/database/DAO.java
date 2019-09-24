@@ -97,7 +97,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
@@ -215,8 +214,8 @@ public class DAO
     /**
      * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM),
      * Android supplies two more.
-     * LOCALIZED: using the system's current locale,
-     * UNICODE  : Unicode Collation Algorithm and not tailored to the current locale.
+     * LOCALIZED: using the system's current Locale,
+     * UNICODE  : Unicode Collation Algorithm and not tailored to the current Locale.
      * <p>
      * We tried 'Collate UNICODE' but it seemed to be case sensitive.
      * We ended up with 'Ursula Le Guin' and 'Ursula le Guin'.
@@ -371,16 +370,16 @@ public class DAO
      * Prepare a string to be inserted in the 'Order By' column.
      * e.g. Author names, the Title of a book: strip spaces etc, make lowercase,...
      *
-     * @param value    to encode
-     * @param lcLocale to use for case manipulation
+     * @param value  to encode
+     * @param locale to use for case manipulation
      *
      * @return the encoded value
      */
     static String encodeOrderByColumn(@NonNull final String value,
-                                      @NonNull final Locale lcLocale) {
+                                      @NonNull final Locale locale) {
 
         // remove all non-word characters. i.e. all characters not in [a-zA-Z_0-9]
-        return ENCODE_ORDERBY_PATTERN.matcher(value).replaceAll("").toLowerCase(lcLocale);
+        return ENCODE_ORDERBY_PATTERN.matcher(value).replaceAll("").toLowerCase(locale);
     }
 
     /**
@@ -834,10 +833,9 @@ public class DAO
      * @return the row id of the newly inserted Author, or -1 if an error occurred
      */
     @SuppressWarnings("UnusedReturnValue")
-    private long insertAuthor(@NonNull final Locale userLocale,
-                              @NonNull final Author /* in/out */ author) {
+    private long insertAuthor(@NonNull final Author /* in/out */ author) {
 
-        Locale authorLocale = author.getLocale(userLocale);
+        Locale authorLocale = author.getLocale(Locale.getDefault());
 
         SynchronizedStatement stmt = mStatements.get(STMT_INSERT_AUTHOR);
         if (stmt == null) {
@@ -864,10 +862,9 @@ public class DAO
      *
      * @return rows affected, should be 1 for success
      */
-    private int updateAuthor(@NonNull final Locale userLocale,
-                             @NonNull final Author author) {
+    private int updateAuthor(@NonNull final Author author) {
 
-        Locale authorLocale = author.getLocale(userLocale);
+        Locale authorLocale = author.getLocale(Locale.getDefault());
 
         ContentValues cv = new ContentValues();
         cv.put(DOM_AUTHOR_FAMILY_NAME.getName(), author.getFamilyName());
@@ -886,23 +883,21 @@ public class DAO
     /**
      * Add or update the passed {@link Author}, depending whether author.id == 0.
      *
-     * @param context    Current context
-     * @param userLocale the locale the user is running the app in.
-     * @param author     object to insert or update. Will be updated with the id.
+     * @param context Current context
+     * @param author  object to insert or update. Will be updated with the id.
      *
      * @return {@code true} for success.
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsertAuthor(@NonNull final Context context,
-                                        @NonNull final Locale userLocale,
                                         @NonNull final /* in/out */ Author author) {
 
         if (author.getId() != 0) {
-            return updateAuthor(userLocale, author) > 0;
+            return updateAuthor(author) > 0;
         } else {
             // try to find first.
-            if (author.fixId(context, this, userLocale) == 0) {
-                return insertAuthor(userLocale, author) > 0;
+            if (author.fixId(context, this, Locale.getDefault()) == 0) {
+                return insertAuthor(author) > 0;
             }
         }
         return false;
@@ -973,12 +968,11 @@ public class DAO
      * @param author  to refresh
      */
     public void refreshAuthor(@NonNull final Context context,
-                              @NonNull final Locale userLocale,
                               @NonNull final Author /* out */ author) {
 
         if (author.getId() == 0) {
             // It wasn't saved before; see if it is now. If so, update ID.
-            author.fixId(context, this, userLocale);
+            author.fixId(context, this, Locale.getDefault());
 
         } else {
             // It was saved, see if it still is and fetch possibly updated fields.
@@ -996,26 +990,24 @@ public class DAO
     /**
      * Globally replace the Author data. This does <strong>not</strong> copy book related fields.
      *
-     * @param context    Current context
-     * @param userLocale the Locale to use if the "from" Author has none set
-     * @param from       Author to replace
-     * @param to         Author to use
+     * @param context Current context
+     * @param from    Author to replace
+     * @param to      Author to use
      *
      * @return {@code true} for success.
      */
     public boolean globalReplace(@NonNull final Context context,
-                                 @NonNull final Locale userLocale,
                                  @NonNull final Author from,
                                  @NonNull final Author to) {
 
         // process the destination Author
-        if (!updateOrInsertAuthor(context, userLocale, to)) {
+        if (!updateOrInsertAuthor(context, to)) {
             Logger.warnWithStackTrace(this, "Could not update", "author=" + to);
             return false;
         }
 
         // Do some basic sanity checks.
-        if (from.getId() == 0 && from.fixId(context, this, userLocale) == 0) {
+        if (from.getId() == 0 && from.fixId(context, this, Locale.getDefault()) == 0) {
             Logger.warnWithStackTrace(this, "Old Author is not defined");
             return false;
         }
@@ -1149,16 +1141,14 @@ public class DAO
     }
 
     /**
-     * @param context    Current context
-     * @param author     to retrieve
-     * @param userLocale the locale the user is running the app in.
+     * @param context Current context
+     * @param author  to retrieve
      *
      * @return the number of {@link Book} this {@link Author} has
      */
     public long countBooksByAuthor(@NonNull final Context context,
-                                   @NonNull final Author author,
-                                   @NonNull final Locale userLocale) {
-        if (author.getId() == 0 && author.fixId(context, this, userLocale) == 0) {
+                                   @NonNull final Author author) {
+        if (author.getId() == 0 && author.fixId(context, this, Locale.getDefault()) == 0) {
             return 0;
         }
 
@@ -1170,16 +1160,14 @@ public class DAO
     }
 
     /**
-     * @param context    Current context
-     * @param author     to count the TocEntries of
-     * @param userLocale the locale the user is running the app in.
+     * @param context Current context
+     * @param author  to count the TocEntries of
      *
      * @return the number of {@link TocEntry} this {@link Author} has
      */
     public long countTocEntryByAuthor(@NonNull final Context context,
-                                      @NonNull final Author author,
-                                      @NonNull final Locale userLocale) {
-        if (author.getId() == 0 && author.fixId(context, this, userLocale) == 0) {
+                                      @NonNull final Author author) {
+        if (author.getId() == 0 && author.fixId(context, this, Locale.getDefault()) == 0) {
             return 0;
         }
 
@@ -1201,8 +1189,7 @@ public class DAO
                                 @NonNull final Book book,
                                 final boolean isNew) {
 
-        Locale locale = LocaleUtils.getLocale(context);
-        Locale bookLocale = book.getLocale(locale);
+        Locale bookLocale = book.getLocale();
 
         // Handle AUTHOR. When is this needed? Legacy archive import ?
         if (book.containsKey(KEY_AUTHOR_FORMATTED)
@@ -1228,14 +1215,13 @@ public class DAO
         }
 
         // Handle all price related fields.
-        preprocessPrices(book, bookLocale);
+        preprocessPrices(book);
 
         // Map website formats to standard ones if enabled by the user.
         if (book.containsKey(DBDefinitions.KEY_FORMAT)
             && PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(Prefs.pk_reformat_formats, false)) {
-            String format = Format.map(context, locale,
-                                       book.getString(DBDefinitions.KEY_FORMAT));
+            String format = Format.map(context, book.getString(DBDefinitions.KEY_FORMAT));
             book.putString(DBDefinitions.KEY_FORMAT, format);
         }
 
@@ -1329,14 +1315,12 @@ public class DAO
         }
     }
 
-    private void preprocessPrices(@NonNull final Book book,
-                                  @NonNull final Locale bookLocale) {
+    private void preprocessPrices(@NonNull final Book book) {
 
         // handle a price without a currency.
         if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED)
             && !book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
-            // use the book Locale.
-            preprocessPrice(bookLocale, book,
+            preprocessPrice(book,
                             DBDefinitions.KEY_PRICE_LISTED,
                             DBDefinitions.KEY_PRICE_LISTED,
                             DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
@@ -1346,8 +1330,7 @@ public class DAO
         if (book.containsKey(DBDefinitions.KEY_PRICE_PAID)
             && !book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
             // we presume the user bought the book in their own currency.
-            preprocessPrice(Locale.getDefault(),
-                            book, DBDefinitions.KEY_PRICE_PAID,
+            preprocessPrice(book, DBDefinitions.KEY_PRICE_PAID,
                             DBDefinitions.KEY_PRICE_PAID,
                             DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         }
@@ -1356,12 +1339,12 @@ public class DAO
         if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
             book.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                            book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
-                               .toUpperCase(bookLocale));
+                               .toUpperCase(book.getLocale()));
         }
         if (book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
             book.putString(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
                            book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)
-                               .toUpperCase(bookLocale));
+                               .toUpperCase(book.getLocale()));
         }
     }
 
@@ -1375,13 +1358,12 @@ public class DAO
      * @param keyPrice             key to store the value
      * @param keyPriceCurrency     key to store the currency
      */
-    private void preprocessPrice(@NonNull final Locale locale,
-                                 @NonNull final Book book,
+    private void preprocessPrice(@NonNull final Book book,
                                  @NonNull final String keyPriceWithCurrency,
                                  @NonNull final String keyPrice,
                                  @NonNull final String keyPriceCurrency) {
         Bundle dest = new Bundle();
-        CurrencyUtils.splitPrice(locale, book.getString(keyPriceWithCurrency),
+        CurrencyUtils.splitPrice(book.getLocale(), book.getString(keyPriceWithCurrency),
                                  keyPrice, keyPriceCurrency, dest);
         String price = dest.getString(keyPrice);
         if (price != null) {
@@ -1400,20 +1382,18 @@ public class DAO
     private void preprocessLegacyAuthor(@NonNull final Context context,
                                         @NonNull final Book book) {
 
-        Locale locale = LocaleUtils.getLocale(context);
-
         // If present, get the author id from the author name
         // (it may have changed with a name change)
         if (book.containsKey(KEY_AUTHOR_FORMATTED)) {
 
             Author author = Author.fromString(book.getString(KEY_AUTHOR_FORMATTED));
-            if (author.fixId(context, this, locale) == 0) {
+            if (author.fixId(context, this, Locale.getDefault()) == 0) {
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.debug(this, "preprocessLegacyAuthor",
                                  "KEY_AUTHOR_FORMATTED",
                                  "inserting author: " + author);
                 }
-                insertAuthor(locale, author);
+                insertAuthor(author);
             }
             book.putLong(DOM_FK_AUTHOR.getName(), author.getId());
 
@@ -1427,13 +1407,13 @@ public class DAO
             }
 
             Author author = new Author(family, given);
-            if (author.fixId(context, this, locale) == 0) {
+            if (author.fixId(context, this, Locale.getDefault()) == 0) {
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.debug(this, "preprocessLegacyAuthor",
                                  "KEY_AUTHOR_FAMILY_NAME",
                                  "inserting author: " + author);
                 }
-                insertAuthor(locale, author);
+                insertAuthor(author);
             }
             book.putLong(DOM_FK_AUTHOR.getName(), author.getId());
         }
@@ -1639,21 +1619,19 @@ public class DAO
                            final long bookId,
                            @NonNull final Book /* in/out */ book) {
 
-        Locale locale = LocaleUtils.getLocale(context);
-
         SyncLock txLock = null;
         if (!sSyncedDb.inTransaction()) {
             txLock = sSyncedDb.beginTransaction(true);
         }
 
         // Handle Language field FIRST, we might need it for 'ORDER BY' fields.
-        book.updateLocale(locale);
+        book.updateLocale();
 
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_INSERT) {
                 Logger.debug(this, "insertBook", book);
             }
-            // Cleanup fields (author, series, title and remove blank fields, etc...)
+            // Cleanup fields (Author, Series, title and remove blank fields, etc...)
             preprocessBook(context, book, bookId == 0);
 
             // Make sure we have an author
@@ -1664,7 +1642,7 @@ public class DAO
             }
 
             // correct field types if needed, and filter out fields we don't have in the db table.
-            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(locale));
+            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale());
 
             // if we have an id, use it.
             if (bookId > 0) {
@@ -1683,8 +1661,8 @@ public class DAO
 
             long newBookId = sSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
             if (newBookId > 0) {
-                insertBookDependents(context, locale, newBookId, book);
-                insertFts(locale, newBookId);
+                insertBookDependents(context, newBookId, book);
+                insertFts(newBookId);
                 // it's an insert, success only if we really inserted.
                 if (txLock != null) {
                     sSyncedDb.setTransactionSuccessful();
@@ -1722,26 +1700,24 @@ public class DAO
                           @NonNull final Book book,
                           final int flags) {
 
-        Locale locale = LocaleUtils.getLocale(context);
-
         SyncLock txLock = null;
         if (!sSyncedDb.inTransaction()) {
             txLock = sSyncedDb.beginTransaction(true);
         }
 
         // Handle Language field FIRST, we might need it for 'ORDER BY' fields.
-        book.updateLocale(locale);
+        book.updateLocale();
 
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_UPDATE) {
                 Logger.debug(this, "updateBook", book);
             }
 
-            // Cleanup fields (author, series, title, 'sameAuthor' if anthology,
+            // Cleanup fields (Author, Series, title, 'sameAuthor' if anthology,
             // and remove blank fields for which we have defaults)
             preprocessBook(context, book, bookId == 0);
 
-            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(locale));
+            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale());
 
             // Disallow UUID updates
             if (cv.containsKey(DOM_BOOK_UUID.getName())) {
@@ -1761,8 +1737,8 @@ public class DAO
             int rowsAffected = sSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
                                                 new String[]{String.valueOf(bookId)});
 
-            insertBookDependents(context, locale, bookId, book);
-            updateFts(locale, bookId);
+            insertBookDependents(context, bookId, book);
+            updateFts(bookId);
 
             if (txLock != null) {
                 sSyncedDb.setTransactionSuccessful();
@@ -1848,25 +1824,24 @@ public class DAO
      * @param book    A collection with the columns to be set. May contain extra data.
      */
     private void insertBookDependents(@NonNull final Context context,
-                                      @NonNull final Locale userLocale,
                                       final long bookId,
                                       @NonNull final Book book) {
 
         if (book.containsKey(UniqueId.BKEY_BOOKSHELF_ARRAY)) {
-            insertBookBookshelf(context, userLocale, bookId, book);
+            insertBookBookshelf(context, bookId, book);
         }
 
         if (book.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)) {
-            insertBookAuthors(context, userLocale, bookId, book);
+            insertBookAuthors(context, bookId, book);
         }
 
         if (book.containsKey(UniqueId.BKEY_SERIES_ARRAY)) {
-            insertBookSeries(context, userLocale, bookId, book);
+            insertBookSeries(context, bookId, book);
         }
 
         if (book.containsKey(UniqueId.BKEY_TOC_ENTRY_ARRAY)) {
             // update: toc entries are two steps away; they can exist in other books
-            updateOrInsertTOC(context, userLocale, bookId, book);
+            updateOrInsertTOC(context, bookId, book);
         }
 
         if (book.containsKey(DBDefinitions.KEY_LOANEE)
@@ -1947,13 +1922,11 @@ public class DAO
      * Note that {@link DBDefinitions#DOM_BOOK_SERIES_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
-     * @param context    Current context
-     * @param userLocale the locale the user is running the app in.
-     * @param bookId     of the book
-     * @param book       A collection with the columns to be set. May contain extra data.
+     * @param context Current context
+     * @param bookId  of the book
+     * @param book    A collection with the columns to be set. May contain extra data.
      */
     private void insertBookSeries(@NonNull final Context context,
-                                  final Locale userLocale,
                                   final long bookId,
                                   @NonNull final Book book) {
 
@@ -1982,7 +1955,7 @@ public class DAO
         final Map<String, Boolean> idHash = new HashMap<>();
         int position = 0;
         for (Series series : list) {
-            Locale seriesLocale = series.getLocale(book.getLocale(userLocale));
+            Locale seriesLocale = series.getLocale(book.getLocale());
             if (series.fixId(context, this, seriesLocale) == 0) {
                 insertSeries(context, series, seriesLocale);
             } else {
@@ -2037,13 +2010,11 @@ public class DAO
     /**
      * Insert a List of TocEntry's for the given book.
      *
-     * @param context    Current context
-     * @param userLocale the locale the user is running the app in.
-     * @param bookId     of the book
-     * @param book       A collection with the columns to be set. May contain extra data.
+     * @param context Current context
+     * @param bookId  of the book
+     * @param book    A collection with the columns to be set. May contain extra data.
      */
     private void updateOrInsertTOC(@NonNull final Context context,
-                                   @NonNull final Locale userLocale,
                                    final long bookId,
                                    @NonNull final Book book) {
         if (!sSyncedDb.inTransaction()) {
@@ -2071,11 +2042,11 @@ public class DAO
         for (TocEntry tocEntry : list) {
             // handle the author.
             Author author = tocEntry.getAuthor();
-            if (author.fixId(context, this, userLocale) == 0) {
-                insertAuthor(userLocale, author);
+            if (author.fixId(context, this, Locale.getDefault()) == 0) {
+                insertAuthor(author);
             }
 
-            Locale bookLocale = book.getLocale(userLocale);
+            Locale bookLocale = book.getLocale();
             // As an entry can exist in multiple books, try to find the entry.
             if (tocEntry.fixId(context, this, bookLocale) == 0) {
                 insertTocEntry(context, tocEntry, bookLocale);
@@ -2181,13 +2152,11 @@ public class DAO
      * Note that {@link DBDefinitions#DOM_BOOK_AUTHOR_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
-     * @param context    Current context
-     * @param userLocale the locale the user is running the app in.
-     * @param bookId     of the book
-     * @param book       A collection with the columns to be set. May contain extra data.
+     * @param context Current context
+     * @param bookId  of the book
+     * @param book    A collection with the columns to be set. May contain extra data.
      */
     private void insertBookAuthors(@NonNull final Context context,
-                                   @NonNull final Locale userLocale,
                                    final long bookId,
                                    @NonNull final Book book) {
 
@@ -2217,8 +2186,8 @@ public class DAO
         int position = 0;
         for (Author author : authors) {
             // find/insert the author
-            if (author.fixId(context, this, userLocale) == 0) {
-                insertAuthor(userLocale, author);
+            if (author.fixId(context, this, Locale.getDefault()) == 0) {
+                insertAuthor(author);
             }
 
             // we use the id as the KEY here, so yes, a String.
@@ -2273,13 +2242,11 @@ public class DAO
      * Note that {@link DBDefinitions#DOM_BOOK_SERIES_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
-     * @param context    Current context
-     * @param userLocale the locale the user is running the app in.
-     * @param bookId     of the book
-     * @param book       A collection with the columns to be set. May contain extra data.
+     * @param context Current context
+     * @param bookId  of the book
+     * @param book    A collection with the columns to be set. May contain extra data.
      */
     private void insertBookBookshelf(@NonNull final Context context,
-                                     final Locale userLocale,
                                      final long bookId,
                                      @NonNull final Book book) {
 
@@ -2312,7 +2279,7 @@ public class DAO
             // validate the style first
             long styleId = bookshelf.getStyle(this).getId();
 
-            if (bookshelf.fixId(context, this, userLocale) == 0) {
+            if (bookshelf.fixId(context, this, Locale.getDefault()) == 0) {
                 insertBookshelf(bookshelf, styleId);
             }
 
@@ -2665,11 +2632,11 @@ public class DAO
     }
 
     /**
-     * Get a list of the series a book belongs to.
+     * Get a list of the Series a book belongs to.
      *
      * @param bookId of the book
      *
-     * @return list of series
+     * @return list of Series
      */
     @NonNull
     public ArrayList<Series> getSeriesByBookId(final long bookId) {
@@ -3006,14 +2973,13 @@ public class DAO
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsertBookshelf(@NonNull final Context context,
-                                           @NonNull final Locale userLocale,
                                            @NonNull final /* in/out */ Bookshelf bookshelf,
                                            final long styleId) {
         if (bookshelf.getId() != 0) {
             return updateBookshelf(bookshelf, styleId) > 0;
         } else {
             // try to find first.
-            if (bookshelf.fixId(context, this, userLocale) == 0) {
+            if (bookshelf.fixId(context, this, Locale.getDefault()) == 0) {
                 return insertBookshelf(bookshelf, styleId) > 0;
             }
         }
@@ -3832,7 +3798,7 @@ public class DAO
      *
      * @param tableDefinition destination table
      * @param data            A collection with the columns to be set. May contain extra data.
-     * @param lcLocale        the Locale to use for character case manipulation
+     * @param bookLocale      the Locale to use for character case manipulation
      *
      * @return New and filtered ContentValues
      */
@@ -3840,7 +3806,7 @@ public class DAO
     private ContentValues filterValues(@SuppressWarnings("SameParameterValue")
                                        @NonNull final TableDefinition tableDefinition,
                                        @NonNull final DataManager data,
-                                       @NonNull final Locale lcLocale) {
+                                       @NonNull final Locale bookLocale) {
 
         TableInfo tableInfo = tableDefinition.getTableInfo(sSyncedDb);
 
@@ -3886,7 +3852,7 @@ public class DAO
                                 } else if (entry instanceof Long) {
                                     cv.put(columnInfo.name, (Long) entry);
                                 } else if (entry != null) {
-                                    String s = entry.toString().toLowerCase(lcLocale);
+                                    String s = entry.toString().toLowerCase(bookLocale);
                                     if (!s.isEmpty()) {
                                         // It's not strictly needed to do these conversions.
                                         // parseInt/catch works, but it's not elegant...
@@ -3960,8 +3926,7 @@ public class DAO
      * @param bookCursor Cursor of books to update
      * @param stmt       Statement to execute (insert or update)
      */
-    private void ftsSendBooks(@NonNull final Locale userLocale,
-                              @NonNull final BookCursor bookCursor,
+    private void ftsSendBooks(@NonNull final BookCursor bookCursor,
                               @NonNull final SynchronizedStatement stmt) {
 
         if (!sSyncedDb.inTransaction()) {
@@ -4047,10 +4012,6 @@ public class DAO
                 }
             }
 
-            if (!userLocale.equals(Locale.getDefault())) {
-                Logger.debug(this, "RAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            }
-
             // Be cautious; other threads may use the cached stmt, and set parameters.
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
@@ -4087,7 +4048,7 @@ public class DAO
      * Bind a string or {@code null} value to a parameter since binding a {@code null}
      * in bindString produces an error.
      * <p>
-     * <strong>Note:</strong> We specifically want to use the default locale for this.
+     * <strong>Note:</strong> We specifically want to use the default Locale for this.
      */
     private void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
                                   final int position,
@@ -4104,8 +4065,7 @@ public class DAO
      * <p>
      * Transaction: required
      */
-    private void insertFts(@NonNull final Locale userLocale,
-                           final long bookId) {
+    private void insertFts(final long bookId) {
 
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ERROR_NEEDS_TRANSACTION);
@@ -4120,7 +4080,7 @@ public class DAO
             try (BookCursor books = (BookCursor) sSyncedDb.rawQueryWithFactory(
                     BOOKS_CURSOR_FACTORY,
                     SqlSelect.BOOK_BY_ID, new String[]{String.valueOf(bookId)}, "")) {
-                ftsSendBooks(userLocale, books, stmt);
+                ftsSendBooks(books, stmt);
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
@@ -4133,8 +4093,7 @@ public class DAO
      * <p>
      * Transaction: required
      */
-    private void updateFts(@NonNull final Locale userLocale,
-                           final long bookId) {
+    private void updateFts(final long bookId) {
 
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException();
@@ -4148,7 +4107,7 @@ public class DAO
             try (BookCursor books = (BookCursor) sSyncedDb.rawQueryWithFactory(
                     BOOKS_CURSOR_FACTORY,
                     SqlSelect.BOOK_BY_ID, new String[]{String.valueOf(bookId)}, "")) {
-                ftsSendBooks(userLocale, books, stmt);
+                ftsSendBooks(books, stmt);
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
@@ -4160,8 +4119,7 @@ public class DAO
      * Rebuild the entire FTS database.
      * This can take several seconds with many books or a slow phone.
      */
-    public void rebuildFts(@NonNull final Locale userLocale) {
-
+    public void rebuildFts() {
         if (sSyncedDb.inTransaction()) {
             throw new TransactionException();
         }
@@ -4188,7 +4146,7 @@ public class DAO
                     "INSERT INTO " + ftsTemp.getName() + SqlFTS.INSERT_BODY);
                  BookCursor books = (BookCursor) sSyncedDb.rawQueryWithFactory(
                          BOOKS_CURSOR_FACTORY, SqlSelectFullTable.BOOKS, null, "")) {
-                ftsSendBooks(userLocale, books, insert);
+                ftsSendBooks(books, insert);
             }
 
             sSyncedDb.setTransactionSuccessful();
@@ -4955,6 +4913,9 @@ public class DAO
                 "SELECT "
                 + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN
                 + " AS " + DOM_AUTHOR_FORMATTED
+                // no author type for now.
+                //+ ',' + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_TYPE_BITMASK)
+
                 + ',' + TBL_BOOKS.dot(DOM_BOOK_LOCATION)
                 + ',' + TBL_BOOKS.dot(DOM_BOOK_FORMAT)
                 + ',' + TBL_BOOKS.dot(DOM_BOOK_PUBLISHER)

@@ -94,7 +94,7 @@
                 android:key="fields.visibility.author_type"
                 android:title="@string/lbl_author_type" />
 
-            <!-- series name includes series 'isComplete' and series number. -->
+            <!-- Series name includes Series 'isComplete' and Series number. -->
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="fields.visibility.series_name"

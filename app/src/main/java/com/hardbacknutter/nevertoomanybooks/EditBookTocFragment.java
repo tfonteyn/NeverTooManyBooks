@@ -140,7 +140,7 @@ public class EditBookTocFragment
 
             Book book = mBookModel.getBook();
 
-            // update the book with series information that was gathered from the TOC
+            // update the book with Series information that was gathered from the TOC
             List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
             if (series != null && !series.isEmpty()) {
                 ArrayList<Series> inBook = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);

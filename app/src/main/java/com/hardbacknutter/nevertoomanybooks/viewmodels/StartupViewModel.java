@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * <strong>Note:</strong> yes, this is overkill for the startup. Call it an experiment.
@@ -189,24 +188,22 @@ public class StartupViewModel
 
 
         if (mStartupTasksShouldBeStarted) {
-            Locale locale = LocaleUtils.getLocale(context);
-
             int taskId = 0;
             // start these unconditionally
-            startTask(new BuildLanguageMappingsTask(++taskId, locale, mTaskListener));
+            startTask(new BuildLanguageMappingsTask(++taskId, mTaskListener));
             startTask(new PreloadGoogleScanner(++taskId, mTaskListener));
 
             // this is not critical, once every so often is fine
             if (mDoPeriodicAction) {
                 // cleaner must be started after the language mapper task.
-                startTask(new DBCleanerTask(++taskId, mDb, locale, mTaskListener));
+                startTask(new DBCleanerTask(++taskId, mDb, mTaskListener));
             }
 
             // on demand only
             if (PreferenceManager.getDefaultSharedPreferences(context)
                                  .getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
                                              false)) {
-                startTask(new RebuildFtsTask(++taskId, mDb, locale, mTaskListener));
+                startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener));
             }
 
             // shouldn't be needed every single time.
@@ -275,9 +272,6 @@ public class StartupViewModel
     static class BuildLanguageMappingsTask
             extends TaskBase<Boolean> {
 
-        @NonNull
-        private final Locale mUserLocale;
-
         /**
          * Constructor.
          *
@@ -286,10 +280,8 @@ public class StartupViewModel
          */
         @UiThread
         BuildLanguageMappingsTask(final int taskId,
-                                  @NonNull final Locale userLocale,
                                   @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
-            mUserLocale = userLocale;
         }
 
         @Override
@@ -301,7 +293,7 @@ public class StartupViewModel
             }
             publishProgress(new TaskProgressMessage(mTaskId, R.string.progress_msg_upgrading));
             try {
-                LanguageUtils.createLanguageMappingCache(mUserLocale);
+                LanguageUtils.createLanguageMappingCache(Locale.getDefault());
 
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
@@ -355,8 +347,6 @@ public class StartupViewModel
         /** Database Access. */
         @NonNull
         private final DAO mDb;
-        @NonNull
-        private final Locale mUserLocale;
 
         /**
          * Constructor.
@@ -368,11 +358,9 @@ public class StartupViewModel
         @UiThread
         DBCleanerTask(final int taskId,
                       @NonNull final DAO db,
-                      @NonNull final Locale userLocale,
                       @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
             mDb = db;
-            mUserLocale = userLocale;
         }
 
         @WorkerThread
@@ -388,7 +376,7 @@ public class StartupViewModel
                 DBCleaner cleaner = new DBCleaner(mDb);
 
                 // do a mass update of any languages not yet converted to ISO 639-2 codes
-                cleaner.updateLanguages(mUserLocale);
+                cleaner.updateLanguages();
                 // clean/correct style UUID's on Bookshelves for deleted styles.
                 cleaner.bookshelves();
 
@@ -412,8 +400,6 @@ public class StartupViewModel
         /** Database Access. */
         @NonNull
         private final DAO mDb;
-        @NonNull
-        private final Locale mUserLocale;
 
         /**
          * Constructor.
@@ -425,11 +411,9 @@ public class StartupViewModel
         @UiThread
         RebuildFtsTask(final int taskId,
                        @NonNull final DAO db,
-                       @NonNull final Locale userLocale,
                        @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
             mDb = db;
-            mUserLocale = userLocale;
         }
 
         @Override
@@ -443,7 +427,7 @@ public class StartupViewModel
             publishProgress(new TaskProgressMessage(mTaskId,
                                                     R.string.progress_msg_rebuilding_search_index));
             try {
-                mDb.rebuildFts(mUserLocale);
+                mDb.rebuildFts();
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;

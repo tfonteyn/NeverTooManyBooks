@@ -532,22 +532,20 @@ public class Book
     /**
      * Update author details from DB.
      *
-     * @param context    Current context
-     * @param userLocale the locale the user is running the app in.
-     * @param db         Database Access
+     * @param context Current context
+     * @param db      Database Access
      */
     public void refreshAuthorList(@NonNull final Context context,
-                                  @NonNull final Locale userLocale,
                                   @NonNull final DAO db) {
         ArrayList<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         for (Author author : list) {
-            db.refreshAuthor(context, userLocale, author);
+            db.refreshAuthor(context, author);
         }
         putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
     }
 
     /**
-     * Get the name of the first series in the list of series for this book.
+     * Get the name of the first Series in the list of Series for this book.
      *
      * @return name, or {@code null} if none found
      */
@@ -564,16 +562,30 @@ public class Book
     }
 
     /**
-     * Validate the locale (based on the Book's language) and reset the language if needed.
+     * Validate the Locale (based on the Book's language) and reset the language if needed.
      */
-    public void updateLocale(@NonNull final Locale userLocale) {
-        getLocale(userLocale, true);
+    public void updateLocale() {
+        getLocale(Locale.getDefault(), true);
     }
 
     /**
-     * Get the Book's locale (based on its language).
+     * Convenience method.
      *
-     * @return the locale, or the users preferred locale if no language was set.
+     * Get the Book's Locale (based on its language).
+     *
+     * @return the Locale, or the users preferred Locale if no language was set.
+     */
+    @NonNull
+    public Locale getLocale() {
+        return getLocale(Locale.getDefault(), false);
+    }
+
+    /**
+     * Get the Book's Locale (based on its language).
+     *
+     * @param userLocale Locale to use if the Book does not have a Locale of its own.
+     *
+     * @return the Locale, or the users preferred Locale if no language was set.
      */
     @NonNull
     @Override
@@ -584,14 +596,14 @@ public class Book
     /**
      * Use the book's language setting to determine the Locale.
      *
-     * @param userLocale     fallback if we can't determine the books Locale
+     * @param fallbackLocale Locale to use if the Book does not have a Locale of its own.
      * @param updateLanguage {@code true} to update the language field with the ISO code
      *                       if needed. {@code false} to leave it unchanged.
      *
-     * @return the locale.
+     * @return the Locale.
      */
     @NonNull
-    private Locale getLocale(@NonNull final Locale userLocale,
+    private Locale getLocale(@NonNull final Locale fallbackLocale,
                              final boolean updateLanguage) {
         Locale bookLocale = null;
         if (containsKey(DBDefinitions.KEY_LANGUAGE)) {
@@ -599,7 +611,7 @@ public class Book
             int len = lang.length();
             // try to convert to iso3 if needed.
             if (len != 2 && len != 3) {
-                lang = LanguageUtils.getIso3fromDisplayName(lang, userLocale);
+                lang = LanguageUtils.getIso3fromDisplayName(lang, fallbackLocale);
             }
 
             // some languages have two iso3 codes; convert if needed.
@@ -616,7 +628,7 @@ public class Book
                                               "title=" + getTitle());
                 }
                 // invalid, use fallback.
-                bookLocale = userLocale;
+                return fallbackLocale;
             } else if (updateLanguage) {
                 putString(DBDefinitions.KEY_LANGUAGE, lang);
             }
@@ -634,23 +646,22 @@ public class Book
                                            "title=" + get(DBDefinitions.KEY_TITLE));
             }
             // none, use fallback.
-            return userLocale;
+            return fallbackLocale;
         }
     }
 
     /**
-     * Update series details from DB.
+     * Update Series details from DB.
      *
      * @param context Current context
      * @param db      Database Access
      */
     public void refreshSeriesList(@NonNull final Context context,
                                   @NonNull final DAO db) {
-        Locale locale = LocaleUtils.getLocale(context);
 
         ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         for (Series series : list) {
-            db.refreshSeries(context, series, getLocale(locale));
+            db.refreshSeries(context, series, getLocale());
         }
         putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
     }

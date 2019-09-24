@@ -122,7 +122,7 @@ class KbNlBookHandler
             case "Part(s)":
             case "Deel / delen":
                 // This label can appear without there being a "Series" label.
-                // In that case, the book title is presumed to also be the series title.
+                // In that case, the book title is presumed to also be the Series title.
                 processSeriesNumber(currentData);
                 break;
 

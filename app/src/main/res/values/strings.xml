@@ -660,7 +660,7 @@
     <!-- ####################################################################################### -->
     <!--
          Not a preference as such.
-         These are the locale specific title prefixes that will be moved to the end of a title,
+         These are the Locale specific title prefixes that will be moved to the end of a title,
          if reformatting of titles options are enabled by the user.
     -->
     <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
@@ -767,7 +767,7 @@
         This is not always desirable, as they use "AND" to combine the terms.
         So by default this is switched off. -->
     <string name="pt_search_uses_publisher">Search uses publisher</string>
-    <!-- SwitchPreference - search engines can collect series information from the toc.
+    <!-- SwitchPreference - search engines can collect Series information from the toc.
         This is not always desirable, and by default switched off. -->
     <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
 
@@ -995,7 +995,7 @@
     <string name="menu_view_book_at">View on…</string>
 
 
-    <!-- book list screen - context menu for authors/series/... -->
+    <!-- book list screen - context menu for Author/Series/... -->
     <string name="menu_set_complete">Set “complete”</string>
     <string name="menu_set_incomplete">Set “incomplete”</string>
     <string name="menu_author_details">All works by this author</string>
@@ -1167,8 +1167,8 @@
     <string name="clear">Clear</string>
 
     <!-- abbreviation to indicate there are more of something.
-        e.g. a list of series: "Foundation et.al" indicates a book belongs to the
-        "Foundation" series, but is also present in others.
+        e.g. a list of Series: "Foundation et.al" indicates a book belongs to the
+        "Foundation" Series, but is also present in others.
     -->
     <string name="and_others">et. al.</string>
 

@@ -35,6 +35,7 @@ import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
@@ -44,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
@@ -118,32 +118,22 @@ public final class SearchSites {
      */
     static {
         int priority = 0;
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOODREADS, priority++, 0));
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOOGLE_BOOKS, priority++, 2));
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(LIBRARY_THING, priority++, 3));
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(ISFDB, priority++, 4));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOODREADS, true, priority++, 0));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOOGLE_BOOKS, true, priority++, 2));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(LIBRARY_THING, true, priority++, 3));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(ISFDB, true, priority++, 4));
 
         // Dutch.
-        Site kbnl = Site.newSite(KBNL, priority++, 5);
-        // Disabled by default if neither the device or the app is running in Dutch.
-        if (!"nld".equals(App.getSystemLocale().getISO3Language())
-            && !"nld".equals(
-                LocaleUtils.getLocale(App.getLocalizedAppContext()).getISO3Language())) {
-            kbnl.setEnabled(false);
-        }
-        SEARCH_ORDER_DEFAULTS.add(kbnl);
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(KBNL, isDutch(), priority++, 5));
 
         // The proxy site has been broken since around April 2019.
-        // 2019-08-11: still broken, disabling for now.
-        Site amazon = Site.newSite(AMAZON, priority++, 1);
-        amazon.setEnabled(false);
-        SEARCH_ORDER_DEFAULTS.add(amazon);
+        // 2019-08-11: still broken, disabled by default.
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(AMAZON, false, priority++, 1));
 
-        // bottom of the list as the data from this site is not up to scratch. Disabled by default.
-        @SuppressWarnings("UnusedAssignment")
-        Site openLibrary = Site.newSite(OPEN_LIBRARY, priority++, 6);
-        openLibrary.setEnabled(false);
-        SEARCH_ORDER_DEFAULTS.add(openLibrary);
+        // bottom of the list as the data from this site is not very complete.
+        // Disabled by default.
+        //noinspection UnusedAssignment
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(OPEN_LIBRARY, false, priority++, 6));
     }
 
     /*
@@ -151,26 +141,20 @@ public final class SearchSites {
      */
     static {
         int priority = 0;
-        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOOGLE_BOOKS, priority++));
-        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(LIBRARY_THING, priority++));
-        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(ISFDB, priority++));
-        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOODREADS, priority++));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOOGLE_BOOKS, true, priority++));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(LIBRARY_THING, true, priority++));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(ISFDB, true, priority++));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOODREADS, true, priority++));
 
-        // Dutch. Disabled by default.
-        Site kbnl = Site.newCoverSite(KBNL, priority++);
-        kbnl.setEnabled(false);
-        COVER_SEARCH_ORDER_DEFAULTS.add(kbnl);
+        // Dutch.
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(KBNL, isDutch(), priority++));
 
         // The proxy site has been broken since around April 2019.
-        Site amazon = Site.newCoverSite(AMAZON, priority++);
-        amazon.setEnabled(false);
-        COVER_SEARCH_ORDER_DEFAULTS.add(amazon);
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(AMAZON, false, priority++));
 
         // bottom of the list as the data from this site is not up to scratch. Disabled by default.
-        @SuppressWarnings("UnusedAssignment")
-        Site openLibrary = Site.newCoverSite(OPEN_LIBRARY, priority++);
-        openLibrary.setEnabled(false);
-        COVER_SEARCH_ORDER_DEFAULTS.add(openLibrary);
+        //noinspection UnusedAssignment
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(OPEN_LIBRARY, false, priority++));
     }
 
     /*
@@ -185,7 +169,7 @@ public final class SearchSites {
         sPreferredCoverSearchOrder = new ArrayList<>(COVER_SEARCH_ORDER_DEFAULTS);
         // yes, this shows that sPreferredSearchOrder should be Map's but for now
         // the code was done with List so this was the easiest to make them configurable.
-        // To be redone.
+        // To be redone some day...
         for (Site searchSite : SEARCH_ORDER_DEFAULTS) {
             sPreferredSearchOrder.set(searchSite.getPriority(), searchSite);
             PREFERRED_RELIABILITY_ORDER.set(searchSite.getReliability(), searchSite);
@@ -196,6 +180,17 @@ public final class SearchSites {
     }
 
     private SearchSites() {
+    }
+
+    /**
+     * Dutch sites are by *default* only enabled if either the device or this app is running
+     * in Dutch.
+     *
+     * @return {@code true} if Dutch sites should be enabled by default.
+     */
+    private static boolean isDutch() {
+        return ("nld".equals(App.getSystemLocale().getISO3Language())
+                || "nld".equals(Locale.getDefault().getISO3Language()));
     }
 
     /**

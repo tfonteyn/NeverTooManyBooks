@@ -101,13 +101,15 @@ public final class LocaleUtils {
     /**
      * Get the user-preferred Locale as stored in the preferences.
      *
-     * @return a locale specification as used for Android resources;
+     * @return a Locale specification as used for Android resources;
      * or {@link #SYSTEM_LANGUAGE} to use the system settings
      */
+    @NonNull
     public static String getPersistedLocaleSpec() {
         return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                                 .getString(Prefs.pk_ui_language, SYSTEM_LANGUAGE);
     }
+
     /**
      * Test if the passed Locale is actually a 'real' Locale
      * by comparing the ISO3 code and the display name. If they are different we assume 'valid'
@@ -174,8 +176,9 @@ public final class LocaleUtils {
     }
 
     /**
-     * Set the system wide default Locale to the given localeSpec.
-     * Set the context's locale to the given localeSpec and return the updated context.
+     * Set the context's Locale to the user preferred localeSpec and return the updated context.
+     *
+     * Set the system wide default Locale to the user preferred localeSpec.
      *
      * @param context to set the Locale on
      *
@@ -208,10 +211,10 @@ public final class LocaleUtils {
     /**
      * Create a new Locale as specified by the localeSpec string.
      *
-     * @param localeSpec a locale specification as used for Android resources;
+     * @param localeSpec a Locale specification as used for Android resources;
      *                   or {@link #SYSTEM_LANGUAGE} to use the system settings
      *
-     * @return a new locale
+     * @return a new Locale
      */
     @NonNull
     private static Locale createLocale(@Nullable final String localeSpec) {
@@ -219,7 +222,7 @@ public final class LocaleUtils {
         if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
             return getSystemLocale();
         } else {
-            // Create a Locale from a concatenated locale string (e.g. 'de', 'en_AU')
+            // Create a Locale from a concatenated Locale string (e.g. 'de', 'en_AU')
             String[] parts;
             if (localeSpec.contains("_")) {
                 parts = localeSpec.split("_");
@@ -283,10 +286,13 @@ public final class LocaleUtils {
     }
 
     public static void insanityCheck(@NonNull final Context context) {
+        String persistedIso3 = createLocale(getPersistedLocaleSpec()).getISO3Language();
         String conIso3 = getConfiguredLocale(context).getISO3Language();
         String defIso3 = Locale.getDefault().getISO3Language();
 
-        if (!defIso3.equals(conIso3)) {
+        if (!defIso3.equals(conIso3)
+            || !defIso3.equals(persistedIso3)
+        ) {
             Error e = new java.lang.VerifyError();
             Logger.error(LocaleUtils.class, e, "defIso3=" + defIso3, "conIso3=" + conIso3);
             throw e;

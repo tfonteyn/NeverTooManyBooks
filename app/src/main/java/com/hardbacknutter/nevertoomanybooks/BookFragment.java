@@ -261,9 +261,6 @@ public class BookFragment
         super.initFields();
         Fields fields = getFields();
 
-        //noinspection ConstantConditions
-        Locale locale = LocaleUtils.getLocale(getContext());
-
         // multiple use
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
@@ -271,53 +268,54 @@ public class BookFragment
         fields.add(R.id.title, DBDefinitions.KEY_TITLE);
 
         // defined, but fetched manually
-        fields.add(R.id.author, "", DBDefinitions.KEY_FK_AUTHOR);
+        fields.add(R.id.author, "", DBDefinitions.KEY_FK_AUTHOR)
+              .setShowHtml(true);
 
         // defined, but fetched manually
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE)
-              .setRelatedFieldIds(R.id.lbl_series);
+              .setRelatedFields(R.id.lbl_series);
 
         Field<String> isbnField = fields.add(R.id.isbn, DBDefinitions.KEY_ISBN)
-                                        .setRelatedFieldIds(R.id.lbl_isbn);
+                                        .setRelatedFields(R.id.lbl_isbn);
 
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION)
               .setShowHtml(true)
-              .setRelatedFieldIds(R.id.lbl_description);
+              .setRelatedFields(R.id.lbl_description);
 
         fields.addBoolean(R.id.cbx_anthology, Book.HAS_MULTIPLE_WORKS)
               .setZeroIsEmpty(true)
-              .setRelatedFieldIds(R.id.lbl_anthology);
+              .setRelatedFields(R.id.lbl_anthology);
         // not added here: actual TOC which is non-text
 
         fields.add(R.id.genre, DBDefinitions.KEY_GENRE)
-              .setRelatedFieldIds(R.id.lbl_genre);
+              .setRelatedFields(R.id.lbl_genre);
 
         fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
-              .setFormatter(new Fields.LanguageFormatter(locale))
-              .setRelatedFieldIds(R.id.lbl_language);
+              .setFormatter(new Fields.LanguageFormatter())
+              .setRelatedFields(R.id.lbl_language);
 
         fields.add(R.id.pages, DBDefinitions.KEY_PAGES)
               .setFormatter(new Fields.PagesFormatter())
               .setZeroIsEmpty(true)
-              .setRelatedFieldIds(R.id.lbl_pages);
+              .setRelatedFields(R.id.lbl_pages);
 
         fields.add(R.id.format, DBDefinitions.KEY_FORMAT)
               .setFormatter(new Fields.FormatFormatter())
-              .setRelatedFieldIds(R.id.lbl_format);
+              .setRelatedFields(R.id.lbl_format);
 
         fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
 
         fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
               .setFormatter(dateFormatter)
-              .setRelatedFieldIds(R.id.lbl_date_published);
+              .setRelatedFields(R.id.lbl_date_published);
 
         fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
               .setFormatter(dateFormatter)
-              .setRelatedFieldIds(R.id.lbl_first_publication);
+              .setRelatedFields(R.id.lbl_first_publication);
 
         // defined, but fetched manually
         fields.add(R.id.price_listed, "", DBDefinitions.KEY_PRICE_LISTED)
-              .setRelatedFieldIds(R.id.price_listed_currency, R.id.lbl_price_listed);
+              .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
 
         Field<String> coverImageField =
                 fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
@@ -332,30 +330,30 @@ public class BookFragment
         // Personal fields
         fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
               .setFormatter(dateFormatter)
-              .setRelatedFieldIds(R.id.lbl_date_acquired);
+              .setRelatedFields(R.id.lbl_date_acquired);
 
         fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
               .setFormatter(new Fields.BitMaskFormatter(Book.EDITIONS))
               .setZeroIsEmpty(true)
-              .setRelatedFieldIds(R.id.lbl_edition);
+              .setRelatedFields(R.id.lbl_edition);
 
         fields.add(R.id.location, DBDefinitions.KEY_LOCATION)
-              .setRelatedFieldIds(R.id.lbl_location, R.id.lbl_location_long);
+              .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
         fields.addFloat(R.id.rating, DBDefinitions.KEY_RATING)
-              .setRelatedFieldIds(R.id.lbl_rating);
+              .setRelatedFields(R.id.lbl_rating);
 
         fields.add(R.id.notes, DBDefinitions.KEY_NOTES)
               .setShowHtml(true)
-              .setRelatedFieldIds(R.id.lbl_notes);
+              .setRelatedFields(R.id.lbl_notes);
 
         fields.add(R.id.read_start, DBDefinitions.KEY_READ_START)
               .setFormatter(dateFormatter)
-              .setRelatedFieldIds(R.id.lbl_read_start);
+              .setRelatedFields(R.id.lbl_read_start);
 
         fields.add(R.id.read_end, DBDefinitions.KEY_READ_END)
               .setFormatter(dateFormatter)
-              .setRelatedFieldIds(R.id.lbl_read_end);
+              .setRelatedFields(R.id.lbl_read_end);
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         fields.addBoolean(R.id.cbx_read, DBDefinitions.KEY_READ);
@@ -363,15 +361,15 @@ public class BookFragment
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         fields.addBoolean(R.id.cbx_signed, DBDefinitions.KEY_SIGNED)
               .setZeroIsEmpty(true)
-              .setRelatedFieldIds(R.id.lbl_signed);
+              .setRelatedFields(R.id.lbl_signed);
 
         // defined, but fetched manually
         fields.add(R.id.price_paid, "", DBDefinitions.KEY_PRICE_PAID)
-              .setRelatedFieldIds(R.id.price_paid_currency, R.id.lbl_price_paid);
+              .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid);
 
         // defined, but fetched manually
         fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF)
-              .setRelatedFieldIds(R.id.lbl_bookshelves);
+              .setRelatedFields(R.id.lbl_bookshelves);
 
         // defined, but fetched manually
         fields.add(R.id.loaned_to, "", DBDefinitions.KEY_LOANEE);
@@ -590,24 +588,33 @@ public class BookFragment
         Book book = mBookModel.getBook();
 
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        getField(R.id.author).setValue(Csv.join(", ", list,
-                                                author -> {
-                                                    final Context context = getContext();
-                                                    //noinspection ConstantConditions
-                                                    String authorLabel = author.getLabel(context);
-                                                    if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
-                                                        String t = author.getTypeLabels(context);
-                                                        if (!t.isEmpty()) {
-                                                            authorLabel += ' ' + t;
-                                                        }
-                                                    }
-
-                                                    return authorLabel;
-                                                }));
+        getField(R.id.author).setValue(Csv.join("<br>", list, false, "• ",
+                                                this::formatAuthor));
     }
 
     /**
-     * The series field is a single String with line-breaks between multiple series.
+     * The formatter for the {@link Csv#join} used by {@link #populateAuthorListField()}.
+     *
+     * @param author to format
+     *
+     * @return HTML formatted author with optional type
+     */
+    private String formatAuthor(@NonNull final Author author) {
+        final Context context = getContext();
+        //noinspection ConstantConditions
+        String authorLabel = author.getLabel(context);
+        if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
+            String type = author.getTypeLabels(context);
+            if (!type.isEmpty()) {
+                authorLabel += " <small><i>" + type + "</i></small>";
+            }
+        }
+
+        return authorLabel;
+    }
+
+    /**
+     * The Series field is a single String with line-breaks between multiple Series.
      * Each line will be prefixed with a "• "
      */
     private void populateSeriesListField() {
@@ -741,6 +748,8 @@ public class BookFragment
             mTocButton.setVisibility(View.GONE);
         }
     }
+
+
 
     /**
      * Listener to handle 'fling' events; we could handle others but need to be

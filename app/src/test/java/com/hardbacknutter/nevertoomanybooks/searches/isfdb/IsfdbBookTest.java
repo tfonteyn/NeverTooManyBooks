@@ -77,7 +77,7 @@ class IsfdbBookTest {
     private static final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
     /** instead we read this file locally. */
     private static final String filename = "/isfdb-book-1.html";
-    /** After mapping, the expected format (presuming the test runs in english locale). */
+    /** After mapping, the expected format (presuming the test runs in english Locale). */
     private static final String bookType_paperback = "Paperback";
 
     @Mock

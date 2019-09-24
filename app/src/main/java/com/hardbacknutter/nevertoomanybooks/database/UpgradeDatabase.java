@@ -289,7 +289,7 @@ public final class UpgradeDatabase {
      * This method is used/meant for use during upgrades.
      * <p>
      * Note this is a lazy approach using the users preferred Locale,
-     * as compared to the DAO code where we take the book's language/locale into account.
+     * as compared to the DAO code where we take the book's language/Locale into account.
      * The overhead here would be huge.
      * If the user has any specific book issue, a simple update of the book will fix it.
      */
@@ -300,7 +300,6 @@ public final class UpgradeDatabase {
 
         db.execSQL("ALTER TABLE " + table + " ADD " + destination + " text not null default ''");
 
-        Locale locale = LocaleUtils.getLocale(App.getLocalizedAppContext());
         SQLiteStatement update = db.compileStatement(
                 "UPDATE " + table + " SET " + destination + "=?"
                 + " WHERE " + DBDefinitions.DOM_PK_ID + "=?");
@@ -311,7 +310,7 @@ public final class UpgradeDatabase {
             while (cur.moveToNext()) {
                 final long id = cur.getLong(0);
                 final String in = cur.getString(1);
-                update.bindString(1, DAO.encodeOrderByColumn(in, locale));
+                update.bindString(1, DAO.encodeOrderByColumn(in, Locale.getDefault()));
                 update.bindLong(2, id);
                 update.executeUpdateDelete();
             }

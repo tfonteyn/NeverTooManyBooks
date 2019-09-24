@@ -96,7 +96,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         super.onCreate(savedInstanceState);
 
         mModel = new ViewModelProvider(this).get(EditObjectListModel.class);
-        mModel.init(this, Objects.requireNonNull(getIntent().getExtras()));
+        mModel.init(Objects.requireNonNull(getIntent().getExtras()));
 
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState
                                                         : getIntent().getExtras();
@@ -155,7 +155,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /**
      * Get the specific adapter from the child class.
      *
-     * @param list              List of series
+     * @param list              List of Series
      * @param dragStartListener Listener to handle the user moving rows up and down
      *
      * @return adapter

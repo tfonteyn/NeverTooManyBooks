@@ -42,7 +42,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -50,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
@@ -108,7 +106,7 @@ public class BookSearchByTextFragment
                             }
 
                             Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
 
                             // Clear the data entry fields ready for the next one
@@ -178,11 +176,10 @@ public class BookSearchByTextFragment
      * search sites can copy with the formatted version.
      */
     private void populateAuthorList() {
-        //noinspection ConstantConditions
-        Locale locale = LocaleUtils.getLocale(getContext());
         // Get all known authors and build a Set of the names
-        final ArrayList<String> authors = mBookSearchBaseModel.getAuthorNames(mAuthorNames, locale);
+        final ArrayList<String> authors = mBookSearchBaseModel.getAuthorNames(mAuthorNames);
         // Now get an adapter based on the combined names
+        //noinspection ConstantConditions
         mAuthorAdapter = new ArrayAdapter<>(getContext(),
                                             android.R.layout.simple_dropdown_item_1line,
                                             authors);

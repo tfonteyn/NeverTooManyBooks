@@ -184,7 +184,7 @@ public class App
     private static NotificationManager sNotifier;
     /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
     private static int sCurrentThemeId = -1;
-    /** The locale used at startup; so that we can revert to system locale if we want to. */
+    /** The Locale used at startup; so that we can revert to system Locale if we want to. */
     private static Locale sSystemInitialLocale;
 
     /** Singleton. */
@@ -625,10 +625,10 @@ public class App
     /**
      * Load a Resources set for the specified Locale.
      * This is an expensive lookup; we do not cache the Resources here,
-     * but it's advisable to cache the strings (map of locale/string for example) being looked up.
+     * but it's advisable to cache the strings (map of Locale/String for example) being looked up.
      *
      * @param context       Current context
-     * @param desiredLocale the desired Locale, e.g. the locale of a book,series,toc,...
+     * @param desiredLocale the desired Locale, e.g. the Locale of a Book,Series,TOC,...
      *
      * @return the Resources
      */

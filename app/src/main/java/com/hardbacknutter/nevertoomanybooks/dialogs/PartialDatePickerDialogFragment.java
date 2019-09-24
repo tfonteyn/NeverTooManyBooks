@@ -49,6 +49,7 @@ import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -56,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
@@ -147,9 +147,8 @@ public class PartialDatePickerDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Get a calendar for locale-related info (defaults to current date)
-        //noinspection ConstantConditions
-        mCalendarForCalculations = Calendar.getInstance(LocaleUtils.getLocale(getContext()));
+        // Get a calendar for Locale related info (defaults to current date)
+        mCalendarForCalculations = Calendar.getInstance(Locale.getDefault());
 
         mCurrentYear = mCalendarForCalculations.get(Calendar.YEAR);
 
@@ -368,7 +367,7 @@ public class PartialDatePickerDialogFragment
          * context) so we are 100% sure we're using the same one as in {@link #onCreateDialog}.
          * Call it paranoia.
          *
-         * @param context        Current context
+         * @param context Current context
          */
         PartialDatePickerDialog(@NonNull final Context context) {
             super(context);
@@ -377,7 +376,7 @@ public class PartialDatePickerDialogFragment
             View root = LayoutInflater.from(context)
                                       .inflate(R.layout.dialog_partial_date_picker, null);
 
-            // Ensure components match current locale order
+            // Ensure components match current Locale order
             reorderPickers(root);
 
             // Set the view
@@ -455,7 +454,7 @@ public class PartialDatePickerDialogFragment
         }
 
         /**
-         * Reorder the views in the dialog to suit the current locale.
+         * Reorder the views in the dialog to suit the current Locale.
          *
          * @param root Root view
          */
@@ -463,7 +462,7 @@ public class PartialDatePickerDialogFragment
             char[] order;
             try {
                 // This actually throws exception in some versions of Android, specifically when
-                // the locale-specific date format has the day name (EEE) in it. So we exit and
+                // the Locale specific date format has the day name (EEE) in it. So we exit and
                 // just use our default order in these cases.
                 // See Issue #712.
                 order = DateFormat.getDateFormatOrder(getContext());

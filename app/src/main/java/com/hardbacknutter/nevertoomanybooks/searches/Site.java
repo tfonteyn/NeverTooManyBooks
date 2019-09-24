@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * All search engines are added here.
@@ -67,7 +68,7 @@ public class Site
     private final String mName;
 
     /** user preference: enable/disable this site. */
-    private boolean mEnabled = true;
+    private boolean mEnabled;
     /** user preference: the priority/order the list of sites will be searched. */
     private int mPriority;
     /** for now hard-coded, but plumbing to have this as a user preference is done. */
@@ -80,11 +81,13 @@ public class Site
     /** Constructor. Use static method instead. */
     private Site(final int id,
                  @NonNull final String name,
+                 final boolean enabled,
                  final int priority,
                  final int reliability) {
 
         this.id = id;
         mName = name;
+        mEnabled = enabled;
         mPriority = priority;
         mReliability = reliability;
         loadFromPrefs(PreferenceManager.getDefaultSharedPreferences(App.getAppContext()));
@@ -110,13 +113,15 @@ public class Site
      * If previously stored to SharedPreferences, the stored values will be used instead.
      *
      * @param id          Internal ID, bitmask based
+     * @param enabled     flag
      * @param priority    the search priority order
      * @param reliability the search reliability order
      */
     static Site newSite(final int id,
+                        final boolean enabled,
                         final int priority,
                         final int reliability) {
-        return new Site(id, SearchSites.getName(id), priority, reliability);
+        return new Site(id, SearchSites.getName(id), enabled, priority, reliability);
     }
 
     /**
@@ -124,16 +129,21 @@ public class Site
      * If previously stored to SharedPreferences, the stored values will be used instead.
      *
      * @param id       Internal ID, bitmask based
+     * @param enabled  flag
      * @param priority the search priority order
      */
     static Site newCoverSite(final int id,
+                             final boolean enabled,
                              final int priority) {
+
+        String name = SearchSites.getName(id)
+                      + '-' + App.getLocalizedAppContext().getString(R.string.lbl_covers);
         // by default, reliability == order.
-        return new Site(id, SearchSites.getName(id) + "-covers", priority, priority);
+        return new Site(id, name, enabled, priority, priority);
     }
 
     /**
-     * @return the manager class instance.
+     * @return the {@link SearchEngine} instance for this site
      */
     public SearchEngine getSearchEngine() {
         if (mSearchEngine == null) {

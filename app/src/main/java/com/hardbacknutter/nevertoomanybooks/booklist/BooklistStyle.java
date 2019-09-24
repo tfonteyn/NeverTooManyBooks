@@ -79,7 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
- * Represents a specific style of book list (e.g. authors/series).
+ * Represents a specific style of book list (e.g. Authors/Series).
  * Individual {@link BooklistGroup} objects are added to a {@link BooklistStyle} in order
  * to describe the resulting list style.
  * <p>

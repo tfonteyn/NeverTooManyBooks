@@ -679,7 +679,7 @@ public class Fields {
             if (mFormatHtml) {
                 String body = format(target, mRawValue);
 
-                view.setText(LinkifyUtils.html(body));
+                view.setText(LinkifyUtils.fromHtml(body));
                 view.setMovementMethod(LinkMovementMethod.getInstance());
 
                 view.setFocusable(true);
@@ -1024,7 +1024,7 @@ public class Fields {
      * Formatter/Extractor for date fields.
      * <p>
      * Can be shared among multiple fields.
-     * Uses the context/locale from the field itself.
+     * Uses the Context/Locale from the field itself.
      */
     public static class DateFieldFormatter
             implements FieldFormatter<String> {
@@ -1040,7 +1040,7 @@ public class Fields {
                 return "";
             }
 
-            return DateUtils.toPrettyDate(field.getLocale(), source);
+            return DateUtils.toPrettyDate(source);
         }
 
         /**
@@ -1065,7 +1065,7 @@ public class Fields {
      * e.g. pre-decimal UK "Shilling/Pence" is in effect a string.
      *
      * <p>
-     * Uses the context/locale from the field itself.
+     * Uses the Context/Locale from the field itself.
      * <p>
      * Does not support {@link FieldFormatter#extract}
      */
@@ -1131,7 +1131,7 @@ public class Fields {
             // all Locales taken into account for parsing
             Float price = ParseUtils.toFloat(source);
             // but the current Locale is used for formatting
-            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(field.getLocale());
+            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.getDefault());
 
             Currency currency = Currency.getInstance(mCurrencyCode);
             currencyFormatter.setCurrency(currency);
@@ -1207,8 +1207,7 @@ public class Fields {
             if (source != null && !source.isEmpty()) {
                 Context context = field.getView().getContext();
                 LocaleUtils.insanityCheck(context);
-                Locale locale = LocaleUtils.getLocale(context);
-                return Format.map(context, locale, source);
+                return Format.map(context, source);
             }
             return "";
         }
@@ -1224,16 +1223,12 @@ public class Fields {
     /**
      * Formatter for language fields.
      * <p>
-     * Uses the locale from the Field.
+     * Uses the Locale from the Field.
      */
     public static class LanguageFormatter
             implements FieldFormatter<String> {
 
-        @NonNull
-        private final Locale mLocale;
-
-        public LanguageFormatter(@NonNull final Locale locale) {
-            this.mLocale = locale;
+        public LanguageFormatter() {
         }
 
         @NonNull
@@ -1244,7 +1239,7 @@ public class Fields {
                 return "";
             }
 
-            return LanguageUtils.getDisplayName(field.getLocale(), source);
+            return LanguageUtils.getDisplayName(Locale.getDefault(), source);
         }
 
         /**
@@ -1258,7 +1253,7 @@ public class Fields {
         @Override
         public String extract(@NonNull final Field<String> field,
                               @NonNull final String source) {
-            return LanguageUtils.getIso3fromDisplayName(source, mLocale);
+            return LanguageUtils.getIso3fromDisplayName(source, Locale.getDefault());
         }
     }
 
@@ -1606,7 +1601,7 @@ public class Fields {
          *
          * @param relatedFields labels etc
          */
-        public Field<T> setRelatedFieldIds(@NonNull @IdRes final int... relatedFields) {
+        public Field<T> setRelatedFields(@NonNull @IdRes final int... relatedFields) {
             mRelatedFields = relatedFields;
             return this;
         }

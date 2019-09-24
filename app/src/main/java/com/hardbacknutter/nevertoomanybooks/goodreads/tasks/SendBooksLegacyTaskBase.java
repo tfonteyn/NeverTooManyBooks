@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
@@ -235,7 +234,7 @@ abstract class SendBooksLegacyTaskBase
         /**
          * Resubmit this book and delete this event.
          *
-         * @param context   Current context
+         * @param context Current context
          */
         void retry(@NonNull final Context context) {
             QueueManager qm = QueueManager.getQueueManager();
@@ -279,8 +278,6 @@ abstract class SendBooksLegacyTaskBase
                              @NonNull final DAO db) {
             final EventsCursor eventsCursor = (EventsCursor) cursor;
 
-            Locale locale = LocaleUtils.getLocale(context);
-
             // Update event info binding; the Views in the holder are unchanged,
             // but when it is reused the Event and id will change.
             BookEventHolder holder = (BookEventHolder) view.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
@@ -295,7 +292,7 @@ abstract class SendBooksLegacyTaskBase
                     author = author + ' ' + context.getString(R.string.and_others);
                 }
             } else {
-                author = context.getString(R.string.unknown).toUpperCase(locale);
+                author = context.getString(R.string.unknown).toUpperCase(Locale.getDefault());
             }
 
             String title = db.getBookTitle(mBookId);
@@ -307,7 +304,7 @@ abstract class SendBooksLegacyTaskBase
             holder.authorView.setText(context.getString(R.string.lbl_by_author_s, author));
             holder.errorView.setText(getDescription());
 
-            String date = DateUtils.toPrettyDateTime(locale, eventsCursor.getEventDate());
+            String date = DateUtils.toPrettyDateTime(eventsCursor.getEventDate());
             holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
 
             holder.retryView.setVisibility(View.GONE);
@@ -350,8 +347,8 @@ abstract class SendBooksLegacyTaskBase
                             GrSendBookEvent event =
                                     (GrSendBookEvent) view.getTag(R.id.TAG_GR_EVENT);
                             Intent intent = new Intent(context, EditBookActivity.class)
-                                                    .putExtra(DBDefinitions.KEY_PK_ID,
-                                                              event.getBookId());
+                                    .putExtra(DBDefinitions.KEY_PK_ID,
+                                              event.getBookId());
                             context.startActivity(intent);
                         } catch (@NonNull final RuntimeException ignore) {
                             // not a book event?
@@ -382,7 +379,7 @@ abstract class SendBooksLegacyTaskBase
                         () -> {
                             try {
                                 GrSendBookEvent event = (GrSendBookEvent)
-                                                                view.getTag(R.id.TAG_GR_EVENT);
+                                        view.getTag(R.id.TAG_GR_EVENT);
                                 event.retry(context);
                                 QueueManager.getQueueManager().deleteEvent(id);
                             } catch (@NonNull final RuntimeException ignore) {

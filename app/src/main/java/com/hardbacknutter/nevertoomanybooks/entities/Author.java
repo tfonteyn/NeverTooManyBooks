@@ -548,15 +548,15 @@ public class Author
     }
 
     /**
-     * ENHANCE: The locale of the Author should be based on the main language the author writes in.
+     * ENHANCE: The Locale of the Author should be based on the main language the author writes in.
      * For now, we always use the fallback which <strong>should be the USER Locale</strong>
      *
-     * @return the locale of the Author
+     * @return the Locale of the Author
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull Locale fallbackLocale) {
-        return fallbackLocale;
+    public Locale getLocale(@NonNull final Locale userLocale) {
+        return userLocale;
     }
 
     @Override

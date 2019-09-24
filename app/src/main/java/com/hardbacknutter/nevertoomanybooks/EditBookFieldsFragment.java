@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -114,7 +113,7 @@ public class EditBookFieldsFragment
         // defined, but fetched/stored manually
         // Storing the list back into the book is handled by onCheckListEditorSave
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE)
-              .setRelatedFieldIds(R.id.lbl_series)
+              .setRelatedFields(R.id.lbl_series)
               .getView().setOnClickListener(v -> {
             // use the current title.
             String title = fields.getField(R.id.title).getValue().toString();
@@ -130,10 +129,10 @@ public class EditBookFieldsFragment
         });
 
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION)
-              .setRelatedFieldIds(R.id.lbl_description);
+              .setRelatedFields(R.id.lbl_description);
 
         Field<String> isbnField = fields.add(R.id.isbn, DBDefinitions.KEY_ISBN)
-                                        .setRelatedFieldIds(R.id.lbl_isbn);
+                                        .setRelatedFields(R.id.lbl_isbn);
 
         Field<String> coverField =
                 fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
@@ -146,7 +145,7 @@ public class EditBookFieldsFragment
         Field<String> field;
 
         field = fields.add(R.id.genre, DBDefinitions.KEY_GENRE)
-                      .setRelatedFieldIds(R.id.lbl_genre);
+                      .setRelatedFields(R.id.lbl_genre);
         initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, mBookModel.getGenres());
 
         // Personal fields
@@ -154,7 +153,7 @@ public class EditBookFieldsFragment
         // defined, but fetched/stored manually
         // Storing the list back into the book is handled by onCheckListEditorSave
         field = fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF)
-                      .setRelatedFieldIds(R.id.lbl_bookshelves);
+                      .setRelatedFields(R.id.lbl_bookshelves);
         initCheckListEditor(field, R.string.lbl_bookshelves_long,
                             () -> mBookModel.getEditableBookshelvesList());
     }
@@ -167,9 +166,6 @@ public class EditBookFieldsFragment
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
         Book book = mBookModel.getBook();
-
-        //noinspection ConstantConditions
-        Locale userLocale = LocaleUtils.getLocale(getContext());
 
         switch (requestCode) {
             case REQ_EDIT_AUTHORS: {
@@ -187,11 +183,12 @@ public class EditBookFieldsFragment
                     } else {
                         // Even though the dialog was terminated,
                         // some authors MAY have been modified.
-                        mBookModel.refreshAuthorList(getContext(), userLocale);
+                        //noinspection ConstantConditions
+                        mBookModel.refreshAuthorList(getContext());
                     }
 
                     boolean wasDirty = mBookModel.isDirty();
-                    populateAuthorListField(userLocale);
+                    populateAuthorListField();
                     mBookModel.setDirty(wasDirty);
 
                 }
@@ -211,7 +208,8 @@ public class EditBookFieldsFragment
 
                     } else {
                         // Even though the dialog was terminated,
-                        // some series MAY have been modified.
+                        // some Series MAY have been modified.
+                        //noinspection ConstantConditions
                         mBookModel.refreshSeriesList(getContext());
                     }
 
@@ -262,10 +260,7 @@ public class EditBookFieldsFragment
         }
         super.onLoadFieldsFromBook();
 
-        //noinspection ConstantConditions
-        Locale locale = LocaleUtils.getLocale(getContext());
-
-        populateAuthorListField(locale);
+        populateAuthorListField();
         populateSeriesListField();
         populateBookshelvesField();
 
@@ -299,15 +294,17 @@ public class EditBookFieldsFragment
         }
     }
 
-    private void populateAuthorListField(@NonNull final Locale userLocale) {
+    private void populateAuthorListField() {
         Book book = mBookModel.getBook();
 
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (!list.isEmpty()
-            && ItemWithFixableId.pruneList(list, getContext(), mBookModel.getDb(), userLocale)) {
+            && ItemWithFixableId.pruneList(list, getContext(),
+                                           mBookModel.getDb(), Locale.getDefault())) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
+
         //noinspection ConstantConditions
         String name = book.getAuthorTextShort(getContext());
         if (name.isEmpty() && book.containsKey(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
@@ -322,13 +319,10 @@ public class EditBookFieldsFragment
         Book book = mBookModel.getBook();
 
         Context context = getContext();
-        //noinspection ConstantConditions
-        Locale locale = LocaleUtils.getLocale(context);
 
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (!list.isEmpty()
-            && ItemWithFixableId
-                    .pruneList(list, context, mBookModel.getDb(), book.getLocale(locale))) {
+            && ItemWithFixableId.pruneList(list, context, mBookModel.getDb(), book.getLocale())) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         }

@@ -59,6 +59,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
@@ -206,7 +207,6 @@ public class BooksOnBookshelf
                 public void onStyleChanged(@NonNull final BooklistStyle style) {
                     // store the new data
                     mModel.onStyleChanged(BooksOnBookshelf.this,
-                                          LocaleUtils.getLocale(BooksOnBookshelf.this),
                                           style,
                                           mLayoutManager.findFirstVisibleItemPosition(),
                                           mListView);
@@ -772,7 +772,7 @@ public class BooksOnBookshelf
                         if (style != null) {
                             // save the new bookshelf/style combination
                             mModel.getCurrentBookshelf().setAsPreferred(this);
-                            mModel.setCurrentStyle(this, LocaleUtils.getLocale(this), style);
+                            mModel.setCurrentStyle(this, style);
                         }
                         mModel.setFullRebuild(true);
                     }
@@ -924,7 +924,6 @@ public class BooksOnBookshelf
 
         super.onBackPressed();
     }
-
 
     /**
      * Queue a rebuild of the underlying cursor and data. This is a wrapper for calling

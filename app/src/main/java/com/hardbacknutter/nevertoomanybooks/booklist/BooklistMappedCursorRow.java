@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
@@ -199,8 +198,6 @@ public class BooklistMappedCursorRow {
                     "groupCount=" + mStyle.groupCount() + " < level=" + level);
         }
 
-        Locale locale = LocaleUtils.getLocale(context);
-
         int index = level - 1;
         @BooklistGroup.RowKind.Kind
         int kind = mStyle.getGroupKindAt(index);
@@ -217,7 +214,7 @@ public class BooklistMappedCursorRow {
                 break;
             }
             case BooklistGroup.RowKind.LANGUAGE: {
-                return LanguageUtils.getDisplayName(locale, source);
+                return LanguageUtils.getDisplayName(Locale.getDefault(), source);
             }
             case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
             case BooklistGroup.RowKind.DATE_ADDED_MONTH:
@@ -228,7 +225,7 @@ public class BooklistMappedCursorRow {
                     int i = Integer.parseInt(source);
                     // If valid, get the short name
                     if (i > 0 && i <= 12) {
-                        return DateUtils.getMonthName(locale, i, false);
+                        return DateUtils.getMonthName(i, false);
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     Logger.error(this, e);

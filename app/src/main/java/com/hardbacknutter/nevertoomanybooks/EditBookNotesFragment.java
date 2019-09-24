@@ -90,40 +90,40 @@ public class EditBookNotesFragment
         fields.addBoolean(R.id.cbx_signed, DBDefinitions.KEY_SIGNED);
 
         fields.addFloat(R.id.rating, DBDefinitions.KEY_RATING)
-              .setRelatedFieldIds(R.id.lbl_rating);
+              .setRelatedFields(R.id.lbl_rating);
 
         fields.add(R.id.notes, DBDefinitions.KEY_NOTES)
-              .setRelatedFieldIds(R.id.lbl_notes);
+              .setRelatedFields(R.id.lbl_notes);
 
         fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID);
         field = fields.add(R.id.price_paid_currency, DBDefinitions.KEY_PRICE_PAID_CURRENCY)
-                      .setRelatedFieldIds(R.id.lbl_price_paid, R.id.price_paid_currency);
+                      .setRelatedFields(R.id.lbl_price_paid, R.id.price_paid_currency);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_paid_currency,
                         mBookModel.getPricePaidCurrencyCodes());
 
         field = fields.add(R.id.location, DBDefinitions.KEY_LOCATION)
-                      .setRelatedFieldIds(R.id.lbl_location, R.id.lbl_location_long);
+                      .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
         initValuePicker(field, R.string.lbl_location, R.id.btn_location, mBookModel.getLocations());
 
         field = fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
                       .setFormatter(new Fields.BitMaskFormatter(Book.EDITIONS))
-                      .setRelatedFieldIds(R.id.lbl_edition);
+                      .setRelatedFields(R.id.lbl_edition);
         initCheckListEditor(field, R.string.lbl_edition,
                             () -> mBookModel.getBook().getEditableEditionList());
 
         field = fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
                       .setFormatter(dateFormatter)
-                      .setRelatedFieldIds(R.id.lbl_date_acquired);
+                      .setRelatedFields(R.id.lbl_date_acquired);
         initPartialDatePicker(field, R.string.lbl_date_acquired, true);
 
         field = fields.add(R.id.read_start, DBDefinitions.KEY_READ_START)
                       .setFormatter(dateFormatter)
-                      .setRelatedFieldIds(R.id.lbl_read_start);
+                      .setRelatedFields(R.id.lbl_read_start);
         initPartialDatePicker(field, R.string.lbl_read_start, true);
 
         field = fields.add(R.id.read_end, DBDefinitions.KEY_READ_END)
                       .setFormatter(dateFormatter)
-                      .setRelatedFieldIds(R.id.lbl_read_end);
+                      .setRelatedFields(R.id.lbl_read_end);
         initPartialDatePicker(field, R.string.lbl_read_end, true);
     }
 
