@@ -79,7 +79,7 @@ public class SendBooksTask
 
         try {
             if (NetworkUtils.networkUnavailable()) {
-                return R.string.error_no_internet_connection;
+                return R.string.error_network_no_connection;
             }
             GoodreadsManager grManager = new GoodreadsManager();
             int msg = SendBooksLegacyTask.checkWeCanExport(grManager);

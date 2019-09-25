@@ -95,8 +95,9 @@ public interface BackupContainer {
      *
      * @param context Current context
      *
-     * @throws IOException on failure
+     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws IOException    on other failures
      */
     void validate(@NonNull Context context)
-            throws IOException;
+            throws InvalidArchiveException, IOException;
 }

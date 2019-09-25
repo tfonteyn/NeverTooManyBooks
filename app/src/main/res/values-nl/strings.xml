@@ -157,10 +157,10 @@
     <string name="error_import_failed">Import mislukt.</string>
     <string name="error_network_timeout">Geen antwoord, probeer opnieuw</string>
     <string name="error_no_external_crop_app">Een toepassing voor het bijsnijden van afbeeldingen werd niet gevonden</string>
-    <string name="error_no_internet_connection">Geen Internet verbinding beschikbaar.</string>
+    <string name="error_network_no_connection">Geen Internet verbinding beschikbaar.</string>
     <string name="error_not_available">%1$s is niet beschikbaar</string>
-    <string name="error_search_configuration">Configuratie fout. Open de instellingen en kijk de Zoek-webpaginas na.</string>
-    <string name="error_search_exception">Zoeken mislukt terwijl %1$s: %2$s</string>
+    <string name="error_search_failed_network">Configuratie fout. Open de instellingen en kijk de Zoek-webpaginas na.</string>
+    <string name="error_search_exception">Zoeken op %1$s is mislukt: %2$s</string>
     <string name="error_search_failed">Het zoeken naar het boek is mislukt. Controleer uw netwerk instellingen.</string>
     <string name="error_site_authentication_failed">%1$s authenticatie mislukt</string>
     <string name="error_storage_no_space_left">Onvoldoende opslag beschikbaar</string>
@@ -231,7 +231,7 @@
     <string name="hint_field_not_set">Niet Ingevuld</string>
     <string name="hint_field_not_set_with_brackets">(leeg)</string>
     <string name="hint_search_text">Tekst en/of ISBN</string>
-    <string name="error_csv_import_file_must_contain_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
+    <string name="error_import_csv_file_must_contain_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
     <string name="import_export_option_csv">Boeken (*.csv)</string>
     <string name="import_export_option_xml">Alle gegevens in XML formaat</string>
     <string name="import_export_option_xml_info">XML is enkel export, geen import.</string>
@@ -641,5 +641,8 @@
     <string name="info_waiting_for_scanner">Wachten op scanner / camera</string>
     <string name="warning_scanner_failed_to_start">De scanner kan niet worden gestart.</string>
     <string name="warning_scanner_retry_install">We raden u aan het opnieuw te proberen, maar als het blijft mislukken, installeer de scanner opnieuw of installeer een andere scanner.</string>
+    <string name="error_import_invalid_archive">Het geselecteerde bestand wordt niet herkend.</string>
+    <string name="lbl_author_type_cover_artist">Omslag illustratie</string>
+    <string name="lbl_author_type_cover_colorist">Omslag kleuren</string>
 
 </resources>

@@ -156,10 +156,10 @@
     <string name="error_import_failed">Импорт не удался.</string>
     <string name="error_network_timeout">Нет ответа, пожалуйста, попробуйте еще раз</string>
     <string name="error_no_external_crop_app">Заявка на обрезку изображений не найдена</string>
-    <string name="error_no_internet_connection">Интернет соединение отсутствует.</string>
+    <string name="error_network_no_connection">Интернет соединение отсутствует.</string>
     <string name="error_not_available">%1$s недоступен</string>
-    <string name="error_search_configuration">Ошибка конфигурации. Пожалуйста, откройте страницу администратора и проверьте настройки поиска.</string>
-    <string name="error_search_exception">Поиск во время %1$s: %2$s не удался</string>
+    <string name="error_search_failed_network">Ошибка конфигурации. Пожалуйста, откройте страницу администратора и проверьте настройки поиска.</string>
+    <string name="error_search_exception">Поиск по %1$s не удался: %2$s</string>
     <string name="error_search_failed">Поиск книги не удался. Пожалуйста, проверьте настройки интернет-соединения.</string>
     <string name="error_site_authentication_failed">%1$s аутентификация не удалась</string>
     <string name="error_storage_no_space_left">Недостаточно места</string>
@@ -223,7 +223,7 @@
     <string name="hint_field_not_set">Не установлено</string>
     <string name="hint_field_not_set_with_brackets">(пусто)</string>
     <string name="hint_search_text">Текст и/или ISBN</string>
-    <string name="error_csv_import_file_must_contain_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
+    <string name="error_import_csv_file_must_contain_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
     <string name="import_export_option_csv">книги (*.csv)</string>
     <string name="import_export_option_xml">Все данные в формате XML</string>
     <string name="import_export_option_xml_info">Только экспорт XML, без импорта.</string>
@@ -628,5 +628,6 @@
     <string name="info_waiting_for_scanner">В ожидании сканера / камеры</string>
     <string name="warning_scanner_failed_to_start">Сканер не запустился.</string>
     <string name="warning_scanner_retry_install">Мы рекомендуем сначала повторить попытку, но если она не работает, переустановите сканер или установите другой сканер.</string>
+    <string name="error_import_invalid_archive">Выбранный файл не распознан.</string>
 
 </resources>

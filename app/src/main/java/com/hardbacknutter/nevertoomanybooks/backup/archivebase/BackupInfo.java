@@ -34,7 +34,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.IOException;
 import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -281,17 +280,17 @@ public class BackupInfo {
      * This is partially a debug method and partially a basic check to see if the info
      * block looks more or less correct.
      *
-     * @throws IOException on failure
+     * @throws InvalidArchiveException on failure
      */
     public void validate()
-            throws IOException {
+            throws InvalidArchiveException {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
             Logger.debug(this, "validate", mBundle.toString());
         }
 
         // extremely simple check: we assume that if one field is present, the rest will be there.
         if (!mBundle.containsKey(INFO_ARCHIVER_VERSION)) {
-            throw new IOException("info block lacks version field");
+            throw new InvalidArchiveException("info block lacks version field");
         }
     }
 }

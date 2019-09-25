@@ -159,10 +159,10 @@
     <string name="error_import_failed">Import gescheitert.</string>
     <string name="error_network_timeout">Keine Antwort, bitte versuchen Sie es erneut</string>
     <string name="error_no_external_crop_app">Eine Anwendung zum Zuschneiden von Bildern wurde nicht gefunden</string>
-    <string name="error_no_internet_connection">Internet Verbindung nicht verfügbar.</string>
+    <string name="error_network_no_connection">Internet Verbindung nicht verfügbar.</string>
     <string name="error_not_available">%1$s ist nicht verfügbar</string>
-    <string name="error_search_configuration">Suchkonfigurationsfehler. Öffnen Sie die Einstellungen und überprüfen Sie die Suchseiten</string>
-    <string name="error_search_exception">Die Suche ist fehlgeschlagen während %1$s: %2$s</string>
+    <string name="error_search_failed_network">Suchkonfigurationsfehler. Öffnen Sie die Einstellungen und überprüfen Sie die Suchseiten</string>
+    <string name="error_search_exception">Suche auf %1$s fehlgeschlagen: %2$s</string>
     <string name="error_search_failed">Die Suche nach dem Buch ist fehlgeschlagen. Bitte überprüfen Sie die Netzwerkeinstellungen.</string>
     <string name="error_site_authentication_failed">Authentifizierung bei %1$s fehlgeschlagen</string>
     <string name="error_storage_no_space_left">Nicht genügend Speicher verfügbar</string>
@@ -227,7 +227,7 @@
     <string name="hint_field_not_set">Nicht gesetzt</string>
     <string name="hint_field_not_set_with_brackets">(leer)</string>
     <string name="hint_search_text">Text und/oder ISBN</string>
-    <string name="error_csv_import_file_must_contain_columns_x">Die Datei muss eine Spalte mit den folgenden Namen enthalten: %1$s</string>
+    <string name="error_import_csv_file_must_contain_columns_x">Die Datei muss eine Spalte mit den folgenden Namen enthalten: %1$s</string>
     <string name="import_export_option_csv">Bücher (*.csv)</string>
     <string name="import_export_option_xml">Alle Daten im XML-Format</string>
     <string name="import_export_option_xml_info">XML ist nur Export, kein Import.</string>
@@ -636,4 +636,6 @@
     <string name="info_waiting_for_scanner">Warten auf Scanner / Kamera</string>
     <string name="warning_scanner_failed_to_start">Der Scanner konnte nicht gestartet werden.</string>
     <string name="warning_scanner_retry_install">Wir empfehlen, dass Sie es zuerst erneut versuchen. Wenn dies jedoch weiterhin fehlschlägt, installieren Sie den Scanner erneut oder installieren Sie einen anderen Scanner.</string>
+    <string name="error_import_invalid_archive">Die ausgewählte Datei wird nicht erkannt.</string>
+    <string name="lbl_author_type_writer">Autor</string>
 </resources>

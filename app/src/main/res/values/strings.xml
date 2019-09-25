@@ -90,23 +90,43 @@
     <string name="error_if_the_problem_persists">
         If the problem persists, contact support via the “Admin” page from the main menu.
     </string>
+
+    <string name="error_network_no_connection">Internet connection is not available.</string>
+    <string name="error_network_timeout">No response, please try again.</string>
+    <string name="error_email_failed">Failed to send the email.</string>
+    <string name="error_google_play_store_missing">Google Play Store is not installed.</string>
+
+    <string name="error_not_available">%1$s is not available.</string>
+
+    <!-- A search on a website failed: param 1: site name; param 2: message -->
+    <string name="error_search_exception">Searching on %1$s failed: %2$s.</string>
     <string name="error_search_failed">
         Searching for the book failed. Please check your network settings.
     </string>
-    <string name="error_search_exception">Search failed while %1$s: %2$s.</string>
+    <string name="error_search_failed_network">
+        Configuration error. Please open the Settings page and check your Search Site preferences.
+    </string>
+
     <string name="error_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
     <string name="error_columns_are_blank">Columns “%1$s” are all blank at row %2$d.</string>
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
-    <string name="error_no_internet_connection">Internet connection is not available.</string>
-    <string name="error_failed_x">Failed: %1$d</string>
-    <!-- generic import failure -->
-    <string name="error_import_failed">Import failed.</string>
+
+    <string name="error_no_external_crop_app">
+        An application for trimming images was not found.
+    </string>
+
+
+    <!-- The user selected a file to import that was not recognised as a valid archive. -->
+    <string name="error_import_invalid_archive">The file selected is not recognized.</string>
     <!-- generic backup failure -->
     <string name="error_backup_failed">Backup Failed.</string>
+    <!-- generic import failure -->
+    <string name="error_import_failed">Import failed.</string>
     <!-- Displayed when a CSV import fails -->
-    <string name="error_csv_import_file_must_contain_columns_x">
+    <string name="error_import_csv_file_must_contain_columns_x">
         File must contain a column with one of the following names: %1$s
     </string>
+
 
     <!-- Displayed when any read operation from Shared Storage fails -->
     <string name="error_storage_not_readable">Please check that storage is accessible.</string>
@@ -119,22 +139,14 @@
     <!-- you're out of Shared Storage space... buy a bigger SD Card -->
     <string name="error_storage_no_space_left">Insufficient storage available.</string>
 
-    <string name="error_not_available">%1$s is not available.</string>
-
-    <string name="error_no_external_crop_app">
-        An application for trimming images was not found.
-    </string>
-    <string name="error_network_timeout">No response, please try again.</string>
-    <string name="error_email_failed">Failed to send the email.</string>
-    <string name="error_google_play_store_missing">Google Play Store is not installed.</string>
-    <string name="error_search_configuration">
-        Configuration error. Please open the Settings page and check your Search Site preferences.
-    </string>
 
     <!-- Generic authentication failed -->
     <string name="error_authentication_failed">Authentication failed</string>
     <!-- 'Site' authentication failed -->
     <string name="error_site_authentication_failed">%1$s authentication failed</string>
+
+
+    <string name="error_failed_x">Failed: %1$d</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Warning messages ========== -->

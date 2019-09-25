@@ -193,7 +193,7 @@ public class UpdateFieldsFromInternetFragment
         // Check general network connectivity. If none, WARN the user.
         if (NetworkUtils.networkUnavailable()) {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_no_internet_connection);
+            UserMessage.show(getView(), R.string.error_network_no_connection);
         }
     }
 
@@ -473,7 +473,7 @@ public class UpdateFieldsFromInternetFragment
         // Don't start search if we have no approved network... FAIL.
         if (NetworkUtils.networkUnavailable()) {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_no_internet_connection);
+            UserMessage.show(getView(), R.string.error_network_no_connection);
             return;
         }
 

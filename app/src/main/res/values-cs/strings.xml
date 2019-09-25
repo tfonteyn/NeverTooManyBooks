@@ -157,10 +157,10 @@
     <string name="error_import_failed">Import se nezdařil.</string>
     <string name="error_network_timeout">Žádná odpověď, zkuste to prosím znovu</string>
     <string name="error_no_external_crop_app">Aplikace pro oříznutí obrázků nebyla nalezena</string>
-    <string name="error_no_internet_connection">Připojení k internetu není k dispozici.</string>
+    <string name="error_network_no_connection">Připojení k internetu není k dispozici.</string>
     <string name="error_not_available">%1$s není k dispozici</string>
-    <string name="error_search_configuration">Chyba konfigurace. Otevřete stránku Nastavení a zkontrolujte předvolby vyhledávacího webu.</string>
-    <string name="error_search_exception">Hledání selhalo %1$s: %2$s</string>
+    <string name="error_search_failed_network">Chyba konfigurace. Otevřete stránku Nastavení a zkontrolujte předvolby vyhledávacího webu.</string>
+    <string name="error_search_exception">Hledání na %1$s se nezdařilo: %2$s</string>
     <string name="error_search_failed">Vyhledávání knihy se nezdařilo. Zkontrolujte prosím své síťové připojení.</string>
     <string name="error_site_authentication_failed">Ověření %1$s se nezdařilo</string>
     <string name="error_storage_no_space_left">Nedostatečné úložiště</string>
@@ -225,7 +225,7 @@
     <string name="hint_field_not_set">Nenastaveno</string>
     <string name="hint_field_not_set_with_brackets">(prázdné)</string>
     <string name="hint_search_text">Vložit a/nebo ISBN</string>
-    <string name="error_csv_import_file_must_contain_columns_x">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
+    <string name="error_import_csv_file_must_contain_columns_x">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
     <string name="import_export_option_csv">Knihy (*.csv)</string>
     <string name="import_export_option_xml">Všechna data ve formátu XML</string>
     <string name="import_export_option_xml_info">XML je pouze export, bez importu.</string>
@@ -629,5 +629,7 @@
     <string name="info_waiting_for_scanner">Čekání na skener / fotoaparát</string>
     <string name="warning_scanner_failed_to_start">Skener se nepodařilo spustit.</string>
     <string name="warning_scanner_retry_install">Doporučujeme zkusit to znovu jako první, ale pokud problém přetrvává, nainstalujte znovu skener nebo nainstalujte jiný skener.</string>
+    <string name="error_import_invalid_archive">Vybraný soubor není rozpoznán.</string>
+    <string name="lbl_author_type_writer">spisovatel</string>
 
 </resources>

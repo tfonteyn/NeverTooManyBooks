@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupReader;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.archivebase.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.tararchive.TarBackupContainer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -68,12 +69,13 @@ public final class BackupManager {
      *
      * @return a new reader
      *
-     * @throws IOException on failure
+     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws IOException    on other failures
      */
     @NonNull
     static BackupReader getReader(@NonNull final Context context,
                                   @NonNull final Uri uri)
-            throws IOException {
+            throws InvalidArchiveException, IOException {
 
         // We only support one backup format; so we use that.
         BackupContainer bkp = new TarBackupContainer(uri);
@@ -120,11 +122,12 @@ public final class BackupManager {
     public static boolean archiveHasValidDates(@NonNull final Context context,
                                                @NonNull final Uri uri) {
         boolean hasValidDates;
+        // InvalidArchiveException is irrelevant, as we would not have gotten here
         try (BackupReader reader = getReader(context, uri)) {
             BackupInfo info = reader.getInfo();
             reader.close();
             hasValidDates = info.getAppVersionCode() >= 152;
-        } catch (@NonNull final IOException e) {
+        } catch (@NonNull final IOException | InvalidArchiveException e) {
             Logger.error(context, e);
             hasValidDates = false;
         }

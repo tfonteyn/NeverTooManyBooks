@@ -157,10 +157,10 @@
     <string name="error_import_failed">Importazione fallita.</string>
     <string name="error_network_timeout">Nessuna risposta, per favore riprova</string>
     <string name="error_no_external_crop_app">Non è stata trovata un\'applicazione per il ritaglio delle immagini</string>
-    <string name="error_no_internet_connection">Nessuna connessione disponibile.</string>
+    <string name="error_network_no_connection">Nessuna connessione disponibile.</string>
     <string name="error_not_available">%1$s non disponibile</string>
-    <string name="error_search_configuration">Errore di configurazione. Apri la Preferenze e verifica le impostazioni nelle pagine di ricerca.</string>
-    <string name="error_search_exception">Ricerca di %1$s: %2$s fallita</string>
+    <string name="error_search_failed_network">Errore di configurazione. Apri la Preferenze e verifica le impostazioni nelle pagine di ricerca.</string>
+    <string name="error_search_exception">Ricerca su %1$s non riuscita: %2$s</string>
     <string name="error_search_failed">Ricerca del libro fallita. Controlla le impostazioni di rete.</string>
     <string name="error_site_authentication_failed">Autenticazione %1$s non riuscita</string>
     <string name="error_storage_no_space_left">Spazio disponibile insufficiente</string>
@@ -225,7 +225,7 @@
     <string name="hint_field_not_set">Non impostato</string>
     <string name="hint_field_not_set_with_brackets">(vuoto)</string>
     <string name="hint_search_text">Testo e/o ISBN</string>
-    <string name="error_csv_import_file_must_contain_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
+    <string name="error_import_csv_file_must_contain_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
     <string name="import_export_option_csv">Libri (*.csv)</string>
     <string name="import_export_option_xml">Tutti i dati in formato XML</string>
     <string name="import_export_option_xml_info">XML è solo esportazione, non importa.</string>
@@ -634,5 +634,6 @@
     <string name="info_waiting_for_scanner">In attesa di scanner / fotocamera</string>
     <string name="warning_scanner_failed_to_start">Lo scanner non si è avviato.</string>
     <string name="warning_scanner_retry_install">Ti consigliamo di riprovare prima, ma se il problema persiste, reinstallare lo scanner o installare un altro scanner.</string>
+    <string name="error_import_invalid_archive">Il file selezionato non è riconosciuto.</string>
 
 </resources>

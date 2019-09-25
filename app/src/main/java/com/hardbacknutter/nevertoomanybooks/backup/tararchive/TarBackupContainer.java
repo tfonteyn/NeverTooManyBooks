@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupReader;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.archivebase.InvalidArchiveException;
 
 /**
  * Class to handle TAR archive storage.
@@ -139,7 +140,7 @@ public class TarBackupContainer
 
     @Override
     public void validate(@NonNull final Context context)
-            throws IOException {
+            throws IOException, InvalidArchiveException {
         // The reader will do basic validation.
         try (BackupReader reader = newReader(context)) {
             BackupInfo backupInfo = reader.getInfo();

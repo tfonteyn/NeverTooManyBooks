@@ -157,10 +157,10 @@
     <string name="error_import_failed">Import nie powiódł się.</string>
     <string name="error_network_timeout">Brak odpowiedzi. Spróbuj ponownie.</string>
     <string name="error_no_external_crop_app">Nie znaleziono aplikacji do przycinania obrazów</string>
-    <string name="error_no_internet_connection">Połączenie internetowe nie jest dostępne.</string>
+    <string name="error_network_no_connection">Połączenie internetowe nie jest dostępne.</string>
     <string name="error_not_available">%1$s jest niedostępny</string>
-    <string name="error_search_configuration">Błąd konfiguracji. Otwórz stronę Ustawienia i sprawdź preferencje strony wyszukiwania.</string>
-    <string name="error_search_exception">Wyszukiwanie nie powiodło się: %1$s: %2$s</string>
+    <string name="error_search_failed_network">Błąd konfiguracji. Otwórz stronę Ustawienia i sprawdź preferencje strony wyszukiwania.</string>
+    <string name="error_search_exception">Wyszukiwanie w %1$s nie powiodło się: %2$s</string>
     <string name="error_search_failed">Wyszukiwanie książki nie powiodło się. Sprawdź połączenie z siecią.</string>
     <string name="error_site_authentication_failed">Uwierzytelnienie %1$s nie powiodło się</string>
     <string name="error_storage_no_space_left">Niewystarczająca pamięć dostępna</string>
@@ -225,7 +225,7 @@
     <string name="hint_field_not_set">Nie wybrany(a)</string>
     <string name="hint_field_not_set_with_brackets">(Nie ustawiony)</string>
     <string name="hint_search_text">Tekst i / lub ISBN</string>
-    <string name="error_csv_import_file_must_contain_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
+    <string name="error_import_csv_file_must_contain_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
     <string name="import_export_option_csv">Książki (*.csv)</string>
     <string name="import_export_option_xml">Wszystkie dane w formacie XML</string>
     <string name="import_export_option_xml_info">XML jest tylko eksportem, bez importu.</string>
@@ -630,4 +630,5 @@
     <string name="info_waiting_for_scanner">Oczekiwanie na skaner / aparat</string>
     <string name="warning_scanner_failed_to_start">Nie można uruchomić skanera.</string>
     <string name="warning_scanner_retry_install">Sugerujemy, aby spróbować ponownie, ale jeśli problem nadal występuje, zainstaluj ponownie skaner lub zainstaluj inny skaner.</string>
+    <string name="error_import_invalid_archive">Wybrany plik nie został rozpoznany.</string>
 </resources>

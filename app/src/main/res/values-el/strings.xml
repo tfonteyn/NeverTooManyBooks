@@ -158,10 +158,10 @@
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
     <string name="error_network_timeout">Δεν υπάρχει απάντηση, δοκιμάστε ξανά</string>
     <string name="error_no_external_crop_app">Δεν βρέθηκε μια εφαρμογή για την αποκοπή εικόνων</string>
-    <string name="error_no_internet_connection">Δεν υπάρχει διαθέσιμη σύνδεση internet.</string>
+    <string name="error_network_no_connection">Δεν υπάρχει διαθέσιμη σύνδεση internet.</string>
     <string name="error_not_available">Το %1$s δεν είναι διαθέσιμο</string>
-    <string name="error_search_configuration">Σφάλμα διαμόρφωσης. Ανοίξτε τη σελίδα Ρυθμίσεις και ελέγξτε τις προτιμήσεις του ιστότοπου αναζήτησης.</string>
-    <string name="error_search_exception">Αναζήτηση απέτυχε όταν %1$s: %2$s</string>
+    <string name="error_search_failed_network">Σφάλμα διαμόρφωσης. Ανοίξτε τη σελίδα Ρυθμίσεις και ελέγξτε τις προτιμήσεις του ιστότοπου αναζήτησης.</string>
+    <string name="error_search_exception">Η αναζήτηση στο %1$s απέτυχε: %2$s</string>
     <string name="error_search_failed">Η αναζήτηση του βιβλίου απέτυχε. Παρακαλούμε ελέγξτε τις ρυθμίσεις δικτύου.</string>
     <string name="error_site_authentication_failed">Ο έλεγχος ταυτότητας %1$s απέτυχε</string>
     <string name="error_storage_no_space_left">Ανεπαρκής χώρος αποθήκευσης</string>
@@ -226,7 +226,7 @@
     <string name="hint_field_not_set">Μη ορισμένο</string>
     <string name="hint_field_not_set_with_brackets">(άδειο)</string>
     <string name="hint_search_text">Κείμενο και/ή ISBN</string>
-    <string name="error_csv_import_file_must_contain_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
+    <string name="error_import_csv_file_must_contain_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
     <string name="import_export_option_csv">βιβλία (*.csv)</string>
     <string name="import_export_option_xml">Όλα τα δεδομένα σε μορφή XML</string>
     <string name="import_export_option_xml_info">Η XML είναι μόνο εξαγωγή, χωρίς εισαγωγή.</string>
@@ -635,5 +635,6 @@
     <string name="info_waiting_for_scanner">Αναμονή για σαρωτή / κάμερα</string>
     <string name="warning_scanner_failed_to_start">Ο σαρωτής απέτυχε να ξεκινήσει.</string>
     <string name="warning_scanner_retry_install">Προτείνουμε να προσπαθήσετε πρώτα, αλλά εάν συνεχίσει να αποτυγχάνει, παρακαλούμε εγκαταστήστε ξανά το σαρωτή ή εγκαταστήστε άλλο σαρωτή.</string>
+    <string name="error_import_invalid_archive">Το επιλεγμένο αρχείο δεν αναγνωρίζεται.</string>
 
 </resources>

@@ -156,10 +156,10 @@
     <string name="error_import_failed">İçe aktarma başarısız.</string>
     <string name="error_network_timeout">Cevapsız. Tekrar deneyin.</string>
     <string name="error_no_external_crop_app">Görüntüleri kırpmak için bir uygulama bulunamadı</string>
-    <string name="error_no_internet_connection">Ağ bağlantısı yok.</string>
+    <string name="error_network_no_connection">Ağ bağlantısı yok.</string>
     <string name="error_not_available">%1$s kullanılamıyor</string>
-    <string name="error_search_configuration">Yapılandırma hatası. Lütfen Ayarlar sayfasını açın ve Arama Sitesi tercihlerinizi kontrol edin.</string>
-    <string name="error_search_exception">%1$s sırasında arama başarısız oldu: %2$s</string>
+    <string name="error_search_failed_network">Yapılandırma hatası. Lütfen Ayarlar sayfasını açın ve Arama Sitesi tercihlerinizi kontrol edin.</string>
+    <string name="error_search_exception">%1$s\'de arama başarısız oldu: %2$s</string>
     <string name="error_search_failed">Kitap araması başarısız oldu. Ağ ayarlarınızı denetleyiniz.</string>
     <string name="error_site_authentication_failed">%1$s kimlik doğrulaması başarısız oldu</string>
     <string name="error_storage_no_space_left">Mevcut depolama yetersiz</string>
@@ -224,7 +224,7 @@
     <string name="hint_field_not_set">Ayarlı değil</string>
     <string name="hint_field_not_set_with_brackets">(boş)</string>
     <string name="hint_search_text">Metin ve/veya ISBN</string>
-    <string name="error_csv_import_file_must_contain_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
+    <string name="error_import_csv_file_must_contain_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
     <string name="import_export_option_csv">Kitaplar (*.csv)</string>
     <string name="import_export_option_xml">Tüm veriler XML formatında</string>
     <string name="import_export_option_xml_info">Yalnızca XML dışa aktarma, içe aktarma yok.</string>
@@ -630,5 +630,6 @@
     <string name="info_waiting_for_scanner">Tarayıcı / kamera bekleniyor</string>
     <string name="warning_scanner_failed_to_start">Tarayıcı başlatılamadı.</string>
     <string name="warning_scanner_retry_install">Önce yeniden denemenizi öneririz, ancak devam ederse, lütfen tarayıcıyı yeniden yükleyin veya başka bir tarayıcı yükleyin.</string>
+    <string name="error_import_invalid_archive">Seçilen dosya tanınmıyor.</string>
 
 </resources>

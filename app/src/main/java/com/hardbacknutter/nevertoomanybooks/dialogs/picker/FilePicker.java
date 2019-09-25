@@ -40,7 +40,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;

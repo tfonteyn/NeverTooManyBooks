@@ -138,6 +138,6 @@ public class AuthorWorksModel
 
     public String getScreenTitle(@NonNull final Context context) {
         //noinspection ConstantConditions
-        return mAuthor.getLabel(context) + " [" + getTocEntries().size() + ']';
+        return mAuthor.getLabel(context) + " #" + getTocEntries().size();
     }
 }

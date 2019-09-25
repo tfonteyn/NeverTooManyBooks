@@ -538,7 +538,6 @@ public final class StorageUtils {
         renameFile(source, destination);
     }
 
-
     /**
      * Private filesystem only - Copy the source File to the destination File.
      *
@@ -607,7 +606,6 @@ public final class StorageUtils {
         }
     }
 
-
     /**
      * Format a number of bytes in a human readable form.
      * <p>
@@ -633,7 +631,6 @@ public final class StorageUtils {
             return context.getString(R.string.megabytes, bytes / 1_000_000);
         }
     }
-
 
     /**
      * Compare two files based on date. Used for sorting file list by date.

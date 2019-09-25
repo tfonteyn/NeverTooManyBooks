@@ -92,7 +92,7 @@ public abstract class BookSearchBaseFragment
         // Check general network connectivity. If none, warn the user.
         if (NetworkUtils.networkUnavailable()) {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_no_internet_connection);
+            UserMessage.show(getView(), R.string.error_network_no_connection);
         }
     }
 
@@ -193,7 +193,7 @@ public abstract class BookSearchBaseFragment
         // Don't start search if we have no approved network... FAIL.
         if (NetworkUtils.networkUnavailable()) {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_no_internet_connection);
+            UserMessage.show(getView(), R.string.error_network_no_connection);
             return false;
         }
 

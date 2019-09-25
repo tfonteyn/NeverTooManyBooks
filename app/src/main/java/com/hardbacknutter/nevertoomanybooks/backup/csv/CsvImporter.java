@@ -714,7 +714,7 @@ public class CsvImporter
             }
         }
 
-        throw new ImportException(R.string.error_csv_import_file_must_contain_columns_x,
+        throw new ImportException(R.string.error_import_csv_file_must_contain_columns_x,
                                   TextUtils.join(",", names));
     }
 

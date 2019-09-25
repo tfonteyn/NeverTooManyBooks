@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.Importer;
 import com.hardbacknutter.nevertoomanybooks.backup.LegacyPreferences;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.RestoreTask;
+import com.hardbacknutter.nevertoomanybooks.backup.archivebase.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.ExportCSVTask;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.ImportCSVTask;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.ExportHelperDialogFragment;
@@ -606,9 +607,15 @@ public class AdminFragment
                         break;
                     }
                     case Failed: {
-                        // URGENT: when the user selects a bogus archive.. -> needs better err msg
-                        String msg = getString(R.string.error_storage_not_readable) + "\n\n"
-                                     + getString(R.string.error_if_the_problem_persists);
+                        String msg;
+                        if (message.exception instanceof InvalidArchiveException) {
+                            msg = getString(R.string.error_import_invalid_archive);
+                        } else if (message.exception instanceof IOException) {
+                            msg = getString(R.string.error_storage_not_readable) + "\n\n"
+                                  + getString(R.string.error_if_the_problem_persists);
+                        } else {
+                            msg = getString(R.string.error_unexpected_error);
+                        }
 
                         new AlertDialog.Builder(context)
                                 .setTitle(R.string.error_import_failed)

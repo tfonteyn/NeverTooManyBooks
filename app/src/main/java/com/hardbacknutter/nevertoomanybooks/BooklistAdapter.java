@@ -1166,7 +1166,7 @@ public class BooklistAdapter
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
-            if (ParseUtils.toBoolean(rowData.getString(mSourceCol), true)) {
+            if (ParseUtils.parseBoolean(rowData.getString(mSourceCol), true)) {
                 setText(R.string.lbl_read, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
             } else {
                 setText(R.string.lbl_unread, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));

@@ -93,7 +93,7 @@ public class RequestAuthTask
         Thread.currentThread().setName("GR.RequestAuthTask");
 
         if (NetworkUtils.networkUnavailable()) {
-            return R.string.error_no_internet_connection;
+            return R.string.error_network_no_connection;
         }
         GoodreadsManager grManager = new GoodreadsManager();
         // should only happen if the developer forgot to add the Goodreads keys.... (me)

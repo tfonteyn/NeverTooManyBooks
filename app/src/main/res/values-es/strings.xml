@@ -159,10 +159,10 @@
     <string name="error_import_failed">La importación falló.</string>
     <string name="error_network_timeout">No hay respuesta, por favor intente de nuevo</string>
     <string name="error_no_external_crop_app">No se encontró una aplicación para recortar imágenes</string>
-    <string name="error_no_internet_connection">No hay conexión a internet.</string>
+    <string name="error_network_no_connection">No hay conexión a internet.</string>
     <string name="error_not_available">%1$s no disponible</string>
-    <string name="error_search_configuration">Error de configuración. Abra la Preferencias y verifique las páginas de búsqueda.</string>
-    <string name="error_search_exception">La búsqueda ha fallado %1$s: %2$s</string>
+    <string name="error_search_failed_network">Error de configuración. Abra la Preferencias y verifique las páginas de búsqueda.</string>
+    <string name="error_search_exception">La búsqueda en %1$s falló: %2$s</string>
     <string name="error_search_failed">La búsqueda del libro ha fallado. Por favor, verifique la configuración de su conexión a internet.</string>
     <string name="error_site_authentication_failed">%1$s autenticación fallida</string>
     <string name="error_storage_no_space_left">Almacenamiento insuficiente disponible</string>
@@ -227,7 +227,7 @@
     <string name="hint_field_not_set">No configurado</string>
     <string name="hint_field_not_set_with_brackets">(vacío)</string>
     <string name="hint_search_text">Texto y/o ISBN</string>
-    <string name="error_csv_import_file_must_contain_columns_x">El fichero debe tener una columna con uno de los nombres siguientes: %1$s</string>
+    <string name="error_import_csv_file_must_contain_columns_x">El fichero debe tener una columna con uno de los nombres siguientes: %1$s</string>
     <string name="import_export_option_csv">Los libros (*.csv)</string>
     <string name="import_export_option_xml">Todos los datos en formato XML</string>
     <string name="import_export_option_xml_info">XML es solo de exportación, no de importación.</string>
@@ -636,5 +636,6 @@
     <string name="info_waiting_for_scanner">Esperando escáner / cámara</string>
     <string name="warning_scanner_failed_to_start">El escáner no pudo iniciarse.</string>
     <string name="warning_scanner_retry_install">Sugerimos que vuelva a intentarlo primero, pero si sigue fallando, reinstale el escáner o instale otro escáner.</string>
+    <string name="error_import_invalid_archive">El archivo seleccionado no se reconoce.</string>
 
 </resources>

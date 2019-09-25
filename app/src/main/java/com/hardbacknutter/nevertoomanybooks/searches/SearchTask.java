@@ -189,7 +189,7 @@ public class SearchTask
         }
         // keys? site up? etc...
         if (!mSearchEngine.isAvailable()) {
-            setFinalError(R.string.error_not_available, mSearchEngine.getNameResId());
+            setFinalError(R.string.error_not_available, null);
             return;
         }
 
@@ -206,20 +206,16 @@ public class SearchTask
             }
 
         } catch (@NonNull final CredentialsException e) {
-            Logger.warn(this, "runTask", e.getLocalizedMessage());
-            setFinalError(R.string.error_authentication_failed);
+            setFinalError(R.string.error_authentication_failed, e);
 
         } catch (@NonNull final SocketTimeoutException e) {
-            Logger.warn(this, "runTask", e.getLocalizedMessage());
-            setFinalError(R.string.error_network_timeout);
+            setFinalError(R.string.error_network_timeout, e);
 
         } catch (@NonNull final MalformedURLException | UnknownHostException e) {
-            Logger.warn(this, "runTask", e.getLocalizedMessage());
-            setFinalError(R.string.error_search_configuration);
+            setFinalError(R.string.error_search_failed_network, e);
 
         } catch (@NonNull final IOException e) {
-            Logger.warn(this, "runTask", e.getLocalizedMessage());
-            setFinalError(R.string.error_search_failed);
+            setFinalError(R.string.error_search_failed, e);
 
         } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
@@ -261,38 +257,42 @@ public class SearchTask
 
     /**
      * Show a 'known' error after task finish.
+     *
+     * @param error String resource id; without parameter place holders.
+     * @param e     (optional) the exception
      */
-    private void setFinalError(@StringRes final int error) {
-        Context context = getContext();
-        mFinalMessage = context.getString(R.string.error_search_exception, mProgressTitle,
-                                          context.getString(error));
-    }
+    private void setFinalError(@StringRes final int error,
+                               @Nullable final Exception e) {
+        if (e != null) {
+            Logger.warn(this, "setFinalError", e.getMessage());
+        }
 
-    /**
-     * Show a 'known' error after task finish.
-     */
-    private void setFinalError(@SuppressWarnings("SameParameterValue") @StringRes final int error,
-                               @StringRes final int arg) {
         Context context = getContext();
-        mFinalMessage = context.getString(R.string.error_search_exception, mProgressTitle,
-                                          context.getString(error, context.getString(arg)));
+        String siteName = context.getString(mSearchEngine.getNameResId());
+        String message = context.getString(error) + "\n\n" + getExceptionMessage(e);
+
+        mFinalMessage = context.getString(R.string.error_search_exception, siteName, message);
     }
 
     /**
      * Show an unexpected exception message after task finish.
      */
     private void setFinalError(@NonNull final Exception e) {
-        String s;
         Context context = getContext();
-        try {
-            if (e instanceof FormattedMessageException) {
-                s = ((FormattedMessageException) e).getLocalizedMessage(context);
-            } else {
-                s = e.getLocalizedMessage();
-            }
-        } catch (@NonNull final RuntimeException e2) {
-            s = e2.getClass().getCanonicalName();
+        String siteName = context.getString(mSearchEngine.getNameResId());
+        String message = getExceptionMessage(e);
+
+        mFinalMessage = context.getString(R.string.error_search_exception, siteName, message);
+    }
+
+    @Nullable
+    private String getExceptionMessage(@Nullable final Exception e) {
+        if (e instanceof FormattedMessageException) {
+            return ((FormattedMessageException) e).getLocalizedMessage(getContext());
+        } else if (e != null) {
+            return e.getLocalizedMessage();
+        } else {
+            return null;
         }
-        mFinalMessage = context.getString(R.string.error_search_exception, mProgressTitle, s);
     }
 }

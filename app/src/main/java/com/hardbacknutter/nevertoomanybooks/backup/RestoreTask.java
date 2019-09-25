@@ -39,6 +39,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupReader;
+import com.hardbacknutter.nevertoomanybooks.backup.archivebase.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -102,7 +103,7 @@ public class RestoreTask
 
             reader.restore(context, mImportHelper, mProgressListener);
 
-        } catch (@NonNull final IOException | ImportException e) {
+        } catch (@NonNull final IOException | ImportException | InvalidArchiveException e) {
             Logger.error(this, e);
             mException = e;
         }

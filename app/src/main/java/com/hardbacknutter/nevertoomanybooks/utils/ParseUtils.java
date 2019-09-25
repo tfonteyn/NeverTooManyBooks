@@ -266,7 +266,7 @@ public final class ParseUtils {
             return (Long) obj != 0;
         }
         // lets see if its a String then
-        return toBoolean(obj.toString(), true);
+        return parseBoolean(obj.toString(), true);
     }
 
     /**
@@ -283,8 +283,8 @@ public final class ParseUtils {
      *
      * @throws NumberFormatException if the string does not contain a valid boolean.
      */
-    public static boolean toBoolean(@Nullable final String source,
-                                    final boolean emptyIsFalse)
+    public static boolean parseBoolean(@Nullable final String source,
+                                       final boolean emptyIsFalse)
             throws NumberFormatException {
 
         if (source == null || source.trim().isEmpty()) {

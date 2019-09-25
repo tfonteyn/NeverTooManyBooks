@@ -77,7 +77,7 @@ public class ImportTask
 
         try {
             if (NetworkUtils.networkUnavailable()) {
-                return R.string.error_no_internet_connection;
+                return R.string.error_network_no_connection;
             }
             int msg = ImportLegacyTask.checkWeCanImport();
             if (msg == GoodreadsTasks.GR_RESULT_CODE_AUTHORIZED) {
