@@ -124,6 +124,7 @@ public abstract class BackupWriterAbstract
         try {
             // If we are doing covers, get the exact number by counting them
             if (!mProgressListener.isCancelled() && incCovers) {
+                mProgressListener.onProgress(0, R.string.title_backing_up);
                 doCovers(true);
                 mProgressListener.setMax(mExportHelper.results.coversExported);
             }
