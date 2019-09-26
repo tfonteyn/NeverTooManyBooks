@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -82,6 +84,9 @@ public class ISBN {
      * UPC Prefix -- ISBN Prefix mapping file (may not be complete)
      */
     private static final Map<String, String> UPC_2_ISBN_PREFIX = new HashMap<>();
+    /** Remove '-' chars. */
+    private static final Pattern DASH_TO_EMPTY_PATTERN = Pattern
+            .compile("-", Pattern.LITERAL);
 
     static {
         UPC_2_ISBN_PREFIX.put("014794", "08041");
@@ -210,33 +215,49 @@ public class ISBN {
      * <p>
      * TODO: SIMPLIFY ISBN matches...
      *
+     * @param code1  first code
+     * @param code2  second code
+     * @param isIsbn {@code true} if this <strong>has</strong> to be ISBN,
+     *               or if it could be another code.
+     *
      * @return {@code true} if the 2 codes match.
      */
-    public static boolean matches(@Nullable final String isbn1,
-                                  @Nullable final String isbn2) {
+    public static boolean matches(@Nullable final String code1,
+                                  @Nullable final String code2,
+                                  final boolean isIsbn) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.debug(ISBN.class, "matches", isbn1 + " ?= " + isbn2);
+            Logger.debug(ISBN.class, "matches", code1 + " ?= " + code2);
         }
-        if (isbn1 == null || isbn2 == null) {
+        if (code1 == null || code2 == null) {
             return false;
         }
-        if (isbn1.length() == isbn2.length()) {
+
+        if (isIsbn) {
+            // Full ISBN check needed ...if either one is invalid, we consider them different
+            ISBN o1 = new ISBN(code1);
+            if (!o1.isValid()) {
+                return false;
+            }
+
+            ISBN o2 = new ISBN(code2);
+            if (!o2.isValid()) {
+                return false;
+            }
+
+            return o1.equals(o2);
+
+        } else {
             // this covers comparing 2 UPC codes, of in fact any code whatsoever.
-            return isbn1.equalsIgnoreCase(isbn2);
+            String i1 = DASH_TO_EMPTY_PATTERN.matcher(code1)
+                                             .replaceAll(Matcher.quoteReplacement(""));
+            String i2 = DASH_TO_EMPTY_PATTERN.matcher(code2)
+                                             .replaceAll(Matcher.quoteReplacement(""));
+            if (i1.length() == i2.length()) {
+                return code1.equalsIgnoreCase(code2);
+            } else {
+                return false;
+            }
         }
-
-        // Full check needed ...if either one is invalid, we consider them different
-        ISBN o1 = new ISBN(isbn1);
-        if (!o1.isValid()) {
-            return false;
-        }
-
-        ISBN o2 = new ISBN(isbn2);
-        if (!o2.isValid()) {
-            return false;
-        }
-
-        return o1.equals(o2);
     }
 
     /**
@@ -313,7 +334,6 @@ public class ISBN {
                 return false;
         }
     }
-
 
     public boolean is10() {
         return isValid() && (mDigits.size() == 10);
@@ -419,7 +439,7 @@ public class ISBN {
                 return sum % 10;
 
             default:
-                throw new java.lang.NumberFormatException("ISBN incorrect length");
+                throw new NumberFormatException("ISBN incorrect length");
         }
     }
 
@@ -523,29 +543,6 @@ public class ISBN {
         tmp.set(tmp.size() - 1, c);
         return tmp;
     }
-
-
-//    public boolean equals(@NonNull final ISBN that) {
-//
-//        // If either is invalid, require they match exactly
-//        if (!isValid() || !that.isValid()) {
-//            return mDigits.size() == that.mDigits.size()
-//                    && digitsMatch(mDigits.size(), 0, that, 0);
-//        }
-//
-//        // same length ? simple check
-//        if (mDigits.size() == that.mDigits.size()) {
-//            return digitsMatch(mDigits.size(), 0, that, 0);
-//        }
-//
-//        // Both are valid ISBN codes and we know the lengths are either 10 or 13
-//        // when we get here. So ... compare the significant digits.
-//        if (mDigits.size() == 10) {
-//            return digitsMatch(9, 0, that, 3);
-//        } else {
-//            return digitsMatch(9, 3, that, 0);
-//        }
-//    }
 
     @Override
     public int hashCode() {

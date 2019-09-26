@@ -62,7 +62,6 @@ class KbNlBookHandler
     }
 
 
-
     @Override
     public void endDocument() {
         if (!mAuthors.isEmpty()) {
@@ -77,7 +76,6 @@ class KbNlBookHandler
             mBookData.putString(DBDefinitions.KEY_LANGUAGE, "nld");
         }
     }
-
 
 
     /**
@@ -145,8 +143,46 @@ class KbNlBookHandler
                 processIsbn(currentData);
                 break;
 
+
+            case "Illustration":
+            case "Illustratie":
+                // seen, but skipped for now.
+                // Lookup: 9789063349943
+                // Illustratie:  gekleurde ill
+                break;
+
+            case "Size":
+            case "Formaat":
+                // seen, but skipped for now.
+                // Lookup: 9789063349943
+                // Formaat: 30 cm
+                break;
+
+            case "Subject heading Depot":
+            case "Trefwoord Depot":
+                // seen, but skipped for now.
+                // Lookup: 9789063349943
+                // Trefwoord Depot: stripverhalen  (record is a link)
+                break;
+
+            case "Request number":
+            case "Aanvraagnummer":
+                // not used
+                break;
+
+            case "Loan indication":
+            case "Uitleenindicatie":
+                // not used
+                break;
+
+            case "Lending information":
+            case "Aanvraaginfo":
+                // not used
+                break;
+
             default:
-                Logger.warnWithStackTrace(this, "currentLabel=" + currentLabel);
+                Logger.warn(this, "processEntry",
+                            "currentLabel=" + currentLabel);
                 break;
         }
     }
@@ -186,19 +222,46 @@ class KbNlBookHandler
      *     <psi:text href="REL?PPN=068561504">Isaak Judovič Ozimov (1920-1992)</psi:text>
      *   </psi:line>
      * </psi:labelledData>
+     *
+     * <psi:labelledData>
+     *   <psi:line>
+     *     <psi:text href="REL?PPN=068870728">Jean-Pol is Jean-Paul Van den Broeck</psi:text>
+     *   </psi:line>
+     * </psi:labelledData>
+     *
+     * <psi:labelledData>
+     *   <psi:line>
+     *     <psi:text href="REL?PPN=070047596">Dirk Stallaert (1955-)</psi:text>
+     *     <psi:text>;</psi:text>
+     *     <psi:text href="REL?PPN=073286796">Leo Loedts</psi:text>
+     *   </psi:line>
+     * </psi:labelledData>
+     *
      * }</pre>
      *
+     *
+     *
+     * <p>
      * Note that the author name in the above example can be the "actual" name, and not
      * the publicly known/used name, i.e. in this case "Isaac Asimov"
-     * ENHANCE: we *really* need to create an 'alias' table for authors.
+     * The second sample shows how the site is creative (hum) about authors using pen-names.
+     * The 3rd sample shows that dates can be added... and that ";" are considered authors.
      *
+     * ENHANCE: we *really* need to create an 'alias' table for authors.
+     * <p>
      * Getting author names:
      * http://opc4.kb.nl/DB=1/SET=1/TTL=1/REL?PPN=068561504
      */
     private void processAuthor(@NonNull final List<String> currentData,
                                final int type) {
         for (String name : currentData) {
+            // remove a year part in the name
             String cleanedString = name.split("\\(")[0].trim();
+            // reject separators as for example: <psi:text>;</psi:text>
+            if (cleanedString.length() == 1) {
+                return;
+            }
+
             Author author = Author.fromString(cleanedString);
             author.setType(type);
             mAuthors.add(author);
@@ -330,19 +393,22 @@ class KbNlBookHandler
      *
      * <psi:labelledData>
      *   <psi:line>
-     *     psi:text>[2019]</psi:text>
+     *     <psi:text>[2019]</psi:text>
      *   </psi:line>
      * </psi:labelledData>
+     *
+     * <psi:labelledData>
+     *   <psi:line>
+     *     <psi:text>cop. 1986</psi:text>
+     *   </psi:line>
+     * </psi:labelledData>
+     *
      * }</pre>
      */
     private void processDatePublished(@NonNull final List<String> currentData) {
         if (!mBookData.containsKey(DBDefinitions.KEY_DATE_PUBLISHED)) {
-            String year = currentData.get(0);
-            if (year.startsWith("[")) {
-                year = year.substring(1, year.length() - 1);
-            }
-
-            if (!year.isEmpty()) {
+            String year = digits(currentData.get(0), false);
+            if (year != null && !year.isEmpty()) {
                 mBookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, year);
             }
         }

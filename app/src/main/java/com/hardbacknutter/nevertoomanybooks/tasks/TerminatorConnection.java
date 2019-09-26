@@ -65,11 +65,11 @@ public final class TerminatorConnection
         implements AutoCloseable {
 
     /** initial connection time to websites timeout. */
-    private static final int CONNECT_TIMEOUT = 5_000;
+    private static final int CONNECT_TIMEOUT_MS = 5_000;
     /** timeout for requests to  website. */
-    private static final int READ_TIMEOUT = 10_000;
+    private static final int READ_TIMEOUT_MS = 10_000;
     /** kill connections after this delay. */
-    private static final int KILL_CONNECT_DELAY = 20_000;
+    private static final int KILL_CONNECT_DELAY_MS = 60_000;
     /** if at first we don't succeed... */
     private static final int NR_OF_TRIES = 1;
     /** milliseconds to wait between retries. */
@@ -122,13 +122,13 @@ public final class TerminatorConnection
             Logger.debugEnter(this, "TerminatorConnection", "url=" + url);
         }
 
-        mKillDelayInMillis = KILL_CONNECT_DELAY;
+        mKillDelayInMillis = KILL_CONNECT_DELAY_MS;
 
         mCon = (HttpURLConnection) url.openConnection();
         mCon.setInstanceFollowRedirects(redirect);
         mCon.setUseCaches(false);
-        mCon.setConnectTimeout(CONNECT_TIMEOUT);
-        mCon.setReadTimeout(READ_TIMEOUT);
+        mCon.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        mCon.setReadTimeout(READ_TIMEOUT_MS);
     }
 
     /**

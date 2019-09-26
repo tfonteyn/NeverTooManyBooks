@@ -517,7 +517,7 @@ public class SearchCoordinator {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);
                     if (bookData != null && bookData.containsKey(DBDefinitions.KEY_ISBN)) {
-                        if (ISBN.matches(mIsbn, bookData.getString(DBDefinitions.KEY_ISBN))) {
+                        if (ISBN.matches(mIsbn, bookData.getString(DBDefinitions.KEY_ISBN), true)) {
                             results.add(site.id);
                         }
                     } else {

@@ -75,7 +75,8 @@ public abstract class KbNlHandlerBase
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            // allows an X anywhere instead of just at the end; doesn't really matter.
+            // allows an X anywhere instead of just at the end;
+            // Doesn't really matter, we'll check for being a valid ISBN later anyhow.
             if (Character.isDigit(c) || (isIsbn && Character.toUpperCase(c) == 'X')) {
                 sb.append(c);
             }

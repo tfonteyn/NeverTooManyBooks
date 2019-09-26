@@ -263,13 +263,15 @@ public class SearchTask
      */
     private void setFinalError(@StringRes final int error,
                                @Nullable final Exception e) {
-        if (e != null) {
-            Logger.warn(this, "setFinalError", e.getMessage());
-        }
 
         Context context = getContext();
         String siteName = context.getString(mSearchEngine.getNameResId());
         String message = context.getString(error) + "\n\n" + getExceptionMessage(e);
+
+        if (e != null) {
+            Logger.warn(this, "setFinalError",
+                        "siteName=" + siteName, e);
+        }
 
         mFinalMessage = context.getString(R.string.error_search_exception, siteName, message);
     }
@@ -281,6 +283,9 @@ public class SearchTask
         Context context = getContext();
         String siteName = context.getString(mSearchEngine.getNameResId());
         String message = getExceptionMessage(e);
+
+        // always as error, as this is unexpected.
+        Logger.error(this, e, "siteName=" + siteName);
 
         mFinalMessage = context.getString(R.string.error_search_exception, siteName, message);
     }

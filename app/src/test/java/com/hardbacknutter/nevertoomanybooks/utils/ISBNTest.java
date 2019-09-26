@@ -50,6 +50,8 @@ class ISBNTest {
             {"068418818X", "9780684188188"},
             // duplicate so array length is equal
             {"068418818X", "9780684188188"},
+
+            {"90-6334-994-7", "9789063349943"},
             };
 
     /**
@@ -64,6 +66,8 @@ class ISBNTest {
             {"068418828X", "9780684188288"},
             // 'A' embedded
             {"06841A828X", "978068418A288"},
+
+            {"91-6334-994-7", "9789163349943"},
             };
 
     private String[][] valid;
@@ -120,36 +124,48 @@ class ISBNTest {
     }
 
     @Test
-    void matches() {
-        // valid == valid ?
+    void matchesValidValid() {
         for (String[] isbnPair : valid) {
-            assertTrue(ISBN.matches(isbnPair[0], isbnPair[1]));
-        }
-        // invalid == invalid ?
-        for (String[] isbnPair : invalid) {
-            assertFalse(ISBN.matches(isbnPair[0], isbnPair[1]));
-        }
-        // valid == invalid ?
-        for (int i = 0; i < invalid.length; i++) {
-            assertFalse(ISBN.matches(valid[i][0], invalid[i][1]));
+            assertTrue(ISBN.matches(isbnPair[0], isbnPair[1], true),
+                       "isbnPair=" + Arrays.toString(isbnPair));
         }
     }
 
     @Test
-    void equals() {
-        // valid == valid ?
+    void matchesInvalidInvalid() {
+        for (String[] isbnPair : invalid) {
+            assertFalse(ISBN.matches(isbnPair[0], isbnPair[1], true),
+                        "isbnPair=" + Arrays.toString(isbnPair));
+        }
+    }
+
+    @Test
+    void matchesValidInvalid() {
+        for (int i = 0; i < invalid.length; i++) {
+            assertFalse(ISBN.matches(valid[i][0], invalid[i][1], true));
+        }
+    }
+
+    @Test
+    void equalsValidValid() {
         for (String[] isbnPair : valid) {
             ISBN isbn0 = new ISBN(isbnPair[0]);
             ISBN isbn1 = new ISBN(isbnPair[1]);
             assertEquals(isbn0, isbn1);
         }
-        // invalid == invalid ?
+    }
+
+    @Test
+    void equalsInvalidInvalid() {
         for (String[] isbnPair : invalid) {
             ISBN isbn0 = new ISBN(isbnPair[0]);
             ISBN isbn1 = new ISBN(isbnPair[1]);
             assertNotEquals(isbn0, isbn1);
         }
-        // valid == invalid ?
+    }
+
+    @Test
+    void equalsValidInvalid() {
         for (int i = 0; i < invalid.length; i++) {
             ISBN isbn0 = new ISBN(valid[i][0]);
             ISBN isbn1 = new ISBN(invalid[i][1]);
