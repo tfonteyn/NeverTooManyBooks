@@ -310,7 +310,6 @@ public class CoverHandler {
             }
             case UniqueId.REQ_ACTION_IMAGE_CAPTURE: {
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
                     processCameraResult(data);
                 }
                 return true;
@@ -408,7 +407,7 @@ public class CoverHandler {
         mCameraHelper.startCamera(mFragment, UniqueId.REQ_ACTION_IMAGE_CAPTURE);
     }
 
-    private void processCameraResult(@NonNull final Intent data) {
+    private void processCameraResult(@Nullable final Intent data) {
         //noinspection ConstantConditions
         File file = mCameraHelper.getFile(data);
         if (file != null && file.exists()) {

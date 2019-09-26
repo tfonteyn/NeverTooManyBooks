@@ -530,21 +530,25 @@ public class CropImageActivity
         finish();
     }
 
+    /**
+     * Check if shared storage is mounted and accessible.
+     *
+     * @return {@code 0} if all is well; or a StringRes with a message for the user.
+     */
     @StringRes
     private int checkStorage() {
-        @StringRes
-        int msgId = R.string.error_storage_not_accessible;
 
         if (StorageUtils.isExternalStorageMounted()) {
             long freeSpace = StorageUtils.getSharedStorageFreeSpace();
             if (freeSpace != StorageUtils.ERROR_CANNOT_STAT) {
                 // make an educated guess how many pics we can store.
                 if (freeSpace / ESTIMATED_PICTURE_SIZE < 1) {
-                    msgId = R.string.error_storage_no_space_left;
+                    return R.string.error_storage_no_space_left;
                 }
             }
+            return R.string.error_storage_not_accessible;
         }
 
-        return msgId;
+        return 0;
     }
 }
