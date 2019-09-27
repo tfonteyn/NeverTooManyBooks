@@ -222,6 +222,7 @@ public final class LanguageUtils {
 
     /**
      * Convert the 3-char terminology code to bibliographic code.
+     * The bibliographic code <strong>CAN</strong> be used with {@code new Locale()}.
      *
      * <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php">
      * https://www.loc.gov/standards/iso639-2/php/code_list.php</a>
@@ -299,7 +300,8 @@ public final class LanguageUtils {
     }
 
     /**
-     * Convert the 3-char bibliographic code to terminology code..
+     * Convert the 3-char bibliographic code to terminology code.
+     * The terminology code <strong>CANNOT</strong> be used with {@code new Locale()}.
      *
      * <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php">
      * https://www.loc.gov/standards/iso639-2/php/code_list.php</a>

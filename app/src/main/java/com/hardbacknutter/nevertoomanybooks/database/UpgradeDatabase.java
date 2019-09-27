@@ -32,11 +32,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
@@ -51,9 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
  * **KEEP** the v82 table creation string for reference.
  */
 public final class UpgradeDatabase {
-
-    /** Flag to indicate FTS rebuild is required at startup. */
-    public static final String PREF_STARTUP_FTS_REBUILD_REQUIRED = "Startup.FtsRebuildRequired";
 
     //<editor-fold desc="V83 CREATE TABLE definitions">
 
@@ -187,13 +182,6 @@ public final class UpgradeDatabase {
     private UpgradeDatabase() {
     }
 
-    /** Set the flag to indicate an FTS rebuild is required. */
-    private static void scheduleFtsRebuild() {
-        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                         .edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true)
-                         .apply();
-    }
-
     /**
      * Renames the original table, recreates it, and loads the data into the new table.
      *
@@ -284,6 +272,8 @@ public final class UpgradeDatabase {
     }
 
     /**
+     * NOT USED RIGHT NOW. BEFORE USING SHOULD BE ENHANCED WITH PREPROCESS_TITLE IF NEEDED
+     *
      * Create and populate the 'order by' column.
      * This method is used/meant for use during upgrades.
      * <p>

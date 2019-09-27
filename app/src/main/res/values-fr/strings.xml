@@ -284,7 +284,7 @@
     <string name="lbl_date_published">Date de publication</string>
     <string name="lbl_day">Jour</string>
     <string name="lbl_description">Description</string>
-    <string name="lbl_details_have_changed">Modification en cours</string>
+    <string name="title_details_have_changed">Modification en cours</string>
     <string name="lbl_edition">Édition</string>
     <string name="lbl_edition_book_club">Édition du club de lecture</string>
     <string name="lbl_edition_first_edition">Première édition</string>
@@ -337,7 +337,7 @@
     <string name="lbl_read_year">Année de lecture</string>
     <string name="lbl_search_criteria">Critères de recherche</string>
     <string name="lbl_search_filtered_on_x">Filtré: %1$s</string>
-    <string name="lbl_search_for_books">Rechercher des livres</string>
+    <string name="title_search_for_books">Rechercher des livres</string>
     <string name="lbl_search_site_order">l\' Ordre</string>
     <string name="lbl_search_sites">Sites de recherche</string>
     <string name="lbl_select_fields">Sélection des champs</string>
@@ -430,8 +430,7 @@
     <string name="pg_filters">Filtres de livres</string>
     <string name="pg_general">Général</string>
     <string name="pg_groupings">Groupes</string>
-    <string name="pg_reformat_titles">Reformater les titres</string>
-    <string name="pg_reformat_titles_summary">Stockez l\'original «Le titre» ou reformatez-le en «titre, Le»</string>
+    <string name="pt_sort_by_title_uses">Trier les titres par</string>
     <string name="pg_barcode_scanner">Scanner de code à barres</string>
     <string name="pg_thumbnails">Miniatures</string>
     <string name="pg_ui">Interface utilisateur</string>
@@ -481,8 +480,6 @@
     <string name="pt_bob_thumbnails_show">Montrer les miniatures</string>
     <string name="pt_collect_series_info_from_toc">Recueillir des informations sur la série de la table des matières</string>
     <string name="pt_bob_thumbnails_scale">Taille de l\'image dans les listes</string>
-    <string name="pt_reformat_titles_on_insert">Lors de l\'ajout</string>
-    <string name="pt_reformat_titles_on_update">Lors de l\'édition</string>
     <string name="pt_reformat_titles_summary_original">Le titre</string>
     <string name="pt_reformat_titles_summary_reformatted">titre, Le</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Beeper si l\'ISBN scanné est invalide</string>

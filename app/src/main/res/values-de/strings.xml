@@ -280,7 +280,7 @@
     <string name="lbl_date_published">Datum der Veröffentlichung</string>
     <string name="lbl_day">Tag</string>
     <string name="lbl_description">Beschreibung</string>
-    <string name="lbl_details_have_changed">Details wurden geändert</string>
+    <string name="title_details_have_changed">Details wurden geändert</string>
     <string name="lbl_edition">Auflage</string>
     <string name="lbl_edition_book_club">Buchclub Edition</string>
     <string name="lbl_edition_first_edition">Erstausgabe</string>
@@ -333,7 +333,7 @@
     <string name="lbl_read_year">Jahr</string>
     <string name="lbl_search_criteria">Suchkriterien</string>
     <string name="lbl_search_filtered_on_x">Gefiltert: %1$s</string>
-    <string name="lbl_search_for_books">Suche nach Büchern</string>
+    <string name="title_search_for_books">Suche nach Büchern</string>
     <string name="lbl_search_site_order">Reihenfolge</string>
     <string name="lbl_search_sites">Suchmaschinen</string>
     <string name="lbl_select_fields">Felder auswählen</string>
@@ -426,8 +426,7 @@
     <string name="pg_filters">Buchfilter</string>
     <string name="pg_general">Allgemein</string>
     <string name="pg_groupings">Gruppierung</string>
-    <string name="pg_reformat_titles">Neuformatierung der Titel</string>
-    <string name="pg_reformat_titles_summary">Speichern Sie das Original „Der Titel“ oder formatieren Sie es in „Titel, Der“.</string>
+    <string name="pt_sort_by_title_uses">Titel sortieren nach</string>
     <string name="pg_barcode_scanner">Barcodelesegerät</string>
     <string name="pg_thumbnails">Umschlagbilder</string>
     <string name="pg_ui">Benutzeroberfläche</string>
@@ -477,8 +476,6 @@
     <string name="pt_bob_thumbnails_show">Cover-Bilder anzeigen</string>
     <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
     <string name="pt_bob_thumbnails_scale">Bildgröße in Listen</string>
-    <string name="pt_reformat_titles_on_insert">Beim Hinzufügen</string>
-    <string name="pt_reformat_titles_on_update">Beim Bearbeiten</string>
     <string name="pt_reformat_titles_summary_original">Der Titel</string>
     <string name="pt_reformat_titles_summary_reformatted">Titel, Der</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Tonsignal, falls die gescannte ISBN ungültig ist</string>

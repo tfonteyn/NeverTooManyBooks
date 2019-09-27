@@ -60,11 +60,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 /**
  * Class to manage a version of a set of related data.
  * <ul>
- *     <li>mRawData: stores the actual data</li>
- *     <li>mDataAccessorsMap: accessors which can 'translate' data</li>
- *     <li>mValidatorsMap: validators applied at 'save' time</li>
- *     <li>mCrossValidators: cross-validators applied at 'save' time</li>
- *     <li></li>
+ * <li>mRawData: stores the actual data</li>
+ * <li>mDataAccessorsMap: accessors which can 'translate' data</li>
+ * <li>mValidatorsMap: validators applied at 'save' time</li>
+ * <li>mCrossValidators: cross-validators applied at 'save' time</li>
+ * <li></li>
  * </ul>
  */
 public class DataManager {
@@ -240,6 +240,10 @@ public class DataManager {
     }
 
     /**
+     * Get a boolean value.
+     *
+     * @param key Key of data object
+     *
      * @return a boolean value.
      */
     public boolean getBoolean(@NonNull final String key) {
@@ -248,6 +252,9 @@ public class DataManager {
 
     /**
      * Store a boolean value.
+     *
+     * @param key   Key of data object
+     * @param value to store
      */
     public void putBoolean(@NonNull final String key,
                            final boolean value) {
@@ -260,6 +267,10 @@ public class DataManager {
     }
 
     /**
+     * Get a double value.
+     *
+     * @param key Key of data object
+     *
      * @return a double value.
      */
     public double getDouble(@NonNull final String key) {
@@ -268,6 +279,9 @@ public class DataManager {
 
     /**
      * Store a double value.
+     *
+     * @param key   Key of data object
+     * @param value to store
      */
     private void putDouble(@NonNull final String key,
                            final double value) {
@@ -280,6 +294,10 @@ public class DataManager {
     }
 
     /**
+     * Get a float value.
+     *
+     * @param key Key of data object
+     *
      * @return a float value.
      */
     float getFloat(@NonNull final String key) {
@@ -288,6 +306,9 @@ public class DataManager {
 
     /**
      * Store a float value.
+     *
+     * @param key   Key of data object
+     * @param value to store
      */
     public void putFloat(@NonNull final String key,
                          final float value) {
@@ -300,7 +321,11 @@ public class DataManager {
     }
 
     /**
-     * @return an int value.
+     * Get an int value, returned as long.
+     *
+     * @param key Key of data object
+     *
+     * @return an long value.
      */
     public long getInt(@NonNull final String key) {
         return ParseUtils.toLong(get(key));
@@ -308,6 +333,9 @@ public class DataManager {
 
     /**
      * Store an int value.
+     *
+     * @param key   Key of data object
+     * @param value to store
      */
     public void putInt(@NonNull final String key,
                        final int value) {
@@ -320,6 +348,10 @@ public class DataManager {
     }
 
     /**
+     * Get a long value.
+     *
+     * @param key Key of data object
+     *
      * @return a long value.
      */
     public long getLong(@NonNull final String key) {
@@ -328,6 +360,9 @@ public class DataManager {
 
     /**
      * Store a long value.
+     *
+     * @param key   Key of data object
+     * @param value to store
      */
     public void putLong(@NonNull final String key,
                         final long value) {
@@ -342,16 +377,25 @@ public class DataManager {
     /**
      * Get a String value.
      *
+     * @param key Key of data object
+     *
      * @return Value of the data, can be empty, but never {@code null}
      */
     @NonNull
     public String getString(@NonNull final String key) {
         Object o = get(key);
-        return o == null ? "" : o.toString().trim();
+        if (o == null) {
+            return "";
+        } else {
+            return o.toString().trim();
+        }
     }
 
     /**
      * Store a String value.
+     *
+     * @param key   Key of data object
+     * @param value to store
      */
     public void putString(@NonNull final String key,
                           @NonNull final String value) {
@@ -366,7 +410,8 @@ public class DataManager {
     /**
      * Get the Parcelable ArrayList from the collection.
      *
-     * @param key Key of object
+     * @param key Key of data object
+     * @param <T> type of objects in the list
      *
      * @return The list, can be empty, but never {@code null}
      */
@@ -390,8 +435,9 @@ public class DataManager {
     /**
      * Set the Parcelable ArrayList in the collection.
      *
-     * @param key   Key of object
-     * @param value The Parcelable ArrayList
+     * @param key   Key of data object
+     * @param value to store
+     * @param <T>   type of objects in the list
      */
     public <T extends Parcelable> void putParcelableArrayList(@NonNull final String key,
                                                               @NonNull final ArrayList<T> value) {
@@ -407,7 +453,8 @@ public class DataManager {
      * Get the serializable object from the collection.
      * Does not support a {@link DataAccessor}.
      *
-     * @param key Key of object
+     * @param key Key of data object
+     * @param <T> type of objects in the list
      *
      * @return The data
      */
@@ -422,8 +469,8 @@ public class DataManager {
      * Set the serializable object in the collection.
      * Does not support a {@link DataAccessor}.
      *
-     * @param key   Key of object
-     * @param value The serializable object
+     * @param key   Key of data object
+     * @param value to store
      */
     private void putSerializable(@NonNull final String key,
                                  @NonNull final Serializable value) {
@@ -436,7 +483,9 @@ public class DataManager {
     }
 
     /**
-     * @param key Key of object
+     * Check if the underlying data contains the specified key.
+     *
+     * @param key Key of data object
      *
      * @return {@code true} if the underlying data contains the specified key.
      */
@@ -445,6 +494,8 @@ public class DataManager {
     }
 
     /**
+     * Get all (real and virtual) keys for this data manager.
+     *
      * @return the current set of data.
      */
     @NonNull
@@ -458,7 +509,7 @@ public class DataManager {
     /**
      * Remove the specified key from this collection.
      *
-     * @param key Key of data to remove.
+     * @param key Key of data object to remove.
      */
     public void remove(@NonNull final String key) {
         mDataAccessorsMap.remove(key);

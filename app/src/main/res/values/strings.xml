@@ -701,17 +701,13 @@
     <!-- Preference screen; opens a new screen where some text handling can be adjusted. -->
     <string name="pg_reformat">Reformat</string>
 
-    <!-- Preference Category -->
-    <string name="pg_reformat_titles">Reformat titles</string>
-    <string name="pg_reformat_titles_summary">Store the original “The title” or reformat to “title, The”</string>
-    <!-- SwitchPreference -->
-    <string name="pt_reformat_titles_on_insert">When adding</string>
-    <!-- SwitchPreference -->
-    <string name="pt_reformat_titles_on_update">When editing</string>
+    <!-- Preference SwitchPreference -->
+    <string name="pt_sort_by_title_uses">Sort titles by</string>
     <!-- example of 'original' title -->
     <string name="pt_reformat_titles_summary_original">The title</string>
     <!-- example of a reformatted title -->
     <string name="pt_reformat_titles_summary_reformatted">title, The</string>
+
     <!-- SwitchPreference -->
     <string name="pt_reformat_format_on_update">Unify &amp; translate “book format” names</string>
 
@@ -861,10 +857,13 @@
     <string name="title_edit_style">Edit style</string>
     <!-- Screen title. -->
     <string name="title_clone_style">Clone style</string>
-    <!-- Screen. -->
+    <!-- Screen title. -->
     <string name="title_edit_book_authors">Edit Book Authors</string>
-    <!-- Screen. -->
+    <!-- Screen title. -->
     <string name="title_edit_book_series">Edit Book Series</string>
+    <!-- Screen title. -->
+    <string name="title_search_for_books">Search for Books</string>
+
 
     <!-- Dialog title; prompts user to register at a website. -->
     <string name="title_registration">Registration</string>
@@ -896,6 +895,8 @@
     <string name="title_importing">Importing…</string>
     <!-- Dialog title. -->
     <string name="title_backing_up">Backing up…</string>
+    <!-- Dialog title. -->
+    <string name="title_details_have_changed">Details have changed</string>
 
     <!-- Chooser title. -->
     <string name="title_send_mail">Send email…</string>
@@ -1202,9 +1203,13 @@
     <string name="lbl_by_author_s">by %1$s</string>
     <string name="lbl_family_name">Family Name</string>
     <string name="lbl_given_names">Given Names</string>
+    <string name="lbl_author">Author</string>
+
     <string name="lbl_publication">Publication</string>
     <string name="lbl_publisher">Publisher</string>
+    <string name="lbl_first_publication">First Publication</string>
     <string name="lbl_date_published">Date Published</string>
+
     <string name="lbl_book">Book</string>
     <string name="lbl_books">Books</string>
     <string name="lbl_bookshelf">Bookshelf</string>
@@ -1220,11 +1225,9 @@
     <string name="lbl_signed">Signed</string>
     <string name="lbl_cover">Cover</string>
     <string name="lbl_covers">Covers</string>
-    <string name="lbl_author">Author</string>
     <string name="lbl_title">Title</string>
     <string name="lbl_series">Series</string>
     <string name="lbl_series_num">#</string>
-    <string name="lbl_first_publication">First Publication</string>
     <string name="lbl_date_acquired">Date Acquired</string>
     <string name="lbl_price_paid">Price paid</string>
     <string name="lbl_is_complete">Is complete</string>
@@ -1240,6 +1243,10 @@
     <string name="lbl_read_start">Date started reading</string>
     <string name="lbl_read_end">Date finished reading</string>
 
+    <string name="lbl_table_of_content">Table Of Content</string>
+    <string name="lbl_cover_images">Cover images</string>
+    <string name="lbl_read_and_unread">Read &amp; Unread</string>
+
     <!-- short and long label for the same field -->
     <string name="lbl_bookshelves">Shelves</string>
     <string name="lbl_bookshelves_long">Bookshelves</string>
@@ -1252,6 +1259,21 @@
     <!-- checkbox for the TOC edit screen. Should fit on a single line -->
     <string name="lbl_toc_anthology">This is an Anthology</string>
     <string name="lbl_toc_multiple_authors">It has multiple authors</string>
+
+    <!-- Author types header -->
+    <string name="lbl_author_type">Author type</string>
+    <!-- Author types -->
+    <string name="lbl_author_type_writer">writer</string>
+    <string name="lbl_author_type_translator">translator</string>
+    <string name="lbl_author_type_editor">editor</string>
+    <string name="lbl_author_type_contributor">contributor</string>
+    <string name="lbl_author_type_intro">Introduction etc.</string>
+    <!-- Interior art / illustrations -->
+    <string name="lbl_author_type_artist">illustrations</string>
+    <string name="lbl_author_type_colorist">colorist</string>
+    <!-- Cover art / Cover illustration -->
+    <string name="lbl_author_type_cover_artist">Cover art</string>
+    <string name="lbl_author_type_cover_colorist">Cover colorist</string>
 
     <!-- Book edition -->
     <string name="lbl_edition">Edition</string>
@@ -1268,16 +1290,28 @@
     <string name="lbl_field_usage_overwrite">Overwrites existing data</string>
     <string name="lbl_field_usage_skip">Skip</string>
 
-    <!-- heading/titles for settings/preference screens -->
-    <string name="lbl_settings">Settings</string>
-    <string name="lbl_preferred_styles">Preferred styles</string>
-    <string name="lbl_search_sites">Search Sites</string>
-    <string name="lbl_search_site_order">Order</string>
+
     <string name="lbl_search_filtered_on_x">Filtered: %1$s</string>
 
     <!-- grouping headings in book lists -->
     <string name="lbl_read">Read</string>
     <string name="lbl_unread">Unread</string>
+
+
+    <!-- Label used in the list of Field visibility preferences. -->
+    <string name="lbl_lending">Lending</string>
+    <!-- a header, with a text field below where the user can type in a name -->
+    <string name="lbl_lend_to">Lend book to:</string>
+    <!-- a one line label, with the name of the person appended -->
+    <string name="lbl_loaned_to_name">On Loan to %1$s</string>
+    <string name="lbl_loaned">On Loan</string>
+
+
+    <!-- Search on keywords entered. -->
+    <string name="lbl_keywords">Keywords</string>
+    <!-- alternative used in some places for lbl_keywords -->
+    <string name="lbl_search_criteria">Search Criteria</string>
+
 
     <!-- Universal date strings -->
     <string name="lbl_year">Year</string>
@@ -1306,8 +1340,13 @@
     <string name="lbl_publication_year">Publication Year</string>
     <string name="lbl_publication_month">Publication Month</string>
 
-    <!-- Heading in Admin activity -->
-    <string name="lbl_advanced_options">Advanced</string>
+
+    <!-- heading/titles for settings/preference screens -->
+    <string name="lbl_settings">Settings</string>
+    <string name="lbl_preferred_styles">Preferred styles</string>
+    <string name="lbl_search_sites">Search Sites</string>
+    <string name="lbl_search_site_order">Order</string>
+
 
     <!-- Admin GROUP -->
     <string name="lbl_data_import_export">Import/Export</string>
@@ -1320,34 +1359,19 @@
     <!-- Admin import books -->
     <string name="lbl_import_from_csv">Import from CSV File</string>
 
+    <!-- Admin GROUP -->
+    <string name="lbl_advanced_options">Advanced</string>
+
+    <!-- Admin advanced - collect debug information and prepare an email to the developers -->
+    <string name="lbl_send_info">Send Debug Information</string>
+    <!-- Admin advanced - cleanup log, temp files -->
+    <string name="lbl_cleanup_files">Cleanup Files</string>
     <!-- Admin advanced - clear the cached images -->
     <string name="lbl_erase_cover_cache">Erase cover cache</string>
     <!-- Admin advanced - make a copy of the internal database to a public folder -->
     <string name="lbl_copy_database">Export Database</string>
     <string name="lbl_copy_database_blurb">Select a folder to export to.</string>
 
-    <!-- Label used in the list of Field visibility preferences. -->
-    <string name="lbl_lending">Lending</string>
-    <!-- a header, with a text field below where the user can type in a name -->
-    <string name="lbl_lend_to">Lend book to:</string>
-    <!-- a one line label, with the name of the person appended -->
-    <string name="lbl_loaned_to_name">On Loan to %1$s</string>
-    <string name="lbl_loaned">On Loan</string>
-
-
-    <string name="lbl_details_have_changed">Details have changed</string>
-    <string name="lbl_table_of_content">Table Of Content</string>
-    <string name="lbl_cover_images">Cover images</string>
-    <string name="lbl_search_for_books">Search for Books</string>
-    <string name="lbl_read_and_unread">Read &amp; Unread</string>
-
-    <!-- Search on keywords entered. -->
-    <string name="lbl_keywords">Keywords</string>
-    <!-- alternative used in some places for lbl_keywords -->
-    <string name="lbl_search_criteria">Search Criteria</string>
-
-    <string name="lbl_send_info">Send Debug Information</string>
-    <string name="lbl_cleanup_files">Cleanup Files</string>
 
     <!-- Headings in 'about' dialog -->
     <string name="lbl_about_website">Web page</string>
@@ -1468,17 +1492,9 @@
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
 
-    <string name="lbl_author_type">Author type</string>
-    <string name="lbl_author_type_writer">writer</string>
-    <string name="lbl_author_type_translator">translator</string>
-    <string name="lbl_author_type_editor">editor</string>
-    <string name="lbl_author_type_contributor">contributor</string>
-    <string name="lbl_author_type_intro">Introduction etc.</string>
-    <!-- Interior art / illustrations -->
-    <string name="lbl_author_type_artist">illustrations</string>
-    <string name="lbl_author_type_colorist">colorist</string>
-    <!-- Cover art / Cover illustration -->
-    <string name="lbl_author_type_cover_artist">Cover art</string>
-    <string name="lbl_author_type_cover_colorist">Cover colorist</string>
+    <string name="warning_rebuild_orderby_columns">
+        This will rebuild the sorting data when the app is restarted.
+        Are you sure you want to continue ?
+    </string>
 
 </resources>

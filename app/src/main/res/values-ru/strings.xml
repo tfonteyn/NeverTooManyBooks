@@ -276,7 +276,7 @@
     <string name="lbl_date_published">Дата издания</string>
     <string name="lbl_day">День</string>
     <string name="lbl_description">Описание</string>
-    <string name="lbl_details_have_changed">Детали были измененны</string>
+    <string name="title_details_have_changed">Детали были измененны</string>
     <string name="lbl_edition">Издание</string>
     <string name="lbl_edition_book_club">Книжный клуб Издание</string>
     <string name="lbl_edition_first_edition">первое издание</string>
@@ -329,7 +329,7 @@
     <string name="lbl_read_year">Год прочтения</string>
     <string name="lbl_search_criteria">Параметры поиска</string>
     <string name="lbl_search_filtered_on_x">отфильтрованный: %1$s</string>
-    <string name="lbl_search_for_books">Поиск книг</string>
+    <string name="title_search_for_books">Поиск книг</string>
     <string name="lbl_search_site_order">порядок</string>
     <string name="lbl_search_sites">Поиск сайтов</string>
     <string name="lbl_select_fields">Выберите поля</string>
@@ -422,7 +422,7 @@
     <string name="pg_filters">Фильтры книг</string>
     <string name="pg_general">Основные</string>
     <string name="pg_groupings">Группирование</string>
-    <string name="pg_reformat_titles">Переформатировать заголовки</string>
+    <string name="pt_sort_by_title_uses">Сортировать названия по</string>
     <string name="pg_barcode_scanner">Сканер штрих-кода</string>
     <string name="pg_thumbnails">Миниатюры</string>
     <string name="pg_ui">Пользовательский интерфейс</string>
@@ -472,8 +472,6 @@
     <string name="pt_bob_thumbnails_show">Показывать миниатюры</string>
     <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
     <string name="pt_bob_thumbnails_scale">Размер изображения в списках</string>
-    <string name="pt_reformat_titles_on_insert">При добавлении</string>
-    <string name="pt_reformat_titles_on_update">При редактировании</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Подать звуковой сигнал, если сканируемый ISBN не правильный</string>
     <string name="pt_scanning_beep_if_isbn_valid">Подать звуковой сигнал, если сканируемый ISBN правильный</string>
     <string name="pt_scanning_preferred_scanner">Предпочтительный сканер</string>

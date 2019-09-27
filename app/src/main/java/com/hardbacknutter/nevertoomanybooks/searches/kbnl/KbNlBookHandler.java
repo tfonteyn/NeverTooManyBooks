@@ -160,21 +160,13 @@ class KbNlBookHandler
 
             case "Subject heading Depot":
             case "Trefwoord Depot":
-                // seen, but skipped for now.
-                // Lookup: 9789063349943
-                // Trefwoord Depot: stripverhalen  (record is a link)
-                break;
-
+                // not used
             case "Request number":
             case "Aanvraagnummer":
                 // not used
-                break;
-
             case "Loan indication":
             case "Uitleenindicatie":
                 // not used
-                break;
-
             case "Lending information":
             case "Aanvraaginfo":
                 // not used
@@ -246,7 +238,7 @@ class KbNlBookHandler
      * the publicly known/used name, i.e. in this case "Isaac Asimov"
      * The second sample shows how the site is creative (hum) about authors using pen-names.
      * The 3rd sample shows that dates can be added... and that ";" are considered authors.
-     *
+     * <p>
      * ENHANCE: we *really* need to create an 'alias' table for authors.
      * <p>
      * Getting author names:

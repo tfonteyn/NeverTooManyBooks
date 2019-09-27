@@ -374,12 +374,12 @@ public class App
     /**
      * Read a string from the META tags in the Manifest.
      *
-     * @param name string to read
+     * @param key The name of the meta data string to retrieve.
      *
      * @return the key, or the empty string if no key found.
      */
     @NonNull
-    public static String getManifestString(@Nullable final String name) {
+    public static String getManifestString(@Nullable final String key) {
         ApplicationInfo ai;
         try {
             ai = sInstance.getApplicationContext().getPackageManager()
@@ -389,7 +389,7 @@ public class App
             throw new IllegalStateException(e);
         }
 
-        String result = ai.metaData.getString(name);
+        String result = ai.metaData.getString(key);
         if (result == null) {
             return "";
         }
@@ -399,16 +399,21 @@ public class App
     /**
      * Get a global preference boolean.
      *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
      * @return the preference value
      */
     public static boolean getPrefBoolean(@NonNull final String key,
-                                         final boolean defaultValue) {
+                                         final boolean defValue) {
         return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                .getBoolean(key, defaultValue);
+                                .getBoolean(key, defValue);
     }
 
     /**
      * Get a global preference String. Null values results are returned as an empty string.
+     *
+     * @param key The name of the preference to retrieve.
      *
      * @return the preference value string, can be empty, but never {@code null}
      */
@@ -424,15 +429,18 @@ public class App
      * {@link ListPreference} stores the selected value as a String.
      * But they are really Integer values. Hence this transmogrification....
      *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
      * @return int (stored as String) global preference
      */
     public static int getListPreference(@NonNull final String key,
-                                        final int defaultValue) {
+                                        final int defValue) {
         Context context = sInstance.getApplicationContext();
         String value = PreferenceManager.getDefaultSharedPreferences(context)
                                         .getString(key, null);
         if (value == null || value.isEmpty()) {
-            return defaultValue;
+            return defValue;
         }
         return Integer.parseInt(value);
     }
@@ -444,12 +452,12 @@ public class App
      * @return int (stored as StringSet) global preference
      */
     public static Integer getMultiSelectListPreference(@NonNull final String key,
-                                                       final int defaultValue) {
+                                                       final int defValue) {
         Context context = sInstance.getApplicationContext();
         Set<String> value = PreferenceManager.getDefaultSharedPreferences(context)
                                              .getStringSet(key, null);
         if (value == null || value.isEmpty()) {
-            return defaultValue;
+            return defValue;
         }
         return Prefs.toInteger(value);
     }

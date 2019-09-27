@@ -887,6 +887,17 @@ public class IsfdbBook
             &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?29" dir="ltr">Robert A. Heinlein</a>
             (trans. of <a href="http://www.isfdb.org/cgi-bin/title.cgi?2233" dir="ltr"><i>Citizen of the Galaxy</i></a> 1957)
 
+
+            2019-09-26: this has been there for a longer time, but just noticed these:
+            ISBN: 90-290-1541-1
+            7 •  Één Nacht per Jaar • interior artwork by John Stewart
+            9 • Één Nacht per Jaar • [Cyrion] • novelette by Tanith Lee (trans. of One Night of the Year 1980)
+            39 •  Aaches Geheim • interior artwork by Jim Pitts
+            41 • Aaches Geheim • [Dilvish] • short story by Roger Zelazny (trans. of The Places of Aache 1980)
+
+            iow: each story appears twice due to the extra interior artwork.
+            For now, we will get two entries in the TOC, same title but different author.
+            TODO: avoid duplicate TOC entries when there are two lines.
              */
             String liAsString = li.toString();
             String title = null;
@@ -906,21 +917,6 @@ public class IsfdbBook
                 } else if (addSeriesFromToc && mSeries.isEmpty()
                            && href.contains(IsfdbManager.URL_PE_CGI)) {
                     String series = a.text();
-//                    String seriesNum = "";
-//                    // check for the number; Series don't always have a number
-//                    int start = liAsString.indexOf('[');
-//                    int end = liAsString.indexOf(']');
-//                    if (start > 1 && end > start) {
-//                        String tmp = liAsString.substring(start, end);
-//                        String[] data = DOT_PATTERN.split(tmp);
-//                        // check if there really was a Series number
-//                        if (data.length > 1) {
-//                            seriesNum = Series.cleanupSeriesNumber(data[1]);
-//                        }
-//                    }
-//                    Series newSeries = new Series(series);
-//                    newSeries.setNumber(seriesNum);
-
                     Series newSeries = Series.fromString(series);
                     mSeries.add(newSeries);
                 }

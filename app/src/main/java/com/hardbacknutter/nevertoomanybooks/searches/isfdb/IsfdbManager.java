@@ -46,7 +46,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -165,7 +164,7 @@ public class IsfdbManager
                 url += "&USE_" + index + "=pub_title"
                        + "&O_" + index + "=contains"
                        + "&TERM_" + index + "="
-                       + URLEncoder.encode(DAO.unMangleTitle(title), CHARSET_ENCODE_URL);
+                       + URLEncoder.encode(title, CHARSET_ENCODE_URL);
             }
 
             // as per user settings.

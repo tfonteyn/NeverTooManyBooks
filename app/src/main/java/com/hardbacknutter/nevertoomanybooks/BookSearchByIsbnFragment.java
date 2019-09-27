@@ -589,7 +589,7 @@ public class BookSearchByIsbnFragment
                 UserMessage.show(getView(), R.string.info_waiting_for_scanner);
                 try {
                     Thread.sleep(SCANNER_WAIT);
-                } catch (InterruptedException ignore) {
+                } catch (@NonNull final InterruptedException ignore) {
                 }
                 if (scanner.isOperational()) {
                     break;

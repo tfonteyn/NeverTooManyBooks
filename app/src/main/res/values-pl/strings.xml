@@ -278,7 +278,7 @@
     <string name="lbl_date_published">Data wydania</string>
     <string name="lbl_day">Dzień</string>
     <string name="lbl_description">Opis</string>
-    <string name="lbl_details_have_changed">Szczegóły uległy zmianie</string>
+    <string name="title_details_have_changed">Szczegóły uległy zmianie</string>
     <string name="lbl_edition">Wydanie</string>
     <string name="lbl_edition_book_club">Klub Książki</string>
     <string name="lbl_edition_first_edition">Pierwsza edycja</string>
@@ -331,7 +331,7 @@
     <string name="lbl_read_year">Przeczytaj rok</string>
     <string name="lbl_search_criteria">Kryteria wyszukiwania</string>
     <string name="lbl_search_filtered_on_x">Przefiltrowany: %1$s</string>
-    <string name="lbl_search_for_books">Szukaj książek</string>
+    <string name="title_search_for_books">Szukaj książek</string>
     <string name="lbl_search_site_order">Zamówienie</string>
     <string name="lbl_search_sites">Witryny wyszukiwania</string>
     <string name="lbl_select_fields">Wybierz pola</string>
@@ -424,7 +424,7 @@
     <string name="pg_filters">Filtry</string>
     <string name="pg_general">Ogólne</string>
     <string name="pg_groupings">Grupowanie</string>
-    <string name="pg_reformat_titles">Sformatuj tytuły</string>
+    <string name="pt_sort_by_title_uses">Sortuj tytuły według</string>
     <string name="pg_barcode_scanner">Skaner kodów kreskowych</string>
     <string name="pg_thumbnails">Miniatury</string>
     <string name="pg_ui">Interfejs użytkownika</string>
@@ -474,8 +474,6 @@
     <string name="pt_bob_thumbnails_show">Pokaż miniaturki</string>
     <string name="pt_collect_series_info_from_toc">Zbierz informacje o serii z spisu treści</string>
     <string name="pt_bob_thumbnails_scale">Rozmiar obrazu na listach</string>
-    <string name="pt_reformat_titles_on_insert">Podczas dodawania</string>
-    <string name="pt_reformat_titles_on_update">Podczas edycji</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Sygnał dźwiękowy, jeśli zeskanowany numer ISBN jest nieprawidłowy</string>
     <string name="pt_scanning_beep_if_isbn_valid">Sygnał dźwiękowy, jeśli skanowany numer ISBN jest prawidłowy</string>
     <string name="pt_scanning_preferred_scanner">Preferowany skaner</string>

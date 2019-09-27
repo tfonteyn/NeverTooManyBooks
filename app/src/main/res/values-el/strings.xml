@@ -279,7 +279,7 @@
     <string name="lbl_date_published">Ημερομηνία έκδοσης</string>
     <string name="lbl_day">Ημέρα</string>
     <string name="lbl_description">Περιγραφή</string>
-    <string name="lbl_details_have_changed">Κάποιες λεπτομέρειες έχουν αλλάξει</string>
+    <string name="title_details_have_changed">Κάποιες λεπτομέρειες έχουν αλλάξει</string>
     <string name="lbl_edition">Εκδοση</string>
     <string name="lbl_edition_book_club">Έκδοση Βιβλίου Club</string>
     <string name="lbl_edition_first_edition">Πρώτη έκδοση</string>
@@ -332,7 +332,7 @@
     <string name="lbl_read_year">Έτος Ανάγνωσης</string>
     <string name="lbl_search_criteria">Κριτήρια αναζήτησης</string>
     <string name="lbl_search_filtered_on_x">Φιλτραρισμένο: %1$s</string>
-    <string name="lbl_search_for_books">Αναζήτηση για βιβλία</string>
+    <string name="title_search_for_books">Αναζήτηση για βιβλία</string>
     <string name="lbl_search_site_order">Αλληλουχία</string>
     <string name="lbl_search_sites">Ερευνητικοί χώροι</string>
     <string name="lbl_select_fields">Επιλεγξτε πεδία</string>
@@ -425,8 +425,7 @@
     <string name="pg_filters">Φίλτρα Βιβλίων</string>
     <string name="pg_general">Γενικά</string>
     <string name="pg_groupings">Ομαδοποιήσεις</string>
-    <string name="pg_reformat_titles">Αναμορφώστε τους τίτλους</string>
-    <string name="pg_reformat_titles_summary">Αποθηκεύστε το πρωτότυπο «Ο τίτλος» ή αναδιαμορφώστε σε «τίτλος, Ο»</string>
+    <string name="pt_sort_by_title_uses">Ταξινόμηση τίτλων με βάση</string>
     <string name="pg_barcode_scanner">Σάρωση γραμμοκώδικα</string>
     <string name="pg_thumbnails">Μικρογραφίες</string>
     <string name="pg_ui">Περιβάλλον Χρήστη</string>
@@ -476,8 +475,6 @@
     <string name="pt_bob_thumbnails_show">Εμφάνιση μικρογραφιών</string>
     <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
     <string name="pt_bob_thumbnails_scale">Μικρογραφεί μέγεθος σε λίστες</string>
-    <string name="pt_reformat_titles_on_insert">Κατά την προσθήκη</string>
-    <string name="pt_reformat_titles_on_update">Κατά την επεξεργασία</string>
     <string name="pt_reformat_titles_summary_original">Ο τίτλος</string>
     <string name="pt_reformat_titles_summary_reformatted">τίτλος, Ο</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Ειδοποίηση αν ο σκαναρισμένος κωδικός ISBN δεν είναι έγκυρος</string>

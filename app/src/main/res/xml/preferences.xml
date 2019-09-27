@@ -269,41 +269,16 @@
         </PreferenceCategory>
     </PreferenceScreen>
 
-    <PreferenceScreen
-        android:icon="@drawable/ic_text_format"
-        android:key="psk_reformat"
-        android:title="@string/pg_reformat"
-        >
-        <PreferenceCategory
-            android:summary="@string/pg_reformat_titles_summary"
-            android:title="@string/pg_reformat_titles">
-            <SwitchPreference
-                android:defaultValue="true"
-                android:icon="@drawable/ic_add"
-                android:key="reformat.title.insert"
-                android:summaryOff="@string/pt_reformat_titles_summary_original"
-                android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
-                android:title="@string/pt_reformat_titles_on_insert" />
-            <SwitchPreference
-                android:defaultValue="true"
-                android:icon="@drawable/ic_edit"
-                android:key="reformat.title.update"
-                android:summaryOff="@string/pt_reformat_titles_summary_original"
-                android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
-                android:title="@string/pt_reformat_titles_on_update" />
-        </PreferenceCategory>
-
-        <PreferenceCategory
-            android:title="@string/lbl_format">
-            <SwitchPreference
-                android:defaultValue="true"
-                android:icon="@drawable/ic_edit"
-                android:key="reformat.format.update"
-                android:summaryOff="@string/no"
-                android:summaryOn="@string/yes"
-                android:title="@string/pt_reformat_format_on_update" />
-        </PreferenceCategory>
-    </PreferenceScreen>
+    <PreferenceCategory
+        android:title="@string/lbl_format">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_edit"
+            android:key="reformat.format.update"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_reformat_format_on_update" />
+    </PreferenceCategory>
 
     <PreferenceCategory
         android:title="@string/pg_booklist">
@@ -315,6 +290,14 @@
         <!--            android:key="psk_styles"-->
         <!--            android:title="@string/lbl_styles"-->
         <!--            />-->
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_sort_by_alpha"
+            android:key="reformat.title.forSorting"
+            android:summaryOff="@string/pt_reformat_titles_summary_original"
+            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
+            android:title="@string/pt_sort_by_title_uses" />
 
         <ListPreference
             android:defaultValue="0"

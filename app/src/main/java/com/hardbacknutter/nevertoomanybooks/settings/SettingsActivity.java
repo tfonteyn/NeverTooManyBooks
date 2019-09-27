@@ -47,9 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
@@ -95,6 +93,13 @@ public class SettingsActivity
                          .registerOnSharedPreferenceChangeListener(this);
     }
 
+    @Override
+    public void onPause() {
+        PreferenceManager.getDefaultSharedPreferences(this)
+                         .unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
     /**
      * create a new fragment instance from the tag.
      *
@@ -112,13 +117,6 @@ public class SettingsActivity
         } else {
             throw new UnexpectedValueException(tag);
         }
-    }
-
-    @Override
-    public void onPause() {
-        PreferenceManager.getDefaultSharedPreferences(this)
-                         .unregisterOnSharedPreferenceChangeListener(this);
-        super.onPause();
     }
 
     /**
@@ -167,9 +165,8 @@ public class SettingsActivity
                               "key=" + key);
         }
 
-
         switch (key) {
-            // Trigger a recreate of this activity, if the setting has changed.
+            // Trigger a recreate of this activity, if this setting has changed.
             case Prefs.pk_ui_theme:
                 if (App.isThemeChanged(mInitialThemeId)) {
                     App.setIsRecreating();
@@ -177,7 +174,7 @@ public class SettingsActivity
                 }
                 break;
 
-            // Trigger a recreate of this activity, if the setting has changed.
+            // Trigger a recreate of this activity, if this setting has changed.
             case Prefs.pk_ui_language:
                 if (LocaleUtils.isChanged(mInitialLocaleSpec)) {
                     LocaleUtils.onLocaleChanged();
@@ -186,25 +183,8 @@ public class SettingsActivity
                 }
                 break;
 
-            case Prefs.pk_scanner_beep_if_invalid:
-                SoundManager.beepLow(this);
-                break;
-
-            case Prefs.pk_scanner_beep_if_valid:
-                SoundManager.beepHigh(this);
-                break;
-
-            case Prefs.pk_scanner_preferred:
-                ScannerManager.installScanner(this, success -> {
-                    if (!success) {
-                        ScannerManager.setDefaultScanner(this);
-                    }
-                });
-                break;
-
             default:
                 break;
         }
     }
-
 }

@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
-public class CurrencyUtils {
+public final class CurrencyUtils {
 
     /**
      * Prices are split into currency and actual amount.

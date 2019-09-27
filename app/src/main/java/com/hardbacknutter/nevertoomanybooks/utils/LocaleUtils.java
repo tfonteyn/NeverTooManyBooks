@@ -33,20 +33,22 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -88,7 +90,10 @@ public final class LocaleUtils {
 
     private static final List<WeakReference<OnLocaleChangedListener>> sOnLocaleChangedListeners =
             new ArrayList<>();
-
+    /**
+     * Cache for the pv_reformat_titles_prefixes strings.
+     */
+    private static final Map<Locale, String> LOCALE_PREFIX_MAP = new HashMap<>();
     /** Remember the current language to detect when language is switched. */
     @NonNull
     private static String sPreferredLocaleSpec = SYSTEM_LANGUAGE;
@@ -157,27 +162,27 @@ public final class LocaleUtils {
         return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec());
     }
 
-    /**
-     * this call is not needed. Use Locale.getDefault();
-     */
-    @NonNull
-    @AnyThread
-    public static Locale getLocale(@NonNull final Context context) {
-        String localeSpec = getPersistedLocaleSpec();
-
-        // create the Locale at first access, or if the requested is different from the current.
-        if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
-            sPreferredLocaleSpec = localeSpec;
-            sPreferredLocale = createLocale(localeSpec);
-        }
-
-        insanityCheck(context);
-        return sPreferredLocale;
-    }
+//    /**
+//     * this call is not needed. Use Locale.getDefault();
+//     */
+//    @NonNull
+//    @AnyThread
+//    public static Locale getLocale(@NonNull final Context context) {
+//        String localeSpec = getPersistedLocaleSpec();
+//
+//        // create the Locale at first access, or if the requested is different from the current.
+//        if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
+//            sPreferredLocaleSpec = localeSpec;
+//            sPreferredLocale = createLocale(localeSpec);
+//        }
+//
+//        insanityCheck(context);
+//        return sPreferredLocale;
+//    }
 
     /**
      * Set the context's Locale to the user preferred localeSpec and return the updated context.
-     *
+     * <p>
      * Set the system wide default Locale to the user preferred localeSpec.
      *
      * @param context to set the Locale on
@@ -344,6 +349,52 @@ public final class LocaleUtils {
                 }
             }
         }
+    }
+
+    /**
+     * Move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The"
+     *
+     * @param userContext Current context, should be an actual user context,
+     *                    and not the ApplicationContext.
+     * @param title       to reorder
+     * @param locales     to try
+     *
+     * @return reordered title, or the original if the pattern was not found
+     */
+    @NonNull
+    public static String reorderTitle(@NonNull final Context userContext,
+                                      @NonNull final String title,
+                                      @NonNull final Locale... locales) {
+
+        String[] titleWords = title.split(" ");
+        // Single word titles (or empty titles).. just return.
+        if (titleWords.length < 2) {
+            return title;
+        }
+
+        for (Locale locale : locales) {
+            // Getting the string is slow, so we cache it for every Locale.
+            String orderPattern = LOCALE_PREFIX_MAP.get(locale);
+            if (orderPattern == null) {
+                // the resources bundle in the language that the book (item) is written in.
+                Resources localeResources = App.getLocalizedResources(userContext, locale);
+                orderPattern = localeResources.getString(R.string.pv_reformat_titles_prefixes);
+                LOCALE_PREFIX_MAP.put(locale, orderPattern);
+            }
+
+            if (titleWords[0].matches(orderPattern)) {
+                StringBuilder newTitle = new StringBuilder();
+                for (int i = 1; i < titleWords.length; i++) {
+                    if (i != 1) {
+                        newTitle.append(' ');
+                    }
+                    newTitle.append(titleWords[i]);
+                }
+                newTitle.append(", ").append(titleWords[0]);
+                return newTitle.toString();
+            }
+        }
+        return title;
     }
 
     public interface OnLocaleChangedListener {

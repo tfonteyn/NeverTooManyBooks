@@ -84,8 +84,7 @@ public final class Prefs {
     public static final String pk_scanner_beep_if_valid = "SoundManager.BeepIfScannedIsbnValid";
     public static final String pk_scanner_beep_if_invalid = "SoundManager.BeepIfScannedIsbnInvalid";
 
-    public static final String pk_reformat_titles_on_insert = "reformat.title.insert";
-    public static final String pk_reformat_titles_on_update = "reformat.title.update";
+    public static final String pk_reorder_titles_for_sorting = "reformat.title.forSorting";
     public static final String pk_reformat_formats = "reformat.format.update";
 
     public static final String pk_images_cache_resized = "Image.Cache.Resized";

@@ -28,33 +28,17 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public interface ItemWithTitle {
-
-    /**
-     * Cache for the pv_reformat_titles_prefixes strings.
-     * <p>
-     * Design-wise this is not very clean. We're in an interface after all.
-     * Setting the VisibleForTesting is also bogus, but it's better then leaving it completely
-     * public. At least this way Studio will warn us about illegal usage.
-     * Suggestions welcome.
-     */
-    @VisibleForTesting
-    Map<Locale, String> LOCALE_PREFIX_MAP = new HashMap<>();
 
     /**
      * Get the Locale of the actual item; e.g. a book written in Spanish should
@@ -72,7 +56,7 @@ public interface ItemWithTitle {
     String getTitle();
 
     /**
-     * Move "The, A, An" etc... to the end of the string.
+     * Move "The, A, An" etc... to the end of the string for use as the OrderBy column.
      *
      * @param userContext    Current context, should be an actual user context,
      *                       and not the ApplicationContext.
@@ -83,54 +67,15 @@ public interface ItemWithTitle {
     default String preprocessTitle(@NonNull final Context userContext,
                                    @NonNull final Locale fallbackLocale) {
 
-        Locale locale = getLocale(fallbackLocale);
+        if (PreferenceManager.getDefaultSharedPreferences(userContext)
+                             .getBoolean(Prefs.pk_reorder_titles_for_sorting, true)) {
 
-        // Getting the string is slow, so we cache it for every Locale.
-        String orderPatter = LOCALE_PREFIX_MAP.get(locale);
-        if (orderPatter == null) {
-            // the resources bundle in the language that the book (item) is written in.
-            Resources localeResources = App.getLocalizedResources(userContext, locale);
-            orderPatter = localeResources.getString(R.string.pv_reformat_titles_prefixes);
-            LOCALE_PREFIX_MAP.put(locale, orderPatter);
-        }
-
-        StringBuilder newTitle = new StringBuilder();
-        String[] titleWords = getTitle().split(" ");
-        if (titleWords[0].matches(orderPatter)) {
-            for (int i = 1; i < titleWords.length; i++) {
-                if (i != 1) {
-                    newTitle.append(' ');
-                }
-                newTitle.append(titleWords[i]);
-            }
-            newTitle.append(", ").append(titleWords[0]);
-            return newTitle.toString();
+            // will try locales in order as passed here.
+            return LocaleUtils.reorderTitle(userContext, getTitle(),
+                                            getLocale(fallbackLocale),
+                                            App.getSystemLocale(),
+                                            Locale.ENGLISH);
         }
         return getTitle();
-    }
-
-    /**
-     * Move "The, A, An" etc... to the end of the string.
-     *
-     * @param userContext    Current context, should be an actual user context,
-     *                       and not the ApplicationContext.
-     * @param isInsert       should be {@code true} for an insert, {@code false} for an update
-     * @param fallbackLocale Locale to use if the item has none set
-     *
-     * @return formatted title
-     */
-    default String preprocessTitle(@NonNull final Context userContext,
-                                   final boolean isInsert,
-                                   @NonNull final Locale fallbackLocale) {
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(userContext);
-        boolean whenInserting = prefs.getBoolean(Prefs.pk_reformat_titles_on_insert, true);
-        boolean whenUpdating = prefs.getBoolean(Prefs.pk_reformat_titles_on_update, true);
-
-        if ((isInsert && whenInserting) || (!isInsert && whenUpdating)) {
-            return preprocessTitle(userContext, fallbackLocale);
-        } else {
-            return getTitle();
-        }
     }
 }

@@ -49,8 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 public final class LegacyPreferences {
 
@@ -265,28 +263,11 @@ public final class LegacyPreferences {
                     /*
                      * Internal settings
                      */
-                    case "state_opened":
-                        ed.putInt(StartupViewModel.PREF_STARTUP_COUNTDOWN, (Integer) oldValue);
-                        break;
-
-                    case "Startup.StartCount":
-                        ed.putInt(StartupViewModel.PREF_STARTUP_COUNT, (Integer) oldValue);
-                        break;
-
                     case "BooksOnBookshelf.BOOKSHELF":
                         String tmpBookshelf = (String) oldValue;
                         if (!tmpBookshelf.isEmpty()) {
                             ed.putString(Bookshelf.PREF_BOOKSHELF_CURRENT, tmpBookshelf);
                         }
-                        break;
-
-                    case "BooksOnBookshelf.TOP_ROW":
-                        ed.putInt(BooksOnBookshelfModel.PREF_BOB_TOP_ROW, (Integer) oldValue);
-                        break;
-
-                    case "BooksOnBookshelf.TOP_ROW_TOP":
-                        ed.putInt(BooksOnBookshelfModel.PREF_BOB_TOP_ROW_OFFSET,
-                                  (Integer) oldValue);
                         break;
 
                     case "BooksOnBookshelf.LIST_STYLE":
@@ -320,9 +301,14 @@ public final class LegacyPreferences {
                     case "state_bookshelf":
                     case "App.BooklistStyle":
                     case "HintManager.Hint.hint_amazon_links_blurb":
+
                         // skip keys that make no sense to copy
                     case "UpgradeMessages.LastMessage":
                     case "Startup.FtsRebuildRequired":
+                    case "Startup.StartCount":
+                    case "state_opened":
+                    case "BooksOnBookshelf.TOP_ROW":
+                    case "BooksOnBookshelf.TOP_ROW_TOP":
                         break;
 
                     default:

@@ -277,7 +277,7 @@
     <string name="lbl_date_published">Yayımlandığı Tarih</string>
     <string name="lbl_day">Gün</string>
     <string name="lbl_description">Özet</string>
-    <string name="lbl_details_have_changed">Ayrıntılar değiştirildi</string>
+    <string name="title_details_have_changed">Ayrıntılar değiştirildi</string>
     <string name="lbl_edition">Baskı</string>
     <string name="lbl_edition_book_club">Kitap Kulübü baskısı</string>
     <string name="lbl_edition_first_edition">1. baskı</string>
@@ -330,7 +330,7 @@
     <string name="lbl_read_year">Okuma yılı</string>
     <string name="lbl_search_criteria">Arama kriteri</string>
     <string name="lbl_search_filtered_on_x">Süzülmüş: %1$s</string>
-    <string name="lbl_search_for_books">Kitap ara</string>
+    <string name="title_search_for_books">Kitap ara</string>
     <string name="lbl_search_site_order">Sekans</string>
     <string name="lbl_search_sites">Siteleri Ara</string>
     <string name="lbl_select_fields">Alanları seçin</string>
@@ -423,7 +423,7 @@
     <string name="pg_filters">Kitap süzgeçleri</string>
     <string name="pg_general">Genel</string>
     <string name="pg_groupings">Öbeklemeler</string>
-    <string name="pg_reformat_titles">Reformat başlıkları</string>
+    <string name="pt_sort_by_title_uses">Başlıkları sırala</string>
     <string name="pg_barcode_scanner">Barkod okuyucu</string>
     <string name="pg_thumbnails">Ufak resimler</string>
     <string name="pg_ui">Kullanıcı arayüzü</string>
@@ -473,8 +473,6 @@
     <string name="pt_bob_thumbnails_show">Ufak resimleri göster</string>
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
     <string name="pt_bob_thumbnails_scale">Listelerdeki görüntü boyutu</string>
-    <string name="pt_reformat_titles_on_insert">Eklerken</string>
-    <string name="pt_reformat_titles_on_update">Düzenlerken</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Taranan ISBN geçerli değil ise biple</string>
     <string name="pt_scanning_beep_if_isbn_valid">Taranan ISBN geçerli ise biple</string>
     <string name="pt_scanning_preferred_scanner">Yeğlenen Tarayıcı</string>

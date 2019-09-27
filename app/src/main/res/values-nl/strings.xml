@@ -284,7 +284,7 @@
     <string name="lbl_date_published">Datum uitgave</string>
     <string name="lbl_day">Dag</string>
     <string name="lbl_description">Beschrijving</string>
-    <string name="lbl_details_have_changed">De details zijn veranderd</string>
+    <string name="title_details_have_changed">De details zijn veranderd</string>
     <string name="lbl_edition">Editie</string>
     <string name="lbl_edition_book_club">Boekenclub</string>
     <string name="lbl_edition_first_edition">Eerste druk</string>
@@ -337,7 +337,7 @@
     <string name="lbl_read_year">Jaar</string>
     <string name="lbl_search_criteria">Zoekcriteria</string>
     <string name="lbl_search_filtered_on_x">Gefiltered: %1$s</string>
-    <string name="lbl_search_for_books">Zoeken naar boeken</string>
+    <string name="title_search_for_books">Zoeken naar boeken</string>
     <string name="lbl_search_site_order">Volgorde</string>
     <string name="lbl_search_sites">Zoek-webpaginas</string>
     <string name="lbl_select_fields">Selecteer velden</string>
@@ -430,8 +430,7 @@
     <string name="pg_filters">Boekfilters</string>
     <string name="pg_general">Algemeen</string>
     <string name="pg_groupings">Groeperingen</string>
-    <string name="pg_reformat_titles">Herformatteren van titels</string>
-    <string name="pg_reformat_titles_summary">Bewaar het origineel „De titel” of herformatteer naar „titel, De”</string>
+    <string name="pt_sort_by_title_uses">Sorteer titels op</string>
     <string name="pg_barcode_scanner">Streepjescodescanner</string>
     <string name="pg_thumbnails">Miniaturen</string>
     <string name="pg_ui">Gebruikersinterface</string>
@@ -481,8 +480,6 @@
     <string name="pt_bob_thumbnails_show">Toon Miniaturen</string>
     <string name="pt_collect_series_info_from_toc">Verzamel Serie-info van de inhouds tabel</string>
     <string name="pt_bob_thumbnails_scale">Miniaturen grootte in lijsten</string>
-    <string name="pt_reformat_titles_on_insert">Tijdens toevoegen</string>
-    <string name="pt_reformat_titles_on_update">Tijdens editeren</string>
     <string name="pt_reformat_titles_summary_original">De titel</string>
     <string name="pt_reformat_titles_summary_reformatted">titel, De</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Beep als het gescande ISBN ongeldig is</string>

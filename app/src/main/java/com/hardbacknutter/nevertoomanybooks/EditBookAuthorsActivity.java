@@ -299,7 +299,7 @@ public class EditBookAuthorsActivity
         private CompoundButton mUseTypeBtn;
         /** Key: type. */
         @SuppressLint("UseSparseArrays")
-        private Map<Integer, CompoundButton> mTypeButtons = new HashMap<>();
+        private final Map<Integer, CompoundButton> mTypeButtons = new HashMap<>();
 
         /** The Author we're editing. */
         private Author mAuthor;

@@ -306,7 +306,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called from {@link #onCreate}
+     * Called from {@link #onCreate}.
      */
     private void initListView() {
         mLayoutManager = new LinearLayoutManager(this);
@@ -325,7 +325,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called from {@link #onCreate}
+     * Called from {@link #onCreate}.
      */
     private void initHeader() {
         mFilterTextView = findViewById(R.id.search_text);
@@ -345,7 +345,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called from {@link #onCreate}
+     * Called from {@link #onCreate}.
      */
     private void initFAB() {
         mFabButton = findViewById(R.id.fab);
@@ -464,6 +464,9 @@ public class BooksOnBookshelf
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, R.string.lbl_style);
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, R.string.debug_history);
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TABLES, 0, R.string.debug_bob_tables);
+
+            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_UNMANGLE, 0, "unmangle");
+
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -557,6 +560,10 @@ public class BooksOnBookshelf
                         case R.id.MENU_DEBUG_TABLES:
                             Logger.debug(this, "onOptionsItemSelected",
                                          mModel.debugBuilderTables());
+                            return true;
+
+                        case R.id.MENU_DEBUG_UNMANGLE:
+                            mModel.getDb().tempUnMangle();
                             return true;
 
                         default:

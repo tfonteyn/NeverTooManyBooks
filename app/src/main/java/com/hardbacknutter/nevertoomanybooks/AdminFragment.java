@@ -182,8 +182,8 @@ public class AdminFragment
             .setOnClickListener(v -> {
                 // or should we use Intent.ACTION_OPEN_DOCUMENT ?
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
-                                        .addCategory(Intent.CATEGORY_OPENABLE)
-                                        .setType("*/*");
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .setType("*/*");
                 startActivityForResult(intent, REQ_PICK_FILE_FOR_ARCHIVE_IMPORT);
             });
 
@@ -191,9 +191,9 @@ public class AdminFragment
         root.findViewById(R.id.lbl_export)
             .setOnClickListener(v -> {
                 Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
-                                        .addCategory(Intent.CATEGORY_OPENABLE)
-                                        .setType("text/csv")
-                                        .putExtra(Intent.EXTRA_TITLE, CSV_EXPORT_FILE_NAME);
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .setType("text/csv")
+                        .putExtra(Intent.EXTRA_TITLE, CSV_EXPORT_FILE_NAME);
                 startActivityForResult(intent, REQ_PICK_FILE_FOR_CSV_EXPORT);
             });
 
@@ -210,10 +210,10 @@ public class AdminFragment
                         .setPositiveButton(android.R.string.ok, (d, which) -> {
                             // or should we use Intent.ACTION_OPEN_DOCUMENT ?
                             Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
-                                                    .addCategory(Intent.CATEGORY_OPENABLE)
-                                                    // Android bug? When using "text/csv"
-                                                    // we cannot select a csv file?
-                                                    .setType("text/*");
+                                    .addCategory(Intent.CATEGORY_OPENABLE)
+                                    // Android bug? When using "text/csv"
+                                    // we cannot select a csv file?
+                                    .setType("text/*");
                             startActivityForResult(intent, REQ_PICK_FILE_FOR_CSV_IMPORT);
                         })
                         .create()
@@ -374,7 +374,7 @@ public class AdminFragment
                             } else {
                                 msgId = R.string.warning_select_an_existing_folder;
                             }
-                        } catch (IOException e) {
+                        } catch (@NonNull final IOException e) {
                             Logger.error(this, e);
                             msgId = R.string.error_backup_failed;
                         }
@@ -417,7 +417,7 @@ public class AdminFragment
                     UserMessage.show(view, msg);
                 } else {
                     RequestAuthTask.needsRegistration(getContext(), mGoodreadsTaskModel
-                                                                            .getTaskListener());
+                            .getTaskListener());
                 }
                 break;
             }
@@ -693,6 +693,8 @@ public class AdminFragment
      * Transform the result data into a user friendly report.
      *
      * @param importHelper import data
+     *
+     * @return the report ready to display to the user.
      */
     private String createImportReport(@NonNull final ImportHelper importHelper) {
         Importer.Results results = importHelper.getResults();
@@ -733,9 +735,9 @@ public class AdminFragment
         //noinspection ConstantConditions
         String fileName = BackupManager.getDefaultBackupFileName(getContext());
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
-                                .addCategory(Intent.CATEGORY_OPENABLE)
-                                .setType("*/*")
-                                .putExtra(Intent.EXTRA_TITLE, fileName);
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("*/*")
+                .putExtra(Intent.EXTRA_TITLE, fileName);
         startActivityForResult(intent, REQ_PICK_FILE_FOR_ARCHIVE_BACKUP);
     }
 
@@ -777,7 +779,7 @@ public class AdminFragment
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog == null) {
             mProgressDialog = ProgressDialogFragment
-                                      .newInstance(R.string.title_backing_up, false, 0);
+                    .newInstance(R.string.title_backing_up, false, 0);
             mProgressDialog.show(fm, TAG);
 
             BackupTask task = new BackupTask(exportHelper,
@@ -837,8 +839,8 @@ public class AdminFragment
                                     .setMessage(msg)
                                     .setPositiveButton(android.R.string.ok, (d, which) -> {
                                         Intent data = new Intent()
-                                                              .putExtra(UniqueId.BKEY_EXPORT_RESULT,
-                                                                        exportHelper.options);
+                                                .putExtra(UniqueId.BKEY_EXPORT_RESULT,
+                                                          exportHelper.options);
                                         //noinspection ConstantConditions
                                         getActivity().setResult(Activity.RESULT_OK, data);
                                         getActivity().finish();
@@ -883,8 +885,8 @@ public class AdminFragment
                                     .setMessage(msg)
                                     .setNegativeButton(android.R.string.cancel, (d, which) -> {
                                         Intent data = new Intent()
-                                                              .putExtra(UniqueId.BKEY_EXPORT_RESULT,
-                                                                        exportHelper.options);
+                                                .putExtra(UniqueId.BKEY_EXPORT_RESULT,
+                                                          exportHelper.options);
                                         //noinspection ConstantConditions
                                         getActivity().setResult(Activity.RESULT_OK, data);
                                         getActivity().finish();
@@ -921,6 +923,10 @@ public class AdminFragment
 
     /**
      * Transform the result data into a user friendly report.
+     *
+     * @param exportHelper export data
+     *
+     * @return the report ready to display to the user.
      */
     private String createExportReport(@NonNull final ExportHelper exportHelper) {
         Exporter.Results results = exportHelper.getResults();
@@ -964,9 +970,9 @@ public class AdminFragment
         uris.add(exportHelper.uri);
         try {
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
-                                    .setType("plain/text")
-                                    .putExtra(Intent.EXTRA_SUBJECT, subject)
-                                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+                    .setType("plain/text")
+                    .putExtra(Intent.EXTRA_SUBJECT, subject)
+                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
             startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
         } catch (@NonNull final NullPointerException e) {
             Logger.error(this, e);

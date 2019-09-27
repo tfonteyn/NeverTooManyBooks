@@ -59,15 +59,11 @@ public final class StandardDialogs {
                                                      @NonNull final Runnable onConfirm) {
         new AlertDialog.Builder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.lbl_details_have_changed)
+                .setTitle(R.string.title_details_have_changed)
                 .setMessage(R.string.warning_unsaved_edits)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setCancelable(false)
                 .setNegativeButton(R.string.btn_continue_editing, (d, which) -> d.dismiss())
-                .setPositiveButton(R.string.btn_confirm_exit, (d, which) -> {
-                    d.dismiss();
-                    onConfirm.run();
-                })
+                .setPositiveButton(R.string.btn_confirm_exit, (d, which) -> onConfirm.run())
                 .create()
                 .show();
     }

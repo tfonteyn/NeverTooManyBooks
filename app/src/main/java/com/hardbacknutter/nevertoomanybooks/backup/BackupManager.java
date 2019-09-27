@@ -70,7 +70,7 @@ public final class BackupManager {
      * @return a new reader
      *
      * @throws InvalidArchiveException on failure to recognise a supported archive
-     * @throws IOException    on other failures
+     * @throws IOException             on other failures
      */
     @NonNull
     static BackupReader getReader(@NonNull final Context context,
@@ -116,6 +116,9 @@ public final class BackupManager {
 
     /**
      * read the info block and check if we have valid dates.
+     *
+     * @param context Current context
+     * @param uri     to read from
      *
      * @return {@code true} if the archive has (or is supposed to have) valid dates
      */

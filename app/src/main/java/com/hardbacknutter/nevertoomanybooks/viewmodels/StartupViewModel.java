@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.database.UpgradeDatabase;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
@@ -64,10 +63,19 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 public class StartupViewModel
         extends ViewModel {
 
+    private static final String TAG = "Startup";
+
     /** Number of times the app has been started. */
-    public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
+    private static final String PREF_STARTUP_COUNT = TAG + ".StartCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
-    public static final String PREF_STARTUP_COUNTDOWN = "Startup.StartCountdown";
+    private static final String PREF_STARTUP_COUNTDOWN = TAG + ".StartCountdown";
+    /** Flag to indicate FTS rebuild is required at startup. */
+    private static final String PREF_STARTUP_FTS_REBUILD_REQUIRED =
+            TAG + ".FtsRebuildRequired";
+    /** Flag to indicate OrderBy columns must be rebuild at startup. */
+    private static final String PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED =
+            TAG + ".OrderByTitleRebuildRequired";
+
     /** Number of app startup's between offers to backup. */
 
     private static final int PROMPT_WAIT_BACKUP;
@@ -121,6 +129,25 @@ public class StartupViewModel
     private boolean mBackupRequired;
 
     private boolean mDoPeriodicAction;
+
+    /** Set the flag to indicate an FTS rebuild is required. */
+    @SuppressWarnings("unused")
+    public static void setScheduleFtsRebuild() {
+        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                         .edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true).apply();
+    }
+
+    /** Set or remove the flag to indicate an OrderBy column rebuild is required. */
+    public static void setScheduleOrderByRebuild(final boolean flag) {
+        SharedPreferences.Editor ed = PreferenceManager
+                .getDefaultSharedPreferences(App.getAppContext()).edit();
+        if (flag) {
+            ed.putBoolean(PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED, true);
+        } else {
+            ed.remove(PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED);
+        }
+        ed.apply();
+    }
 
     /**
      * @return {@code true} if all tasks are finished.
@@ -201,7 +228,14 @@ public class StartupViewModel
 
             // on demand only
             if (PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
+                                 .getBoolean(PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED,
+                                             false)) {
+                startTask(new RebuildOrderByTitleColumnsTask(++taskId, mDb, mTaskListener));
+            }
+
+            // on demand only
+            if (PreferenceManager.getDefaultSharedPreferences(context)
+                                 .getBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED,
                                              false)) {
                 startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener));
             }
@@ -291,7 +325,7 @@ public class StartupViewModel
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Logger.debug(this, "doInBackground", "taskId=" + getId());
             }
-            publishProgress(new TaskProgressMessage(mTaskId, R.string.progress_msg_upgrading));
+            publishProgress(new TaskProgressMessage(mTaskId, R.string.progress_msg_optimizing));
             try {
                 LanguageUtils.createLanguageMappingCache(Locale.getDefault());
 
@@ -442,9 +476,63 @@ public class StartupViewModel
             if (result) {
                 PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                                  .edit()
-                                 .remove(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED)
+                                 .remove(PREF_STARTUP_FTS_REBUILD_REQUIRED)
                                  .apply();
             }
+        }
+    }
+
+    /**
+     * Task to rebuild all OrderBy columns in background.
+     */
+    static class RebuildOrderByTitleColumnsTask
+            extends TaskBase<Boolean> {
+
+        /** Database Access. */
+        @NonNull
+        private final DAO mDb;
+
+        /**
+         * Constructor.
+         *
+         * @param taskId       a task identifier, will be returned in the task finished listener.
+         * @param db           Database Access
+         * @param taskListener for sending progress and finish messages to.
+         */
+        @UiThread
+        RebuildOrderByTitleColumnsTask(final int taskId,
+                                       @NonNull final DAO db,
+                                       @NonNull final TaskListener<Boolean> taskListener) {
+            super(taskId, taskListener);
+            mDb = db;
+        }
+
+        @Override
+        @WorkerThread
+        protected Boolean doInBackground(final Void... params) {
+            Thread.currentThread().setName("RebuildOrderByTitleColumnsTask");
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
+                Logger.debug(this, "doInBackground", "taskId=" + getId());
+            }
+            // incorrect progress message, but it's half-true.
+            publishProgress(new TaskProgressMessage(mTaskId,
+                                                    R.string.progress_msg_rebuilding_search_index));
+            try {
+                mDb.rebuildOrderByTitleColumns();
+            } catch (@NonNull final RuntimeException e) {
+                Logger.error(this, e);
+                mException = e;
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(@NonNull final Boolean result) {
+            super.onPostExecute(result);
+            // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
+            setScheduleOrderByRebuild(false);
         }
     }
 

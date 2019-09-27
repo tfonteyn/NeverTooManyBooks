@@ -88,7 +88,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Format;
-import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
@@ -97,6 +96,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
@@ -447,30 +448,6 @@ public class DAO
     }
 
     /**
-     * Cuts of a trailing ", text" part of the passed in String.
-     * <p>
-     * The intention is to undo what {@link ItemWithTitle#preprocessTitle} does,
-     * so we can use the string for internet searches on less flexible sites.
-     * <p>
-     * This is certainly not ideal.
-     * The alternative would be to always store the original title
-     * and (as per settings) the preprocessed one in the database.
-     * But that would/could lead to the user having to edit TWO title fields... even less ideal.
-     *
-     * @param title to cut
-     *
-     * @return title without suffix.
-     */
-    public static String unMangleTitle(@NonNull final String title) {
-        int index = title.lastIndexOf(',');
-        if (index > 0) {
-            return title.substring(0, index);
-        } else {
-            return title;
-        }
-    }
-
-    /**
      * Cleanup a search string to remove all quotes etc.
      * <p>
      * Remove punctuation from the search string to TRY to match the tokenizer.
@@ -752,7 +729,7 @@ public class DAO
             stmt = mStatements.add(STMT_GET_TOC_ENTRY_ID, SqlGet.TOC_ENTRY_ID);
         }
 
-        String preprocessedTitle = tocEntry.preprocessTitle(context, tocLocale);
+        String obTitle = tocEntry.preprocessTitle(context, tocLocale);
 
         // Be cautious; other threads may use the cached stmt, and set parameters.
         // the check of preprocessTitle is unconditional as it's an OR.
@@ -760,7 +737,7 @@ public class DAO
         synchronized (stmt) {
             stmt.bindLong(1, tocEntry.getAuthor().getId());
             stmt.bindString(2, encodeOrderByColumn(tocEntry.getTitle(), tocLocale));
-            stmt.bindString(3, encodeOrderByColumn(preprocessedTitle, tocLocale));
+            stmt.bindString(3, encodeOrderByColumn(obTitle, tocLocale));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -1183,11 +1160,9 @@ public class DAO
      *
      * @param context Current context
      * @param book    A collection with the columns to be set. May contain extra data.
-     * @param isNew   indicates if the book is new
      */
     private void preprocessBook(@NonNull final Context context,
-                                @NonNull final Book book,
-                                final boolean isNew) {
+                                @NonNull final Book book) {
 
         Locale bookLocale = book.getLocale();
 
@@ -1199,8 +1174,8 @@ public class DAO
 
         // Handle TITLE
         if (book.containsKey(DBDefinitions.KEY_TITLE)) {
-            String title = book.preprocessTitle(context, isNew, bookLocale);
-            book.putString(DOM_TITLE_OB.getName(), encodeOrderByColumn(title, bookLocale));
+            String obTitle = book.preprocessTitle(context, bookLocale);
+            book.putString(DOM_TITLE_OB.getName(), encodeOrderByColumn(obTitle, bookLocale));
         }
 
         // Handle TOC_BITMASK only, no handling of actual titles here,
@@ -1632,7 +1607,7 @@ public class DAO
                 Logger.debug(this, "insertBook", book);
             }
             // Cleanup fields (Author, Series, title and remove blank fields, etc...)
-            preprocessBook(context, book, bookId == 0);
+            preprocessBook(context, book);
 
             // Make sure we have an author
             List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
@@ -1715,7 +1690,7 @@ public class DAO
 
             // Cleanup fields (Author, Series, title, 'sameAuthor' if anthology,
             // and remove blank fields for which we have defaults)
-            preprocessBook(context, book, bookId == 0);
+            preprocessBook(context, book);
 
             ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale());
 
@@ -1936,6 +1911,8 @@ public class DAO
 
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
+        Locale bookLocale = book.getLocale();
+
         // Need to delete the current records because they may have been reordered and a simple
         // set of updates could result in unique key or index violations.
         deleteBookSeriesByBookId(bookId);
@@ -1955,19 +1932,18 @@ public class DAO
         final Map<String, Boolean> idHash = new HashMap<>();
         int position = 0;
         for (Series series : list) {
-            Locale seriesLocale = series.getLocale(book.getLocale());
-            if (series.fixId(context, this, seriesLocale) == 0) {
-                insertSeries(context, series, seriesLocale);
+            if (series.fixId(context, this, bookLocale) == 0) {
+                if (insertSeries(context, series, bookLocale) <= 0) {
+                    Logger.warnWithStackTrace(this, "insertSeries failed??");
+                }
             } else {
-                // Check if the title should be updated; treat this as an update to the Series.
-                String ppt = series.preprocessTitle(context, false, seriesLocale);
-                if (!series.getTitle().equals(ppt)) {
-                    updateSeries(context, series, seriesLocale);
+                if (updateSeries(context, series, bookLocale) <= 0) {
+                    Logger.warnWithStackTrace(this, "updateSeries failed??");
                 }
             }
 
-            String uniqueId = series.getId() + '_'
-                              + series.getNumber().toLowerCase(seriesLocale);
+            Locale seriesLocale = series.getLocale(bookLocale);
+            String uniqueId = series.getId() + '_' + series.getNumber().toLowerCase(seriesLocale);
             if (!idHash.containsKey(uniqueId)) {
                 idHash.put(uniqueId, true);
                 position++;
@@ -2056,11 +2032,11 @@ public class DAO
                 // We *do* update the title to allow corrections of case,
                 // as the find was done on the DOM_TITLE_OB field.
                 // and we update the DOM_TITLE_OB as well obviously.
-                String title = tocEntry.preprocessTitle(context, false, bookLocale);
+                String obTitle = tocEntry.preprocessTitle(context, bookLocale);
 
                 ContentValues cv = new ContentValues();
-                cv.put(DOM_TITLE.getName(), title);
-                cv.put(DOM_TITLE_OB.getName(), encodeOrderByColumn(title, bookLocale));
+                cv.put(DOM_TITLE.getName(), tocEntry.getTitle());
+                cv.put(DOM_TITLE_OB.getName(), encodeOrderByColumn(obTitle, bookLocale));
                 cv.put(DOM_DATE_FIRST_PUBLICATION.getName(), tocEntry.getFirstPublication());
 
                 sSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
@@ -2128,13 +2104,13 @@ public class DAO
             stmt = mStatements.add(STMT_INSERT_TOC_ENTRY, SqlInsert.TOC_ENTRY);
         }
 
-        String title = tocEntry.preprocessTitle(context, true, tocLocale);
+        String obTitle = tocEntry.preprocessTitle(context, tocLocale);
         // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, tocEntry.getAuthor().getId());
-            stmt.bindString(2, title);
-            stmt.bindString(3, encodeOrderByColumn(title, tocLocale));
+            stmt.bindString(2, tocEntry.getTitle());
+            stmt.bindString(3, encodeOrderByColumn(obTitle, tocLocale));
             stmt.bindString(4, tocEntry.getFirstPublication());
             long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -3376,7 +3352,6 @@ public class DAO
      *
      * @return the row id of the newly inserted row, or -1 if an error occurred
      */
-    @SuppressWarnings("UnusedReturnValue")
     private long insertSeries(@NonNull final Context context,
                               @NonNull final Series /* in/out */ series,
                               @NonNull final Locale bookLocale) {
@@ -3388,13 +3363,13 @@ public class DAO
             stmt = mStatements.add(STMT_INSERT_SERIES, SqlInsert.SERIES);
         }
 
-        String title = series.preprocessTitle(context, true, seriesLocale);
+        String obTitle = series.preprocessTitle(context, seriesLocale);
 
         // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
-            stmt.bindString(1, title);
-            stmt.bindString(2, encodeOrderByColumn(title, seriesLocale));
+            stmt.bindString(1, series.getTitle());
+            stmt.bindString(2, encodeOrderByColumn(obTitle, seriesLocale));
             stmt.bindLong(3, series.isComplete() ? 1 : 0);
             long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -3417,11 +3392,11 @@ public class DAO
 
         Locale seriesLocale = series.getLocale(bookLocale);
 
-        String title = series.preprocessTitle(context, false, seriesLocale);
+        String obTitle = series.preprocessTitle(context, seriesLocale);
 
         ContentValues cv = new ContentValues();
-        cv.put(DOM_SERIES_TITLE.getName(), title);
-        cv.put(DOM_SERIES_TITLE_OB.getName(), encodeOrderByColumn(title, seriesLocale));
+        cv.put(DOM_SERIES_TITLE.getName(), series.getTitle());
+        cv.put(DOM_SERIES_TITLE_OB.getName(), encodeOrderByColumn(obTitle, seriesLocale));
         cv.put(DOM_SERIES_IS_COMPLETE.getName(), series.isComplete());
 
         return sSyncedDb.update(TBL_SERIES.getName(), cv,
@@ -3450,15 +3425,9 @@ public class DAO
             if (series.fixId(context, this, bookLocale) == 0) {
                 return insertSeries(context, series, bookLocale) > 0;
             } else {
-                Locale seriesLocale = series.getLocale(bookLocale);
-                // Check if the title should be updated; treat this as an update to the Series.
-                String ppt = series.preprocessTitle(context, false, seriesLocale);
-                if (!series.getTitle().equals(ppt)) {
-                    updateSeries(context, series, seriesLocale);
-                }
+                return updateSeries(context, series, bookLocale) > 0;
             }
         }
-        return false;
     }
 
     /**
@@ -3529,13 +3498,13 @@ public class DAO
             stmt = mStatements.add(STMT_GET_SERIES_ID, SqlGet.SERIES_ID_BY_NAME);
         }
 
-        String preprocessedTitle = series.preprocessTitle(context, seriesLocale);
+        String obTitle = series.preprocessTitle(context, seriesLocale);
 
         // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindString(1, encodeOrderByColumn(series.getTitle(), seriesLocale));
-            stmt.bindString(2, encodeOrderByColumn(preprocessedTitle, seriesLocale));
+            stmt.bindString(2, encodeOrderByColumn(obTitle, seriesLocale));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -3556,9 +3525,8 @@ public class DAO
                               @NonNull final Locale bookLocale) {
 
         if (series.getId() == 0) {
-            Locale seriesLocale = series.getLocale(bookLocale);
             // It wasn't saved before; see if it is now. If so, update ID.
-            series.fixId(context, this, seriesLocale);
+            series.fixId(context, this, bookLocale);
 
         } else {
             // It was saved, see if it still is and fetch possibly updated fields.
@@ -4116,6 +4084,29 @@ public class DAO
     }
 
     /**
+     * Search the FTS table and return a cursor.
+     *
+     * @param author      Author related keywords to find
+     * @param title       Title related keywords to find
+     * @param seriesTitle Series title related keywords to find
+     * @param keywords    Keywords to find anywhere in book; this includes titles and authors
+     *
+     * @return a cursor, or {@code null} if all input was empty
+     */
+    @Nullable
+    public Cursor searchFts(@Nullable final String author,
+                            @Nullable final String title,
+                            @Nullable final String seriesTitle,
+                            @Nullable final String keywords) {
+        String sql = getFtsSearchSQL(author, title, seriesTitle, keywords);
+        if (sql == null) {
+            return null;
+        }
+
+        return sSyncedDb.rawQuery(sql, null);
+    }
+
+    /**
      * Rebuild the entire FTS database.
      * This can take several seconds with many books or a slow phone.
      */
@@ -4175,26 +4166,188 @@ public class DAO
     }
 
     /**
-     * Search the FTS table and return a cursor.
-     *
-     * @param author      Author related keywords to find
-     * @param title       Title related keywords to find
-     * @param seriesTitle Series title related keywords to find
-     * @param keywords    Keywords to find anywhere in book; this includes titles and authors
-     *
-     * @return a cursor, or {@code null} if all input was empty
+     * Repopulate all OrderBy TITLE columns
+     * <p>
+     * Book + TOCEntry: DOM_TITLE  ==> DOM_TITLE_OB
+     * Series:          DOM_SERIES_TITLE => DOM_SERIES_TITLE_OB
      */
-    @Nullable
-    public Cursor searchFts(@Nullable final String author,
-                            @Nullable final String title,
-                            @Nullable final String seriesTitle,
-                            @Nullable final String keywords) {
-        String sql = getFtsSearchSQL(author, title, seriesTitle, keywords);
-        if (sql == null) {
-            return null;
+    public void rebuildOrderByTitleColumns() {
+
+        Context context = App.getLocalizedAppContext();
+
+        // key: the book language (ISO3)
+        Map<String, Locale> locales = new HashMap<>();
+
+        long id;
+        String title;
+        String language;
+        Locale locale;
+        String obTitle;
+
+        // Books
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.BOOK_TITLES, null)) {
+            while (cursor.moveToNext()) {
+                id = cursor.getLong(0);
+                title = cursor.getString(1);
+
+                language = cursor.getString(2);
+                if (!locales.containsKey(language)) {
+                    locale = new Locale(LanguageUtils.iso3ToBibliographic(language));
+                    locales.put(language, locale);
+                } else {
+                    locale = locales.get(language);
+                }
+
+                obTitle = LocaleUtils.reorderTitle(context, title, locale);
+                if (!title.equals(obTitle)) {
+                    ContentValues cv = new ContentValues();
+                    //noinspection ConstantConditions
+                    cv.put(DOM_TITLE_OB.getName(), encodeOrderByColumn(obTitle, locale));
+                    sSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
+                                     new String[]{String.valueOf(id)});
+                }
+            }
         }
 
-        return sSyncedDb.rawQuery(sql, null);
+        locale = Locale.getDefault();
+
+        // Series - using the user Locale.
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.SERIES_TITLES, null)) {
+            while (cursor.moveToNext()) {
+                id = cursor.getLong(0);
+                title = cursor.getString(1);
+                // use the user Locale.
+                obTitle = LocaleUtils.reorderTitle(context, title, locale);
+                if (!title.equals(obTitle)) {
+                    ContentValues cv = new ContentValues();
+                    cv.put(DOM_SERIES_TITLE_OB.getName(), encodeOrderByColumn(obTitle, locale));
+                    sSyncedDb.update(TBL_SERIES.getName(), cv, DOM_PK_ID + "=?",
+                                     new String[]{String.valueOf(id)});
+                }
+            }
+        }
+
+        // TOC Entries - should use primary book or Author Locale... but that is a huge overhead.
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.TOC_ENTRY_TITLES, null)) {
+            while (cursor.moveToNext()) {
+                id = cursor.getLong(0);
+                title = cursor.getString(1);
+                // use the user Locale.
+                obTitle = LocaleUtils.reorderTitle(context, title, locale);
+                if (!title.equals(obTitle)) {
+                    ContentValues cv = new ContentValues();
+                    cv.put(DOM_TITLE_OB.getName(), encodeOrderByColumn(obTitle, locale));
+                    sSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv, DOM_PK_ID + "=?",
+                                     new String[]{String.valueOf(id)});
+                }
+            }
+        }
+    }
+
+    /**
+     * DEBUG / TEMPORARY. Will be deleted soon!
+     */
+    public void tempUnMangle() {
+
+        Context context = App.getLocalizedAppContext();
+
+        // key: the book language (ISO3)
+        Map<String, Locale> locales = new HashMap<>();
+
+        long id;
+        String title;
+        String language;
+        Locale locale;
+        String obTitle;
+
+        // Books
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.BOOK_TITLES, null)) {
+            while (cursor.moveToNext()) {
+                id = cursor.getLong(0);
+                title = cursor.getString(1);
+
+                language = cursor.getString(2);
+                if (!locales.containsKey(language)) {
+                    locale = new Locale(LanguageUtils.iso3ToBibliographic(language));
+                    locales.put(language, locale);
+                } else {
+                    locale = locales.get(language);
+                }
+
+                title = unmangle(title);
+                obTitle = LocaleUtils.reorderTitle(context, title, locale);
+
+                ContentValues cv = new ContentValues();
+                cv.put(DOM_TITLE.getName(), title);
+                //noinspection ConstantConditions
+                cv.put(DOM_TITLE_OB.getName(), encodeOrderByColumn(obTitle, locale));
+                sSyncedDb.update(TBL_BOOKS.getName(), cv,
+                                 DOM_PK_ID + "=?", new String[]{String.valueOf(id)});
+            }
+        }
+
+        locale = Locale.getDefault();
+
+        Logger.debug(this, "unmangle", "starting SERIES");
+        // Series
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.SERIES_TITLES, null)) {
+            while (cursor.moveToNext()) {
+                id = cursor.getLong(0);
+                title = cursor.getString(1);
+
+                title = unmangle(title);
+                obTitle = LocaleUtils.reorderTitle(context, title, locale);
+
+                ContentValues cv = new ContentValues();
+                cv.put(DOM_SERIES_TITLE.getName(), title);
+                cv.put(DOM_SERIES_TITLE_OB.getName(), encodeOrderByColumn(obTitle, locale));
+                sSyncedDb.update(TBL_SERIES.getName(), cv,
+                                 DOM_PK_ID + "=?", new String[]{String.valueOf(id)});
+            }
+        }
+
+        Logger.debug(this, "unmangle", "starting TOCS");
+
+        // TOC Entries - should use the primary book or Author Locale... huge overhead.
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.TOC_ENTRY_TITLES, null)) {
+            while (cursor.moveToNext()) {
+                id = cursor.getLong(0);
+                title = cursor.getString(1);
+
+                title = unmangle(title);
+                obTitle = LocaleUtils.reorderTitle(context, title, locale);
+
+                ContentValues cv = new ContentValues();
+                cv.put(DOM_TITLE.getName(), title);
+                cv.put(DOM_TITLE_OB.getName(), encodeOrderByColumn(obTitle, locale));
+                sSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
+                                 DOM_PK_ID + "=?", new String[]{String.valueOf(id)});
+            }
+        }
+        Logger.debug(this, "unmangle", "DONE");
+
+    }
+
+    /**
+     * DEBUG / TEMPORARY. Will be deleted soon!
+     */
+    @SuppressWarnings("DuplicateExpressions")
+    private String unmangle(@NonNull final String title) {
+        if (title.endsWith(", A")) {
+            return "A " + title.substring(0, title.length() - 3);
+        } else if (title.endsWith(", An")) {
+            return "An " + title.substring(0, title.length() - 4);
+        } else if (title.endsWith(", The")) {
+            return "The " + title.substring(0, title.length() - 5);
+        } else if (title.endsWith(", De")) {
+            return "De " + title.substring(0, title.length() - 4);
+        } else if (title.endsWith(", Een")) {
+            return "Een " + title.substring(0, title.length() - 5);
+        } else if (title.endsWith(", Het")) {
+            return "Het " + title.substring(0, title.length() - 5);
+        } else {
+            return title;
+        }
     }
 
     /**
@@ -4629,6 +4782,25 @@ public class DAO
                 "SELECT DISTINCT " + DOM_BOOK_PUBLISHER
                 + " FROM " + TBL_BOOKS
                 + " ORDER BY lower(" + DOM_BOOK_PUBLISHER + ')' + COLLATION;
+
+        /**
+         * All Book titles for a rebuild of the {@link DBDefinitions#DOM_TITLE_OB} column.
+         */
+        private static final String BOOK_TITLES =
+                "SELECT " + DOM_PK_ID + ',' + DOM_TITLE + ',' + DOM_BOOK_LANGUAGE
+                + " FROM " + TBL_BOOKS;
+
+        /**
+         * All Series for a rebuild of the {@link DBDefinitions#DOM_SERIES_TITLE_OB} column.
+         */
+        private static final String SERIES_TITLES =
+                "SELECT " + DOM_PK_ID + ',' + DOM_SERIES_TITLE + " FROM " + TBL_SERIES;
+
+        /**
+         * All Series for a rebuild of the {@link DBDefinitions#DOM_TITLE_OB} column.
+         */
+        private static final String TOC_ENTRY_TITLES =
+                "SELECT " + DOM_PK_ID + ',' + DOM_TITLE + " FROM " + TBL_TOC_ENTRIES;
     }
 
     /**
@@ -4750,6 +4922,7 @@ public class DAO
                 + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
                 + " WHERE " + TBL_TOC_ENTRIES.dot(DOM_FK_AUTHOR) + "=?"
                 + " GROUP BY " + DOM_PK_ID;
+
 
         /**
          * All Book titles and their first pub. date, for an Author..

@@ -220,12 +220,6 @@ public final class AmazonManager
         return bookData;
     }
 
-    /**
-     * @param isbn to search for
-     * @param size of image to get.
-     *
-     * @return found/saved File, or {@code null} if none found (or any other failure)
-     */
     @Nullable
     @Override
     @WorkerThread

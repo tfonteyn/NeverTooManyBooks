@@ -278,7 +278,7 @@
     <string name="lbl_date_published">Data di pubblicazione</string>
     <string name="lbl_day">Giorno</string>
     <string name="lbl_description">Descrizione</string>
-    <string name="lbl_details_have_changed">Dettagli modificati</string>
+    <string name="title_details_have_changed">Dettagli modificati</string>
     <string name="lbl_edition">Edizione</string>
     <string name="lbl_edition_book_club">Club del libro</string>
     <string name="lbl_edition_first_edition">Prima edizione</string>
@@ -331,7 +331,7 @@
     <string name="lbl_read_year">Leggi Anno</string>
     <string name="lbl_search_criteria">Criteri di ricerca</string>
     <string name="lbl_search_filtered_on_x">Filtrato: %1$s</string>
-    <string name="lbl_search_for_books">Cerca per libro</string>
+    <string name="title_search_for_books">Cerca per libro</string>
     <string name="lbl_search_site_order">Sequenza</string>
     <string name="lbl_search_sites">Cerca siti</string>
     <string name="lbl_select_fields">Seleziona i campi</string>
@@ -424,8 +424,7 @@
     <string name="pg_filters">Filtra libri</string>
     <string name="pg_general">Generale</string>
     <string name="pg_groupings">Raggruppamenti</string>
-    <string name="pg_reformat_titles">Riformattare i titoli</string>
-    <string name="pg_reformat_titles_summary">Memorizza l\'originale «Il titolo» o riformatta in «titolo, Il»</string>
+    <string name="pt_sort_by_title_uses">Ordina titoli per</string>
     <string name="pg_barcode_scanner">Scanner di codici a barre</string>
     <string name="pg_thumbnails">Miniature</string>
     <string name="pg_ui">Interfaccia Utente</string>
@@ -475,8 +474,6 @@
     <string name="pt_bob_thumbnails_show">Mostra miniature</string>
     <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie da TOC</string>
     <string name="pt_bob_thumbnails_scale">Dimensione miniature in elenchi</string>
-    <string name="pt_reformat_titles_on_insert">Quando si aggiunge</string>
-    <string name="pt_reformat_titles_on_update">Durante la modifica</string>
     <string name="pt_reformat_titles_summary_original">Il titolo</string>
     <string name="pt_reformat_titles_summary_reformatted">titolo, Il</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Suona se il codice ISBN acquisito non è valido</string>

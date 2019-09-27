@@ -59,7 +59,7 @@ public class CameraHelper {
     }
 
     /**
-     * DEBUG only
+     * DEBUG only.
      *
      * @return the default camera file.
      */
