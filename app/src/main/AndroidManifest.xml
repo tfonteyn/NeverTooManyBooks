@@ -35,8 +35,10 @@
     android:versionName="6.0.0"
     >
     <!-- original package -->
-    <!-- android:versionCode="179" -->
-    <!-- android:versionName="5.2.2" -->
+    <!-- android:versionCode="179"   android:versionName="5.2.2" -->
+    <!-- android:versionCode="182"   android:versionName="5.2.3-Beta2" -->
+
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -119,9 +121,17 @@
         <!-- Admin pages -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.About" />
         <activity android:name="com.hardbacknutter.nevertoomanybooks.AdminActivity" />
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity" />
         <!-- Manage Bookshelves -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.EditBookshelfListActivity" />
+        <!-- main/global preferences -->
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity">
+            <intent-filter>
+                <action android:name="Settings.EDIT" />
+
+                <category android:name="android.intent.category.PREFERENCE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <!-- Edit the user preferred book list styles -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity" />
         <!-- Edit the groups for a style. -->
@@ -145,15 +155,15 @@
         <activity
             android:name="com.hardbacknutter.nevertoomanybooks.BookSearchActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <!-- Edit a book + the related author/series -->
+        <!-- Edit a book + the related Author/Series -->
         <activity
             android:name="com.hardbacknutter.nevertoomanybooks.EditBookActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
-            android:name="com.hardbacknutter.nevertoomanybooks.EditAuthorListActivity"
+            android:name="com.hardbacknutter.nevertoomanybooks.EditBookAuthorsActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
-            android:name="com.hardbacknutter.nevertoomanybooks.EditSeriesListActivity"
+            android:name="com.hardbacknutter.nevertoomanybooks.EditBookSeriesActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <!-- View an Author and all of his works. -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.AuthorWorksActivity" />
