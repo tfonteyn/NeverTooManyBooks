@@ -67,6 +67,9 @@ public class CsvExporter
 
     private static final int BUFFER_SIZE = 32768;
 
+    /** Only send progress updates every 200ms. */
+    private static final int PROGRESS_UPDATE_INTERVAL = 200;
+
     /**
      * The order of the header MUST be the same as the order used to write the data (obvious eh?).
      * <p>
@@ -114,6 +117,8 @@ public class CsvExporter
             + '"' + DBDefinitions.KEY_GOODREADS_BOOK_ID + "\","
             + '"' + DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE + "\""
             + '\n';
+
+
     @NonNull
     private final ExportHelper mExportHelper;
     private final String mUnknownString;
@@ -246,7 +251,7 @@ public class CsvExporter
                 out.write(row.toString());
 
                 long now = System.currentTimeMillis();
-                if ((now - lastUpdate) > 200) {
+                if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL) {
                     progressListener.onProgress(results.booksExported, title);
                     lastUpdate = now;
                 }

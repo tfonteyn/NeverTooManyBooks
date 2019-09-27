@@ -52,20 +52,20 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 public final class LegacyPreferences {
 
-    /** Legacy preferences name, pre-v200. */
+    /** Legacy preferences name, pre-v1000. */
     public static final String PREF_LEGACY_PREFS = "bookCatalogue";
 
     private LegacyPreferences() {
     }
 
     /**
-     * v200 brought a cleanup and re-structuring of the preferences.
+     * v1000 brought a cleanup and re-structuring of the preferences.
      * Some of these are real migrations,
      * some just for aesthetics's making the key's naming standard.
      *
      * @param context Current context
      */
-    public static void migratePreV200preferences(@NonNull final Context context) {
+    public static void migrateLegacyPreferences(@NonNull final Context context) {
 
         SharedPreferences oldPrefs = context.getSharedPreferences(
                 PREF_LEGACY_PREFS,
@@ -358,7 +358,7 @@ public final class LegacyPreferences {
                             }
 
                         } else if (!entry.getKey().startsWith("state_current_group")) {
-                            Logger.info(Prefs.class, "migratePreV200preferences",
+                            Logger.info(Prefs.class, "migrateLegacyPreferences",
                                         "unknown key=" + entry.getKey(),
                                         "value=" + oldValue);
                         }

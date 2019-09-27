@@ -98,6 +98,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 public class CsvImporter
         implements Importer {
 
+    /** Only send progress updates every 200ms. */
+    private static final int PROGRESS_UPDATE_INTERVAL = 200;
+
     private static final int BUFFER_SIZE = 32768;
 
     private static final char QUOTE_CHAR = '"';
@@ -111,9 +114,9 @@ public class CsvImporter
     /** log error string. */
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
 
-    /** Present in pre-v200 CSV files. Obsolete, not used. */
+    /** Present in pre-v1000 CSV files. Obsolete, not used. */
     private static final String LEGACY_BOOKSHELF_ID = "bookshelf_id";
-    /** When present in pre-v200 CSV files, we should use it as the bookshelf name. */
+    /** When present in pre-v1000 CSV files, we should use it as the bookshelf name. */
     private static final String LEGACY_BOOKSHELF_TEXT_COLUMN = "bookshelf_text";
 
     /** Database Access. */
@@ -304,7 +307,8 @@ public class CsvImporter
 
                 // limit the amount of progress updates, otherwise this will cause a slowdown.
                 long now = System.currentTimeMillis();
-                if ((now - lastUpdate) > 200 && !progressListener.isCancelled()) {
+                if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL
+                    && !progressListener.isCancelled()) {
                     String msg = String.format(mProgress_msg_n_created_m_updated,
                                                mBooksText,
                                                mResults.booksCreated,

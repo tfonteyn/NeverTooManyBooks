@@ -476,7 +476,6 @@ class ImportLegacyTask
 
         addLongIfPresent(review, bookData, DBDefinitions.KEY_GOODREADS_BOOK_ID);
 
-        // v200: Now storing as a string
         addStringIfNonBlank(review, bookData, DBDefinitions.KEY_PAGES);
 
         addDateIfValid(review, DBDefinitions.KEY_READ_START,

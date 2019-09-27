@@ -31,7 +31,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hardbacknutter.nevertoomanybooks"
     android:installLocation="auto"
-    android:versionCode="200"
+    android:versionCode="1000"
     android:versionName="6.0.0"
     >
     <!-- original package -->
@@ -58,15 +58,15 @@
 
         <meta-data
             android:name="beta.build"
-            android:value="" />
+            android:value="2019-09-27" />
 
         <!-- Application developer keys - stripped out in a git pre-commit script. -->
         <meta-data
             android:name="goodreads.dev_key"
-            android:value="" />
+            android:value="ZWx0GvfCNvQxqPmbBdsNQ" />
         <meta-data
             android:name="goodreads.dev_secret"
-            android:value="" />
+            android:value="A6gLqqm5Jxf6TKTvcBMjkXnq3k31jNzYmthfRWUA" />
 
         <provider
             android:name="com.hardbacknutter.nevertoomanybooks.searches.SearchSuggestionProvider"

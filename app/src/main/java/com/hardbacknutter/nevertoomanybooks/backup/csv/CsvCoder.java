@@ -240,7 +240,7 @@ public final class CsvCoder {
                  * <li>(YYYY-DD-MM) might work depending on the user's Locale. Not tested.</li>
                  * </ul>
                  * v82 had no dates: Giants In The Sky * Blish, James
-                 * <ul>V200+ also accepts:
+                 * <ul>V1000+ also accepts:
                  * <li>Giants In The Sky (1952) * Blish, James</li>
                  * <li>Giants In The Sky (1952-03) * Blish, James</li>
                  * <li>Giants In The Sky (1952-03-22) * Blish, James</li>

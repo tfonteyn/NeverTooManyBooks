@@ -667,10 +667,10 @@ public class AdminFragment
     private void onImportFinished(@StringRes final int titleId,
                                   @NonNull final ImportHelper importHelper) {
 
-        // See if there are any pre-200 preferences that need migrating.
+        // See if there are any pre-1000 preferences that need migrating.
         if ((importHelper.options & Options.PREFERENCES) != 0) {
             //noinspection ConstantConditions
-            LegacyPreferences.migratePreV200preferences(getContext());
+            LegacyPreferences.migrateLegacyPreferences(getContext());
         }
 
         String msg = createImportReport(importHelper);

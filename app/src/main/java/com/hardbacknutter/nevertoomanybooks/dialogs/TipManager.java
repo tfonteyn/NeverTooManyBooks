@@ -111,7 +111,6 @@ public final class TipManager {
                 new Tip("book_list"));
         ALL.put(R.string.tip_book_search_by_text,
                 new Tip("book_search_by_text"));
-        // v200
         ALL.put(R.string.pt_thumbnail_cropper_layer_type_summary,
                 new Tip("pref_layer_type"));
         ALL.put(R.string.tip_update_fields_from_internet,

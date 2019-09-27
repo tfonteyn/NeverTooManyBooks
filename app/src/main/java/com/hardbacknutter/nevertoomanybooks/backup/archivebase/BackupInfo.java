@@ -71,7 +71,7 @@ public class BackupInfo {
     /**
      * Stores the database version.
      *
-     * @since v200
+     * @since v1000
      */
     private static final String INFO_DATABASE_VERSION = "DatabaseVersionCode";
 
@@ -185,7 +185,7 @@ public class BackupInfo {
      * @return version of the *database* this archive was generated from;
      * or 0 for a database version 81 or earlier
      *
-     * @since v200
+     * @since v1000
      */
     @SuppressWarnings("unused")
     public int getDatabaseVersionCode() {

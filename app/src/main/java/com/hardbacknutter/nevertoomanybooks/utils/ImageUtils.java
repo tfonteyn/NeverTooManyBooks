@@ -87,10 +87,10 @@ public final class ImageUtils {
 
     /**
      * The minimum size an image file must be to be considered valid.
-     * 200: based on LibraryThing 1x1 pixel placeholder being 178 bytes in download
-     * (43 after compression on disk).
+     * 300: based on LibraryThing 1x1 pixel placeholder being 178 bytes in download
+     * (43 bytes after compression on disk).
      */
-    public static final int MIN_IMAGE_FILE_SIZE = 200;
+    public static final int MIN_IMAGE_FILE_SIZE = 300;
 
     /*
      * Scaling of thumbnails.

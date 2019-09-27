@@ -601,7 +601,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *      <dc:creator>Brian Aldiss</dc:creator>
  *      <dc:date>2013-10-24</dc:date>
  *      <dc:description>A Space Opera. An ambitious, incredible - Space Opera!</dc:description>
- *      <dc:format>200 pages</dc:format>
+ *      <dc:format>201 pages</dc:format>
  *      <dc:format>book</dc:format>
  *      <dc:identifier>4ZCy30OedPMC</dc:identifier>
  *      <dc:identifier>ISBN:9780007482450</dc:identifier>

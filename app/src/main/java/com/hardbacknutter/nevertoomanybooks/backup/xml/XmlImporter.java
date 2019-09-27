@@ -251,7 +251,7 @@ public class XmlImporter
         // we need an uber-root to hang our tree on.
         XmlFilter rootFilter = new XmlFilter("");
 
-        // Allow reading pre-v200 archive data.
+        // Allow reading pre-v1000 archive data.
         buildLegacyFilters(rootFilter, accessor);
         // Current version filters
         buildFilters(rootFilter, accessor);
@@ -513,7 +513,7 @@ public class XmlImporter
     }
 
     /**
-     * Creates an XmlFilter that can read pre-v200 Info and Preferences XML format.
+     * Creates an XmlFilter that can read pre-v1000 Info and Preferences XML format.
      * <p>
      * This legacy format was flat, had a fixed tag name ('item') and used an attribute 'type'.
      * indicating int,string,...
@@ -689,7 +689,7 @@ public class XmlImporter
         final String value;
         /**
          * - current use: the type of the element as set by the tag itself.
-         * - pre-v200 backward compatibility: the type attribute of a generic 'item' tag.
+         * - pre-v1000 backward compatibility: the type attribute of a generic 'item' tag.
          */
         @NonNull
         String type;
@@ -699,7 +699,7 @@ public class XmlImporter
         /**
          * Constructor.
          * <p>
-         * Important: a tag called "item" will trigger pre-v200 parsing: the 'type' attribute will
+         * Important: a tag called "item" will trigger pre-v1000 parsing: the 'type' attribute will
          * be read and be used as the tag-name.
          *
          * @param elementContext of the XML tag
@@ -708,7 +708,7 @@ public class XmlImporter
             Attributes attrs = elementContext.getAttributes();
 
             type = elementContext.getLocalName();
-            // Legacy pre-v200 used a fixed tag "item", with the type as an attribute
+            // Legacy pre-v1000 used a fixed tag "item", with the type as an attribute
             if ("item".equals(type)) {
                 type = attrs.getValue("type");
             }

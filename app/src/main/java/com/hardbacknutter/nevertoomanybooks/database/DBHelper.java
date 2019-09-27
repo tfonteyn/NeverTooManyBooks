@@ -95,10 +95,10 @@ public final class DBHelper
     /**
      * RELEASE: Update database version.
      * <p>
-     * db100 == app200 == 6.0.0 beta01, 2019-08-14 release to github.
+     * db1000 == app1000 == 6.0.0
      * db82 == app179 == 5.2.2 == "Book Catalogue" version from which we forked.
      */
-    public static final int DATABASE_VERSION = 100;
+    public static final int DATABASE_VERSION = 1000;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -285,7 +285,7 @@ public final class DBHelper
                               "Old database version: " + oldVersion,
                               "Upgrading database: " + db.getPath());
         }
-        if (oldVersion < 100) {
+        if (oldVersion < 1000) {
             throw new UpgradeException();
         }
 
@@ -303,11 +303,11 @@ public final class DBHelper
         int curVersion = oldVersion;
         SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
-        // db100 == app200 == 6.0.0;
-//        if (curVersion < newVersion && curVersion == 100) {
+        // db1000 == app1000 == 6.0.0;
+//        if (curVersion < newVersion && curVersion == 1000) {
 //            //noinspection UnusedAssignment
-//            curVersion = 101;
-//            UpgradeDatabase.toDb101(db, syncedDb);
+//            curVersion = 1001;
+//            UpgradeDatabase.toDb1001(db, syncedDb);
 //        }
 
         // Rebuild all indices

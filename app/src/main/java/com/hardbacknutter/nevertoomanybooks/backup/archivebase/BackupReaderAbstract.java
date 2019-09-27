@@ -235,8 +235,8 @@ public abstract class BackupReaderAbstract
                         // skip, already handled
                         break;
 
-                    case PreferencesPreV200: {
-                        // pre-v200 format
+                    case LegacyPreferences: {
+                        // pre-v1000 format
                         if (incPrefs) {
                             progressListener.onProgressStep(1, mProcessPreferences);
                             // read them into the 'old' prefs. Migration is done at a later stage.
@@ -249,8 +249,8 @@ public abstract class BackupReaderAbstract
                         }
                         break;
                     }
-                    case BooklistStylesPreV200:
-                        // pre-v200 format was a serialized binary. No longer supported.
+                    case LegacyBooklistStyles:
+                        // pre-v1000 format was a serialized binary. No longer supported.
                         break;
 
                     case Unknown:

@@ -56,7 +56,7 @@ public final class UpgradeMessageManager {
      * List of version-specific messages.
      */
     private static final int[][] UPGRADE_MESSAGES = {
-            {200, R.string.new_in_600},
+            {1000, R.string.new_in_600},
             };
     private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 

@@ -92,7 +92,7 @@ public interface ReaderEntity {
         XML,
         Unknown,
 
-        PreferencesPreV200,
-        BooklistStylesPreV200,
+        LegacyPreferences,
+        LegacyBooklistStyles,
     }
 }

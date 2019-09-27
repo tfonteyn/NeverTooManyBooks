@@ -182,13 +182,13 @@ public class TarBackupReader
         } else if (TarBackupContainer.DB_FILE.equalsIgnoreCase(name)) {
             return Type.Database;
 
-            // pre-v200
+            // pre-v1000
         } else if (LEGACY_STYLES_PATTERN.matcher(name).find()) {
-            return Type.BooklistStylesPreV200;
+            return Type.LegacyBooklistStyles;
 
-            // pre-v200
+            // pre-v1000
         } else if ("preferences".equals(name)) {
-            return Type.PreferencesPreV200;
+            return Type.LegacyPreferences;
 
             // needs to be below any specific xml files.
         } else if (name.endsWith(".xml")) {
