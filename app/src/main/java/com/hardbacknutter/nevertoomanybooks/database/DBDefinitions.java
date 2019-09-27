@@ -1006,22 +1006,22 @@ public final class DBDefinitions {
          * This is an EXAMPLE only. The structure will depend on {@link BooklistBuilder}.
          *
          * _id  level   kind book_count root_key                   book     book_uuid                           title
-         * 1	1	    13	            fmt/Hardcover                       1d872e0edbda2c86758d8fc889351716
-         * 2	2	    0	 1		    fmt/Hardcover	            1617	fc78e8ee6918e54547c2561986ccbec2	Accelerando
-         * 3	2	    0	 1		    fmt/Hardcover	            1564	47f6f13fd98594afcdca1ce71df9f23c	Bad Ronald
+         * 1    1       13              fmt/Hardcover                       1d872e0edbda2c86758d8fc889351716
+         * 2    2       0    1          fmt/Hardcover               1617    fc78e8ee6918e54547c2561986ccbec2	Accelerando
+         * 3    2       0    1          fmt/Hardcover               1564    47f6f13fd98594afcdca1ce71df9f23c	Bad Ronald
          * ... snip...
-         * 21	2	    0	 1		    fmt/Hardcover	            1531	3ac5caf178d9c61cbf8810d6233d0a2c	Shadow Captain
-         * 22	2	    0	 1		    fmt/Hardcover	            1334	9a37fe8a709e2d9ba8c8d0301c4c0903	Tales from the Perilous Realm
-         * 23	2	    0	 1		    fmt/Hardcover	            1616	61891a4d06bf821a7f270769671c13d9	Toast
-         * 24	2	    0	 1		    fmt/Hardcover	            1332	ab291216c5d0d6612b8e5e6d4484ffd5	Unfinished Tales of Numenor and Middle-Earth
-         * 25	1	    13	            fmt/Hardcover - Traycase		    ae199f646b992c321f3b8ff04d0387ce
-         * 26	2	    0	 1	    	fmt/Hardcover - Traycase	1505	228bff45e6d9cb025c2f73911ef6e4c4	Night Lamp
-         * 27	2	    0	 1	    	fmt/Hardcover - Traycase	1561	e6db432cb841ea0cb82901e6b3e7c0b3	Ports Of Call
-         * 28	1	    13	            fmt/Paperback		                a5df7be3d84070e0152494bbbfe99eb6
+         * 21   2       0    1          fmt/Hardcover               1531    3ac5caf178d9c61cbf8810d6233d0a2c	Shadow Captain
+         * 22   2       0    1          fmt/Hardcover               1334    9a37fe8a709e2d9ba8c8d0301c4c0903	Tales from the Perilous Realm
+         * 23   2       0    1          fmt/Hardcover               1616    61891a4d06bf821a7f270769671c13d9	Toast
+         * 24   2       0    1          fmt/Hardcover               1332    ab291216c5d0d6612b8e5e6d4484ffd5	Unfinished Tales of Numenor and Middle-Earth
+         * 25   1       13              fmt/Hardcover - Traycase            ae199f646b992c321f3b8ff04d0387ce
+         * 26   2       0    1      	fmt/Hardcover - Traycase    1505    228bff45e6d9cb025c2f73911ef6e4c4	Night Lamp
+         * 27   2       0    1      	fmt/Hardcover - Traycase    1561    e6db432cb841ea0cb82901e6b3e7c0b3	Ports Of Call
+         * 28   1       13              fmt/Paperback   	                a5df7be3d84070e0152494bbbfe99eb6
          * ...snip...
-         * 32	2	    0	 1	    	fmt/Paperback	            1589	649dfb4b92a05e15e66821e2933f1930	Wild Thyme and Violets and Other Unpublished Stories
-         * 33	1	    13		        fmt/Paperback - Trade		        07b91229ccb1de81de8f0fe7cdbefb83
-         * 34	2	    0	 1	    	fmt/Paperback - Trade	    1251	74034e297d73785aee87c26d3050a8cb	Annals of Klepsis
+         * 32   2       0    1      	fmt/Paperback               1589    649dfb4b92a05e15e66821e2933f1930	Wild Thyme and Violets and Other Unpublished Stories
+         * 33   1       13              fmt/Paperback - Trade   	        07b91229ccb1de81de8f0fe7cdbefb83
+         * 34   2       0    1      	fmt/Paperback - Trade       1251    74034e297d73785aee87c26d3050a8cb	Annals of Klepsis
          *
          * This table should always be created without column constraints applied,
          * with the exception of the "_id" primary key autoincrement
