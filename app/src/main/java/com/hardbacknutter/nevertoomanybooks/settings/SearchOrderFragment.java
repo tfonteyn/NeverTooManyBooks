@@ -66,18 +66,19 @@ public class SearchOrderFragment
     private RecyclerView mListView;
     private ItemTouchHelper mItemTouchHelper;
 
-    private SearchAdminActivity mActivity;
+    private SearchAdminActivity mHostActivity;
+
     private final SimpleAdapterDataObserver mAdapterDataObserver = new SimpleAdapterDataObserver() {
         @Override
         public void onChanged() {
-            mActivity.setDirty(true);
+            mHostActivity.setDirty(true);
         }
     };
 
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        mActivity = (SearchAdminActivity) context;
+        mHostActivity = (SearchAdminActivity) context;
     }
 
     @Override

@@ -108,6 +108,7 @@ public class PBitmask
         } else {
             Set<String> value = getPrefs().getStringSet(getKey(), null);
             if (value == null || value.isEmpty()) {
+                // not present, fallback to global.
                 value = getGlobal().getStringSet(getKey(), null);
                 if (value == null || value.isEmpty()) {
                     return mDefaultValue;

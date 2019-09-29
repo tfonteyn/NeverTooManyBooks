@@ -64,11 +64,13 @@ public class BooklistMappedCursorRow {
 
     /**
      * level text. Uses a dynamically set domain.
-     * Why 10 members? because at 2 it took me an hour to figure out why we had crashed...
-     * i.o.w. there can be as many levels as there are groups,
-     * FIXME: If a user adds more then 10 groups to a style, we'll crash...
+     * Why 30 members? There can be as many levels as there are groups;
+     * currently 28 of them (2019-09-29). While it's unlikely, the user COULD simply select all
+     * groups... so let's guard against that.
      */
-    private final int[] mLevelCol = {-2, -2, -2, -2, -2, -2, -2, -2, -2, -2};
+    private final int[] mLevelCol = {-2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
+                                     -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
+                                     -2, -2, -2, -2, -2, -2, -2, -2, -2, -2};
     /** The mapper helper. */
     @NonNull
     private final CursorMapper mMapper;

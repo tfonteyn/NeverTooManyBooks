@@ -160,7 +160,12 @@ public class EditBookSeriesActivity
 
         // if it's not, then we can simply re-use the old object.
         if (mModel.isSingleUsage(nrOfReferences)) {
-            // Use the original Series, but update its fields
+            /*
+             * Use the original Series object, but update its fields
+             *
+             * see below and {@link DAO#insertBookDependents} where an *insert* will be done
+             * The 'old' Series will be orphaned. TODO: simplify / don't orphan?
+             */
             updateItem(series, newSeriesData, bookLocale);
             return;
         }
@@ -239,7 +244,7 @@ public class EditBookSeriesActivity
         /** Database Access. */
         protected DAO mDb;
 
-        private EditBookSeriesActivity mActivity;
+        private EditBookSeriesActivity mHostActivity;
 
         private AutoCompleteTextView mTitleView;
         private Checkable mIsCompleteView;
@@ -272,7 +277,7 @@ public class EditBookSeriesActivity
         @Override
         public void onAttach(@NonNull final Context context) {
             super.onAttach(context);
-            mActivity = (EditBookSeriesActivity) context;
+            mHostActivity = (EditBookSeriesActivity) context;
         }
 
         @Override
@@ -306,7 +311,7 @@ public class EditBookSeriesActivity
             mTitleView = root.findViewById(R.id.series);
             mTitleView.setText(mSeriesName);
             // we re-use the activity adapter.
-            mTitleView.setAdapter(mActivity.mAutoCompleteAdapter);
+            mTitleView.setAdapter(mHostActivity.mAutoCompleteAdapter);
 
             mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
             if (mIsCompleteView != null) {
@@ -335,7 +340,7 @@ public class EditBookSeriesActivity
                         // Create a new Series as a holder for the changes.
                         Series newSeriesData = new Series(mSeriesName, mSeriesIsComplete);
                         newSeriesData.setNumber(mSeriesNumber);
-                        mActivity.processChanges(mSeries, newSeriesData);
+                        mHostActivity.processChanges(mSeries, newSeriesData);
                     })
                     .create();
         }

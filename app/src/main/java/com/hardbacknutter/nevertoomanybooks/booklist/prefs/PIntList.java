@@ -79,6 +79,7 @@ public class PIntList
             // reminder: it's a CSV string
             String values = getPrefs().getString(getKey(), null);
             if (values == null || values.isEmpty()) {
+                // not present, fallback to global/default
                 values = getGlobal().getString(getKey(), null);
                 if (values == null || values.isEmpty()) {
                     return mDefaultValue;

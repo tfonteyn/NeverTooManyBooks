@@ -212,7 +212,6 @@ public final class AmazonManager
             throw new IOException(e);
         }
 
-        //TEST: due to the proxy, we don't get actual XML error entities, so this is not tested.
         String error = handler.getError();
         if (error != null) {
             throw new IOException(error);

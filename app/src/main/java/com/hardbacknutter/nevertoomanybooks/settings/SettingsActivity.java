@@ -176,7 +176,7 @@ public class SettingsActivity
 
             // Trigger a recreate of this activity, if this setting has changed.
             case Prefs.pk_ui_language:
-                if (LocaleUtils.isChanged(mInitialLocaleSpec)) {
+                if (LocaleUtils.isChanged(this, mInitialLocaleSpec)) {
                     LocaleUtils.onLocaleChanged();
                     App.setIsRecreating();
                     recreate();

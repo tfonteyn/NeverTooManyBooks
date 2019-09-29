@@ -34,48 +34,37 @@ import androidx.preference.PreferenceManager;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
+/**
+ * Basically a wrapper for {@link LocaleUtils#reorderTitle}.
+ * <p>
+ * Encapsulates getting the title and whether to reorder at all.
+ */
 public interface ItemWithTitle {
-
-    /**
-     * Get the Locale of the actual item; e.g. a book written in Spanish should
-     * return an Spanish Locale even if for example the user runs the app in German,
-     * and the device in Danish.
-     *
-     * @param fallbackLocale Locale to use if the item does not have a Locale of its own.
-     *
-     * @return the item Locale, or the fallbackLocale.
-     */
-    @NonNull
-    Locale getLocale(@NonNull Locale fallbackLocale);
 
     @NonNull
     String getTitle();
 
     /**
-     * Move "The, A, An" etc... to the end of the string for use as the OrderBy column.
+     * Reformat titles for <strong>use as the OrderBy column</strong>.
      *
-     * @param userContext    Current context, should be an actual user context,
-     *                       and not the ApplicationContext.
-     * @param fallbackLocale Locale to use if the item has none set
+     * @param userContext Current context, should be an actual user context,
+     *                    and not the ApplicationContext.
+     * @param titleLocale Locale to use
      *
-     * @return formatted title
+     * @return reordered title / original title
      */
-    default String preprocessTitle(@NonNull final Context userContext,
-                                   @NonNull final Locale fallbackLocale) {
+    default String reorderTitleForSorting(@NonNull final Context userContext,
+                                          @NonNull final Locale titleLocale) {
 
         if (PreferenceManager.getDefaultSharedPreferences(userContext)
                              .getBoolean(Prefs.pk_reorder_titles_for_sorting, true)) {
 
-            // will try locales in order as passed here.
-            return LocaleUtils.reorderTitle(userContext, getTitle(),
-                                            getLocale(fallbackLocale),
-                                            App.getSystemLocale(),
-                                            Locale.ENGLISH);
+            return LocaleUtils.reorderTitle(userContext, getTitle(), titleLocale);
+        } else {
+            return getTitle();
         }
-        return getTitle();
     }
 }

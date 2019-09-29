@@ -29,12 +29,14 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
@@ -86,14 +88,18 @@ public final class LocaleUtils {
      * The string "system" is hardcoded in the preference string-array and
      * in the default setting in the preference screen.
      */
-    private static final String SYSTEM_LANGUAGE = "system";
+    @VisibleForTesting
+    public static final String SYSTEM_LANGUAGE = "system";
 
-    private static final List<WeakReference<OnLocaleChangedListener>> sOnLocaleChangedListeners =
-            new ArrayList<>();
-    /**
-     * Cache for the pv_reformat_titles_prefixes strings.
-     */
+    private static final List<WeakReference<OnLocaleChangedListener>>
+            ON_LOCALE_CHANGED_LISTENERS = new ArrayList<>();
+
+    /** Cache for Locales; key: the BOOK language (ISO3). */
+    private static final Map<String, Locale> LOCALE_MAP = new HashMap<>();
+
+    /** Cache for the pv_reformat_titles_prefixes strings. */
     private static final Map<Locale, String> LOCALE_PREFIX_MAP = new HashMap<>();
+
     /** Remember the current language to detect when language is switched. */
     @NonNull
     private static String sPreferredLocaleSpec = SYSTEM_LANGUAGE;
@@ -106,13 +112,15 @@ public final class LocaleUtils {
     /**
      * Get the user-preferred Locale as stored in the preferences.
      *
+     * @param context Current context
+     *
      * @return a Locale specification as used for Android resources;
      * or {@link #SYSTEM_LANGUAGE} to use the system settings
      */
     @NonNull
-    public static String getPersistedLocaleSpec() {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                .getString(Prefs.pk_ui_language, SYSTEM_LANGUAGE);
+    public static String getPersistedLocaleSpec(@NonNull final Context context) {
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+        return p.getString(Prefs.pk_ui_language, SYSTEM_LANGUAGE);
     }
 
     /**
@@ -145,13 +153,15 @@ public final class LocaleUtils {
     }
 
     /**
-     * Check if the passed localeSpec is different from the user preferred Locale
+     * Check if the passed localeSpec is different from the user preferred Locale.
      *
+     * @param context    Current context
      * @param localeSpec to test
      *
      * @return {@code true} if different
      */
-    public static boolean isChanged(@Nullable final String localeSpec) {
+    public static boolean isChanged(@NonNull final Context context,
+                                    @Nullable final String localeSpec) {
         if (BuildConfig.DEBUG /* always */) {
             // developer sanity check: for now, we don't use/support full local tags
             if (localeSpec != null && localeSpec.contains("_")) {
@@ -159,7 +169,7 @@ public final class LocaleUtils {
                                                 + localeSpec);
             }
         }
-        return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec());
+        return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec(context));
     }
 
 //    /**
@@ -191,7 +201,7 @@ public final class LocaleUtils {
      */
     @NonNull
     public static Context applyLocale(@NonNull final Context context) {
-        String localeSpec = getPersistedLocaleSpec();
+        String localeSpec = getPersistedLocaleSpec(context);
 
         // create the Locale at first access, or if the requested is different from the current.
         if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
@@ -291,7 +301,7 @@ public final class LocaleUtils {
     }
 
     public static void insanityCheck(@NonNull final Context context) {
-        String persistedIso3 = createLocale(getPersistedLocaleSpec()).getISO3Language();
+        String persistedIso3 = createLocale(getPersistedLocaleSpec(context)).getISO3Language();
         String conIso3 = getConfiguredLocale(context).getISO3Language();
         String defIso3 = Locale.getDefault().getISO3Language();
 
@@ -304,11 +314,16 @@ public final class LocaleUtils {
         }
     }
 
-    /** No protection against adding twice. */
+    /**
+     * Add the specified listener. There is no protection against adding twice.
+     *
+     * @param listener to add
+     */
+    @SuppressWarnings("unused")
     public static void registerOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
-        synchronized (sOnLocaleChangedListeners) {
-            sOnLocaleChangedListeners.add(new WeakReference<>(listener));
+        synchronized (ON_LOCALE_CHANGED_LISTENERS) {
+            ON_LOCALE_CHANGED_LISTENERS.add(new WeakReference<>(listener));
         }
     }
 
@@ -317,11 +332,12 @@ public final class LocaleUtils {
      *
      * @param listener to remove
      */
+    @SuppressWarnings("unused")
     public static void unregisterOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
-        synchronized (sOnLocaleChangedListeners) {
+        synchronized (ON_LOCALE_CHANGED_LISTENERS) {
             Iterator<WeakReference<OnLocaleChangedListener>> it =
-                    sOnLocaleChangedListeners.iterator();
+                    ON_LOCALE_CHANGED_LISTENERS.iterator();
             while (it.hasNext()) {
                 WeakReference<OnLocaleChangedListener> listenerRef = it.next();
                 if (listenerRef.get() == null || listenerRef.get().equals(listener)) {
@@ -336,9 +352,9 @@ public final class LocaleUtils {
      * Broadcast to registered listener. Dead listeners are removed.
      */
     public static void onLocaleChanged() {
-        synchronized (sOnLocaleChangedListeners) {
+        synchronized (ON_LOCALE_CHANGED_LISTENERS) {
             Iterator<WeakReference<OnLocaleChangedListener>> it =
-                    sOnLocaleChangedListeners.iterator();
+                    ON_LOCALE_CHANGED_LISTENERS.iterator();
             while (it.hasNext()) {
                 WeakReference<OnLocaleChangedListener> listenerRef = it.next();
                 if (listenerRef.get() != null) {
@@ -351,26 +367,75 @@ public final class LocaleUtils {
         }
     }
 
+
+    /**
+     * Get a Locale for the given language.
+     *
+     * @param iso3Language to use for Locale
+     *
+     * @return the Locale, or {@code null} if the iso3 was invalid.
+     */
+    @Nullable
+    public static Locale getLocale(@NonNull final String iso3Language) {
+        Locale locale = LOCALE_MAP.get(iso3Language);
+        if (locale == null) {
+            locale = new Locale(LanguageUtils.iso3ToBibliographic(iso3Language));
+            if (isValid(locale)) {
+                LOCALE_MAP.put(iso3Language, locale);
+            } else {
+                locale = null;
+            }
+        }
+
+        return locale;
+    }
+
+    /**
+     * Move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The"
+     *
+     * @param userContext  Current context, should be an actual user context,
+     *                     and not the ApplicationContext.
+     * @param title        to reorder
+     * @param iso3Language to use for Locale
+     *
+     * @return reordered title, or the original if the pattern was not found
+     */
+    public static String reorderTitle(@NonNull final Context userContext,
+                                      @NonNull final String title,
+                                      @NonNull final String iso3Language) {
+
+        return reorderTitle(userContext, title, getLocale(iso3Language));
+    }
+
     /**
      * Move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The"
      *
      * @param userContext Current context, should be an actual user context,
      *                    and not the ApplicationContext.
      * @param title       to reorder
-     * @param locales     to try
+     * @param titleLocale (optional) Locale matching the title.
+     *                    When {@code null} Locale.getDefault() is used.
      *
      * @return reordered title, or the original if the pattern was not found
      */
     @NonNull
     public static String reorderTitle(@NonNull final Context userContext,
                                       @NonNull final String title,
-                                      @NonNull final Locale... locales) {
+                                      @Nullable final Locale titleLocale) {
 
         String[] titleWords = title.split(" ");
         // Single word titles (or empty titles).. just return.
         if (titleWords.length < 2) {
             return title;
         }
+
+        // we check in order - first match returns.
+        // 1. the Locale passed in
+        // 2. the user Locale they run our app in
+        // 3. the user device Locale
+        // 4. English
+        Locale[] locales = {titleLocale != null ? titleLocale : Locale.getDefault(),
+                            Locale.getDefault(), App.getSystemLocale(), Locale.ENGLISH};
 
         for (Locale locale : locales) {
             // Getting the string is slow, so we cache it for every Locale.
@@ -396,6 +461,7 @@ public final class LocaleUtils {
         }
         return title;
     }
+
 
     public interface OnLocaleChangedListener {
 

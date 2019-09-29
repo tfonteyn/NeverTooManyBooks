@@ -138,13 +138,23 @@ public abstract class BookBaseFragment
         }
     }
 
-    /** Convenience method. */
+    /**
+     * Convenience method.
+     *
+     * @return the fields collection
+     */
     @NonNull
     Fields getFields() {
         return mFields;
     }
 
-    /** Convenience method. */
+    /**
+     * Convenience method.
+     *
+     * @param fieldId field to get
+     *
+     * @return the field
+     */
     @NonNull
     Field getField(@IdRes final int fieldId) {
         return mFields.getField(fieldId);
@@ -372,24 +382,6 @@ public abstract class BookBaseFragment
         if (fieldView != null) {
             boolean allGone = hasSameVisibility(View.GONE, fields);
             fieldView.setVisibility(allGone ? View.GONE : visibilityToSet);
-        }
-    }
-
-    /**
-     * Set the visibility for a list of fields.
-     *
-     * @param visibility to use
-     * @param fields     list of fields to set visibility on
-     */
-    private void setVisibility(final int visibility,
-                               @NonNull @IdRes final int... fields) {
-        View view = getView();
-        for (int fieldId : fields) {
-            //noinspection ConstantConditions
-            View field = view.findViewById(fieldId);
-            if (field != null) {
-                field.setVisibility(visibility);
-            }
         }
     }
 

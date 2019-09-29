@@ -220,7 +220,7 @@
     <!-- ####################################################################################### -->
     <!-- Shown in the heading of book lists. -->
     <string name="info_displaying_n_books_in_m_entries">
-        displaying %1$d books, in %2$d entries
+        Displaying %1$d books, in %2$d entries
     </string>
 
     <string name="info_cleanup_files_text">
@@ -407,7 +407,7 @@
 
     <string name="progress_end_cancelled">Cancelled</string>
     <string name="progress_end_cancelled_info">Cancelled - %1$s</string>
-    <string name="progress_end_n_books_searched">%1$d Books searched</string>
+    <string name="progress_end_n_books_searched">%1$d books searched</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Tips which are shown in some places on how to use a screen ========== -->
@@ -701,12 +701,15 @@
     <!-- Preference screen; opens a new screen where some text handling can be adjusted. -->
     <string name="pg_reformat">Reformat</string>
 
-    <!-- Preference SwitchPreference -->
-    <string name="pt_sort_by_title_uses">Sort titles by</string>
+    <!-- SwitchPreference - How to display titles. -->
+    <string name="pt_bob_titles_display">Show titles as</string>
+    <!-- SwitchPreference - How to sort titles. -->
+    <string name="pt_bob_titles_sort">Sort titles by</string>
     <!-- example of 'original' title -->
-    <string name="pt_reformat_titles_summary_original">The title</string>
+    <string name="pt_bob_titles_summary_original">The title</string>
     <!-- example of a reformatted title -->
-    <string name="pt_reformat_titles_summary_reformatted">title, The</string>
+    <string name="pt_bob_titles_summary_reformatted">title, The</string>
+
 
     <!-- SwitchPreference -->
     <string name="pt_reformat_format_on_update">Unify &amp; translate “book format” names</string>
@@ -816,7 +819,6 @@
     <!-- ListPreference - Scale text. -->
     <string name="pt_bob_text_size">Size of book list text</string>
 
-
     <!-- Preference Category: thumbnails -->
     <!-- SwitchPreference - Show thumbnail image for each book -->
     <string name="pt_bob_thumbnails_show">Show Thumbnails</string>
@@ -824,11 +826,11 @@
     <string name="pt_bob_thumbnails_scale">Thumbnails size in lists</string>
 
     <!-- Preference Category: author -->
-    <!-- SwitchPreference - Sorting Author by family (default) or given name.
-     This is independent from the display format -->
-    <string name="pt_bob_sorting_author">Sorting of author names</string>
-    <!-- SwitchPreference: "given family" or "family, given" -->
-    <string name="pt_bob_author_name">Format of author names</string>
+    <!-- SwitchPreference - Display Authors by family (default) or given name. -->
+    <string name="pt_bob_authors_display">Show authors as</string>
+    <!-- SwitchPreference - Sorting Authors by family (default) or given name. -->
+    <string name="pt_bob_authors_sort">Sort authors by</string>
+
     <string name="pv_bob_author_name_given_first">Given name first e.g. “Phillis Wheatley”</string>
     <string name="pv_bob_author_name_family_first">Family name first e.g. “Wheatley, Phillis”</string>
     <!-- SwitchPreference -->
@@ -1074,7 +1076,7 @@
     <string name="hint_field_not_set">Not Set</string>
     <!-- generic place holder text for Book list rows -->
     <string name="hint_field_not_set_with_brackets">(Not Set)</string>
-    <string name="hint_date_not_set_with_brackets">(no date)</string>
+    <string name="hint_date_not_set_with_brackets">(No Date)</string>
     <!-- LibraryThing etc. require the user to configure a personal key -->
     <string name="hint_developer_key">Developer Key</string>
 

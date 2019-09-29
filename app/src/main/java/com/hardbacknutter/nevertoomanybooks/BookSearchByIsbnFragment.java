@@ -573,7 +573,7 @@ public class BookSearchByIsbnFragment
         Scanner scanner = mModel.getScanner();
         try {
             if (scanner == null) {
-                scanner = ScannerManager.getScanner(mActivity);
+                scanner = ScannerManager.getScanner(mHostActivity);
                 if (scanner == null) {
                     noScanner();
                     return;
@@ -624,11 +624,11 @@ public class BookSearchByIsbnFragment
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)
                 .setNeutralButton(R.string.lbl_settings, (d, w) -> {
-                    Intent intent = new Intent(mActivity, SettingsActivity.class)
+                    Intent intent = new Intent(mHostActivity, SettingsActivity.class)
                                             .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                                       Prefs.psk_barcode_scanner);
 
-                    mActivity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
+                    mHostActivity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
                 })
                 .setPositiveButton(R.string.retry, (d, w) -> {
 
@@ -651,11 +651,11 @@ public class BookSearchByIsbnFragment
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)
                 .setOnDismissListener(d -> {
-                    Intent intent = new Intent(mActivity, SettingsActivity.class)
+                    Intent intent = new Intent(mHostActivity, SettingsActivity.class)
                                             .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                                       Prefs.psk_barcode_scanner);
 
-                    mActivity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
+                    mHostActivity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
                 })
                 .create()
                 .show();
@@ -668,11 +668,12 @@ public class BookSearchByIsbnFragment
      */
     private void scanFailedOrCancelled() {
         Intent lastBookData = mBookSearchBaseModel.getLastBookData();
-        mActivity.setResult(lastBookData != null ? Activity.RESULT_OK : Activity.RESULT_CANCELED,
-                            lastBookData);
+        mHostActivity.setResult(lastBookData != null ? Activity.RESULT_OK
+                                                     : Activity.RESULT_CANCELED,
+                                lastBookData);
         // and exit if no dialog present.
         if (!mKeepAlive) {
-            mActivity.finish();
+            mHostActivity.finish();
         }
     }
 }

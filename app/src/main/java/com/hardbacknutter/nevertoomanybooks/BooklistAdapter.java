@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
@@ -167,8 +168,6 @@ public class BooklistAdapter
             return new BookHolder(itemView, mDb, mStyle);
         }
 
-        // Except for CheckableStringHolder, which uses an additional fixed column,
-        // all other rows are based on a single column
         String columnName = RowKind.get(viewType).getDisplayDomain().getName();
         //noinspection ConstantConditions
         int columnIndex = mCursor.getColumnIndex(columnName);
@@ -180,14 +179,12 @@ public class BooklistAdapter
             // NEWKIND: ROW_KIND_x
 
             case RowKind.AUTHOR:
-                return new CheckableStringHolder(itemView, columnIndex,
-                                                 DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
-                                                 R.string.hint_field_not_set_with_brackets);
+                return new AuthorHolder(itemView, columnIndex,
+                                        R.string.hint_field_not_set_with_brackets);
 
             case RowKind.SERIES:
-                return new CheckableStringHolder(itemView, columnIndex,
-                                                 DBDefinitions.KEY_SERIES_IS_COMPLETE,
-                                                 R.string.hint_field_not_set_with_brackets);
+                return new SeriesHolder(itemView, columnIndex,
+                                        R.string.hint_field_not_set_with_brackets);
 
             // Months are displayed by name
             case RowKind.DATE_PUBLISHED_MONTH:
@@ -210,7 +207,7 @@ public class BooklistAdapter
                 return new ReadUnreadHolder(itemView, columnIndex,
                                             R.string.hint_field_not_set_with_brackets);
 
-
+            // Sanity check
             //noinspection ConstantConditions
             case RowKind.BOOK:
                 throw new UnexpectedValueException(viewType);
@@ -667,7 +664,7 @@ public class BooklistAdapter
         private final TextView mTitleView;
 
         /** The "I've read it" checkbox. */
-        private final CompoundButton mReadview;
+        private final CompoundButton mReadView;
         /** The "on loan" checkbox. */
         private final CompoundButton mOnLoanView;
 
@@ -748,8 +745,8 @@ public class BooklistAdapter
 
             // visibility is independent from actual data, so this is final.
             mReadIsUsed = style.isUsed(DBDefinitions.KEY_READ);
-            mReadview = itemView.findViewById(R.id.cbx_read);
-            mReadview.setVisibility(mReadIsUsed ? View.VISIBLE : View.GONE);
+            mReadView = itemView.findViewById(R.id.cbx_read);
+            mReadView.setVisibility(mReadIsUsed ? View.VISIBLE : View.GONE);
 
             // visibility is independent from actual data, so this is final.
             mLoaneeIsUsed = style.isUsed(DBDefinitions.KEY_LOANEE);
@@ -799,10 +796,15 @@ public class BooklistAdapter
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
-            mTitleView.setText(rowData.getString(DBDefinitions.KEY_TITLE));
+            String title = rowData.getString(DBDefinitions.KEY_TITLE);
+            if (style.reorderTitleForDisplaying()) {
+                String language = rowData.getString(DBDefinitions.KEY_LANGUAGE);
+                title = LocaleUtils.reorderTitle(App.getLocalizedAppContext(), title, language);
+            }
+            mTitleView.setText(title);
 
             if (mReadIsUsed && rowData.contains(DBDefinitions.KEY_READ)) {
-                mReadview.setChecked(rowData.getInt(DBDefinitions.KEY_READ) != 0);
+                mReadView.setChecked(rowData.getInt(DBDefinitions.KEY_READ) != 0);
             }
 
             if (mLoaneeIsUsed && rowData.contains(DBDefinitions.KEY_LOANEE_AS_BOOLEAN)) {
@@ -1217,9 +1219,61 @@ public class BooklistAdapter
     }
 
     /**
+     * Holder for a Series.
+     */
+    public static class SeriesHolder
+            extends CheckableStringHolder {
+
+        /**
+         * Constructor.
+         *
+         * @param itemView    the view specific for this holder
+         * @param columnIndex index in SQL result set
+         * @param noDataId    String id to use when data is blank
+         */
+        SeriesHolder(@NonNull final View itemView,
+                     final int columnIndex,
+                     @StringRes final int noDataId) {
+            super(itemView, columnIndex, noDataId, DBDefinitions.KEY_SERIES_IS_COMPLETE);
+        }
+
+        @Override
+        public void setText(@Nullable final String text,
+                            final int level) {
+            if (text != null && Prefs.reorderTitleForDisplaying(App.getAppContext())) {
+                // URGENT: translated series are not reordered unless the app runs in that language
+                super.setText(LocaleUtils.reorderTitle(App.getAppContext(), text,
+                                                       Locale.getDefault()), level);
+            } else {
+                super.setText(text, level);
+            }
+        }
+    }
+
+    /**
+     * Holder for an Author.
+     */
+    public static class AuthorHolder
+            extends CheckableStringHolder {
+
+        /**
+         * Constructor.
+         *
+         * @param itemView    the view specific for this holder
+         * @param columnIndex index in SQL result set
+         * @param noDataId    String id to use when data is blank
+         */
+        AuthorHolder(@NonNull final View itemView,
+                     final int columnIndex,
+                     @StringRes final int noDataId) {
+            super(itemView, columnIndex, noDataId, DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+        }
+    }
+
+    /**
      * Holder for a row that displays a generic string, but with a 'lock' icon at the 'end'.
      */
-    public static class CheckableStringHolder
+    public abstract static class CheckableStringHolder
             extends GenericStringHolder {
 
         /** Column name of related boolean column. */
@@ -1230,14 +1284,13 @@ public class BooklistAdapter
          *
          * @param itemView       the view specific for this holder
          * @param columnIndex    index in SQL result set
-         * @param isLockedSource Column name to use for the boolean 'lock' status
          * @param noDataId       String id to use when data is blank
+         * @param isLockedSource Column name to use for the boolean 'lock' status
          */
-        @SuppressWarnings("SameParameterValue")
         CheckableStringHolder(@NonNull final View itemView,
                               final int columnIndex,
-                              @NonNull final String isLockedSource,
-                              @StringRes final int noDataId) {
+                              @StringRes final int noDataId,
+                              @NonNull final String isLockedSource) {
             super(itemView, columnIndex, noDataId);
             mIsLockedSourceCol = isLockedSource;
         }

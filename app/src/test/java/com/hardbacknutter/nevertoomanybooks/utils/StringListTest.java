@@ -45,7 +45,8 @@ class StringListTest {
             + "|"
             + "Cornelius Chronicles, The (8\\|8 as includes The Alchemist's Question)"
             + "|"
-            + "Eternal Champion, The (984\\|Jerry Cornelius Calendar 4 as includes The Alchemist's Question)";
+            + "Eternal Champion, The (984\\|Jerry Cornelius Calendar 4 as includes "
+            + "The Alchemist's Question)";
 
 
     /**

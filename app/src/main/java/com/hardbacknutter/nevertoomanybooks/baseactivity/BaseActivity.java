@@ -88,9 +88,10 @@ public abstract class BaseActivity
      * apply the user-preferred Locale before onCreate is called.
      */
     protected void attachBaseContext(@NonNull final Context base) {
-        super.attachBaseContext(LocaleUtils.applyLocale(base));
+        Context localizedContext = LocaleUtils.applyLocale(base);
+        super.attachBaseContext(localizedContext);
         // preserve, so we can check for changes in onResume.
-        mInitialLocaleSpec = LocaleUtils.getPersistedLocaleSpec();
+        mInitialLocaleSpec = LocaleUtils.getPersistedLocaleSpec(localizedContext);
 
     }
 
@@ -139,7 +140,7 @@ public abstract class BaseActivity
     protected void onResume() {
         super.onResume();
 
-        boolean localeChanged = LocaleUtils.isChanged(mInitialLocaleSpec);
+        boolean localeChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
         if (localeChanged) {
             LocaleUtils.onLocaleChanged();
         }

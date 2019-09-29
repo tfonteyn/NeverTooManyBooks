@@ -164,11 +164,10 @@ public class EditBookAuthorsActivity
         // if it's not, then we can simply re-use the old object.
         if (mModel.isSingleUsage(nrOfReferences)) {
             /*
-             * Use the original author, but update its fields
+             * Use the original Author object, but update its fields
              *
              * see below and {@link DAO#insertBookDependents} where an *insert* will be done
-             * The 'old' author will be orphaned.
-             * TODO: simplify / don't orphan?
+             * The 'old' Author will be orphaned. TODO: simplify / don't orphan?
              */
             updateItem(author, newAuthorData, Locale.getDefault());
             return;
@@ -292,7 +291,7 @@ public class EditBookAuthorsActivity
         /** Database Access. */
         protected DAO mDb;
         WeakReference<BookChangedListener> mBookChangedListener;
-        private EditBookAuthorsActivity mActivity;
+        private EditBookAuthorsActivity mHostActivity;
         private AutoCompleteTextView mFamilyNameView;
         private AutoCompleteTextView mGivenNamesView;
         private Checkable mIsCompleteView;
@@ -336,7 +335,7 @@ public class EditBookAuthorsActivity
         @Override
         public void onAttach(@NonNull final Context context) {
             super.onAttach(context);
-            mActivity = (EditBookAuthorsActivity) context;
+            mHostActivity = (EditBookAuthorsActivity) context;
         }
 
         @Override
@@ -446,7 +445,7 @@ public class EditBookAuthorsActivity
                         if (mUseTypeBtn.isChecked()) {
                             newAuthorData.setType(mType);
                         }
-                        mActivity.processChanges(mAuthor, newAuthorData);
+                        mHostActivity.processChanges(mAuthor, newAuthorData);
                     })
                     .create();
         }

@@ -236,7 +236,7 @@
     <string name="import_warning_old_archive">Questa opzione non è supportata per le versioni più vecchie dell\'archivio.</string>
     <string name="info_authorized">Autorizzato</string>
     <string name="info_cleanup_files_text">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD ad ogni aggiornamento, ad ogni backup del database o quando l\'applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante »Invia informazioni\' prima di eliminarli.</string>
-    <string name="info_displaying_n_books_in_m_entries">visualizzati %1$d libri, in %2$d voci</string>
+    <string name="info_displaying_n_books_in_m_entries">Visualizzati %1$d libri, in %2$d voci</string>
     <string name="X_info_install_scanner">Per scansionare i codici a barre ISBN, toccare di seguito per installare una di queste applicazioni per scanner di codici a barre.</string>
     <string name="info_manage_fields">I campi selezionati sono visibili nella schermata aggiungi/modifica libro. Gli altri rimangono nascosti.</string>
     <string name="info_not_authorized">Non autorizzato</string>
@@ -424,7 +424,7 @@
     <string name="pg_filters">Filtra libri</string>
     <string name="pg_general">Generale</string>
     <string name="pg_groupings">Raggruppamenti</string>
-    <string name="pt_sort_by_title_uses">Ordina titoli per</string>
+    <string name="pt_bob_titles_sort">Ordina titoli per</string>
     <string name="pg_barcode_scanner">Scanner di codici a barre</string>
     <string name="pg_thumbnails">Miniature</string>
     <string name="pg_ui">Interfaccia Utente</string>
@@ -463,19 +463,19 @@
     <string name="pt_allow_mobile_data">Consenti l\'utilizzo dei dati mobili</string>
     <string name="pt_bob_books_under_multiple_authors">Libri con autori multipli</string>
     <string name="pt_bob_books_under_multiple_series">Libri in serie multiple</string>
-    <string name="pt_bob_author_name">Formato dei nome degli autori</string>
+    <string name="pt_bob_authors_display">Visualizza autori come</string>
     <string name="pt_bob_header">Riassunto dettagli nel titolo</string>
     <string name="pt_booklist_generation">Opzioni di Generazione Elenco Libri</string>
     <string name="pt_booklist_state">Stato elenco libri</string>
     <string name="pt_booklist_open_book_read_only">Apri il libro in sola lettura</string>
-    <string name="pt_bob_sorting_author">Ordina i nomi degli autori</string>
+    <string name="pt_bob_authors_sort">Ordina autori per</string>
     <string name="pt_bob_text_size">Dimensione degli elementi dell\'elenco libri</string>
     <string name="pt_thumbnails_cache_resized">Memorizza le miniature ridimensionate</string>
     <string name="pt_bob_thumbnails_show">Mostra miniature</string>
     <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie da TOC</string>
     <string name="pt_bob_thumbnails_scale">Dimensione miniature in elenchi</string>
-    <string name="pt_reformat_titles_summary_original">Il titolo</string>
-    <string name="pt_reformat_titles_summary_reformatted">titolo, Il</string>
+    <string name="pt_bob_titles_summary_original">Il titolo</string>
+    <string name="pt_bob_titles_summary_reformatted">titolo, Il</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Suona se il codice ISBN acquisito non è valido</string>
     <string name="pt_scanning_beep_if_isbn_valid">Suona se il codice ISBN acquisito è valido</string>
     <string name="pt_scanning_preferred_scanner">Programma Preferito</string>
@@ -632,5 +632,9 @@
     <string name="warning_scanner_failed_to_start">Lo scanner non si è avviato.</string>
     <string name="warning_scanner_retry_install">Ti consigliamo di riprovare prima, ma se il problema persiste, reinstallare lo scanner o installare un altro scanner.</string>
     <string name="error_import_invalid_archive">Il file selezionato non è riconosciuto.</string>
+    <string name="pt_bob_titles_display">Mostra titoli come</string>
+    <string name="lbl_author_type_artist">illustrazioni</string>
+    <string name="lbl_author_type_cover_artist">copertina</string>
+    <string name="lbl_author_type_cover_colorist">colori della copertina</string>
 
 </resources>

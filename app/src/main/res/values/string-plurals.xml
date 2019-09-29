@@ -1,31 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <resources>
     <!-- http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
         cardinal -->
 
     <!-- displayed in the header of booklist -->
     <plurals name="displaying_n_books">
-        <item quantity="zero">no books</item>
+        <item quantity="zero">No books</item>
         <item quantity="one">%1$d book displayed</item>
-        <item quantity="other">displaying %1$d books</item>
+        <item quantity="other">Displaying %1$d books</item>
     </plurals>
 
     <plurals name="n_books_found">
-        <item quantity="zero">no books found</item>
+        <item quantity="zero">No books found</item>
         <item quantity="one">%1$d book found</item>
         <item quantity="other">%1$d books found</item>
     </plurals>
 
     <!-- Short text for 'n books' -->
     <plurals name="n_books">
-        <item quantity="zero">no books</item>
+        <item quantity="zero">No books</item>
         <item quantity="one">%1$d book</item>
         <item quantity="other">%1$s books</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
     <plurals name="n_covers">
-        <item quantity="zero">no covers</item>
+        <item quantity="zero">No covers</item>
         <item quantity="one">%1$d cover</item>
         <item quantity="other">%1$s covers</item>
     </plurals>

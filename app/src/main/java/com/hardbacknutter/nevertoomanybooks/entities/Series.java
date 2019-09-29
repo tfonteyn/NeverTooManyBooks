@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Class to hold book-related Series data.
+ *
  * <p>
  * <strong>Note:</strong> the Series "number" is a column of {@link DBDefinitions#TBL_BOOK_SERIES}
  * So this class does not strictly represent a Series, but a "BookInSeries"
@@ -90,15 +91,15 @@ public class Series
     private static final String NUMBER_REGEXP =
             // The possible prefixes to a number as seen in the wild.
             "(?:"
-            + /* */ ",|"
-            + /* */ "#|"
-            + /* */ ",\\s*#|"
-            + /* */ "number|num|num.|no|no.|nr|nr.|"
-            + /* */ "book|bk|bk.|"
-            + /* */ "volume|vol|vol.|"
-            + /* */ "tome|"
-            + /* */ "part|pt.|"
-            + /* */ "deel|dl.|"
+            + ",|"
+            + "#|"
+            + ",\\s*#|"
+            + "number|num|num.|no|no.|nr|nr.|"
+            + "book|bk|bk.|"
+            + "volume|vol|vol.|"
+            + "tome|"
+            + "part|pt.|"
+            + "deel|dl.|"
                     /* or no prefix */
             + ")"
             // whitespace between prefix and actual number
@@ -106,18 +107,18 @@ public class Series
             // Capture the number group
             + "("
             // numeric numerals allowing for .-_ but must start with a digit.
-            + /* 2019-09-23: */ "[0-9][0-9.\\-_]*"
+            + "[0-9][0-9.\\-_]*"
             // optional alphanumeric suffix.
-            + /* */ "\\S*?"
+            + "\\S*?"
 
             + "|"
 
             // roman numerals are accepted ONLY if they are prefixed by either '(' or a space
-            + /* */ "\\s[(]?"
+            + "\\s[(]?"
             // roman numerals allowing for .-_
-            + /* */ "[ivxlcm.\\-_]+"
+            + "[ivxlcm.\\-_]+"
             // roman numerals are accepted ONLY if they are suffixed by either ')' or EOL
-            + /* */ "[)]?$"
+            + "[)]?$"
             // roman numerals do not support an alphanumeric suffixes.
             + ")";
 
@@ -127,6 +128,7 @@ public class Series
      * <p>
      * FAIL: "Blake's 7" and similar Series titles will fail UNLESS there is an actual number:
      * i.e. "Blake's 7 1" should give "Blake's 7" and number 1
+     * but "Blake's 7" will give "Blake's" and number 7
      */
     private static final String TITLE_NUMBER_REGEXP =
             // whitespace at the start
@@ -237,7 +239,7 @@ public class Series
         }
 
         // HORRENDOUS, HORRIBLE HACK...
-        if (fullTitle.equalsIgnoreCase("Blake's 7")) {
+        if ("Blake's 7".equalsIgnoreCase(fullTitle)) {
             return new Series(fullTitle);
         }
 
@@ -289,7 +291,7 @@ public class Series
                     if (PURE_NUMERICAL_PATTERN.matcher(cleanNumber).find()) {
                         try {
                             cleanNumber = String.valueOf(Long.parseLong(cleanNumber));
-                        } catch (NumberFormatException ignore) {
+                        } catch (@NonNull final NumberFormatException ignore) {
                         }
                     }
                     newSeries.setNumber(cleanNumber);
@@ -317,10 +319,13 @@ public class Series
      * fred(5) <-- delete
      * fred(6)
      *
+     * <strong>Note:</strong> 'db' can be {@code null} in which case we use the 'bookLocale'
+     * and the id from the item as-is. This should be limited to unit testing.
+     * If set, then we lookup the Locale properly and call {@link #fixId} first.
+     *
      * @param list       to prune
      * @param context    Current context
-     * @param db         Database Access; can be {@code null} in which case we use the id
-     *                   from the item directly. If set, then we call {@link #fixId} first.
+     * @param db         Database Access;
      * @param bookLocale Locale to use if the item does not have a Locale of its own.
      *
      * @return {@code true} if the list was modified.
@@ -338,7 +343,14 @@ public class Series
         while (it.hasNext()) {
             Series series = it.next();
 
-            Locale locale = series.getLocale(bookLocale);
+            Locale locale;
+            if (db != null) {
+                locale = series.getLocale(db, bookLocale);
+            } else {
+                locale = bookLocale;
+            }
+
+
             String title = series.getTitle().trim().toLowerCase(locale);
             String number = series.getNumber().trim().toLowerCase(locale);
 
@@ -431,7 +443,11 @@ public class Series
     }
 
     /**
-     * @return User visible title; consisting of "title" or "title (nr)"
+     * Get the user visible title.
+     *
+     * @param context Current context
+     *
+     * @return "title" or "title (nr)"
      */
     @NonNull
     public String getLabel(@NonNull final Context context) {
@@ -500,18 +516,27 @@ public class Series
     }
 
     /**
-     * ENHANCE: The Locale of the Series should be based on either a specific language
-     * setting for the Series itself, or on the Locale of the <strong>primary</strong> book.
-     * <p>
-     * For now, we always use the passed fallback which <strong>should be the BOOK Locale</strong>
+     * Get the Locale for a Series.
+     * This is defined as the Locale for the language from the first book in the Series.
      *
+     * @param db         Database Access
      * @param bookLocale Locale to use if the Series does not have a Locale of its own.
      *
      * @return the Locale of the Series
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Locale bookLocale) {
+    public Locale getLocale(@NonNull final DAO db,
+                            @NonNull final Locale bookLocale) {
+
+        String iso3Language = db.getSeriesLanguage(mId);
+        if (!iso3Language.isEmpty()) {
+            Locale seriesLocale = LocaleUtils.getLocale(iso3Language);
+            if (seriesLocale != null) {
+                return seriesLocale;
+            }
+        }
+
         return bookLocale;
     }
 
@@ -519,7 +544,6 @@ public class Series
     public long fixId(@NonNull final Context context,
                       @NonNull final DAO db,
                       @NonNull final Locale bookLocale) {
-        LocaleUtils.insanityCheck(context);
         mId = db.getSeriesId(context, this, bookLocale);
         return mId;
     }

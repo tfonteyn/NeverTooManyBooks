@@ -154,7 +154,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_people"
+            android:icon="@drawable/ic_directions_run"
             android:key="BookList.UseTaskFor.BookDetails"
             android:summaryOff="@string/pt_bob_show_details_uses_task_off"
             android:summaryOn="@string/pt_bob_show_details_uses_task_on"
@@ -217,7 +217,7 @@
             android:key="BookList.Style.Sort.Author.GivenFirst"
             android:summaryOff="@string/pv_bob_author_name_family_first"
             android:summaryOn="@string/pv_bob_author_name_given_first"
-            android:title="@string/pt_bob_sorting_author"
+            android:title="@string/pt_bob_authors_sort"
             />
 
     </PreferenceCategory>

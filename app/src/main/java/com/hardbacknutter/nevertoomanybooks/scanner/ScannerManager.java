@@ -235,7 +235,7 @@ public final class ScannerManager {
             context.getPackageManager()
                    .getPackageInfo(GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE, 0);
             return true;
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (@NonNull final PackageManager.NameNotFoundException e) {
             return false;
         }
     }

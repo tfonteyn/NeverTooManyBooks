@@ -102,6 +102,8 @@ public class BookBaseFragmentModel
     /**
      * Pseudo constructor.
      *
+     * Loads the book data upon first start.
+     *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@Nullable final Bundle args) {

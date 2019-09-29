@@ -334,9 +334,9 @@ public class BooklistBuilder
      */
     @NonNull
     @SuppressWarnings("UnusedReturnValue")
-    public BooklistBuilder requireDomain(@NonNull final DomainDefinition domain,
-                                         @Nullable final String sourceExpression,
-                                         final boolean isSorted) {
+    public BooklistBuilder addExtraDomain(@NonNull final DomainDefinition domain,
+                                          @Nullable final String sourceExpression,
+                                          final boolean isSorted) {
         if (!mExtraDomains.containsKey(domain.getName())) {
             int flags = 0;
             if (isSorted) {
@@ -346,8 +346,8 @@ public class BooklistBuilder
                               new ExtraDomainDetails(domain, sourceExpression, flags));
 
         } else {
-            Logger.warnWithStackTrace(this, "requireDomain",
-                                      "Domain already added: `" + domain.getName() + '`');
+            // adding a duplicate here is a bug.
+            throw new IllegalArgumentException("Domain already added: `" + domain.getName() + '`');
         }
 
         return this;
@@ -1546,8 +1546,13 @@ public class BooklistBuilder
 
     /**
      * Toggle the expand/collapse status of the node at the specified absolute position.
+     *
+     * @return {@code true} if the new state is expanded.
+     * {@code false} if collapsed, or if an error occurred.
      */
-    public void toggleExpandNode(final long absPos) {
+    public boolean toggleExpandNode(final long absPos) {
+        int isExpanded;
+
         SyncLock txLock = null;
         try {
             if (!mSyncedDb.inTransaction()) {
@@ -1572,10 +1577,10 @@ public class BooklistBuilder
             try {
                 info = getNodeLevelStmt.simpleQueryForString().split("/");
             } catch (@NonNull final SQLiteDoneException ignore) {
-                return;
+                return false;
             }
             long level = Long.parseLong(info[0]);
-            int isExpanded = (Integer.parseInt(info[1]) == 1) ? 0 : 1;
+            isExpanded = (Integer.parseInt(info[1]) == 1) ? 0 : 1;
 
             // Find the next row at the same level
             SynchronizedStatement getNextAtSameLevelStmt =
@@ -1642,6 +1647,8 @@ public class BooklistBuilder
                 mSyncedDb.endTransaction(txLock);
             }
         }
+
+        return isExpanded != 0;
     }
 
     /**
@@ -2343,7 +2350,8 @@ public class BooklistBuilder
                 // The domain was already present, do a sanity check!
                 String expression = mExpressions.get(domain);
                 if (Objects.equals(sourceExpression, expression)) {
-                    // same expression, we do NOT want to add it. This is fine.
+                    // same expression, we do NOT want to add it.
+                    // This is NOT a bug, although one could argue it's an efficiency issue.
                     if (BuildConfig.DEBUG /* always */) {
                         Logger.warnWithStackTrace(this, "duplicate domain/expression",
                                                   "domain.name=" + domain.getName());

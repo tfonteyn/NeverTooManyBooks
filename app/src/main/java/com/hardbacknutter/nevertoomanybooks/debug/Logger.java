@@ -255,7 +255,7 @@ public final class Logger {
                 result = bis.read();
             }
             Log.d(tag(object), buf.toString("UTF-8"));
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             Log.d(tag(object), "dumping failed: ", e);
         }
     }

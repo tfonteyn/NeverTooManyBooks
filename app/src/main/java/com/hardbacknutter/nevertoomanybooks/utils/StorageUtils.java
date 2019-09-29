@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
@@ -37,7 +36,6 @@ import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
 import androidx.annotation.StringRes;
 import androidx.documentfile.provider.DocumentFile;
 
@@ -71,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * Also referred to as "Shared Storage" because all apps have access to it.
  * For the sake of clarity (confusion?) we'll call it "Shared Storage" only.
  * <p>
- * FIXME: implement the sample code for 'watching'  Environment.getExternalStorageDirectory()
+ * TODO: implement the sample code for 'watching'  Environment.getExternalStorageDirectory()
  * and/or isExternalStorageRemovable()
  * <p>
  * <strong>Important:</strong> Any changes to the directories used
@@ -81,7 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * see {@link #renameFile(File, File)}
  * <p>
  * TODO: ExternalStorageException added were appropriate, but other then here we don't catch them.
- *
+ * <p>
  * ENHANCE: using the private directories was an improvement (and mandatory to target Android 10)
  * but would be nice to use the contentResolver API and keep our covers in a sub directory
  * of the users Pictures folder.
@@ -110,8 +108,11 @@ public final class StorageUtils {
      * Only called from StartupActivity, after permissions have been granted.
      *
      * @return 0 for all ok, or a StringRes with the appropriate error.
+     * <p>
+     * // Not needed any longer, as we only use getExternalFilesDir(String)
+     * // and getExternalCacheDir(). Leaving this in comment as a reminder.
+     * //@RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
      */
-    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     @StringRes
     public static int initSharedDirectories()
             throws SecurityException {

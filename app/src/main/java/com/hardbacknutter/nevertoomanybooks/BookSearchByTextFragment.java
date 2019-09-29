@@ -63,6 +63,7 @@ public class BookSearchByTextFragment
 
     private EditText mTitleView;
     private AutoCompleteTextView mAuthorView;
+    /** Used to set visibility on a group of widgets all related to the Publisher. */
     private Group mPublisherGroup;
 
     // ENHANCE: add auto-completion for publishers?

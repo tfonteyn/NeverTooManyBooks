@@ -60,10 +60,8 @@ public class PString
         } else {
             String value = getPrefs().getString(getKey(), null);
             if (value == null || value.isEmpty()) {
-                value = getGlobal().getString(getKey(), null);
-                if (value == null || value.isEmpty()) {
-                    return mDefaultValue;
-                }
+                // not present, fallback to global/default
+                value = getGlobal().getString(getKey(), mDefaultValue);
             }
             return value;
         }

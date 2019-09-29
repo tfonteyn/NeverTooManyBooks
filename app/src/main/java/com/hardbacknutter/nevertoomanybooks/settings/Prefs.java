@@ -84,7 +84,8 @@ public final class Prefs {
     public static final String pk_scanner_beep_if_valid = "SoundManager.BeepIfScannedIsbnValid";
     public static final String pk_scanner_beep_if_invalid = "SoundManager.BeepIfScannedIsbnInvalid";
 
-    public static final String pk_reorder_titles_for_sorting = "reformat.title.forSorting";
+    public static final String pk_reorder_titles_for_sorting = "reformat.titles.sort";
+    public static final String pk_reorder_titles_for_displaying = "reformat.titles.display";
     public static final String pk_reformat_formats = "reformat.format.update";
 
     public static final String pk_images_cache_resized = "Image.Cache.Resized";
@@ -287,5 +288,17 @@ public final class Prefs {
     public static boolean sortAuthorGivenNameFirst(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(pk_bob_sort_author_name, false);
+    }
+
+    /**
+     * Get the global default for this preference.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
+     */
+    public static boolean reorderTitleForDisplaying(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_reorder_titles_for_displaying, true);
     }
 }

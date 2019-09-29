@@ -94,6 +94,13 @@ public class EditBookshelfListActivity
     }
 
     @Override
+    public void onAttachFragment(@NonNull final Fragment fragment) {
+        if (EditBookshelfDialogFragment.TAG.equals(fragment.getTag())) {
+            ((EditBookshelfDialogFragment) fragment).setListener(mListener);
+        }
+    }
+
+    @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_edit_bookshelves);
@@ -114,13 +121,6 @@ public class EditBookshelfListActivity
         listView.setAdapter(mAdapter);
     }
 
-    @Override
-    public void onAttachFragment(@NonNull final Fragment fragment) {
-        if (EditBookshelfDialogFragment.TAG.equals(fragment.getTag())) {
-            ((EditBookshelfDialogFragment) fragment).setListener(mListener);
-        }
-    }
-
     private void onCreateContextMenu(final int position) {
 
         Bookshelf bookshelf = mList.get(position);
@@ -135,7 +135,6 @@ public class EditBookshelfListActivity
         new MenuPicker<>(this, title, null, menu, bookshelf, this::onContextItemSelected)
                 .show();
     }
-
 
     /**
      * Using {@link ValuePicker} for context menus.
@@ -171,6 +170,8 @@ public class EditBookshelfListActivity
     }
 
     /**
+     * Start the fragment dialog to edit a Bookshelf.
+     *
      * @param bookshelf to edit
      */
     private void editItem(@NonNull final Bookshelf bookshelf) {

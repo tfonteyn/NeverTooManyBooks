@@ -270,7 +270,7 @@ public class FTSSearchActivity
             Logger.error(this, e);
         }
 
-        final String message = (tmpMsg != null) ? tmpMsg : "";
+        final String message = tmpMsg != null ? tmpMsg : "";
 
         // Update the UI in main thread.
         mHandler.post(() -> mBooksFound.setText(message));

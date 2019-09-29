@@ -430,7 +430,7 @@
     <string name="pg_filters">Filtres de livres</string>
     <string name="pg_general">Général</string>
     <string name="pg_groupings">Groupes</string>
-    <string name="pt_sort_by_title_uses">Trier les titres par</string>
+    <string name="pt_bob_titles_sort">Trier les titres par</string>
     <string name="pg_barcode_scanner">Scanner de code à barres</string>
     <string name="pg_thumbnails">Miniatures</string>
     <string name="pg_ui">Interface utilisateur</string>
@@ -469,19 +469,19 @@
     <string name="pt_allow_mobile_data">Autoriser l\'utilisation de données mobiles</string>
     <string name="pt_bob_books_under_multiple_authors">Livres d\'auteurs multiples</string>
     <string name="pt_bob_books_under_multiple_series">Livres appartenant à des séries multiples</string>
-    <string name="pt_bob_author_name">Format des noms d\'auteur</string>
+    <string name="pt_bob_authors_display">Afficher les auteurs en tant que</string>
     <string name="pt_bob_header">Détails du résumé dans l\'en-tête</string>
     <string name="pt_booklist_generation">Option de génération de la liste de livres</string>
     <string name="pt_booklist_state">État de la liste de livres</string>
     <string name="pt_booklist_open_book_read_only">Affichage en mode visualisation</string>
-    <string name="pt_bob_sorting_author">Trier les noms d\'auteur</string>
+    <string name="pt_bob_authors_sort">Trier les auteurs par</string>
     <string name="pt_bob_text_size">Taille des éléments de liste de livres</string>
     <string name="pt_thumbnails_cache_resized">Mettre les miniatures en cache</string>
     <string name="pt_bob_thumbnails_show">Montrer les miniatures</string>
     <string name="pt_collect_series_info_from_toc">Recueillir des informations sur la série de la table des matières</string>
     <string name="pt_bob_thumbnails_scale">Taille de l\'image dans les listes</string>
-    <string name="pt_reformat_titles_summary_original">Le titre</string>
-    <string name="pt_reformat_titles_summary_reformatted">titre, Le</string>
+    <string name="pt_bob_titles_summary_original">Le titre</string>
+    <string name="pt_bob_titles_summary_reformatted">titre, Le</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Beeper si l\'ISBN scanné est invalide</string>
     <string name="pt_scanning_beep_if_isbn_valid">Beeper si l\'ISBN scanné est valide</string>
     <string name="pt_scanning_preferred_scanner">Scanner préféré</string>
@@ -639,5 +639,8 @@
     <string name="warning_scanner_failed_to_start">Le scanner n\'a pas pu démarrer.</string>
     <string name="warning_scanner_retry_install">Nous vous suggérons d’essayer d’abord, mais si le problème persiste, réinstallez le scanner ou installez-en un autre.</string>
     <string name="error_import_invalid_archive">Le fichier sélectionné n\'est pas reconnu.</string>
+    <string name="pt_bob_titles_display">Afficher les titres en tant que</string>
+    <string name="lbl_author_type_cover_artist">couverture</string>
+    <string name="lbl_author_type_cover_colorist">couleur de la couverture</string>
 
 </resources>

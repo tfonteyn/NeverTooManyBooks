@@ -422,44 +422,46 @@ public class BooksOnBookshelfModel
             // get a new builder and add the required extra domains
             blb = new BooklistBuilder(context, style);
 
-            // Title for displaying
-            blb.requireDomain(DBDefinitions.DOM_TITLE,
-                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
-                              false);
+            // Title for displaying + the book language
+            blb.addExtraDomain(DBDefinitions.DOM_TITLE,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
+                               false);
+            blb.addExtraDomain(DBDefinitions.DOM_BOOK_LANGUAGE,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LANGUAGE),
+                               false);
 
             // Title for sorting
-            blb.requireDomain(DBDefinitions.DOM_TITLE_OB,
-                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE_OB),
-                              true);
+            blb.addExtraDomain(DBDefinitions.DOM_TITLE_OB,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE_OB),
+                               true);
             // The read flag
-            blb.requireDomain(DBDefinitions.DOM_BOOK_READ,
-                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
-                              false);
+            blb.addExtraDomain(DBDefinitions.DOM_BOOK_READ,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
+                               false);
 
             // external site ID's
-            blb.requireDomain(DBDefinitions.DOM_BOOK_ISFDB_ID,
-                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISFDB_ID),
-                              false);
-            blb.requireDomain(DBDefinitions.DOM_BOOK_GOODREADS_ID,
-                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_GOODREADS_ID),
-                              false);
-            blb.requireDomain(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID,
-                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID),
-                              false);
-            blb.requireDomain(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID,
-                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),
-                              false);
+            blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISFDB_ID,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISFDB_ID),
+                               false);
+            blb.addExtraDomain(DBDefinitions.DOM_BOOK_GOODREADS_ID,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_GOODREADS_ID),
+                               false);
+            blb.addExtraDomain(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID),
+                               false);
+            blb.addExtraDomain(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),
+                               false);
 
             /*
-             * URGENT: experimental... {@link BooklistStyle#useTaskForExtras()}.
-             * When set to false, "extra" field bookshelves (if selected) will not be populated.
              * Depending on the device speed, and user habits, BOTH methods can be advantageous.
              * ==> now a preference <strong>per style</strong>
              */
             if (!style.useTaskForExtras()) {
-                //ENHANCE:  see DAO#fetchBookExtrasById ... this needs work.
+                //URGENT: see DAO#fetchBookExtrasById ... this needs work.
+                // "extra" field bookshelves (if selected) will not be populated.
 //                if (style.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
-//                    blb.requireDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
+//                    blb.addExtraDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
 //                                   "GROUP_CONCAT("
 //                                   + DBDefinitions.TBL_BOOKSHELF.dot(DBDefinitions.DOM_BOOKSHELF)
 //                                   + ",', ')",
@@ -469,45 +471,46 @@ public class BooksOnBookshelfModel
 
                 // we fetch ONLY the primary author
                 if (style.isUsed(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
-                    blb.requireDomain(DBDefinitions.DOM_AUTHOR_FORMATTED,
-                                      style.showAuthorGivenNameFirst(context)
-                                      ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
-                                      : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
-                                      false);
+                    blb.addExtraDomain(DBDefinitions.DOM_AUTHOR_FORMATTED,
+                                       style.showAuthorGivenNameFirst(context)
+                                       ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
+                                       : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
+                                       false);
                 }
                 // and for now, don't get the author type.
 //                if (style.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
-//                    blb.requireDomain(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
+//                    blb.addExtraDomain(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
 //                                      DBDefinitions.TBL_BOOK_AUTHOR
 //                                              .dot(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK),
 //                                      false);
 //                }
 
                 if (style.isUsed(DBDefinitions.KEY_PUBLISHER)) {
-                    blb.requireDomain(DBDefinitions.DOM_BOOK_PUBLISHER,
-                                      DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_PUBLISHER),
-                                      false);
+                    blb.addExtraDomain(
+                            DBDefinitions.DOM_BOOK_PUBLISHER,
+                            DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_PUBLISHER),
+                            false);
                 }
                 if (style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
-                    blb.requireDomain(DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
-                                      DBDefinitions.TBL_BOOKS.dot(
-                                              DBDefinitions.DOM_BOOK_DATE_PUBLISHED),
-                                      false);
+                    blb.addExtraDomain(
+                            DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
+                            DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_DATE_PUBLISHED),
+                            false);
                 }
                 if (style.isUsed(DBDefinitions.KEY_ISBN)) {
-                    blb.requireDomain(DBDefinitions.DOM_BOOK_ISBN,
-                                      DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISBN),
-                                      false);
+                    blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISBN,
+                                       DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISBN),
+                                       false);
                 }
                 if (style.isUsed(DBDefinitions.KEY_FORMAT)) {
-                    blb.requireDomain(DBDefinitions.DOM_BOOK_FORMAT,
-                                      DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_FORMAT),
-                                      false);
+                    blb.addExtraDomain(DBDefinitions.DOM_BOOK_FORMAT,
+                                       DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_FORMAT),
+                                       false);
                 }
                 if (style.isUsed(DBDefinitions.KEY_LOCATION)) {
-                    blb.requireDomain(DBDefinitions.DOM_BOOK_LOCATION,
-                                      DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LOCATION),
-                                      false);
+                    blb.addExtraDomain(DBDefinitions.DOM_BOOK_LOCATION,
+                                       DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LOCATION),
+                                       false);
                 }
             }
 

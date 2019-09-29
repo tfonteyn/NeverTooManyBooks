@@ -110,6 +110,7 @@ public class PBoolean
             if (getPrefs().contains(getKey())) {
                 return getPrefs().getBoolean(getKey(), mDefaultValue);
             } else {
+                // not present, fallback to global.
                 return getGlobal().getBoolean(getKey(), mDefaultValue);
             }
         }

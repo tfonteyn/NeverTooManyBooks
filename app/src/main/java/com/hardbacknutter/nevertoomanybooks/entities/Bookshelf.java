@@ -312,20 +312,6 @@ public class Bookshelf
         dest.writeString(mStyleUuid);
     }
 
-    /**
-     * Kludge / dummy method.
-     * A Bookshelf does not have a Locale, but we need to implement {@link ItemWithFixableId}.
-     *
-     * @param fallbackLocale Locale to use
-     *
-     * @return fallbackLocale as passed in
-     */
-    @NonNull
-    @Override
-    public Locale getLocale(@NonNull final Locale fallbackLocale) {
-        return fallbackLocale;
-    }
-
     @Override
     public long fixId(@NonNull final Context context,
                       @NonNull final DAO db,

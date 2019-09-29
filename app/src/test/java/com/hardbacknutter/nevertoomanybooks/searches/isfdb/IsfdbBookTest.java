@@ -106,9 +106,9 @@ class IsfdbBookTest {
         when(mContext.getResources()).thenReturn(mResources);
         when(mContext.createConfigurationContext(any())).thenReturn(mContext);
         when(mContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mSharedPreferences);
+        when(mResources.getConfiguration()).thenReturn(mConfiguration);
 
         when(mContext.getString(R.string.book_format_paperback)).thenReturn(bookType_paperback);
-        when(mResources.getConfiguration()).thenReturn(mConfiguration);
 
         // Supposedly we should run two tests; i.e. true/false return.
         when(mSharedPreferences.getBoolean(eq(IsfdbManager.PREFS_SERIES_FROM_TOC), anyBoolean()))

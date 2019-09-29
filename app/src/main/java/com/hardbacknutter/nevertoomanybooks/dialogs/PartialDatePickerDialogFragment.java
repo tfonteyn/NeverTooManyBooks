@@ -484,7 +484,6 @@ public class PartialDatePickerDialogFragment
             // Remove them
             parent.removeAllViews();
             // Re-add in the correct order.
-            //FIXME: once the CL 2.0 ConstraintSet is better known, see if that is faster.
             for (char c : order) {
                 switch (c) {
                     case 'd':

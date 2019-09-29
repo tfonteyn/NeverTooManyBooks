@@ -27,17 +27,39 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Bundle;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.hardbacknutter.nevertoomanybooks.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
+ * Currently this test will fail as we don't mock the right id for the objects.
+ *
  * isUniqueById().
  * - 'true' for Author, Bookshelf, TocEntry
  * - 'false' for Series
@@ -47,17 +69,63 @@ class PruneListTest {
     private static final String PHILIP_JOSE_FARMER = "Philip Jose Farmer";
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
 
+    @Mock
+    Context mContext;
+    @Mock
+    SharedPreferences mSharedPreferences;
+    @Mock
+    Resources mResources;
+    @Mock
+    Configuration mConfiguration;
+    @Mock
+    Bundle mBundle;
+
+    @Mock
+    DAO mDb;
+
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+
+        mBundle = BundleMock.mock();
+        mContext = mock(Context.class);
+        mResources = mock(Resources.class);
+        mSharedPreferences = mock(SharedPreferences.class);
+        mConfiguration = mock(Configuration.class);
+
+        when(mContext.getApplicationContext()).thenReturn(mContext);
+        when(mContext.getResources()).thenReturn(mResources);
+        when(mContext.createConfigurationContext(any())).thenReturn(mContext);
+        when(mContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mSharedPreferences);
+
+        when(mSharedPreferences.getString(eq(Prefs.pk_ui_language),
+                                          eq(LocaleUtils.SYSTEM_LANGUAGE)))
+                .thenReturn(LocaleUtils.SYSTEM_LANGUAGE);
+
+        mDb = mock(DAO.class);
+
+        // FIXME: pretend fixing the id - how to return the actual id of the current author/series?
+//        when(mDb.getAuthorId(any(Author.class), any(Locale.class)))
+//                .thenReturn(100L);
+//        when(mDb.getSeriesId(eq(mContext), any(Series.class), any(Locale.class)))
+//                .thenReturn(100L);
+
+        // the return value is not used for now but fits the Series title data used.
+        when(mDb.getSeriesLanguage(100L)).thenReturn("eng");
+        when(mDb.getSeriesLanguage(200L)).thenReturn("nld");
+    }
+
     /**
-     * TEST: add authors with an id==0
+     * Test {@link ItemWithFixableId#pruneList}.
      */
     @Test
     void pruneAuthorList() {
 
         List<Author> authorList = new ArrayList<>();
-        Author author;
 
         // Keep
-        author = Author.fromString(ISAAC_ASIMOV);
+        Author author = Author.fromString(ISAAC_ASIMOV);
         author.setId(100);
         authorList.add(author);
 
@@ -96,8 +164,9 @@ class PruneListTest {
         authorList.add(author);
 
 
-        boolean modified = ItemWithFixableId.pruneList(authorList, null, null, Locale.getDefault());
-        //System.out.println(list);
+        boolean modified = ItemWithFixableId.pruneList(authorList, mContext,
+                                                       mDb, Locale.getDefault());
+        System.out.println(authorList);
 
         assertTrue(author.isUniqueById());
         assertTrue(modified);
@@ -122,43 +191,42 @@ class PruneListTest {
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
     }
 
+
     /**
-     * TEST: add Series with an id!=0
+     * While {@link Series#pruneList} does call {@link ItemWithFixableId#pruneList},
+     * this Series data is only setup for testing {@link Series#pruneList} itself.
+     *
+     * The {@link #pruneAuthorList()} is used to test {@link ItemWithFixableId#pruneList}.
      */
     @Test
     void pruneSeriesList() {
         List<Series> list = new ArrayList<>();
-        Series series;
 
-        series = Series.fromString("fred(5)");
+
+        Series series = Series.fromString("The series (5)");
+        series.setId(100);
         list.add(series);
-        series = Series.fromString("fred");
+        series = Series.fromString("The series");
+        series.setId(100);
         list.add(series);
-        series = Series.fromString("bill");
+        series = Series.fromString("De reeks");
+        series.setId(200);
         list.add(series);
-        series = Series.fromString("bill");
+        series = Series.fromString("De reeks");
+        series.setId(200);
         list.add(series);
-        series = Series.fromString("bill(1)");
+        series = Series.fromString("De reeks (1)");
+        series.setId(200);
         list.add(series);
-        series = Series.fromString("fred(5)");
+        series = Series.fromString("The series (5)");
+        series.setId(100);
         list.add(series);
-        series = Series.fromString("fred(6)");
+        series = Series.fromString("The series (6)");
+        series.setId(100);
         list.add(series);
 
-//        series = Series.fromString("bill(1)");
-//        series.setId(1);
-//        list.add(series);
-//        series = Series.fromString("fred(5)");
-//        series.setId(2);
-//        list.add(series);
-//        series = Series.fromString("fred(6)");
-//        series.setId(3);
-//        list.add(series);
-//        series = Series.fromString("fred(6)");
-//        series.setId(2);
-//        list.add(series);
-
-        boolean modified = Series.pruneList(list, null, null, Locale.getDefault());
+        //System.out.println(list);
+        boolean modified = Series.pruneList(list, mContext, mDb, Locale.getDefault());
         System.out.println(list);
 
         assertFalse(series.isUniqueById());
@@ -166,15 +234,15 @@ class PruneListTest {
         assertEquals(3, list.size());
 
         series = list.get(0);
-        assertEquals("fred", series.getTitle());
+        assertEquals("The series", series.getTitle());
         assertEquals("5", series.getNumber());
 
         series = list.get(1);
-        assertEquals("bill", series.getTitle());
+        assertEquals("De reeks", series.getTitle());
         assertEquals("1", series.getNumber());
 
         series = list.get(2);
-        assertEquals("fred", series.getTitle());
+        assertEquals("The series", series.getTitle());
         assertEquals("6", series.getNumber());
     }
 }

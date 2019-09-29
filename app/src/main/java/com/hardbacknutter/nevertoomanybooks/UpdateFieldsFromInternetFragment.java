@@ -102,10 +102,10 @@ public class UpdateFieldsFromInternetFragment
         public void onTaskFinished(@NonNull final ManagedTask task) {
             mUpdateSenderId = 0;
             Intent data = new Intent()
-                                  .putExtra(UniqueId.BKEY_CANCELED, task.isCancelled())
-                                  // null if we did 'all books'
-                                  // or the ID's of the (hopefully) updated books.
-                                  .putExtra(UniqueId.BKEY_ID_LIST, mBookIds);
+                    .putExtra(UniqueId.BKEY_CANCELED, task.isCancelled())
+                    // null if we did 'all books'
+                    // or the ID's of the (hopefully) updated books.
+                    .putExtra(UniqueId.BKEY_ID_LIST, mBookIds);
 
             Activity activity = getActivity();
             if (!isSingleBook()) {
@@ -397,8 +397,8 @@ public class UpdateFieldsFromInternetFragment
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
-                                        .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
-                                                  SearchAdminActivity.TAB_ORDER);
+                        .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
+                                  SearchAdminActivity.TAB_ORDER);
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
 

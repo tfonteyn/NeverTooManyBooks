@@ -109,12 +109,15 @@ import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
 public class BooksOnBookshelf
         extends BaseActivity {
 
+    /** This is very important: the number of FAB sub-buttons we're using. */
     private static final int FAB_ITEMS = 4;
+
     /**
      * Views for the current row level-text.
      * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
      */
     private final TextView[] mHeaderTextView = new TextView[2];
+
     /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
     private final ExtendedFloatingActionButton[] mFabMenuItems =
             new ExtendedFloatingActionButton[FAB_ITEMS];
@@ -252,7 +255,8 @@ public class BooksOnBookshelf
                 @Override
                 public void onScrollStateChanged(@NonNull final RecyclerView recyclerView,
                                                  final int newState) {
-                    //URGENT: this is not called when the fast scroller stops scrolling
+                    //FIXME: this is not called when the fast scroller stops scrolling
+                    //but it's not unusable... the slighted swipe of the user brings the FAB back.
                     if (newState == RecyclerView.SCROLL_STATE_IDLE
                         || newState == RecyclerView.SCROLL_STATE_SETTLING) {
                         showFABMenu(false);
@@ -291,8 +295,9 @@ public class BooksOnBookshelf
 
         // Setup the list view.
         initListView();
-        // create and hookup the list adapter; initially without a cursor (item list)
-        initAdapter(null);
+        // Reminder: we DO NOT init the adapter here.
+        //remove: //create and hookup the list adapter; initially without a cursor (item list)
+        //remove: initAdapter(null);
         // details for the header.
         initHeader();
         // Setup the FAB button and the linked menu.
@@ -449,6 +454,7 @@ public class BooksOnBookshelf
             .setIcon(R.drawable.ic_unfold_less);
 
         // Disabled for now. It's a bit to easy for the user to select this from here,
+        // with potentially huge impact.
         // This will use the currently displayed book list (the book ID's)
 //        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, 0, R.string.lbl_update_fields)
 //            .setIcon(R.drawable.ic_cloud_download);
@@ -465,7 +471,7 @@ public class BooksOnBookshelf
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, R.string.debug_history);
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TABLES, 0, R.string.debug_bob_tables);
 
-            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_UNMANGLE, 0, "unmangle");
+            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_UNMANGLE, 0, "un-mangle");
 
         }
         return super.onCreateOptionsMenu(menu);
@@ -820,10 +826,13 @@ public class BooksOnBookshelf
             return;
         }
 
-        // clear the cursor; we'll prepare a new one and meanwhile the view/adapter should
-        // obviously NOT try to display the old list.
-        // Note we do not clear the cursor on the model here, so we have the option of re-using it.
-        mAdapter.setCursor(null);
+        if (mAdapter != null) {
+            // clear the cursor; we'll prepare a new one and meanwhile the view/adapter
+            // should obviously NOT try to display the old list.
+            // Note we do not clear the cursor on the model here,
+            // so we have the option of re-using it.
+            mAdapter.setCursor(null);
+        }
 
         // If we got here after onActivityResult, see if we need to force a rebuild.
         Boolean fullOrPartialRebuild = mModel.isForceFullRebuild();
@@ -1050,19 +1059,12 @@ public class BooksOnBookshelf
     }
 
     /**
-     * FIXME: we should not create the adapter twice.
-     * Need a reliable way of creating it in {@link #onCreate} and loading in {@link #displayList}.
+     * A new adapter is created each time the list is prepared,
+     * as the underlying data can be very different from list to list.
+     *
+     * @param cursor with list of items
      */
     private void initAdapter(@Nullable final Cursor cursor) {
-
-        //This turned out not to work, or at least not reliably.
-
-        // make sure any old views with potentially incorrect layout are removed
-//        mListView.getRecycledViewPool().clear();
-//        // (re)set the adapter with the current style
-//        mAdapter.setStyle(mModel.getCurrentStyle());
-//        // set the list, this will trigger the adapter to refresh.
-//        mAdapter.setCursor(mModel.getListCursor());
 
         mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(),
                                        mModel.getDb(), cursor);
@@ -1173,18 +1175,26 @@ public class BooksOnBookshelf
                 }
                 break;
 
-            // if's not a book, expand/collapse as needed
+            // If it's a level, expand/collapse. Technically, we could expand/collapse any level
+            // but storing and recovering the view becomes unmanageable.
+            // ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542
             default:
-                // If it's a level, expand/collapse. Technically, we could expand/collapse any level
-                // but storing and recovering the view becomes unmanageable.
-                // ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542
                 // we don't prohibit other levels any longer, but we don't store/recover them.
-//                if (row.getRowLevel() == 1) {
-                cursor.getBuilder()
-                      .toggleExpandNode(mapper.getInt(DBDefinitions.KEY_BL_ABSOLUTE_POSITION));
+//           if (row.getRowLevel() == 1) {
+                long absPos = mapper.getInt(DBDefinitions.KEY_BL_ABSOLUTE_POSITION);
+                boolean isExpanded = cursor.getBuilder().toggleExpandNode(absPos);
                 cursor.requery();
                 mAdapter.notifyDataSetChanged();
-//                }
+
+                if (isExpanded) {
+                    // if the user expands the line at the bottom of the screen,
+                    int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                    if ((position + 1 == lastPos) || (position == lastPos)) {
+                        // then we move the list a minimum of 2 positions upwards. 3 for comfort.
+                        mListView.scrollToPosition(position + 3);
+                    }
+                }
+//           }
                 break;
         }
     }
@@ -1743,7 +1753,6 @@ public class BooksOnBookshelf
         return true;
     }
 
-
     /**
      * Convenience wrapper method that handles the 4 steps of preparing the list header.
      *
@@ -1790,7 +1799,7 @@ public class BooksOnBookshelf
                 stringArgs = getResources().getQuantityString(R.plurals.displaying_n_books,
                                                               uniqueBooks, uniqueBooks);
             }
-            mBookCountView.setText(getString(R.string.brackets, stringArgs));
+            mBookCountView.setText(stringArgs);
             mBookCountView.setVisibility(View.VISIBLE);
         } else {
             mBookCountView.setVisibility(View.GONE);

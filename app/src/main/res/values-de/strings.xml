@@ -426,7 +426,7 @@
     <string name="pg_filters">Buchfilter</string>
     <string name="pg_general">Allgemein</string>
     <string name="pg_groupings">Gruppierung</string>
-    <string name="pt_sort_by_title_uses">Titel sortieren nach</string>
+    <string name="pt_bob_titles_sort">Titel sortieren nach</string>
     <string name="pg_barcode_scanner">Barcodelesegerät</string>
     <string name="pg_thumbnails">Umschlagbilder</string>
     <string name="pg_ui">Benutzeroberfläche</string>
@@ -465,19 +465,19 @@
     <string name="pt_allow_mobile_data">Mobile Datennutzung zulassen</string>
     <string name="pt_bob_books_under_multiple_authors">Bücher mit mehreren Autoren</string>
     <string name="pt_bob_books_under_multiple_series">Bücher in mehreren Serien</string>
-    <string name="pt_bob_author_name">Format des Autorennamens</string>
+    <string name="pt_bob_authors_display">Autoren anzeigen als</string>
     <string name="pt_bob_header">Zusammenfassung in der Kopfzeile</string>
     <string name="pt_booklist_generation">Erzeugung der Bücherliste</string>
     <string name="pt_booklist_state">Darstellung der Bücherliste</string>
     <string name="pt_booklist_open_book_read_only">Buch im schreibgeschützten Modus öffnen</string>
-    <string name="pt_bob_sorting_author">Autorennamen sortieren</string>
+    <string name="pt_bob_authors_sort">Autoren sortieren nach</string>
     <string name="pt_bob_text_size">Größe der Einträge in der Bücherliste</string>
     <string name="pt_thumbnails_cache_resized">Größe der Cover-Bilder ändern zwischenspeichern</string>
     <string name="pt_bob_thumbnails_show">Cover-Bilder anzeigen</string>
     <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
     <string name="pt_bob_thumbnails_scale">Bildgröße in Listen</string>
-    <string name="pt_reformat_titles_summary_original">Der Titel</string>
-    <string name="pt_reformat_titles_summary_reformatted">Titel, Der</string>
+    <string name="pt_bob_titles_summary_original">Der Titel</string>
+    <string name="pt_bob_titles_summary_reformatted">Titel, Der</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Tonsignal, falls die gescannte ISBN ungültig ist</string>
     <string name="pt_scanning_beep_if_isbn_valid">Tonsignal bei gültig gescannter ISBN</string>
     <string name="pt_scanning_preferred_scanner">Bevorzugter Scanner</string>
@@ -635,4 +635,8 @@
     <string name="warning_scanner_retry_install">Wir empfehlen, dass Sie es zuerst erneut versuchen. Wenn dies jedoch weiterhin fehlschlägt, installieren Sie den Scanner erneut oder installieren Sie einen anderen Scanner.</string>
     <string name="error_import_invalid_archive">Die ausgewählte Datei wird nicht erkannt.</string>
     <string name="lbl_author_type_writer">Autor</string>
+    <string name="pt_bob_titles_display">Titel anzeigen als</string>
+    <string name="lbl_author_type_artist">Abbildungen</string>
+    <string name="lbl_author_type_cover_artist">Titelbild</string>
+    <string name="lbl_author_type_cover_colorist">Titelbild Farbe</string>
 </resources>

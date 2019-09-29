@@ -72,6 +72,15 @@ public class AuthorWorksModel
     }
 
     /**
+     * NEVER close this database.
+     *
+     * @return the DAO
+     */
+    public DAO getDb() {
+        return mDb;
+    }
+
+    /**
      * Pseudo constructor.
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}

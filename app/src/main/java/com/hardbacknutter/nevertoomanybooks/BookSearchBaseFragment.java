@@ -62,7 +62,7 @@ public abstract class BookSearchBaseFragment
         extends Fragment {
 
     /** hosting activity. */
-    AppCompatActivity mActivity;
+    AppCompatActivity mHostActivity;
     TaskManager mTaskManager;
 
     /** the ViewModel. */
@@ -71,8 +71,8 @@ public abstract class BookSearchBaseFragment
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        mActivity = (AppCompatActivity) context;
-        mTaskManager = ((BookSearchActivity) mActivity).getTaskManager();
+        mHostActivity = (AppCompatActivity) context;
+        mTaskManager = ((BookSearchActivity) mHostActivity).getTaskManager();
     }
 
     @Override
@@ -223,8 +223,8 @@ public abstract class BookSearchBaseFragment
             UserMessage.show(getView(), R.string.error_search_failed);
 
         }
-        mActivity.setResult(Activity.RESULT_CANCELED);
-        mActivity.finish();
+        mHostActivity.setResult(Activity.RESULT_CANCELED);
+        mHostActivity.finish();
         return false;
     }
 
@@ -250,11 +250,11 @@ public abstract class BookSearchBaseFragment
                     // Created a book; save the intent
                     mBookSearchBaseModel.setLastBookData(data);
                     // pass all results up the chain
-                    mActivity.setResult(resultCode, mBookSearchBaseModel.getLastBookData());
+                    mHostActivity.setResult(resultCode, mBookSearchBaseModel.getLastBookData());
 
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     // if the edit was cancelled, set that as the default result code
-                    mActivity.setResult(Activity.RESULT_CANCELED);
+                    mHostActivity.setResult(Activity.RESULT_CANCELED);
                 }
                 break;
             }

@@ -254,15 +254,16 @@ public class TocEntry
     /**
      * ENHANCE: The Locale of the TocEntry should be based on either a specific language
      * setting for the TocEntry itself, or on the Locale of the <strong>primary</strong> book.
-     * For now, we always use the passed fallback which <strong>should be the BOOK Locale</strong>
      *
-     * @param bookLocale Locale to use if the Series does not have a Locale of its own.
+     * @param db         Database Access
+     * @param bookLocale Locale to use if the TOCEntry does not have a Locale of its own.
      *
      * @return the Locale of the TocEntry
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Locale bookLocale) {
+    public Locale getLocale(@NonNull final DAO db,
+                            @NonNull final Locale bookLocale) {
         return bookLocale;
     }
 

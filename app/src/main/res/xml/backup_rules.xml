@@ -27,29 +27,20 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <plurals name="displaying_n_books">
-        <item quantity="one">Visualizzati %1$d libro</item>
-        <item quantity="other">Visualizzati %1$d libri</item>
-    </plurals>
+<!--
+    Testing backups: https://developer.android.com/guide/topics/data/testingbackup
+-->
+<full-backup-content xmlns:tools="http://schemas.android.com/tools">
+    <!-- not needed; gets generated on the fly. -->
+    <exclude
+        domain="sharedpref"
+        path="language2iso3.xml"
+        tools:ignore="FullBackupContent" />
 
-    <plurals name="n_books_found">
-        <item quantity="one">%1$d libro trovato</item>
-        <item quantity="other">%1$d libri trovati</item>
-    </plurals>
+    <!-- can't do the cover images as this would rapidly exceed the 25mb limit -->
+    <exclude
+        domain="external"
+        path="./Pictures" />
+    <!-- we DO let it backup the log files -->
 
-    <plurals name="n_books">
-        <item quantity="one">%1$d libro</item>
-        <item quantity="other">%1$d libri</item>
-    </plurals>
-
-    <plurals name="n_covers">
-        <item quantity="one">%1$d copertina</item>
-        <item quantity="other">%1$d copertine</item>
-    </plurals>
-
-    <plurals name="n_stars">
-        <item quantity="one">%1$s stella</item>
-        <item quantity="other">%1$s stelle</item>
-    </plurals>
-</resources>
+</full-backup-content>

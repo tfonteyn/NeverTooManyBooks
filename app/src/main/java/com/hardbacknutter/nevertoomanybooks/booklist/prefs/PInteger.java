@@ -66,6 +66,7 @@ public class PInteger
             // reminder: Integer is stored as a String
             String value = getPrefs().getString(getKey(), null);
             if (value == null || value.isEmpty()) {
+                // not present, fallback to global/default
                 value = getGlobal().getString(getKey(), null);
                 if (value == null || value.isEmpty()) {
                     return mDefaultValue;

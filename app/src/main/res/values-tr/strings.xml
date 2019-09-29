@@ -423,7 +423,7 @@
     <string name="pg_filters">Kitap süzgeçleri</string>
     <string name="pg_general">Genel</string>
     <string name="pg_groupings">Öbeklemeler</string>
-    <string name="pt_sort_by_title_uses">Başlıkları sırala</string>
+    <string name="pt_bob_titles_sort">Başlıkları sırala</string>
     <string name="pg_barcode_scanner">Barkod okuyucu</string>
     <string name="pg_thumbnails">Ufak resimler</string>
     <string name="pg_ui">Kullanıcı arayüzü</string>
@@ -462,12 +462,12 @@
     <string name="pt_allow_mobile_data">Mobil veri kullanımına izin ver</string>
     <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>
     <string name="pt_bob_books_under_multiple_series">Birden fazla seride bulunan kitaplar</string>
-    <string name="pt_bob_author_name">Yazar adları biçimi</string>
+    <string name="pt_bob_authors_display">Yazarları olarak görüntüle</string>
     <string name="pt_bob_header">Başlık özet ayrıntıları</string>
     <string name="pt_booklist_generation">Kitap dizelgesi oluşturma seçeneği</string>
     <string name="pt_booklist_state">Kitap dizelgesi durumu</string>
     <string name="pt_booklist_open_book_read_only">Kitabı salt okunur aç</string>
-    <string name="pt_bob_sorting_author">Yazarları sırala</string>
+    <string name="pt_bob_authors_sort">Yazarları sırala</string>
     <string name="pt_bob_text_size">Kitap dizelgesi öğeleri boyutu</string>
     <string name="pt_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
     <string name="pt_bob_thumbnails_show">Ufak resimleri göster</string>
@@ -629,5 +629,9 @@
     <string name="warning_scanner_failed_to_start">Tarayıcı başlatılamadı.</string>
     <string name="warning_scanner_retry_install">Önce yeniden denemenizi öneririz, ancak devam ederse, lütfen tarayıcıyı yeniden yükleyin veya başka bir tarayıcı yükleyin.</string>
     <string name="error_import_invalid_archive">Seçilen dosya tanınmıyor.</string>
+    <string name="pt_bob_titles_display">Başlıkları farklı göster</string>
+    <string name="lbl_author_type_artist">çizimler</string>
+    <string name="lbl_author_type_cover_artist">Kapak resmi</string>
+    <string name="lbl_author_type_cover_colorist">Kapak boyama</string>
 
 </resources>

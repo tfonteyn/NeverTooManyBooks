@@ -41,20 +41,30 @@ import androidx.annotation.Nullable;
  */
 public interface PPref<T> {
 
+    @NonNull
+    String getKey();
+
     /**
-     * for single updates.
+     * for single updates; user preferences only.
      */
     void set(@Nullable T value);
 
     /**
-     * for batch updates. Can also be used for setting globals.
+     * for batch updates.
+     * Can also be used for setting globals.
      */
     void set(@NonNull SharedPreferences.Editor ed,
              @NonNull T value);
 
+    /**
+     * <ol>Implementations should return in order:
+     * <li>The user preference if set</li>
+     * <li>The global preference if set</li>
+     * <li>The default value as set at creation time of the preference Object.</li>
+     * </ol>
+     *
+     * @return the value of the preference
+     */
     @NonNull
     T get();
-
-    @NonNull
-    String getKey();
 }

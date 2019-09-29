@@ -771,6 +771,15 @@ public class BooklistStyle
     }
 
     /**
+     * ENHANCE: make reorderTitleForDisplaying specific to style (with global fallback).
+     *
+     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
+     */
+    public boolean reorderTitleForDisplaying() {
+        return Prefs.reorderTitleForDisplaying(App.getAppContext());
+    }
+
+    /**
      * Check if the style wants the book count to be displayed.
      *
      * @return {@code true} if the book count should be shown
@@ -1098,8 +1107,6 @@ public class BooklistStyle
 
     /**
      * Construct a clone of this object with id==0, and a new uuid.
-     * <p>
-     * TODO: have a think... don't use Parceling, but simply copy the prefs + db entry.
      *
      * @param context Current context
      */
@@ -1238,7 +1245,8 @@ public class BooklistStyle
      */
     public boolean isUsed(@NonNull final String key) {
         // check the groups first; they take priority on 'extras' and even on App.isUsed,
-        //FIXME: we currently don't hide/remove groups based on user preference visibility.
+        //ENHANCE: we currently don't hide/remove groups based on user preference visibility.
+        // but do we really care?
         for (BooklistGroup group : getGroups()) {
             if (group.getDisplayDomain().getName().equals(key)) {
                 return true;

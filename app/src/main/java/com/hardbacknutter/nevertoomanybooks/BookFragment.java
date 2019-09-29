@@ -92,10 +92,14 @@ public class BookFragment
     /** Fragment manager tag. */
     public static final String TAG = "BookFragment";
 
+    /** Table name of the {@link FlattenedBooklist}. */
     public static final String BKEY_FLAT_BOOKLIST_TABLE = TAG + ":FBL_Table";
+    /** Position in the {@link FlattenedBooklist} of this book. Used for left/right swipes. */
     public static final String BKEY_FLAT_BOOKLIST_POSITION = TAG + ":FBL_Position";
 
+    /** Size of the cover image to use. */
     private static final int IMAGE_SCALE = ImageUtils.SCALE_LARGE;
+
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (data != null) {
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
@@ -107,11 +111,16 @@ public class BookFragment
             }
         }
     };
-    private View mTocLabelView;
+
+    /** Switch the user can flick to display/hide the TOC (if present). */
     private CompoundButton mTocButton;
+    /** We display/hide the TOC header label as needed. */
+    private View mTocLabelView;
+    /** The TOC list. */
     private LinearLayout mTocView;
 
-    private NestedScrollView mNestedScrollView;
+    /** The scroll view encompassing the entire fragment page. */
+    private NestedScrollView mTopScrollView;
 
     /** Handles cover replacement, rotation, etc. */
     private CoverHandler mCoverHandler;
@@ -125,12 +134,13 @@ public class BookFragment
     /** Contains the flattened book list for next/previous paging. */
     private FlattenedBooklistModel mFlattenedBooklistModel;
 
-    private AppCompatActivity mActivity;
+    /** Hosting activity to handle FAB/result/touches. */
+    private AppCompatActivity mHostActivity;
 
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        mActivity = (AppCompatActivity) context;
+        mHostActivity = (AppCompatActivity) context;
     }
 
     @Override
@@ -146,7 +156,7 @@ public class BookFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book_details, container, false);
-        mNestedScrollView = view.findViewById(R.id.topScroller);
+        mTopScrollView = view.findViewById(R.id.topScroller);
 
         mTocLabelView = view.findViewById(R.id.lbl_toc);
         mTocView = view.findViewById(R.id.toc);
@@ -158,7 +168,7 @@ public class BookFragment
             // If user clicks to fast it gets out of sync.
             if (mTocView.getVisibility() == View.VISIBLE) {
                 // force a scroll; a manual scroll is no longer possible after the TOC closes.
-                mNestedScrollView.fullScroll(View.FOCUS_UP);
+                mTopScrollView.fullScroll(View.FOCUS_UP);
                 mTocView.setVisibility(View.GONE);
                 mTocButton.setChecked(false);
 
@@ -174,6 +184,7 @@ public class BookFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * <ul>All storage interaction is done via:
+     * <li>parent / model for loading the book</li>
      * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
      * </ul>
      * {@inheritDoc}
@@ -182,13 +193,15 @@ public class BookFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        // parent takes care of initialising the Fields.
+        // the parent will tell the model to load the Book.
+        // After that it takes care of initialising the Fields.
+        // Transferring data from Book to fields is done in onResume.
         super.onActivityCreated(savedInstanceState);
 
         mFlattenedBooklistModel = new ViewModelProvider(this).get(FlattenedBooklistModel.class);
         mFlattenedBooklistModel.init(getArguments(), mBookModel.getBook().getId());
 
-        FloatingActionButton fabButton = mActivity.findViewById(R.id.fab);
+        FloatingActionButton fabButton = mHostActivity.findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_edit);
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> startEditBook());
@@ -204,33 +217,30 @@ public class BookFragment
         }
     }
 
-    @Override
-    @CallSuper
-    public void onPause() {
-        ((BookDetailsActivity) mActivity).unregisterOnTouchListener(mOnTouchListener);
-
-        //  set the current visible book id as the result data.
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, mBookModel.getBook().getId());
-        mActivity.setResult(Activity.RESULT_OK, data);
-
-        super.onPause();
-    }
-
+    /**
+     * The parent onResume() will kick of the process that triggers {@link #onLoadFieldsFromBook}.
+     */
     @CallSuper
     @Override
     public void onResume() {
         Tracker.enterOnResume(this);
-        // returning here from somewhere else (e.g. from editing the book) and have an ID...reload!
-        long bookId = mBookModel.getBook().getId();
-        if (bookId != 0) {
-            mBookModel.reload(bookId);
-        }
-        // the parent will kick of the process that triggers onLoadFieldsFromBook.
-        super.onResume();
 
-        ((BookDetailsActivity) mActivity).registerOnTouchListener(mOnTouchListener);
+        super.onResume();
+        ((BookDetailsActivity) mHostActivity).registerOnTouchListener(mOnTouchListener);
 
         Tracker.exitOnResume(this);
+    }
+
+    @Override
+    @CallSuper
+    public void onPause() {
+        ((BookDetailsActivity) mHostActivity).unregisterOnTouchListener(mOnTouchListener);
+
+        //  set the current visible book id as the result data.
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, mBookModel.getBook().getId());
+        mHostActivity.setResult(Activity.RESULT_OK, data);
+
+        super.onPause();
     }
 
     @Override
@@ -498,8 +508,8 @@ public class BookFragment
                 StandardDialogs.deleteBookAlert(getContext(), title, authors, () -> {
                     mBookModel.getDb().deleteBook(book.getId());
                     Intent data = new Intent().putExtra(UniqueId.BKEY_DELETED_SOMETHING, true);
-                    mActivity.setResult(Activity.RESULT_OK, data);
-                    mActivity.finish();
+                    mHostActivity.setResult(Activity.RESULT_OK, data);
+                    mHostActivity.finish();
                 });
                 return true;
 

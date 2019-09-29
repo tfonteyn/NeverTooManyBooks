@@ -86,7 +86,7 @@ public class EditBookFragment
     @SuppressWarnings("unused")
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
-    private AppCompatActivity mActivity;
+    private AppCompatActivity mHostActivity;
 
     private ViewPager mViewPager;
     private ViewPagerAdapter mPagerAdapter;
@@ -94,7 +94,7 @@ public class EditBookFragment
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        mActivity = (AppCompatActivity) context;
+        mHostActivity = (AppCompatActivity) context;
     }
 
     @Override
@@ -136,13 +136,13 @@ public class EditBookFragment
         mViewPager.setAdapter(mPagerAdapter);
 
         // The FAB lives in the activity.
-        FloatingActionButton fabButton = mActivity.findViewById(R.id.fab);
+        FloatingActionButton fabButton = mHostActivity.findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_save);
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> doSave());
 
         // The tab bar lives in the activity layout inside the AppBarLayout!
-        TabLayout tabLayout = mActivity.findViewById(R.id.tab_panel);
+        TabLayout tabLayout = mHostActivity.findViewById(R.id.tab_panel);
 
         tabLayout.setupWithViewPager(mViewPager);
         // sanity check
@@ -255,7 +255,7 @@ public class EditBookFragment
                         .setMessage(R.string.confirm_duplicate_book_message)
                         .setCancelable(false)
                         .setNegativeButton(android.R.string.cancel,
-                                           (d, which) -> mActivity.finish())
+                                           (d, which) -> mHostActivity.finish())
                         .setPositiveButton(android.R.string.ok, (d, which) -> saveBook())
                         .create()
                         .show();
@@ -274,8 +274,8 @@ public class EditBookFragment
         //noinspection ConstantConditions
         Book book = mBookModel.saveBook(getContext());
         Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, book.getId());
-        mActivity.setResult(Activity.RESULT_OK, data);
-        mActivity.finish();
+        mHostActivity.setResult(Activity.RESULT_OK, data);
+        mHostActivity.finish();
     }
 
     /**

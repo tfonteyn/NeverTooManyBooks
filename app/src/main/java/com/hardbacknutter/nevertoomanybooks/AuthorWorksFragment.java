@@ -52,11 +52,14 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -124,7 +127,7 @@ public class AuthorWorksFragment
                     new FastScrollerOverlay(context, R.drawable.fast_scroll_overlay));
         }
 
-        mAdapter = new TocAdapter(context);
+        mAdapter = new TocAdapter(context, mModel.getDb());
         listView.setAdapter(mAdapter);
 
         if (savedInstanceState == null) {
@@ -309,14 +312,18 @@ public class AuthorWorksFragment
 
         /** Caching the inflater. */
         private final LayoutInflater mInflater;
+        private final DAO mDb;
 
         /**
          * Constructor.
          *
          * @param context Current context
+         * @param db      Database Access
          */
-        TocAdapter(@NonNull final Context context) {
+        TocAdapter(@NonNull final Context context,
+                   @NonNull final DAO db) {
             mInflater = LayoutInflater.from(context);
+            mDb = db;
         }
 
         @NonNull
@@ -345,10 +352,16 @@ public class AuthorWorksFragment
 
             TocEntry tocEntry = mModel.getTocEntries().get(position);
 
-            holder.titleView.setText(tocEntry.getTitle());
+            String title = tocEntry.getTitle();
+            //noinspection ConstantConditions
+            if (Prefs.reorderTitleForDisplaying(getContext())) {
+                title = LocaleUtils.reorderTitle(getContext(), title,
+                                                 tocEntry.getLocale(mDb, Locale.getDefault()));
+            }
+            holder.titleView.setText(title);
+
             // optional
             if (holder.authorView != null) {
-                //noinspection ConstantConditions
                 holder.authorView.setText(tocEntry.getAuthor().getLabel(getContext()));
             }
             // optional

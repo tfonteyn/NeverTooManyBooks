@@ -425,7 +425,7 @@
     <string name="pg_filters">Φίλτρα Βιβλίων</string>
     <string name="pg_general">Γενικά</string>
     <string name="pg_groupings">Ομαδοποιήσεις</string>
-    <string name="pt_sort_by_title_uses">Ταξινόμηση τίτλων με βάση</string>
+    <string name="pt_bob_titles_sort">Ταξινόμηση τίτλων με βάση</string>
     <string name="pg_barcode_scanner">Σάρωση γραμμοκώδικα</string>
     <string name="pg_thumbnails">Μικρογραφίες</string>
     <string name="pg_ui">Περιβάλλον Χρήστη</string>
@@ -464,19 +464,19 @@
     <string name="pt_allow_mobile_data">Να επιτρέπεται η χρήση δεδομένων κινητής τηλεφωνίας</string>
     <string name="pt_bob_books_under_multiple_authors">Βιβλία με πολλούς συγγραφείς</string>
     <string name="pt_bob_books_under_multiple_series">Βιβλία σε πολλές σειρές</string>
-    <string name="pt_bob_author_name">Μορφή του ονόματος συγγραφέα</string>
+    <string name="pt_bob_authors_display">Προβολή συγγραφέων ως</string>
     <string name="pt_bob_header">Λεπτομέρειες περίληψης στην επικεφαλίδα</string>
     <string name="pt_booklist_generation">Επιλογή παραγωγής λίστας βιβλίων</string>
     <string name="pt_booklist_state">Κατάσταση λίστας βιβλίων</string>
     <string name="pt_booklist_open_book_read_only">Άνοιγμα βιβλίου μόνο για ανάγνωση</string>
-    <string name="pt_bob_sorting_author">Ταξινόμηση δημιουργών</string>
+    <string name="pt_bob_authors_sort">Ταξινόμηση συγγραφέων από</string>
     <string name="pt_bob_text_size">Μέγεθος αντικειμένων λίστας βιβλίων</string>
     <string name="pt_thumbnails_cache_resized">Η μνήμη cache επέστρεψε τις μικρογραφίες</string>
     <string name="pt_bob_thumbnails_show">Εμφάνιση μικρογραφιών</string>
     <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
     <string name="pt_bob_thumbnails_scale">Μικρογραφεί μέγεθος σε λίστες</string>
-    <string name="pt_reformat_titles_summary_original">Ο τίτλος</string>
-    <string name="pt_reformat_titles_summary_reformatted">τίτλος, Ο</string>
+    <string name="pt_bob_titles_summary_original">Ο τίτλος</string>
+    <string name="pt_bob_titles_summary_reformatted">τίτλος, Ο</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Ειδοποίηση αν ο σκαναρισμένος κωδικός ISBN δεν είναι έγκυρος</string>
     <string name="pt_scanning_beep_if_isbn_valid">Ειδοποίηση αν το σκαναρισμένο ISBN είναι έγκυρο</string>
     <string name="pt_scanning_preferred_scanner">Προτιμώμενος σαρωτής</string>
@@ -633,5 +633,9 @@
     <string name="warning_scanner_failed_to_start">Ο σαρωτής απέτυχε να ξεκινήσει.</string>
     <string name="warning_scanner_retry_install">Προτείνουμε να προσπαθήσετε πρώτα, αλλά εάν συνεχίσει να αποτυγχάνει, παρακαλούμε εγκαταστήστε ξανά το σαρωτή ή εγκαταστήστε άλλο σαρωτή.</string>
     <string name="error_import_invalid_archive">Το επιλεγμένο αρχείο δεν αναγνωρίζεται.</string>
+    <string name="pt_bob_titles_display">Εμφάνιση τίτλων ως</string>
+    <string name="lbl_author_type_artist">εικονογραφήσεις</string>
+    <string name="lbl_author_type_cover_artist">εικόνα εξωφύλλου βιβλίου</string>
+    <string name="lbl_author_type_cover_colorist">βιβλίο κάλυψης βιβλίου</string>
 
 </resources>

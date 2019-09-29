@@ -581,19 +581,6 @@ public class Book
     }
 
     /**
-     * Get the Book's Locale (based on its language).
-     *
-     * @param userLocale Locale to use if the Book does not have a Locale of its own.
-     *
-     * @return the Locale, or the users preferred Locale if no language was set.
-     */
-    @NonNull
-    @Override
-    public Locale getLocale(@NonNull final Locale userLocale) {
-        return getLocale(userLocale, false);
-    }
-
-    /**
      * Use the book's language setting to determine the Locale.
      *
      * @param fallbackLocale Locale to use if the Book does not have a Locale of its own.
@@ -629,6 +616,7 @@ public class Book
                 }
                 // invalid, use fallback.
                 return fallbackLocale;
+
             } else if (updateLanguage) {
                 putString(DBDefinitions.KEY_LANGUAGE, lang);
             }

@@ -213,10 +213,14 @@ public class EditBookTocFragment
                                          mIsfdbResultsListener).execute();
                 }
             };
+
     /** checkbox to hide/show the author edit field. */
     private CompoundButton mMultiAuthorsView;
+
+    /** Hold the item position in the ist while we're editing an item. */
     @Nullable
     private Integer mEditPosition;
+
     private final EditTocEntryDialogFragment.EditTocEntryResults mEditTocEntryResultsListener =
             new EditTocEntryDialogFragment.EditTocEntryResults() {
                 /**
@@ -440,7 +444,10 @@ public class EditBookTocFragment
     }
 
     /**
-     * Edit an entry.
+     * Start the fragment dialog to edit a Bookshelf.
+     *
+     * @param tocEntry to edit
+     * @param position the item position which will be used to update the data after editing.
      */
     private void editEntry(@NonNull final TocEntry tocEntry,
                            @Nullable final Integer position) {

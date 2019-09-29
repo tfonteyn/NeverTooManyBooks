@@ -430,7 +430,7 @@
     <string name="pg_filters">Boekfilters</string>
     <string name="pg_general">Algemeen</string>
     <string name="pg_groupings">Groeperingen</string>
-    <string name="pt_sort_by_title_uses">Sorteer titels op</string>
+    <string name="pt_bob_titles_sort">Sorteer titels op</string>
     <string name="pg_barcode_scanner">Streepjescodescanner</string>
     <string name="pg_thumbnails">Miniaturen</string>
     <string name="pg_ui">Gebruikersinterface</string>
@@ -439,7 +439,7 @@
     <string name="progress_end_cancelled">Geannuleerd</string>
     <string name="progress_end_cancelled_info">Geannuleerd - %1$s</string>
     <string name="progress_end_import_complete">Import Compleet</string>
-    <string name="progress_end_n_books_searched">%1$d Boeken gezocht</string>
+    <string name="progress_end_n_books_searched">%1$d boeken gezocht</string>
     <string name="progress_msg_adding_book">Boeken aan \'t toevoegen…</string>
     <string name="title_backing_up">Aan \'t Back-uppen…</string>
     <string name="progress_msg_cancelling">Aan \'t Annuleren</string>
@@ -469,19 +469,19 @@
     <string name="pt_allow_mobile_data">Sta mobiel dataverbruik toe</string>
     <string name="pt_bob_books_under_multiple_authors">Boeken met meerdere auteurs</string>
     <string name="pt_bob_books_under_multiple_series">Boeken in meerdere series</string>
-    <string name="pt_bob_author_name">Formaat van auteursnamen</string>
+    <string name="pt_bob_authors_display">Toon auteurs als</string>
     <string name="pt_bob_header">Details in de koptekst</string>
     <string name="pt_booklist_generation">Optie voor genereren boekenlijst</string>
     <string name="pt_booklist_state">Boekenlijst status</string>
     <string name="pt_booklist_open_book_read_only">Open boek in alleen-lezen modus</string>
-    <string name="pt_bob_sorting_author">Auteur namen sorteren</string>
+    <string name="pt_bob_authors_sort">Auteurs sorteren op</string>
     <string name="pt_bob_text_size">Grootte van boekenlijst tekst</string>
     <string name="pt_thumbnails_cache_resized">Cache herschaalde miniaturen</string>
     <string name="pt_bob_thumbnails_show">Toon Miniaturen</string>
     <string name="pt_collect_series_info_from_toc">Verzamel Serie-info van de inhouds tabel</string>
     <string name="pt_bob_thumbnails_scale">Miniaturen grootte in lijsten</string>
-    <string name="pt_reformat_titles_summary_original">De titel</string>
-    <string name="pt_reformat_titles_summary_reformatted">titel, De</string>
+    <string name="pt_bob_titles_summary_original">De titel</string>
+    <string name="pt_bob_titles_summary_reformatted">titel, De</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Beep als het gescande ISBN ongeldig is</string>
     <string name="pt_scanning_beep_if_isbn_valid">Beep als gescande ISBN geldig is</string>
     <string name="pt_scanning_preferred_scanner">Voorkeur Scanner</string>
@@ -639,7 +639,8 @@
     <string name="warning_scanner_failed_to_start">De scanner kan niet worden gestart.</string>
     <string name="warning_scanner_retry_install">We raden u aan het opnieuw te proberen, maar als het blijft mislukken, installeer de scanner opnieuw of installeer een andere scanner.</string>
     <string name="error_import_invalid_archive">Het geselecteerde bestand wordt niet herkend.</string>
-    <string name="lbl_author_type_cover_artist">Omslag illustratie</string>
-    <string name="lbl_author_type_cover_colorist">Omslag kleuren</string>
+    <string name="lbl_author_type_cover_artist">Omslag</string>
+    <string name="lbl_author_type_cover_colorist">Omslag inkleuring</string>
+    <string name="pt_bob_titles_display">Toon titels als</string>
 
 </resources>

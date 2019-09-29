@@ -422,7 +422,7 @@
     <string name="pg_filters">Фильтры книг</string>
     <string name="pg_general">Основные</string>
     <string name="pg_groupings">Группирование</string>
-    <string name="pt_sort_by_title_uses">Сортировать названия по</string>
+    <string name="pt_bob_titles_sort">Сортировать названия по</string>
     <string name="pg_barcode_scanner">Сканер штрих-кода</string>
     <string name="pg_thumbnails">Миниатюры</string>
     <string name="pg_ui">Пользовательский интерфейс</string>
@@ -461,12 +461,12 @@
     <string name="pt_allow_mobile_data">Разрешить использование мобильных данных</string>
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
     <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
-    <string name="pt_bob_author_name">Форматирование по авторским именам</string>
+    <string name="pt_bob_authors_display">Показать авторов как</string>
     <string name="pt_bob_header">Суммарная информация в заголовке</string>
     <string name="pt_booklist_generation">Составление списка книг</string>
     <string name="pt_booklist_state">Состояние списка книг</string>
     <string name="pt_booklist_open_book_read_only">Просмотр книги в режиме чтения</string>
-    <string name="pt_bob_sorting_author">Сортировать авторов</string>
+    <string name="pt_bob_authors_sort">Сортировать авторов по</string>
     <string name="pt_bob_text_size">Размер элемента списка книг</string>
     <string name="pt_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
     <string name="pt_bob_thumbnails_show">Показывать миниатюры</string>
@@ -627,5 +627,9 @@
     <string name="warning_scanner_failed_to_start">Сканер не запустился.</string>
     <string name="warning_scanner_retry_install">Мы рекомендуем сначала повторить попытку, но если она не работает, переустановите сканер или установите другой сканер.</string>
     <string name="error_import_invalid_archive">Выбранный файл не распознан.</string>
+    <string name="pt_bob_titles_display">Показать названия как</string>
+    <string name="lbl_author_type_artist">иллюстрации</string>
+    <string name="lbl_author_type_cover_artist">иллюстрация обложки книги</string>
+    <string name="lbl_author_type_cover_colorist">цвета обложки книги</string>
 
 </resources>

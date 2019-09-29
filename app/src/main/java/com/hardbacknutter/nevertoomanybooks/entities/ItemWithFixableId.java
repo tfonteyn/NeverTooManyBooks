@@ -87,7 +87,7 @@ public interface ItemWithFixableId {
             // try to find the item.
             if (db != null) {
                 //noinspection ConstantConditions
-                itemId = item.fixId(context, db, item.getLocale(fallbackLocale));
+                itemId = item.fixId(context, db, item.getLocale(db, fallbackLocale));
             } else {
                 itemId = item.getId();
             }
@@ -125,13 +125,21 @@ public interface ItemWithFixableId {
      * Get the Locale of the actual item; e.g. a book written in Spanish should
      * return an Spanish Locale even if for example the user runs the app in German,
      * and the device in Danish.
+     * <p>
+     * The default implementation just returns the fallbackLocale itself.
      *
+     * @param db             Database Access
      * @param fallbackLocale Locale to use if the item does not have a Locale of its own.
      *
      * @return the item Locale, or the fallbackLocale.
      */
     @NonNull
-    Locale getLocale(@NonNull Locale fallbackLocale);
+    default Locale getLocale(@NonNull final DAO db,
+                             @NonNull final Locale fallbackLocale) {
+        return fallbackLocale;
+    }
+
+    long getId();
 
     /**
      * Tries to find the item in the database using all or some of its fields (except the id).
@@ -148,8 +156,6 @@ public interface ItemWithFixableId {
     long fixId(@NonNull Context context,
                @NonNull DAO db,
                @NonNull Locale locale);
-
-    long getId();
 
     /**
      * Get the flag as used in {@link #pruneList}.

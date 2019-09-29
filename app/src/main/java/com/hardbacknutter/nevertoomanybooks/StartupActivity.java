@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -42,8 +41,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -275,15 +272,14 @@ public class StartupActivity
      * @return {@code true} if we had permission and storage is initialized.
      */
     private boolean initStorage() {
-        int p = ContextCompat.checkSelfPermission(this,
-                                                  Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (p != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    UniqueId.REQ_ANDROID_PERMISSIONS);
-            return false;
-        }
+        // Not needed any longer, as we only use getExternalFilesDir(String)
+        // and getExternalCacheDir(). Leaving this in comment as a reminder.
+//        int p = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//        if (p != PackageManager.PERMISSION_GRANTED) {
+//            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+//                               UniqueId.REQ_ANDROID_PERMISSIONS);
+//            return false;
+//        }
 
         int msgId = StorageUtils.initSharedDirectories();
         if (msgId != 0) {

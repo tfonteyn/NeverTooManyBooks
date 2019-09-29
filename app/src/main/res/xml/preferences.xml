@@ -294,10 +294,18 @@
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_sort_by_alpha"
-            android:key="reformat.title.forSorting"
-            android:summaryOff="@string/pt_reformat_titles_summary_original"
-            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
-            android:title="@string/pt_sort_by_title_uses" />
+            android:key="reformat.titles.sort"
+            android:summaryOff="@string/pt_bob_titles_summary_original"
+            android:summaryOn="@string/pt_bob_titles_summary_reformatted"
+            android:title="@string/pt_bob_titles_sort" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_reorder"
+            android:key="reformat.titles.display"
+            android:summaryOff="@string/pt_bob_titles_summary_original"
+            android:summaryOn="@string/pt_bob_titles_summary_reformatted"
+            android:title="@string/pt_bob_titles_display" />
 
         <ListPreference
             android:defaultValue="0"

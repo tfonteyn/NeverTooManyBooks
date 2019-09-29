@@ -106,9 +106,9 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
                 // so we check on NO_POSITION.
                 //  java.lang.ArrayIndexOutOfBoundsException: length=3; index=-1
                 //  at java.util.ArrayList.get(ArrayList.java:439)
-                //  at com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase.getItem(RecyclerViewAdapterBase.java:128)
-                //  at com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase.lambda$onBindViewHolder$0$RecyclerViewAdapterBase(RecyclerViewAdapterBase.java:104)
-                //  at com.hardbacknutter.nevertoomanybooks.widgets.-$$Lambda$RecyclerViewAdapterBase$Wcbn3D1mbbC41rsUlSURIXWMu-E.onClick(Unknown Source:4)
+                //  at ...widgets.RecyclerViewAdapterBase.getItem(RecyclerViewAdapterBase.java:128)
+                //  at ...widgets.RecyclerViewAdapterBase.lambda$onBindViewHolder$0$RecyclerViewAdapterBase(RecyclerViewAdapterBase.java:104)
+                //  at ...widgets.-$$Lambda$RecyclerViewAdapterBase$Wcbn3D1mbbC41rsUlSURIXWMu-E.onClick(Unknown Source:4)
                 if (pos == RecyclerView.NO_POSITION) {
                     // NO_POSITION was received, don't touch the item list, but update the screen.
                     notifyDataSetChanged();

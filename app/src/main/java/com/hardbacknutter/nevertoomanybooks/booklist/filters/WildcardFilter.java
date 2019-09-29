@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  * An SQL WHERE clause  (column LIKE '%text%').
  * Note that the LIKE usage means this is case insensitive.
  * <p>
- * FIXME: bad stopgap... use PreparedStatements instead !
+ * TODO: bad stopgap... use PreparedStatements instead !
  */
 public class WildcardFilter
         implements Filter {

@@ -487,8 +487,8 @@ public class BooklistGroup
                 category.addPreference(pShowAll);
 
                 SwitchPreference pGivenNameFirst = new SwitchPreference(context);
-                pGivenNameFirst.setTitle(R.string.pt_bob_author_name);
-                pGivenNameFirst.setIcon(R.drawable.ic_title);
+                pGivenNameFirst.setTitle(R.string.pt_bob_authors_display);
+                pGivenNameFirst.setIcon(R.drawable.ic_reorder);
                 pGivenNameFirst.setKey(Prefs.pk_bob_format_author_name);
                 pGivenNameFirst.setDefaultValue(false);
                 pGivenNameFirst.setSummaryOn(R.string.pv_bob_author_name_given_first);

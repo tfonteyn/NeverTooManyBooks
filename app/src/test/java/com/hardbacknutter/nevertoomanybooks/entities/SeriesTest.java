@@ -448,7 +448,8 @@ class SeriesTest {
     @Test
     void fromString206() {
         Series series = Series.fromString(
-                "Eternal Champion, The (984\\|Jerry Cornelius Calendar 4 as includes The Alchemist's Question)");
+                "Eternal Champion, The (984\\|Jerry Cornelius Calendar 4 as includes"
+                + " The Alchemist's Question)");
         assertNotNull(series);
         assertEquals("Eternal Champion, The", series.getTitle());
         assertEquals("984|Jerry Cornelius Calendar 4 as includes The Alchemist's Question",
