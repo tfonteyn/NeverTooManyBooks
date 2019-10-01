@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.EditBookshelfListActivity;
+import com.hardbacknutter.nevertoomanybooks.FTSSearchActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -182,11 +183,13 @@ public abstract class BaseActivity
 
         switch (item.getItemId()) {
             case R.id.nav_search:
-                //FIXME: onSearchRequested only functional when current Activity is BoB
-                // i.o.w. it works because BoB overrides it... and not 'thanks' to the search API.
-                // https://developer.android.com/guide/topics/search/search-dialog
-                onSearchRequested();
-                return true;
+                // IMPORTANT: see App.USE_CUSTOM_SEARCH_ACTIVITY for details.
+                if (App.USE_CUSTOM_SEARCH_ACTIVITY) {
+                    return onCustomSearchRequested();
+                } else {
+                    // standard system call.
+                    return onSearchRequested();
+                }
 
             case R.id.nav_manage_bookshelves:
                 startActivityForResult(new Intent(this, EditBookshelfListActivity.class),
@@ -215,6 +218,17 @@ public abstract class BaseActivity
             default:
                 return false;
         }
+    }
+
+    /**
+     * There was a search requested by the user.
+     * <p>
+     * <strong>IMPORTANT:</strong> see {@link App#USE_CUSTOM_SEARCH_ACTIVITY} for details.
+     */
+    protected boolean onCustomSearchRequested() {
+        Intent intent = new Intent(this, FTSSearchActivity.class);
+        startActivityForResult(intent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
+        return true;
     }
 
     /**

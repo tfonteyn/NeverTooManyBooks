@@ -92,7 +92,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSuggestionProvider;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -136,6 +135,7 @@ public class BooksOnBookshelf
     private ArrayAdapter<String> mBookshelfSpinnerAdapter;
     /** The number of books in the current list. */
     private TextView mBookCountView;
+
     /** The ViewModel. */
     private BooksOnBookshelfModel mModel;
     /** Listener for the Bookshelf Spinner. */
@@ -201,9 +201,8 @@ public class BooksOnBookshelf
             }
         }
     };
-    /**
-     * Apply the style that a user has selected.
-     */
+
+    /** Apply the style that a user has selected. */
     private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
             new StylePickerDialogFragment.StyleChangedListener() {
                 public void onStyleChanged(@NonNull final BooklistStyle style) {
@@ -216,6 +215,7 @@ public class BooksOnBookshelf
                     initBookList(true);
                 }
             };
+
     /** Whether to show header texts - this depends on the current style. */
     private boolean mShowHeaderTexts;
     /** Define a scroller to update header detail when the top row changes. */
@@ -234,6 +234,7 @@ public class BooksOnBookshelf
                     }
                 }
             };
+
     /** The normal FAB button; opens or closes the FAB menu. */
     private FloatingActionButton mFabButton;
     /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
@@ -286,7 +287,8 @@ public class BooksOnBookshelf
         // listen for the booklist being ready to display.
         mModel.getBuilderResult().observe(this, this::builderResultsAreReadyToDisplay);
 
-        // set the search capability to local (application) search
+        // set the search capability to local (application) search, see:
+        // https://developer.android.com/guide/topics/search/search-dialog#InvokingTheSearchDialog
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
         // check & get search text coming from a system search intent
         handleStandardSearchIntent();
@@ -295,9 +297,7 @@ public class BooksOnBookshelf
 
         // Setup the list view.
         initListView();
-        // Reminder: we DO NOT init the adapter here.
-        //remove: //create and hookup the list adapter; initially without a cursor (item list)
-        //remove: initAdapter(null);
+
         // details for the header.
         initHeader();
         // Setup the FAB button and the linked menu.
@@ -312,6 +312,8 @@ public class BooksOnBookshelf
 
     /**
      * Called from {@link #onCreate}.
+     * <p>
+     * Reminder: we DO NOT init the adapter here. See {@link #initAdapter}.
      */
     private void initListView() {
         mLayoutManager = new LinearLayoutManager(this);
@@ -349,6 +351,7 @@ public class BooksOnBookshelf
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
     }
 
+
     /**
      * Called from {@link #onCreate}.
      */
@@ -365,6 +368,15 @@ public class BooksOnBookshelf
         mFabMenuItems[2].setOnClickListener(v -> startAddBySearch(BookSearchByTextFragment.TAG));
         mFabMenuItems[3] = findViewById(R.id.fab4);
         mFabMenuItems[3].setOnClickListener(v -> startAddManually());
+    }
+
+    /**
+     * Hide the FAB menu if it's showing. Does not affect the FAB button itself.
+     */
+    private void hideFABMenu() {
+        if (mFabMenuItems[0].isShown()) {
+            showFABMenu(false);
+        }
     }
 
     /**
@@ -486,15 +498,6 @@ public class BooksOnBookshelf
         return super.onPrepareOptionsMenu(menu);
     }
 
-    /**
-     * Hide the FAB menu if it's showing. Does not affect the FAB button itself.
-     */
-    private void hideFABMenu() {
-        if (mFabMenuItems[0].isShown()) {
-            showFABMenu(false);
-        }
-    }
-
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -582,63 +585,6 @@ public class BooksOnBookshelf
         }
     }
 
-    private void startAddByScan() {
-        Intent intent = new Intent(this, BookSearchActivity.class)
-                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
-                .putExtra(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE, true);
-        startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
-    }
-
-    private void startAddBySearch(@NonNull final String tag) {
-        Intent intent = new Intent(this, BookSearchActivity.class)
-                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, tag);
-        startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
-    }
-
-    private void startAddManually() {
-        Intent intent = new Intent(this, EditBookActivity.class);
-        startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-    }
-
-    /** Syntax sugar. */
-    private void showStylePicker() {
-        StylePickerDialogFragment.newInstance(getSupportFragmentManager(),
-                                              mModel.getCurrentStyle(), false);
-    }
-
-    /**
-     * Expand/Collapse the current position in the list.
-     *
-     * @param expand {@code true} to expand, {@code false} to collapse
-     */
-    private void expandOrCollapseAllNodes(final boolean expand) {
-
-        int layoutPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
-        // It is possible that the list will be empty, if so, ignore
-        if (layoutPosition != RecyclerView.NO_POSITION) {
-            BooklistAdapter.RowViewHolder holder =
-                    (BooklistAdapter.RowViewHolder)
-                            mListView.findViewHolderForLayoutPosition(layoutPosition);
-
-            @SuppressWarnings("ConstantConditions")
-            int oldAbsPos = holder.absolutePosition;
-
-            savePosition();
-
-            // get the builder from the current cursor.
-            BooklistBuilder booklistBuilder = mModel.getBuilder();
-            // do the work, and re-position.
-            //noinspection ConstantConditions
-            booklistBuilder.expandAll(expand);
-            savePosition(booklistBuilder.getPosition(oldAbsPos));
-
-            // pass in a new cursor and display the list.
-            // the old cursor will get closed afterwards.
-            displayList(booklistBuilder.getNewListCursor(), null);
-        }
-    }
-
-
     /**
      * Reminder: don't do any commits on the fragment manager.
      * This includes showing fragments, or starting tasks that show fragments.
@@ -713,7 +659,6 @@ public class BooksOnBookshelf
                         Bundle extras = data.getExtras();
                         if (extras != null) {
                             mModel.getSearchCriteria().from(extras, true);
-//                            setFilterTextField();
                         }
                         mModel.setFullRebuild(true);
                     }
@@ -801,6 +746,28 @@ public class BooksOnBookshelf
         Tracker.exitOnActivityResult(this);
     }
 
+    /**
+     * If the FAB is showing, hide it.
+     * If the current list is has any search criteria enabled, clear them and rebuild the list.
+     * <p>
+     * Otherwise handle the back-key as normal.
+     */
+    @Override
+    public void onBackPressed() {
+        if (mFabMenuItems[0].isShown()) {
+            showFABMenu(false);
+            return;
+        }
+
+        if (!mModel.getSearchCriteria().isEmpty()) {
+            mModel.getSearchCriteria().clear();
+            initBookList(true);
+            return;
+        }
+
+        super.onBackPressed();
+    }
+
     @Override
     @CallSuper
     public void onResume() {
@@ -869,6 +836,78 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Save position when paused.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onPause() {
+        hideFABMenu();
+        if (mModel.getSearchCriteria().isEmpty()) {
+            savePosition();
+        }
+        super.onPause();
+    }
+
+
+    private void startAddByScan() {
+        Intent intent = new Intent(this, BookSearchActivity.class)
+                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
+                .putExtra(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE, true);
+        startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+    }
+
+    private void startAddBySearch(@NonNull final String tag) {
+        Intent intent = new Intent(this, BookSearchActivity.class)
+                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, tag);
+        startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+    }
+
+    private void startAddManually() {
+        Intent intent = new Intent(this, EditBookActivity.class);
+        startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+    }
+
+    /** Syntax sugar. */
+    private void showStylePicker() {
+        StylePickerDialogFragment.newInstance(getSupportFragmentManager(),
+                                              mModel.getCurrentStyle(), false);
+    }
+
+    /**
+     * Expand/Collapse the current position in the list.
+     *
+     * @param expand {@code true} to expand, {@code false} to collapse
+     */
+    private void expandOrCollapseAllNodes(final boolean expand) {
+
+        int layoutPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+        // It is possible that the list will be empty, if so, ignore
+        if (layoutPosition != RecyclerView.NO_POSITION) {
+            BooklistAdapter.RowViewHolder holder =
+                    (BooklistAdapter.RowViewHolder)
+                            mListView.findViewHolderForLayoutPosition(layoutPosition);
+
+            @SuppressWarnings("ConstantConditions")
+            int oldAbsPos = holder.absolutePosition;
+
+            savePosition();
+
+            // get the builder from the current cursor.
+            BooklistBuilder booklistBuilder = mModel.getBuilder();
+            // do the work, and re-position.
+            //noinspection ConstantConditions
+            booklistBuilder.expandAll(expand);
+            savePosition(booklistBuilder.getPosition(oldAbsPos));
+
+            // pass in a new cursor and display the list.
+            // the old cursor will get closed afterwards.
+            displayList(booklistBuilder.getNewListCursor(), null);
+        }
+    }
+
+    /**
      * Populate the BookShelf list in the Spinner and set the current bookshelf/style.
      * <p>
      * <strong>Note:</strong> no longer triggers a rebuild, as it was getting messy who/when/where.
@@ -901,43 +940,6 @@ public class BooksOnBookshelf
 
         // Flag up if the selection was different.
         return previous == null || !previous.equalsIgnoreCase(selected);
-    }
-
-    /**
-     * Save position when paused.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onPause() {
-        hideFABMenu();
-        if (mModel.getSearchCriteria().isEmpty()) {
-            savePosition();
-        }
-        super.onPause();
-    }
-
-    /**
-     * If the FAB is showing, hide it.
-     * If the current list is has any search criteria enabled, clear them and rebuild the list.
-     * <p>
-     * Otherwise handle the back-key as normal.
-     */
-    @Override
-    public void onBackPressed() {
-        if (mFabMenuItems[0].isShown()) {
-            showFABMenu(false);
-            return;
-        }
-
-        if (!mModel.getSearchCriteria().isEmpty()) {
-            mModel.getSearchCriteria().clear();
-            initBookList(true);
-            return;
-        }
-
-        super.onBackPressed();
     }
 
     /**
@@ -1041,8 +1043,7 @@ public class BooksOnBookshelf
             mListView.post(() -> fixPositionWhenDrawn(targetRows));
         }
 
-        // setup the list header
-        mShowHeaderTexts = setupListHeader(count > 0);
+        mShowHeaderTexts = initListHeader(count > 0);
 
         // all set, we can close the old list
         if (oldCursor != null) {
@@ -1261,6 +1262,7 @@ public class BooksOnBookshelf
                 menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit)
                     .setIcon(R.drawable.ic_edit);
 
+                // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
                 if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
                     if (mModel.isAvailable(row)) {
                         menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_ADD,
@@ -1717,36 +1719,26 @@ public class BooksOnBookshelf
     }
 
     /**
-     * android.intent.action.SEARCH.
+     * Handle the standard search intent / suggestions click.
+     *
+     * <a href="https://developer.android.com/guide/topics/search/search-dialog#ReceivingTheQuery">
+     * https://developer.android.com/guide/topics/search/search-dialog#ReceivingTheQuery</a>
      */
     private void handleStandardSearchIntent() {
-        String searchText = "";
+        String keywords = "";
         if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
-            // Return the search results instead of all books (for the bookshelf)
-            searchText = getIntent().getStringExtra(SearchManager.QUERY);
+            // Handle the standard search intent.
+            keywords = getIntent().getStringExtra(SearchManager.QUERY);
 
         } else if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
-            // Handle a suggestions click (because the suggestions all use ACTION_VIEW)
-            searchText = getIntent().getDataString();
+            // Handle a suggestions click.
+            keywords = getIntent().getDataString();
         }
-        mModel.getSearchCriteria().setKeywords(searchText);
+        mModel.getSearchCriteria().setKeywords(keywords);
     }
 
-    /**
-     * There was a search requested by the user.
-     *
-     * @return Returns {@code true} if search launched, and {@code false} if the activity does
-     * not respond to search.
-     * <p>
-     * <strong>Note:</strong> uses the 'advanced' FTS search activity. To use the standard search,
-     * comment this method out. The system will use {@link SearchSuggestionProvider}
-     * as configured in res/xml/searchable.xml
-     * <p>
-     * FIXME: https://developer.android.com/guide/topics/search/search-dialog
-     * the way this is implemented is a bit of a shoehorn... to be revisited.
-     */
     @Override
-    public boolean onSearchRequested() {
+    protected boolean onCustomSearchRequested() {
         Intent intent = new Intent(this, FTSSearchActivity.class);
         mModel.getSearchCriteria().to(intent);
         startActivityForResult(intent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
@@ -1760,7 +1752,7 @@ public class BooksOnBookshelf
      *
      * @return {@code true} if the header should display the 'level' texts.
      */
-    private boolean setupListHeader(final boolean listHasItems) {
+    private boolean initListHeader(final boolean listHasItems) {
         setFilterTextField();
         setBookCountField();
         boolean showHeaderTexts = setHeaderTextVisibility();
