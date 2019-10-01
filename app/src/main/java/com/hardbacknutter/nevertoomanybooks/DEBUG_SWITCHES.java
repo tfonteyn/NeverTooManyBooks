@@ -55,7 +55,18 @@ public final class DEBUG_SWITCHES {
 //            System.setProperty("debug","true");
 //    }
 
-    public static final boolean USER_MESSAGE_STACK_TRACE = false;
+
+    /** Enable strict mode reporting on network,disc,... usage. */
+    static final boolean STRICT_MODE = false;
+
+    /* ****************************************************************************************** */
+    /** Make the {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}
+     * use standard tables instead of Temporary ones.
+     */
+    public static final boolean BOOK_LIST_USES_STANDARD_TABLES = false;
+
+    /** {@link BooksOnBookshelf}#fixPositionWhenDrawn. */
+    static final boolean BOB_FIX_POSITION = false;
 
     /* ****************************************************************************************** */
     /** enable timers for performance measurements. */
@@ -181,24 +192,22 @@ public final class DEBUG_SWITCHES {
     public static final boolean DUMP_INSTANCE_STATE = false;
     /** dump the style each time it is accessed. Medium length in the log. */
     public static final boolean DUMP_STYLE = false;
+
     /**
      * Dump (just) the URL used in
      * {@link com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection}.
      */
-    public static final boolean DUMP_HTTP_URL = false;
+    public static final boolean DUMP_HTTP_URL = true;
+
     /** Dump entire HTTP response to System.out. WARNING: can abort the function it's in. */
     public static final boolean DUMP_HTTP_RESPONSE = false;
-    public static final boolean FIELD_FORMATTER = false;
+
 
     static final boolean THEME = false;
-    /** Enable strict mode reporting on network,disc,... usage. */
-    static final boolean STRICT_MODE = false;
-
-    /** {@link BooksOnBookshelf}#fixPositionWhenDrawn. */
-    static final boolean BOB_FIX_POSITION = false;
-
+    public static final boolean USER_MESSAGE_STACK_TRACE = false;
     public static final boolean PRUNE_LIST = false;
-
+    public static final boolean FIELD_FORMATTER = false;
+    public static final boolean BOOK_LOCALE = false;
 
     private DEBUG_SWITCHES() {
     }

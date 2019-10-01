@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
@@ -385,7 +386,7 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. A rating goes from 0 to 5 stars, in 0.5 increments. */
     public static final DomainDefinition DOM_BOOK_RATING;
     /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_NOTES;
+    public static final DomainDefinition DOM_BOOK_PRIVATE_NOTES;
 
     public static final String KEY_BOOK_UUID = "book_uuid";
 
@@ -401,7 +402,7 @@ public final class DBDefinitions {
     public static final String KEY_READ_END = "read_end";
     public static final String KEY_SIGNED = "signed";
     public static final String KEY_RATING = "rating";
-    public static final String KEY_NOTES = "notes";
+    public static final String KEY_PRIVATE_NOTES = "notes";
     public static final String KEY_OWNED = "owned";
     public static final String KEY_DATE_ACQUIRED = "date_acquired";
     public static final String KEY_DATE_ADDED = "date_added";
@@ -455,8 +456,8 @@ public final class DBDefinitions {
         DOM_BOOK_RATING =
                 new DomainDefinition(KEY_RATING, ColumnInfo.TYPE_REAL, true)
                         .setDefault(0);
-        DOM_BOOK_NOTES =
-                new DomainDefinition(KEY_NOTES, ColumnInfo.TYPE_TEXT, true)
+        DOM_BOOK_PRIVATE_NOTES =
+                new DomainDefinition(KEY_PRIVATE_NOTES, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
     }
 
@@ -771,31 +772,31 @@ public final class DBDefinitions {
 
         DB_TN_BOOK_LIST_NAME = "book_list_tmp";
 
-        // this is TableTypes == Standard as it needs to keep its data across app starts.
         TBL_BOOK_LIST_NODE_SETTINGS =
                 new TableDefinition(DB_TN_BOOK_LIST_NAME + "_node_settings")
                         .setAlias("blns");
 
         TBL_BOOK_LIST =
                 new TableDefinition(DB_TN_BOOK_LIST_NAME)
-                        //RELEASE MUST use TableTypes.Temporary
-                        .setType(TableTypes.Temporary)
-//                        .setType(TableTypes.Standard)
-                        .setAlias("bl");
+                        .setAlias("bl")
+                        .setType(TableTypes.Temporary);
 
         TBL_ROW_NAVIGATOR =
                 new TableDefinition(DB_TN_BOOK_LIST_NAME + "_row_pos")
-                        //RELEASE MUST use TableTypes.Temporary
-                        .setType(TableTypes.Temporary)
-//                        .setType(TableTypes.Standard)
-                        .setAlias("blrp");
+                        .setAlias("blrp")
+                        .setType(TableTypes.Temporary);
 
         TBL_ROW_NAVIGATOR_FLATTENED =
                 new TableDefinition(DB_TN_BOOK_LIST_NAME + "_row_pos_flattened")
-                        //RELEASE MUST use TableTypes.Temporary
-                        .setType(TableTypes.Temporary)
-//                        .setType(TableTypes.Standard)
-                        .setAlias("blrpf");
+                        .setAlias("blrpf")
+                        .setType(TableTypes.Temporary);
+
+        // Allow debug mode to use standard tables so we can export and inspect the content.
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLES) {
+            TBL_BOOK_LIST.setType(TableTypes.Standard);
+            TBL_ROW_NAVIGATOR.setType(TableTypes.Standard);
+            TBL_ROW_NAVIGATOR_FLATTENED.setType(TableTypes.Standard);
+        }
     }
 
     static {
@@ -863,7 +864,7 @@ public final class DBDefinitions {
                              DOM_BOOK_SIGNED,
                              DOM_BOOK_RATING,
                              DOM_BOOK_LOCATION,
-                             DOM_BOOK_NOTES,
+                             DOM_BOOK_PRIVATE_NOTES,
 
                              // external id/data
                              DOM_BOOK_ISFDB_ID,
@@ -1116,7 +1117,7 @@ public final class DBDefinitions {
                                  DOM_BOOK_ISBN,
 
                                  DOM_BOOK_DESCRIPTION,
-                                 DOM_BOOK_NOTES,
+                                 DOM_BOOK_PRIVATE_NOTES,
 
                                  DOM_BOOK_PUBLISHER,
                                  DOM_BOOK_GENRE,
