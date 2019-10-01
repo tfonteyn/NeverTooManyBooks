@@ -127,7 +127,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LIBRARY_THING_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LOCATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_NOTES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PAGES;
@@ -135,6 +134,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PRICE_PAID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PRIVATE_NOTES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_RATING;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
@@ -1255,7 +1255,7 @@ public class DAO
                 DBDefinitions.KEY_READ_END,
 
                 DBDefinitions.KEY_DESCRIPTION,
-                DBDefinitions.KEY_NOTES,
+                DBDefinitions.KEY_PRIVATE_NOTES,
                 }) {
             if (book.containsKey(name)) {
                 if (book.get(name) == null) {
@@ -2740,8 +2740,9 @@ public class DAO
                  .append(Csv.join(",", isbnList, element -> '\'' + encodeString(element) + '\''))
                  .append(')');
         }
-        return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                                                          where.toString(),
+
+        String sql = getBookSql(where.toString());
+        return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY, sql,
                                                           null, "");
     }
 
@@ -4008,7 +4009,7 @@ public class DAO
                 bindStringOrNull(stmt, 2, titleText.toString());
                 bindStringOrNull(stmt, 3, seriesText.toString());
                 bindStringOrNull(stmt, 4, bookCursor.getString(DOM_BOOK_DESCRIPTION.getName()));
-                bindStringOrNull(stmt, 5, bookCursor.getString(DOM_BOOK_NOTES.getName()));
+                bindStringOrNull(stmt, 5, bookCursor.getString(DOM_BOOK_PRIVATE_NOTES.getName()));
                 bindStringOrNull(stmt, 6, bookCursor.getString(DOM_BOOK_PUBLISHER.getName()));
                 bindStringOrNull(stmt, 7, bookCursor.getString(DOM_BOOK_GENRE.getName()));
                 bindStringOrNull(stmt, 8, bookCursor.getString(DOM_BOOK_LOCATION.getName()));
@@ -4458,7 +4459,7 @@ public class DAO
                 // partially edition info, partially user-owned info.
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_EDITION_BITMASK)
                 // user data
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_NOTES)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRIVATE_NOTES)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LOCATION)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_SIGNED)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_RATING)
@@ -4687,7 +4688,7 @@ public class DAO
                 + ',' + DOM_BOOK_READ_START
                 + ',' + DOM_BOOK_READ_END
                 + ',' + DOM_BOOK_RATING
-                //+ ',' + DOM_BOOK_NOTES
+                + ',' + DOM_BOOK_PRIVATE_NOTES
                 + " FROM " + TBL_BOOKS;
 
         /** {@link Book}, all columns. */
@@ -5487,7 +5488,7 @@ public class DAO
                 + ',' + DOM_TITLE
                 + ',' + DOM_SERIES_TITLE
                 + ',' + DOM_BOOK_DESCRIPTION
-                + ',' + DOM_BOOK_NOTES
+                + ',' + DOM_BOOK_PRIVATE_NOTES
                 + ',' + DOM_BOOK_PUBLISHER
                 + ',' + DOM_BOOK_GENRE
                 + ',' + DOM_BOOK_LOCATION
@@ -5505,7 +5506,7 @@ public class DAO
                 + ',' + DOM_TITLE + "=?"
                 + ',' + DOM_SERIES_TITLE + "=?"
                 + ',' + DOM_BOOK_DESCRIPTION + "=?"
-                + ',' + DOM_BOOK_NOTES + "=?"
+                + ',' + DOM_BOOK_PRIVATE_NOTES + "=?"
                 + ',' + DOM_BOOK_PUBLISHER + "=?"
                 + ',' + DOM_BOOK_GENRE + "=?"
                 + ',' + DOM_BOOK_LOCATION + "=?"

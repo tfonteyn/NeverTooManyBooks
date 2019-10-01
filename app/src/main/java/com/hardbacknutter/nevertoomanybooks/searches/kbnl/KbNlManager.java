@@ -66,7 +66,7 @@ public class KbNlManager
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
 
     /**
-     * RELEASE: Chrome 2019-08-12. Update to latest version.
+     * RELEASE: Chrome 2019-08-12. Continuously update to latest version.
      * The site does not return full data unless the user agent header is set to a valid browser.
      */
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"

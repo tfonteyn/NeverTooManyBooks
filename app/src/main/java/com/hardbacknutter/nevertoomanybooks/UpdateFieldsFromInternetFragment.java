@@ -73,7 +73,7 @@ import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Cop
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
 
 /**
- * NEWKIND: must stay in sync with {@link UpdateFieldsFromInternetTask}.
+ * NEWTHINGS: must stay in sync with {@link UpdateFieldsFromInternetTask}.
  */
 public class UpdateFieldsFromInternetFragment
         extends Fragment {

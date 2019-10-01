@@ -70,7 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * <li>Pic2Shop: allegedly better then ZXing. Comments on the app not that good however.</li>
  * </ul>
  * <p>
- * NEWKIND: adding a scanner
+ * NEWTHINGS: adding a scanner
  * - implement the {@link Scanner} interface
  * - create a {@link ScannerFactory} for it and add to {@link #SCANNER_FACTORIES}
  * - add to {@link #ALL_ACTIONS} and add a new identifier here below.

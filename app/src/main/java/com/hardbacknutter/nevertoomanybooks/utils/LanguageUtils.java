@@ -145,7 +145,7 @@ public final class LanguageUtils {
      * Map an ISO 639-2 (3-char) language code to an ISO 639-1 (2-char) language code.
      * <p>
      * There is one entry here for each language supported.
-     * NEWKIND: if a new resource language is added, add a mapping here.
+     * NEWTHINGS: if a new resource language is added, add a mapping here.
      *
      * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      *

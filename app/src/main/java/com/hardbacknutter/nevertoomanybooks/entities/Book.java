@@ -49,6 +49,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -134,7 +135,7 @@ public class Book
      * <p>
      * 0%10000000 = book club
      * <p>
-     * NEWKIND: edition
+     * NEWTHINGS: edition
      * Never change the bit value!
      */
     /** first edition ever of this work/content/story. */
@@ -152,7 +153,7 @@ public class Book
     private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
 
     /*
-     * NEWKIND: edition.
+     * NEWTHINGS: edition.
      *
      * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
      */
@@ -333,8 +334,8 @@ public class Book
         bookData.putDouble(DBDefinitions.KEY_RATING,
                            getDouble(DBDefinitions.KEY_RATING));
 
-        bookData.putString(DBDefinitions.KEY_NOTES,
-                           getString(DBDefinitions.KEY_NOTES));
+        bookData.putString(DBDefinitions.KEY_PRIVATE_NOTES,
+                           getString(DBDefinitions.KEY_PRIVATE_NOTES));
         bookData.putString(DBDefinitions.KEY_LOCATION,
                            getString(DBDefinitions.KEY_LOCATION));
         bookData.putString(DBDefinitions.KEY_READ_START,
@@ -627,7 +628,7 @@ public class Book
         } else {
             // this is not an issue as such, but helps during debug when the book *should*
             // have a language and did not.
-            if (BuildConfig.DEBUG /* always */) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LOCALE) {
                 Logger.debugWithStackTrace(this, "getLocale",
                                            "no language set",
                                            "id=" + getId(),

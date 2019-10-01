@@ -84,7 +84,7 @@ public class Author
 
     /*
      * {@link DBDefinitions#DOM_BOOK_AUTHOR_TYPE_BITMASK}.
-     * NEWKIND: author type
+     * NEWTHINGS: author type
      * Never change the bit value!
      */
     /**
@@ -173,7 +173,7 @@ public class Author
     private static final Map<String, Integer> TYPES_MAPPER = new HashMap<>();
 
     /*
-     * NEWKIND: author type.
+     * NEWTHINGS: author type.
      *
      * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
      */
@@ -217,6 +217,9 @@ public class Author
         // Italian, unless listed above
         TYPES_MAPPER.put("Testi", TYPE_WRITER);
         TYPES_MAPPER.put("Disegni", TYPE_ARTIST);
+
+        // There are no doubt MANY missing.... will add them when/as they show up.
+        // Maybe better if this is done in an external file
     }
 
     /** Row ID. */

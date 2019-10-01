@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 /**
  * Manages the setup of search engines/sites.
  * <p>
- * <br>NEWKIND: adding a new search engine:
+ * <br>NEWTHINGS: adding a new search engine:
  * To make it available, follow these steps:
  * <ol>
  * <li>Implement {@link SearchEngine} to create the new engine.</li>

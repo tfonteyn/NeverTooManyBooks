@@ -840,7 +840,7 @@ public class BooklistStyle
      */
     public int getThumbnailScaleFactor() {
         //noinspection ConstantConditions
-        if (!App.isUsed(UniqueId.BKEY_IMAGE) || mAllExtras.get(UniqueId.BKEY_IMAGE).isFalse()) {
+        if (!isUsed(UniqueId.BKEY_IMAGE) || mAllExtras.get(UniqueId.BKEY_IMAGE).isFalse()) {
             return 0;
         }
 
@@ -1245,8 +1245,8 @@ public class BooklistStyle
      */
     public boolean isUsed(@NonNull final String key) {
         // check the groups first; they take priority on 'extras' and even on App.isUsed,
-        //ENHANCE: we currently don't hide/remove groups based on user preference visibility.
-        // but do we really care?
+        //ENHANCE: because we currently don't hide/remove groups based on user preference
+        // visibility. But do we really care?
         for (BooklistGroup group : getGroups()) {
             if (group.getDisplayDomain().getName().equals(key)) {
                 return true;
@@ -1619,7 +1619,7 @@ public class BooklistStyle
      */
     public static final class Builtin {
 
-        // NEWKIND: BooklistStyle. Make sure to update the max id when adding a style!
+        // NEWTHINGS: BooklistStyle. Make sure to update the max id when adding a style!
         // and make sure a row is added to the database styles table.
         // next max is -20
         public static final int MAX_ID = -19;
@@ -1924,7 +1924,7 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
             style.setShowExtra(DBDefinitions.KEY_AUTHOR_FORMATTED, true);
 
-            // NEWKIND: BooklistStyle
+            // NEWTHINGS: BooklistStyle
         }
     }
 }

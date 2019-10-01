@@ -122,7 +122,7 @@
         <item translatable="false">tr</item>
     </string-array>
 
-    <!-- ListPreference NEWKIND: APP THEME. -->
+    <!-- ListPreference NEWTHINGS: APP THEME. -->
     <string-array name="pe_ui_theme">
         <item>@string/pe_ui_theme_day_night</item>
         <item>@string/pe_ui_theme_dark</item>
@@ -254,7 +254,7 @@
     </string-array>
 
     <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all
-    NEWKIND: edition. -->
+    NEWTHINGS: edition. -->
     <string-array name="pe_bob_filter_edition">
         <item>@string/lbl_edition_first_edition</item>
         <item>@string/lbl_edition_first_impression</item>
@@ -262,7 +262,7 @@
         <item>@string/lbl_edition_slipcase</item>
         <item>@string/lbl_edition_book_club</item>
     </string-array>
-    <!-- multi-select: use bitmask values: 1,2,4,8,... NEWKIND: edition.-->
+    <!-- multi-select: use bitmask values: 1,2,4,8,... NEWTHINGS: edition.-->
     <string-array name="pv_bob_filter_edition">
         <!-- Book#EDITION_FIRST = 1 -->
         <item>1</item>

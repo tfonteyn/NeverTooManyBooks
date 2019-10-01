@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * It can either import 'all' or 'sync' books.
  * <p>
  * We runs a network and authorization check first.
- * If successful, an actual GoodReads task {@link TQTask} is kicked of to do the actual work.
+ * If successful, an actual GoodReads task {@link TQTask} is kicked of to do the real work.
  */
 public class ImportTask
         extends TaskBase<Integer> {

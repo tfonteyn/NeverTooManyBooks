@@ -91,7 +91,7 @@ public class CsvExporter
             + '"' + DBDefinitions.KEY_READ + "\","
             + '"' + CSV_COLUMN_SERIES + "\","
             + '"' + DBDefinitions.KEY_PAGES + "\","
-            + '"' + DBDefinitions.KEY_NOTES + "\","
+            + '"' + DBDefinitions.KEY_PRIVATE_NOTES + "\","
 
             + '"' + DBDefinitions.KEY_PRICE_LISTED + "\","
             + '"' + DBDefinitions.KEY_PRICE_LISTED_CURRENCY + "\","
@@ -216,7 +216,7 @@ public class CsvExporter
                    .append(format(CsvCoder.getSeriesCoder()
                                           .encodeList(db.getSeriesByBookId(bookId))))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_PAGES)))
-                   .append(format(bookCursor.getString(DBDefinitions.KEY_NOTES)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_PRIVATE_NOTES)))
 
                    .append(format(bookCursor.getString(DBDefinitions.KEY_PRICE_LISTED)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))

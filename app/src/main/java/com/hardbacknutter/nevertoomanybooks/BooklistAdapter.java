@@ -176,7 +176,7 @@ public class BooklistAdapter
         }
 
         switch (viewType) {
-            // NEWKIND: ROW_KIND_x
+            // NEWTHINGS: ROW_KIND_x
 
             case RowKind.AUTHOR:
                 return new AuthorHolder(itemView, columnIndex,
@@ -411,7 +411,7 @@ public class BooklistAdapter
 
         /** The listener for the tasks result. */
         @NonNull
-        private final WeakReference<GetBookExtrasTaskFinishedListener> mTaskListener;
+        private final WeakReference<TaskFinishedListener> mTaskListener;
 
         /** Database Access. */
         @NonNull
@@ -439,7 +439,7 @@ public class BooklistAdapter
         GetBookExtrasTask(@NonNull final Context context,
                           @NonNull final DAO db,
                           final long bookId,
-                          @NonNull final GetBookExtrasTaskFinishedListener taskListener,
+                          @NonNull final TaskFinishedListener taskListener,
                           @BooklistStyle.ExtraOption final int extraFields) {
 
             mDb = db;
@@ -555,7 +555,7 @@ public class BooklistAdapter
             }
             // Fields not used will be null.
             if (mTaskListener.get() != null) {
-                mTaskListener.get().onGetBookExtrasTaskFinished(mResults);
+                mTaskListener.get().onTaskFinished(mResults);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                     Logger.debug(this, "onPostExecute",
@@ -564,7 +564,7 @@ public class BooklistAdapter
             }
         }
 
-        interface GetBookExtrasTaskFinishedListener {
+        interface TaskFinishedListener {
 
             /**
              * Results from fetching the extras.
@@ -572,7 +572,7 @@ public class BooklistAdapter
              *
              * @param results a bundle with the result field.
              */
-            void onGetBookExtrasTaskFinished(@NonNull Bundle results);
+            void onTaskFinished(@NonNull Bundle results);
         }
     }
 
@@ -690,14 +690,16 @@ public class BooklistAdapter
         /** View that stores the related book field. */
         private final TextView mBookshelvesView;
 
-        private final GetBookExtrasTask.GetBookExtrasTaskFinishedListener mTaskListener =
-                new GetBookExtrasTask.GetBookExtrasTaskFinishedListener() {
+        /**
+         * Receives the results of one {@link GetBookExtrasTask} and populates the fields.
+         */
+        private final GetBookExtrasTask.TaskFinishedListener mBookExtrasTaskFinishedListener =
+                new GetBookExtrasTask.TaskFinishedListener() {
                     @Override
-                    public void onGetBookExtrasTaskFinished(@NonNull final Bundle results) {
+                    public void onTaskFinished(@NonNull final Bundle results) {
                         // do not re-test usage here. If not in use, we won't have fetched them.
                         showOrHide(mBookshelvesView, mShelvesLabel,
                                    results.getString(DBDefinitions.KEY_BOOKSHELF_CSV));
-
                         showOrHide(mAuthorView,
                                    results.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
                         showOrHide(mIsbnView,
@@ -886,7 +888,7 @@ public class BooklistAdapter
                     // Queue the task.
                     new GetBookExtrasTask(itemView.getContext(), mDb,
                                           rowData.getLong(DBDefinitions.KEY_FK_BOOK),
-                                          mTaskListener, mExtraFieldsUsed)
+                                          mBookExtrasTaskFinishedListener, mExtraFieldsUsed)
                             .execute();
                 }
             }

@@ -549,7 +549,7 @@ public class BooklistGroup
         public static final int DATE_ACQUIRED_DAY = 26;
         public static final int DATE_FIRST_PUBLICATION_YEAR = 27;
         public static final int DATE_FIRST_PUBLICATION_MONTH = 28;
-        // NEWKIND: ROW_KIND_x
+        // NEWTHINGS: ROW_KIND_x
         // the highest valid index of kinds  ALWAYS update after adding a row kind...
         private static final int ROW_KIND_MAX = 28;
         private static final Map<Integer, RowKind> ALL_KINDS = new UniqueMap<>();
@@ -678,7 +678,7 @@ public class BooklistGroup
                                   DBDefinitions.DOM_DATE_FIRST_PUBLICATION_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            // NEWKIND: ROW_KIND_x
+            // NEWTHINGS: ROW_KIND_x
 
             if (BuildConfig.DEBUG /* always */) {
                 // Developer sanity check (for() loop starting at 1)

@@ -581,7 +581,7 @@ public class SearchCoordinator {
      * <p>
      * The Bundle will contain by default only String and {@link StringList} based data.
      * <p>
-     * NEWKIND: if you add a new Search task that adds non-string based data, handle that here.
+     * NEWTHINGS: if you add a new Search task that adds non-string based data, handle that here.
      *
      * @param searchId Source
      */

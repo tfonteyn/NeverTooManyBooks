@@ -62,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 /**
  * ManagedTask to update requested fields by doing a search.
  * <p>
- * NEWKIND must stay in sync with {@link UpdateFieldsFromInternetActivity}
+ * NEWTHINGS must stay in sync with {@link UpdateFieldsFromInternetActivity}
  */
 public class UpdateFieldsFromInternetTask
         extends ManagedTask {

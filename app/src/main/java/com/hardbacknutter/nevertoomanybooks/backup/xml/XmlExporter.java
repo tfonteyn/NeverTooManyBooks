@@ -793,8 +793,8 @@ public class XmlExporter
                       // last are the text field tags
                       .append(tagWithCData(DBDefinitions.KEY_DESCRIPTION, null,
                                         bookCursor.getString(DBDefinitions.KEY_DESCRIPTION)))
-                      .append(tagWithCData(DBDefinitions.KEY_NOTES, null,
-                                        bookCursor.getString(DBDefinitions.KEY_NOTES)))
+                      .append(tagWithCData(DBDefinitions.KEY_PRIVATE_NOTES, null,
+                                           bookCursor.getString(DBDefinitions.KEY_PRIVATE_NOTES)))
 
                       .append("</" + XmlTags.XML_BOOK + ">\n");
                 booksExported++;

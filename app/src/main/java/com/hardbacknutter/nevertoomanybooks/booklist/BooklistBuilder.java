@@ -1898,6 +1898,7 @@ public class BooklistBuilder
                 join = new Joiner(TBL_BOOKS);
             }
 
+            // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
             if (buildInfoHolder.isJoinLoaned() || App.isUsed(DBDefinitions.KEY_LOANEE)) {
                 // so get the loanee name, or a {@code null} for available books.
                 join.leftOuterJoin(TBL_BOOK_LOANEE);
@@ -2502,10 +2503,7 @@ public class BooklistBuilder
                     addDomain(group.getDisplayDomain(), TBL_BOOKS.dot(DOM_BOOK_READ),
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 
-                    //FIXME: run a cleanup of data in db upgrades.
-                    // We want the READ flag at the lowest level only.
-                    // Some bad data means that it may be 0 or 'f',
-                    // so we don't group by it.
+                    // We want the READ flag at the lowest level only, don't group.
                     addDomain(DOM_BOOK_READ, TBL_BOOKS.dot(DOM_BOOK_READ),
                               SummaryBuilder.FLAG_NONE);
                     break;
@@ -2687,7 +2685,7 @@ public class BooklistBuilder
                     break;
                 }
 
-                // NEWKIND: RowKind.ROW_KIND_x
+                // NEWTHINGS: RowKind.ROW_KIND_x
 
                 default:
                     throw new UnexpectedValueException(group.getKind());

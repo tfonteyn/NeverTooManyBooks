@@ -1279,7 +1279,7 @@
 
     <!-- Book edition -->
     <string name="lbl_edition">Edition</string>
-    <!-- Book editions flags NEWKIND: edition. -->
+    <!-- Book editions flags NEWTHINGS: edition. -->
     <string name="lbl_edition_first_edition">First Edition</string>
     <string name="lbl_edition_first_impression">First impression</string>
     <string name="lbl_edition_limited">Limited</string>

@@ -42,4 +42,4 @@ Small notes in addition (with a pinch of salt... as I change my own mind from ti
   - ENHANCE:
   - TEST: work done, but needs proper testing
   - RELEASE: things that must be checked before doing a public release
-  - NEWKIND: where a list of 'items' is processed -> where you can/should add 'items' to that list
+  - NEWTHINGS: where a list of 'items' is processed -> where you can/should add 'items' to that list

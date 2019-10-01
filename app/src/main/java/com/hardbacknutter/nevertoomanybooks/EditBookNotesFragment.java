@@ -92,7 +92,7 @@ public class EditBookNotesFragment
         fields.addFloat(R.id.rating, DBDefinitions.KEY_RATING)
               .setRelatedFields(R.id.lbl_rating);
 
-        fields.add(R.id.notes, DBDefinitions.KEY_NOTES)
+        fields.add(R.id.notes, DBDefinitions.KEY_PRIVATE_NOTES)
               .setRelatedFields(R.id.lbl_notes);
 
         fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID);

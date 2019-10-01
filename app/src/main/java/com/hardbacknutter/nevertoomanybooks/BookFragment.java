@@ -352,7 +352,7 @@ public class BookFragment
         fields.addFloat(R.id.rating, DBDefinitions.KEY_RATING)
               .setRelatedFields(R.id.lbl_rating);
 
-        fields.add(R.id.notes, DBDefinitions.KEY_NOTES)
+        fields.add(R.id.notes, DBDefinitions.KEY_PRIVATE_NOTES)
               .setShowHtml(true)
               .setRelatedFields(R.id.lbl_notes);
 
