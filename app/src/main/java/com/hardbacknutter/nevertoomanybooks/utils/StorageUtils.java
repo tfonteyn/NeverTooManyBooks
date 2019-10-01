@@ -99,6 +99,9 @@ public final class StorageUtils {
     private static final String[] PURGEABLE_FILE_PREFIXES = new String[]{
             "tmp", "DbUpgrade", "DbExport", Logger.ERROR_LOG_FILE};
 
+    /** Mime type for exporting database files. */
+    private static final String MIME_TYPE_SQLITE = "application/x-sqlite3";
+
     private StorageUtils() {
     }
 
@@ -430,22 +433,32 @@ public final class StorageUtils {
 
     /**
      * Convenience method to export all database files.
+     *
+     * @param context        Current context
+     * @param destinationDir the folder where to copy the files to
+     *
+     * @throws IOException on failure
      */
     public static void exportDatabaseFiles(@NonNull final Context context,
                                            @NonNull final DocumentFile destinationDir)
             throws IOException {
 
         exportFile(context, DBHelper.getDatabasePath(context),
-                   "application/x-sqlite3", destinationDir);
+                   MIME_TYPE_SQLITE, destinationDir);
 
         File coversDb = CoversDAO.CoversDbHelper.getDatabasePath(context);
         if (coversDb.exists()) {
-            exportFile(context, coversDb, "application/x-sqlite3", destinationDir);
+            exportFile(context, coversDb, MIME_TYPE_SQLITE, destinationDir);
         }
     }
 
     /**
      * Export the source File to the destination directory specified by the DocumentFile.
+     *
+     * @param context        Current context
+     * @param file           to copy
+     * @param mimeType       to use for writing
+     * @param destinationDir the folder where to copy the file to
      *
      * @throws IOException on failure
      */
@@ -542,6 +555,9 @@ public final class StorageUtils {
     /**
      * Private filesystem only - Copy the source File to the destination File.
      *
+     * @param source      file
+     * @param destination file
+     *
      * @throws IOException on failure
      */
     public static void copyFile(@NonNull final File source,
@@ -583,6 +599,9 @@ public final class StorageUtils {
     /**
      * Channels are FAST... TODO: replace old method with this one.
      * but needs testing, never used it on Android myself
+     *
+     * @param source      file
+     * @param destination file
      *
      * @throws IOException on failure
      */

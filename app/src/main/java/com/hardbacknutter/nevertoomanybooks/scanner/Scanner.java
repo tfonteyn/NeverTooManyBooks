@@ -43,8 +43,8 @@ public interface Scanner {
      *
      * @param fragment    calling fragment
      * @param requestCode which will be passed back to onActivityResult
-     *
-     * When receiving a {@code false}, the caller <strong>should not</strong> retry.
+     *                    <p>
+     *                    When receiving a {@code false}, the caller <strong>should not</strong> retry.
      *
      * @return {@code true} if we could start the activity.
      */
@@ -64,6 +64,9 @@ public interface Scanner {
     }
 
     /**
+     *
+     * @param data the intent as coming from {@link  Fragment#onActivityResult}
+     *
      * @return the barcode from the resulting intent of a scan action; or {@code null}
      */
     @Nullable

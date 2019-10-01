@@ -122,7 +122,11 @@ public final class TipManager {
     private TipManager() {
     }
 
-    /** Reset all tips to that they will be displayed again. */
+    /**
+     * Reset all tips to that they will be displayed again.
+     *
+     * @param context Current context
+     */
     public static void reset(@NonNull final Context context) {
         for (Tip h : ALL.values()) {
             h.reset(context);
@@ -223,6 +227,8 @@ public final class TipManager {
 
         /**
          * Check if this tip should be shown.
+         *
+         * @param context Current context
          */
         private boolean shouldBeShown(@NonNull final Context context) {
             return !mHasBeenDisplayed && PreferenceManager

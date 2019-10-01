@@ -397,7 +397,7 @@ public class PreferredStylesActivity
         }
 
         /**
-         * Look up and down in the list to find a 'preferred' row, and set it 'selected'
+         * Look up and down in the list to find a 'preferred' row, and set it 'selected'.
          *
          * @param direction must be either '-1' or '+1'
          *

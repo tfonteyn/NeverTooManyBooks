@@ -70,6 +70,7 @@ public class StylePickerDialogFragment
     private boolean mShowAllStyles;
     private RadioGroupRecyclerAdapter<BooklistStyle> mAdapter;
 
+    /** Currently selected style. */
     private BooklistStyle mCurrentStyle;
 
     private WeakReference<StyleChangedListener> mListener;
@@ -77,7 +78,8 @@ public class StylePickerDialogFragment
     /**
      * Constructor.
      *
-     * @param all if {@code true} show all styles, otherwise only the preferred ones.
+     * @param currentStyle the currently active style
+     * @param all          if {@code true} show all styles, otherwise only the preferred ones.
      */
     public static void newInstance(@NonNull final FragmentManager fm,
                                    @NonNull final BooklistStyle currentStyle,
@@ -129,22 +131,22 @@ public class StylePickerDialogFragment
         listView.setAdapter(mAdapter);
 
         return new AlertDialog.Builder(getContext())
-                       .setTitle(R.string.title_select_style)
-                       .setView(root)
-                       .setNeutralButton(R.string.btn_customize, (d, w) -> {
-                           Intent intent = new Intent(getContext(), PreferredStylesActivity.class)
-                                                   .putExtra(
-                                                           PreferredStylesActivity.BKEY_STYLE_UUID,
-                                                           mCurrentStyle.getUuid());
-                           // use the activity so we get the results there.
-                           getActivity().startActivityForResult(intent,
-                                                                UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
-                           dismiss();
+                .setTitle(R.string.title_select_style)
+                .setView(root)
+                .setNeutralButton(R.string.btn_customize, (d, w) -> {
+                    Intent intent = new Intent(getContext(), PreferredStylesActivity.class)
+                            .putExtra(
+                                    PreferredStylesActivity.BKEY_STYLE_UUID,
+                                    mCurrentStyle.getUuid());
+                    // use the activity so we get the results there.
+                    getActivity().startActivityForResult(intent,
+                                                         UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+                    dismiss();
 
-                       })
-                       // see onResume for setting the listener.
-                       .setPositiveButton(posBtnTxtId(), null)
-                       .create();
+                })
+                // see onResume for setting the listener.
+                .setPositiveButton(posBtnTxtId(), null)
+                .create();
     }
 
     @StringRes
@@ -230,7 +232,7 @@ public class StylePickerDialogFragment
         /**
          * Constructor.
          *
-         * @param context     Current context
+         * @param context      Current context
          * @param items        List of items
          * @param selectedItem (optional) the pre-selected item
          * @param listener     (optional) to send a selection to

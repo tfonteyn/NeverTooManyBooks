@@ -69,6 +69,8 @@ public class PreferredStylesViewModel
 
     /**
      * Called after a style has been edited.
+     *
+     * @param style the (potentially) modified style
      */
     public void handleStyleChange(@NonNull final BooklistStyle style) {
         // based on the uuid, find the style in the list.

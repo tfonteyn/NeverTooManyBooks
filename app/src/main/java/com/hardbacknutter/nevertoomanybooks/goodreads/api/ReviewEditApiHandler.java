@@ -35,19 +35,26 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.xml.sax.helpers.DefaultHandler;
+
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlDumpParser;
 
 /**
  * review.edit   —   Edit a review.
  *
  * <a href="https://www.goodreads.com/api/index#review.edit">
  * https://www.goodreads.com/api/index#review.edit</a>
+ *
+ * The response actually contains the private notes; but there seems to be no way to *send* them.
  */
-public class ReviewUpdateApiHandler
+public class ReviewEditApiHandler
         extends ApiHandler {
 
     /**
@@ -64,7 +71,7 @@ public class ReviewUpdateApiHandler
      *
      * @throws CredentialsException with GoodReads
      */
-    public ReviewUpdateApiHandler(@NonNull final GoodreadsManager grManager)
+    public ReviewEditApiHandler(@NonNull final GoodreadsManager grManager)
             throws CredentialsException {
         super(grManager);
         if (!grManager.hasValidCredentials()) {
@@ -84,7 +91,8 @@ public class ReviewUpdateApiHandler
      * @param readStart       (optional) Date when we started reading this book, YYYY-MM-DD format
      * @param readEnd         (optional) Date when we finished reading this book, YYYY-MM-DD format
      * @param rating          Rating 0-5 with 0 == No rating
-     * @param review          (optional) Text for the review
+     * @param privateNotes    (optional) Text for the Goodreads PRIVATE notes
+     * @param review          (optional) Text for the review, PUBLIC
      *
      * @throws CredentialsException  with GoodReads
      * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
@@ -95,6 +103,7 @@ public class ReviewUpdateApiHandler
                        @Nullable final String readStart,
                        @Nullable final String readEnd,
                        @IntRange(from = 0, to = 5) final int rating,
+                       @Nullable final String privateNotes,
                        @Nullable final String review)
             throws CredentialsException, BookNotFoundException, IOException {
 
@@ -123,12 +132,21 @@ public class ReviewUpdateApiHandler
             parameters.put("review[rating]", String.valueOf(rating));
         }
 
+        // This was a pure guess... and it was rejected by the site.
+//        if (privateNotes != null) {
+//            parameters.put("review[notes]", review);
+//        }
+
+        // Do not sync Notes<->Review. We will add a local 'Review' field later.
         if (review != null) {
             parameters.put("review[review]", review);
         }
 
-        //DefaultHandler handler = new XmlResponseParser(mRootFilter);
-        executePost(url, parameters, true, null);
+        DefaultHandler handler = null;
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
+            handler = new XmlDumpParser();
+        }
+        executePost(url, parameters, true, handler);
     }
 
     /*
@@ -147,7 +165,7 @@ public class ReviewUpdateApiHandler
      *           <last-comment-at type='datetime' nil='true'></last-comment-at>
      *           <last-revision-at type='datetime'>2012-01-01T05:43:30-08:00</last-revision-at>
      *           <non-friends-rating-count type='integer'>0</non-friends-rating-count>
-     *           <notes></notes>
+     *           <notes>these are the private notes</notes>
      *           <rating type='integer'>4</rating>
      *           <ratings-count type='integer'>0</ratings-count>
      *           <ratings-sum type='integer'>0</ratings-sum>

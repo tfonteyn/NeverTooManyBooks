@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
- * Used for {@link androidx.preference.MultiSelectListPreference}
+ * Used for {@link androidx.preference.MultiSelectListPreference}.
  * <p>
  * We basically want a bitmask/int, but the Preference insists on a {@code Set<String>}
  */

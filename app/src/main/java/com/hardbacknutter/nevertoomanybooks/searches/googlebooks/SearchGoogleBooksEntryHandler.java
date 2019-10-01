@@ -165,7 +165,7 @@ class SearchGoogleBooksEntryHandler
 
     /* XML tags/attrs we look for. */
     /**
-     * Contains a direct link to this entry
+     * Contains a direct link to this entry.
      * <id>http://www.google.com/books/feeds/volumes/IVnpNAAACAAJ</id>
      */
     private static final String ID = "id";
@@ -287,7 +287,7 @@ class SearchGoogleBooksEntryHandler
         // the url is an attribute of the xml element; not the content
         if (mFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
             if ("http://schemas.google.com/books/2008/thumbnail"
-                        .equals(attributes.getValue("", "rel"))) {
+                    .equals(attributes.getValue("", "rel"))) {
 
                 String coverUrl = attributes.getValue("", "href");
                 String name = mBookData.getString(DBDefinitions.KEY_ISBN, "");
@@ -417,7 +417,7 @@ class SearchGoogleBooksEntryHandler
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                     // see what we are missing.
                     Logger.debug(this, "endElement",
-                                "Skipping: " + localName + "->`" + mBuilder + '`');
+                                 "Skipping: " + localName + "->`" + mBuilder + '`');
                 }
                 break;
 

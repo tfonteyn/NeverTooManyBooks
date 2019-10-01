@@ -63,8 +63,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
-import com.hardbacknutter.nevertoomanybooks.goodreads.api.ListReviewsApiHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.api.ListReviewsApiHandler.ReviewField;
+import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.ReviewField;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
@@ -199,7 +199,7 @@ class ImportLegacyTask
      * Repeatedly request review pages until we are done.
      *
      * @param context Current context
-     * @param db Database Access
+     * @param db      Database Access
      *
      * @return {@code true} if all went well
      *
@@ -211,7 +211,7 @@ class ImportLegacyTask
             throws CredentialsException {
 
         GoodreadsManager gr = new GoodreadsManager();
-        ListReviewsApiHandler api = new ListReviewsApiHandler(gr);
+        ReviewsListApiHandler api = new ReviewsListApiHandler(gr);
 
         int currPage = mPosition / BOOKS_PER_PAGE;
         while (true) {
@@ -241,7 +241,7 @@ class ImportLegacyTask
             }
 
             // Get the total, and if first call, save the object again so the UI can update.
-            mTotalBooks = (int) results.getLong(ListReviewsApiHandler.ReviewField.TOTAL);
+            mTotalBooks = (int) results.getLong(ReviewsListApiHandler.ReviewField.TOTAL);
             if (mFirstCall) {
                 // So the details get updated
                 queueManager.updateTask(this);
@@ -250,7 +250,7 @@ class ImportLegacyTask
 
             // Get the reviews array and process it
             ArrayList<Bundle> reviews =
-                    results.getParcelableArrayList(ListReviewsApiHandler.ReviewField.REVIEWS);
+                    results.getParcelableArrayList(ReviewsListApiHandler.ReviewField.REVIEWS);
 
             if (reviews == null || reviews.isEmpty()) {
                 break;
@@ -295,15 +295,20 @@ class ImportLegacyTask
 
     /**
      * Process one review (book).
+     * https://www.goodreads.com/book/show/64524.The_Crystal_City
      *
-     * @param context    Current context
-     * @param db Database Access
+     * @param context Current context
+     * @param db      Database Access
      */
     private void processReview(@NonNull final Context context,
                                @NonNull final DAO db,
                                @NonNull final Bundle review) {
 
         long grBookId = review.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
+
+        if (grBookId == 64524) {
+            Logger.debug(this, "processReview", review);
+        }
 
         // Find the books in our database - there may be more than one!
         // First look by Goodreads book ID
@@ -346,7 +351,6 @@ class ImportLegacyTask
      * Passed a Goodreads shelf name, return the best matching local bookshelf name,
      * or the original if no match found.
      *
-     *
      * @param db          Database Access
      * @param grShelfName Goodreads shelf name
      *
@@ -383,7 +387,7 @@ class ImportLegacyTask
     private List<String> extractIsbnList(@NonNull final Bundle review) {
 
         List<String> list = new ArrayList<>(5);
-        addIfHasValue(list, review.getString(ListReviewsApiHandler.ReviewField.ISBN13));
+        addIfHasValue(list, review.getString(ReviewsListApiHandler.ReviewField.ISBN13));
         addIfHasValue(list, review.getString(DBDefinitions.KEY_ISBN));
         return list;
     }
@@ -391,8 +395,8 @@ class ImportLegacyTask
     /**
      * Update the book using the Goodreads data.
      *
-     * @param context    Current context
-     * @param db Database Access
+     * @param context Current context
+     * @param db      Database Access
      */
     private void updateBook(@NonNull final Context context,
                             @NonNull final DAO db,
@@ -401,7 +405,7 @@ class ImportLegacyTask
         // Get last date book was sent to Goodreads (may be null)
         String lastGrSync = bookCursor.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE);
         // If the review has an 'updated' date, then see if we can compare to book
-        if (review.containsKey(ListReviewsApiHandler.ReviewField.UPDATED)) {
+        if (review.containsKey(ReviewsListApiHandler.ReviewField.UPDATED)) {
             String lastUpdate = review.getString(ReviewField.UPDATED);
             // If last update in Goodreads was before last Goodreads sync of book,
             // then don't bother updating book.
@@ -421,8 +425,8 @@ class ImportLegacyTask
     /**
      * Create a new book.
      *
-     * @param context    Current context
-     * @param db Database Access
+     * @param context Current context
+     * @param db      Database Access
      */
     private void insertBook(@NonNull final Context context,
                             @NonNull final DAO db,
@@ -444,9 +448,8 @@ class ImportLegacyTask
      * Build a book bundle based on the Goodreads 'review' data. Some data is just copied
      * while other data is processed (e.g. dates) and other are combined (authors & series).
      *
-     *
      * @param context Current context
-     * @param db Database Access
+     * @param db      Database Access
      *
      * @return bookData bundle
      */
@@ -464,7 +467,9 @@ class ImportLegacyTask
 
         //ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/812 - syn Goodreads notes
         // Do not sync Notes<->Review. We will add a 'Review' field later.
-        //addStringIfNonBlank(review, ReviewField.DBA_NOTES, book, ReviewField.DBA_NOTES);
+
+
+        addStringIfNonBlank(review, bookData, DBDefinitions.KEY_PRIVATE_NOTES);
 
         addStringIfNonBlank(review, bookData, DBDefinitions.KEY_TITLE);
 
@@ -475,8 +480,6 @@ class ImportLegacyTask
         addStringIfNonBlank(review, bookData, DBDefinitions.KEY_PUBLISHER);
 
         addLongIfPresent(review, bookData, DBDefinitions.KEY_GOODREADS_BOOK_ID);
-
-        addStringIfNonBlank(review, bookData, DBDefinitions.KEY_PAGES);
 
         addDateIfValid(review, DBDefinitions.KEY_READ_START,
                        bookData, DBDefinitions.KEY_READ_START);
@@ -491,6 +494,14 @@ class ImportLegacyTask
         // DO NOT overwrite existing data since it *may* be read even without these fields.
         if ((rating != null && rating > 0) || (readEnd != null && !readEnd.isEmpty())) {
             bookData.putBoolean(Book.IS_READ, true);
+        }
+
+        // Pages: convert long to String
+        if (review.containsKey(ReviewField.PAGES)) {
+            long pages = review.getLong(ReviewField.PAGES);
+            if (pages != 0) {
+                bookData.putString(DBDefinitions.KEY_PAGES, String.valueOf(pages));
+            }
         }
 
         /*
@@ -544,7 +555,13 @@ class ImportLegacyTask
         for (Bundle grAuthor : grAuthors) {
             String name = grAuthor.getString(ReviewField.AUTHOR_NAME_GF);
             if (name != null && !name.trim().isEmpty()) {
-                authors.add(Author.fromString(name));
+                Author author = Author.fromString(name);
+                String role = grAuthor.getString(ReviewField.AUTHOR_ROLE);
+                if (role != null && !role.trim().isEmpty()) {
+                    author.setType(role.trim());
+                }
+                authors.add(author);
+
             }
         }
         bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, authors);
@@ -605,7 +622,7 @@ class ImportLegacyTask
             // --- end 2019-02-04 ---
 
             for (Bundle shelfBundle : grShelves) {
-                String bsName = shelfBundle.getString(ListReviewsApiHandler.ReviewField.SHELF);
+                String bsName = shelfBundle.getString(ReviewsListApiHandler.ReviewField.SHELF);
                 bsName = translateBookshelf(db, bsName);
 
                 if (bsName != null && !bsName.isEmpty()) {

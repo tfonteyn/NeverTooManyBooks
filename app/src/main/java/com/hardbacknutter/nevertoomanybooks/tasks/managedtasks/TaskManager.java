@@ -162,6 +162,8 @@ public class TaskManager {
 
     /**
      * Constructor.
+     *
+     * @param context Current context, will get cached.
      */
     public TaskManager(@NonNull final Context context) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {

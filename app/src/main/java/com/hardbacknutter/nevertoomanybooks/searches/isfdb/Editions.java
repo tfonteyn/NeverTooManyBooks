@@ -85,9 +85,11 @@ public class Editions
     }
 
     /**
+     * Get the list with native ISFDB book ID's pointing to individual editions.
+     *
      * @param url A fully qualified ISFDB search url
      *
-     * @return a list with native ISFDB book ID's pointing to individual editions
+     * @return list
      *
      * @throws SocketTimeoutException on timeout
      */

@@ -87,24 +87,25 @@ public final class UniqueId {
 
     /** Request code: system request to ask the user for permissions. */
     public static final int REQ_ANDROID_PERMISSIONS = 9_000;
-    /** Request code: system request to ask the user to install this stuff */
+    /** Request code: system request to ask the user to install this stuff. */
     public static final int REQ_UPDATE_GOOGLE_PLAY_SERVICES = 9_001;
 
-    /**
-     * Bundle keys for {@code ParcelableArrayList<Entity>}.
-     */
+    /** Bundle key for {@code ParcelableArrayList<Author>}. */
     public static final String BKEY_AUTHOR_ARRAY = "author_array";
+    /** Bundle key for {@code ParcelableArrayList<Series>}. */
     public static final String BKEY_SERIES_ARRAY = "series_array";
+    /** Bundle key for {@code ParcelableArrayList<TocEntry>}. */
     public static final String BKEY_TOC_ENTRY_ARRAY = "toc_titles_array";
+    /** Bundle key for {@code ParcelableArrayList<Bookshelf>}. */
     public static final String BKEY_BOOKSHELF_ARRAY = "bookshelf_array";
 
-    /** generic search text. */
+    /** Bundle key for generic search text. */
     public static final String BKEY_SEARCH_TEXT = "searchText";
-    /** Author search text. */
+    /** Bundle key for Author search text. */
     public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
-    /** Title search text. */
+    /** Bundle key for Title search text. */
     public static final String BKEY_SEARCH_TITLE = "searchTitle";
-    /** Series title search text. */
+    /** Bundle key for Series title search text. */
     public static final String BKEY_SEARCH_SERIES_TITLE = "searchSeriesTitle";
 
     /**

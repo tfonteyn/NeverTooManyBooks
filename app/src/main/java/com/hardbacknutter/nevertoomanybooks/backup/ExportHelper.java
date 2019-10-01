@@ -87,7 +87,7 @@ public class ExportHelper
     private static final String TEMP_FILE_NAME = "tmpExport.tmp";
 
     @NonNull
-    public final Exporter.Results results = new Exporter.Results();
+    private final Exporter.Results mResults = new Exporter.Results();
 
     /** EXPORT_SINCE. */
     @Nullable
@@ -97,6 +97,7 @@ public class ExportHelper
      * Constructor.
      *
      * @param options to export
+     * @param uri     to write to
      */
     public ExportHelper(final int options,
                         @Nullable final Uri uri) {
@@ -122,19 +123,19 @@ public class ExportHelper
     }
 
     public void addResults(@NonNull final Exporter.Results results) {
-        this.results.booksProcessed += results.booksProcessed;
-        this.results.booksExported += results.booksExported;
+        mResults.booksProcessed += results.booksProcessed;
+        mResults.booksExported += results.booksExported;
 
-        this.results.coversProcessed += results.coversProcessed;
-        this.results.coversExported += results.coversExported;
-        this.results.coversMissing += results.coversMissing;
+        mResults.coversProcessed += results.coversProcessed;
+        mResults.coversExported += results.coversExported;
+        mResults.coversMissing += results.coversMissing;
 
-        this.results.styles += results.styles;
+        mResults.styles += results.styles;
     }
 
     @NonNull
     public Exporter.Results getResults() {
-        return results;
+        return mResults;
     }
 
     @Override
@@ -204,7 +205,7 @@ public class ExportHelper
     public String toString() {
         return "ExportHelper{"
                + ", options=0b" + Integer.toBinaryString(options)
-               + ", results=" + results
+               + ", mResults=" + mResults
                + ", mDateFrom=" + mDateFrom
                + '}';
     }

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,6 +162,8 @@ public class XmlFilter {
     /**
      * Find a sub-filter for the passed context.
      * Currently just used local_name from the context.
+     *
+     * @param context Current ElementContext
      */
     @Nullable
     XmlFilter getSubFilter(@NonNull final ElementContext context) {
@@ -186,6 +189,8 @@ public class XmlFilter {
 
     /**
      * Called when associated tag is started.
+     *
+     * @param context Current ElementContext
      */
     void processStart(@NonNull final ElementContext context) {
         if (mStartAction != null) {
@@ -196,6 +201,8 @@ public class XmlFilter {
 
     /**
      * Called when associated tag is finished.
+     *
+     * @param context Current ElementContext
      */
     void processEnd(@NonNull final ElementContext context) {
         if (mEndAction != null) {

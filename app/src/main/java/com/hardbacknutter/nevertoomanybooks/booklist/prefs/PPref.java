@@ -57,7 +57,8 @@ public interface PPref<T> {
              @NonNull T value);
 
     /**
-     * <ol>Implementations should return in order:
+     * Implementations should return in order below.
+     * <ol>
      * <li>The user preference if set</li>
      * <li>The global preference if set</li>
      * <li>The default value as set at creation time of the preference Object.</li>

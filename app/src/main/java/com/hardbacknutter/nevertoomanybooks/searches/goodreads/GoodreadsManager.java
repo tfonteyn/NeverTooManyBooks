@@ -76,7 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.AddBookToShelfApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.AuthUserApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.IsbnToIdApiHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewUpdateApiHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewEditApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.SearchBooksApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShelvesListApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookApiHandler;
@@ -195,7 +195,7 @@ public class GoodreadsManager
     private AddBookToShelfApiHandler mAddBookToShelfApiHandler;
     /** Cache this common handler. */
     @Nullable
-    private ReviewUpdateApiHandler mReviewUpdateApiHandler;
+    private ReviewEditApiHandler mReviewEditApiHandler;
 
     /** Cached list of shelves. */
     @Nullable
@@ -411,8 +411,8 @@ public class GoodreadsManager
         try {
             mConsumer.sign(request);
         } catch (@NonNull final OAuthMessageSignerException
-                                        | OAuthExpectationFailedException
-                                        | OAuthCommunicationException e) {
+                | OAuthExpectationFailedException
+                | OAuthCommunicationException e) {
             throw new IOException(e);
         }
     }
@@ -448,8 +448,8 @@ public class GoodreadsManager
         try {
             mConsumer.sign(request);
         } catch (@NonNull final OAuthMessageSignerException
-                                        | OAuthExpectationFailedException
-                                        | OAuthCommunicationException e) {
+                | OAuthExpectationFailedException
+                | OAuthCommunicationException e) {
             throw new IOException(e);
         }
     }
@@ -568,12 +568,13 @@ public class GoodreadsManager
      * <p>
      * Depending on the state of 'isRead', the date fields will determine which shelf is used.
      *
-     * @param reviewId   to update
-     * @param isRead     Flag to indicate we finished reading this book.
-     * @param readStart  (optional) Date when we started reading this book, YYYY-MM-DD format
-     * @param readEnd    (optional) Date when we finished reading this book, YYYY-MM-DD format
-     * @param rating     Rating 0-5 with 0 == No rating
-     * @param reviewText (optional) Text for the review
+     * @param reviewId     to update
+     * @param isRead       Flag to indicate we finished reading this book.
+     * @param readStart    (optional) Date when we started reading this book, YYYY-MM-DD format
+     * @param readEnd      (optional) Date when we finished reading this book, YYYY-MM-DD format
+     * @param rating       Rating 0-5 with 0 == No rating
+     * @param privateNotes (optional) Text for the Goodreads PRIVATE notes
+     * @param review       (optional) Text for the review, PUBLIC
      *
      * @throws CredentialsException  with GoodReads
      * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
@@ -584,14 +585,17 @@ public class GoodreadsManager
                               @Nullable final String readStart,
                               @Nullable final String readEnd,
                               final int rating,
+                              @Nullable final String privateNotes,
                               @SuppressWarnings("SameParameterValue")
-                              @Nullable final String reviewText)
+                              @Nullable final String review)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        if (mReviewUpdateApiHandler == null) {
-            mReviewUpdateApiHandler = new ReviewUpdateApiHandler(this);
+        if (mReviewEditApiHandler == null) {
+            mReviewEditApiHandler = new ReviewEditApiHandler(this);
         }
-        mReviewUpdateApiHandler.update(reviewId, isRead, readStart, readEnd, rating, reviewText);
+        mReviewEditApiHandler.update(reviewId, isRead, readStart, readEnd, rating,
+                                     privateNotes,
+                                     review);
     }
 
     /**
@@ -767,13 +771,12 @@ public class GoodreadsManager
             }
 
             // Now update the remaining review details.
-            // Do not sync Notes<->Review. We will add a 'Review' field later.
-            // ('notes' has been disabled from the SQL)
             updateReview(reviewId,
                          bookCursor.getBoolean(DBDefinitions.KEY_READ),
                          bookCursor.getString(DBDefinitions.KEY_READ_START),
                          bookCursor.getString(DBDefinitions.KEY_READ_END),
                          (int) bookCursor.getDouble(DBDefinitions.KEY_RATING),
+                         bookCursor.getString(DBDefinitions.KEY_PRIVATE_NOTES),
                          null);
 
             return ExportResult.sent;
@@ -807,7 +810,7 @@ public class GoodreadsManager
 
             } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
                 List<GoodreadsWork> goodreadsWorks = new SearchBooksApiHandler(this)
-                                                             .search(author + ' ' + title);
+                        .search(author + ' ' + title);
 
                 if (!goodreadsWorks.isEmpty()) {
                     return getBookById(context, goodreadsWorks.get(0).bookId, fetchThumbnail);

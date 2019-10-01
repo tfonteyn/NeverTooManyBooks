@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * <p>
  * It also has a static method to check if the intent is present.
  */
-public class ZxingScanner
+public final class ZxingScanner
         implements Scanner {
 
     static final String ACTION = "com.google.zxing.client.android.SCAN";
@@ -74,6 +74,9 @@ public class ZxingScanner
 
     /**
      * Check if the passed intent action is available.
+     *
+     * @param context     Current context
+     * @param packageName to check
      *
      * @return {@code true} if present
      */

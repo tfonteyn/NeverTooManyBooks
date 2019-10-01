@@ -62,8 +62,14 @@ public class ImportHelper
     private static final int MASK = ALL | IMPORT_ONLY_NEW_OR_UPDATED;
 
     @NonNull
-    private final Importer.Results results = new Importer.Results();
+    private final Importer.Results mResults = new Importer.Results();
 
+    /**
+     * Constructor.
+     *
+     * @param options to import
+     * @param uri     to read from
+     */
     public ImportHelper(final int options,
                         @Nullable final Uri uri) {
         super(options, uri);
@@ -80,19 +86,19 @@ public class ImportHelper
 
     @NonNull
     public Importer.Results getResults() {
-        return results;
+        return mResults;
     }
 
     public void addResults(@NonNull final Importer.Results results) {
-        this.results.booksProcessed += results.booksProcessed;
-        this.results.booksCreated += results.booksCreated;
-        this.results.booksUpdated += results.booksUpdated;
+        mResults.booksProcessed += results.booksProcessed;
+        mResults.booksCreated += results.booksCreated;
+        mResults.booksUpdated += results.booksUpdated;
 
-        this.results.coversProcessed += results.coversProcessed;
-        this.results.coversCreated += results.coversCreated;
-        this.results.coversUpdated += results.coversUpdated;
+        mResults.coversProcessed += results.coversProcessed;
+        mResults.coversCreated += results.coversCreated;
+        mResults.coversUpdated += results.coversUpdated;
 
-        this.results.styles += results.styles;
+        mResults.styles += results.styles;
     }
 
     /**
@@ -111,7 +117,7 @@ public class ImportHelper
     public String toString() {
         return "ImportHelper{"
                + ", options=0b" + Integer.toBinaryString(options)
-               + ", results=" + results
+               + ", mResults=" + mResults
                + '}';
     }
 

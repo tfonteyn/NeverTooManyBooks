@@ -248,11 +248,24 @@ public class BookFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         switch (requestCode) {
-            case UniqueId.REQ_BOOK_DUPLICATE:
             case UniqueId.REQ_BOOK_EDIT:
                 if (resultCode == Activity.RESULT_OK) {
                     mBookModel.reload();
                     // onResume will display the changed book.
+                }
+                break;
+
+            case UniqueId.REQ_BOOK_DUPLICATE:
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
+                        long id = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
+                        if (id != 0) {
+                            mBookModel.setBook(id);
+                        }
+                    }
+                    mBookModel.reload();
+                    // onResume will display the new book.
+                    // FIXME: swiping through the flattened booklist will not see the new book
                 }
                 break;
 

@@ -48,24 +48,32 @@ import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryMana
  * <p>
  * Defines some menu 'order' variables, to ensure certain menu's have a fixed spot.
  */
-public final class MenuHandler {
+final class MenuHandler {
 
-    public static final int ORDER_HIDE_KEYBOARD = 1;
-    static final int ORDER_SAVE = 5;
+    static final int ORDER_HIDE_KEYBOARD = 1;
 
     static final int ORDER_SEARCH_SITES = 20;
 
-    static final int ORDER_UPDATE_FIELDS = 70;
-    static final int ORDER_LENDING = 80;
+    static final int ORDER_UPDATE_FIELDS = 50;
+    static final int ORDER_LENDING = 60;
 
-    static final int ORDER_SHARE = 90;
-    static final int ORDER_SEND_TO_GOODREADS = 92;
-    static final int ORDER_VIEW_BOOK_AT_SITE = 97;
+    static final int ORDER_SHARE = 70;
+
+    static final int ORDER_SEND_TO_GOODREADS = 80;
+
+    static final int ORDER_VIEW_BOOK_AT_SITE = 90;
     private static final int ORDER_AMAZON = 99;
 
     private MenuHandler() {
     }
 
+    /**
+     * Add SubMenu for viewing a book on external sites.
+     * <p>
+     * Normally called from your {@link Fragment#onCreateOptionsMenu}.
+     *
+     * @param menu Root menu
+     */
     static void addViewBookSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_VIEW_BOOK_AT_SITE,
                                           ORDER_VIEW_BOOK_AT_SITE,

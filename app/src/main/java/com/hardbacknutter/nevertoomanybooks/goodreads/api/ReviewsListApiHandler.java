@@ -56,8 +56,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  *
  * <a href="https://www.goodreads.com/api/index#reviews.list">
  * https://www.goodreads.com/api/index#reviews.list</a>
+ *
+ * <strong>IMPORTANT:</strong> Goodreads private notes are not included in this response.
+ * So we cannot import them here.
  */
-public class ListReviewsApiHandler
+public class ReviewsListApiHandler
         extends ApiHandler {
 
     /** Date format used for parsing 'last_update_date'. */
@@ -132,7 +135,7 @@ public class ListReviewsApiHandler
      *
      * @throws CredentialsException with GoodReads
      */
-    public ListReviewsApiHandler(@NonNull final GoodreadsManager grManager)
+    public ReviewsListApiHandler(@NonNull final GoodreadsManager grManager)
             throws CredentialsException {
         super(grManager);
         if (!grManager.hasValidCredentials()) {
@@ -147,10 +150,10 @@ public class ListReviewsApiHandler
      *
      * {@code
      * Bundle results = get(page,perPage);
-     * mTotalBooks = (int) results.getLong(ListReviewsApiHandler.ReviewField.TOTAL);
+     * mTotalBooks = (int) results.getLong(ReviewsListApiHandler.ReviewField.TOTAL);
      *
      * ArrayList<Bundle> reviews = results.getParcelableArrayList(
-     *                                 ListReviewsApiHandler.ReviewField.REVIEWS);
+     *                                 ReviewsListApiHandler.ReviewField.REVIEWS);
      * }
      *
      * @return A bundle containing an ArrayList of Bundles, one for each review.
@@ -167,6 +170,7 @@ public class ListReviewsApiHandler
         final String url = String.format(URL, mManager.getDevKey(), page, perPage,
                                          mManager.getUserId());
         DefaultHandler handler = new XmlResponseParser(mRootFilter);
+//        DefaultHandler handler = new XmlDumpParser();
         executeGet(url, null, true, handler);
         return mFilters.getData();
     }
@@ -397,7 +401,9 @@ public class ListReviewsApiHandler
                 .stringBody(XmlTags.XML_SMALL_IMAGE_URL, ReviewField.SMALL_IMAGE)
                 //              ...
                 //              <num_pages>159</num_pages>
-                .longBody(XmlTags.XML_NUM_PAGES, DBDefinitions.KEY_PAGES)
+                // Note we get this as a LONG to be consistent with the Goodreads type,
+                // while our app uses a String. So use a ReviewField and convert later.
+                .longBody(XmlTags.XML_NUM_PAGES, ReviewField.PAGES)
                 //              <format></format>
                 .stringBody(XmlTags.XML_FORMAT, DBDefinitions.KEY_FORMAT)
                 //              <publisher></publisher>
@@ -451,7 +457,7 @@ public class ListReviewsApiHandler
                 .stringBody(ReviewField.UPDATED).setListener(mUpdatedListener).pop()
                 //          ...
                 //          <body><![CDATA[]]></body>
-                .stringBody(XmlTags.XML_BODY, DBDefinitions.KEY_NOTES).pop()
+                .stringBody(XmlTags.XML_BODY, ReviewField.BODY).pop()
                 //          ...
                 //          <owned>0</owned>
                 //      </review>
@@ -501,8 +507,13 @@ public class ListReviewsApiHandler
         public static final String AUTHOR_NAME_GF = "__author_name";
         public static final String AUTHOR_ROLE = "__author_role";
 
+        public static final String BODY = "__body";
+
         public static final String SHELF = "__shelf";
         public static final String SHELVES = "__shelves";
+
+        /** Type: long. */
+        public static final String PAGES = "__pages";
 
         static final String REVIEW_ID = "__review_id";
 

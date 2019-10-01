@@ -107,6 +107,8 @@ public abstract class BackupWriterAbstract
         mExportHelper = exportHelper;
         mProgressListener = progressListener;
 
+        Exporter.Results exportResults = mExportHelper.getResults();
+
         // do a cleanup first
         mDb.purge();
 
@@ -121,12 +123,13 @@ public abstract class BackupWriterAbstract
 
         File tmpBookCsvFile = null;
 
+
         try {
             // If we are doing covers, get the exact number by counting them
             if (!mProgressListener.isCancelled() && incCovers) {
                 mProgressListener.onProgress(0, R.string.progress_msg_searching);
                 doCovers(true);
-                mProgressListener.setMax(mExportHelper.results.coversExported);
+                mProgressListener.setMax(exportResults.coversExported);
             }
 
             // If we are doing books, generate the CSV file first, so we have the #books
@@ -144,19 +147,19 @@ public abstract class BackupWriterAbstract
 
             // we now have a known number of books; add the covers and we've more or less have an
             // exact number of steps. Added arbitrary 10 for the other entities we might do
-            mProgressListener.setMax(mExportHelper.results.booksExported
-                                     + mExportHelper.results.coversExported + 10);
+            mProgressListener.setMax(exportResults.booksExported
+                                     + exportResults.coversExported + 10);
 
             // Process each component of the Archive, unless we are cancelled.
             if (!mProgressListener.isCancelled()) {
-                doInfo(mExportHelper.results.booksExported,
-                       mExportHelper.results.coversExported,
+                doInfo(exportResults.booksExported,
+                       exportResults.coversExported,
                        incStyles, incPrefs);
             }
             // Write styles and prefs first. This will facilitate & speedup
             // importing as we'll be seeking in the input archive for them first.
             if (!mProgressListener.isCancelled() && incStyles) {
-                mExportHelper.results.styles += doStyles();
+                exportResults.styles += doStyles();
                 entitiesWritten |= Options.BOOK_LIST_STYLES;
             }
             if (!mProgressListener.isCancelled() && incPrefs) {
@@ -185,7 +188,7 @@ public abstract class BackupWriterAbstract
             mExportHelper.options = entitiesWritten;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
                 Logger.debug(this, "backup",
-                             "mExportHelper.getResults()=" + mExportHelper.getResults());
+                             "mExportHelper.getResults()=" + exportResults);
             }
             try {
                 close();
@@ -330,9 +333,10 @@ public abstract class BackupWriterAbstract
         }
 
         if (dryRun) {
-            mExportHelper.results.coversExported += coversExported;
-            mExportHelper.results.coversMissing += missing;
-            mExportHelper.results.coversProcessed += coversExported + missing + skipped;
+            Exporter.Results results = mExportHelper.getResults();
+            results.coversExported += coversExported;
+            results.coversMissing += missing;
+            results.coversProcessed += coversExported + missing + skipped;
         }
 
         if (!dryRun) {

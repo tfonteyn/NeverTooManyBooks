@@ -51,5 +51,5 @@ public interface Entity {
      *
      * @return the label to use.
      */
-    String getLabel(@NonNull final Context context);
+    String getLabel(@NonNull Context context);
 }

@@ -117,8 +117,8 @@ public class XmlExporter
     private static final int XML_EXPORTER_BOOKS_VERSION = 1;
 
     /** individual format version of Styles. */
-    private static final int XML_EXPORTER_STYLES_VERSION = 1;
-    private static final int XML_EXPORTER_STYLES_VERSION_v2 = 2;
+    private static final int XML_EXPORTER_STYLES_VERSION_1 = 1;
+    private static final int XML_EXPORTER_STYLES_VERSION_2 = 2;
 
     private static final int BUFFER_SIZE = 32768;
 
@@ -824,7 +824,7 @@ public class XmlExporter
         }
 
         writer.append('<' + XmlTags.XML_STYLE_LIST)
-              .append(version(XML_EXPORTER_STYLES_VERSION_v2))
+              .append(version(XML_EXPORTER_STYLES_VERSION_2))
               .append(">\n");
 
         for (BooklistStyle style : styles) {
@@ -1273,7 +1273,7 @@ public class XmlExporter
 
         @Override
         public long getElementVersionAttribute() {
-            return XmlExporter.XML_EXPORTER_STYLES_VERSION;
+            return XmlExporter.XML_EXPORTER_STYLES_VERSION_1;
         }
 
         @Override

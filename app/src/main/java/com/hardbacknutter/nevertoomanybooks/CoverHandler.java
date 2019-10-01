@@ -166,9 +166,8 @@ public class CoverHandler {
         });
 
         //Allow zooming by clicking on the image
-        //noinspection ConstantConditions
         mCoverView.setOnClickListener(
-                v -> ZoomedImageDialogFragment.show(mFragment.getFragmentManager(),
+                v -> ZoomedImageDialogFragment.show(mFragment.getParentFragmentManager(),
                                                     getCoverFile()));
     }
 
@@ -431,9 +430,8 @@ public class CoverHandler {
 
         String isbn = mIsbnView.getText().toString().trim();
         if (ISBN.isValid(isbn)) {
-            FragmentManager fm = mFragment.getFragmentManager();
+            FragmentManager fm = mFragment.getParentFragmentManager();
             // we must use the same fragment manager as the hosting fragment.
-            //noinspection ConstantConditions
             mCoverBrowser = (CoverBrowserFragment) fm.findFragmentByTag(CoverBrowserFragment.TAG);
             if (mCoverBrowser == null) {
                 mCoverBrowser = CoverBrowserFragment.newInstance(isbn, SearchSites.SEARCH_ALL);
