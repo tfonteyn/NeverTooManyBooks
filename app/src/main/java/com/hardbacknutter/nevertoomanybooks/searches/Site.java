@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 /**
  * All search engines are added here.
  */
-public class Site
+public final class Site
         implements Parcelable {
 
     /** {@link Parcelable}. */
@@ -61,6 +61,7 @@ public class Site
     private static final String PREF_PREFIX = "SearchSite.";
 
     /** Internal ID, bitmask based, not stored in prefs. */
+    @SearchSites.Id
     public final int id;
 
     /** Internal task(thread) name AND user-visible name AND key into prefs. */
@@ -78,8 +79,16 @@ public class Site
     private SearchEngine mSearchEngine;
 
 
-    /** Constructor. Use static method instead. */
-    private Site(final int id,
+    /**
+     * Constructor. Use static method instead.
+     *
+     * @param id          Internal ID, bitmask based
+     * @param name        user visible name
+     * @param enabled     flag
+     * @param priority    the search priority order
+     * @param reliability the search reliability order
+     */
+    private Site(@SearchSites.Id final int id,
                  @NonNull final String name,
                  final boolean enabled,
                  final int priority,
@@ -117,7 +126,7 @@ public class Site
      * @param priority    the search priority order
      * @param reliability the search reliability order
      */
-    static Site newSite(final int id,
+    static Site newSite(@SearchSites.Id final int id,
                         final boolean enabled,
                         final int priority,
                         final int reliability) {
@@ -132,7 +141,7 @@ public class Site
      * @param enabled  flag
      * @param priority the search priority order
      */
-    static Site newCoverSite(final int id,
+    static Site newCoverSite(@SearchSites.Id final int id,
                              final boolean enabled,
                              final int priority) {
 
@@ -143,7 +152,9 @@ public class Site
     }
 
     /**
-     * @return the {@link SearchEngine} instance for this site
+     * Get the {@link SearchEngine} instance for this site.
+     *
+     * @return {@link SearchEngine}
      */
     public SearchEngine getSearchEngine() {
         if (mSearchEngine == null) {

@@ -52,6 +52,7 @@ public class BookSearchBaseModel
     private DAO mDb;
 
     /** sites to search on. Can be overridden by the user (option menu). */
+    @SearchSites.Id
     private int mSearchSites = SearchSites.SEARCH_ALL;
 
     /** Objects managing current search. */
@@ -108,11 +109,12 @@ public class BookSearchBaseModel
         return mDb;
     }
 
+    @SearchSites.Id
     public int getSearchSites() {
         return mSearchSites;
     }
 
-    public void setSearchSites(final int searchSites) {
+    public void setSearchSites(@SearchSites.Id final int searchSites) {
         mSearchSites = searchSites;
     }
 

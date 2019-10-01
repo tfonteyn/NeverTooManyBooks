@@ -64,13 +64,14 @@ public interface SearchEngine {
      * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
      * {@code null} returned.
      *
-     * @param isbn to search for
+     * @param searchEngine engine to use
+     * @param isbn         to search for
      *
      * @return found/saved File, or {@code null} when none found (or any other failure)
      */
     @Nullable
     @WorkerThread
-    static File getCoverImageFallback(@NonNull final SearchEngine site,
+    static File getCoverImageFallback(@NonNull final SearchEngine searchEngine,
                                       @NonNull final String isbn) {
         // sanity check
         if (!ISBN.isValid(isbn)) {
@@ -79,7 +80,7 @@ public interface SearchEngine {
 
         try {
             //ENHANCE: it seems most implementations can return multiple book bundles quite easily.
-            Bundle bookData = site.search(isbn, "", "", "", true);
+            Bundle bookData = searchEngine.search(isbn, "", "", "", true);
 
             ArrayList<String> imageList =
                     bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
@@ -116,6 +117,12 @@ public interface SearchEngine {
      * The implementation will/should give preference to using the ISBN if present,
      * and only fall back to using author/title if needed.
      *
+     * @param isbn           to search for
+     * @param author         to search for
+     * @param title          to search for
+     * @param publisher      optional and in addition to author/title.
+     *                       i.e. author and/or title must be valid; only then publisher
+     *                       is taken into account.
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return bundle with book data. Can be empty, but never {@code null}.
@@ -198,6 +205,8 @@ public interface SearchEngine {
     boolean isAvailable();
 
     /**
+     * Check if the site is ISBN based only.
+     *
      * @return {@code true} if the site can only be searched with a valid ISBN
      */
     @AnyThread
@@ -206,7 +215,9 @@ public interface SearchEngine {
     }
 
     /**
-     * @return the resource id for the human-readable name of the site
+     * Get the resource id for the human-readable name of the site.
+     *
+     * @return the resource id
      */
     @AnyThread
     @StringRes

@@ -75,6 +75,7 @@ public class UpdateFieldsFromInternetTask
     /** Signal for available items. */
     private final Condition mSearchDone = mSearchLock.newCondition();
     /** Sites to search. */
+    @SearchSites.Id
     private final int mSearchSites;
     /** Active search manager. */
     private final SearchCoordinator mSearchCoordinator;
@@ -149,7 +150,7 @@ public class UpdateFieldsFromInternetTask
      * @param listener    where to send our results to
      */
     public UpdateFieldsFromInternetTask(@NonNull final TaskManager taskManager,
-                                        final int searchSites,
+                                        @SearchSites.Id final int searchSites,
                                         @NonNull final Map<String, FieldUsage> fields,
                                         @NonNull final ManagedTaskListener listener) {
         super(taskManager, "UpdateFieldsFromInternetTask");

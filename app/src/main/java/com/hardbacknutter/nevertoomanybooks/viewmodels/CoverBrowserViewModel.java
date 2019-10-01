@@ -370,6 +370,7 @@ public class CoverBrowserViewModel
                           @NonNull final SearchEngine.ImageSize... imageSizes) {
 
             // use a local copy so we can disable sites on the fly.
+            @SearchSites.Id
             int currentSearchSites = mSearchSites;
 
             // we need to use the size as the outer loop (and not inside of getCoverImage itself).

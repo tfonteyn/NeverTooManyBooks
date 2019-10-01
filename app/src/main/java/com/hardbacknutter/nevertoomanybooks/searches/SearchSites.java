@@ -30,9 +30,12 @@ package com.hardbacknutter.nevertoomanybooks.searches;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -69,13 +72,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  */
 public final class SearchSites {
 
-    /** search source to use. */
-    static final int AMAZON = 1 << 1;
+
     /** tag. */
     private static final String TAG = "SearchSites";
     public static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
     /** search source to use. */
     private static final int GOOGLE_BOOKS = 1;
+    /** search source to use. */
+    static final int AMAZON = 1 << 1;
     /** search source to use. */
     private static final int LIBRARY_THING = 1 << 2;
     /** search source to use. */
@@ -97,6 +101,17 @@ public final class SearchSites {
     public static final int SEARCH_ALL = GOOGLE_BOOKS | AMAZON
                                          | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY
                                          | KBNL;
+
+    /**
+     * Dutch sites are by *default* only enabled if either the device or this app is running
+     * in Dutch.
+     *
+     * @return {@code true} if Dutch sites should be enabled by default.
+     */
+    private static boolean isDutch() {
+        return "nld".equals(App.getSystemLocale().getISO3Language())
+               || "nld".equals(Locale.getDefault().getISO3Language());
+    }
 
     /** the default search site order for standard data/covers. */
     private static final ArrayList<Site> SEARCH_ORDER_DEFAULTS = new ArrayList<>();
@@ -183,17 +198,6 @@ public final class SearchSites {
     }
 
     /**
-     * Dutch sites are by *default* only enabled if either the device or this app is running
-     * in Dutch.
-     *
-     * @return {@code true} if Dutch sites should be enabled by default.
-     */
-    private static boolean isDutch() {
-        return ("nld".equals(App.getSystemLocale().getISO3Language())
-                || "nld".equals(Locale.getDefault().getISO3Language()));
-    }
-
-    /**
      * Return the name for the site. This should/is a hardcoded single word.
      * It is used for:
      * <ol>
@@ -212,7 +216,7 @@ public final class SearchSites {
      *
      * @return the name
      */
-    static String getName(final int id) {
+    static String getName(@Id final int id) {
         switch (id) {
             case GOOGLE_BOOKS:
                 return "GoogleBooks";
@@ -239,7 +243,7 @@ public final class SearchSites {
      *
      * @return instance
      */
-    static SearchEngine getSearchEngine(final int id) {
+    static SearchEngine getSearchEngine(@SearchSites.Id final int id) {
 
         switch (id) {
             case GOOGLE_BOOKS:
@@ -268,6 +272,16 @@ public final class SearchSites {
         }
     }
 
+    /**
+     * Reset all values back to the hardcoded defaults.
+     *
+     * @param context Current context
+     */
+    public static void reset(@NonNull final Context context) {
+        setSearchOrder(context, SEARCH_ORDER_DEFAULTS);
+        setCoverSearchOrder(context, COVER_SEARCH_ORDER_DEFAULTS);
+    }
+
 
     public static boolean usePublisher(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -275,19 +289,50 @@ public final class SearchSites {
     }
 
     /**
-     * Reset all values back to the hardcoded defaults.
+     * Reset search order values back to the hardcoded defaults.
+     *
+     * @param context Current context
      */
-    public static void reset(@NonNull final Context context) {
-        setSearchOrder(context, SEARCH_ORDER_DEFAULTS);
-        setCoverSearchOrder(context, COVER_SEARCH_ORDER_DEFAULTS);
-    }
-
     public static void resetSearchOrder(@NonNull final Context context) {
         setSearchOrder(context, SEARCH_ORDER_DEFAULTS);
     }
 
+    /**
+     * Reset cover search order values back to the hardcoded defaults.
+     *
+     * @param context Current context
+     */
     public static void resetCoverSearchOrder(@NonNull final Context context) {
         setCoverSearchOrder(context, COVER_SEARCH_ORDER_DEFAULTS);
+    }
+
+    /**
+     * Bring up an Alert to the user if the searchSites include a site where registration
+     * is beneficial/required.
+     *
+     * @param context     Current context
+     * @param prefSuffix  Tip preference marker
+     * @param searchSites sites
+     *
+     * @return {@code true} if an alert is currently shown
+     */
+    public static boolean alertRegistrationBeneficial(@NonNull final Context context,
+                                                      @NonNull final String prefSuffix,
+                                                      @SearchSites.Id final int searchSites) {
+        boolean showingAlert = false;
+
+        if ((searchSites & GOODREADS) != 0) {
+            showingAlert = GoodreadsManager.alertRegistrationBeneficial(context,
+                                                                        false, prefSuffix);
+        }
+
+        if ((searchSites & LIBRARY_THING) != 0) {
+            showingAlert = showingAlert
+                           || LibraryThingManager.alertRegistrationBeneficial(context,
+                                                                              false, prefSuffix);
+        }
+
+        return showingAlert;
     }
 
     @NonNull
@@ -337,32 +382,9 @@ public final class SearchSites {
         ed.apply();
     }
 
-    /**
-     * Bring up an Alert to the user if the searchSites include a site where registration
-     * is beneficial/required.
-     *
-     * @param context     Current context
-     * @param prefSuffix  Tip preference marker
-     * @param searchSites sites
-     *
-     * @return {@code true} if an alert is currently shown
-     */
-    public static boolean alertRegistrationBeneficial(@NonNull final Context context,
-                                                      @NonNull final String prefSuffix,
-                                                      final int searchSites) {
-        boolean showingAlert = false;
-
-        if ((searchSites & GOODREADS) != 0) {
-            showingAlert = GoodreadsManager.alertRegistrationBeneficial(context,
-                                                                        false, prefSuffix);
-        }
-
-        if ((searchSites & LIBRARY_THING) != 0) {
-            showingAlert = showingAlert
-                           || LibraryThingManager.alertRegistrationBeneficial(context,
-                                                                              false, prefSuffix);
-        }
-
-        return showingAlert;
+    @IntDef(flag = true, value = {
+            GOOGLE_BOOKS, AMAZON, LIBRARY_THING, GOODREADS, ISFDB, OPEN_LIBRARY, KBNL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Id {
     }
 }

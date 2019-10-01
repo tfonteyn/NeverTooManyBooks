@@ -118,6 +118,7 @@ public class SearchCoordinator {
         }
     };
     /** Flags applicable to *current* search. */
+    @SearchSites.Id
     private int mSearchFlags;
     /** Accumulated book data. */
     private Bundle mBookData;
@@ -226,7 +227,7 @@ public class SearchCoordinator {
      * @param publisher      to search for (can be empty)
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
-    public void search(final int searchFlags,
+    public void search(@SearchSites.Id final int searchFlags,
                        @NonNull final String isbn,
                        @NonNull final String author,
                        @NonNull final String title,
@@ -357,7 +358,7 @@ public class SearchCoordinator {
      *
      * @return {@code true} if at least one search was started, {@code false} if none
      */
-    private boolean startSearches(final int sources) {
+    private boolean startSearches(@SearchSites.Id final int sources) {
         boolean atLeastOneStarted = false;
         // Loop searches in priority order
         for (Site source : SearchSites.getSites()) {

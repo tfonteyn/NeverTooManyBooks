@@ -116,7 +116,7 @@ public class CoverBrowserFragment
      */
     @NonNull
     public static CoverBrowserFragment newInstance(@NonNull final String isbn,
-                                                   final int searchSites) {
+                                                   @SearchSites.Id final int searchSites) {
 
         if (!LibraryThingManager.hasKey()) {
             throw new IllegalStateException("LibraryThing Key must be tested before calling this");
