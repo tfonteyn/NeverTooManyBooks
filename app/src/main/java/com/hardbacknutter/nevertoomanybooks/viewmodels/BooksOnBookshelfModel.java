@@ -81,14 +81,12 @@ public class BooksOnBookshelfModel
         extends ViewModel {
 
     private static final String TAG = "BooksOnBookshelf";
-    /** Preference name - Saved position of last top row. */
-    public static final String PREF_BOB_TOP_ROW = TAG + ".TopRow";
-    /** Preference name - Saved position of last top row offset from view top. */
-    public static final String PREF_BOB_TOP_ROW_OFFSET = TAG + ".TopRowOffset";
-
     /** collapsed/expanded. */
     public static final String BKEY_LIST_STATE = TAG + ":list.state";
-
+    /** Preference name - Saved position of last top row. */
+    private static final String PREF_BOB_TOP_ROW = TAG + ".TopRow";
+    /** Preference name - Saved position of last top row offset from view top. */
+    private static final String PREF_BOB_TOP_ROW_OFFSET = TAG + ".TopRowOffset";
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
     /** Allows progress message from a task to update the user. */
@@ -103,6 +101,23 @@ public class BooksOnBookshelfModel
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
     /** Cache for all bookshelf names / spinner list. */
     private final List<String> mBookshelfNameList = new ArrayList<>();
+
+    /**
+     * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_CSV} when
+     * NOT using a background task for the extras.
+     */
+    private final String BOOKSHELVES_CSV_SOURCE_EXPRESSION =
+            "("
+            + "SELECT GROUP_CONCAT("
+            + DBDefinitions.TBL_BOOKSHELF.dot(DBDefinitions.DOM_BOOKSHELF) + ",', ')"
+            + " FROM "
+            + DBDefinitions.TBL_BOOKSHELF.ref()
+            + DBDefinitions.TBL_BOOKSHELF.join(DBDefinitions.TBL_BOOK_BOOKSHELF)
+            + " WHERE "
+            + DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID) + "="
+            + DBDefinitions.TBL_BOOK_BOOKSHELF.dot(DBDefinitions.DOM_FK_BOOK)
+            + ")";
+
     /** Database Access. */
     private DAO mDb;
     /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
@@ -241,7 +256,6 @@ public class BooksOnBookshelfModel
     public DAO getDb() {
         return mDb;
     }
-
 
     @NonNull
     public List<String> getBookshelfNameList() {
@@ -403,7 +417,7 @@ public class BooksOnBookshelfModel
      * Queue a rebuild of the underlying cursor and data.
      *
      * @param context       Current context
-     * @param isFullRebuild Indicates whole table structure needs rebuild,
+     * @param isFullRebuild Indicates whole table structure needs a rebuild,
      *                      versus just do a reselect of underlying data
      */
     public void initBookList(@NonNull final Context context,
@@ -454,20 +468,17 @@ public class BooksOnBookshelfModel
                                false);
 
             /*
-             * Depending on the device speed, and user habits, BOTH methods can be advantageous.
-             * ==> now a preference <strong>per style</strong>
+             * If we do not use a background task for the extras, then we need to
+             * add the needed extras columns to the main query.
+             * Depending on the device speed, and how the user uses styles,
+             * BOTH methods can be advantageous.
+             * Hence this is a preference <strong>per style</strong>.
              */
             if (!style.useTaskForExtras()) {
-                //URGENT: see DAO#fetchBookExtrasById ... this needs work.
-                // "extra" field bookshelves (if selected) will not be populated.
-//                if (style.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
-//                    blb.addExtraDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
-//                                   "GROUP_CONCAT("
-//                                   + DBDefinitions.TBL_BOOKSHELF.dot(DBDefinitions.DOM_BOOKSHELF)
-//                                   + ",', ')",
-//                                   false);
-//                    blb.requireJoin(DBDefinitions.TBL_BOOKSHELF);
-//                }
+                if (style.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
+                    blb.addExtraDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
+                                       BOOKSHELVES_CSV_SOURCE_EXPRESSION, false);
+                }
 
                 // we fetch ONLY the primary author
                 if (style.isUsed(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
@@ -514,14 +525,14 @@ public class BooksOnBookshelfModel
                 }
             }
 
+            // Always limit to the current bookshelf.
+            blb.setFilterOnBookshelfId(mCurrentBookshelf.getId());
+
             // if we have a list of ID's, ignore other criteria.
             if (mSearchCriteria.hasIdList()) {
                 blb.setFilterOnBookIdList(mSearchCriteria.bookList);
 
             } else {
-                // always limit to the current bookshelf.
-                blb.setFilterOnBookshelfId(mCurrentBookshelf.getId());
-
                 // Criteria supported by FTS
                 blb.setFilter(mSearchCriteria.ftsAuthor,
                               mSearchCriteria.ftsTitle,
