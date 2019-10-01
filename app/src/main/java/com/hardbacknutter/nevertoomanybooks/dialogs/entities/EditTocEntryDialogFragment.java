@@ -69,17 +69,20 @@ public class EditTocEntryDialogFragment
     private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
     private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
 
+    private WeakReference<EditTocEntryResults> mListener;
+
+    /** Database Access. */
+    private DAO mDb;
+
     private AutoCompleteTextView mAuthorTextView;
     private EditText mTitleTextView;
     private EditText mPubDateTextView;
 
     private boolean mHasMultipleAuthors;
+
+    /** The TocEntry we're editing. */
     private TocEntry mTocEntry;
 
-    /** Database Access. */
-    private DAO mDb;
-
-    private WeakReference<EditTocEntryResults> mListener;
 
     /**
      * Constructor.

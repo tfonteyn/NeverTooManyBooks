@@ -62,8 +62,6 @@ public class EditLocationDialog
                                @NonNull final String from,
                                @NonNull final String to) {
         mDb.updateLocation(from, to);
-        if (mListener != null) {
-            mListener.onBookChanged(0, BookChangedListener.LOCATION, null);
-        }
+        sendBookChangedMessage(BookChangedListener.LOCATION);
     }
 }

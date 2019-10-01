@@ -66,11 +66,14 @@ public class EditPublisherDialogFragment
     /** Database Access. */
     private DAO mDb;
 
-    private Publisher mPublisher;
-    private String mName;
+    private WeakReference<BookChangedListener> mBookChangedListener;
 
     private AutoCompleteTextView mNameView;
-    private WeakReference<BookChangedListener> mBookChangedListener;
+
+    /** The Publisher we're editing. */
+    private Publisher mPublisher;
+    /** Current edit. */
+    private String mName;
 
     /**
      * Constructor.

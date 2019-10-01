@@ -79,8 +79,6 @@ public class EditLanguageDialog
                                @NonNull final String from,
                                @NonNull final String to) {
         mDb.updateLanguage(from, LanguageUtils.getIso3fromDisplayName(to, Locale.getDefault()));
-        if (mListener != null) {
-            mListener.onBookChanged(0, BookChangedListener.LANGUAGE, null);
-        }
+        sendBookChangedMessage(BookChangedListener.LANGUAGE);
     }
 }

@@ -40,22 +40,29 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 abstract class EditStringBaseDialog {
 
-    @Nullable
-    protected final BookChangedListener mListener;
     /** Database Access. */
     @NonNull
     final DAO mDb;
+
+    @Nullable
+    private final WeakReference<BookChangedListener> mBookChangedListener;
+
     @NonNull
     private final Context mContext;
+
     /** Adapter for the AutoCompleteTextView field. */
     private final ArrayAdapter<String> mAdapter;
 
@@ -74,7 +81,7 @@ abstract class EditStringBaseDialog {
                          @Nullable final BookChangedListener listener) {
         mContext = context;
         mDb = db;
-        mListener = listener;
+        mBookChangedListener = new WeakReference<>(listener);
         mAdapter = null;
     }
 
@@ -91,7 +98,7 @@ abstract class EditStringBaseDialog {
                          @Nullable final BookChangedListener listener) {
         mContext = context;
         mDb = db;
-        mListener = listener;
+        mBookChangedListener = new WeakReference<>(listener);
         mAdapter = new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line, list);
     }
 
@@ -136,6 +143,17 @@ abstract class EditStringBaseDialog {
         }
         // ask child class to save
         saveChanges(mContext, mCurrentText, newText);
+    }
+
+    void sendBookChangedMessage(final int changeFlags) {
+        if (mBookChangedListener != null && mBookChangedListener.get() != null) {
+            mBookChangedListener.get().onBookChanged(0, changeFlags, null);
+        } else {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                Logger.debug(this, "onBookChanged",
+                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+            }
+        }
     }
 
     protected abstract void saveChanges(@NonNull Context context,

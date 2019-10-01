@@ -62,8 +62,6 @@ public class EditFormatDialog
                                @NonNull final String from,
                                @NonNull final String to) {
         mDb.updateFormat(from, to);
-        if (mListener != null) {
-            mListener.onBookChanged(0, BookChangedListener.FORMAT, null);
-        }
+        sendBookChangedMessage(BookChangedListener.FORMAT);
     }
 }
