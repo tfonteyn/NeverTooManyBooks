@@ -42,29 +42,33 @@ public class SearchSuggestionProvider
         extends SearchRecentSuggestionsProvider {
 
     /**
-     * can't use getContext, because setupSuggestions() MUST be called from the constructor,
-     * at which point getContext == null.
-     * alternative is hardcoding the package name of course
-     * <p>
-     * Matches the Manifest entry:
-     * <p>
-     * android:authorities="${packageName}.SearchSuggestionProvider"
+     * The authorities value must match:
+     * - AndroidManifest.xml/provider/android:authorities
+     * - res/xml/searchable.xml/searchSuggestAuthority
+     * - SearchSuggestionProvider.java/AUTHORITY
      */
-    private static final String AUTHORITY = App.getAppPackageName()
-                                            + ".SearchSuggestionProvider";
+    public static final String AUTHORITY = App.getAppPackageName() + ".SearchSuggestionProvider";
+
+    /** This mode bit configures the database to record recent queries. */
+    public final static int MODE = DATABASE_MODE_QUERIES;
 
     /** Database Access. */
     @Nullable
     private DAO mDb;
 
-    @Nullable
-    private Cursor mSSCursor;
-
     public SearchSuggestionProvider() {
-        setupSuggestions(AUTHORITY, DATABASE_MODE_QUERIES);
+        setupSuggestions(AUTHORITY, MODE);
     }
 
     /**
+     * The docs of the super state:
+     * <strong>This method is provided for use by the ContentResolver.  Do not override, or directly
+     * call from your own code.
+     * </strong>
+     * <br><br>
+     * But the original BC code did override this regardless to use/provide a custom
+     * query operating on the actual database instead of on the suggestions database.
+     * <br><br>
      * <strong>Note:</strong> {@link ContentProvider#onCreate()} states that database connections
      * etc should be deferred until needed. Hence creating it on the fly.
      */
@@ -80,21 +84,6 @@ public class SearchSuggestionProvider
         if (mDb == null) {
             mDb = new DAO();
         }
-        mSSCursor = mDb.fetchSearchSuggestions(selectionArgs[0]);
-        return mSSCursor;
+        return mDb.fetchSearchSuggestions(selectionArgs[0]);
     }
-
-//    /**
-//     * There does not seem to be a way to cleanup resources (here, our db)
-//     * in a {@link ContentProvider}.
-//     * Added/Leaving this method here as a reminder
-//     */
-//    public void close() {
-//        if (mSSCursor != null) {
-//            mSSCursor.close();
-//        }
-//        if (mDb != null) {
-//            mDb.close();
-//        }
-//    }
 }

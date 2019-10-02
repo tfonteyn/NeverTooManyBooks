@@ -742,6 +742,7 @@
     <string name="pt_scanning_preferred_scanner">Preferred Scanner</string>
     <string name="pv_scanner_zxing_compatible">Zxing Compatible Scanner</string>
 
+    <string name="pt_search_form">Local Search Form</string>
 
     <!-- Preference Category -->
     <string name="pg_thumbnails">Thumbnails</string>
@@ -770,8 +771,9 @@
     <string name="pe_thumbnails_cropper_layer_type_hardware">Hardware</string>
     <string name="pe_thumbnails_cropper_layer_type_software">Software</string>
 
-
     <!-- category: search sites -->
+    <string name="pg_internet_search">Web Searches</string>
+
     <!-- SwitchPreference - allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_mobile_data">Allow mobile data usage</string>
     <!-- SwitchPreference - some search engines can add the publisher to the search terms.
@@ -904,9 +906,6 @@
     <string name="title_send_mail">Send email…</string>
     <!-- Chooser title. -->
     <string name="title_select_image">Select Image</string>
-
-    <!-- system search. -->
-    <string name="title_search_for">Search Author or Title</string>
 
     <!-- ####################################################################################### -->
     <!-- == Menu strings. Some of these are re-used for Dialog titles. == -->
@@ -1080,6 +1079,8 @@
     <!-- LibraryThing etc. require the user to configure a personal key -->
     <string name="hint_developer_key">Developer Key</string>
 
+    <string name="hint_system_search">Author, Title or ISBN</string>
+
     <!-- ####################################################################################### -->
     <!-- == Size measurements; for now only file-sizes.  == -->
     <!-- ####################################################################################### -->
@@ -1195,6 +1196,9 @@
 
     <!-- Default 'name' for anything that has a name -->
     <string name="name">Name</string>
+
+    <string name="lbl_simple">Simple</string>
+    <string name="lbl_advanced">Advanced</string>
 
 
     <!-- ####################################################################################### -->
@@ -1346,9 +1350,7 @@
     <!-- heading/titles for settings/preference screens -->
     <string name="lbl_settings">Settings</string>
     <string name="lbl_preferred_styles">Preferred styles</string>
-    <string name="lbl_search_sites">Search Sites</string>
-    <string name="lbl_search_site_order">Order</string>
-
+    <string name="lbl_websites">Websites</string>
 
     <!-- Admin GROUP -->
     <string name="lbl_data_import_export">Import/Export</string>
@@ -1365,15 +1367,14 @@
     <string name="lbl_advanced_options">Advanced</string>
 
     <!-- Admin advanced - collect debug information and prepare an email to the developers -->
-    <string name="lbl_send_info">Send Debug Information</string>
+    <string name="lbl_send_debug_info">Send Debug Information</string>
     <!-- Admin advanced - cleanup log, temp files -->
     <string name="lbl_cleanup_files">Cleanup Files</string>
     <!-- Admin advanced - clear the cached images -->
-    <string name="lbl_erase_cover_cache">Erase cover cache</string>
+    <string name="lbl_clear_image_cache">Clear images cache</string>
     <!-- Admin advanced - make a copy of the internal database to a public folder -->
     <string name="lbl_copy_database">Export Database</string>
     <string name="lbl_copy_database_blurb">Select a folder to export to.</string>
-
 
     <!-- Headings in 'about' dialog -->
     <string name="lbl_about_website">Web page</string>
@@ -1473,9 +1474,10 @@
 
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
 
-    <string name="X_lbl_author_other">Other</string>
     <string name="X_lbl_author_secondary">co-author</string>
 
+    <string name="X_lbl_order">Order</string>
+    <string name="X_lbl_other">Other</string>
     <string name="X_updated">Updated</string>
     <string name="X_size">Size</string>
 
@@ -1498,5 +1500,7 @@
         This will rebuild the sorting data when the app is restarted.
         Are you sure you want to continue ?
     </string>
+    <string name="lbl_clear_search_history">Clear search history</string>
+
 
 </resources>

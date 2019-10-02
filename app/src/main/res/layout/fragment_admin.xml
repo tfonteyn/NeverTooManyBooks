@@ -128,18 +128,18 @@
             android:text="@string/lbl_advanced_options"
             />
 
-        <TextView
-            android:id="@+id/lbl_reset_tips"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_undo"
-            android:text="@string/tip_reset_all"
-            />
+        <!--        <TextView-->
+        <!--            android:id="@+id/lbl_clear_search_history"-->
+        <!--            style="@style/OptionRow.Menu"-->
+        <!--            android:drawableStart="@drawable/ic_close"-->
+        <!--            android:text="@string/lbl_clear_search_history"-->
+        <!--            />-->
 
         <TextView
             android:id="@+id/lbl_erase_cover_cache"
             style="@style/OptionRow.Menu"
             android:drawableStart="@drawable/ic_close"
-            android:text="@string/lbl_erase_cover_cache"
+            android:text="@string/lbl_clear_image_cache"
             />
 
         <TextView
@@ -150,10 +150,17 @@
             />
 
         <TextView
-            android:id="@+id/lbl_send_info"
+            android:id="@+id/lbl_reset_tips"
+            style="@style/OptionRow.Menu"
+            android:drawableStart="@drawable/ic_undo"
+            android:text="@string/tip_reset_all"
+            />
+
+        <TextView
+            android:id="@+id/lbl_send_debug_info"
             style="@style/OptionRow.Menu"
             android:drawableStart="@drawable/ic_send"
-            android:text="@string/lbl_send_info"
+            android:text="@string/lbl_send_debug_info"
             />
 
         <TextView

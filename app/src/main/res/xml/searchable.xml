@@ -27,11 +27,17 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- searchSuggestAuthority should not use ${}, won't work.
+            The authorities value must match:
+            - AndroidManifest.xml/provider/android:authorities
+            - res/xml/searchable.xml/searchSuggestAuthority
+            - SearchSuggestionProvider.java/AUTHORITY
+ -->
 <searchable
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:hint="@string/title_search_for"
+    android:hint="@string/hint_system_search"
     android:label="@string/title_search_for_books"
-    android:searchSuggestAuthority="${packageName}.SearchSuggestionProvider"
+    android:searchSuggestAuthority="com.hardbacknutter.nevertoomanybooks.SearchSuggestionProvider"
     android:searchSuggestIntentAction="android.intent.action.VIEW"
-    android:searchSuggestSelection=" ?"
+    android:searchSuggestSelection=" ? "
     />

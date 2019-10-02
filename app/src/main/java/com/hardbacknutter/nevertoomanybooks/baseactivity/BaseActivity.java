@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -183,9 +184,8 @@ public abstract class BaseActivity
 
         switch (item.getItemId()) {
             case R.id.nav_search:
-                // IMPORTANT: see App.USE_CUSTOM_SEARCH_ACTIVITY for details.
-                if (App.USE_CUSTOM_SEARCH_ACTIVITY) {
-                    return onCustomSearchRequested();
+                if (App.getPrefBoolean(Prefs.pk_search_form_advanced, false)) {
+                    return onAdvancedSearchRequested();
                 } else {
                     // standard system call.
                     return onSearchRequested();
@@ -221,11 +221,9 @@ public abstract class BaseActivity
     }
 
     /**
-     * There was a search requested by the user.
-     * <p>
-     * <strong>IMPORTANT:</strong> see {@link App#USE_CUSTOM_SEARCH_ACTIVITY} for details.
+     * There was a search requested by the user; bring up the advanced form (activity).
      */
-    protected boolean onCustomSearchRequested() {
+    protected boolean onAdvancedSearchRequested() {
         Intent intent = new Intent(this, FTSSearchActivity.class);
         startActivityForResult(intent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
         return true;

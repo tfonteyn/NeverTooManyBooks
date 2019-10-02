@@ -272,6 +272,13 @@ public class AdminFragment
                 UserMessage.show(v, R.string.tip_reset_done);
             });
 
+//        /* Clear the system suggestions history. (not in use for now) */
+//        root.findViewById(R.id.lbl_clear_search_history)
+//            .setOnClickListener(v -> {
+//                clearSearchHistory();
+//                UserMessage.show(v, R.string.clear);
+//            });
+
         /* Erase cover cache */
         root.findViewById(R.id.lbl_erase_cover_cache)
             .setOnClickListener(v -> CoversDAO.deleteAll());
@@ -281,7 +288,7 @@ public class AdminFragment
             .setOnClickListener(v -> cleanupFiles());
 
         /* Send debug info */
-        root.findViewById(R.id.lbl_send_info)
+        root.findViewById(R.id.lbl_send_debug_info)
             .setOnClickListener(v -> sendDebugInfo());
 
         /* Export database for tech support */
@@ -980,4 +987,12 @@ public class AdminFragment
             UserMessage.show(getView(), R.string.error_email_failed);
         }
     }
+
+//    private void clearSearchHistory() {
+//        SearchRecentSuggestions suggestions =
+//                new SearchRecentSuggestions(getContext(),
+//                                            SearchSuggestionProvider.AUTHORITY,
+//                                            SearchSuggestionProvider.MODE);
+//        suggestions.clearHistory();
+//    }
 }

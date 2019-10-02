@@ -1729,16 +1729,23 @@ public class BooksOnBookshelf
         if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
             // Handle the standard search intent.
             keywords = getIntent().getStringExtra(SearchManager.QUERY);
+//            // see {@link SearchSuggestionProvider} We don't actually use the suggestions.
+//            SearchRecentSuggestions suggestions =
+//                    new SearchRecentSuggestions(this,
+//                                                SearchSuggestionProvider.AUTHORITY,
+//                                                SearchSuggestionProvider.MODE);
+//            suggestions.saveRecentQuery(keywords, null);
 
         } else if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
             // Handle a suggestions click.
+            // The ACTION_VIEW as set in res/xml/searchable.xml/searchSuggestIntentAction
             keywords = getIntent().getDataString();
         }
         mModel.getSearchCriteria().setKeywords(keywords);
     }
 
     @Override
-    protected boolean onCustomSearchRequested() {
+    protected boolean onAdvancedSearchRequested() {
         Intent intent = new Intent(this, FTSSearchActivity.class);
         mModel.getSearchCriteria().to(intent);
         startActivityForResult(intent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);

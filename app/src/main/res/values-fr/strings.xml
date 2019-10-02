@@ -290,7 +290,7 @@
     <string name="lbl_edition_first_edition">Première édition</string>
     <string name="lbl_edition_first_impression">Première impression</string>
     <string name="lbl_edition_limited">Édition limitée</string>
-    <string name="lbl_erase_cover_cache">Effacer le cache des couvertures</string>
+    <string name="lbl_clear_image_cache">Effacer le cache des images</string>
     <string name="lbl_export_to_csv">Export vers un fichier CSV</string>
     <string name="lbl_family_name">Nom de famille</string>
     <string name="lbl_field_usage_append">Ajouter des données supplémentaires</string>
@@ -338,10 +338,10 @@
     <string name="lbl_search_criteria">Critères de recherche</string>
     <string name="lbl_search_filtered_on_x">Filtré: %1$s</string>
     <string name="title_search_for_books">Rechercher des livres</string>
-    <string name="lbl_search_site_order">l\' Ordre</string>
-    <string name="lbl_search_sites">Sites de recherche</string>
+    <string name="X_lbl_order">l\' Ordre</string>
+    <string name="lbl_websites">Sites Internet</string>
     <string name="lbl_select_fields">Sélection des champs</string>
-    <string name="lbl_send_info">Envoyer des informations de débogage</string>
+    <string name="lbl_send_debug_info">Envoyer des informations de débogage</string>
     <string name="lbl_series">Série</string>
     <string name="lbl_series_num">No</string>
     <string name="lbl_settings">Préférences</string>
@@ -564,7 +564,7 @@
     <string name="X_title_install_scan">Installer le scanner de code barre</string>
     <string name="title_registration">Enregistrement LibraryThing</string>
     <string name="title_scope_of_change">Périmètre du changement</string>
-    <string name="title_search_for">Rechercher un auteur ou un titre</string>
+    <string name="hint_system_search">Auteur, Titre ou ISBN</string>
     <string name="title_search_isbn">recherche par ISBN</string>
     <string name="title_select_an_action">Choisissez une action</string>
     <string name="title_select_image">Choisissez une image</string>
@@ -615,7 +615,7 @@
     <string name="x_of_y">%1$d de %2$d</string>
     <string name="yes">Oui</string>
     <string name="lbl_author_type_translator">Traducteur</string>
-    <string name="X_lbl_author_other">Autre</string>
+    <string name="X_lbl_other">Autre</string>
     <string name="lbl_author_type_colorist">Coloriste</string>
     <string name="lbl_author_type_editor">Éditeur</string>
     <string name="lbl_author_type_contributor">Collaborateur</string>
@@ -642,5 +642,9 @@
     <string name="pt_bob_titles_display">Afficher les titres en tant que</string>
     <string name="lbl_author_type_cover_artist">couverture</string>
     <string name="lbl_author_type_cover_colorist">couleur de la couverture</string>
+    <string name="lbl_advanced">Avancé</string>
+    <string name="lbl_simple">Simple</string>
+    <string name="pt_search_form">Formulaire de recherche locale</string>
+    <string name="pg_internet_search">Recherches sur le web</string>
 
 </resources>

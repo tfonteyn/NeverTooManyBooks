@@ -284,7 +284,7 @@
     <string name="lbl_edition_first_edition">Pierwsza edycja</string>
     <string name="lbl_edition_first_impression">Pierwszy wydruk</string>
     <string name="lbl_edition_limited">Edycja limitowana</string>
-    <string name="lbl_erase_cover_cache">Usuń pamięć podręczną okładki</string>
+    <string name="lbl_clear_image_cache">Wyczyść pamięć podręczną obrazu</string>
     <string name="lbl_export_to_csv">Eksportuj do pliku CSV</string>
     <string name="lbl_family_name">Nazwisko</string>
     <string name="lbl_field_usage_append">Dopisz do istniejącego</string>
@@ -332,10 +332,10 @@
     <string name="lbl_search_criteria">Kryteria wyszukiwania</string>
     <string name="lbl_search_filtered_on_x">Przefiltrowany: %1$s</string>
     <string name="title_search_for_books">Szukaj książek</string>
-    <string name="lbl_search_site_order">Zamówienie</string>
-    <string name="lbl_search_sites">Witryny wyszukiwania</string>
+    <string name="X_lbl_order">Zamówienie</string>
+    <string name="lbl_websites">Strony internetowe</string>
     <string name="lbl_select_fields">Wybierz pola</string>
-    <string name="lbl_send_info">Wyślij informacje o debugowaniu</string>
+    <string name="lbl_send_debug_info">Wyślij informacje o debugowaniu</string>
     <string name="lbl_series">Seria</string>
     <string name="lbl_series_num">tom#</string>
     <string name="lbl_settings">Preferencje</string>
@@ -555,7 +555,7 @@
     <string name="X_title_install_scan">Zainstaluj Barcode Scanner</string>
     <string name="title_registration">Rejestracja w LibraryThing</string>
     <string name="title_scope_of_change">Zakres zmiany</string>
-    <string name="title_search_for">Szukaj autora lub tytułu</string>
+    <string name="hint_system_search">Autor, tytuł lub numer ISBN</string>
     <string name="title_search_isbn">Szukj wg ISBN</string>
     <string name="title_select_an_action">Wybierz akcję</string>
     <string name="title_select_image">Wybierz zdjęcie</string>
@@ -605,7 +605,7 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">„%1$s” nie jest prawidłowym numerem ISBN lub ASIN</string>
     <string name="x_of_y">%1$d z %2$d</string>
     <string name="yes">Tak</string>
-    <string name="X_lbl_author_other">Inny</string>
+    <string name="X_lbl_other">Inny</string>
     <string name="lbl_author_type_translator">Tłumacz</string>
     <string name="lbl_author_type_colorist">Kolorysta</string>
     <string name="lbl_author_type_editor">Redaktor</string>
@@ -633,4 +633,8 @@
     <string name="lbl_author_type_artist">ilustracje</string>
     <string name="lbl_author_type_cover_artist">ilustracja okładki książki</string>
     <string name="lbl_author_type_cover_colorist">kolor okładki książki</string>
+    <string name="lbl_advanced">Zaawansowane</string>
+    <string name="lbl_simple">Prosty</string>
+    <string name="pt_search_form">Lokalny formularz wyszukiwania</string>
+    <string name="pg_internet_search">Wyszukiwania w Internecie</string>
 </resources>

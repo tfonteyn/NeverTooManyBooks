@@ -79,6 +79,8 @@ public final class Prefs {
 
     public static final String pk_network_allow_metered_data = "network.mobile_data";
 
+    public static final String pk_search_form_advanced = "search.form.advanced";
+
     public static final String pk_scanner_preferred = "ScannerManager.PreferredScanner";
 
     public static final String pk_scanner_beep_if_valid = "SoundManager.BeepIfScannedIsbnValid";

@@ -383,7 +383,7 @@ public class UpdateFieldsFromInternetFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
-                 MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_search_sites)
+                 MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_websites)
             .setIcon(R.drawable.ic_search)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 

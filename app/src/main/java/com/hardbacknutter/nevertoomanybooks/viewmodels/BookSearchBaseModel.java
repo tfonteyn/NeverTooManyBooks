@@ -93,7 +93,9 @@ public class BookSearchBaseModel
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
 
         mSearchSites = currentArgs.getInt(UniqueId.BKEY_SEARCH_SITES, mSearchSites);
+
         mIsbnSearchText = currentArgs.getString(DBDefinitions.KEY_ISBN, mIsbnSearchText);
+
         mAuthorSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
         mTitleSearchText = currentArgs.getString(DBDefinitions.KEY_TITLE, mTitleSearchText);
         mPublisherSearchText = currentArgs.getString(DBDefinitions.KEY_PUBLISHER,

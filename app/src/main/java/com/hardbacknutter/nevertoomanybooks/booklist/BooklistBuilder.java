@@ -383,7 +383,9 @@ public class BooklistBuilder
             || (keywords != null && !keywords.trim().isEmpty())) {
 
             mFilters.add(() -> '(' + TBL_BOOKS.dot(DOM_PK_ID)
-                               + " IN (" + mDb.getFtsSearchSQL(author, title, seriesTitle, keywords)
+                               + " IN ("
+                               + mDb.getFtsSearchSQL(author, title, seriesTitle, keywords)
+                               + ')'
                                + ')');
         }
     }

@@ -285,7 +285,7 @@
     <string name="lbl_edition_first_edition">Πρώτη έκδοση</string>
     <string name="lbl_edition_first_impression">Πρώτη εκτύπωση</string>
     <string name="lbl_edition_limited">Περιορισμένη έκδοση</string>
-    <string name="lbl_erase_cover_cache">Διαγραφή εξωφύλλων από προσωρινή μνήμη</string>
+    <string name="lbl_clear_image_cache">Καθαρή cache εικόνας</string>
     <string name="lbl_export_to_csv">Εξαγωγή σε αρχείο CSV</string>
     <string name="lbl_family_name">Επώνυμο</string>
     <string name="lbl_field_usage_append">Προσθέτει επιπλέον δεδομένα</string>
@@ -333,10 +333,10 @@
     <string name="lbl_search_criteria">Κριτήρια αναζήτησης</string>
     <string name="lbl_search_filtered_on_x">Φιλτραρισμένο: %1$s</string>
     <string name="title_search_for_books">Αναζήτηση για βιβλία</string>
-    <string name="lbl_search_site_order">Αλληλουχία</string>
-    <string name="lbl_search_sites">Ερευνητικοί χώροι</string>
+    <string name="X_lbl_order">Αλληλουχία</string>
+    <string name="lbl_websites">Ιστοσελίδες</string>
     <string name="lbl_select_fields">Επιλεγξτε πεδία</string>
-    <string name="lbl_send_info">Αποστολή πληροφοριών εντοπισμού σφαλμάτων</string>
+    <string name="lbl_send_debug_info">Αποστολή πληροφοριών εντοπισμού σφαλμάτων</string>
     <string name="lbl_series">Σειρές</string>
     <string name="lbl_series_num">#</string>
     <string name="lbl_settings">Επιλογές</string>
@@ -559,7 +559,7 @@
     <string name="X_title_install_scan">Εγκατάσταση σαρωτή barcode</string>
     <string name="title_registration">LibraryThing Εγγραφή</string>
     <string name="title_scope_of_change">Πεδίο εφαρμογής της αλλαγής</string>
-    <string name="title_search_for">Αναζήτηση συγγραφέα ή τίτλου</string>
+    <string name="hint_system_search">Συγγραφέας, Τίτλος ή ISBN</string>
     <string name="title_search_isbn">ISBN Αναζήτηση</string>
     <string name="title_select_an_action">Επιλέξτε μια ενέργεια</string>
     <string name="title_select_image">Επιλογή εικόνας</string>
@@ -609,7 +609,7 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s δεν είναι έγκυρος κωδικός ISBN ή ASIN</string>
     <string name="x_of_y">%1$d από %2$d</string>
     <string name="yes">Ναι</string>
-    <string name="X_lbl_author_other">Αλλα</string>
+    <string name="X_lbl_other">Αλλα</string>
     <string name="lbl_author_type_translator">Μεταφράστης</string>
     <string name="lbl_author_type_colorist">Ζωγράφος</string>
     <string name="lbl_author_type_editor">Συντάκτης</string>
@@ -637,5 +637,9 @@
     <string name="lbl_author_type_artist">εικονογραφήσεις</string>
     <string name="lbl_author_type_cover_artist">εικόνα εξωφύλλου βιβλίου</string>
     <string name="lbl_author_type_cover_colorist">βιβλίο κάλυψης βιβλίου</string>
+    <string name="lbl_advanced">Προχωρημένος</string>
+    <string name="lbl_simple">Απλός</string>
+    <string name="pt_search_form">Φόρμα τοπικής αναζήτησης</string>
+    <string name="pg_internet_search">αναζητήσεις στο διαδίκτυο</string>
 
 </resources>

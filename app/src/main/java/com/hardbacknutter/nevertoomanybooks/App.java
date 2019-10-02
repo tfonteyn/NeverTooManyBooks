@@ -120,21 +120,6 @@ public class App
         extends Application {
 
     /**
-     * <strong>IMPORTANT:</strong> this is a compile time switch to specify whether to
-     * use the custom {@link FTSSearchActivity} or the system search dialog.
-     * <p>
-     * The former is non-standard; does not show actual search results immediately,
-     * but does show number of books found.
-     * The latter is slower, however it does show results immediately.
-     * <p>
-     * Either way, the result list is provided by {@link BooksOnBookshelf}.
-     * <p>
-     * FIXME: https://developer.android.com/guide/topics/search/search-dialog
-     */
-    public static final boolean USE_CUSTOM_SEARCH_ACTIVITY = true;
-
-
-    /**
      * Users can select which fields they use / don't want to use.
      * Each field has an entry in the Preferences.
      * The key is suffixed with the name of the field.
