@@ -301,6 +301,7 @@ public final class DBDefinitions {
      *  {@link #TBL_BOOKS}.
      *  A String typed column due to supporting pre-decimal UK "Shilling/Pence" as used on
      *  the ISFDB web site.
+     *  Hum... ISBN first intro 1970, Decimal day 1971... so very little overlap.
      */
     public static final DomainDefinition DOM_BOOK_PRICE_LISTED;
     /** {@link #TBL_BOOKS}. */
