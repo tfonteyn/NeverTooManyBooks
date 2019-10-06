@@ -322,7 +322,8 @@ public class LendBookDialogFragment
                 break;
 
             default:
-                Logger.warnWithStackTrace(this, "requestCode=" + requestCode);
+                //noinspection ConstantConditions
+                Logger.warnWithStackTrace(getContext(), this, "requestCode=" + requestCode);
                 break;
         }
     }

@@ -325,7 +325,7 @@ public final class CsvCoder {
                     if (uuid != null && !uuid.isEmpty()) {
                         return new Bookshelf(name, uuid);
                     }
-                    // the right thing to do would be: get a database, then get the 'real'
+                    // the right thing to do would be: get a database and get the 'real'
                     // default style. As this is a lot of overkill for importing,
                     // we're just using the builtin default.
                     return new Bookshelf(name, BooklistStyle.Builtin.DEFAULT);

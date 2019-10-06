@@ -574,8 +574,13 @@ class SearchLibraryThingHandler
                     break;
 
                 case Series:
-                case PubSeries:
                     mSeries.add(Series.fromString(mBuilder.toString()));
+                    break;
+
+                case PubSeries:
+                    // don't do this. The site does not differentiate between "this"
+                    // edition of the book and all others.
+//                    mSeries.add(Series.fromString(mBuilder.toString()));
                     break;
 
                 case Description:

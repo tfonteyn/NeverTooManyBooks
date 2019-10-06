@@ -106,14 +106,14 @@ abstract class SendBooksLegacyTaskBase
             if (grManager.hasValidCredentials()) {
                 return send(queueManager, context, grManager);
             } else {
-                Logger.warnWithStackTrace(this, "no valid credentials");
+                Logger.warnWithStackTrace(context, this, "no valid credentials");
             }
         } else {
             // Only wait 5 minutes max on network errors.
             if (getRetryDelay() > FIVE_MINUTES) {
                 setRetryDelay(FIVE_MINUTES);
             }
-            Logger.warn(this, "run", "network or site not available");
+            Logger.warn(context, this, "run", "network or site not available");
         }
 
         return false;

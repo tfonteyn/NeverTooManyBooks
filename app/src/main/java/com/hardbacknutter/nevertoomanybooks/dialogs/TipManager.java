@@ -58,8 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
  * a 'Do not show again' option, that results in an update to the preferences which
  * are checked by this code.
  * <p>
- * To add a new tip, create a string resource and add it to ALL. Then, to display the
- * tip, simply call {@link #display}.
+ * To add a new tip, create a string resource and add it to ALL.
+ * To display the tip, simply call {@link #display}.
  * <p>
  * Note that tips are displayed as HTML spans. So any special formatting
  * should be done inside a CDATA and use HTML tags.
@@ -172,7 +172,7 @@ public final class TipManager {
         final Tip tip = ALL.get(stringId);
         if (tip == null) {
             // log but ignore.
-            Logger.warnWithStackTrace(TipManager.class, "display", "stringId=" + stringId);
+            Logger.warnWithStackTrace(context, TipManager.class, "display", "stringId=" + stringId);
             return;
         }
         if (!tip.shouldBeShown(context)) {

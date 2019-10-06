@@ -31,11 +31,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.text.method.LinkMovementMethod;
 import android.view.MotionEvent;
 import android.view.View;
@@ -59,13 +59,16 @@ import com.google.android.material.button.MaterialButton;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.text.NumberFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -79,7 +82,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -88,7 +90,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * possible.
  * <ul>Features provides are:
  * <li> handling of visibility via preferences</li>
- * <li> handling of 'group' visibility via the 'group' property of a field.</li>
+ * <li> handling of 'mGroup' visibility via the 'mGroup' property of a field.</li>
  * <li> understanding of kinds of views (setting a Checkbox (Checkable) value to 'true' will work
  * as expected as will setting the value of a Spinner). As new view types are added, it
  * will be necessary to add new {@link FieldDataAccessor} implementations.</li>
@@ -218,7 +220,7 @@ public class Fields {
     }
 
     /**
-     * Add a field to this collection.
+     * Add a Boolean field to this collection.
      *
      * @param fieldId Layout ID
      * @param key     Key used to access a {@link DataManager} or {@code Bundle}.
@@ -240,7 +242,7 @@ public class Fields {
     }
 
     /**
-     * Add a field to this collection.
+     * Add a Float field to this collection.
      *
      * @param fieldId Layout ID
      * @param key     Key used to access a {@link DataManager} or {@code Bundle}.
@@ -260,6 +262,78 @@ public class Fields {
         Field<Float> field = Field.newField(this, fieldId, key, key);
         mAllFields.put(fieldId, field);
         return field;
+    }
+
+    /**
+     * Add a Monetary field to this collection.
+     *
+     * @param fieldId Layout ID
+     * @param key     Key used to access a {@link DataManager} or {@code Bundle}.
+     *
+     * @return The resulting Field.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public Field<String> addMonetary(@IdRes final int fieldId,
+                                     @NonNull final String key) {
+        if (BuildConfig.DEBUG /* always */) {
+            // sanity check
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException("key should not be empty");
+            }
+        }
+        Field<String> field = Field.newField(this, fieldId, key, key);
+        mAllFields.put(fieldId, field);
+
+        initDecimalField(field);
+
+        return field;
+    }
+
+    /**
+     * URGENT: the input panel only allows '.' parsing sees that (correctly) as a thousands sep.
+     *
+     * @param field {@link Field} to process
+     */
+    private void initDecimalField(@NonNull final Field<String> field) {
+
+        DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
+        DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
+
+        //String thousandSeparator = Character.toString(symbols.getGroupingSeparator());
+
+        final String decimalSeparator = Character.toString(symbols.getDecimalSeparator());
+
+        final TextView editText = field.getView();
+
+        editText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s,
+                                          int start,
+                                          int count,
+                                          int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s,
+                                      int start,
+                                      int before,
+                                      int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(@NonNull final Editable editable) {
+                // allow only one decimal separator
+                if (editable.toString().contains(decimalSeparator)) {
+                    editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+                } else {
+                    editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"
+                                                                          + decimalSeparator));
+                }
+            }
+        });
     }
 
     /**
@@ -468,6 +542,7 @@ public class Fields {
          * Format a string for applying to a View.
          * If the source is {@code null}, implementations should return "" (and log an error)
          *
+         * @param field  The field
          * @param source Input value
          *
          * @return The formatted value.
@@ -481,6 +556,7 @@ public class Fields {
          * <p>
          * Extract a formatted {@code String} from the displayed version.
          *
+         * @param field  The field
          * @param source The value to be back-translated
          *
          * @return The extracted value
@@ -837,7 +913,7 @@ public class Fields {
 
     /**
      * Checkable accessor.
-     *
+     * <p>
      * When set to {@code false} we make it {@code View.GONE} as well.
      *
      * <ul>{@link Checkable} covers more then just a Checkbox:
@@ -1063,30 +1139,65 @@ public class Fields {
      * Note this is {@code String} typed due to backwards compatibility.
      * <p>
      * e.g. pre-decimal UK "Shilling/Pence" is in effect a string.
-     *
-     * <p>
-     * Uses the Context/Locale from the field itself.
-     * <p>
-     * Does not support {@link FieldFormatter#extract}
      */
-    public static class PriceFormatter
+    public static class MonetaryFormatter
             implements FieldFormatter<String> {
 
+        /**
+         * This is used for error logging only, and is normally always the app context
+         * except in unit tests.
+         */
+        @NonNull
+        private final Context mContext;
+
+        /** Optional; if null we use the default Locale. */
+        @Nullable
+        private Locale mLocale;
+
+        /** Optional; but should really be set. */
         @Nullable
         private String mCurrencyCode;
+
+        /** pattern for pure floats. */
+        private Pattern FLOAT_PATTERN = Pattern.compile("^\\s*\\d+\\.?\\d*\\s*$");
+
+        /**
+         * Constructor.
+         */
+        public MonetaryFormatter() {
+            mContext = App.getAppContext();
+        }
+
+        /**
+         * TEST Constructor; unit tests cannot use App.getAppContext().
+         *
+         * @param context to use
+         */
+        @VisibleForTesting
+        MonetaryFormatter(@NonNull final Context context) {
+            mContext = context;
+        }
+
+        /**
+         * Set the Locale for the formatter/parser.
+         *
+         * @param locale to use (if any)
+         */
+        public MonetaryFormatter setLocale(@Nullable final Locale locale) {
+            mLocale = locale;
+            return this;
+        }
 
         /**
          * Set the currency code.
          *
          * @param currencyCode to use (if any)
          */
-        public void setCurrencyCode(@Nullable final String currencyCode) {
+        public MonetaryFormatter setCurrencyCode(@Nullable final String currencyCode) {
             mCurrencyCode = currencyCode;
+            return this;
         }
 
-        /**
-         * Display with the currency symbol.
-         */
         @NonNull
         @Override
         public String format(@NonNull final Field<String> field,
@@ -1098,46 +1209,52 @@ public class Fields {
                 return source;
             }
 
-            // quick return for the pre-decimal UK "Shilling/Pence" prices.
-            // ISFDB provides those types of prices. Bit hackish...
-            if (source.contains("/")) {
+            // anything that does not match a float will be displayed as-is.
+            Matcher m = FLOAT_PATTERN.matcher(source);
+            if (!m.find()) {
                 return source;
             }
 
+            if (mLocale == null) {
+                mLocale = Locale.getDefault();
+            }
+
             try {
-                return jdkFormat(field, source);
+                // parse without a Locale as the incoming value *should* be a pure float.
+                float money = Float.parseFloat(source);
+
+                // Always use the current Locale for formatting
+                DecimalFormat nf = (DecimalFormat)
+                        DecimalFormat.getCurrencyInstance(mLocale);
+                if (mCurrencyCode != null) {
+                    nf.setCurrency(Currency.getInstance(mCurrencyCode));
+                }
+                // the result is rather dire... most currency symbols are shown as 3-char codes
+                // e.g. 'EUR','US$',...
+                return nf.format(money);
 
             } catch (@NonNull final IllegalArgumentException e) {
-                Logger.error(this, e, "currencyCode=`" + mCurrencyCode + "`,"
-                                      + " source=`" + source + '`');
-                return mCurrencyCode + ' ' + source;
+                Logger.error(mContext, this, e,
+                             "currencyCode=`" + mCurrencyCode + "`,"
+                             + " source=`" + source + '`');
+
+                // fallback
+                if (mCurrencyCode != null) {
+                    return mCurrencyCode + ' ' + source;
+                } else {
+                    return source;
+                }
             }
         }
 
+        /**
+         * NOT SUPPORTED.
+         */
         @NonNull
         @Override
         public String extract(@NonNull final Field<String> field,
                               @NonNull final String source) {
-            try {
-                // parse with Locales, and return non-Locale representation.
-                return String.valueOf(ParseUtils.parseFloat(source));
-            } catch (@NonNull final NumberFormatException e) {
-                return source;
-            }
-        }
-
-        private String jdkFormat(@NonNull final Field<String> field,
-                                 @NonNull final Object source) {
-            // all Locales taken into account for parsing
-            Float price = ParseUtils.toFloat(source);
-            // but the current Locale is used for formatting
-            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.getDefault());
-
-            Currency currency = Currency.getInstance(mCurrencyCode);
-            currencyFormatter.setCurrency(currency);
-            // the result is rather dire... most currency symbols are shown as 3-char codes
-            // e.g. 'EUR','US$',...
-            return currencyFormatter.format(price);
+            return source;
         }
 
         // The ICU NumberFormatter is only available from ICU level 60, but Android lags behind:
@@ -1146,8 +1263,7 @@ public class Fields {
         // is not available in android.icu.* so you still would need to bundle the full ICU lib
         // For now, this is to much overkill.
 //        @TargetApi(28)
-//        private String icuFormat(@NonNull final Field<String> field,
-//                                @NonNull final Object source) {
+//        private String icuFormat(@NonNull final Float money) {
 //            https://github.com/unicode-org/icu/blob/master/icu4j/main/classes/core/src/
 //            com/ibm/icu/number/NumberFormatter.java
 //            and UnitWidth.NARROW
@@ -1379,14 +1495,14 @@ public class Fields {
 
         /** Field ID. */
         @IdRes
-        public final int id;
+        private final int mId;
         /** DEBUG - Owning collection. */
         @SuppressWarnings("FieldNotUsedInToString")
         @NonNull
         private final WeakReference<Fields> mFields;
-        /** Visibility group name. Used in conjunction with preferences to show/hide Views. */
+        /** Visibility mGroup name. Used in conjunction with preferences to show/hide Views. */
         @NonNull
-        private final String group;
+        private final String mGroup;
         /**
          * Key (can be blank) used to access a {@link DataManager} or {@code Bundle}.
          * <p>
@@ -1435,7 +1551,7 @@ public class Fields {
          * @param fieldId         Layout ID
          * @param key             Key used to access a {@link DataManager} or {@code Bundle}.
          *                        Set to "" to suppress all access.
-         * @param visibilityGroup Visibility group. Can be blank.
+         * @param visibilityGroup Visibility mGroup. Can be blank.
          */
         @VisibleForTesting
         public Field(@NonNull final Fields fields,
@@ -1444,61 +1560,20 @@ public class Fields {
                      @NonNull final String visibilityGroup) {
 
             mFields = new WeakReference<>(fields);
-            id = fieldId;
+            mId = fieldId;
             mKey = key;
-            group = visibilityGroup;
+            mGroup = visibilityGroup;
 
             // Lookup the view. {@link Fields} will have the context set to the activity/fragment.
             final View view = getView();
 
-            // check if the user actually uses this group.
-            mIsUsed = App.isUsed(group);
+            // check if the user actually uses this mGroup.
+            mIsUsed = App.isUsed(mGroup);
             if (!mIsUsed) {
                 view.setVisibility(View.GONE);
             }
 
-            // Set the appropriate accessor
-            if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
-                // this was nasty... a MaterialButton implements Checkable,
-                // but you have to double check (pardon the pun) whether it IS checkable.
-                mFieldDataAccessor = new CheckableAccessor();
-                addTouchSignalsDirty(view);
-
-            } else if (!((view instanceof MaterialButton)) && (view instanceof Checkable)) {
-                // the opposite, do not accept the MaterialButton here.
-                mFieldDataAccessor = new CheckableAccessor();
-                addTouchSignalsDirty(view);
-
-            } else if (view instanceof EditText) {
-                //noinspection unchecked
-                mFieldDataAccessor = new EditTextAccessor((EditText) view, (Field<String>) this);
-
-            } else if (view instanceof Button) {
-                // a Button *is* a TextView, but this is cleaner
-                mFieldDataAccessor = new TextViewAccessor();
-
-            } else if (view instanceof TextView) {
-                mFieldDataAccessor = new TextViewAccessor();
-
-            } else if (view instanceof ImageView) {
-                mFieldDataAccessor = new ImageViewAccessor(ImageUtils.SCALE_MEDIUM);
-
-            } else if (view instanceof RatingBar) {
-                mFieldDataAccessor = new RatingBarAccessor();
-                addTouchSignalsDirty(view);
-
-            } else if (view instanceof Spinner) {
-                mFieldDataAccessor = new SpinnerAccessor();
-
-            } else {
-                // field has no layout, store in a dummy String.
-                mFieldDataAccessor = new StringDataAccessor();
-                if (BuildConfig.DEBUG /* always */) {
-                    Logger.debug(this, "Field",
-                                 "Using StringDataAccessor",
-                                 "key=" + key);
-                }
-            }
+            mFieldDataAccessor = createAccessor(view);
         }
 
         /**
@@ -1508,7 +1583,7 @@ public class Fields {
          * @param fieldId         Layout ID
          * @param key             Key used to access a {@link DataManager} or {@code Bundle}.
          *                        Set to "" to suppress all access.
-         * @param visibilityGroup Visibility group. Can be blank.
+         * @param visibilityGroup Visibility mGroup. Can be blank.
          *
          * @return new Field
          */
@@ -1519,12 +1594,70 @@ public class Fields {
             return new Field<>(fields, fieldId, key, visibilityGroup);
         }
 
+        /**
+         * Automatically determine a suitable FieldDataAccessor based on the View type.
+         *
+         * @param view to process
+         *
+         * @return FieldDataAccessor
+         */
+        @NonNull
+        private FieldDataAccessor createAccessor(@NonNull final View view) {
+
+            FieldDataAccessor accessor;
+
+            // Set the appropriate accessor
+            if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
+                // this was nasty... a MaterialButton implements Checkable,
+                // but you have to double check (pardon the pun) whether it IS checkable.
+                accessor = new CheckableAccessor();
+                addTouchSignalsDirty(view);
+
+            } else if (!((view instanceof MaterialButton)) && (view instanceof Checkable)) {
+                // the opposite, do not accept the MaterialButton here.
+                accessor = new CheckableAccessor();
+                addTouchSignalsDirty(view);
+
+            } else if (view instanceof EditText) {
+                //noinspection unchecked
+                accessor = new EditTextAccessor((EditText) view, (Field<String>) this);
+
+            } else if (view instanceof Button) {
+                // a Button *is* a TextView, but this is cleaner
+                accessor = new TextViewAccessor();
+
+            } else if (view instanceof TextView) {
+                accessor = new TextViewAccessor();
+
+            } else if (view instanceof ImageView) {
+                accessor = new ImageViewAccessor(ImageUtils.SCALE_MEDIUM);
+
+            } else if (view instanceof RatingBar) {
+                accessor = new RatingBarAccessor();
+                addTouchSignalsDirty(view);
+
+            } else if (view instanceof Spinner) {
+                accessor = new SpinnerAccessor();
+
+            } else {
+                // field has no layout, store in a dummy String.
+                accessor = new StringDataAccessor();
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.debug(this, "Field",
+                                 "Using StringDataAccessor",
+                                 "key=" + mKey);
+                }
+            }
+
+            return accessor;
+        }
+
         @Override
         @NonNull
         public String toString() {
             return "Field{"
-                   + "id=" + id
-                   + ", group='" + group + '\''
+                   + "mId=" + mId
+                   + ", mGroup='" + mGroup + '\''
                    + ", mKey='" + mKey + '\''
                    + ", mZeroIsEmpty=" + mZeroIsEmpty
                    + ", mIsUsed=" + mIsUsed
@@ -1622,7 +1755,7 @@ public class Fields {
          */
         private void resetVisibility(final boolean hideIfEmpty) {
 
-            mIsUsed = App.isUsed(group);
+            mIsUsed = App.isUsed(mGroup);
             int visibility = mIsUsed ? View.VISIBLE : View.GONE;
             View fieldView = getView();
 
@@ -1680,7 +1813,7 @@ public class Fields {
             if (fields == null) {
                 throw new NullPointerException("mFields was NULL");
             }
-            View view = fields.getFieldContext().findViewById(id);
+            View view = fields.getFieldContext().findViewById(mId);
             // see comment on debugNullView
             if (view == null) {
                 throw new NullPointerException("View object not found\n" + debugNullView());
@@ -1713,7 +1846,7 @@ public class Fields {
          * since the view is gone.
          */
         private String debugNullView() {
-            String msg = "NULL View: key=" + mKey + ", id=" + id + ", group=" + group;
+            String msg = "NULL View: key=" + mKey + ", id=" + mId + ", mGroup=" + mGroup;
             Fields fields = mFields.get();
             if (fields == null) {
                 msg += "|mFields=NULL";
@@ -1732,20 +1865,9 @@ public class Fields {
             return msg;
         }
 
-        /**
-         * syntax sugar.
-         *
-         * @return the Locale of the fields' context.
-         */
-        @NonNull
-        public Locale getLocale() {
-            Locale locale;
-            if (Build.VERSION.SDK_INT >= 24) {
-                locale = getView().getResources().getConfiguration().getLocales().get(0);
-            } else {
-                locale = getView().getResources().getConfiguration().locale;
-            }
-            return locale != null ? locale : Locale.ENGLISH;
+        @IdRes
+        public int getId() {
+            return mId;
         }
 
         /**

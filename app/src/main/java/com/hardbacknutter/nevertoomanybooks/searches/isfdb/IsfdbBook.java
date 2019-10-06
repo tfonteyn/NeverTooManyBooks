@@ -71,6 +71,7 @@ public class IsfdbBook
                                            + IsfdbManager.URL_PL_CGI + "?%1$s";
 
     private static final Map<String, Integer> TYPE_MAP = new HashMap<>();
+
     /**
      * Either the Web page itself, and/or the JSoup parser has used both decimal and hex
      * representation for the "•" character. Capturing all 3 possibilities here.
@@ -142,6 +143,7 @@ public class IsfdbBook
     /** accumulate all Series for this book. */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
+    /** The fully qualified ISFDB search url. */
     private String mPath;
     /** List of all editions (ISFDB 'publicationRecord') of this book. */
     private List<Editions.Edition> mEditions;
@@ -177,13 +179,15 @@ public class IsfdbBook
     }
 
     /**
+     * Fetch a book.
+     *
      * @param isfdbId          ISFDB native book ID
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   whether to get thumbnails as well
      *
      * @return Bundle with book data
      *
-     * @throws SocketTimeoutException on timeout
+     * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
     public Bundle fetch(final long isfdbId,
@@ -197,13 +201,15 @@ public class IsfdbBook
     }
 
     /**
+     * Fetch a book.
+     *
      * @param path             A fully qualified ISFDB search url
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   whether to get thumbnails as well
      *
      * @return Bundle with book data
      *
-     * @throws SocketTimeoutException on timeout
+     * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
     public Bundle fetch(@NonNull final String path,
@@ -222,13 +228,15 @@ public class IsfdbBook
     }
 
     /**
+     * Fetch a book.
+     *
      * @param editions         List of ISFDB Editions with native book ID
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   whether to get thumbnails as well
      *
      * @return Bundle with book data
      *
-     * @throws SocketTimeoutException on timeout
+     * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
     public Bundle fetch(@Size(min = 1) @NonNull final List<Editions.Edition> editions,
@@ -388,6 +396,8 @@ public class IsfdbBook
      * @param fetchThumbnail   whether to get thumbnails as well
      *
      * @return Bundle with book data, can be empty, but never {@code null}
+     *
+     * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
     @VisibleForTesting
@@ -643,11 +653,12 @@ public class IsfdbBook
 
     /**
      * All lines are normally.
+     * {@code
      * <li> <abbr class="template" title="Online Computer Library Center">OCLC/WorldCat</abbr>:
      * <a href="http://www.worldcat.org/oclc/963112443" target="_blank">963112443</a>
-     * <p>
+     * }
      * Except for Amazon:
-     *
+     * {@code
      * <li><abbr class="template" ... >ASIN</abbr>:  B003ODIWEG
      * (<a href="https://www.amazon.com.au/dp/B003ODIWEG" target="_blank">AU</a>
      * <a href="https://www.amazon.com.br/dp/B003ODIWEG" target="_blank">BR</a>
@@ -665,6 +676,7 @@ public class IsfdbBook
      * target="_blank">UK</a>
      * <a href="https://www.amazon.com/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-20&amp;
      * linkCode=as2&amp;camp=1789&amp;creative=9325" target="_blank">US</a>)
+     * }
      *
      * @param elements LI elements
      * @param bookData bundle to store the findings.
@@ -815,7 +827,7 @@ public class IsfdbBook
      *
      * @return the TOC
      *
-     * @throws SocketTimeoutException on timeout
+     * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
     private ArrayList<TocEntry> getTocList(@NonNull final Bundle bookData,

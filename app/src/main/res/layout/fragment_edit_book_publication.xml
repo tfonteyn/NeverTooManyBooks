@@ -57,7 +57,10 @@
             app:layout_constraintEnd_toStartOf="@id/btn_format"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_format"
-            />
+            >
+
+            <requestFocus />
+        </AutoCompleteTextView>
 
         <ImageButton
             android:id="@+id/btn_format"

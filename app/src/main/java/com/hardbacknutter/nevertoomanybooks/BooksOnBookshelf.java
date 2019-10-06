@@ -121,6 +121,22 @@ public class BooksOnBookshelf
     private final ExtendedFloatingActionButton[] mFabMenuItems =
             new ExtendedFloatingActionButton[FAB_ITEMS];
 
+    /** Define a scroller to update header detail when the top row changes. */
+    private final RecyclerView.OnScrollListener mUpdateHeaderScrollListener =
+            new RecyclerView.OnScrollListener() {
+                public void onScrolled(@NonNull final RecyclerView recyclerView,
+                                       final int dx,
+                                       final int dy) {
+                    int currentTopRow = mLayoutManager.findFirstVisibleItemPosition();
+                    // Need to check isDestroyed() because BooklistPseudoCursor misbehaves when
+                    // activity terminates and closes cursor
+                    if (mModel.getLastTopRow() != currentTopRow
+                        && !isDestroyed()
+                        && mShowHeaderTexts) {
+                        setHeaderLevelText(currentTopRow);
+                    }
+                }
+            };
     private TextView mFilterTextView;
     /** The View for the list. */
     private RecyclerView mListView;
@@ -218,22 +234,7 @@ public class BooksOnBookshelf
 
     /** Whether to show header texts - this depends on the current style. */
     private boolean mShowHeaderTexts;
-    /** Define a scroller to update header detail when the top row changes. */
-    private final RecyclerView.OnScrollListener mUpdateHeaderScrollListener =
-            new RecyclerView.OnScrollListener() {
-                public void onScrolled(@NonNull final RecyclerView recyclerView,
-                                       final int dx,
-                                       final int dy) {
-                    int currentTopRow = mLayoutManager.findFirstVisibleItemPosition();
-                    // Need to check isDestroyed() because BooklistPseudoCursor misbehaves when
-                    // activity terminates and closes cursor
-                    if (mModel.getLastTopRow() != currentTopRow
-                        && !isDestroyed()
-                        && mShowHeaderTexts) {
-                        setHeaderText(currentTopRow);
-                    }
-                }
-            };
+    private TextView mStyleNameView;
 
     /** The normal FAB button; opens or closes the FAB menu. */
     private FloatingActionButton mFabButton;
@@ -335,6 +336,7 @@ public class BooksOnBookshelf
      * Called from {@link #onCreate}.
      */
     private void initHeader() {
+        mStyleNameView = findViewById(R.id.style_name);
         mFilterTextView = findViewById(R.id.search_text);
         mBookCountView = findViewById(R.id.book_count);
         mHeaderTextView[0] = findViewById(R.id.level_1_text);
@@ -459,10 +461,13 @@ public class BooksOnBookshelf
             .setIcon(R.drawable.ic_sort_by_alpha)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        menu.add(Menu.NONE, R.id.MENU_EXPAND, 0, R.string.menu_expand_all)
+        menu.add(Menu.NONE, R.id.MENU_LEVEL_RESET, 0, R.string.menu_level_reset)
+            .setIcon(R.drawable.ic_refresh);
+
+        menu.add(Menu.NONE, R.id.MENU_LEVEL_EXPAND, 0, R.string.menu_level_expand)
             .setIcon(R.drawable.ic_unfold_more);
 
-        menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
+        menu.add(Menu.NONE, R.id.MENU_LEVEL_COLLAPSE, 0, R.string.menu_level_collapse)
             .setIcon(R.drawable.ic_unfold_less);
 
         // Disabled for now. It's a bit to easy for the user to select this from here,
@@ -509,12 +514,16 @@ public class BooksOnBookshelf
                 TipManager.display(this, R.string.tip_booklist_style_menu, this::showStylePicker);
                 return true;
 
-            case R.id.MENU_EXPAND:
-                expandOrCollapseAllNodes(true);
+            case R.id.MENU_LEVEL_RESET:
+                expandNodes(true, mModel.getCurrentStyle().getDefaultLevel());
                 return true;
 
-            case R.id.MENU_COLLAPSE:
-                expandOrCollapseAllNodes(false);
+            case R.id.MENU_LEVEL_EXPAND:
+                expandNodes(true, 1);
+                return true;
+
+            case R.id.MENU_LEVEL_COLLAPSE:
+                expandNodes(false, 1);
                 return true;
 
             case R.id.MENU_CLEAR_FILTERS: {
@@ -606,7 +615,6 @@ public class BooksOnBookshelf
             case UniqueId.REQ_BOOK_EDIT: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-
                     if (data.getBooleanExtra(UniqueId.BKEY_DELETED_SOMETHING, false)) {
                         // one or more books were deleted.
                         // TODO: handle re-positioning better
@@ -626,13 +634,13 @@ public class BooksOnBookshelf
             }
             case UniqueId.REQ_AUTHOR_WORKS: {
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
-
-                    if (data.getBooleanExtra(UniqueId.BKEY_DELETED_SOMETHING, false)) {
-                        // one or more books were deleted.
-                        // TODO: handle re-positioning better
-                        //mCurrentPositionedBookId = [somehow get the id 'above' the deleted one];
-                        mModel.setFullRebuild(false);
+                    if (data != null) {
+                        if (data.getBooleanExtra(UniqueId.BKEY_DELETED_SOMETHING, false)) {
+                            // one or more books were deleted.
+                            // TODO: handle re-positioning better
+                            //mCurrentPositionedBookId = [get the id 'above' the deleted one];
+                            mModel.setFullRebuild(false);
+                        }
                     }
                 }
                 break;
@@ -668,12 +676,13 @@ public class BooksOnBookshelf
             // from BaseActivity Nav Panel
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES: {
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
-                    // the last edited/inserted shelf
-                    long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
-                                                         Bookshelf.DEFAULT_ID);
-                    mModel.setCurrentBookshelf(bookshelfId);
-                    mModel.setFullRebuild(true);
+                    if (data != null) {
+                        // the last edited/inserted shelf
+                        long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
+                                                             Bookshelf.DEFAULT_ID);
+                        mModel.setCurrentBookshelf(bookshelfId);
+                        mModel.setFullRebuild(true);
+                    }
                 }
                 break;
             }
@@ -715,10 +724,6 @@ public class BooksOnBookshelf
             case UniqueId.REQ_NAV_PANEL_EDIT_STYLES: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-
-                    if (data.getBooleanExtra(UniqueId.BKEY_DELETED_SOMETHING, false)) {
-                        mModel.setFullRebuild(true);
-                    }
 
                     if (data.getBooleanExtra(UniqueId.BKEY_PREFERRED_STYLES_MODIFIED, false)) {
                         mModel.setFullRebuild(true);
@@ -879,8 +884,10 @@ public class BooksOnBookshelf
      * Expand/Collapse the current position in the list.
      *
      * @param expand {@code true} to expand, {@code false} to collapse
+     * @param level  the level up-to where we expand/collapse; top level == 1
      */
-    private void expandOrCollapseAllNodes(final boolean expand) {
+    private void expandNodes(final boolean expand,
+                             @IntRange(from = 1) final int level) {
 
         int layoutPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         // It is possible that the list will be empty, if so, ignore
@@ -898,7 +905,7 @@ public class BooksOnBookshelf
             BooklistBuilder booklistBuilder = mModel.getBuilder();
             // do the work, and re-position.
             //noinspection ConstantConditions
-            booklistBuilder.expandAll(expand);
+            booklistBuilder.expandNodes(expand, level);
             savePosition(booklistBuilder.getPosition(oldAbsPos));
 
             // pass in a new cursor and display the list.
@@ -1011,8 +1018,10 @@ public class BooksOnBookshelf
                               "newListCursor=" + newListCursor);
         }
 
-        // Update the activity title using the current style name.
-        setTitle(mModel.getCurrentStyle().getLabel(this));
+        // remove the default title to make space for the bookshelf spinner.
+        setTitle("");
+        // Update the current style name.
+        setHeaderStyleName();
 
         mProgressBar.setVisibility(View.GONE);
 
@@ -1029,7 +1038,7 @@ public class BooksOnBookshelf
         //noinspection ConstantConditions
         final int count = mModel.getListCursor().getCount();
         if (mModel.getTopRow() >= count) {
-            // the list is shorter then it used to be, just scroll to the end
+            // the list is shorter than it used to be, just scroll to the end
             savePosition(count - 1);
             mLayoutManager.scrollToPosition(mModel.getTopRow());
         } else {
@@ -1043,7 +1052,7 @@ public class BooksOnBookshelf
             mListView.post(() -> fixPositionWhenDrawn(targetRows));
         }
 
-        mShowHeaderTexts = initListHeader(count > 0);
+        mShowHeaderTexts = prepareListHeader(count > 0);
 
         // all set, we can close the old list
         if (oldCursor != null) {
@@ -1395,7 +1404,7 @@ public class BooksOnBookshelf
                 break;
             }
             default: {
-                Logger.warnWithStackTrace(this, "rowKind=" + rowKind);
+                Logger.warnWithStackTrace(this, this, "rowKind=" + rowKind);
                 break;
             }
         }
@@ -1503,7 +1512,7 @@ public class BooksOnBookshelf
                         break;
                     }
                     default: {
-                        Logger.warnWithStackTrace(this, "onContextItemSelected",
+                        Logger.warnWithStackTrace(this, this, "onContextItemSelected",
                                                   "MENU_BOOK_UPDATE_FROM_INTERNET not supported",
                                                   "RowKind="
                                                   + row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND));
@@ -1759,21 +1768,33 @@ public class BooksOnBookshelf
      *
      * @return {@code true} if the header should display the 'level' texts.
      */
-    private boolean initListHeader(final boolean listHasItems) {
-        setFilterTextField();
-        setBookCountField();
-        boolean showHeaderTexts = setHeaderTextVisibility();
+    private boolean prepareListHeader(final boolean listHasItems) {
+        setHeaderFilterText();
+        setHeaderBookCount();
+        boolean showHeaderTexts = setHeaderLevelTextVisibility();
         // Set the initial details to the current first visible row.
         if (listHasItems && showHeaderTexts) {
-            setHeaderText(mModel.getTopRow());
+            setHeaderLevelText(mModel.getTopRow());
         }
         return showHeaderTexts;
     }
 
     /**
-     * display or hide the search text field in the header.
+     * Display or hide the style name field in the header.
      */
-    private void setFilterTextField() {
+    private void setHeaderStyleName() {
+        if (mModel.getCurrentStyle().headerShowsStyleName()) {
+            mStyleNameView.setText(mModel.getCurrentStyle().getLabel(this));
+            mStyleNameView.setVisibility(View.VISIBLE);
+        } else {
+            mStyleNameView.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Display or hide the search text field in the header.
+     */
+    private void setHeaderFilterText() {
         String filterText = mModel.getSearchCriteria().getDisplayString();
         if (filterText.isEmpty()) {
             mFilterTextView.setVisibility(View.GONE);
@@ -1784,10 +1805,10 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Display the number of books in the current list.
+     * Display or hide the number of books in the current list.
      */
-    private void setBookCountField() {
-        if (mModel.getCurrentStyle().showBookCount()) {
+    private void setHeaderBookCount() {
+        if (mModel.getCurrentStyle().headerShowsBookCount()) {
             int totalBooks = mModel.getTotalBooks();
             int uniqueBooks = mModel.getUniqueBooks();
             String stringArgs;
@@ -1810,7 +1831,7 @@ public class BooksOnBookshelf
      *
      * @return {@code true} if the style supports any level at all.
      */
-    private boolean setHeaderTextVisibility() {
+    private boolean setHeaderLevelTextVisibility() {
 
         BooklistStyle style = mModel.getCurrentStyle();
         // for level, set the visibility of the views.
@@ -1822,7 +1843,7 @@ public class BooksOnBookshelf
             // 2. the style defined the level.
             //noinspection ConstantConditions
             if (mModel.getBuilder().levels() > level
-                && style.hasHeaderForLevel(level)) {
+                && style.headerHasLevelText(level)) {
                 mHeaderTextView[index].setVisibility(View.VISIBLE);
                 mHeaderTextView[index].setText("");
             } else {
@@ -1830,7 +1851,7 @@ public class BooksOnBookshelf
             }
         }
         // are we showing any levels?
-        return style.hasHeaderForLevel(1) || style.hasHeaderForLevel(2);
+        return style.headerHasLevelText(1) || style.headerHasLevelText(2);
     }
 
     /**
@@ -1838,14 +1859,14 @@ public class BooksOnBookshelf
      *
      * @param currentTopRow Top row which is visible
      */
-    private void setHeaderText(@IntRange(from = 0) final int currentTopRow) {
+    private void setHeaderLevelText(@IntRange(from = 0) final int currentTopRow) {
         if (currentTopRow >= 0) {
             mModel.setLastTopRow(currentTopRow);
         } else {
             mModel.setLastTopRow(0);
         }
 
-        // use visibility which was set in {@link #setHeaderTextVisibility}
+        // use visibility which was set in {@link #setHeaderLevelTextVisibility}
         if (mHeaderTextView[0].getVisibility() == View.VISIBLE
             || mHeaderTextView[1].getVisibility() == View.VISIBLE) {
 

@@ -114,7 +114,7 @@ public class About
                                     .putExtra(Intent.EXTRA_SUBJECT, subject);
             startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
         } catch (@NonNull final ActivityNotFoundException e) {
-            Logger.error(this, e);
+            Logger.error(this, this, e);
         }
     }
 }

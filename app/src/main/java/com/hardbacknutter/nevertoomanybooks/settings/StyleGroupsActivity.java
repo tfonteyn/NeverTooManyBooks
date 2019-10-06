@@ -123,7 +123,6 @@ public class StyleGroupsActivity
         mModel.saveStyle();
         Intent data = new Intent().putExtra(UniqueId.BKEY_STYLE, mModel.getStyle());
         setResult(Activity.RESULT_OK, data);
-
         super.onBackPressed();
     }
 

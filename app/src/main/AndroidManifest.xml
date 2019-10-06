@@ -36,7 +36,7 @@
     >
     <!-- original package -->
     <!-- android:versionCode="179"   android:versionName="5.2.2" -->
-    <!-- android:versionCode="182"   android:versionName="5.2.3-Beta2" -->
+    <!-- android:versionCode="186"   android:versionName="5.2.4" -->
 
     <!-- Not needed any longer, as we only use getExternalFilesDir(String)
          and getExternalCacheDir(). Leaving this in comment as a reminder.
@@ -71,6 +71,12 @@
             android:name="goodreads.dev_secret"
             android:value="" />
 
+        <!--
+            The authorities value must match:
+            - AndroidManifest.xml/provider/android:authorities
+            - res/xml/searchable.xml/searchSuggestAuthority
+            - SearchSuggestionProvider.java/AUTHORITY
+        -->
         <provider
             android:name="com.hardbacknutter.nevertoomanybooks.searches.SearchSuggestionProvider"
             android:authorities="${packageName}.SearchSuggestionProvider"
@@ -121,6 +127,38 @@
                 android:resource="@xml/searchable" />
         </activity>
 
+        <!-- View a book -->
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.BookDetailsActivity" />
+        <!-- Add a Book through an internet search. -->
+        <activity
+            android:name="com.hardbacknutter.nevertoomanybooks.BookSearchActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+        <!-- Edit a book + the related Author/Series -->
+        <activity
+            android:name="com.hardbacknutter.nevertoomanybooks.EditBookActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+        <activity
+            android:name="com.hardbacknutter.nevertoomanybooks.EditBookAuthorsActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+        <activity
+            android:name="com.hardbacknutter.nevertoomanybooks.EditBookSeriesActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+        <!-- View an Author and all of their works. -->
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.AuthorWorksActivity" />
+
+        <!-- Cropping an image, either from the cover of a book, or direct from a new scan -->
+        <activity
+            android:name="com.hardbacknutter.nevertoomanybooks.cropper.CropImageActivity"
+            android:theme="@style/AppTheme.FullScreen"
+            />
+
+        <!-- Update book Fields from the internet -->
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.UpdateFieldsFromInternetActivity" />
+        <!-- Local Search -->
+        <activity
+            android:name="com.hardbacknutter.nevertoomanybooks.FTSSearchActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+
         <!-- Admin pages -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.About" />
         <activity android:name="com.hardbacknutter.nevertoomanybooks.AdminActivity" />
@@ -145,36 +183,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <!-- Update book Fields from the internet -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.UpdateFieldsFromInternetActivity" />
-        <!-- Local Search -->
-        <activity
-            android:name="com.hardbacknutter.nevertoomanybooks.FTSSearchActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <!-- View a book -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.BookDetailsActivity" />
-        <!-- Add a Book through an internet search. -->
-        <activity
-            android:name="com.hardbacknutter.nevertoomanybooks.BookSearchActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <!-- Edit a book + the related Author/Series -->
-        <activity
-            android:name="com.hardbacknutter.nevertoomanybooks.EditBookActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <activity
-            android:name="com.hardbacknutter.nevertoomanybooks.EditBookAuthorsActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <activity
-            android:name="com.hardbacknutter.nevertoomanybooks.EditBookSeriesActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <!-- View an Author and all of his works. -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.AuthorWorksActivity" />
-        <!-- Cropping an image, either from the cover of a book, or direct from a new scan -->
-        <activity
-            android:name="com.hardbacknutter.nevertoomanybooks.cropper.CropImageActivity"
-            android:theme="@style/AppTheme.FullScreen"
-            />
 
         <!-- Search Sites configuration -->
         <activity

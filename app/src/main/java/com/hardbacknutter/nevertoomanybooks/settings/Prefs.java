@@ -103,6 +103,8 @@ public final class Prefs {
 
     public static final String pk_bob_use_task_for_extras = "BookList.UseTaskFor.BookDetails";
 
+    public static final String pk_bob_default_level = "BookList.Style.level.default";
+
     public static final String pk_bob_style_name = "BookList.Style.Name";
     public static final String pk_bob_groups = "BookList.Style.Groups";
     public static final String pk_bob_preferred_style = "BookList.Style.Preferred";
@@ -226,7 +228,7 @@ public final class Prefs {
                 //noinspection unchecked
                 ed.putStringSet(entry.getKey(), (Set<String>) entry.getValue());
             } else {
-                Logger.warnWithStackTrace(Prefs.class,
+                Logger.warnWithStackTrace(context, Prefs.class,
                                           entry.getValue().getClass().getCanonicalName());
             }
         }

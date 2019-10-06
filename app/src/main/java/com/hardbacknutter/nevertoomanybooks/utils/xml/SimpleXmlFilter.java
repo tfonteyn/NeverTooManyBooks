@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -122,55 +123,36 @@ public class SimpleXmlFilter {
     /** See constructor. */
     @NonNull
     private final XmlHandler mDoubleHandler;
+    @Nullable
+    private final Locale mLocale;
     @NonNull
     private final XmlFilter mRootFilter;
     private final ArrayList<BuilderContext> mContexts = new ArrayList<>();
     private final ArrayList<String> mTags = new ArrayList<>();
     private final DataStore mRootData = new DataStore();
 
-    /** Whether Float and Double parsing routines use Locales or not. */
-    private final boolean mFloatUsesLocales;
-
     /**
      * Constructor.
-     * <p>
-     * Locale independent.
      *
      * @param root filter
      */
-    public SimpleXmlFilter(@NonNull final XmlFilter root) {
-        this(root, false);
-    }
-
-    /**
-     * Constructor.
-     *
-     * <strong>Note:</strong> 2019-08-30: currently only used by Goodreads code which
-     * is Locale.US only; i.e. floatUsesLocales is always {@code false}.
-     *
-     * @param root             filter
-     * @param floatUsesLocales take Locales into account when parsing strings or not.
-     */
     public SimpleXmlFilter(@NonNull final XmlFilter root,
-                           final boolean floatUsesLocales) {
+                           @Nullable final Locale locale) {
         mRootFilter = root;
-        mFloatUsesLocales = floatUsesLocales;
+        mLocale = locale;
 
+        // defined here due to compiler wanting mLocale to be defined.
         mDoubleHandler = context -> {
             final BuilderContext bc = (BuilderContext) context.getUserArg();
             final String name = bc.collectField;
             try {
-                double d;
-                if (mFloatUsesLocales) {
-                    d = ParseUtils.parseDouble(context.getBody());
-                } else {
-                    d = Double.parseDouble(context.getBody());
-                }
+                double d = ParseUtils.parseDouble(context.getBody(), mLocale);
                 bc.getData().putDouble(name, d);
 
             } catch (@NonNull final NumberFormatException ignore) {
             }
         };
+
     }
 
     private static boolean textToBoolean(@Nullable final String s)
@@ -293,7 +275,7 @@ public class SimpleXmlFilter {
     SimpleXmlFilter doubleAttr(@NonNull final String attrName,
                                @NonNull final String key) {
         List<AttrFilter> attrs = getAttrFilters();
-        attrs.add(new DoubleAttrFilter(key, attrName, mFloatUsesLocales));
+        attrs.add(new DoubleAttrFilter(key, attrName, mLocale));
         return this;
     }
 
@@ -572,24 +554,19 @@ public class SimpleXmlFilter {
     private static class DoubleAttrFilter
             extends AttrFilter {
 
-        /** Whether Float and Double parsing routines use Locales or not. */
-        private final boolean mFloatUsesLocales;
+        @Nullable
+        private final Locale mLocale;
 
         DoubleAttrFilter(@NonNull final String key,
                          @NonNull final String name,
-                         final boolean floatUsesLocales) {
+                         @Nullable final Locale locale) {
             super(key, name);
-            mFloatUsesLocales = floatUsesLocales;
+            mLocale = locale;
         }
 
         public void put(@NonNull final BuilderContext context,
                         @NonNull final String value) {
-            if (mFloatUsesLocales) {
-                context.getData().putDouble(key, ParseUtils.parseDouble(value));
-            } else {
-                context.getData().putDouble(key, Double.parseDouble(value));
-
-            }
+            context.getData().putDouble(key, ParseUtils.parseDouble(value, mLocale));
         }
     }
 

@@ -95,7 +95,8 @@ public class EditBookNotesFragment
         fields.add(R.id.notes, DBDefinitions.KEY_PRIVATE_NOTES)
               .setRelatedFields(R.id.lbl_notes);
 
-        fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID);
+        fields.addMonetary(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID);
+
         field = fields.add(R.id.price_paid_currency, DBDefinitions.KEY_PRICE_PAID_CURRENCY)
                       .setRelatedFields(R.id.lbl_price_paid, R.id.price_paid_currency);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_paid_currency,

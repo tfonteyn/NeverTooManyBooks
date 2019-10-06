@@ -160,7 +160,7 @@ public abstract class PPrefBase<T>
             // is what we want for user-defined styles anyhow.
             dest.writeValue(get());
         } else {
-            // builtin ? then write the in-memory value to the parcel
+            // builtin ? write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
             dest.writeValue(mNonPersistedValue);
         }

@@ -105,7 +105,6 @@
         android:id="@+id/use_author_type_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:checked="false"
         app:layout_constraintStart_toEndOf="@id/lbl_author_type"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_author_type"
         />

@@ -137,7 +137,8 @@ public class BooklistMappedCursorRow {
             }
         }
 
-        //FIXME: from BoB, click book. Move sideways book to book (10.. 13x) then Back to BoB
+        //FIXME: from BoB, click book. Move sideways book to book
+        // (up to BooklistPseudoCursor#CURSOR_SIZE times) then go Back to BoB
 
         // ==> https://github.com/eleybourn/Book-Catalogue/issues/504
 
@@ -165,7 +166,7 @@ public class BooklistMappedCursorRow {
 
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
             //DO NOT add this.toString() ... will recursively throw CursorIndexOutOfBoundsException
-            Logger.error(this, e, "level=" + level,
+            Logger.error(context, this, e, "level=" + level,
                          "columnIndex=" + columnIndex);
             return null;
         }
@@ -230,7 +231,7 @@ public class BooklistMappedCursorRow {
                         return DateUtils.getMonthName(i, false);
                     }
                 } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(this, e);
+                    Logger.error(context, this, e);
                 }
                 break;
             }
@@ -242,7 +243,7 @@ public class BooklistMappedCursorRow {
                         return context.getResources().getQuantityString(R.plurals.n_stars, i, i);
                     }
                 } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(this, e);
+                    Logger.error(context, this, e);
                 }
                 break;
             }
@@ -275,7 +276,7 @@ public class BooklistMappedCursorRow {
                 throw new UnexpectedValueException(kind);
 
         }
-        Logger.warnWithStackTrace(this, "formatRowGroup",
+        Logger.warnWithStackTrace(context, this, "formatRowGroup",
                                   "source=" + source,
                                   "level=" + level,
                                   "kind=" + kind);

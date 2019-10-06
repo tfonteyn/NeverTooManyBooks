@@ -48,6 +48,7 @@ public class UpdateFieldsFromInternetActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocaleUtils.insanityCheck(this);
+
         FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(UpdateFieldsFromInternetFragment.TAG) == null) {
             Fragment frag = new UpdateFieldsFromInternetFragment();

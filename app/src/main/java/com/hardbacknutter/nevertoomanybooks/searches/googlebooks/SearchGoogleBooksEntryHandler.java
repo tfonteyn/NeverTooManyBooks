@@ -286,6 +286,7 @@ class SearchGoogleBooksEntryHandler
 
         // the url is an attribute of the xml element; not the content
         if (mFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
+            // http; this is a schema and not an actual website url
             if ("http://schemas.google.com/books/2008/thumbnail"
                     .equals(attributes.getValue("", "rel"))) {
 

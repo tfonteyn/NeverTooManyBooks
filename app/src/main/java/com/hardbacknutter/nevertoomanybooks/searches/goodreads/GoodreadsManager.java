@@ -701,7 +701,7 @@ public class GoodreadsManager
                 }
             }
 
-            // If no exclusive shelves are specified, then add pseudo-shelf to match Goodreads
+            // If no exclusive shelves are specified, add pseudo-shelf to match Goodreads
             // because review.update does not seem to update them properly
             if (exclusiveCount == 0) {
                 String pseudoShelf;

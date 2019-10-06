@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.io.File;
@@ -62,11 +64,11 @@ public abstract class ReaderEntityAbstract
     }
 
     @Override
-    public void save()
+    public void save(@NonNull final Context context)
             throws IOException {
 
         // Build the new File and save
-        File destFile = new File(StorageUtils.getCoverDir(), getName());
+        File destFile = new File(StorageUtils.getCoverDir(context), getName());
         try (OutputStream os = new FileOutputStream(destFile)) {
             StorageUtils.copy(getInputStream(), os);
         } finally {

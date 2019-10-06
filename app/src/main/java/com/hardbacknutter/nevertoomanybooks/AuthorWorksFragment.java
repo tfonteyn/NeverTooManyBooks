@@ -39,6 +39,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
@@ -51,9 +52,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
@@ -133,6 +136,20 @@ public class AuthorWorksFragment
         if (savedInstanceState == null) {
             TipManager.display(context, R.string.tip_authors_works, null);
         }
+    }
+
+    @Override
+    @CallSuper
+    public void onResume() {
+        Tracker.enterOnResume(this);
+        super.onResume();
+        if (getActivity() instanceof BaseActivity) {
+            BaseActivity activity = (BaseActivity) getActivity();
+            if (activity.isGoingToRecreate()) {
+                return;
+            }
+        }
+        Tracker.exitOnResume(this);
     }
 
     @Override
@@ -301,7 +318,7 @@ public class AuthorWorksFragment
             authorView = itemView.findViewById(R.id.author);
             // optional
             firstPublicationView = itemView.findViewById(R.id.year);
-            // optional icon to indicate a story appears in more then one book
+            // optional icon to indicate a story appears in more than one book
             multipleBooksView = itemView.findViewById(R.id.cbx_multiple_books);
         }
     }

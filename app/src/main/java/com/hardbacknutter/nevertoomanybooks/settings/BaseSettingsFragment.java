@@ -123,17 +123,17 @@ public abstract class BaseSettingsFragment
                 int index = msp.findIndexOfValue(s);
                 if (index == -1) {
                     // This re-surfaces sometimes after a careless dev. change.
+                    //noinspection ConstantConditions
                     Logger.warnWithStackTrace(
-                            this, "MultiSelectListPreference:"
-                                  + "\n s=" + s
-                                  + "\n key=" + msp.getKey()
-                                  + "\n entries="
-                                  + TextUtils.join(",",
-                                                   Arrays.asList(msp.getEntries()))
-                                  + "\n entryValues="
-                                  + TextUtils.join(",",
-                                                   Arrays.asList(msp.getEntryValues()))
-                                  + "\n values=" + msp.getValues());
+                            getContext(), this,
+                            "MultiSelectListPreference:"
+                            + "\n s=" + s
+                            + "\n key=" + msp.getKey()
+                            + "\n entries="
+                            + TextUtils.join(",", Arrays.asList(msp.getEntries()))
+                            + "\n entryValues="
+                            + TextUtils.join(",", Arrays.asList(msp.getEntryValues()))
+                            + "\n values=" + msp.getValues());
                 } else {
                     text.append(msp.getEntries()[index]).append('\n');
                 }
@@ -159,11 +159,4 @@ public abstract class BaseSettingsFragment
                                           @NonNull final String key) {
         setSummary(key);
     }
-
-
-    /**
-     * Force children to adopt this pattern / to not forget to set a result.
-     * THEY STILL MUST CALL IT THEMSELVES!
-     */
-    abstract void prepareResult();
 }

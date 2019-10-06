@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.ImportCSVTask;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.ExportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.ImportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.OptionsDialogBase;
+import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -382,7 +383,7 @@ public class AdminFragment
                                 msgId = R.string.warning_select_an_existing_folder;
                             }
                         } catch (@NonNull final IOException e) {
-                            Logger.error(this, e);
+                            Logger.error(getContext(), this, e);
                             msgId = R.string.error_backup_failed;
                         }
                         //noinspection ConstantConditions
@@ -397,6 +398,20 @@ public class AdminFragment
             }
         }
         Tracker.exitOnActivityResult(this);
+    }
+
+    @Override
+    @CallSuper
+    public void onResume() {
+        Tracker.enterOnResume(this);
+        super.onResume();
+        if (getActivity() instanceof BaseActivity) {
+            BaseActivity activity = (BaseActivity) getActivity();
+            if (activity.isGoingToRecreate()) {
+                return;
+            }
+        }
+        Tracker.exitOnResume(this);
     }
 
     private void onTaskProgressMessage(@NonNull final TaskProgressMessage message) {
@@ -429,7 +444,8 @@ public class AdminFragment
                 break;
             }
             default: {
-                Logger.warnWithStackTrace(this, "taskId=" + message.taskId);
+                //noinspection ConstantConditions
+                Logger.warnWithStackTrace(getContext(), this, "taskId=" + message.taskId);
                 break;
             }
         }
@@ -450,7 +466,8 @@ public class AdminFragment
         //noinspection ConstantConditions
         String msg = getString(R.string.info_cleanup_files_text,
                                StorageUtils.formatFileSize(getContext(),
-                                                           StorageUtils.purgeFiles(false)));
+                                                           StorageUtils.purgeFiles(getContext(),
+                                                                                   false)));
 
         new AlertDialog.Builder(getContext())
                 .setIcon(R.drawable.ic_warning)
@@ -458,7 +475,7 @@ public class AdminFragment
                 .setMessage(msg)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok,
-                                   (dialog, which) -> StorageUtils.purgeFiles(true))
+                                   (dialog, which) -> StorageUtils.purgeFiles(getContext(), true))
                 .create()
                 .show();
     }
@@ -665,7 +682,7 @@ public class AdminFragment
                 break;
             }
             default: {
-                Logger.warnWithStackTrace(this, "taskId=" + message.taskId);
+                Logger.warnWithStackTrace(context, this, "taskId=" + message.taskId);
                 break;
             }
         }
@@ -922,7 +939,8 @@ public class AdminFragment
                 break;
             }
             default: {
-                Logger.warnWithStackTrace(view, "taskId=" + message.taskId);
+                //noinspection ConstantConditions
+                Logger.warnWithStackTrace(getContext(), view, "taskId=" + message.taskId);
                 break;
             }
         }
@@ -982,7 +1000,8 @@ public class AdminFragment
                     .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
             startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
         } catch (@NonNull final NullPointerException e) {
-            Logger.error(this, e);
+            //noinspection ConstantConditions
+            Logger.error(getContext(), this, e);
             //noinspection ConstantConditions
             UserMessage.show(getView(), R.string.error_email_failed);
         }

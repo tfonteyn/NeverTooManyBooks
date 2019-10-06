@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -56,6 +57,8 @@ public class ExportHelper
      * If the latter is {@code null}, then since last backup.
      */
     public static final int EXPORT_SINCE = 1 << 16;
+
+    /** {@link Parcelable}. */
     public static final Creator<ExportHelper> CREATOR = new Creator<ExportHelper>() {
         @Override
         public ExportHelper createFromParcel(@NonNull final Parcel source) {
@@ -118,8 +121,8 @@ public class ExportHelper
         }
     }
 
-    public static File getTempFile() {
-        return new File(StorageUtils.getCacheDir(), TEMP_FILE_NAME);
+    public static File getTempFile(@NonNull final Context context) {
+        return new File(StorageUtils.getCacheDir(context), TEMP_FILE_NAME);
     }
 
     public void addResults(@NonNull final Exporter.Results results) {

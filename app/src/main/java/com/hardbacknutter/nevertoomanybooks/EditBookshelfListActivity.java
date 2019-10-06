@@ -67,6 +67,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 public class EditBookshelfListActivity
         extends BaseActivity {
 
+    private static final long NO_BOOKSHELF = -1;
+
     /** Database Access. */
     private DAO mDb;
 
@@ -74,6 +76,8 @@ public class EditBookshelfListActivity
     private ArrayList<Bookshelf> mList;
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
+
+    private long mLastEditedBookshelf = NO_BOOKSHELF;
 
     private final EditBookshelfDialogFragment.BookshelfChangedListener mListener =
             new EditBookshelfDialogFragment.BookshelfChangedListener() {
@@ -83,8 +87,8 @@ public class EditBookshelfListActivity
                     mList.clear();
                     mList.addAll(mDb.getBookshelves());
                     mAdapter.notifyDataSetChanged();
-                    Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, bookshelfId);
-                    setResult(Activity.RESULT_OK, data);
+
+                    mLastEditedBookshelf = bookshelfId;
                 }
             };
 
@@ -154,9 +158,14 @@ public class EditBookshelfListActivity
 
             case R.id.MENU_DELETE:
                 if (!bookshelf.isDefault()) {
-                    mDb.deleteBookshelf(bookshelf.getId());
+                    long bookshelfId = bookshelf.getId();
+                    mDb.deleteBookshelf(bookshelfId);
                     mList.remove(bookshelf);
                     mAdapter.notifyDataSetChanged();
+
+                    if (bookshelfId == mLastEditedBookshelf) {
+                        mLastEditedBookshelf = NO_BOOKSHELF;
+                    }
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left..
                     // e.g. count > 2, then you can delete '1'
@@ -180,6 +189,15 @@ public class EditBookshelfListActivity
             EditBookshelfDialogFragment.newInstance(bookshelf)
                                        .show(fm, EditBookshelfDialogFragment.TAG);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mLastEditedBookshelf != NO_BOOKSHELF) {
+            Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, mLastEditedBookshelf);
+            setResult(Activity.RESULT_OK, data);
+        }
+        super.onBackPressed();
     }
 
     @Override

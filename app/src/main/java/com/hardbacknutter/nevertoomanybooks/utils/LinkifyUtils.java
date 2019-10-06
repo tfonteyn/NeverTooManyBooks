@@ -83,7 +83,7 @@ public final class LinkifyUtils {
         // Save the span details for later restoration
         URLSpan[] currentSpans = text.getSpans(0, text.length(), URLSpan.class);
 
-        // Build an empty spannable then add the links
+        // Build an empty spannable and add the links
         SpannableString buffer = new SpannableString(text);
         Linkify.addLinks(buffer, LINKIFY_MASK);
 

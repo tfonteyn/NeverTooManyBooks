@@ -354,7 +354,8 @@ public class PartialDatePickerDialogFragment
                                 break;
 
                             default:
-                                Logger.warnWithStackTrace(this, "id=" + picker.getId());
+                                Logger.warnWithStackTrace(getContext(), this,
+                                                          "id=" + picker.getId());
                                 break;
                         }
                     }
@@ -475,7 +476,7 @@ public class PartialDatePickerDialogFragment
                 return;
             }
 
-            // Remove the 3 pickers from their parent and then add them back in the required order.
+            // Remove the 3 pickers from their parent and add them back in the required order.
             ViewGroup parent = root.findViewById(R.id.dateSelector);
             // Get the three views
             ConstraintLayout y = parent.findViewById(R.id.yearSelector);

@@ -50,6 +50,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -57,6 +58,8 @@ import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Set;
 
@@ -127,18 +130,17 @@ public class App
     public static final String PREFS_FIELD_VISIBILITY = "fields.visibility.";
 
     /** don't assume / allow the day-night theme to have a different integer ID. */
+    private static final int THEME_INVALID = -1;
     private static final int THEME_DAY_NIGHT = 0;
     private static final int THEME_DARK = 1;
     private static final int THEME_LIGHT = 2;
 
     /** we really only use the one. */
     private static final int NOTIFICATION_ID = 0;
-
     /** Activity is in need of recreating. */
     private static final int ACTIVITY_NEEDS_RECREATING = 1;
     /** Checked in onResume() so not to start tasks etc. */
     private static final int ACTIVITY_IS_RECREATING = 2;
-
     /**
      * NEWTHINGS: APP THEME.
      * <ol>
@@ -152,9 +154,8 @@ public class App
      * <p>
      * DEFAULT_THEME: the default to use.
      */
+    @ThemeId
     private static final int DEFAULT_THEME = THEME_DAY_NIGHT;
-
-
     /**
      * As defined in res/themes.xml.
      * <ul>
@@ -168,13 +169,11 @@ public class App
             R.style.AppTheme_Dark,
             R.style.AppTheme_Light,
             };
-
     /**
      * Give static methods access to our singleton.
      * <strong>Note:</strong> never store a context in a static, use the instance instead
      */
     private static App sInstance;
-
     /**
      * internal; check if an Activity should do a 'recreate()'.
      * See {@link BaseActivity} in the onResume method.
@@ -183,7 +182,8 @@ public class App
     /** Used to sent notifications regarding tasks. */
     private static NotificationManager sNotifier;
     /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
-    private static int sCurrentThemeId = -1;
+    @ThemeId
+    private static int sCurrentThemeId = THEME_INVALID;
     /** The Locale used at startup; so that we can revert to system Locale if we want to. */
     private static Locale sSystemInitialLocale;
 
@@ -292,6 +292,8 @@ public class App
     }
 
     /**
+     * Get the resource id for the given attribute.
+     *
      * @param context Current context
      * @param attr    attribute id to resolve
      *
@@ -307,6 +309,8 @@ public class App
     }
 
     /**
+     * Get a color int value for the given attribute.
+     *
      * @param context Current context
      * @param attr    attribute id to resolve
      *
@@ -322,12 +326,14 @@ public class App
     }
 
     /**
+     * Get the Attribute dimension value multiplied by the appropriate
+     * metric and truncated to integer pixels.
+     *
      * @param context Current context
      * @param attr    attribute id to resolve
      *                Must be a type that has a {@code android.R.attr.textSize} value.
      *
-     * @return Attribute dimension value multiplied by the appropriate
-     * metric and truncated to integer pixels, or -1 if not defined.
+     * @return size in integer pixels, or -1 if not defined.
      */
     @SuppressWarnings("unused")
     public static int getTextSize(@NonNull final Context context,
@@ -344,7 +350,6 @@ public class App
 
         return textSize;
     }
-
 
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
@@ -368,8 +373,6 @@ public class App
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-
-    /* ########################################################################################## */
 
     /**
      * Read a string from the META tags in the Manifest.
@@ -395,6 +398,8 @@ public class App
         }
         return result.trim();
     }
+
+    /* ########################################################################################## */
 
     /**
      * Get a global preference boolean.
@@ -449,6 +454,9 @@ public class App
      * {@link MultiSelectListPreference} store the selected value as a StringSet.
      * But they are really Integer values. Hence this transmogrification....
      *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
      * @return int (stored as StringSet) global preference
      */
     public static Integer getMultiSelectListPreference(@NonNull final String key,
@@ -462,18 +470,20 @@ public class App
         return Prefs.toInteger(value);
     }
 
-    /* ########################################################################################## */
-
     /**
      * Test if the Theme has changed.
      *
+     * @param themeId to check
+     *
      * @return {@code true} if the theme was changed
      */
-    public static boolean isThemeChanged(final int themeId) {
+    public static boolean isThemeChanged(@ThemeId final int themeId) {
         // always reload from prefs.
         sCurrentThemeId = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
         return themeId != sCurrentThemeId;
     }
+
+    /* ########################################################################################## */
 
     /**
      * Apply the user's preferred Theme.
@@ -494,6 +504,7 @@ public class App
      *
      * @return the applied theme id.
      */
+    @ThemeId
     public static int applyTheme(@NonNull final Activity activity) {
         // Always read from prefs.
         sCurrentThemeId = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
@@ -522,7 +533,7 @@ public class App
     /**
      * DEBUG only.
      */
-    private static void dumpDayNightMode(final int themeId) {
+    private static void dumpDayNightMode(@ThemeId final int themeId) {
         StringBuilder sb = new StringBuilder();
 
         String varName = "sCurrentThemeId";
@@ -536,9 +547,14 @@ public class App
             case THEME_LIGHT:
                 sb.append(varName).append("=THEME_LIGHT");
                 break;
+            case THEME_INVALID:
+                sb.append(varName).append("=THEME_INVALID");
+                break;
+
             default:
                 sb.append(varName).append("=eh? ").append(themeId);
                 break;
+
         }
 
         varName = "getDefaultNightMode";
@@ -588,11 +604,11 @@ public class App
         Logger.debug(App.class, "dumpDayNightMode", sb);
     }
 
-    /* ########################################################################################## */
-
     public static void setNeedsRecreating() {
         sActivityRecreateStatus = ACTIVITY_NEEDS_RECREATING;
     }
+
+    /* ########################################################################################## */
 
     public static boolean isInNeedOfRecreating() {
         return sActivityRecreateStatus == ACTIVITY_NEEDS_RECREATING;
@@ -610,12 +626,12 @@ public class App
         sActivityRecreateStatus = 0;
     }
 
-    /* ########################################################################################## */
-
     @SuppressWarnings("unused")
     public static boolean isRtl(@NonNull final Locale locale) {
         return TextUtils.getLayoutDirectionFromLocale(locale) == View.LAYOUT_DIRECTION_RTL;
     }
+
+    /* ########################################################################################## */
 
     /**
      * Return the device Locale.
@@ -657,8 +673,6 @@ public class App
         return localizedContext.getResources();
     }
 
-    /* ########################################################################################## */
-
     /**
      * Initialize ACRA for a given Application.
      * <p>
@@ -673,6 +687,8 @@ public class App
         ACRA.getErrorReporter().putCustomData("TrackerEventsInfo", Tracker.getEventsInfo());
         ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
     }
+
+    /* ########################################################################################## */
 
     @Override
     public void onCreate() {
@@ -708,5 +724,11 @@ public class App
             }
             Logger.debug(this, "onConfigurationChanged", locale);
         }
+    }
+
+    @IntDef({THEME_INVALID, THEME_DAY_NIGHT, THEME_DARK, THEME_LIGHT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ThemeId {
+
     }
 }

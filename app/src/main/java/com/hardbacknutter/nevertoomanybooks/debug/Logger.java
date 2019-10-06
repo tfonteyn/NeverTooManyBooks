@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.debug;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -63,17 +64,14 @@ public final class Logger {
 
     /** Widely used DEBUG error message. */
     public static final String WEAK_REFERENCE_TO_LISTENER_WAS_DEAD = "Listener was dead";
-
+    /** serious errors are written to this file. */
+    public static final String ERROR_LOG_FILE = "error.log";
     /** Prefix for logfile entries. Not used on the console. */
     private static final String ERROR = "ERROR";
     private static final String WARN = "WARN";
     private static final String INFO = "INFO";
-
     private static final DateFormat DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", App.getSystemLocale());
-
-    /** serious errors are written to this file. */
-    public static final String ERROR_LOG_FILE = "error.log";
 
     private Logger() {
     }
@@ -81,7 +79,8 @@ public final class Logger {
     /**
      * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
      */
-    public static void error(@NonNull final Object tag,
+    public static void error(@NonNull final Context context,
+                             @NonNull final Object tag,
                              @NonNull final Throwable e,
                              @Nullable final Object... params) {
         String msg;
@@ -90,10 +89,16 @@ public final class Logger {
         } else {
             msg = "";
         }
-        writeToLog(ERROR, msg, e);
+        writeToLog(context, ERROR, msg, e);
         if (BuildConfig.DEBUG /* always */) {
             Log.e(tag(tag), Tracker.State.Running.toString() + '|' + msg, e);
         }
+    }
+
+    public static void error(@NonNull final Object tag,
+                             @NonNull final Throwable e,
+                             @Nullable final Object... params) {
+        error(App.getAppContext(), tag, e, params);
     }
 
     /**
@@ -104,14 +109,20 @@ public final class Logger {
      * <p>
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
      */
-    public static void warnWithStackTrace(@NonNull final Object object,
+    public static void warnWithStackTrace(@NonNull final Context context,
+                                          @NonNull final Object object,
                                           @NonNull final Object... params) {
         Throwable e = new Throwable();
         String msg = concat(params);
-        writeToLog(WARN, msg, e);
+        writeToLog(context, WARN, msg, e);
         if (BuildConfig.DEBUG /* always */) {
             Log.w(tag(object), Tracker.State.Running.toString() + '|' + msg, e);
         }
+    }
+
+    public static void warnWithStackTrace(@NonNull final Object object,
+                                          @NonNull final Object... params) {
+        warnWithStackTrace(App.getAppContext(), object, params);
     }
 
     /**
@@ -122,26 +133,36 @@ public final class Logger {
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
      * No stacktrace!
      */
-    public static void warn(@NonNull final Object object,
+    public static void warn(@NonNull final Context context,
+                            @NonNull final Object object,
                             @NonNull final String methodName,
                             @NonNull final Object... params) {
         String msg = methodName + '|' + concat(params);
-        writeToLog(WARN, msg, null);
+        writeToLog(context, WARN, msg, null);
         if (BuildConfig.DEBUG /* always */) {
             Log.w(tag(object), Tracker.State.Running.toString() + '|' + msg);
         }
+    }
+
+    public static void warn(@NonNull final Object object,
+                            @NonNull final String methodName,
+                            @NonNull final Object... params) {
+        warn(App.getAppContext(), object, methodName, params);
     }
 
     /**
      * INFO message. Send to the logfile (always) and the console (when in DEBUG mode).
      * <p>
      * Use very sparingly, writing to the log is expensive.
+     *
+     * @param context Current context
      */
-    public static void info(@NonNull final Object object,
+    public static void info(@NonNull final Context context,
+                            @NonNull final Object object,
                             @NonNull final String methodName,
                             @NonNull final Object... params) {
         String msg = methodName + '|' + concat(params);
-        writeToLog(INFO, msg, null);
+        writeToLog(context, INFO, msg, null);
         if (BuildConfig.DEBUG /* always */) {
             Log.i(tag(object), Tracker.State.Running.toString() + '|' + msg);
         }
@@ -221,24 +242,46 @@ public final class Logger {
      * @param message to write
      * @param e       optional Throwable
      */
-    private static void writeToLog(@NonNull final String type,
+    private static void writeToLog(@NonNull final Context context,
+                                   @NonNull final String type,
                                    @NonNull final String message,
                                    @Nullable final Throwable e) {
-        File logFile = new File(StorageUtils.getLogDir(), ERROR_LOG_FILE);
+        String exMsg;
+        if (e != null) {
+            exMsg = '|' + e.getLocalizedMessage() + '\n' + Log.getStackTraceString(e);
+        } else {
+            exMsg = "";
+        }
+        String fullMessage = DATE_FORMAT.format(new Date()) + '|' + type + '|' + message + exMsg;
+
+        // do not write to the log if we're running a JUnit test.
+        if (BuildConfig.DEBUG && isJUnitTest()) {
+            Log.d("isJUnitTest", fullMessage);
+            return;
+        }
+
+        File logFile = new File(StorageUtils.getLogDir(context), ERROR_LOG_FILE);
         //noinspection ImplicitDefaultCharsetUsage
         try (FileWriter fw = new FileWriter(logFile, true);
              BufferedWriter out = new BufferedWriter(fw)) {
-            String exMsg;
-            if (e != null) {
-                exMsg = '|' + e.getLocalizedMessage() + '\n' + Log.getStackTraceString(e);
-            } else {
-                exMsg = "";
-            }
-
-            out.write(DATE_FORMAT.format(new Date()) + '|' + type + '|' + message + exMsg);
+            out.write(fullMessage);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignored) {
             // do nothing - we can't log an error in the logger (and we don't want to CF the app).
         }
+    }
+
+    /**
+     * DEBUG
+     *
+     * @return {@code true} if this is a JUnit run.
+     */
+    private static boolean isJUnitTest() {
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            if (element.getClassName().startsWith("org.junit.")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -306,10 +349,12 @@ public final class Logger {
 
     /**
      * Clear the log each time the app is started; preserve previous if non-empty.
+     *
+     * @param context Current context
      */
-    public static void clearLog() {
+    public static void clearLog(final Context context) {
         try {
-            File logFile = new File(StorageUtils.getLogDir(), ERROR_LOG_FILE);
+            File logFile = new File(StorageUtils.getLogDir(context), ERROR_LOG_FILE);
             if (logFile.exists() && logFile.length() > 0) {
                 File backup = new File(logFile.getPath() + ".bak");
                 StorageUtils.renameFile(logFile, backup);

@@ -52,6 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
  * See notes in the package-info.java file.
+ *
+ * 2019-10-01: "http://www.isfdb.org" is not available on https.
  */
 public class IsfdbManager
         implements SearchEngine {

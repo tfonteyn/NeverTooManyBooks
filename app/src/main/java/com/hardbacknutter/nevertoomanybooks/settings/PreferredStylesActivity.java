@@ -95,14 +95,16 @@ public class PreferredStylesActivity
     private ItemTouchHelper mItemTouchHelper;
     /** The ViewModel. */
     private PreferredStylesViewModel mModel;
+
+    private boolean mPreferredStylesModified;
+
     private final SimpleAdapterDataObserver mAdapterDataObserver = new SimpleAdapterDataObserver() {
         @Override
         public void onChanged() {
             // we save the order after each change.
             mModel.saveMenuOrder();
             // and make sure the results flags up we changed something.
-            Intent data = new Intent().putExtra(UniqueId.BKEY_PREFERRED_STYLES_MODIFIED, true);
-            setResult(Activity.RESULT_OK, data);
+            mPreferredStylesModified = true;
         }
     };
 
@@ -150,13 +152,16 @@ public class PreferredStylesActivity
 
     @Override
     public void onBackPressed() {
+        Intent data = new Intent()
+                .putExtra(UniqueId.BKEY_PREFERRED_STYLES_MODIFIED, mPreferredStylesModified);
+
         BooklistStyle selectedStyle = mListAdapter.getSelectedStyle();
         if (selectedStyle != null) {
-            Intent data = new Intent()
-                                  .putExtra(UniqueId.BKEY_STYLE_MODIFIED, true)
-                                  .putExtra(UniqueId.BKEY_STYLE, mListAdapter.getSelectedStyle());
-            setResult(Activity.RESULT_OK, data);
+            data.putExtra(UniqueId.BKEY_STYLE_MODIFIED, true)
+                .putExtra(UniqueId.BKEY_STYLE, mListAdapter.getSelectedStyle());
         }
+
+        setResult(Activity.RESULT_OK, data);
         super.onBackPressed();
     }
 
@@ -175,14 +180,11 @@ public class PreferredStylesActivity
                     if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
                         BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                         if (style != null) {
-                            mModel.handleStyleChange(style);
+                            int position = mModel.handleStyleChange(style);
                         }
                         mListAdapter.resetSelectedPosition();
                         // strictly speaking, only the row of the modified style should be updated.
                         mListAdapter.notifyDataSetChanged();
-
-                        // pass all results up the chain
-                        setResult(resultCode, data);
                     }
                 }
                 break;
@@ -243,8 +245,7 @@ public class PreferredStylesActivity
             case R.id.MENU_DELETE:
                 mModel.deleteStyle(style);
                 mListAdapter.notifyDataSetChanged();
-                Intent data = new Intent().putExtra(UniqueId.BKEY_DELETED_SOMETHING, true);
-                setResult(Activity.RESULT_OK, data);
+                mPreferredStylesModified = true;
                 return true;
 
             default:
@@ -261,8 +262,8 @@ public class PreferredStylesActivity
         }
 
         Intent intent = new Intent(this, SettingsActivity.class)
-                                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StyleSettingsFragment.TAG)
-                                .putExtra(UniqueId.BKEY_STYLE, style);
+                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StyleSettingsFragment.TAG)
+                .putExtra(UniqueId.BKEY_STYLE, style);
         startActivityForResult(intent, UniqueId.REQ_EDIT_STYLE);
     }
 
@@ -313,7 +314,7 @@ public class PreferredStylesActivity
                                          final int viewType) {
 
             View view = getLayoutInflater()
-                                .inflate(R.layout.row_edit_preferred_styles, parent, false);
+                    .inflate(R.layout.row_edit_preferred_styles, parent, false);
             return new Holder(view);
         }
 

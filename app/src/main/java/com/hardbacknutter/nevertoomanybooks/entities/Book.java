@@ -268,6 +268,16 @@ public class Book
     public Bundle duplicate() {
         final Bundle bookData = new Bundle();
 
+        // Q: Why don't we get the DataManager#mRawData, remove the identifiers/dates and use that?
+        // A: because we would need to clone mRawData before we can start removing fields,
+        //  From Bundle#clone() docs: Clones the current Bundle.
+        //  The internal map is cloned, but the keys and values to which it refers are
+        //  copied by reference.
+        // ==> by reference...  so we would in effect be removing fields from the original book.
+        // This would be ok if we discard the original object (in memory only)
+        // but lets play this safe.
+
+
         // Do not copy any identifiers.
 //        DOM_PK_ID
 //        DOM_BOOK_UUID

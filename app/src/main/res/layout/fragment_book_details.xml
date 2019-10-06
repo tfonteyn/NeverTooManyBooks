@@ -395,8 +395,8 @@
             />
 
         <!-- note that the views used to set constraints are the data views.
-          The labels are then baseline'd to them.
-          This is due to font size of the labels being smaller then the data.
+          The labels are baseline'd to them.
+          This is due to font size of the labels being smaller than the data.
           iow: the data fields form the vertical chain.
          -->
 

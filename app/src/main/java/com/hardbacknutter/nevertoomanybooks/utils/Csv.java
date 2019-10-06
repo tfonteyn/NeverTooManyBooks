@@ -70,6 +70,7 @@ public final class Csv {
      * @param delimiter  e.g. "," or ", " etc...
      * @param collection collection
      * @param formatter  (optional) formatter to use on each element, or {@code null} for none.
+     * @param <E>        type of elements
      *
      * @return csv string, can be empty, but never {@code null}.
      */
@@ -93,6 +94,7 @@ public final class Csv {
      * @param prefix       (optional) prefix that will be added to each element.
      *                     Caller is responsible to add spaces if desired.
      * @param formatter    (optional) formatter to use on each element, or {@code null} for none.
+     * @param <E>          type of elements
      *
      * @return csv string, can be empty, but never {@code null}.
      */

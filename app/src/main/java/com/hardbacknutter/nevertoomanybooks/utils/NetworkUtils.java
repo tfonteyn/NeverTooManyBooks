@@ -52,7 +52,7 @@ public final class NetworkUtils {
 
     /**
      * timeout we allow for a connection to work.
-     * Initial tests show the sites we use, connect in less then 200ms.
+     * Initial tests show the sites we use, connect in less than 200ms.
      */
     private static final int SOCKET_TIMEOUT_MS = 1500;
     private static final Pattern SLASH_PATTERN = Pattern.compile("//");
@@ -99,7 +99,7 @@ public final class NetworkUtils {
 
                 }
             } else {
-                Logger.warn(NetworkUtils.class, "networkUnavailable",
+                Logger.warn(context, NetworkUtils.class, "networkUnavailable",
                             "no active network");
             }
         }

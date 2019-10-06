@@ -58,7 +58,8 @@ public class ImportHelperDialogFragment
     /**
      * Constructor.
      *
-     * @param importHelper import configuration
+     * @param importHelper         import configuration
+     * @param archiveHasValidDates flag
      *
      * @return Created fragment
      */

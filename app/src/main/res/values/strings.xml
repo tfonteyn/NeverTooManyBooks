@@ -952,10 +952,13 @@
     <string name="menu_add_book_manually">Add Manually</string>
     <!-- menu option -->
     <string name="menu_sort_and_style_ellipsis">Sorting &amp; Styles…</string>
+
     <!-- menu option -->
-    <string name="menu_expand_all">Expand All</string>
+    <string name="menu_level_reset">Preferred expansion</string>
     <!-- menu option -->
-    <string name="menu_collapse_all">Collapse All</string>
+    <string name="menu_level_expand">Expand All</string>
+    <!-- menu option -->
+    <string name="menu_level_collapse">Collapse All</string>
     <!-- menu option -->
     <string name="menu_clear_search_filters">Clear Filters</string>
 
@@ -1197,9 +1200,8 @@
     <!-- Default 'name' for anything that has a name -->
     <string name="name">Name</string>
 
-    <string name="lbl_simple">Simple</string>
+    <string name="lbl_standard">Standard</string>
     <string name="lbl_advanced">Advanced</string>
-
 
     <!-- ####################################################################################### -->
     <!-- == Field labels == -->
@@ -1501,6 +1503,9 @@
         Are you sure you want to continue ?
     </string>
     <string name="lbl_clear_search_history">Clear search history</string>
+
+    <string name="pv_bob_header_style_name">Style name</string>
+    <string name="pt_booklist_level_default">Default expanded level</string>
 
 
 </resources>

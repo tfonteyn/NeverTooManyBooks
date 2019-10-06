@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
@@ -96,7 +97,7 @@ public class ExportCSVTask
     }
 
     private void cleanup() {
-        StorageUtils.deleteFile(ExportHelper.getTempFile());
+        StorageUtils.deleteFile(ExportHelper.getTempFile(App.getAppContext()));
         try {
             mExporter.close();
         } catch (@NonNull final IOException ignore) {
@@ -109,18 +110,20 @@ public class ExportCSVTask
     protected ExportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName("ExportTask");
 
-        try (OutputStream os = new FileOutputStream(ExportHelper.getTempFile())) {
+        Context context = App.getAppContext();
+
+        try (OutputStream os = new FileOutputStream(ExportHelper.getTempFile(context))) {
             mExportHelper.addResults(mExporter.doBooks(os, mProgressListener));
 
             if (!isCancelled()) {
                 // send to user destination
                 Objects.requireNonNull(mExportHelper.uri);
-                StorageUtils.exportFile(ExportHelper.getTempFile(), mExportHelper.uri);
+                StorageUtils.exportFile(ExportHelper.getTempFile(context), mExportHelper.uri);
             }
             return mExportHelper;
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-            Logger.error(this, e);
+            Logger.error(context, this, e);
             mException = e;
             return mExportHelper;
         } finally {

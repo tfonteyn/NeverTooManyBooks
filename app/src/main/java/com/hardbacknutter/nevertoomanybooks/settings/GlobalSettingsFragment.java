@@ -66,16 +66,6 @@ public class GlobalSettingsFragment
         setPreferencesFromResource(R.xml.preferences, rootKey);
         PreferenceScreen screen = getPreferenceScreen();
         setSummary(screen);
-
-        prepareResult();
-    }
-
-    @Override
-    void prepareResult() {
-        // TODO: make the response conditional, not all changes warrant a recreate!
-        Intent data = new Intent().putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
-        //noinspection ConstantConditions
-        getActivity().setResult(Activity.RESULT_OK, data);
     }
 
     private boolean warnAfterChange = true;
@@ -129,6 +119,12 @@ public class GlobalSettingsFragment
             default:
                 break;
         }
+
+        // set the result (and again and again...)
+        // TODO: make the response conditional, not all changes warrant a recreate!
+        Intent data = new Intent().putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
+        //noinspection ConstantConditions
+        getActivity().setResult(Activity.RESULT_OK, data);
 
         super.onSharedPreferenceChanged(sharedPreferences, key);
     }

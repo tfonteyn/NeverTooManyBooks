@@ -38,6 +38,16 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
+/**
+ * <a href="https://developer.android.com/guide/topics/search/adding-custom-suggestions.html">
+ * https://developer.android.com/guide/topics/search/adding-custom-suggestions.html</a>
+ * <p>
+ * This class is a bit of a hack as it override the SearchRecentSuggestionsProvider,
+ * but then actually bypasses most of its functionality by overriding the query method.
+ * <p>
+ * A cleaner implementation would be to extend the {@link ContentProvider} class,
+ * and move the FTS insert/update methods from the DAO here.
+ */
 public class SearchSuggestionProvider
         extends SearchRecentSuggestionsProvider {
 
@@ -49,29 +59,20 @@ public class SearchSuggestionProvider
      */
     public static final String AUTHORITY = App.getAppPackageName() + ".SearchSuggestionProvider";
 
-    /** This mode bit configures the database to record recent queries. */
+    /** Required. This mode bit configures the suggestions database to record recent queries. */
     public final static int MODE = DATABASE_MODE_QUERIES;
 
     /** Database Access. */
     @Nullable
     private DAO mDb;
 
+    /**
+     * Constructor.
+     */
     public SearchSuggestionProvider() {
         setupSuggestions(AUTHORITY, MODE);
     }
 
-    /**
-     * The docs of the super state:
-     * <strong>This method is provided for use by the ContentResolver.  Do not override, or directly
-     * call from your own code.
-     * </strong>
-     * <br><br>
-     * But the original BC code did override this regardless to use/provide a custom
-     * query operating on the actual database instead of on the suggestions database.
-     * <br><br>
-     * <strong>Note:</strong> {@link ContentProvider#onCreate()} states that database connections
-     * etc should be deferred until needed. Hence creating it on the fly.
-     */
     @Override
     public Cursor query(final Uri uri,
                         final String[] projection,

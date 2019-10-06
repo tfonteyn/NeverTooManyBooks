@@ -39,5 +39,5 @@
     android:label="@string/title_search_for_books"
     android:searchSuggestAuthority="com.hardbacknutter.nevertoomanybooks.SearchSuggestionProvider"
     android:searchSuggestIntentAction="android.intent.action.VIEW"
-    android:searchSuggestSelection=" ? "
+    android:searchSuggestSelection=" ?"
     />

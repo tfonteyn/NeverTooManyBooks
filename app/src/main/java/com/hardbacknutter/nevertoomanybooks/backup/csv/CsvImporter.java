@@ -90,7 +90,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
  * <ul>These are used <strong>unescaped</strong>:
  * <li>',' is allowed/used in an Author name: "family, given-names",<br>
  * * and as a list separator in a list of Bookshelf names.</li>
- * <li>'|' is used as an element separator for fields that take more then one value.</li>
+ * <li>'|' is used as an element separator for fields that take more than one value.</li>
  * <li>'*' is used in few places where an element itself can consist of multiple parts.</li>
  * <li>'(' and ')' are used to add numbers or dates (between the brackets) to items.</li>
  * </ul>
@@ -302,7 +302,7 @@ public class CsvImporter
                         }
                     }
                 } catch (@NonNull final IOException | SQLiteDoneException e) {
-                    Logger.error(this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
+                    Logger.error(context, this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 }
 
                 // limit the amount of progress updates, otherwise this will cause a slowdown.
@@ -355,7 +355,9 @@ public class CsvImporter
     /**
      * insert or update a single book.
      *
-     * @param context Current context
+     * @param context           Current context
+     * @param book              to import
+     * @param updateOnlyIfNewer flag
      *
      * @return the imported book ID
      */

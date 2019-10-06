@@ -274,7 +274,7 @@ public class DataManager {
      * @return a double value.
      */
     public double getDouble(@NonNull final String key) {
-        return ParseUtils.toDouble(get(key));
+        return ParseUtils.toDouble(get(key), null);
     }
 
     /**
@@ -301,7 +301,7 @@ public class DataManager {
      * @return a float value.
      */
     float getFloat(@NonNull final String key) {
-        return ParseUtils.toFloat(get(key));
+        return ParseUtils.toFloat(get(key), null);
     }
 
     /**

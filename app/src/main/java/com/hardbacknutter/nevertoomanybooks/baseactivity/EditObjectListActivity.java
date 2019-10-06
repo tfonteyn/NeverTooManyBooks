@@ -179,8 +179,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * @param item    the original data.
      * @param newData a holder for the edited data.
      */
-    protected abstract void processChanges(@NonNull final T item,
-                                           @NonNull final T newData);
+    protected abstract void processChanges(@NonNull T item,
+                                           @NonNull T newData);
 
     /**
      * Update the item for <strong>this</strong> book.
@@ -191,9 +191,9 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * @param newData        a holder for the edited data.
      * @param fallbackLocale Locale to use if the item has none set.
      */
-    protected abstract void updateItem(@NonNull final T item,
-                                       @NonNull final T newData,
-                                       final Locale fallbackLocale);
+    protected abstract void updateItem(@NonNull T item,
+                                       @NonNull T newData,
+                                       @NonNull Locale fallbackLocale);
 
     /**
      * Ensure that the list is saved.

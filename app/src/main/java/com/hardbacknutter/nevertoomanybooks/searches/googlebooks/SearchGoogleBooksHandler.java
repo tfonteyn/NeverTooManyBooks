@@ -52,7 +52,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * - So we do NOT parse the "entry" as delivered in the "feed"
  * ==> waste of bandwidth.
  * - a search for "9780575109735" shows that the data in the first "entry" of the "feed"
- * CAN BE DIFFERENT then the data fetched from the entry url!
+ * CAN BE DIFFERENT from the data fetched from the entry url!
  * ==> so google delivers (potentially) different results for "fee/entry1" versus directly
  * fetching "entry1" ??
  * <p>

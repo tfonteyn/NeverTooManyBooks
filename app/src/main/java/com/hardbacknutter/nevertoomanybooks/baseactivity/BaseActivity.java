@@ -64,6 +64,25 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Base class for all (most?) Activity's.
+ * <p>
+ * Fragments should implement:
+ * <pre>
+ *     {@code
+ *          @Override
+ *          @CallSuper
+ *          public void onResume() {
+ *              Tracker.enterOnResume(this);
+ *              super.onResume();
+ *              if (getActivity() instanceof BaseActivity) {
+ *                  BaseActivity activity = (BaseActivity) getActivity();
+ *                  if (activity.isGoingToRecreate()) {
+ *                      return;
+ *                  }
+ *              }
+ *              Tracker.exitOnResume(this);
+ *          }
+ *     }
+ * </pre>
  */
 public abstract class BaseActivity
         extends AppCompatActivity {
@@ -71,6 +90,7 @@ public abstract class BaseActivity
     /** Locale at {@link #onCreate} time. */
     protected String mInitialLocaleSpec;
     /** Theme at {@link #onCreate} time. */
+    @App.ThemeId
     protected int mInitialThemeId;
 
     /** The side/navigation panel. */
@@ -94,7 +114,6 @@ public abstract class BaseActivity
         super.attachBaseContext(localizedContext);
         // preserve, so we can check for changes in onResume.
         mInitialLocaleSpec = LocaleUtils.getPersistedLocaleSpec(localizedContext);
-
     }
 
     @Override
@@ -142,6 +161,16 @@ public abstract class BaseActivity
     protected void onResume() {
         super.onResume();
 
+        isGoingToRecreate();
+    }
+
+
+    /**
+     * Check if the Locale/Theme was changed, which will trigger the Activity to be recreated.
+     *
+     * @return {@code true} if a recreate was triggered.
+     */
+    public boolean isGoingToRecreate() {
         boolean localeChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
         if (localeChanged) {
             LocaleUtils.onLocaleChanged();
@@ -154,6 +183,9 @@ public abstract class BaseActivity
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
                 Logger.debugExit(this, "BaseActivity.onResume", "Recreate!");
             }
+
+            return true;
+
         } else {
             // this is the second time we got here in onResume, so we have been re-created.
             App.clearRecreateFlag();
@@ -161,6 +193,8 @@ public abstract class BaseActivity
                 Logger.debugExit(this, "BaseActivity.onResume", "Resuming");
             }
         }
+
+        return false;
     }
 
     /**
@@ -309,7 +343,7 @@ public abstract class BaseActivity
                     // codes for fragments have upper 16 bits in use, don't log those.
                     // the super call will redirect those.
                     if ((requestCode & 0xFF) != 0) {
-                        Logger.warn(this, "BaseActivity.onActivityResult",
+                        Logger.warn(this, this, "BaseActivity.onActivityResult",
                                     "NOT HANDLED",
                                     "requestCode=" + requestCode,
                                     "resultCode=" + resultCode);

@@ -78,7 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * <strong>Note:</strong> we use the external cache directory, so a 'rename' works as is.
  * see {@link #renameFile(File, File)}
  * <p>
- * TODO: ExternalStorageException added were appropriate, but other then here we don't catch them.
+ * TODO: ExternalStorageException added were appropriate, but other than here we don't catch them.
  * <p>
  * ENHANCE: using the private directories was an improvement (and mandatory to target Android 10)
  * but would be nice to use the contentResolver API and keep our covers in a sub directory
@@ -110,6 +110,8 @@ public final class StorageUtils {
      * <p>
      * Only called from StartupActivity, after permissions have been granted.
      *
+     * @param context Current context
+     *
      * @return 0 for all ok, or a StringRes with the appropriate error.
      * <p>
      * // Not needed any longer, as we only use getExternalFilesDir(String)
@@ -117,7 +119,7 @@ public final class StorageUtils {
      * //@RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
      */
     @StringRes
-    public static int initSharedDirectories()
+    public static int initSharedDirectories(final Context context)
             throws SecurityException {
 
         if (!isExternalStorageMounted()) {
@@ -126,36 +128,38 @@ public final class StorageUtils {
 
         try {
             // check we can get our root.
-            getRootDir();
+            getRootDir(context);
 
             // and create the log dir if needed.
-            File dir = getLogDir();
+            File dir = getLogDir(context);
             if (!(dir.isDirectory() || dir.mkdirs())) {
                 return R.string.error_storage_not_writable;
             }
 
             // Prevent thumbnails showing up in the device Image Gallery.
             //noinspection ResultOfMethodCallIgnored
-            new File(getCoverDir(), MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
+            new File(getCoverDir(context), MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
 
             return 0;
 
         } catch (@NonNull final ExternalStorageException | IOException e) {
-            Logger.error(StorageUtils.class, e, "initSharedDirectories failed");
+            Logger.error(context, StorageUtils.class, e, "initSharedDirectories failed");
             return R.string.error_storage_not_writable;
         }
     }
 
     /**
+     * @param context Current context
+     *
      * @return Space in bytes free on Shared Storage,
      * or {@link #ERROR_CANNOT_STAT} on error accessing it
      */
-    public static long getSharedStorageFreeSpace() {
+    public static long getSharedStorageFreeSpace(@NonNull final Context context) {
         try {
-            StatFs stat = new StatFs(getRootDir().getPath());
+            StatFs stat = new StatFs(getRootDir(context).getPath());
             return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
         } catch (@NonNull final IllegalArgumentException | ExternalStorageException e) {
-            Logger.error(StorageUtils.class, e);
+            Logger.error(context, StorageUtils.class, e);
             return ERROR_CANNOT_STAT;
         }
     }
@@ -184,9 +188,9 @@ public final class StorageUtils {
      *
      * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
      */
-    public static File getCacheDir()
+    public static File getCacheDir(@NonNull final Context context)
             throws ExternalStorageException {
-        File dir = App.getAppContext().getExternalCacheDir();
+        File dir = context.getExternalCacheDir();
         if (dir == null) {
             throw new ExternalStorageException();
         }
@@ -200,9 +204,9 @@ public final class StorageUtils {
      *
      * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
      */
-    public static File getRootDir()
+    public static File getRootDir(@NonNull final Context context)
             throws ExternalStorageException {
-        File dir = App.getAppContext().getExternalFilesDir(null);
+        File dir = context.getExternalFilesDir(null);
         if (dir == null) {
             throw new ExternalStorageException();
         }
@@ -216,9 +220,9 @@ public final class StorageUtils {
      *
      * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
      */
-    public static File getCoverDir()
+    public static File getCoverDir(@NonNull final Context context)
             throws ExternalStorageException {
-        File dir = App.getAppContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         if (dir == null) {
             throw new ExternalStorageException();
         }
@@ -232,9 +236,9 @@ public final class StorageUtils {
      *
      * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
      */
-    public static File getLogDir()
+    public static File getLogDir(@NonNull final Context context)
             throws ExternalStorageException {
-        return new File(getRootDir(), "log");
+        return new File(getRootDir(context), "log");
     }
 
     /**
@@ -250,12 +254,14 @@ public final class StorageUtils {
     @NonNull
     public static File getCoverFileForUuid(@NonNull final String uuid)
             throws ExternalStorageException {
-        final File jpg = new File(getCoverDir(), uuid + ".jpg");
+        final File coverDir = getCoverDir(App.getAppContext());
+
+        final File jpg = new File(coverDir, uuid + ".jpg");
         if (jpg.exists()) {
             return jpg;
         }
         // could be a png
-        final File png = new File(getCoverDir(), uuid + ".png");
+        final File png = new File(coverDir, uuid + ".png");
         if (png.exists()) {
             return png;
         }
@@ -275,7 +281,7 @@ public final class StorageUtils {
      */
     public static File getTempCoverFile()
             throws ExternalStorageException {
-        return new File(getCacheDir(), "tmp.jpg");
+        return new File(getCacheDir(App.getAppContext()), "tmp.jpg");
     }
 
     /**
@@ -290,7 +296,7 @@ public final class StorageUtils {
      */
     public static File getTempCoverFile(@NonNull final String name)
             throws ExternalStorageException {
-        return new File(getCacheDir(), "tmp" + name + ".jpg");
+        return new File(getCacheDir(App.getAppContext()), "tmp" + name + ".jpg");
     }
 
 
@@ -299,21 +305,23 @@ public final class StorageUtils {
      * <p>
      * Does <strong>not</strong> enter subdirectories.
      *
+     * @param context      Current context
      * @param reallyDelete if {@code true}, delete files, if {@code false} only count bytes
      *
      * @return the total size in bytes of purgeable/purged files.
      */
-    public static long purgeFiles(final boolean reallyDelete) {
+    public static long purgeFiles(@NonNull final Context context,
+                                  final boolean reallyDelete) {
         long totalSize = 0;
         try {
-            totalSize += purgeDir(getLogDir(), reallyDelete);
-            totalSize += purgeDir(getCoverDir(), reallyDelete);
-            totalSize += purgeDir(getRootDir(), reallyDelete);
-            totalSize += purgeDir(getCacheDir(), reallyDelete);
+            totalSize += purgeDir(getLogDir(context), reallyDelete);
+            totalSize += purgeDir(getCoverDir(context), reallyDelete);
+            totalSize += purgeDir(getRootDir(context), reallyDelete);
+            totalSize += purgeDir(getCacheDir(context), reallyDelete);
 
         } catch (@NonNull final SecurityException | ExternalStorageException e) {
             // not critical, just log it.
-            Logger.error(StorageUtils.class, e);
+            Logger.error(context, StorageUtils.class, e);
         }
         return totalSize;
     }
@@ -410,25 +418,28 @@ public final class StorageUtils {
      * ENHANCE: make suitable for multiple filesystems using {@link #copyFile(File, File)}
      * Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      *
+     * @param source      File to rename
+     * @param destination new name
+     *
      * @return {@code true} if the rename worked, this is really a ".exists()" call.
      * and not relying on the OS renameTo call.
      */
-    public static boolean renameFile(@NonNull final File src,
-                                     @NonNull final File dst) {
+    public static boolean renameFile(@NonNull final File source,
+                                     @NonNull final File destination) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
             Logger.debug(StorageUtils.class, "renameFile",
-                         "src=" + src.getAbsolutePath(),
-                         "dst=" + dst.getAbsolutePath());
+                         "src=" + source.getAbsolutePath(),
+                         "dst=" + destination.getAbsolutePath());
         }
-        if (src.exists()) {
+        if (source.exists()) {
             try {
                 //noinspection ResultOfMethodCallIgnored
-                src.renameTo(dst);
+                source.renameTo(destination);
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(StorageUtils.class, e);
             }
         }
-        return dst.exists();
+        return destination.exists();
     }
 
     /**

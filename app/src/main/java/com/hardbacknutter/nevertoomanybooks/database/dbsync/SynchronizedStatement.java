@@ -38,6 +38,7 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -349,7 +350,7 @@ public class SynchronizedStatement
             return rowsAffected;
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(this, e, mStatement.toString());
+            Logger.error(App.getAppContext(), this, e, mStatement.toString());
             throw e;
         } finally {
             exclusiveLock.unlock();
@@ -374,7 +375,7 @@ public class SynchronizedStatement
                              mStatement, "id=" + id);
 
                 if (id == -1) {
-                    Logger.warnWithStackTrace(this, "Insert failed");
+                    Logger.warnWithStackTrace(App.getAppContext(), this, "Insert failed");
                 }
             }
             return id;

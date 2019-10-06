@@ -125,7 +125,7 @@ public class MessageSwitch<T, U> {
         // Try to deliver last message if requested
         if (deliverLast) {
             final MessageRoutingSlip routingSlip = queue.getLastMessage();
-            // If there was a message then send to the passed listener
+            // If there was a message send it to the passed listener
             if (routingSlip != null) {
                 // Do it on the UI thread.
                 if (HANDLER.getLooper().getThread() == Thread.currentThread()) {
@@ -164,7 +164,7 @@ public class MessageSwitch<T, U> {
         synchronized (mMessageQueue) {
             mMessageQueue.add(routingSlip);
         }
-        // If in UI thread, then simply process the queue,
+        // If in UI thread, simply process the queue,
         // otherwise post a new runnable to do so.
         if (HANDLER.getLooper().getThread() == Thread.currentThread()) {
             processMessages();

@@ -25,11 +25,11 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
+package com.hardbacknutter.nevertoomanybooks.datamanager;
 
 import android.content.Context;
 
-import java.net.SocketTimeoutException;
+import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,13 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Fairly simple test that does an active download, and checks if the resulting page
- * has the right "location" URL afterwards.
- * There have been some hick-ups from ISFDB with redirecting (Apache web server config issues);
- * and the JSoup parser is not fully redirect proof either.
- */
-class AbstractBaseTest {
+class MonetaryFormatterTest {
 
     @Mock
     Context mContext;
@@ -59,42 +53,55 @@ class AbstractBaseTest {
         when(mContext.getApplicationContext()).thenReturn(mContext);
     }
 
-
-    /**
-     * Search for 0-88733-160-2; which has a single edition, so will redirect to the book.
-     * Resulting url should have "pl.cgi".
-     */
     @Test
-    void searchSingleEditionIsbn()
-            throws SocketTimeoutException {
+    void format01() {
+        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter(mContext)
+                .setCurrencyCode("USD")
+                .setLocale(Locale.US);
+        //noinspection ConstantConditions
+        assertEquals("$10.50", f.format(null, "10.50"));
+    }
 
-        DummyLoader loader = new DummyLoader();
+    @Test
+    void format02() {
+        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter(mContext)
+                .setCurrencyCode("USD")
+                .setLocale(Locale.UK);
+        //noinspection ConstantConditions
+        assertEquals("USD10.50", f.format(null, "10.50"));
+    }
 
-        String url = IsfdbManager.getBaseURL() + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
-        String resultingUrl = loader.loadPage(url);
-        assertEquals(IsfdbManager.getBaseURL() + "/cgi-bin/pl.cgi?326539",
-                     resultingUrl);
+    @Test
+    void format03() {
+        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter(mContext)
+                .setCurrencyCode("USD")
+                .setLocale(Locale.GERMANY);
+        //noinspection ConstantConditions
+        assertEquals("10,50 USD", f.format(null, "10.50"));
     }
 
 
     /**
-     * Search for 978-1-4732-0892-6; which has two editions.
-     * Resulting url will should "se.cgi".
+     * Parsing will fail, we get the source back
      */
     @Test
-    void searchMultiEditionIsbn()
-            throws SocketTimeoutException {
-
-        DummyLoader loader = new DummyLoader();
-
-        String url = IsfdbManager.getBaseURL() + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
-        String resultingUrl = loader.loadPage(url);
-        assertEquals(IsfdbManager.getBaseURL() + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN",
-                     resultingUrl);
+    void format10() {
+        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter(mContext)
+                .setCurrencyCode("EUR")
+                .setLocale(Locale.GERMANY);
+        //noinspection ConstantConditions
+        assertEquals("EUR 10,50", f.format(null, "10,50"));
     }
 
-    private static class DummyLoader
-            extends AbstractBase {
-
+    /**
+     * Parsing will fail, we get the source back
+     */
+    @Test
+    void format11() {
+        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter(mContext)
+                .setCurrencyCode("EUR")
+                .setLocale(Locale.UK);
+        //noinspection ConstantConditions
+        assertEquals("EUR 10,50", f.format(null, "10,50"));
     }
 }

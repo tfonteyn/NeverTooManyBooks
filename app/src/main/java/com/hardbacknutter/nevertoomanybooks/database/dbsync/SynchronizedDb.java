@@ -103,7 +103,7 @@ public class SynchronizedDb {
      *                          but if you follow the source code, you end up in
      *                          android.database.sqlite.SQLiteDatabaseConfiguration
      *                          where the default is in fact 25!
-     *                          Do NOT set the size to less then 25.
+     *                          Do NOT set the size to less than 25.
      */
     public SynchronizedDb(@NonNull final SQLiteOpenHelper helper,
                           @NonNull final Synchronizer sync,
@@ -111,7 +111,7 @@ public class SynchronizedDb {
         mSync = sync;
         mSqlDb = openWithRetries(helper);
 
-        // only set when bigger then default
+        // only set when bigger than default
         if ((preparedStmtCache > 25)
             && (preparedStmtCache < SQLiteDatabase.MAX_SQL_CACHE_SIZE)) {
             mSqlDb.setMaxSqlCacheSize(preparedStmtCache);

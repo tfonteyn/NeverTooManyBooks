@@ -104,7 +104,7 @@ public class RestoreTask
             reader.restore(context, mImportHelper, mProgressListener);
 
         } catch (@NonNull final IOException | ImportException | InvalidArchiveException e) {
-            Logger.error(this, e);
+            Logger.error(context, this, e);
             mException = e;
         }
         return mImportHelper;

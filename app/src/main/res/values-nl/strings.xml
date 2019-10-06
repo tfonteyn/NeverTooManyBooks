@@ -321,7 +321,7 @@
     <string name="lbl_personal_notes">Aantekeningen</string>
     <string name="lbl_pages">Pagina\'s</string>
     <string name="lbl_preferred_styles">Voorkeursstijlen</string>
-    <string name="lbl_price_listed">Prijs</string>
+    <string name="lbl_price_listed">Lijstprijs</string>
     <string name="lbl_price_paid">Betaald</string>
     <string name="lbl_publication">Uitgave</string>
     <string name="lbl_publication_month">Maand</string>
@@ -389,7 +389,7 @@
     <string name="menu_booklist_styles">Boekenlijst Stijlen</string>
     <string name="menu_bookshelves">Boekenplanken</string>
     <string name="menu_clear_search_filters">Filters verwijderen</string>
-    <string name="menu_collapse_all">Alles inklappen</string>
+    <string name="menu_level_collapse">Alles inklappen</string>
     <string name="menu_cover_replace_from_camera">Van Camera…</string>
     <string name="menu_cover_replace_from_gallery">Van Galerij…</string>
     <string name="menu_cover_crop">Bijsnijden</string>
@@ -402,7 +402,7 @@
     <string name="menu_delete">Verwijder</string>
     <string name="menu_duplicate">Dupliceer</string>
     <string name="menu_edit">Bewerken…</string>
-    <string name="menu_expand_all">Alles uitklappen</string>
+    <string name="menu_level_expand">Alles uitklappen</string>
     <string name="menu_hide_keyboard">Toetsenbord verbergen</string>
     <string name="menu_loan_lend_book">Boek uitlenen…</string>
     <string name="menu_loan_return_book">Uitgeleend boek is terug</string>
@@ -623,7 +623,7 @@
     <string name="X_lbl_author_secondary">coauteur</string>
     <string name="lbl_author_type">Auteur type</string>
     <string name="tip_update_fields_from_internet">Externe sitekoppelingen worden alleen verwerkt als er daadwerkelijk contact met de site wordt gemaakt. Als gevolg hiervan zal het menu „Bekijk op…” eveneens alleen weergeven wat beschikbaar is.</string>
-    <string name="pt_bob_show_details_uses_task_off">per direct</string>
+    <string name="pt_bob_show_details_uses_task_off">direct</string>
     <string name="lbl_author_type_artist">illustraties</string>
     <string name="progress_end_import_partially_complete">Gedeeltelijke import voltooid</string>
     <string name="pt_bob_show_details_uses_task">Extra boekdetails ophalen</string>
@@ -643,7 +643,7 @@
     <string name="lbl_author_type_cover_colorist">Omslag inkleuring</string>
     <string name="pt_bob_titles_display">Toon titels als</string>
     <string name="lbl_advanced">Gedetaileerd</string>
-    <string name="lbl_simple">Simpel</string>
+    <string name="lbl_standard">Standaard</string>
     <string name="pt_search_form">Lokaal zoekformulier</string>
     <string name="pg_internet_search">Internet Zoekopdrachten</string>
 

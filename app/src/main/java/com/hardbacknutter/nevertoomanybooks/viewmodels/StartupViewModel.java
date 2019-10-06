@@ -203,7 +203,7 @@ public class StartupViewModel
      */
     public void startTasks(@NonNull final Context context) {
         // Remove old logs
-        Logger.clearLog();
+        Logger.clearLog(context);
 
         try {
             mDb = new DAO();

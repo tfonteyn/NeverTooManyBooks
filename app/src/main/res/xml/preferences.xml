@@ -273,7 +273,7 @@
         android:defaultValue="false"
         android:icon="@drawable/ic_edit"
         android:key="search.form.advanced"
-        android:summaryOff="@string/lbl_simple"
+        android:summaryOff="@string/lbl_standard"
         android:summaryOn="@string/lbl_advanced"
         android:title="@string/pt_search_form" />
 
@@ -325,6 +325,17 @@
             android:icon="@drawable/ic_view_list"
             android:key="BookList.ListRebuildState"
             android:title="@string/pt_booklist_state" />
+
+
+        <!-- default expanded level for the booklist. -->
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/pe_bob_level_default"
+            android:entryValues="@array/pv_bob_level_default"
+            android:icon="@drawable/ic_view_list"
+            android:key="BookList.Style.level.default"
+            android:title="@string/pt_booklist_level_default" />
+
 
         <!-- default BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED == 0 -->
         <ListPreference

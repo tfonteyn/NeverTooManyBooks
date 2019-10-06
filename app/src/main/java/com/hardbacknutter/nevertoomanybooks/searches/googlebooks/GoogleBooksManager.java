@@ -150,10 +150,12 @@ public final class GoogleBooksManager
     }
 
     /**
+     * Get the found/saved File.
+     *
      * @param isbn to search for
      * @param size of image to get.
      *
-     * @return found/saved File, or {@code null} if none found (or any other failure)
+     * @return file, or {@code null} if none found (or any other failure)
      */
     @Nullable
     @Override
@@ -177,6 +179,10 @@ public final class GoogleBooksManager
 
     /**
      * replace spaces with %20.
+     *
+     * @param s String to encode
+     *
+     * @return encodes string
      */
     private String encodeSpaces(@NonNull final String s) {
 //        return URLEncoder.encode(s, "UTF-8");

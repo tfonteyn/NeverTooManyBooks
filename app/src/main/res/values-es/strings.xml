@@ -317,7 +317,7 @@
     <string name="lbl_personal_notes">Notas personales</string>
     <string name="lbl_pages">Páginas</string>
     <string name="lbl_preferred_styles">Estilos preferidos</string>
-    <string name="lbl_price_listed">Precio</string>
+    <string name="lbl_price_listed">Precio de lista</string>
     <string name="lbl_price_paid">Pagado</string>
     <string name="lbl_publication">Publicación</string>
     <string name="lbl_publication_month">Mes de publicación</string>
@@ -385,7 +385,7 @@
     <string name="menu_booklist_styles">Estilos del listado de libros</string>
     <string name="menu_bookshelves">Bibliotecas</string>
     <string name="menu_clear_search_filters">Borrar filtros</string>
-    <string name="menu_collapse_all">Comprimir todo</string>
+    <string name="menu_level_collapse">Comprimir todo</string>
     <string name="menu_cover_replace_from_camera">Desde la cámara…</string>
     <string name="menu_cover_replace_from_gallery">Desde la galería…</string>
     <string name="menu_cover_crop">Recortar</string>
@@ -398,7 +398,7 @@
     <string name="menu_delete">Borrar</string>
     <string name="menu_duplicate">Duplicar</string>
     <string name="menu_edit">Editar…</string>
-    <string name="menu_expand_all">Expandir todo</string>
+    <string name="menu_level_expand">Expandir todo</string>
     <string name="menu_hide_keyboard">Ocultar teclado</string>
     <string name="menu_loan_lend_book">Prestar libro…</string>
     <string name="menu_loan_return_book">El libro prestado esta de vuelta</string>
@@ -639,7 +639,7 @@
     <string name="lbl_author_type_cover_artist">diseño de portada</string>
     <string name="lbl_author_type_cover_colorist">colores de la portada</string>
     <string name="lbl_advanced">Avanzado</string>
-    <string name="lbl_simple">Sencillo</string>
+    <string name="lbl_standard">Estándar</string>
     <string name="pt_search_form">Formulario de búsqueda local</string>
     <string name="pg_internet_search">Búsquedas web</string>
 

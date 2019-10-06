@@ -142,7 +142,7 @@ public abstract class BackupReaderAbstract
                 progressListener.onProgressStep(1, mProcessBooklistStyles);
                 ReaderEntity entity = findEntity(ReaderEntity.Type.BooklistStyles);
                 if (entity != null) {
-                    try (XmlImporter importer = new XmlImporter()) {
+                    try (XmlImporter importer = new XmlImporter(null)) {
                         mResults.styles += importer.doStyles(entity, progressListener);
                     }
                     entitiesRead |= Options.BOOK_LIST_STYLES;
@@ -156,7 +156,7 @@ public abstract class BackupReaderAbstract
                 progressListener.onProgressStep(1, mProcessPreferences);
                 ReaderEntity entity = findEntity(ReaderEntity.Type.Preferences);
                 if (entity != null) {
-                    try (XmlImporter importer = new XmlImporter()) {
+                    try (XmlImporter importer = new XmlImporter(null)) {
                         importer.doPreferences(entity, prefs, progressListener);
                     }
                     entitiesRead |= Options.PREFERENCES;
@@ -176,7 +176,7 @@ public abstract class BackupReaderAbstract
                 switch (entity.getType()) {
                     case Cover: {
                         if (incCovers) {
-                            importCover(entity);
+                            importCover(context, entity);
                             String msg = String.format(mProgress_covers_n_created_m_updated,
                                                        mCoversText,
                                                        mResults.coversCreated,
@@ -204,7 +204,7 @@ public abstract class BackupReaderAbstract
                     case Preferences: {
                         if (incPrefs) {
                             progressListener.onProgressStep(1, mProcessPreferences);
-                            try (XmlImporter importer = new XmlImporter()) {
+                            try (XmlImporter importer = new XmlImporter(null)) {
                                 importer.doPreferences(entity, prefs, progressListener);
                             }
                             entitiesRead |= Options.PREFERENCES;
@@ -215,7 +215,7 @@ public abstract class BackupReaderAbstract
                     case BooklistStyles: {
                         if (incStyles) {
                             progressListener.onProgressStep(1, mProcessBooklistStyles);
-                            try (XmlImporter importer = new XmlImporter()) {
+                            try (XmlImporter importer = new XmlImporter(null)) {
                                 mResults.styles += importer.doStyles(entity, progressListener);
                             }
                             entitiesRead |= Options.BOOK_LIST_STYLES;
@@ -242,7 +242,7 @@ public abstract class BackupReaderAbstract
                             // read them into the 'old' prefs. Migration is done at a later stage.
                             SharedPreferences legacyPrefs = context.getSharedPreferences(
                                     LegacyPreferences.PREF_LEGACY_PREFS, Context.MODE_PRIVATE);
-                            try (XmlImporter importer = new XmlImporter()) {
+                            try (XmlImporter importer = new XmlImporter(null)) {
                                 importer.doPreferences(entity, legacyPrefs, progressListener);
                             }
                             entitiesRead |= Options.PREFERENCES;
@@ -254,7 +254,7 @@ public abstract class BackupReaderAbstract
                         break;
 
                     case Unknown:
-                        Logger.warn(this, "restore", "type=" + entity.getType());
+                        Logger.warn(context, this, "restore", "type=" + entity.getType());
                         break;
                 }
                 entity = nextEntity();
@@ -295,17 +295,19 @@ public abstract class BackupReaderAbstract
     /**
      * Import a cover file.
      *
-     * @param cover to import
+     * @param context Current context
+     * @param cover   to import
      *
      * @throws IOException on failure
      */
-    private void importCover(@NonNull final ReaderEntity cover)
+    private void importCover(@NonNull final Context context,
+                             @NonNull final ReaderEntity cover)
             throws IOException {
 
         Date coverDate = cover.getDateModified();
 
         // see if we have this file already
-        File currentCover = new File(StorageUtils.getCoverDir(), cover.getName());
+        File currentCover = new File(StorageUtils.getCoverDir(context), cover.getName());
         boolean exists = currentCover.exists();
         if ((mSettings.options & ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
             if (exists) {
@@ -316,7 +318,7 @@ public abstract class BackupReaderAbstract
             }
         }
         // save (and overwrite)
-        cover.save();
+        cover.save(context);
         //noinspection ResultOfMethodCallIgnored
         currentCover.setLastModified(coverDate.getTime());
 

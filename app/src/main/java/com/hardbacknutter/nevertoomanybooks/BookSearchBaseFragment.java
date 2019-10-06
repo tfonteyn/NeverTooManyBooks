@@ -44,6 +44,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -86,7 +87,8 @@ public abstract class BookSearchBaseFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mBookSearchBaseModel = new ViewModelProvider(this).get(BookSearchBaseModel.class);
+        //noinspection ConstantConditions
+        mBookSearchBaseModel = new ViewModelProvider(getActivity()).get(BookSearchBaseModel.class);
         mBookSearchBaseModel.init(requireArguments(), savedInstanceState);
 
         // Check general network connectivity. If none, warn the user.
@@ -104,12 +106,20 @@ public abstract class BookSearchBaseFragment
     @Override
     @CallSuper
     public void onResume() {
+        Tracker.enterOnResume(this);
         super.onResume();
+        if (getActivity() instanceof BaseActivity) {
+            BaseActivity activity = (BaseActivity) getActivity();
+            if (activity.isGoingToRecreate()) {
+                return;
+            }
+        }
         if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
             SearchCoordinator.MESSAGE_SWITCH
                     .addListener(mBookSearchBaseModel.getSearchCoordinatorId(), true,
                                  getSearchFinishedListener());
         }
+        Tracker.exitOnResume(this);
     }
 
     /**
@@ -157,8 +167,8 @@ public abstract class BookSearchBaseFragment
 
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
-                                        .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
-                                                  SearchAdminActivity.TAB_ORDER);
+                        .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
+                                  SearchAdminActivity.TAB_ORDER);
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
 
@@ -218,7 +228,8 @@ public abstract class BookSearchBaseFragment
             return true;
 
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e);
+            //noinspection ConstantConditions
+            Logger.error(getContext(), this, e);
             //noinspection ConstantConditions
             UserMessage.show(getView(), R.string.error_search_failed);
 
@@ -249,12 +260,6 @@ public abstract class BookSearchBaseFragment
                 if (resultCode == Activity.RESULT_OK) {
                     // Created a book; save the intent
                     mBookSearchBaseModel.setLastBookData(data);
-                    // pass all results up the chain
-                    mHostActivity.setResult(resultCode, mBookSearchBaseModel.getLastBookData());
-
-                } else if (resultCode == Activity.RESULT_CANCELED) {
-                    // if the edit was cancelled, set that as the default result code
-                    mHostActivity.setResult(Activity.RESULT_CANCELED);
                 }
                 break;
             }

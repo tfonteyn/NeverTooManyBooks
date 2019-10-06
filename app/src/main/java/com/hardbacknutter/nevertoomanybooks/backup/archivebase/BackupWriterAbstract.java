@@ -43,6 +43,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -340,7 +341,8 @@ public abstract class BackupWriterAbstract
         }
 
         if (!dryRun) {
-            Logger.info(this, "doCovers", " written=" + coversExported,
+            Logger.info(App.getAppContext(), this,
+                        "doCovers", " written=" + coversExported,
                         "missing=" + missing, "skipped=" + skipped);
         }
     }

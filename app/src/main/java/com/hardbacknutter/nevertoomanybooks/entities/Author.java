@@ -305,7 +305,7 @@ public class Author
      * Recognised pre/suffixes: see {@link #FAMILY_NAME_PREFIX} and {@link #FAMILY_NAME_SUFFIX}
      * <ul>Not covered:
      * <li>multiple, and not concatenated, family names.</li>
-     * <li>more then 1 un-encoded comma.</li>
+     * <li>more than 1 un-encoded comma.</li>
      * </ul>
      *
      * @param name a String containing the name

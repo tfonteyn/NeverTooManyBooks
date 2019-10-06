@@ -34,6 +34,7 @@ import java.util.Map;
 
 public class GoodreadsShelves {
 
+    /** All shelves. */
     @NonNull
     private final Map<String, GoodreadsShelf> mMap;
 

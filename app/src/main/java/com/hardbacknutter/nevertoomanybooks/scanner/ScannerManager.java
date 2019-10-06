@@ -67,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * App is no longer updated (since early 2019)on the Google store,
  * and the ZXing github site docs state the project in is maintenance mode.
  * </li>
- * <li>Pic2Shop: allegedly better then ZXing. Comments on the app not that good however.</li>
+ * <li>Pic2Shop: allegedly better than ZXing. Comments on the app not that good however.</li>
  * </ul>
  * <p>
  * NEWTHINGS: adding a scanner

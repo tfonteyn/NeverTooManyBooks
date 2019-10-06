@@ -207,6 +207,7 @@ public class CoverBrowserViewModel
     public static class FileInfo
             implements Parcelable {
 
+        /** {@link Parcelable}. */
         public static final Creator<FileInfo> CREATOR = new Creator<FileInfo>() {
             @Override
             public FileInfo createFromParcel(@NonNull final Parcel in) {

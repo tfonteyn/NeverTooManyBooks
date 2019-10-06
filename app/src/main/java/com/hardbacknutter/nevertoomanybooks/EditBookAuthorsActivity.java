@@ -142,7 +142,7 @@ public class EditBookAuthorsActivity
     protected void processChanges(@NonNull final Author author,
                                   @NonNull final Author newAuthorData) {
 
-        // anything other then the type changed ?
+        // anything other than the type changed ?
         if (author.getFamilyName().equals(newAuthorData.getFamilyName())
             && author.getGivenNames().equals(newAuthorData.getGivenNames())
             && author.isComplete() == newAuthorData.isComplete()) {
@@ -161,7 +161,7 @@ public class EditBookAuthorsActivity
         long nrOfReferences = mModel.getDb().countBooksByAuthor(this, author)
                               + mModel.getDb().countTocEntryByAuthor(this, author);
 
-        // if it's not, then we can simply re-use the old object.
+        // if it's not, we simply re-use the old object.
         if (mModel.isSingleUsage(nrOfReferences)) {
             /*
              * Use the original Author object, but update its fields
@@ -197,6 +197,10 @@ public class EditBookAuthorsActivity
          * Result:
          * - all books previously using the olf author, now point to the new author.
          * - the old author will still exist, but won't be in use.
+         *
+         * WARNING: if the given-name is/was empty, the replace might have failed.
+         * Solution: make a change to the family name, do replace, change family name back,
+         * do replace.
          *
          * Copy the data fields (name,..) from the holder to the 'old' author.
          * and remove any duplicates.
@@ -243,7 +247,7 @@ public class EditBookAuthorsActivity
     @Override
     protected void updateItem(@NonNull final Author author,
                               @NonNull final Author newAuthorData,
-                              final Locale fallbackLocale) {
+                              @NonNull final Locale fallbackLocale) {
         // make the book related field changes
         author.copyFrom(newAuthorData, true);
         ItemWithFixableId.pruneList(mList, this, mModel.getDb(), fallbackLocale);
@@ -295,6 +299,8 @@ public class EditBookAuthorsActivity
         private AutoCompleteTextView mFamilyNameView;
         private AutoCompleteTextView mGivenNamesView;
         private Checkable mIsCompleteView;
+
+        /** Enable or disable the type buttons. */
         private CompoundButton mUseTypeBtn;
         /** Key: type. */
         @SuppressLint("UseSparseArrays")
@@ -419,7 +425,9 @@ public class EditBookAuthorsActivity
 
             if (mType != Author.TYPE_UNKNOWN) {
                 setTypeEnabled(true);
-                setTypeViews(mType);
+                for (Map.Entry<Integer, CompoundButton> entry : mTypeButtons.entrySet()) {
+                    entry.getValue().setChecked((mType & entry.getKey()) != 0);
+                }
             } else {
                 setTypeEnabled(false);
             }
@@ -485,19 +493,12 @@ public class EditBookAuthorsActivity
             super.onDestroy();
         }
 
-        private void setTypeEnabled(final boolean isChecked) {
+        private void setTypeEnabled(final boolean enable) {
             // don't bother changing the 'checked' status, we'll ignore them anyhow.
             // and this is more user friendly if they flip the switch more than once.
-            mUseTypeBtn.setChecked(isChecked);
+            mUseTypeBtn.setChecked(enable);
             for (CompoundButton typeBtn : mTypeButtons.values()) {
-                typeBtn.setEnabled(isChecked);
-            }
-        }
-
-        private void setTypeViews(final int authorType) {
-            mUseTypeBtn.setChecked(true);
-            for (Map.Entry<Integer, CompoundButton> entry : mTypeButtons.entrySet()) {
-                entry.getValue().setChecked((authorType & entry.getKey()) != 0);
+                typeBtn.setEnabled(enable);
             }
         }
 
@@ -506,7 +507,7 @@ public class EditBookAuthorsActivity
             for (Integer type : mTypeButtons.keySet()) {
                 //noinspection ConstantConditions
                 if (mTypeButtons.get(type).isChecked()) {
-                    authorType += type;
+                    authorType |= type;
                 }
             }
             return authorType;

@@ -108,10 +108,10 @@ public abstract class ShowBookApiHandler
             // Ignore but don't add
         }
     };
-    private final XmlHandler mHandleFloat = context -> {
+    private final XmlHandler mHandleDouble = context -> {
         final String name = (String) context.getUserArg();
         try {
-            double d = ParseUtils.parseDouble(GoodreadsManager.SITE_LOCALE, context.getBody());
+            double d = ParseUtils.parseDouble(context.getBody(), GoodreadsManager.SITE_LOCALE);
             mBookData.putDouble(name, d);
         } catch (@NonNull final NumberFormatException ignore) {
             // Ignore but don't add
@@ -709,7 +709,7 @@ public abstract class ShowBookApiHandler
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_AVERAGE_RATING)
-                 .setEndAction(mHandleFloat, ShowBookFieldName.RATING);
+                 .setEndAction(mHandleDouble, ShowBookFieldName.RATING);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_NUM_PAGES)
                  .setEndAction(mHandleLong, DBDefinitions.KEY_PAGES);

@@ -71,8 +71,10 @@ public class PreferredStylesViewModel
      * Called after a style has been edited.
      *
      * @param style the (potentially) modified style
+     *
+     * @return position of the style in the list
      */
-    public void handleStyleChange(@NonNull final BooklistStyle style) {
+    public int handleStyleChange(@NonNull final BooklistStyle style) {
         // based on the uuid, find the style in the list.
         // Don't use 'indexOf' though, as the incoming style object was parcelled along the way.
         int editedRow = -1;
@@ -87,6 +89,7 @@ public class PreferredStylesViewModel
             // New Style added. Put at top and set as preferred
             mList.add(0, style);
             style.setPreferred(true);
+            editedRow = 0;
 
         } else {
             // Existing Style edited.
@@ -119,6 +122,8 @@ public class PreferredStylesViewModel
         if (style.getId() == 0) {
             style.insert(mDb);
         }
+
+        return editedRow;
     }
 
     public void deleteStyle(@NonNull final BooklistStyle style) {

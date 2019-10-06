@@ -366,7 +366,7 @@ public class ReviewsListApiHandler
      */
     private void buildFilters() {
 
-        mFilters = new SimpleXmlFilter(mRootFilter);
+        mFilters = new SimpleXmlFilter(mRootFilter, GoodreadsManager.SITE_LOCALE);
         mFilters
                 //<GoodreadsResponse>
                 .s(XmlTags.XML_GOODREADS_RESPONSE)

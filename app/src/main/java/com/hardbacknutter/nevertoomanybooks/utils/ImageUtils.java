@@ -283,7 +283,7 @@ public final class ImageUtils {
     }
 
     /**
-     * Convenience method for {@link #createScaledBitmap(Bitmap, int, int)}
+     * Convenience method for {@link #createScaledBitmap(Bitmap, int, int)}.
      *
      * @param file  The file of the image
      * @param scale user preferred scale factor
@@ -347,7 +347,7 @@ public final class ImageUtils {
      * <p>
      * <strong>Note:</strong>: forceScaleBitmap is an expensive operation.
      * Make sure you really need it.
-     * This method is slower then {@link #createScaledBitmap} but produces a truly scaled
+     * This method is slower than {@link #createScaledBitmap} but produces a truly scaled
      * bitmap to fit withing the bounds passed in.
      *
      * @param fileSpec  the file specification (NOT the uuid!)

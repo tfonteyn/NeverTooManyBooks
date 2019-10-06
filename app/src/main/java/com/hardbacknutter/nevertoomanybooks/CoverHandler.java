@@ -349,7 +349,8 @@ public class CoverHandler {
         String uuid = (String) mCoverView.getTag(R.id.TAG_UUID);
         // if we forgot to set it in some bad code... log the fact, and make a trip to the db.
         if (uuid == null) {
-            Logger.warnWithStackTrace(this, "getUuid", "UUID was not available on the view");
+            Logger.warnWithStackTrace(mContext, this, "getUuid",
+                                      "UUID was not available on the view");
             uuid = mDb.getBookUuid(mBook.getId());
         }
         return uuid;
@@ -367,7 +368,7 @@ public class CoverHandler {
     /**
      * Get the File object for the cover of the book we are editing.
      * If the book is new (0), return the standard temporary cover file.
-     * If the data is a result from a search, then that standard temp file will
+     * If the data is a result from a search, that standard temp file will
      * be the downloaded file.
      * <p>
      * Otherwise, return the actual cover file for the book.
@@ -387,7 +388,7 @@ public class CoverHandler {
         try {
             StorageUtils.deleteFile(getCoverFile());
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e);
+            Logger.error(mContext, this, e);
         }
         // Ensure that the cached images for this book are deleted (if present).
         if (mBook.getId() != 0) {
@@ -480,13 +481,13 @@ public class CoverHandler {
 
         if (selectedImageUri != null) {
             int bytesRead = 0;
-            // If no 'content' scheme, then use the content resolver.
+            // If no 'content' scheme, use the content resolver.
             try (InputStream is = mContext.getContentResolver()
                                           .openInputStream(selectedImageUri)) {
                 bytesRead = StorageUtils.saveInputStreamToFile(is, getCoverFile());
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-                Logger.error(this, e, "Unable to copy content to file");
+                Logger.error(mContext, this, e, "Unable to copy content to file");
             }
 
             if (bytesRead > 0) {

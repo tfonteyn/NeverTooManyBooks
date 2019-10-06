@@ -120,7 +120,7 @@ public final class AmazonManager
             try {
                 extra += "&field-author=" + URLEncoder.encode(cAuthor, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(AmazonManager.class, e, "Unable to add author to URL");
+                Logger.error(context, AmazonManager.class, e, "Unable to add author to URL");
             }
         }
 
@@ -128,7 +128,7 @@ public final class AmazonManager
             try {
                 extra += "&field-keywords=" + URLEncoder.encode(cSeries, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(AmazonManager.class, e, "Unable to add series to URL");
+                Logger.error(context, AmazonManager.class, e, "Unable to add series to URL");
             }
         }
 

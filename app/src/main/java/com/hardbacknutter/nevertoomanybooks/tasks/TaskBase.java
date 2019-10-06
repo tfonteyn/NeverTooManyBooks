@@ -60,7 +60,7 @@ public abstract class TaskBase<Result>
 
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
-     * {@link #onPostExecute} can then check it.
+     * {@link #onPostExecute} can check it.
      */
     @Nullable
     protected Exception mException;

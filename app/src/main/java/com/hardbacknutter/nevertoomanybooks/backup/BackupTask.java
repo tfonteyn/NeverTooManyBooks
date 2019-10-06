@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessa
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
- * Writes to a fixed file {@link ExportHelper#getTempFile()},
+ * Writes to a fixed file {@link ExportHelper#getTempFile},
  * an on being successful, copies that file to the external Uri.
  */
 public class BackupTask
@@ -107,7 +107,7 @@ public class BackupTask
 
     @AnyThread
     private void cleanup() {
-        StorageUtils.deleteFile(ExportHelper.getTempFile());
+        StorageUtils.deleteFile(ExportHelper.getTempFile(App.getAppContext()));
     }
 
     @Override
@@ -117,14 +117,14 @@ public class BackupTask
         Thread.currentThread().setName("BackupTask");
 
         Context context = App.getLocalizedAppContext();
-        Uri uri = Uri.fromFile(ExportHelper.getTempFile());
+        Uri uri = Uri.fromFile(ExportHelper.getTempFile(context));
         try (BackupWriter writer = BackupManager.getWriter(context, uri)) {
 
             writer.backup(context, mExportHelper, mProgressListener);
             if (!isCancelled()) {
                 // the export was successful
                 //noinspection ConstantConditions
-                StorageUtils.exportFile(ExportHelper.getTempFile(), mExportHelper.uri);
+                StorageUtils.exportFile(ExportHelper.getTempFile(context), mExportHelper.uri);
 
                 // if the backup was a full one (not a 'since') remember that.
                 if ((mExportHelper.options & ExportHelper.EXPORT_SINCE) == 0) {
@@ -135,7 +135,7 @@ public class BackupTask
             return mExportHelper;
 
         } catch (@NonNull final IOException e) {
-            Logger.error(this, e);
+            Logger.error(context, this, e);
             mException = e;
             return mExportHelper;
         } finally {

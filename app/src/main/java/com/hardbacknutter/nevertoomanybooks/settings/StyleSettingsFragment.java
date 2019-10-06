@@ -124,12 +124,11 @@ public class StyleSettingsFragment
         // Set the summaries reflecting the current values for all basic Preferences.
         setSummary(screen);
         updateLocalSummaries();
-        // set the default response
-        prepareResult();
     }
 
     /**
      * Update the local summaries after a change.
+     * Set the activity result on each change.
      *
      * <p>
      * <br>{@inheritDoc}
@@ -140,6 +139,14 @@ public class StyleSettingsFragment
         super.onSharedPreferenceChanged(sharedPreferences, key);
 
         updateLocalSummaries();
+
+        // set the result (and again and again...)
+        // Set the style as the Activity result data.
+        Intent data = new Intent()
+                .putExtra(UniqueId.BKEY_STYLE_MODIFIED, true)
+                .putExtra(UniqueId.BKEY_STYLE, mStyle);
+        //noinspection ConstantConditions
+        getActivity().setResult(Activity.RESULT_OK, data);
     }
 
     @Override
@@ -147,22 +154,6 @@ public class StyleSettingsFragment
         super.onResume();
 
         updateLocalSummaries();
-    }
-
-    /**
-     * Put the style into the activity result.
-     * <p>
-     * <strong>Note:</strong>: do NOT call this in onPause
-     * as onBackPressed is called before (and does finish).
-     */
-    @Override
-    void prepareResult() {
-        Intent data = new Intent()
-                              .putExtra(UniqueId.BKEY_STYLE_MODIFIED, true)
-                              .putExtra(UniqueId.BKEY_STYLE, mStyle);
-        //noinspection ConstantConditions
-        getActivity().setResult(Activity.RESULT_OK, data);
-
     }
 
     /**
@@ -245,8 +236,6 @@ public class StyleSettingsFragment
                     mStyle = Objects.requireNonNull(data.getParcelableExtra(UniqueId.BKEY_STYLE));
                     // refresh summaries on screen
                     updateLocalSummaries();
-                    // and set the activity result with the new style object
-                    prepareResult();
                 }
                 break;
 

@@ -91,7 +91,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     @Override
     public void writeToParcel(@NonNull final Parcel dest) {
         if (!mIsPersistent) {
-            // builtin ? then write the in-memory value to the parcel
+            // builtin ? write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
             //noinspection ConstantConditions
             dest.writeList(new ArrayList<>(mNonPersistedValue));

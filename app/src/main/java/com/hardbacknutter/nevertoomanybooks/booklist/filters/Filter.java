@@ -44,6 +44,8 @@ public interface Filter<T> {
     String getExpression();
 
     /**
+     * Get a human readable label/name for this filter.
+     *
      * @param context Current context
      *
      * @return a human readable label/name for this filter, or {@code null} if none.

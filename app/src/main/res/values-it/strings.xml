@@ -383,7 +383,7 @@
     <string name="menu_booklist_styles">Stili elenco libri</string>
     <string name="menu_bookshelves">Librerie</string>
     <string name="menu_clear_search_filters">Cancella filtri</string>
-    <string name="menu_collapse_all">Comprimi tutto</string>
+    <string name="menu_level_collapse">Comprimi tutto</string>
     <string name="menu_cover_replace_from_camera">Dalla fotocamera…</string>
     <string name="menu_cover_replace_from_gallery">Dalla Galleria…</string>
     <string name="menu_cover_crop">Ritaglia</string>
@@ -396,7 +396,7 @@
     <string name="menu_delete">Cancellare</string>
     <string name="menu_duplicate">Duplicare</string>
     <string name="menu_edit">Modifica…</string>
-    <string name="menu_expand_all">Espandi tutto</string>
+    <string name="menu_level_expand">Espandi tutto</string>
     <string name="menu_hide_keyboard">Nascondi tastiera</string>
     <string name="menu_loan_lend_book">Presta libro…</string>
     <string name="menu_loan_return_book">Il libro preso in prestito è tornato</string>
@@ -637,7 +637,7 @@
     <string name="lbl_author_type_cover_artist">copertina</string>
     <string name="lbl_author_type_cover_colorist">colori della copertina</string>
     <string name="lbl_advanced">Avanzate</string>
-    <string name="lbl_simple">Semplice</string>
+    <string name="lbl_standard">Standard</string>
     <string name="pt_search_form">Modulo di ricerca locale</string>
     <string name="pg_internet_search">Ricerche sul web</string>
 

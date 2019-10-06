@@ -317,7 +317,7 @@
     <string name="lbl_personal_notes">Persönliche Notizen</string>
     <string name="lbl_pages">Seiten</string>
     <string name="lbl_preferred_styles">Bevorzugte Stile</string>
-    <string name="lbl_price_listed">Preis</string>
+    <string name="lbl_price_listed">Listenpreis</string>
     <string name="lbl_price_paid">Bezahlt</string>
     <string name="lbl_publication">Veröffentlichung</string>
     <string name="lbl_publication_month">Monat der Veröffentlichung</string>
@@ -385,7 +385,7 @@
     <string name="menu_booklist_styles">Stile der Bücherlisten</string>
     <string name="menu_bookshelves">Bücherregale</string>
     <string name="menu_clear_search_filters">Filter löschen</string>
-    <string name="menu_collapse_all">Alles einklappen</string>
+    <string name="menu_level_collapse">Alles einklappen</string>
     <string name="menu_cover_replace_from_camera">Von Kamera…</string>
     <string name="menu_cover_replace_from_gallery">Aus der Fotogalerie…</string>
     <string name="menu_cover_crop">Zuschneiden</string>
@@ -398,7 +398,7 @@
     <string name="menu_delete">Löschen</string>
     <string name="menu_duplicate">Vervielfältigen</string>
     <string name="menu_edit">Bearbeiten…</string>
-    <string name="menu_expand_all">Alles ausklappen</string>
+    <string name="menu_level_expand">Alles ausklappen</string>
     <string name="menu_hide_keyboard">Tastatur ausblenden</string>
     <string name="menu_loan_lend_book">Buch verleihen…</string>
     <string name="menu_loan_return_book">Geliehenes Buch ist zurück</string>
@@ -640,7 +640,7 @@
     <string name="lbl_author_type_cover_artist">Titelbild</string>
     <string name="lbl_author_type_cover_colorist">Titelbild Farbe</string>
     <string name="lbl_advanced">Fortgeschritten</string>
-    <string name="lbl_simple">Einfach</string>
+    <string name="lbl_standard">Normal</string>
     <string name="pt_search_form">Lokales Suchformular</string>
     <string name="pg_internet_search">Websuchen</string>
 </resources>

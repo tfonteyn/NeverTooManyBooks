@@ -146,7 +146,7 @@ public class TocEntry
      *
      * @param list of entries
      *
-     * @return {@code true} if there is more then 1 author in the TOC
+     * @return {@code true} if there is more than 1 author in the TOC
      */
     public static boolean hasMultipleAuthors(@NonNull final List<TocEntry> list) {
         if (list.size() > 1) {

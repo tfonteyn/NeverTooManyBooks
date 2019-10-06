@@ -84,7 +84,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.FlattenedBooklistModel;
  * Class for representing read-only book details.
  * <p>
  * Keep in mind the fragment can be re-used.
- * Do NOT assume they are empty by default when populating fields manually.
+ * Do NOT assume fields are empty by default when populating them manually.
  */
 public class BookFragment
         extends BookBaseFragment {
@@ -106,7 +106,8 @@ public class BookFragment
                 populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
             } else {
                 // we don't expect/implement any others.
-                Logger.warnWithStackTrace(this, "bookId=" + bookId,
+                //noinspection ConstantConditions
+                Logger.warnWithStackTrace(getContext(), this, "bookId=" + bookId,
                                           "fieldsChanged=" + fieldsChanged);
             }
         }
@@ -217,14 +218,11 @@ public class BookFragment
         }
     }
 
-    /**
-     * The parent onResume() will kick of the process that triggers {@link #onLoadFieldsFromBook}.
-     */
     @CallSuper
     @Override
     public void onResume() {
         Tracker.enterOnResume(this);
-
+        // The parent will kick of the process that triggers {@link #onLoadFieldsFromBook}.
         super.onResume();
         ((BookDetailsActivity) mHostActivity).registerOnTouchListener(mOnTouchListener);
 
@@ -235,10 +233,6 @@ public class BookFragment
     @CallSuper
     public void onPause() {
         ((BookDetailsActivity) mHostActivity).unregisterOnTouchListener(mOnTouchListener);
-
-        //  set the current visible book id as the result data.
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, mBookModel.getBook().getId());
-        mHostActivity.setResult(Activity.RESULT_OK, data);
 
         super.onPause();
     }
@@ -264,7 +258,7 @@ public class BookFragment
                         }
                     }
                     mBookModel.reload();
-                    // onResume will display the new book.
+                    // onResume will display the new book, but
                     // FIXME: swiping through the flattened booklist will not see the new book
                 }
                 break;
@@ -667,13 +661,13 @@ public class BookFragment
     private void populatePriceFields() {
         Book book = mBookModel.getBook();
 
-        Fields.PriceFormatter listedFormatter = new Fields.PriceFormatter();
-        listedFormatter.setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
+        Fields.MonetaryFormatter listedFormatter = new Fields.MonetaryFormatter()
+                .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
         getField(R.id.price_listed).setFormatter(listedFormatter)
                                    .setValue(book.getString(DBDefinitions.KEY_PRICE_LISTED));
 
-        Fields.PriceFormatter paidFormatter = new Fields.PriceFormatter();
-        paidFormatter.setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
+        Fields.MonetaryFormatter paidFormatter = new Fields.MonetaryFormatter()
+                .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
         getField(R.id.price_paid).setFormatter(paidFormatter)
                                  .setValue(book.getString(DBDefinitions.KEY_PRICE_PAID));
     }
@@ -722,7 +716,7 @@ public class BookFragment
     private void populateToc() {
         Book book = mBookModel.getBook();
 
-        // we can get called more then once (when user moves sideways to another book),
+        // we can get called more than once (when user moves sideways to another book),
         // so clear and hide/disable the view before populating it.
         // Actual visibility is handled after building the list.
         mTocView.removeAllViews();
@@ -770,7 +764,6 @@ public class BookFragment
             mTocButton.setVisibility(View.GONE);
         }
     }
-
 
 
     /**

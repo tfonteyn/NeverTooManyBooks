@@ -69,7 +69,7 @@ public class Editions
      *
      * @return a list with native ISFDB book ID's pointing to individual editions
      *
-     * @throws SocketTimeoutException on timeout
+     * @throws SocketTimeoutException if the connection times out
      */
     public ArrayList<Edition> fetch(@NonNull final String isbn)
             throws SocketTimeoutException {
@@ -91,7 +91,7 @@ public class Editions
      *
      * @return list
      *
-     * @throws SocketTimeoutException on timeout
+     * @throws SocketTimeoutException if the connection times out
      */
     @SuppressWarnings("WeakerAccess")
     public ArrayList<Edition> fetchPath(@NonNull final String url)
@@ -115,7 +115,6 @@ public class Editions
         // http://www.isfdb.org/cgi-bin/se.cgi?arg=0887331602&type=ISBN
         // http://www.isfdb.org/cgi-bin/pl.cgi?326539
         String pageUrl = mDoc.location();
-
 
         if (pageUrl.contains(IsfdbManager.URL_PL_CGI)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.

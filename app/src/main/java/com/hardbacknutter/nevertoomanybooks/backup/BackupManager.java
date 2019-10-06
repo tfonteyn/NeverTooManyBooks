@@ -131,7 +131,7 @@ public final class BackupManager {
             reader.close();
             hasValidDates = info.getAppVersionCode() >= 152;
         } catch (@NonNull final IOException | InvalidArchiveException e) {
-            Logger.error(context, e);
+            Logger.error(context, context, e);
             hasValidDates = false;
         }
         return hasValidDates;

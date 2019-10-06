@@ -315,7 +315,7 @@
     <string name="lbl_personal_notes">Notatki osobiste</string>
     <string name="lbl_pages">Stron</string>
     <string name="lbl_preferred_styles">Preferowane style</string>
-    <string name="lbl_price_listed">Cena</string>
+    <string name="lbl_price_listed">Cena katalogowa</string>
     <string name="lbl_price_paid">Zapłacona cena</string>
     <string name="lbl_publication">Publikacja</string>
     <string name="lbl_publication_month">Miesiąc publikacji</string>
@@ -383,7 +383,7 @@
     <string name="menu_booklist_styles">Style listy książek</string>
     <string name="menu_bookshelves">Półkami</string>
     <string name="menu_clear_search_filters">Wyczyść filtry</string>
-    <string name="menu_collapse_all">Zwiń wszystko</string>
+    <string name="menu_level_collapse">Zwiń wszystko</string>
     <string name="menu_cover_replace_from_camera">Z aparatu…</string>
     <string name="menu_cover_replace_from_gallery">Z galerii…</string>
     <string name="menu_cover_crop">Obciąć</string>
@@ -396,7 +396,7 @@
     <string name="menu_delete">Usuń</string>
     <string name="menu_duplicate">Kopia</string>
     <string name="menu_edit">Edytować…</string>
-    <string name="menu_expand_all">Rozwiń wszystko</string>
+    <string name="menu_level_expand">Rozwiń wszystko</string>
     <string name="menu_hide_keyboard">Ukryj klawiaturę</string>
     <string name="menu_loan_lend_book">Wypożycz książkę…</string>
     <string name="menu_loan_return_book">Pożyczona książka powraca</string>
@@ -634,7 +634,7 @@
     <string name="lbl_author_type_cover_artist">ilustracja okładki książki</string>
     <string name="lbl_author_type_cover_colorist">kolor okładki książki</string>
     <string name="lbl_advanced">Zaawansowane</string>
-    <string name="lbl_simple">Prosty</string>
+    <string name="lbl_standard">Normalny</string>
     <string name="pt_search_form">Lokalny formularz wyszukiwania</string>
     <string name="pg_internet_search">Wyszukiwania w Internecie</string>
 </resources>

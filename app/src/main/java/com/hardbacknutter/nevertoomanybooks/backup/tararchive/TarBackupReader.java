@@ -141,7 +141,7 @@ public class TarBackupReader
             }
             // read the INFO
             mInfo = new BackupInfo();
-            try (XmlImporter importer = new XmlImporter()) {
+            try (XmlImporter importer = new XmlImporter(null)) {
                 importer.doBackupInfoBlock(entity, mInfo);
             }
             // We MUST close the stream here, so the caller gets a pristine stream.
@@ -195,7 +195,7 @@ public class TarBackupReader
             return Type.XML;
 
         } else {
-            Logger.info(this, "getBackupEntityType",
+            Logger.info(App.getAppContext(), this, "getBackupEntityType",
                         "Unknown file in archive: " + entry.getName());
             return Type.Unknown;
         }

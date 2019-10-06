@@ -308,8 +308,11 @@ public final class LocaleUtils {
         if (!defIso3.equals(conIso3)
             || !defIso3.equals(persistedIso3)
         ) {
-            Error e = new java.lang.VerifyError();
-            Logger.error(LocaleUtils.class, e, "defIso3=" + defIso3, "conIso3=" + conIso3);
+            String error = "Locale.getDefault()=" + defIso3
+                           + ", getConfiguration().locale=" + conIso3
+                           + ", SharedPreferences=" + persistedIso3;
+            Error e = new java.lang.VerifyError(error);
+            Logger.error(context, LocaleUtils.class, e, error);
             throw e;
         }
     }
@@ -431,13 +434,16 @@ public final class LocaleUtils {
 
         // we check in order - first match returns.
         // 1. the Locale passed in
-        // 2. the user Locale they run our app in
+        // 2. the default Locale
         // 3. the user device Locale
-        // 4. English
-        Locale[] locales = {titleLocale != null ? titleLocale : Locale.getDefault(),
-                            Locale.getDefault(), App.getSystemLocale(), Locale.ENGLISH};
+        // 4. ENGLISH.
+        Locale[] locales = {titleLocale, Locale.getDefault(),
+                            App.getSystemLocale(), Locale.ENGLISH};
 
         for (Locale locale : locales) {
+            if (locale == null) {
+                continue;
+            }
             // Getting the string is slow, so we cache it for every Locale.
             String orderPattern = LOCALE_PREFIX_MAP.get(locale);
             if (orderPattern == null) {
@@ -461,7 +467,6 @@ public final class LocaleUtils {
         }
         return title;
     }
-
 
     public interface OnLocaleChangedListener {
 

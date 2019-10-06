@@ -521,7 +521,7 @@ public class CropImageActivity
                 setResult(Activity.RESULT_OK, intent);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-                Logger.error(this, e);
+                Logger.error(this, this, e);
                 setResult(Activity.RESULT_CANCELED);
             }
         }
@@ -539,7 +539,7 @@ public class CropImageActivity
     private int checkStorage() {
 
         if (StorageUtils.isExternalStorageMounted()) {
-            long freeSpace = StorageUtils.getSharedStorageFreeSpace();
+            long freeSpace = StorageUtils.getSharedStorageFreeSpace(this);
             if (freeSpace != StorageUtils.ERROR_CANNOT_STAT) {
                 // make an educated guess how many pics we can store.
                 if (freeSpace / ESTIMATED_PICTURE_SIZE < 1) {

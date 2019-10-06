@@ -281,7 +281,7 @@ public class StartupActivity
 //            return false;
 //        }
 
-        int msgId = StorageUtils.initSharedDirectories();
+        int msgId = StorageUtils.initSharedDirectories(this);
         if (msgId != 0) {
             UserMessage.show(this, msgId);
         }
@@ -314,7 +314,7 @@ public class StartupActivity
                 break;
 
             default:
-                Logger.warnWithStackTrace(this, "requestCode=" + requestCode);
+                Logger.warnWithStackTrace(this, this, "requestCode=" + requestCode);
                 break;
         }
     }

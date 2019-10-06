@@ -172,7 +172,7 @@ public class StringList<E> {
      */
     @NonNull
     public String encodeList(@NonNull final Collection<E> list) {
-        // The factory will encode each element, and then we simply concat all of them.
+        // The factory will encode each element, and we simply concat all of them.
         return Csv.join(String.valueOf(mFactory.getElementSeparator()), list, mFactory::encode);
     }
 

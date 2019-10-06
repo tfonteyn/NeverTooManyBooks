@@ -133,7 +133,7 @@ public class ImportCSVTask
             return mImportHelper;
 
         } catch (@NonNull final IOException | ImportException e) {
-            Logger.error(this, e);
+            Logger.error(context, this, e);
             mException = e;
             return mImportHelper;
         } finally {
@@ -167,11 +167,13 @@ public class ImportCSVTask
         /**
          * Constructor.
          *
+         * @param context    Current context
          * @param sourcePath the path where to look for cover files.
          */
-        LocalCoverFinder(@NonNull final String sourcePath) {
+        LocalCoverFinder(@NonNull final Context context,
+                         @NonNull final String sourcePath) {
             mSourcePath = sourcePath;
-            mIsForeign = !mSourcePath.startsWith(StorageUtils.getRootDir().getPath());
+            mIsForeign = !mSourcePath.startsWith(StorageUtils.getRootDir(context).getPath());
         }
 
         /**

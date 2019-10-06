@@ -233,12 +233,13 @@ public final class DebugReport {
 
         try {
             // Copy the database from the internal protected area to the cache area.
-            File dbFile = new File(StorageUtils.getCacheDir(), "DbExport-tmp.db");
+            File dbFile = new File(StorageUtils.getCacheDir(context), "DbExport-tmp.db");
             dbFile.deleteOnExit();
             StorageUtils.copyFile(DBHelper.getDatabasePath(context), dbFile);
 
             // Find all files of interest to send in the cache and log dirs
-            List<String> files = collectFiles(StorageUtils.getCacheDir(), StorageUtils.getLogDir());
+            List<String> files = collectFiles(StorageUtils.getCacheDir(context),
+                                              StorageUtils.getLogDir(context));
 
             // Build the attachment list
             ArrayList<Uri> uriList = new ArrayList<>();
@@ -268,7 +269,7 @@ public final class DebugReport {
             return true;
 
         } catch (@NonNull final NullPointerException | IOException e) {
-            Logger.error(DebugReport.class, e);
+            Logger.error(context, DebugReport.class, e);
             return false;
         }
     }

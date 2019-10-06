@@ -55,8 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 /**
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
  * number of hits more or less in real time. The user can choose to see a full list at any time.
+ * ENHANCE: make the fields autocomplete based on individual FTS searches.
  * <p>
- * The form allows entering free text, author, title.
+ * The form allows entering free text, author, title, series.
  * <p>
  * The search gets the ID's of matching books, and returns this list when the 'show' button
  * is tapped. <strong>Only this list is returned</strong>; the original fields are not.
@@ -246,8 +247,8 @@ public class FTSSearchActivity
     }
 
     /**
-     * Called in the timer thread, this code will run the search then queue the UI
-     * updates to the main thread.
+     * Called in the timer thread, this code will run the search and
+     * queue the UI updates to the main thread.
      */
     private void doSearch() {
         getTextFromFields();
@@ -267,7 +268,7 @@ public class FTSSearchActivity
                 }
             }
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e);
+            Logger.error(this, this, e);
         }
 
         final String message = tmpMsg != null ? tmpMsg : "";

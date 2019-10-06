@@ -66,7 +66,7 @@ public class GoogleBarcodeScanner
      *
      * @param context Current context
      */
-    public GoogleBarcodeScanner(@NonNull final Context context) {
+    private GoogleBarcodeScanner(@NonNull final Context context) {
         mDetector = new BarcodeDetector.Builder(context.getApplicationContext())
                             .setBarcodeFormats(Barcode.ISBN
                                                | Barcode.EAN_13 | Barcode.EAN_8

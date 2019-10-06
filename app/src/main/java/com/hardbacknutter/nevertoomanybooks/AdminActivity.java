@@ -67,10 +67,6 @@ public class AdminActivity
         }
     }
 
-    /**
-     * Setting the result from the fragment with getActivity().setResult does not
-     * seem to be 100% fool proof when the 'back' key is used. Using this pattern is.
-     */
     @Override
     public void onBackPressed() {
         AdminModel model = new ViewModelProvider(this).get(AdminModel.class);

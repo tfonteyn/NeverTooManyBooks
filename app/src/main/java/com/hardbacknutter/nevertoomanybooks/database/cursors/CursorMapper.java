@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.cursors;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 
@@ -186,7 +187,7 @@ public class CursorMapper {
      */
     @SuppressWarnings("unused")
     @NonNull
-    public Bundle getAll() {
+    public Bundle getAll(@NonNull final Context context) {
         Bundle bundle = new Bundle();
 
         for (String columnName : mCursor.getColumnNames()) {
@@ -216,7 +217,7 @@ public class CursorMapper {
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(this, "columnName=" + columnName,
+                        Logger.warnWithStackTrace(context, this, "columnName=" + columnName,
                                                   "type=" + mCursor.getType(col));
                         break;
                 }

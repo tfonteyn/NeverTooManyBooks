@@ -140,7 +140,7 @@ public class EditBookSeriesActivity
 
         final Locale bookLocale = mModel.getBookLocale();
 
-        // anything other then the number changed ?
+        // anything other than the number changed ?
         if (series.getTitle().equals(newSeriesData.getTitle())
             && series.isComplete() == newSeriesData.isComplete()) {
 
@@ -158,7 +158,7 @@ public class EditBookSeriesActivity
         //See if the old one is used by any other books.
         long nrOfReferences = mModel.getDb().countBooksInSeries(this, series, bookLocale);
 
-        // if it's not, then we can simply re-use the old object.
+        // if it's not, we simply re-use the old object.
         if (mModel.isSingleUsage(nrOfReferences)) {
             /*
              * Use the original Series object, but update its fields
@@ -197,7 +197,7 @@ public class EditBookSeriesActivity
     @Override
     protected void updateItem(@NonNull final Series series,
                               @NonNull final Series newSeriesData,
-                              final Locale fallbackLocale) {
+                              @NonNull final Locale fallbackLocale) {
         series.copyFrom(newSeriesData, true);
         Series.pruneList(mList, this, mModel.getDb(), fallbackLocale);
         mListAdapter.notifyDataSetChanged();

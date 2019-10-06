@@ -39,8 +39,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public final class CurrencyUtils {
 
@@ -140,50 +138,51 @@ public final class CurrencyUtils {
      *
      * @param locale            Locale to use for parsing the price string
      * @param priceWithCurrency price, e.g. "Bf459", "$9.99", ...
-     * @param keyPrice          bundle key for the value
-     * @param keyCurrency       bundle key for the currency
-     * @param destination       bundle to add the two keys to.
+     * @param keyOutputPrice    bundle key for the value
+     * @param keyOutputCurrency bundle key for the currency
+     * @param result            bundle to add the two keys to.
      */
     public static void splitPrice(@NonNull final Locale locale,
                                   @NonNull final String priceWithCurrency,
-                                  @NonNull final String keyPrice,
-                                  @NonNull final String keyCurrency,
-                                  @NonNull final Bundle destination) {
+                                  @NonNull final String keyOutputPrice,
+                                  @NonNull final String keyOutputCurrency,
+                                  @NonNull final Bundle result) {
         String[] data = SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN.split(priceWithCurrency, 2);
         if (data.length > 1) {
-            String currencyCode = currencyToISO(data[0]);
+            String currencyCode = data[0].trim().toUpperCase(locale);
+            // if we don't have a normalized ISO3 code, see if we can convert it to one.
+            if (currencyCode.length() != 3) {
+                currencyCode = currencyToISO(data[0]);
+            }
+            // if we do have an ISO3 code, split the data as required.
             if (currencyCode != null && currencyCode.length() == 3) {
                 try {
                     java.util.Currency currency = java.util.Currency.getInstance(currencyCode);
 
                     int decDigits = currency.getDefaultFractionDigits();
-                    // format with 'digits' decimal places
-                    Float price = ParseUtils.parseFloat(locale, data[1]);
+                    // parse and format with #decDigits decimal places, effectively rounding it.
+                    float price = ParseUtils.parseFloat(data[1], locale);
                     String priceStr = String.format("%." + decDigits + 'f', price);
 
-                    destination.putString(keyPrice, priceStr);
+                    result.putString(keyOutputPrice, priceStr);
                     // re-get the code just in case it used a recognised but non-standard string
-                    destination.putString(keyCurrency, currency.getCurrencyCode());
+                    result.putString(keyOutputCurrency, currency.getCurrencyCode());
                     return;
 
                 } catch (@NonNull final NumberFormatException e) {
                     // accept the 'broken' price data[1]
-                    destination.putString(keyPrice, data[1]);
-                    destination.putString(keyCurrency, currencyCode);
+                    result.putString(keyOutputPrice, data[1]);
+                    result.putString(keyOutputCurrency, currencyCode);
                     return;
 
-                } catch (@NonNull final IllegalArgumentException e) {
+                } catch (@NonNull final IllegalArgumentException ignore) {
                     // Currency.getInstance sanity catch....
-                    if (BuildConfig.DEBUG /* always */) {
-                        Logger.error(LocaleUtils.class, e, "splitPrice",
-                                     "data[0]=" + data[0], "data[1]=" + data[1]);
-                    }
                 }
             }
         }
 
         // fall back to the input
-        destination.putString(keyPrice, priceWithCurrency);
-        destination.putString(keyCurrency, "");
+        result.putString(keyOutputPrice, priceWithCurrency);
+        result.putString(keyOutputCurrency, "");
     }
 }

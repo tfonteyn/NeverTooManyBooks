@@ -120,12 +120,12 @@ public class EditBookshelfDialogFragment
 
         //noinspection ConstantConditions
         return new AlertDialog.Builder(getContext())
-                       .setIcon(R.drawable.ic_edit)
-                       .setView(root)
-                       .setTitle(R.string.lbl_bookshelf)
-                       .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                       .setPositiveButton(R.string.btn_confirm_save, (d, which) -> doSave())
-                       .create();
+                .setIcon(R.drawable.ic_edit)
+                .setView(root)
+                .setTitle(R.string.lbl_bookshelf)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(R.string.btn_confirm_save, (d, which) -> doSave())
+                .create();
     }
 
     @Override
@@ -202,6 +202,9 @@ public class EditBookshelfDialogFragment
 
     /**
      * Bring up a dialog asking for the next action.
+     *
+     * @param source      bookshelf. Will be deleted afterwards.
+     * @param destination bookshelf that will receive all books from the source shelf
      */
     private void mergeShelves(@NonNull final Bookshelf source,
                               @NonNull final Bookshelf destination) {
@@ -214,7 +217,7 @@ public class EditBookshelfDialogFragment
                 .setPositiveButton(R.string.btn_confirm_merge, (d, which) -> {
                     d.dismiss();
 
-                    // move all books from bookshelf to existingShelf
+                    // move all books
                     int booksMoved = mDb.mergeBookshelves(source.getId(), destination.getId());
                     if (mListener.get() != null) {
                         mListener.get().onBookshelfChanged(destination.getId(), booksMoved);

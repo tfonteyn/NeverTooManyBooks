@@ -296,7 +296,7 @@ public final class DBHelper
 
         if (oldVersion != newVersion) {
             StorageUtils.copyFileWithBackup(new File(db.getPath()),
-                                            new File(StorageUtils.getRootDir(),
+                                            new File(StorageUtils.getRootDir(App.getAppContext()),
                                                      "DbUpgrade-" + oldVersion + '-' + newVersion));
         }
 

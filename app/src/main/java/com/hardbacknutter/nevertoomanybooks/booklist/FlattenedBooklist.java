@@ -141,6 +141,8 @@ public class FlattenedBooklist
     /**
      * Passed a statement update the 'current' row details based on the columns returned.
      *
+     * @param stmt to execute
+     *
      * @return {@code true} if we have set position and bookId successfully.
      */
     private boolean fetchBookIdAndPosition(@NonNull final SynchronizedStatement stmt) {
@@ -224,6 +226,8 @@ public class FlattenedBooklist
      * Move to the specified book row, based on the row ID, not the book id or row number.
      * The row id should be the row number in the table, including header-related rows.
      *
+     * @param position to move to
+     *
      * @return {@code true} if successful
      */
     @SuppressWarnings("UnusedReturnValue")
@@ -278,7 +282,9 @@ public class FlattenedBooklist
     }
 
     /**
-     * @return the underlying row position (row ID).
+     * Get the underlying row position (row ID).
+     *
+     * @return position
      */
     @SuppressWarnings("unused")
     public long getPosition() {
@@ -286,7 +292,9 @@ public class FlattenedBooklist
     }
 
     /**
-     * @return the position of the current record in the table
+     * Get the position of the current record in the table.
+     *
+     * @return position
      */
     @SuppressWarnings("unused")
     public long getAbsolutePosition() {

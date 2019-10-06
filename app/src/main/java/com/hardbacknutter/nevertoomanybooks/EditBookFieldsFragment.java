@@ -254,7 +254,7 @@ public class EditBookFieldsFragment
 
     @Override
     protected void onLoadFieldsFromBook() {
-        // if the book has no cover, then make sure the temp cover is deleted.
+        // if the book has no cover, make sure the temp cover is deleted.
         if (!mBookModel.getBook().getBoolean(UniqueId.BKEY_IMAGE)) {
             StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
         }

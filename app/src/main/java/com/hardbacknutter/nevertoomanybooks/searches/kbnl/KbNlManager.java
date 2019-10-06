@@ -55,6 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 /**
  * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>
  * <a href="https://www.kb.nl/">Royal Library, The Netherlands.</a>
+ * <p>
+ * 2019-10-01: "http://opc4.kb.nl" is not available on https.
  */
 public class KbNlManager
         implements SearchEngine {
@@ -99,7 +101,7 @@ public class KbNlManager
     /**
      * param 1: site specific author id.
      */
-    private static final String AUTHOR_URL = "http://opc4.kb.nl/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
+    private static final String AUTHOR_URL = getBaseURL() + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
 
     public KbNlManager() {
     }

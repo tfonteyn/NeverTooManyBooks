@@ -314,7 +314,7 @@
     <string name="lbl_personal_notes">Kişisel notlar</string>
     <string name="lbl_pages">Sayfa</string>
     <string name="lbl_preferred_styles">Yeğlenen biçemler</string>
-    <string name="lbl_price_listed">Fiyatı</string>
+    <string name="lbl_price_listed">Liste fiyatı</string>
     <string name="lbl_price_paid">Ödenen fiyat</string>
     <string name="lbl_publication">Yayınlama</string>
     <string name="lbl_publication_month">Yayım ayı</string>
@@ -382,7 +382,7 @@
     <string name="menu_booklist_styles">Kitap listesi stilleri</string>
     <string name="menu_bookshelves">Kitaplıkları</string>
     <string name="menu_clear_search_filters">Filtreleri Temizle</string>
-    <string name="menu_collapse_all">Hepsini gizle</string>
+    <string name="menu_level_collapse">Hepsini gizle</string>
     <string name="menu_cover_replace_from_camera">Kameradan…</string>
     <string name="menu_cover_replace_from_gallery">Galeriden…</string>
     <string name="menu_cover_crop">Küçük resmi kırp</string>
@@ -395,7 +395,7 @@
     <string name="menu_delete">Silmek</string>
     <string name="menu_duplicate">Çift</string>
     <string name="menu_edit">Düzenle…</string>
-    <string name="menu_expand_all">Hepsini göster</string>
+    <string name="menu_level_expand">Hepsini göster</string>
     <string name="menu_hide_keyboard">Klavyeyi gizle</string>
     <string name="menu_loan_lend_book">Kitabı ödünç ver…</string>
     <string name="menu_loan_return_book">Ödünç alınan kitap geri döndü</string>
@@ -634,7 +634,7 @@
     <string name="lbl_author_type_cover_artist">Kapak resmi</string>
     <string name="lbl_author_type_cover_colorist">Kapak boyama</string>
     <string name="lbl_advanced">Ileri</string>
-    <string name="lbl_simple">Sencillo</string>
+    <string name="lbl_standard">Standart</string>
     <string name="pt_search_form">Yerel Arama Formu</string>
     <string name="pg_internet_search">Web aramaları</string>
 

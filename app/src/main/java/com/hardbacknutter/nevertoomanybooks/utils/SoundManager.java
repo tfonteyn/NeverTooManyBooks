@@ -77,7 +77,7 @@ public final class SoundManager {
             throw new IllegalStateException(e);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
             // No sound is critical.
-            Logger.warn(SoundManager.class, "playFile", e);
+            Logger.warn(context, SoundManager.class, "playFile", e);
         }
     }
 }

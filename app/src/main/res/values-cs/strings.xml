@@ -315,7 +315,7 @@
     <string name="lbl_personal_notes">Osobní poznámky</string>
     <string name="lbl_pages">Počet stran</string>
     <string name="lbl_preferred_styles">Preferované styly</string>
-    <string name="lbl_price_listed">Seznam cen</string>
+    <string name="lbl_price_listed">Ceník</string>
     <string name="lbl_price_paid">Cena zaplacena</string>
     <string name="lbl_publication">Vydání</string>
     <string name="lbl_publication_month">Měsíc vydání</string>
@@ -383,7 +383,7 @@
     <string name="menu_booklist_styles">Styly pro seznam knih</string>
     <string name="menu_bookshelves">Knihovny</string>
     <string name="menu_clear_search_filters">Vymazat filtry</string>
-    <string name="menu_collapse_all">Sbalit vše</string>
+    <string name="menu_level_collapse">Sbalit vše</string>
     <string name="menu_cover_replace_from_camera">Z fotoaparátu…</string>
     <string name="menu_cover_replace_from_gallery">Z galerie…</string>
     <string name="menu_cover_crop">Oříznout</string>
@@ -396,7 +396,7 @@
     <string name="menu_delete">Smazat</string>
     <string name="menu_duplicate">Kopírovat</string>
     <string name="menu_edit">Upravit…</string>
-    <string name="menu_expand_all">Rozbalit vše</string>
+    <string name="menu_level_expand">Rozbalit vše</string>
     <string name="menu_hide_keyboard">Skrýt klávesnici</string>
     <string name="menu_loan_lend_book">Půjčit knihu…</string>
     <string name="menu_loan_return_book">Vypůjčená kniha je zpět</string>
@@ -634,7 +634,7 @@
     <string name="lbl_author_type_cover_artist">ilustrace knihy</string>
     <string name="lbl_author_type_cover_colorist">barva obálky knihy</string>
     <string name="lbl_advanced">Pokročilý</string>
-    <string name="lbl_simple">Jednoduchý</string>
+    <string name="lbl_standard">Standardní</string>
     <string name="pt_search_form">Formulář místního vyhledávání</string>
     <string name="pg_internet_search">Vyhledávání na webu</string>
 

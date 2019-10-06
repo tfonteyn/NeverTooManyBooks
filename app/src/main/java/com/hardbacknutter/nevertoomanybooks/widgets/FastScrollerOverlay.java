@@ -106,7 +106,7 @@ public class FastScrollerOverlay
     private final TextPaint mTextPaint;
     /** Text size for 1st line. Also ued to base the overlay size on. */
     private final float mPrimaryTextSize;
-    /** Text size for 2nd line. Smaller then 1st. */
+    /** Text size for 2nd line. Smaller than 1st. */
     private final float mSecondaryTextSize;
     /** The current size. */
     private final int mOverlaySize;
@@ -127,9 +127,9 @@ public class FastScrollerOverlay
     /** The y-coordinate of the baseline of the text being drawn. */
     private float mTextY;
     /** previous width of the RecyclerView. Used to avoid recomputing coordinates. */
-    private int oldw;
+    private int mOldWidth;
     /** previous height of the RecyclerView. Used to avoid recomputing coordinates. */
-    private int oldh;
+    private int mOldHeight;
 
     /** Whether we have Reflection access to the scroller <strong>and</strong> the mState. */
     private Boolean mHasFastScroller;
@@ -206,19 +206,19 @@ public class FastScrollerOverlay
     /**
      * Recalculate the overlay position and bounds.
      */
-    private void computeOverlayCoordinates(final int w,
-                                           final int h) {
-        if (w == oldw && h == oldh) {
+    private void computeOverlayCoordinates(final int width,
+                                           final int height) {
+        if (width == mOldWidth && height == mOldHeight) {
             return;
         }
-        oldw = w;
-        oldh = h;
+        mOldWidth = width;
+        mOldHeight = height;
 
         // 75% of total available width
-        mTmpRect.left = w / 8f;
-        mTmpRect.right = mTmpRect.left + w * 0.75f;
+        mTmpRect.left = width / 8f;
+        mTmpRect.right = mTmpRect.left + width * 0.75f;
         // 10% from top
-        mTmpRect.top = h / 10f;
+        mTmpRect.top = height / 10f;
         mTmpRect.bottom = mTmpRect.top + mOverlaySize;
 
         // same effect, but 1 param calls 4 param method, so skip a step.
@@ -236,11 +236,11 @@ public class FastScrollerOverlay
         // cache the bounds for 1 and 2 lines of text.
         mOverlayBoundsSingleLine = mOverlayDrawable.copyBounds();
         // Compute the size to fit 2 lines.
-        int height = mOverlayBoundsSingleLine.bottom + mOverlayBoundsSingleLine.height() / 2;
+        int bottom = mOverlayBoundsSingleLine.bottom + mOverlayBoundsSingleLine.height() / 2;
         mOverlayBoundsTwoLines = new Rect(mOverlayBoundsSingleLine.left,
                                           mOverlayBoundsSingleLine.top,
                                           mOverlayBoundsSingleLine.right,
-                                          height);
+                                          bottom);
     }
 
     /**
@@ -342,7 +342,8 @@ public class FastScrollerOverlay
 
         } catch (@NonNull final IllegalAccessException e) {
             // should not happen.... yeah right!
-            Logger.warn(this, "fastScrollerIsDragging", e.getLocalizedMessage());
+            Logger.warn(recyclerView.getContext(), this,
+                        "fastScrollerIsDragging", e.getLocalizedMessage());
             mHasFastScroller = false;
         }
 
@@ -370,7 +371,8 @@ public class FastScrollerOverlay
                 }
             }
         } catch (@NonNull final NoSuchFieldException | SecurityException e) {
-            Logger.warn(this, "enableFastScrollerAccess", e.getLocalizedMessage());
+            Logger.warn(recyclerView.getContext(), this,
+                        "enableFastScrollerAccess", e.getLocalizedMessage());
         }
 
         return false;

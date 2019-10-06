@@ -30,12 +30,37 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.text.NumberFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 
+/**
+ * {@link #parseFloat} / {@link #parseDouble}.
+ * <p>
+ * Tested with Device running in US Locale, app in Dutch.
+ * A price field with content "10.45".
+ * The inputType field on the screen was set to "numberDecimal"
+ * the keypad does NOT allow the use of ',' as used in Dutch for the decimal separator.
+ * Using the Dutch Locale, parsing returns "1045" as the '.' is seen as the thousands separator.
+ * <p>
+ * 2nd test with the device running in Dutch, and the app set to system Locale.
+ * Again the keypad only allowed the '.' to be used.
+ * <p>
+ * Known issue. Stated to be fixed in Android O == 8.0
+ * <a href="https://issuetracker.google.com/issues/36907764">
+ * https://issuetracker.google.com/issues/36907764</a>
+ * <a href="https://issuetracker.google.com/issues/37015783">
+ * https://issuetracker.google.com/issues/37015783</a>
+ *
+ * <a href="https://stackoverflow.com/questions/3821539/decimal-separator-comma-with-numberdecimal-inputtype-in-edittext">
+ * https://stackoverflow.com/questions/3821539/decimal-separator-comma-with-numberdecimal-inputtype-in-edittext</a>
+ * <p>
+ * But I test with Android 8.0 ... Americans just can't see beyond their border...
+ * To be clear: parsing works fine; it's just the user not able to input the
+ * right decimal/thousand separators for their Locale.
+ */
 public final class ParseUtils {
 
     /** log error string. */
@@ -57,6 +82,7 @@ public final class ParseUtils {
      *
      * @return encoded string
      */
+    @SuppressWarnings("WeakerAccess")
     public static String escape(@NonNull final String source,
                                 final char... escapeChars) {
 
@@ -147,126 +173,65 @@ public final class ParseUtils {
         return sb.toString().trim();
     }
 
+
     /**
      * Translate the passed Object to a Long value.
      *
-     * @param obj Object
+     * @param source Object
      *
      * @return Resulting value ({@code null} or empty becomes 0)
+     *
+     * @throws NumberFormatException if the source was not compatible.
      */
-    public static long toLong(@Nullable final Object obj) {
-        if (obj == null) {
+    public static long toLong(@Nullable final Object source)
+            throws NumberFormatException {
+        if (source == null) {
             return 0;
 
-        } else if (obj instanceof Long) {
-            return (Long) obj;
+        } else if (source instanceof Long) {
+            return (Long) source;
 
-        } else if (obj instanceof Integer) {
-            return ((Integer) obj).longValue();
+        } else if (source instanceof Integer) {
+            return ((Integer) source).longValue();
 
         } else {
-            String stringValue = obj.toString().trim();
+            String stringValue = source.toString().trim();
             if (stringValue.isEmpty()) {
                 return 0;
             } else {
                 try {
                     return Long.parseLong(stringValue);
-                } catch (@NonNull final NumberFormatException e1) {
+                } catch (@NonNull final NumberFormatException e) {
                     // desperate ?
-                    return toBoolean(obj) ? 1 : 0;
+                    return toBoolean(source) ? 1 : 0;
                 }
             }
         }
     }
 
-    /**
-     * Translate the passed Object to a double value.
-     *
-     * @param obj Object
-     *
-     * @return Resulting value ({@code null} or empty becomes 0)
-     */
-    public static double toDouble(@Nullable final Object obj) {
-        if (obj == null) {
-            return 0;
-
-        } else if (obj instanceof Double) {
-            return (Double) obj;
-
-        } else if (obj instanceof Float) {
-            return ((Float) obj).doubleValue();
-
-        } else {
-            String stringValue = obj.toString().trim();
-            if (stringValue.isEmpty()) {
-                return 0;
-            } else {
-                try {
-                    return parseDouble(stringValue);
-                } catch (@NonNull final NumberFormatException e1) {
-                    // desperate ?
-                    return toBoolean(obj) ? 1 : 0;
-                }
-            }
-        }
-    }
-
-    /**
-     * Translate the passed Object to a float value.
-     *
-     * @param obj Object
-     *
-     * @return Resulting value, {@code null} or empty string become 0f.
-     *
-     * @throws NumberFormatException if the Object was not float compatible.
-     */
-    public static float toFloat(@Nullable final Object obj)
-            throws NumberFormatException {
-        if (obj == null) {
-            return 0f;
-
-        } else if (obj instanceof Float) {
-            return (float) obj;
-
-        } else if (obj instanceof Double) {
-            return ((Double) obj).floatValue();
-
-        } else {
-            String stringValue = obj.toString().trim();
-            if (stringValue.isEmpty()) {
-                return 0f;
-            }
-            try {
-                return parseFloat(stringValue);
-            } catch (@NonNull final NumberFormatException e1) {
-                // desperate ?
-                return toBoolean(obj) ? 1 : 0;
-            }
-        }
-    }
 
     /**
      * Translate the passed Object to a boolean value.
      *
-     * @param obj Object
+     * @param source Object
      *
      * @return Resulting value, {@code null} or empty string become {@code false}.
      *
-     * @throws NumberFormatException if the Object was not boolean compatible.
+     * @throws NumberFormatException if the source was not compatible.
      */
-    public static boolean toBoolean(@Nullable final Object obj)
+    public static boolean toBoolean(@Nullable final Object source)
             throws NumberFormatException {
-        if (obj == null) {
+        if (source == null) {
             return false;
-        } else if (obj instanceof Boolean) {
-            return (Boolean) obj;
-        } else if (obj instanceof Integer) {
-            return (Integer) obj != 0;
-        } else if (obj instanceof Long) {
-            return (Long) obj != 0;
+        } else if (source instanceof Boolean) {
+            return (Boolean) source;
+        } else if (source instanceof Integer) {
+            return (Integer) source != 0;
+        } else if (source instanceof Long) {
+            return (Long) source != 0;
         }
-        // lets see if its a String then
-        return parseBoolean(obj.toString(), true);
+        // lets see if its a String
+        return parseBoolean(source.toString(), true);
     }
 
     /**
@@ -281,7 +246,7 @@ public final class ParseUtils {
      *
      * @return boolean value
      *
-     * @throws NumberFormatException if the string does not contain a valid boolean.
+     * @throws NumberFormatException if the source was not compatible.
      */
     public static boolean parseBoolean(@Nullable final String source,
                                        final boolean emptyIsFalse)
@@ -318,104 +283,166 @@ public final class ParseUtils {
         }
     }
 
+
     /**
-     * Replacement for {@code Float.parseFloat(String)} that tries several Locales.
-     * <ul>
-     * <li>Locale.getDefault()</li>
-     * <li>Device Locale</li>
-     * <li>Locale.US</li>
-     * </ul>
+     * Translate the passed Object to a float value.
      *
-     * @param source string to parse
+     * @param source       Object
+     * @param sourceLocale Locale to use for the formatter/parser.
+     *                     Can be {@code null} in which case {@code Locale.getDefault()} is used.
      *
-     * @return float
+     * @return Resulting value ({@code null} or empty becomes 0)
      *
-     * @throws NumberFormatException on failure
+     * @throws NumberFormatException if the source was not compatible.
      */
-    public static float parseFloat(@Nullable final String source)
+    public static float toFloat(@Nullable final Object source,
+                                @Nullable final Locale sourceLocale)
             throws NumberFormatException {
+        if (source == null) {
+            return 0f;
+
+        } else if (source instanceof Float) {
+            return (float) source;
+
+        } else if (source instanceof Double) {
+            return ((Double) source).floatValue();
+
+        } else {
+            String stringValue = source.toString().trim();
+            if (stringValue.isEmpty()) {
+                return 0f;
+            }
+            try {
+                return parseFloat(stringValue, sourceLocale);
+            } catch (@NonNull final NumberFormatException e) {
+                // desperate ?
+                return toBoolean(source) ? 1 : 0;
+            }
+        }
+    }
+
+    /**
+     * Replacement for {@code Float.parseFloat(String)} using Locales.
+     *
+     * @param source       string to parse
+     * @param sourceLocale (optional) Locale to use for the formatter/parser.
+     *
+     * @return Resulting value ({@code null} or empty becomes 0)
+     *
+     * @throws NumberFormatException if the source was not compatible.
+     */
+    public static float parseFloat(@Nullable final String source,
+                                   @Nullable final Locale sourceLocale)
+            throws NumberFormatException {
+
         if (source == null || source.trim().isEmpty()) {
             return 0f;
         }
 
-        try {
-            return parseFloat(Locale.getDefault(), source);
-        } catch (@NonNull final NumberFormatException ignore) {
-            // ignore
+        if (sourceLocale == null) {
+            return Float.parseFloat(source);
         }
 
-        try {
-            return parseFloat(App.getSystemLocale(), source);
-        } catch (@NonNull final NumberFormatException ignore) {
-            // ignore
-        }
+        // we check in order - first match returns.
+        // US is used for '.' as decimal; ',' as thousands separator.
+        Locale[] locales = {sourceLocale, App.getSystemLocale(), Locale.US};
 
-        return parseFloat(Locale.US, source);
-    }
+        for (Locale locale : locales) {
+            try {
+                DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
+//                char decSep = nf.getDecimalFormatSymbols().getDecimalSeparator();
 
-    static float parseFloat(@NonNull final Locale locale,
-                            @NonNull final String source)
-            throws NumberFormatException {
-        try {
-            NumberFormat nf = NumberFormat.getInstance(locale);
-            Number number = nf.parse(source);
-            if (number != null) {
-                return number.floatValue();
+                Number number = nf.parse(source);
+                if (number != null) {
+                    return number.floatValue();
+                }
+            } catch (@NonNull final ParseException | IndexOutOfBoundsException ignore) {
+                // ignore
             }
-        } catch (@NonNull final ParseException ignore) {
-            // ignore
         }
 
         throw new NumberFormatException("not a float: " + source);
     }
 
+
     /**
-     * Replacement for {@code Double.parseDouble(String)} that tries several Locales.
-     * <ul>
-     * <li>Locale.getDefault()</li>
-     * <li>Device Locale</li>
-     * <li>Locale.US</li>
-     * </ul>
+     * Translate the passed Object to a double value.
      *
-     * @param source string to parse
+     * @param source       Object
+     * @param sourceLocale Locale to use for the formatter/parser.
+     *                     Can be {@code null} in which case {@code Locale.getDefault()} is used.
      *
-     * @return double
+     * @return Resulting value ({@code null} or empty becomes 0)
      *
-     * @throws NumberFormatException on failure
+     * @throws NumberFormatException if the source was not compatible.
      */
-    public static double parseDouble(@Nullable final String source)
+    public static double toDouble(@Nullable final Object source,
+                                  @Nullable final Locale sourceLocale)
             throws NumberFormatException {
+        if (source == null) {
+            return 0;
+
+        } else if (source instanceof Double) {
+            return (Double) source;
+
+        } else if (source instanceof Float) {
+            return ((Float) source).doubleValue();
+
+        } else {
+            String stringValue = source.toString().trim();
+            if (stringValue.isEmpty()) {
+                return 0;
+            } else {
+                try {
+                    return parseDouble(stringValue, sourceLocale);
+                } catch (@NonNull final NumberFormatException e) {
+                    // desperate ?
+                    return toBoolean(source) ? 1 : 0;
+                }
+            }
+        }
+    }
+
+    /**
+     * Replacement for {@code Double.parseDouble(String)} using Locales.
+     *
+     * @param source       string to parse
+     * @param sourceLocale Locale to use for the formatter/parser.
+     *                     Can be {@code null} in which case {@code Locale.getDefault()} is used.
+     *
+     * @return Resulting value ({@code null} or empty becomes 0)
+     *
+     * @throws NumberFormatException if the source was not compatible.
+     */
+    public static double parseDouble(@Nullable final String source,
+                                     @Nullable final Locale sourceLocale)
+            throws NumberFormatException {
+
         if (source == null || source.trim().isEmpty()) {
             return 0d;
         }
 
-        try {
-            return parseDouble(Locale.getDefault(), source);
-        } catch (@NonNull final NumberFormatException ignore) {
-            // ignore
+        if (sourceLocale == null) {
+            return Double.parseDouble(source);
         }
 
-        try {
-            return parseDouble(App.getSystemLocale(), source);
-        } catch (@NonNull final NumberFormatException ignore) {
-            // ignore
-        }
+        // we check in order - first match returns.
+        // US is used for '.' as decimal; ',' as thousands separator.
+        Locale[] locales = {sourceLocale, App.getSystemLocale(), Locale.US};
 
-        return parseDouble(Locale.US, source);
-    }
+        for (Locale locale : locales) {
+            try {
+                DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
+//                char decSep = nf.getDecimalFormatSymbols().getDecimalSeparator();
 
-    public static double parseDouble(@NonNull final Locale locale,
-                                     @NonNull final String s)
-            throws NumberFormatException {
-        try {
-            NumberFormat nf = NumberFormat.getInstance(locale);
-            Number number = nf.parse(s);
-            if (number != null) {
-                return number.doubleValue();
+                Number number = nf.parse(source);
+                if (number != null) {
+                    return number.doubleValue();
+                }
+            } catch (@NonNull final ParseException ignore) {
+                // ignore
             }
-        } catch (@NonNull final ParseException ignore) {
         }
-
-        throw new NumberFormatException("not a double: " + s);
+        throw new NumberFormatException("not a double: " + source);
     }
 }

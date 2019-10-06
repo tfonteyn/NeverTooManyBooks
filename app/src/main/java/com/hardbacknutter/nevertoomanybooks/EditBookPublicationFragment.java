@@ -104,7 +104,8 @@ public class EditBookPublicationFragment
                       .setRelatedFields(R.id.lbl_first_publication);
         initPartialDatePicker(field, R.string.lbl_first_publication, false);
 
-        fields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED);
+        fields.addMonetary(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED);
+
         field = fields.add(R.id.price_listed_currency, DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
                       .setRelatedFields(R.id.lbl_price_listed, R.id.price_listed_currency);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_listed_currency,

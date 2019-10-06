@@ -39,7 +39,9 @@ public class GoodreadsShelf {
 
     /** Virtual shelf names used in XML request/responses. */
     public static final String VIRTUAL_CURRENTLY_READING = "currently-reading";
+    /** Virtual Goodreads shelf name. */
     public static final String VIRTUAL_READ = "read";
+    /** Virtual Goodreads shelf name. */
     public static final String VIRTUAL_TO_READ = "to-read";
 
     /** Bundle with shelf related entries. */

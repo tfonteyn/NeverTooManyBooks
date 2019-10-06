@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -34,9 +36,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
 
 /**
  * Searches the internet for book details based on:
@@ -46,40 +50,64 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 public class BookSearchActivity
         extends BaseActivityWithTasks {
 
+    private String mTag;
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
-        if (tag == null) {
-            tag = BookSearchByIsbnFragment.TAG;
+        mTag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
+        if (mTag == null) {
+            mTag = BookSearchByIsbnFragment.TAG;
         }
 
         FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(tag) == null) {
-            Fragment frag = createFragment(tag);
+        if (fm.findFragmentByTag(mTag) == null) {
+            Fragment frag = createFragment(mTag);
             frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()
               .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, frag, tag)
+              .replace(R.id.main_fragment, frag, mTag)
               .commit();
         }
     }
 
     /**
-     * Create a fragment based on tag name.
+     * Create a fragment based on the given tag.
      *
      * @param tag for the required fragment
      *
      * @return a new fragment instance.
      */
     private Fragment createFragment(@NonNull final String tag) {
-        if (BookSearchByIsbnFragment.TAG.equals(tag)) {
-            return new BookSearchByIsbnFragment();
-        } else if (BookSearchByTextFragment.TAG.equals(tag)) {
-            return new BookSearchByTextFragment();
-        } else {
-            throw new UnexpectedValueException(tag);
+        switch (tag) {
+            case BookSearchByIsbnFragment.TAG:
+                return new BookSearchByIsbnFragment();
+
+            case BookSearchByTextFragment.TAG:
+                return new BookSearchByTextFragment();
+
+//            case UpdateFieldsFromInternetFragment.TAG:
+//                return new UpdateFieldsFromInternetFragment();
+
+            default:
+                throw new UnexpectedValueException(tag);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+//        if (!UpdateFieldsFromInternetFragment.TAG.equals(mTag)) {
+        BookSearchBaseModel mBookSearchBaseModel =
+                new ViewModelProvider(this).get(BookSearchBaseModel.class);
+        Intent lastBookData = mBookSearchBaseModel.getLastBookData();
+        if (lastBookData != null) {
+            setResult(Activity.RESULT_OK, lastBookData);
+        } else {
+            setResult(Activity.RESULT_CANCELED);
+        }
+//        }
+        super.onBackPressed();
     }
 }

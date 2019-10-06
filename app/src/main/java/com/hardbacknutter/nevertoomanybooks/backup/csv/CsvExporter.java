@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
@@ -121,6 +122,7 @@ public class CsvExporter
 
     @NonNull
     private final ExportHelper mExportHelper;
+    /** cached localized "unknown" string. */
     private final String mUnknownString;
 
     /**
@@ -140,6 +142,8 @@ public class CsvExporter
     }
 
     /**
+     * Get the total number of books exported.
+     *
      * @param os               Stream for writing data
      * @param progressListener Progress and cancellation interface
      *
@@ -257,7 +261,8 @@ public class CsvExporter
                 }
             }
         } finally {
-            Logger.info(this, "doBooks", "results=" + results);
+            Logger.info(App.getAppContext(), this,
+                        "doBooks", "results=" + results);
         }
         return results;
     }

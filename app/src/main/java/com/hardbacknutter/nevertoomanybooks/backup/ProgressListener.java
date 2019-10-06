@@ -37,7 +37,7 @@ public interface ProgressListener {
 
     /**
      * Get the max position. Useful if a routine wants to adjust the max only if the
-     * new value it intents to use if larger then the current max.
+     * new value it intents to use if larger than the current max.
      *
      * @return max position
      */

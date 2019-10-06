@@ -298,7 +298,7 @@ public class BookSearchByIsbnFragment
 
     private void handleAsinClick(final boolean isChecked) {
         if (isChecked) {
-            // over-optimisation... asin is used less then ISBN
+            // over-optimisation... asin is used less than ISBN
             DigitsKeyListener asinListener = DigitsKeyListener.getInstance(ASIN_DIGITS);
             //noinspection ConstantConditions
             mIsbnView.setKeyListener(asinListener);
@@ -360,7 +360,9 @@ public class BookSearchByIsbnFragment
                         // detect emulator for testing
                         if (Build.PRODUCT.startsWith("sdk")) {
                             // when used, the file must be in the root external app dir.
-                            File file = new File(StorageUtils.getRootDir(), "barcode.jpg");
+                            //noinspection ConstantConditions
+                            File file = new File(StorageUtils.getRootDir(getContext()),
+                                                 "barcode.jpg");
                             if (file.exists()) {
                                 Bitmap dummy = BitmapFactory.decodeFile(file.getAbsolutePath());
                                 if (data != null) {
@@ -548,12 +550,16 @@ public class BookSearchByIsbnFragment
         } else {
             msg = R.string.warning_x_is_not_a_valid_isbn;
         }
-        //noinspection ConstantConditions
-        UserMessage.show(mIsbnView, getString(msg, isbn));
+
         if (mModel.isScanMode()) {
+            //noinspection ConstantConditions
+            UserMessage.show(getActivity(), getString(msg, isbn));
             // reset the now-discarded details
             mBookSearchBaseModel.clearSearchText();
             startScannerActivity();
+        } else {
+            //noinspection ConstantConditions
+            UserMessage.show(mIsbnView, getString(msg, isbn));
         }
     }
 
@@ -577,7 +583,8 @@ public class BookSearchByIsbnFragment
             int retry = SCANNER_RETRY;
             while (!scanner.isOperational() && retry > 0) {
                 //noinspection ConstantConditions
-                UserMessage.show(getView(), R.string.info_waiting_for_scanner);
+                UserMessage.show(getActivity(), R.string.info_waiting_for_scanner);
+
                 try {
                     Thread.sleep(SCANNER_WAIT);
                 } catch (@NonNull final InterruptedException ignore) {
@@ -599,7 +606,8 @@ public class BookSearchByIsbnFragment
             }
 
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e);
+            //noinspection ConstantConditions
+            Logger.error(getContext(), this, e);
             noScanner();
         }
     }
@@ -659,9 +667,12 @@ public class BookSearchByIsbnFragment
      */
     private void scanFailedOrCancelled() {
         Intent lastBookData = mBookSearchBaseModel.getLastBookData();
-        mHostActivity.setResult(lastBookData != null ? Activity.RESULT_OK
-                                                     : Activity.RESULT_CANCELED,
-                                lastBookData);
+        if (lastBookData != null) {
+            mHostActivity.setResult(Activity.RESULT_OK, lastBookData);
+        } else {
+            mHostActivity.setResult(Activity.RESULT_CANCELED);
+        }
+
         // and exit if no dialog present.
         if (!mKeepAlive) {
             mHostActivity.finish();

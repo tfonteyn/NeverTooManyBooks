@@ -316,7 +316,7 @@
     <string name="lbl_personal_notes">Προσωπικές σημειώσεις</string>
     <string name="lbl_pages">Σελίδες</string>
     <string name="lbl_preferred_styles">Προτιμώμενα στυλ</string>
-    <string name="lbl_price_listed">List Price</string>
+    <string name="lbl_price_listed">Τιμοκατάλογος</string>
     <string name="lbl_price_paid">Πληρωθείσα τιμή</string>
     <string name="lbl_publication">Δημοσίευση</string>
     <string name="lbl_publication_month">Μήνας Έκδοσης</string>
@@ -384,7 +384,7 @@
     <string name="menu_booklist_styles">Στυλ λίστας βιβλίων</string>
     <string name="menu_bookshelves">βιβλία Ράφια</string>
     <string name="menu_clear_search_filters">Διαγραφή φίλτρων</string>
-    <string name="menu_collapse_all">Απόκρυψη Όλων</string>
+    <string name="menu_level_collapse">Απόκρυψη Όλων</string>
     <string name="menu_cover_replace_from_camera">Από κάμερα…</string>
     <string name="menu_cover_replace_from_gallery">Από φωτογραφίες…</string>
     <string name="menu_cover_crop">Περικοπή</string>
@@ -397,7 +397,7 @@
     <string name="menu_delete">Διαγράφω</string>
     <string name="menu_duplicate">Aντιγράφω</string>
     <string name="menu_edit">επεξεργασία…</string>
-    <string name="menu_expand_all">Επέκταση Όλων</string>
+    <string name="menu_level_expand">Επέκταση Όλων</string>
     <string name="menu_hide_keyboard">Απόκρυψη πληκτρολογίου</string>
     <string name="menu_loan_lend_book">Δανεισμός βιβλίου…</string>
     <string name="menu_loan_return_book">Το δανεισμένο βιβλίο είναι πίσω</string>
@@ -638,7 +638,7 @@
     <string name="lbl_author_type_cover_artist">εικόνα εξωφύλλου βιβλίου</string>
     <string name="lbl_author_type_cover_colorist">βιβλίο κάλυψης βιβλίου</string>
     <string name="lbl_advanced">Προχωρημένος</string>
-    <string name="lbl_simple">Απλός</string>
+    <string name="lbl_standard">κανονικός</string>
     <string name="pt_search_form">Φόρμα τοπικής αναζήτησης</string>
     <string name="pg_internet_search">αναζητήσεις στο διαδίκτυο</string>
 

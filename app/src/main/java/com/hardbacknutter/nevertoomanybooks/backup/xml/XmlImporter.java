@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -106,8 +107,8 @@ public class XmlImporter
     @NonNull
     private final DAO mDb;
 
-    /** Whether Float and Double parsing routines use Locales or not. */
-    private final boolean mFloatUsesLocales;
+    @Nullable
+    private final Locale mLocale;
 
     /**
      * Stack for popping tags on if we go into one.
@@ -120,22 +121,12 @@ public class XmlImporter
 
     /**
      * Constructor.
-     *
-     * Locale independent.
+     * <p>
+     * @param locale (optional)
      */
-    public XmlImporter() {
+    public XmlImporter(@Nullable final Locale locale) {
+        mLocale = locale;
         mDb = new DAO();
-        mFloatUsesLocales = false;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param floatUsesLocales take Locales into account when parsing strings or not.
-     */
-    public XmlImporter(final boolean floatUsesLocales) {
-        mDb = new DAO();
-        mFloatUsesLocales = floatUsesLocales;
     }
 
     /**
@@ -158,7 +149,7 @@ public class XmlImporter
     /**
      * Read Styles from an XML stream.
      *
-     * @param entity   to read
+     * @param entity           to read
      * @param progressListener Progress and cancellation provider
      *
      * @throws IOException on failure
@@ -181,8 +172,8 @@ public class XmlImporter
      * <strong>Note:</strong> the passed in SharedPreferences is dependent on the caller.
      * Do <strong>not</strong> replace with mSettings.getPrefs() !
      *
-     * @param entity   to read
-     * @param prefs    object to populate
+     * @param entity           to read
+     * @param prefs            object to populate
      * @param progressListener Progress and cancellation provider
      *
      * @throws IOException on failure
@@ -328,19 +319,11 @@ public class XmlImporter
                         break;
 
                     case XmlTags.XML_FLOAT:
-                        if (mFloatUsesLocales) {
-                            accessor.putFloat(mTag.name, ParseUtils.parseFloat(mTag.value));
-                        } else {
-                            accessor.putFloat(mTag.name, Float.parseFloat(mTag.value));
-                        }
+                        accessor.putFloat(mTag.name, ParseUtils.parseFloat(mTag.value, mLocale));
                         break;
 
                     case XmlTags.XML_DOUBLE:
-                        if (mFloatUsesLocales) {
-                            accessor.putDouble(mTag.name, ParseUtils.parseDouble(mTag.value));
-                        } else {
-                            accessor.putDouble(mTag.name, Double.parseDouble(mTag.value));
-                        }
+                        accessor.putDouble(mTag.name, ParseUtils.parseDouble(mTag.value, mLocale));
                         break;
 
                     default:

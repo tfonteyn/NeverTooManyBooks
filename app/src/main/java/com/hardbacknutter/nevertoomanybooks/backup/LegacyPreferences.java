@@ -358,7 +358,7 @@ public final class LegacyPreferences {
                             }
 
                         } else if (!entry.getKey().startsWith("state_current_group")) {
-                            Logger.info(Prefs.class, "migrateLegacyPreferences",
+                            Logger.info(context, Prefs.class, "migrateLegacyPreferences",
                                         "unknown key=" + entry.getKey(),
                                         "value=" + oldValue);
                         }
@@ -367,7 +367,7 @@ public final class LegacyPreferences {
 
             } catch (@NonNull final RuntimeException e) {
                 // to bad... skip that key, not fatal, use default.
-                Logger.error(Prefs.class, e, "key=" + entry.getKey());
+                Logger.error(context, Prefs.class, e, "key=" + entry.getKey());
             }
         }
         ed.apply();

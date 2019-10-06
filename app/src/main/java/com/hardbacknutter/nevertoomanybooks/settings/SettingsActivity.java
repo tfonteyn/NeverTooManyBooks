@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -186,5 +188,10 @@ public class SettingsActivity
             default:
                 break;
         }
+
+        // set the result (and again and again...). Also see the fragment method.
+        // TODO: make the response conditional, not all changes warrant a recreate!
+        Intent data = new Intent().putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
+        setResult(Activity.RESULT_OK, data);
     }
 }

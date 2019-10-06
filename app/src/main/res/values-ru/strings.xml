@@ -381,7 +381,7 @@
     <string name="menu_booklist_styles">Cтили списка книг</string>
     <string name="menu_bookshelves">Полки</string>
     <string name="menu_clear_search_filters">Сбросить фильтры</string>
-    <string name="menu_collapse_all">Свернуть всё</string>
+    <string name="menu_level_collapse">Свернуть всё</string>
     <string name="menu_cover_replace_from_camera">С камеры…</string>
     <string name="menu_cover_replace_from_gallery">Из галереи…</string>
     <string name="menu_cover_crop">Обрезать эскиз</string>
@@ -394,7 +394,7 @@
     <string name="menu_delete">Удалить</string>
     <string name="menu_duplicate">копия</string>
     <string name="menu_edit">редактировать…</string>
-    <string name="menu_expand_all">Развернуть всё</string>
+    <string name="menu_level_expand">Развернуть всё</string>
     <string name="menu_hide_keyboard">Скрыть клавиатуру</string>
     <string name="menu_loan_lend_book">Одолжить книгу…</string>
     <string name="menu_loan_return_book">Заимствованная книга возвращается</string>
@@ -632,7 +632,7 @@
     <string name="lbl_author_type_cover_artist">иллюстрация обложки книги</string>
     <string name="lbl_author_type_cover_colorist">цвета обложки книги</string>
     <string name="lbl_advanced">продвинутый</string>
-    <string name="lbl_simple">просто</string>
+    <string name="lbl_standard">стандартный</string>
     <string name="pt_search_form">Форма локального поиска</string>
     <string name="pg_internet_search">веб-поиск</string>
 

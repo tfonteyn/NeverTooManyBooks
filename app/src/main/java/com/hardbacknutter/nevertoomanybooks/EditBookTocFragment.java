@@ -490,6 +490,8 @@ public class EditBookTocFragment
         /**
          * Constructor.
          *
+         * @param hasOtherEditions flag
+         *
          * @return the instance
          */
         static ConfirmToc newInstance(@NonNull final Bundle bookData,

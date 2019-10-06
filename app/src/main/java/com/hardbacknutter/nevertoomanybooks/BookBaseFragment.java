@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
@@ -57,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 
@@ -286,6 +288,15 @@ public abstract class BookBaseFragment
     public void onResume() {
         Tracker.enterOnResume(this);
         super.onResume();
+        if (getActivity() instanceof BaseActivity) {
+            BaseActivity activity = (BaseActivity) getActivity();
+            if (activity.isGoingToRecreate()) {
+                return;
+            }
+        }
+
+        //noinspection ConstantConditions
+        LocaleUtils.insanityCheck(getContext());
 
         loadFields();
 
@@ -482,7 +493,7 @@ public abstract class BookBaseFragment
             } catch (@NonNull final RuntimeException e) {
                 // Log, but ignore. This is a non-critical feature that prevents crashes
                 // when the 'next' key is pressed and some views have been hidden.
-                Logger.error(FocusSettings.class, e);
+                Logger.error(root.getContext(), FocusSettings.class, e);
             }
         }
 

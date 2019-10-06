@@ -34,6 +34,7 @@ import android.database.sqlite.SQLiteDoneException;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -432,7 +433,7 @@ public class BooklistBuilder
 
     /**
      * The where clause will add a "AND books._id IN (list)".
-     * Be careful when combining with other criteria as you might get less then expected
+     * Be careful when combining with other criteria as you might get less than expected
      * <p>
      * An empty filter will silently be rejected.
      *
@@ -462,7 +463,7 @@ public class BooklistBuilder
     }
 
     /**
-     * Clear and then build the temporary list of books.
+     * Clear and build the temporary list of books.
      * Criteria must be set before calling this method with one or more of the setCriteria calls.
      *
      * @param preferredState           State to display: expanded, collapsed or remembered
@@ -607,7 +608,7 @@ public class BooklistBuilder
             SyncLock txLock = mSyncedDb.beginTransaction(true);
             try {
                 if (mUseTriggers) {
-                    // If we are using triggers, then we insert them in order and rely on the
+                    // If we are using triggers, insert them in order and rely on the
                     // triggers to build the summary rows in the correct place.
                     String tgt;
                     if (mUseNestedTriggers) {
@@ -1493,11 +1494,22 @@ public class BooklistBuilder
     }
 
     /**
-     * For EXPAND: Set all rows as visible/expanded.
-     * For COLLAPSE: Set all non-root rows as invisible/unexpanded and mark all root
-     * nodes as visible/unexpanded.
+     * Set all rows above the specified level as invisible/collapsed.
+     * Actual level to visible/unexpanded.
+     * All rows below the specified level as visible/expanded.
+     *
+     * @param expand flag
+     * @param level  the level up-to where we expand/collapse; top level == 1
      */
-    public void expandAll(final boolean expand) {
+    public void expandNodes(final boolean expand,
+                            @IntRange(from = 1) final int level) {
+        // sanity check
+        if (BuildConfig.DEBUG /* always */) {
+            if (level < 1) {
+                throw new IllegalArgumentException("level must be >=1");
+            }
+        }
+
         SyncLock txLock = null;
         try {
             if (!mSyncedDb.inTransaction()) {
@@ -1505,34 +1517,24 @@ public class BooklistBuilder
             }
 
             final long t0 = System.nanoTime();
-            if (expand) {
+
+            if (expand && level < 2) {
+                // expand and show all nodes, all levels.
                 String sql = "UPDATE " + mNavTable + " SET "
-                             + DOM_BL_NODE_EXPANDED + "=1,"
-                             + DOM_BL_NODE_VISIBLE + "=1";
+                             + DOM_BL_NODE_EXPANDED + "=1"
+                             + ',' + DOM_BL_NODE_VISIBLE + "=1";
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                     stmt.executeUpdateDelete();
                 }
                 saveListNodeSettings();
 
             } else {
-                String sql = "UPDATE " + mNavTable + " SET "
-                             + DOM_BL_NODE_EXPANDED + "=0,"
-                             + DOM_BL_NODE_VISIBLE + "=0"
-                             + " WHERE " + DOM_BL_NODE_LEVEL + ">1";
-                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                    stmt.executeUpdateDelete();
-                }
-                sql = "UPDATE " + mNavTable + " SET "
-                      + DOM_BL_NODE_EXPANDED + "=0"
-                      + " WHERE " + DOM_BL_NODE_LEVEL + "=1";
-                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                    stmt.executeUpdateDelete();
-                }
-                deleteListNodeSettings();
+                updateNodesNavigatorTable(level);
+                saveListNodeSettings();
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Logger.debug(this, "expandAll",
+                Logger.debug(this, "expandNodes",
                              (System.nanoTime() - t0) + "nano");
             }
 
@@ -1546,13 +1548,50 @@ public class BooklistBuilder
         }
     }
 
+    private void updateNodesNavigatorTable(@IntRange(from = 1) final int level) {
+        String sql;
+        if (level > 1) {
+            // always expand and show top levels.
+            sql = "UPDATE " + mNavTable + " SET "
+                  + DOM_BL_NODE_EXPANDED + "=1"
+                  + ',' + DOM_BL_NODE_VISIBLE + "=1"
+                  + " WHERE " + DOM_BL_NODE_LEVEL + "<?";
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+                stmt.bindLong(1, level);
+                stmt.executeUpdateDelete();
+            }
+        }
+
+        // collapse the specified level, but keep it visible.
+        sql = "UPDATE " + mNavTable + " SET "
+              + DOM_BL_NODE_EXPANDED + "=0"
+              + ',' + DOM_BL_NODE_VISIBLE + "=1"
+              + " WHERE " + DOM_BL_NODE_LEVEL + "=?";
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+            stmt.bindLong(1, level);
+            stmt.executeUpdateDelete();
+        }
+
+        // collapsed & hide all lower levels
+        sql = "UPDATE " + mNavTable + " SET "
+              + DOM_BL_NODE_EXPANDED + "=0"
+              + ',' + DOM_BL_NODE_VISIBLE + "=0"
+              + " WHERE " + DOM_BL_NODE_LEVEL + ">?";
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+            stmt.bindLong(1, level);
+            stmt.executeUpdateDelete();
+        }
+    }
+
     /**
      * Toggle the expand/collapse status of the node at the specified absolute position.
+     *
+     * @param position of the node in the list
      *
      * @return {@code true} if the new state is expanded.
      * {@code false} if collapsed, or if an error occurred.
      */
-    public boolean toggleExpandNode(final long absPos) {
+    public boolean toggleExpandNode(final long position) {
         int isExpanded;
 
         SyncLock txLock = null;
@@ -1562,7 +1601,7 @@ public class BooklistBuilder
             }
 
             // row position starts at 0, ID's start at 1...
-            final long rowId = absPos + 1;
+            final long rowId = position + 1;
 
             // Get the details of the passed row position.
             SynchronizedStatement getNodeLevelStmt = mStatements.get(STMT_GET_NODE_LEVEL);

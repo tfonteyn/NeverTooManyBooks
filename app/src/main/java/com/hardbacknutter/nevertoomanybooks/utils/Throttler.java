@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 public class Throttler {
@@ -80,20 +78,18 @@ public class Throttler {
         long wait;
         synchronized (this) {
             wait = mDelayInMillis - (now - mLastRequestTime);
-            //
             // mLastRequestTime must be updated while synchronized. As soon as this
             // block is left, another block may perform another update.
-            //
             if (wait < 0) {
                 wait = 0;
             }
             mLastRequestTime = now + wait;
-            Log.d("Throttler", "mLastRequestTime=" + mLastRequestTime);
+            //Log.d("Throttler", "mLastRequestTime=" + mLastRequestTime);
         }
 
         if (wait > 0) {
             try {
-                Log.d("Throttler", "wait=" + wait);
+                //Log.d("Throttler", "wait=" + wait);
                 Thread.sleep(wait);
             } catch (@NonNull final InterruptedException ignored) {
             }

@@ -139,8 +139,9 @@
 
     <!-- standard Booklist options menu -->
     <item name="MENU_SORT" type="id" />
-    <item name="MENU_EXPAND" type="id" />
-    <item name="MENU_COLLAPSE" type="id" />
+    <item name="MENU_LEVEL_RESET" type="id" />
+    <item name="MENU_LEVEL_EXPAND" type="id" />
+    <item name="MENU_LEVEL_COLLAPSE" type="id" />
     <item name="MENU_CLEAR_FILTERS" type="id" />
 
     <item name="MENU_SEARCH_GOODREADS" type="id" />

@@ -66,14 +66,9 @@ public class AuthorWorksActivity
         }
     }
 
-    /**
-     * Setting the result from the fragment with getActivity().setResult does not
-     * seem to be 100% fool proof when the 'back' key is used. Using this pattern is.
-     */
     @Override
     public void onBackPressed() {
         AuthorWorksModel model = new ViewModelProvider(this).get(AuthorWorksModel.class);
-
         if (model.isAtLeastOneBookDeleted()) {
             Intent data = new Intent().putExtra(UniqueId.BKEY_DELETED_SOMETHING, true);
             setResult(Activity.RESULT_OK, data);

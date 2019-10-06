@@ -43,6 +43,7 @@ public class ImportHelper
      */
     public static final int IMPORT_ONLY_NEW_OR_UPDATED = 1 << 16;
 
+    /** {@link Parcelable}. */
     public static final Creator<ImportHelper> CREATOR = new Creator<ImportHelper>() {
         @Override
         public ImportHelper createFromParcel(@NonNull final Parcel source) {

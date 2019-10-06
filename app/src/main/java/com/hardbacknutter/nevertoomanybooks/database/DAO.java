@@ -910,6 +910,9 @@ public class DAO
     /**
      * Find an Author, and return its ID. The incoming object is not modified.
      *
+     * <strong>IMPORTANT:</strong> the query can return more then one row if the
+     * given-name of the author is empty. But we only return the id of the first row found.
+     *
      * @param author to find the id of
      *
      * @return the id, or 0 (i.e. 'new') when not found
@@ -978,13 +981,13 @@ public class DAO
 
         // process the destination Author
         if (!updateOrInsertAuthor(context, to)) {
-            Logger.warnWithStackTrace(this, "Could not update", "author=" + to);
+            Logger.warnWithStackTrace(context, this, "Could not update", "author=" + to);
             return false;
         }
 
         // Do some basic sanity checks.
         if (from.getId() == 0 && from.fixId(context, this, Locale.getDefault()) == 0) {
-            Logger.warnWithStackTrace(this, "Old Author is not defined");
+            Logger.warnWithStackTrace(context, this, "Old Author is not defined");
             return false;
         }
 
@@ -1012,7 +1015,7 @@ public class DAO
 
             sSyncedDb.setTransactionSuccessful();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e);
+            Logger.error(context, this, e);
             return false;
         } finally {
             sSyncedDb.endTransaction(txLock);
@@ -1224,7 +1227,7 @@ public class DAO
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(this, "type=" + domain.getType());
+                        Logger.warnWithStackTrace(context, this, "type=" + domain.getType());
                         break;
                 }
             }
@@ -1327,25 +1330,26 @@ public class DAO
      * On any failure, no changes are made.
      * On success, the 'keyPriceWithCurrency' is removed.
      *
-     * @param book                 with price fields / where to store the result.
-     * @param keyPriceWithCurrency key to get the combined field
-     * @param keyPrice             key to store the value
-     * @param keyPriceCurrency     key to store the currency
+     * @param book              with price fields / where to store the result.
+     * @param keyInput          key to get the combined field
+     * @param keyOutputPrice    key to store the value
+     * @param keyOutputCurrency key to store the currency
      */
     private void preprocessPrice(@NonNull final Book book,
-                                 @NonNull final String keyPriceWithCurrency,
-                                 @NonNull final String keyPrice,
-                                 @NonNull final String keyPriceCurrency) {
-        Bundle dest = new Bundle();
-        CurrencyUtils.splitPrice(book.getLocale(), book.getString(keyPriceWithCurrency),
-                                 keyPrice, keyPriceCurrency, dest);
-        String price = dest.getString(keyPrice);
+                                 @NonNull final String keyInput,
+                                 @NonNull final String keyOutputPrice,
+                                 @NonNull final String keyOutputCurrency) {
+        Bundle tmpDest = new Bundle();
+        CurrencyUtils.splitPrice(book.getLocale(), book.getString(keyInput),
+                                 keyOutputPrice, keyOutputCurrency, tmpDest);
+        String price = tmpDest.getString(keyOutputPrice);
         if (price != null) {
-            book.remove(keyPriceWithCurrency);
-            book.putString(keyPrice, price);
-            String currency = dest.getString(keyPriceCurrency);
-            book.putString(keyPriceCurrency, currency != null ? currency : "");
+            book.remove(keyInput);
+            book.putString(keyOutputPrice, price);
+            String currency = tmpDest.getString(keyOutputCurrency);
+            book.putString(keyOutputCurrency, currency != null ? currency : "");
         }
+        // else do not change the input
     }
 
     /**
@@ -1611,12 +1615,12 @@ public class DAO
             // Make sure we have an author
             List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
             if (authors.isEmpty()) {
-                Logger.warnWithStackTrace(this, "No authors\n", book);
+                Logger.warnWithStackTrace(context, this, "No authors\n", book);
                 return -1L;
             }
 
             // correct field types if needed, and filter out fields we don't have in the db table.
-            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale());
+            ContentValues cv = filterValues(context, TBL_BOOKS, book, book.getLocale());
 
             // if we have an id, use it.
             if (bookId > 0) {
@@ -1636,7 +1640,7 @@ public class DAO
             long newBookId = sSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
             if (newBookId > 0) {
                 insertBookDependents(context, newBookId, book);
-                insertFts(newBookId);
+                insertFts(context, newBookId);
                 // it's an insert, success only if we really inserted.
                 if (txLock != null) {
                     sSyncedDb.setTransactionSuccessful();
@@ -1649,7 +1653,7 @@ public class DAO
             return newBookId;
 
         } catch (@NonNull final NumberFormatException e) {
-            Logger.error(this, e, ERROR_FAILED_CREATING_BOOK_FROM + book);
+            Logger.error(context, this, e, ERROR_FAILED_CREATING_BOOK_FROM + book);
             return -1L;
         } finally {
             if (txLock != null) {
@@ -1691,7 +1695,7 @@ public class DAO
             // and remove blank fields for which we have defaults)
             preprocessBook(context, book);
 
-            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale());
+            ContentValues cv = filterValues(context, TBL_BOOKS, book, book.getLocale());
 
             // Disallow UUID updates
             if (cv.containsKey(DOM_BOOK_UUID.getName())) {
@@ -1712,7 +1716,7 @@ public class DAO
                                                 new String[]{String.valueOf(bookId)});
 
             insertBookDependents(context, bookId, book);
-            updateFts(bookId);
+            updateFts(context, bookId);
 
             if (txLock != null) {
                 sSyncedDb.setTransactionSuccessful();
@@ -1722,7 +1726,7 @@ public class DAO
 
             return rowsAffected;
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e);
+            Logger.error(context, this, e);
             throw new RuntimeException(
                     "Error updating book from " + book + ": " + e.getLocalizedMessage(), e);
         } finally {
@@ -1933,11 +1937,11 @@ public class DAO
         for (Series series : list) {
             if (series.fixId(context, this, bookLocale) == 0) {
                 if (insertSeries(context, series, bookLocale) <= 0) {
-                    Logger.warnWithStackTrace(this, "insertSeries failed??");
+                    Logger.warnWithStackTrace(context, this, "insertSeries failed??");
                 }
             } else {
                 if (updateSeries(context, series, bookLocale) <= 0) {
-                    Logger.warnWithStackTrace(this, "updateSeries failed??");
+                    Logger.warnWithStackTrace(context, this, "updateSeries failed??");
                 }
             }
 
@@ -2664,7 +2668,7 @@ public class DAO
 
     /**
      * Return a {@link BookCursor} for the given {@link Book} id.
-     * The caller can then retrieve columns as needed.
+     * The caller can retrieve columns as needed.
      *
      * @param bookId to retrieve
      *
@@ -2682,7 +2686,7 @@ public class DAO
 
     /**
      * Return a {@link BookCursor} for the given list of {@link Book} ID's.
-     * The caller can then retrieve columns as needed.
+     * The caller can retrieve columns as needed.
      *
      * @param bookIds           List of book ID's to update, {@code null} for all books.
      * @param fromBookIdOnwards the lowest book id to start from.
@@ -3580,13 +3584,13 @@ public class DAO
 
         // process the destination Series.
         if (!updateOrInsertSeries(context, bookLocale, to)) {
-            Logger.warnWithStackTrace(this, "Could not update", "series=" + to);
+            Logger.warnWithStackTrace(context, this, "Could not update", "series=" + to);
             return false;
         }
 
         // sanity check
         if (from.getId() == 0 && from.fixId(context, this, bookLocale) == 0) {
-            Logger.warnWithStackTrace(this, "Old Series is not defined");
+            Logger.warnWithStackTrace(context, this, "Old Series is not defined");
             return false;
         }
 
@@ -3612,7 +3616,7 @@ public class DAO
 
             sSyncedDb.setTransactionSuccessful();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e);
+            Logger.error(context, this, e);
             return false;
         } finally {
             sSyncedDb.endTransaction(txLock);
@@ -3786,6 +3790,7 @@ public class DAO
      * e.g. if a columns says it's Integer, an incoming boolean will be transformed to 0/1</li>
      * </ul>
      *
+     * @param context         Current context
      * @param tableDefinition destination table
      * @param data            A collection with the columns to be set. May contain extra data.
      * @param bookLocale      the Locale to use for character case manipulation
@@ -3793,7 +3798,8 @@ public class DAO
      * @return New and filtered ContentValues
      */
     @NonNull
-    private ContentValues filterValues(@SuppressWarnings("SameParameterValue")
+    private ContentValues filterValues(final Context context,
+                                       @SuppressWarnings("SameParameterValue")
                                        @NonNull final TableDefinition tableDefinition,
                                        @NonNull final DataManager data,
                                        @NonNull final Locale bookLocale) {
@@ -3821,9 +3827,10 @@ public class DAO
                                 } else if (entry != null) {
                                     String stringValue = entry.toString().trim();
                                     if (!stringValue.isEmpty()) {
-                                        // All Locales taken into account.
+                                        // sqlite does not care about float/double,
+                                        // Using double covers float as well.
                                         cv.put(columnInfo.name,
-                                               ParseUtils.parseDouble(stringValue));
+                                               ParseUtils.parseDouble(stringValue, bookLocale));
                                     } else {
                                         cv.put(columnInfo.name, "");
                                     }
@@ -3845,7 +3852,7 @@ public class DAO
                                     String s = entry.toString().toLowerCase(bookLocale);
                                     if (!s.isEmpty()) {
                                         // It's not strictly needed to do these conversions.
-                                        // parseInt/catch works, but it's not elegant...
+                                        // parseInt/catch(Exception) works, but it's not elegant...
                                         switch (s) {
                                             case "1":
                                             case "true":
@@ -3895,7 +3902,7 @@ public class DAO
                             }
                         }
                     } catch (@NonNull final NumberFormatException e) {
-                        Logger.error(this, e,
+                        Logger.error(context, this, e,
                                      "column=" + columnInfo.name,
                                      "stringValue=" + entry.toString());
                         // not really ok, but let's store it anyhow.
@@ -4055,7 +4062,8 @@ public class DAO
      * <p>
      * Transaction: required
      */
-    private void insertFts(final long bookId) {
+    private void insertFts(@NonNull final Context context,
+                           final long bookId) {
 
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ERROR_NEEDS_TRANSACTION);
@@ -4074,7 +4082,7 @@ public class DAO
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(this, e, ERROR_FAILED_TO_UPDATE_FTS);
+            Logger.error(context, this, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -4083,7 +4091,8 @@ public class DAO
      * <p>
      * Transaction: required
      */
-    private void updateFts(final long bookId) {
+    private void updateFts(@NonNull final Context context,
+                           final long bookId) {
 
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException();
@@ -4101,7 +4110,7 @@ public class DAO
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(this, e, ERROR_FAILED_TO_UPDATE_FTS);
+            Logger.error(context, this, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -4983,6 +4992,9 @@ public class DAO
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKLIST_STYLES
                 + " WHERE " + DOM_UUID + "=?";
 
+        /**
+         * Can return more then one row if the DOM_AUTHOR_GIVEN_NAMES_OB is empty.
+         */
         static final String AUTHOR_ID_BY_NAME =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_AUTHORS
                 + " WHERE " + DOM_AUTHOR_FAMILY_NAME_OB + "=?" + COLLATION
@@ -4994,7 +5006,7 @@ public class DAO
 
         /**
          * Get the id of a {@link Series} by its Title.
-         * Search on both "The Title" and "Title, The"
+         * Search DOM_SERIES_TITLE_OB on both "The Title" and "Title, The"
          */
         static final String SERIES_ID_BY_NAME =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_SERIES
@@ -5003,7 +5015,7 @@ public class DAO
 
         /**
          * Get the id of a {@link TocEntry} by its Title.
-         * Search on both "The Title" and "Title, The"
+         * Search DOM_TITLE_OB on both "The Title" and "Title, The"
          */
         static final String TOC_ENTRY_ID =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_TOC_ENTRIES
@@ -5019,14 +5031,12 @@ public class DAO
          * Get the UUID of a {@link Book} by its id.
          */
         static final String BOOK_UUID_BY_ID =
-                "SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS
-                + " WHERE " + DOM_PK_ID + "=?";
+                "SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?";
         /**
          * Get the id of a {@link Book} by its UUID.
          */
         static final String BOOK_ID_BY_UUID =
-                "SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKS
-                + " WHERE " + DOM_BOOK_UUID + "=?";
+                "SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKS + " WHERE " + DOM_BOOK_UUID + "=?";
         /**
          * Get the ISBN of a {@link Book} by its id.
          */
@@ -5482,7 +5492,7 @@ public class DAO
                 + " WHERE "
                 + TBL_BOOK_TOC_ENTRIES.dot(DOM_FK_BOOK) + "=?";
 
-        // the body of an INSERT INTO [table]. Used more then once.
+        // the body of an INSERT INTO [table]. Used more than once.
         static final String INSERT_BODY =
                 " (" + DOM_FTS_AUTHOR_NAME
                 + ',' + DOM_TITLE

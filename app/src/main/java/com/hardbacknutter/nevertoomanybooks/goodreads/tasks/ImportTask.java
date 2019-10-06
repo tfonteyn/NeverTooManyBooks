@@ -58,6 +58,7 @@ public class ImportTask
     /**
      * Constructor.
      *
+     * @param context      Current context
      * @param isSync       Flag to indicate sync data or import all.
      * @param taskListener for sending progress and finish messages to.
      */

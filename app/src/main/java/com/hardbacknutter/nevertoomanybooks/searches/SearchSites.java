@@ -157,7 +157,6 @@ public final class SearchSites {
     static {
         int priority = 0;
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOOGLE_BOOKS, true, priority++));
-        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(LIBRARY_THING, true, priority++));
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(ISFDB, true, priority++));
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOODREADS, true, priority++));
 
@@ -166,6 +165,9 @@ public final class SearchSites {
 
         // The proxy site has been broken since around April 2019.
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(AMAZON, false, priority++));
+
+        // based on feedback, disabling by default.
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(LIBRARY_THING, false, priority++));
 
         // bottom of the list as the data from this site is not up to scratch. Disabled by default.
         //noinspection UnusedAssignment

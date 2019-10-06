@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,11 +38,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 
 /**
  * Hosting activity for showing a book.
@@ -48,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 public class BookDetailsActivity
         extends BaseActivity {
 
+    /** all registered listeners. */
     private final List<View.OnTouchListener> mOnTouchListeners = new ArrayList<>();
 
     @Override
@@ -68,6 +74,17 @@ public class BookDetailsActivity
               .replace(R.id.main_fragment, frag, BookFragment.TAG)
               .commit();
         }
+    }
+
+    /**
+     * Set the current visible book id as the Activity result data.
+     */
+    @Override
+    public void onBackPressed() {
+        BookBaseFragmentModel model = new ViewModelProvider(this).get(BookBaseFragmentModel.class);
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
+        setResult(Activity.RESULT_OK, data);
+        super.onBackPressed();
     }
 
     public void registerOnTouchListener(@NonNull final View.OnTouchListener listener) {

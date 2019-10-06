@@ -54,6 +54,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
@@ -200,11 +201,20 @@ public class UpdateFieldsFromInternetFragment
     @Override
     @CallSuper
     public void onResume() {
+        Tracker.enterOnResume(this);
         super.onResume();
+        if (getActivity() instanceof BaseActivity) {
+            BaseActivity activity = (BaseActivity) getActivity();
+            if (activity.isGoingToRecreate()) {
+                return;
+            }
+        }
+
         if (mUpdateSenderId != 0) {
             UpdateFieldsFromInternetTask.MESSAGE_SWITCH
                     .addListener(mUpdateSenderId, true, mManagedTaskListener);
         }
+        Tracker.exitOnResume(this);
     }
 
     /** syntax sugar. */
@@ -385,7 +395,7 @@ public class UpdateFieldsFromInternetFragment
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
                  MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_websites)
             .setIcon(R.drawable.ic_search)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         super.onCreateOptionsMenu(menu, inflater);
     }

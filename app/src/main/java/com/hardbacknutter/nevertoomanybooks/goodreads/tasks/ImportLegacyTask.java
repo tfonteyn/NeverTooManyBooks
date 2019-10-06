@@ -288,7 +288,7 @@ class ImportLegacyTask
             db.analyze();
         } catch (@NonNull final RuntimeException e) {
             // Do nothing. Not a critical step.
-            Logger.info(this, "processReviews", e);
+            Logger.info(context, this, "processReviews", e);
         }
         return true;
     }
@@ -305,10 +305,6 @@ class ImportLegacyTask
                                @NonNull final Bundle review) {
 
         long grBookId = review.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
-
-        if (grBookId == 64524) {
-            Logger.debug(this, "processReview", review);
-        }
 
         // Find the books in our database - there may be more than one!
         // First look by Goodreads book ID
@@ -540,7 +536,7 @@ class ImportLegacyTask
          */
         ArrayList<Bundle> grAuthors = review.getParcelableArrayList(ReviewField.AUTHORS);
         if (grAuthors == null) {
-            Logger.warnWithStackTrace(this, "grAuthors was null");
+            Logger.warnWithStackTrace(context, this, "grAuthors was null");
             return bookData;
         }
         ArrayList<Author> authors;
@@ -604,7 +600,7 @@ class ImportLegacyTask
         if (review.containsKey(ReviewField.SHELVES)) {
             ArrayList<Bundle> grShelves = review.getParcelableArrayList(ReviewField.SHELVES);
             if (grShelves == null) {
-                Logger.warnWithStackTrace(this, "grShelves was null");
+                Logger.warnWithStackTrace(context, this, "grShelves was null");
                 return bookData;
             }
 

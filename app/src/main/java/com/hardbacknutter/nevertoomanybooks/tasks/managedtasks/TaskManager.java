@@ -333,7 +333,7 @@ public class TaskManager {
                                                         progressMessage.toString()));
 
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e, "Error updating progress");
+            Logger.error(mContext, this, e, "Error updating progress");
         }
     }
 

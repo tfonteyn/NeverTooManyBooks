@@ -148,7 +148,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
      * view is shifted to a new index, and not at the end of a “drop” event.
      *
      * @param fromPosition The start position of the moved item.
-     * @param toPosition   Then resolved position of the moved item.
+     * @param toPosition   The resolved position of the moved item.
      *
      * @return {@code true} if a move was done, {@code false} if not.
      */

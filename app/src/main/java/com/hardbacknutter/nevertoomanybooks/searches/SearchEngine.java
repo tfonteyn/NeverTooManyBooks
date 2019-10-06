@@ -121,8 +121,8 @@ public interface SearchEngine {
      * @param author         to search for
      * @param title          to search for
      * @param publisher      optional and in addition to author/title.
-     *                       i.e. author and/or title must be valid; only then publisher
-     *                       is taken into account.
+     *                       i.e. author and/or title must be valid;
+     *                       only then the publisher is taken into account.
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return bundle with book data. Can be empty, but never {@code null}.

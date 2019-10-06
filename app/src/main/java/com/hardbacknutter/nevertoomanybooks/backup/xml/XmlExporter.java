@@ -431,7 +431,7 @@ public class XmlExporter
 
     /**
      * The 'value' attribute should be encoded if it's a String.
-     * If there is a String body, then use {@link #tagWithCData}
+     * If there is a String body, use {@link #tagWithCData}
      * <p>
      * escape reserved XML characters + all newlines/tab and the backslash.
      * <p>
@@ -1009,7 +1009,7 @@ public class XmlExporter
 
         /**
          * When we do not have a list, this method should return 'false'.
-         * <ul>When there is a list, then:
+         * <ul>When there is a list:
          * <li>the first element should be set to the 'current'</li>
          * <li>a loop should be (is) implemented with:</li>
          * </ul>

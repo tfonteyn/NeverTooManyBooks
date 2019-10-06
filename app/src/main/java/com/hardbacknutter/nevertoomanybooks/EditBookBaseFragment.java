@@ -113,7 +113,7 @@ public abstract class EditBookBaseFragment<T>
      * Trigger the Fragment to save its Fields to the Book.
      * <p>
      * This is always done, even when the user 'cancel's the edit.
-     * The latter will then result in a "are you sure" where they can 'cancel the cancel'
+     * The latter will result in a "are you sure" where they can 'cancel the cancel'
      * and continue with all data present.
      * <p>
      * <br>{@inheritDoc}
@@ -211,7 +211,7 @@ public abstract class EditBookBaseFragment<T>
         @SuppressWarnings("ConstantConditions")
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, list);
-        getFields().setAdapter(field.id, adapter);
+        getFields().setAdapter(field.getId(), adapter);
 
         // Get the drop-down button for the list and setup dialog
         fieldButton.setOnClickListener(v -> {
@@ -239,7 +239,7 @@ public abstract class EditBookBaseFragment<T>
                 if (fm.findFragmentByTag(PartialDatePickerDialogFragment.TAG) == null) {
                     String value = field.getValue();
                     PartialDatePickerDialogFragment
-                            .newInstance(field.id, value, dialogTitleId, todayIfNone)
+                            .newInstance(field.getId(), value, dialogTitleId, todayIfNone)
                             .show(fm, PartialDatePickerDialogFragment.TAG);
                 }
             });
@@ -263,7 +263,7 @@ public abstract class EditBookBaseFragment<T>
             field.getView().setOnClickListener(v -> {
                 FragmentManager fm = getChildFragmentManager();
                 if (fm.findFragmentByTag(CheckListDialogFragment.TAG) == null) {
-                    CheckListDialogFragment.newInstance(field.id, dialogTitleId, listGetter)
+                    CheckListDialogFragment.newInstance(field.getId(), dialogTitleId, listGetter)
                                            .show(fm, CheckListDialogFragment.TAG);
                 }
             });

@@ -107,7 +107,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * <li>if necessary add new domain to {@link DBDefinitions }</li>
  * <li>modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains</li>
  * <li>modify {@link BooklistAdapter} ; If it is just a string field,
- * then use a {@link BooklistAdapter} .GenericStringHolder}, otherwise add a new holder.</li>
+ * use a {@link BooklistAdapter} .GenericStringHolder}, otherwise add a new holder.</li>
  * </ol>
  * Need to at least modify {@link BooklistAdapter} #createHolder
  */
@@ -167,15 +167,20 @@ public class BooklistStyle
     public static final String PREF_BL_PREFERRED_STYLES = "BookList.Style.Preferred.Order";
     /** Extra book data to show at lowest level. */
     private static final int EXTRAS_THUMBNAIL = 1 << 8;
+
     /** the amount of details to show in the header. */
-    private static final Integer SUMMARY_SHOW_COUNT = 1;
+    private static final int SUMMARY_SHOW_BOOK_COUNT = 1;
     /** the amount of details to show in the header. */
-    private static final Integer SUMMARY_SHOW_LEVEL_1 = 1 << 1;
+    private static final int SUMMARY_SHOW_LEVEL_1 = 1 << 1;
     /** the amount of details to show in the header. */
-    private static final Integer SUMMARY_SHOW_LEVEL_2 = 1 << 2;
+    private static final int SUMMARY_SHOW_LEVEL_2 = 1 << 2;
     /** the amount of details to show in the header. */
-    public static final Integer SUMMARY_SHOW_ALL =
-            SUMMARY_SHOW_COUNT | SUMMARY_SHOW_LEVEL_1 | SUMMARY_SHOW_LEVEL_2;
+    private static final int SUMMARY_SHOW_STYLE_NAME = 1 << 3;
+    /** the amount of details to show in the header. */
+    public static final int SUMMARY_SHOW_ALL =
+            SUMMARY_SHOW_BOOK_COUNT
+            | SUMMARY_SHOW_LEVEL_1 | SUMMARY_SHOW_LEVEL_2
+            | SUMMARY_SHOW_STYLE_NAME;
     /**
      * Unique name. This is a stored in our preference file (with the same name)
      * and is used for backup/restore purposes as the 'ID'.
@@ -784,8 +789,17 @@ public class BooklistStyle
      *
      * @return {@code true} if the book count should be shown
      */
-    public boolean showBookCount() {
-        return (mShowHeaderInfo.get() & SUMMARY_SHOW_COUNT) != 0;
+    public boolean headerShowsBookCount() {
+        return (mShowHeaderInfo.get() & SUMMARY_SHOW_BOOK_COUNT) != 0;
+    }
+
+    /**
+     * Check if the style wants the style name to be displayed.
+     *
+     * @return {@code true} if the style name should be shown
+     */
+    public boolean headerShowsStyleName() {
+        return (mShowHeaderInfo.get() & SUMMARY_SHOW_STYLE_NAME) != 0;
     }
 
     /**
@@ -795,7 +809,7 @@ public class BooklistStyle
      *
      * @return {@code true} if this style can show the desired level
      */
-    public boolean hasHeaderForLevel(@IntRange(from = 1, to = 2) final int level) {
+    public boolean headerHasLevelText(@IntRange(from = 1, to = 2) final int level) {
         switch (level) {
             case 1:
                 return (mShowHeaderInfo.get() & SUMMARY_SHOW_LEVEL_1) != 0;
@@ -1282,6 +1296,24 @@ public class BooklistStyle
         return Prefs.displayAuthorGivenNameFirst(context);
     }
 
+    /**
+     * Get the default visible level for the list.
+     * i.e. the level which will be visible but not expanded.
+     *
+     * <strong>Note:</strong> despite being defined in the style, we only ever return the global.
+     * Not sure (yet) if this should be on a per-style basis.
+     *
+     * @return level
+     */
+    @IntRange(from = 1)
+    public int getDefaultLevel() {
+        int level = App.getListPreference(Prefs.pk_bob_default_level, 1);
+        if (level > mStyleGroups.size()) {
+            level = mStyleGroups.size();
+        }
+        return level;
+    }
+
     @IntDef(flag = true, value = {
             EXTRAS_BOOKSHELVES,
             EXTRAS_LOCATION,
@@ -1298,11 +1330,13 @@ public class BooklistStyle
 
     }
 
-//    @IntDef(flag = true, value = {SUMMARY_SHOW_COUNT, SUMMARY_SHOW_LEVEL_1, SUMMARY_SHOW_LEVEL_2})
-//    @Retention(RetentionPolicy.SOURCE)
-//    public @interface ListHeaderOption {
-//
-//    }
+    @IntDef(flag = true, value = {SUMMARY_SHOW_BOOK_COUNT,
+                                  SUMMARY_SHOW_LEVEL_1, SUMMARY_SHOW_LEVEL_2,
+                                  SUMMARY_SHOW_STYLE_NAME})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ListHeaderOption {
+
+    }
 
     @IntDef({TEXT_SCALE_SMALL, TEXT_SCALE_MEDIUM, TEXT_SCALE_LARGE})
     @Retention(RetentionPolicy.SOURCE)

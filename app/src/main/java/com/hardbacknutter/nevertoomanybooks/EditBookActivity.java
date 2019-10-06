@@ -82,19 +82,18 @@ public class EditBookActivity
         BookBaseFragmentModel model = new ViewModelProvider(this)
                 .get(BookBaseFragmentModel.class);
 
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
-        //ENHANCE: global changes not detected, so assume they happened.
-        setResult(Activity.RESULT_OK, data);
-
         if (model.isDirty()) {
             StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
                 // runs when user clicks 'exit'
                 setResult(Activity.RESULT_CANCELED);
-                super.onBackPressed();
+                finish();
             });
-        } else {
-            setResult(Activity.RESULT_CANCELED);
-            super.onBackPressed();
+            return;
         }
+
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
+        //ENHANCE: global changes not detected, so assume they happened.
+        setResult(Activity.RESULT_OK, data);
+        super.onBackPressed();
     }
 }

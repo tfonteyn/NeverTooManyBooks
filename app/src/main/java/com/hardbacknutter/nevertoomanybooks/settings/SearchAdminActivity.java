@@ -142,7 +142,7 @@ public class SearchAdminActivity
         } else {
             doSave();
         }
-        finish();
+        super.onBackPressed();
     }
 
     @Override
@@ -165,7 +165,8 @@ public class SearchAdminActivity
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(this, "item=" + mViewPager.getCurrentItem());
+                        Logger.warnWithStackTrace(this, this,
+                                                  "item=" + mViewPager.getCurrentItem());
                         break;
                 }
                 return true;
@@ -195,8 +196,13 @@ public class SearchAdminActivity
                                         mAdapter.getItem(mViewPager.getCurrentItem())).getList();
         //noinspection ConstantConditions
         for (Site site : list) {
-            sites = site.isEnabled() ? sites | site.id
-                                     : sites & ~site.id;
+            if (site.isEnabled()) {
+                // add the site
+                sites = sites | site.id;
+            } else {
+                // remove the site
+                sites = sites & ~site.id;
+            }
         }
         Intent data = new Intent().putExtra(RESULT_SEARCH_SITES, sites);
         // don't commit any changes, we got data to use temporarily
