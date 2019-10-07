@@ -28,28 +28,18 @@
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jsoup.HttpStatusException;
-import org.jsoup.Jsoup;
-import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.EditBookTocFragment;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
 
-abstract class AbstractBase {
+abstract class AbstractBase
+        extends JsoupBase {
 
     /**
      * Trim extraneous punctuation and whitespace from the titles and authors.
@@ -74,136 +64,33 @@ abstract class AbstractBase {
     private static final int READ_TIMEOUT = 60_000;
     private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 
-    /** Not needed for now, but handy for testing. */
-    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-                                             + " AppleWebKit/537.36 (KHTML, like Gecko)"
-                                             + " Chrome/76.0.3809.100 Safari/537.36";
-    /** The parsed downloaded web page. */
-    Document mDoc;
-    /** If the site drops connection, we retry once. */
-    private boolean afterEofTryAgain = true;
 
+    /**
+     * Constructor.
+     */
     AbstractBase() {
-    }
-
-    @VisibleForTesting
-    AbstractBase(@Nullable final Document doc) {
-        mDoc = doc;
+        super();
+        initSiteSpecifics();
     }
 
     /**
-     * Fetch the URL and parse it into {@link #mDoc}.
-     * <p>
-     * the connect call uses a set of defaults. For example the user-agent:
-     * {@link HttpConnection#DEFAULT_UA}
-     * <p>
-     * The content encoding by default is: "Accept-Encoding", "gzip"
+     * Constructor for mocking.
      *
-     * @param url to fetch
-     *
-     * @return the actual URL for the page we got (after redirects etc), or {@code null}
-     * on failure to load.
-     *
-     * @throws SocketTimeoutException if the connection times out
+     * @param doc the pre-loaded Jsoup document.
      */
-    @Nullable
-    String loadPage(@NonNull final String url)
-            throws SocketTimeoutException {
+    @VisibleForTesting
+    AbstractBase(@NonNull final Document doc) {
+        super(doc);
+        initSiteSpecifics();
+    }
 
-        if (mDoc == null) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_LOAD_PAGE) {
-                Logger.debug(this, "loadPage", "REQUESTED",
-                             "url=" + url);
-            }
-
-            try (TerminatorConnection terminatorConnection = new TerminatorConnection(url)) {
-                HttpURLConnection con = terminatorConnection.getHttpURLConnection();
-
-                // added due to https://github.com/square/okhttp/issues/1517
-                // it's a server issue, this is a workaround.
-                con.setRequestProperty("Connection", "close");
-                con.setConnectTimeout(CONNECT_TIMEOUT);
-                con.setReadTimeout(READ_TIMEOUT);
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_LOAD_PAGE) {
-                    Logger.debug(this, "loadPage", "BEFORE open",
-                                 "con.getURL()=" + con.getURL().toString());
-                }
-                // GO!
-                terminatorConnection.open();
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_LOAD_PAGE) {
-                    Logger.debug(this, "loadPage", "AFTER open",
-                                 "con.getURL()=" + con.getURL().toString());
-                    Logger.debug(this, "loadPage", "AFTER open",
-                                 "con.getHeaderField(\"location\")="
-                                 + con.getHeaderField("location"));
-                }
-
-                // the original url will change after a redirect.
-                // We need the actual url for further processing.
-                String locationHeader = con.getHeaderField("location");
-                if (locationHeader == null || locationHeader.isEmpty()) {
-                    locationHeader = con.getURL().toString();
-
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_LOAD_PAGE) {
-                        Logger.debug(this, "loadPage",
-                                     "location header not set, using url");
-                    }
-                }
-
-                /*
-                 VERY IMPORTANT: Explicitly set the baseUri to the location header.
-                 JSoup by default uses the absolute path from the inputStream
-                 and sets that as the document 'location'
-                 From JSoup docs:
-
-                * Get the URL this Document was parsed from. If the starting URL is a redirect,
-                * this will return the final URL from which the document was served from.
-                * @return location
-                public String location() {
-                    return location;
-                }
-
-                However that is WRONG (org.jsoup:jsoup:1.11.3)
-                It will NOT resolve the redirect itself and 'location' == 'baseUri'
-                */
-                mDoc = Jsoup.parse(terminatorConnection.inputStream,
-                                   IsfdbManager.CHARSET_DECODE_PAGE, locationHeader);
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_LOAD_PAGE) {
-                    Logger.debug(this, "loadPage", "AFTER parsing",
-                                 "mDoc.location()=" + mDoc.location());
-                }
-
-            } catch (@NonNull final HttpStatusException e) {
-                Logger.error(this, e);
-                return null;
-
-            } catch (@NonNull final EOFException e) {
-                // this happens often with ISFDB... Google search says it's a server issue.
-                // not so sure that Google search is correct thought but what do I know...
-                // So, retry once.
-                if (afterEofTryAgain) {
-                    afterEofTryAgain = false;
-                    mDoc = null;
-                    return loadPage(url);
-                } else {
-                    return null;
-                }
-
-            } catch (@NonNull final SocketTimeoutException e) {
-                throw e;
-
-            } catch (@NonNull final IOException e) {
-                Logger.error(this, e, url);
-                return null;
-            }
-            // reset the flags.
-            afterEofTryAgain = true;
-        }
-
-        return mDoc.location();
+    /**
+     * Set some site specific parameters.
+     */
+    private void initSiteSpecifics() {
+        setConnectTimeout(CONNECT_TIMEOUT);
+        setReadTimeout(READ_TIMEOUT);
+        setCharSetName(IsfdbManager.CHARSET_DECODE_PAGE);
     }
 
     @NonNull

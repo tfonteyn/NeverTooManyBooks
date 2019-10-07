@@ -116,10 +116,10 @@ public class IsfdbManager
     }
 
     /**
-     * Open a Book on ISFDB web site.
+     * View a Book on the web site.
      *
      * @param context Current context
-     * @param bookId  book id to show
+     * @param bookId  site native book id to show
      */
     public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {

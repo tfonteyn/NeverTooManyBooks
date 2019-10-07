@@ -78,7 +78,7 @@ public class IsfdbBook
      */
     private static final String DOT = "(&#x2022;|&#8226;|•)";
     /** Character used by the site as string divider/splitter. */
-    private static final Pattern DOT_PATTERN = Pattern.compile(DOT);
+//    private static final Pattern DOT_PATTERN = Pattern.compile(DOT);
     private static final Pattern YEAR_PATTERN = Pattern.compile(DOT + " \\(([1|2]\\d\\d\\d)\\)");
     /** ISFDB uses 00 for the day/month when unknown. We cut that out. */
     private static final Pattern UNKNOWN_M_D_PATTERN = Pattern.compile("-00", Pattern.LITERAL);
@@ -162,14 +162,13 @@ public class IsfdbBook
         super();
     }
 
-
     /**
      * Constructor used for testing.
      *
      * @param doc the JSoup Document.
      */
     @VisibleForTesting
-    IsfdbBook(@Nullable final Document doc) {
+    IsfdbBook(@NonNull final Document doc) {
         super(doc);
     }
 
@@ -391,7 +390,7 @@ public class IsfdbBook
      * }
      * </pre>
      *
-     * @param bookData         a new Bundle()  (must be passed in so we mock it in test)
+     * @param bookData         a new Bundle()  (must be passed in so we can mock it in test)
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   whether to get thumbnails as well
      *
@@ -645,7 +644,25 @@ public class IsfdbBook
 
         // optional fetch of the cover.
         if (fetchThumbnail) {
-            fetchCover(bookData, mDoc.select("div.contentbox").first());
+            /* First "ContentBox" contains all basic details.
+             * <pre>
+             *   {@code
+             *     <div class="ContentBox">
+             *       <table>
+             *       <tr class="scan">
+             *         <td>
+             *           <a href="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg">
+             *           <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg"
+             *              alt="picture" class="scan"></a>
+             *         </td>
+             *         ...
+             *     }
+             * </pre>
+             */
+            Element img = mDoc.selectFirst("div.contentbox").selectFirst("img");
+            if (img != null) {
+                fetchCover(img.attr("src"), bookData);
+            }
         }
 
         return bookData;
@@ -762,42 +779,30 @@ public class IsfdbBook
     }
 
     /**
-     * First "ContentBox" contains all basic details.
-     * <pre>
-     *   {@code
-     *     <div class="ContentBox">
-     *       <table>
-     *       <tr class="scan">
-     *         <td>
-     *           <a href="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg">
-     *           <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg"
-     *              alt="picture" class="scan"></a>
-     *         </td>
-     *         ...
-     *     }
-     * </pre>
+     * Fetch the cover from the url. Uses the ISBN (if any) from the bookData bundle.
+     *
+     * @param coverUrl fully qualified url
+     * @param bookData destination bundle
      */
-    private void fetchCover(@NonNull final Bundle /* out */ bookData,
-                            @NonNull final Element contentBox) {
-        Element img = contentBox.selectFirst("img");
-        if (img != null) {
-            String coverUrl = img.attr("src");
-            String isbn = bookData.getString(DBDefinitions.KEY_ISBN, "");
-            if (isbn.isEmpty()) {
-                isbn = bookData.getString(DBDefinitions.KEY_ISFDB_ID, "");
-            }
-            String fileSpec = ImageUtils.saveImage(coverUrl, isbn, FILENAME_SUFFIX, null);
-
-            if (fileSpec != null) {
-                ArrayList<String> imageList =
-                        bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
-                if (imageList == null) {
-                    imageList = new ArrayList<>();
-                }
-                imageList.add(fileSpec);
-                bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
-            }
+    private void fetchCover(@NonNull final String coverUrl,
+                            @NonNull final Bundle /* in/out */ bookData) {
+        String isbn = bookData.getString(DBDefinitions.KEY_ISBN, "");
+        if (isbn.isEmpty()) {
+            isbn = bookData.getString(DBDefinitions.KEY_ISFDB_ID, "");
         }
+
+        String fileSpec = ImageUtils.saveImage(coverUrl, isbn, FILENAME_SUFFIX, null);
+
+        if (fileSpec != null) {
+            ArrayList<String> imageList =
+                    bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+            if (imageList == null) {
+                imageList = new ArrayList<>();
+            }
+            imageList.add(fileSpec);
+            bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
+        }
+
     }
 
     /**

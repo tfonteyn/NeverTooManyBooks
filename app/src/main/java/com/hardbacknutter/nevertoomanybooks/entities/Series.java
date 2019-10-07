@@ -494,10 +494,14 @@ public class Series
     /**
      * Set the unformatted number; as entered manually by the user.
      *
-     * @param number to use, cannot be {@code null}.
+     * @param number to use, a {@code null} is replaced by "".
      */
-    public void setNumber(@NonNull final String number) {
-        mNumber = number;
+    public void setNumber(@Nullable final String number) {
+        if (number == null) {
+            mNumber = "";
+        } else {
+            mNumber = number;
+        }
     }
 
     /**

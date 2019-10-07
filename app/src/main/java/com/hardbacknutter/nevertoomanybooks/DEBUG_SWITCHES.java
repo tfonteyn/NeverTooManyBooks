@@ -123,6 +123,8 @@ public final class DEBUG_SWITCHES {
     public static final boolean ISFDB_SEARCH = false;
     /** {@link IsfdbBook}. */
     public static final boolean ISFDB_LOAD_PAGE = false;
+    /** {@link com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoBook}. */
+    public static final boolean STRIP_INFO_LOAD_PAGE = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager}. */
     public static final boolean OPEN_LIBRARY_SEARCH = false;
     /** {@link DAO}. Check for leaking instances. */
@@ -206,7 +208,7 @@ public final class DEBUG_SWITCHES {
     static final boolean THEME = false;
     public static final boolean USER_MESSAGE_STACK_TRACE = false;
     public static final boolean PRUNE_LIST = false;
-    public static final boolean FIELD_FORMATTER = false;
+    public static final boolean FIELD_FORMATTER = true;
     public static final boolean BOOK_LOCALE = false;
 
     private DEBUG_SWITCHES() {

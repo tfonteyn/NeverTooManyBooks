@@ -122,6 +122,12 @@ public class OpenLibraryManager
         return SearchEngine.getPref().getString(PREFS_HOST_URL, "https://openlibrary.org");
     }
 
+    /**
+     * View a Book on the web site.
+     *
+     * @param context Current context
+     * @param bookId  site native book id to show
+     */
     public static void openWebsite(@NonNull final Context context,
                                    @NonNull final String bookId) {
         String url = getBaseURL() + "/books/" + bookId;

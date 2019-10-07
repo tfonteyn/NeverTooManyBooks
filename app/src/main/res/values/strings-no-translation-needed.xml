@@ -73,6 +73,7 @@
     <string name="open_library" translatable="false">OpenLibrary</string>
     <string name="isfdb" translatable="false">ISFDB</string>
     <string name="KBNL" translatable="false">KBNL</string>
+    <string name="stripinfo" translatable="false">stripinfo.be</string>
 
     <string name="amazon" translatable="false">Amazon</string>
     <!-- specific for a submenu title -->

@@ -79,6 +79,11 @@ public class Publisher
         mName = in.readString();
     }
 
+
+    public static Publisher fromString(final String name) {
+        return new Publisher(name);
+    }
+
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {

@@ -231,6 +231,12 @@ public class GoodreadsManager
         return BASE_URL;
     }
 
+    /**
+     * View a Book on the web site.
+     *
+     * @param context Current context
+     * @param bookId  site native book id to show
+     */
     public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {
         String url = getBaseURL() + "/book/show/" + bookId;

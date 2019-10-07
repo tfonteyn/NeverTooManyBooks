@@ -74,8 +74,7 @@ import static org.mockito.Mockito.when;
 class IsfdbBookTest {
 
     /** This test does not 'live' fetch the doc, but this is the correct baseUri. */
-    private static final String locationHeader = IsfdbManager.getBaseURL()
-                                                 + "/cgi-bin/pl.cgi?112781";
+    private static final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
     /** instead we read this file locally. */
     private static final String filename = "/isfdb-book-1.html";
     /** After mapping, the expected format (presuming the test runs in english Locale). */

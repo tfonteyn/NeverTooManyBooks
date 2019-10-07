@@ -94,6 +94,8 @@ public final class UniqueId {
     public static final String BKEY_AUTHOR_ARRAY = "author_array";
     /** Bundle key for {@code ParcelableArrayList<Series>}. */
     public static final String BKEY_SERIES_ARRAY = "series_array";
+    /** Bundle key for {@code ParcelableArrayList<Publisher>}. NOT FULLY SUPPORTED YET. */
+    public static final String BKEY_PUBLISHER_ARRAY = "publisher_array";
     /** Bundle key for {@code ParcelableArrayList<TocEntry>}. */
     public static final String BKEY_TOC_ENTRY_ARRAY = "toc_titles_array";
     /** Bundle key for {@code ParcelableArrayList<Bookshelf>}. */

@@ -207,6 +207,9 @@ public interface SearchEngine {
     /**
      * Check if the site is ISBN based only.
      *
+     * The default implementation assumes that the site can also use other criteria.
+     * Override and return {@code true} if the actual implementation cannot do this.
+     *
      * @return {@code true} if the site can only be searched with a valid ISBN
      */
     @AnyThread

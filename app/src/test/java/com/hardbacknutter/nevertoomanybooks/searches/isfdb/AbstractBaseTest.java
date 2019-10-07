@@ -95,6 +95,5 @@ class AbstractBaseTest {
 
     private static class DummyLoader
             extends AbstractBase {
-
     }
 }
