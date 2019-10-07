@@ -299,9 +299,7 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_BOOK_DATE_PUBLISHED;
     /**
      *  {@link #TBL_BOOKS}.
-     *  A String typed column due to supporting pre-decimal UK "Shilling/Pence" as used on
-     *  the ISFDB web site.
-     *  Hum... ISBN first intro 1970, Decimal day 1971... so very little overlap.
+     *  String typed. We cannot rely on prices fetched from the internet to be 100% parsable.
      */
     public static final DomainDefinition DOM_BOOK_PRICE_LISTED;
     /** {@link #TBL_BOOKS}. */
@@ -361,7 +359,10 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_BOOK_EDITION_BITMASK;
     /** {@link #TBL_BOOKS}. See {@link Book#TOC_SINGLE_AUTHOR_SINGLE_WORK}. */
     public static final DomainDefinition DOM_BOOK_TOC_BITMASK;
-    /** {@link #TBL_BOOKS}. */
+    /**
+     *  {@link #TBL_BOOKS}.
+     *  String typed. We cannot rely on prices fetched from the internet to be 100% parsable.
+     */
     public static final DomainDefinition DOM_BOOK_PRICE_PAID;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_PRICE_PAID_CURRENCY;
