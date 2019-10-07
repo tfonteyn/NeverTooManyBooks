@@ -169,7 +169,10 @@
     </style>
 
     <!-- Base style for Localized field; not to be used directly in layouts. -->
-    <style name="EditText.AutoComplete" />
+    <style name="EditText.AutoComplete">
+        <!-- default threshold is 1 which when used with Field formatters can get very tricky -->
+        <item name="android:completionThreshold">2</item>
+    </style>
     <!-- Base style for Localized field; not to be used directly in layouts. -->
     <style name="EditText.AutoComplete.Title" />
     <!-- Base style for Localized field; not to be used directly in layouts. -->

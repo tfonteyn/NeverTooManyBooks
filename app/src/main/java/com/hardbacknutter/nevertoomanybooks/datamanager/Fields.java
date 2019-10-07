@@ -1355,7 +1355,14 @@ public class Fields {
                 return "";
             }
 
-            return LanguageUtils.getDisplayName(Locale.getDefault(), source);
+            String formatted = LanguageUtils.getDisplayName(Locale.getDefault(), source);
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_FORMATTER) {
+                Logger.debug(this, "format",
+                             "source=`" + source + '`',
+                             "formatted=`" + formatted + '`');
+            }
+            return formatted;
         }
 
         /**

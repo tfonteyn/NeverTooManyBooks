@@ -70,7 +70,8 @@ public final class LanguageUtils {
     @NonNull
     public static String getDisplayName(@NonNull final Locale locale,
                                         @NonNull final String iso) {
-        Locale isoLocale = new Locale(iso3ToBibliographic(iso.trim()));
+        String localeLang = getIso2fromIso3(iso);
+        Locale isoLocale = new Locale(localeLang);
         if (LocaleUtils.isValid(isoLocale)) {
             return isoLocale.getDisplayLanguage(locale);
         }
@@ -115,6 +116,7 @@ public final class LanguageUtils {
         if (iso == null) {
             return source;
         }
+        // make sure we can use the resulting iso3 code for creating Locales.
         return iso3ToBibliographic(iso);
     }
 
@@ -149,7 +151,8 @@ public final class LanguageUtils {
      *
      * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      *
-     * @return ISO 639-1 (2-char) language code
+     * @return ISO 639-1 (2-char) language code, or the incoming string if conversion
+     * was not needed or failed.
      */
     public static String getIso2fromIso3(@NonNull final String iso3) {
         String source = iso3.trim();
@@ -198,8 +201,7 @@ public final class LanguageUtils {
                 return "tr";
 
             default:
-                // anything else is not supported, and (FLW) should never happen.
-                return "en";
+                return source;
         }
     }
 
@@ -299,85 +301,85 @@ public final class LanguageUtils {
         }
     }
 
-    /**
-     * Convert the 3-char bibliographic code to terminology code.
-     * The terminology code <strong>CANNOT</strong> be used with {@code new Locale()}.
-     *
-     * <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php">
-     * https://www.loc.gov/standards/iso639-2/php/code_list.php</a>
-     * <p>
-     * This is the entire set correct as on 2019-08-22.
-     */
-    @SuppressWarnings("unused")
-    @NonNull
-    public static String iso3ToTerminology(@NonNull final String lang) {
-        String source = lang.trim();
-        switch (source) {
-            // Albanian
-            case "alb":
-                return "sqi";
-            // Armenian
-            case "arm":
-                return "hye";
-            // Basque
-            case "baq":
-                return "eus";
-            // Burmese
-            case "bur":
-                return "mya";
-            // Chinese
-            case "chi":
-                return "zho";
-            // Czech
-            case "cze":
-                return "ces";
-            // Dutch
-            case "dut":
-                return "nld";
-            // French
-            case "fre":
-                return "fra";
-            // Georgian
-            case "geo":
-                return "kat";
-            // German
-            case "ger":
-                return "deu";
-            // Greek
-            case "gre":
-                return "ell";
-            // Icelandic
-            case "ice":
-                return "isl";
-            // Macedonian
-            case "mac":
-                return "mkd";
-            // Maori
-            case "mao":
-                return "mri";
-            // Malay
-            case "may":
-                return "msa";
-            // Persian
-            case "per":
-                return "fas";
-            // Romanian
-            case "rum":
-                return "ron";
-            // Slovak
-            case "slo":
-                return "slk";
-            // Tibetan
-            case "tib":
-                return "bod";
-            // Welsh
-            case "wel":
-                return "cym";
-
-            default:
-                return source;
-        }
-    }
+//    /**
+//     * Convert the 3-char bibliographic code to terminology code.
+//     * The terminology code <strong>CANNOT</strong> be used with {@code new Locale()}.
+//     *
+//     * <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php">
+//     * https://www.loc.gov/standards/iso639-2/php/code_list.php</a>
+//     * <p>
+//     * This is the entire set correct as on 2019-08-22.
+//     */
+//    @SuppressWarnings("unused")
+//    @NonNull
+//    public static String iso3ToTerminology(@NonNull final String lang) {
+//        String source = lang.trim();
+//        switch (source) {
+//            // Albanian
+//            case "alb":
+//                return "sqi";
+//            // Armenian
+//            case "arm":
+//                return "hye";
+//            // Basque
+//            case "baq":
+//                return "eus";
+//            // Burmese
+//            case "bur":
+//                return "mya";
+//            // Chinese
+//            case "chi":
+//                return "zho";
+//            // Czech
+//            case "cze":
+//                return "ces";
+//            // Dutch
+//            case "dut":
+//                return "nld";
+//            // French
+//            case "fre":
+//                return "fra";
+//            // Georgian
+//            case "geo":
+//                return "kat";
+//            // German
+//            case "ger":
+//                return "deu";
+//            // Greek
+//            case "gre":
+//                return "ell";
+//            // Icelandic
+//            case "ice":
+//                return "isl";
+//            // Macedonian
+//            case "mac":
+//                return "mkd";
+//            // Maori
+//            case "mao":
+//                return "mri";
+//            // Malay
+//            case "may":
+//                return "msa";
+//            // Persian
+//            case "per":
+//                return "fas";
+//            // Romanian
+//            case "rum":
+//                return "ron";
+//            // Slovak
+//            case "slo":
+//                return "slk";
+//            // Tibetan
+//            case "tib":
+//                return "bod";
+//            // Welsh
+//            case "wel":
+//                return "cym";
+//
+//            default:
+//                return source;
+//        }
+//    }
 
     /**
      * generate initial language2iso mappings.
