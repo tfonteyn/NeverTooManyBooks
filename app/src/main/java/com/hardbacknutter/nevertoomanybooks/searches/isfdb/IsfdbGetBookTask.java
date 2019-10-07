@@ -54,7 +54,7 @@ public class IsfdbGetBookTask
     /** whether the TOC should get parsed for Series information. */
     private final boolean mAddSeriesFromToc;
     @Nullable
-    private final List<Editions.Edition> mEditions;
+    private final List<IsfdbEditionsHandler.Edition> mEditions;
 
     /**
      * Constructor. Initiate a single book lookup by edition.
@@ -64,7 +64,7 @@ public class IsfdbGetBookTask
      * @param taskListener     where to send the results to
      */
     @UiThread
-    public IsfdbGetBookTask(@NonNull final List<Editions.Edition> editions,
+    public IsfdbGetBookTask(@NonNull final List<IsfdbEditionsHandler.Edition> editions,
                             final boolean addSeriesFromToc,
                             @NonNull final IsfdbResultsListener taskListener) {
         mIsfdbId = 0;
@@ -99,10 +99,10 @@ public class IsfdbGetBookTask
         Thread.currentThread().setName("IsfdbGetBookTask");
         try {
             if (mEditions != null) {
-                return new IsfdbBook().fetch(mEditions, mAddSeriesFromToc, false);
+                return new IsfdbBookHandler().fetch(mEditions, mAddSeriesFromToc, false);
 
             } else if (mIsfdbId != 0) {
-                return new IsfdbBook().fetch(mIsfdbId, mAddSeriesFromToc, false);
+                return new IsfdbBookHandler().fetch(mIsfdbId, mAddSeriesFromToc, false);
 
             } else {
                 if (BuildConfig.DEBUG /* always */) {

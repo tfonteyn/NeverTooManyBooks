@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 
 /**
  * Provide a more or less robust base to load a url and parse the html with Jsoup.
- * Needed due to the size of some html pages we're parsing.
+ * The extra safeguards are needed due to the size of some html pages we're parsing.
  */
 public abstract class JsoupBase {
 

@@ -71,7 +71,7 @@ import static org.mockito.Mockito.when;
  * <a href="http://www.isfdb.org/cgi-bin/pl.cgi?112781">
  * http://www.isfdb.org/cgi-bin/pl.cgi?112781</a>
  */
-class IsfdbBookTest {
+class IsfdbBookHandlerTest {
 
     /** This test does not 'live' fetch the doc, but this is the correct baseUri. */
     private static final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
@@ -130,9 +130,9 @@ class IsfdbBookTest {
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        IsfdbBook isfdbBook = new IsfdbBook(doc);
+        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(doc);
         // we've set the doc, so no internet download will be done.
-        Bundle bookData = isfdbBook.parseDoc(mBundle, false, false);
+        Bundle bookData = isfdbBookHandler.parseDoc(mBundle, false, false);
 
         assertFalse(bookData.isEmpty());
 
@@ -141,13 +141,13 @@ class IsfdbBookTest {
         // On the site: "Date: 1986-10-00". Our code substitutes "00" with "01"
         assertEquals("1986-10-01", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("0413600106", bookData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("9780413600103", bookData.getString(IsfdbBook.BookField.ISBN_2));
+        assertEquals("9780413600103", bookData.getString(IsfdbBookHandler.BookField.ISBN_2));
         assertEquals("Methuen", bookData.getString(DBDefinitions.KEY_PUBLISHER));
         assertEquals("1.95", bookData.getString(DBDefinitions.KEY_PRICE_LISTED));
         assertEquals("GBP", bookData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
         assertEquals("159", bookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("pb", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("COLLECTION", bookData.getString(IsfdbBook.BookField.BOOK_TYPE));
+        assertEquals("COLLECTION", bookData.getString(IsfdbBookHandler.BookField.BOOK_TYPE));
         assertEquals(Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS,
                      bookData.getLong(DBDefinitions.KEY_TOC_BITMASK));
 

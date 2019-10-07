@@ -194,7 +194,7 @@ public final class AmazonManager
         Bundle bookData = new Bundle();
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        SearchAmazonHandler handler = new SearchAmazonHandler(bookData, fetchThumbnail);
+        AmazonHandler handler = new AmazonHandler(bookData, fetchThumbnail);
 
         // See class docs: adding throttling
         THROTTLER.waitUntilRequestAllowed();

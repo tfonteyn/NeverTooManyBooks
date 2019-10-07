@@ -70,7 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsFromInternetTask;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.Editions;
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbEditionsHandler;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
@@ -123,7 +123,7 @@ public class EditBookTocFragment
      * We'll try them one by one if the user asks for a re-try.
      */
     @Nullable
-    private ArrayList<Editions.Edition> mIsfdbEditions;
+    private ArrayList<IsfdbEditionsHandler.Edition> mIsfdbEditions;
     private final IsfdbResultsListener mIsfdbResultsListener = new IsfdbResultsListener() {
         /**
          * we got a book.
@@ -174,7 +174,8 @@ public class EditBookTocFragment
          * we got one or more editions from ISFDB.
          * Store the url's locally as the user might want to try the next in line
          */
-        public void onGotIsfdbEditions(@Nullable final ArrayList<Editions.Edition> editions) {
+        public void onGotIsfdbEditions(
+                @Nullable final ArrayList<IsfdbEditionsHandler.Edition> editions) {
             mIsfdbEditions = editions != null ? editions : new ArrayList<>();
             if (!mIsfdbEditions.isEmpty()) {
                 new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(), this).execute();

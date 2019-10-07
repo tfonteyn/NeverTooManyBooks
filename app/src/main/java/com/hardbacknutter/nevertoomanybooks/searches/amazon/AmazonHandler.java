@@ -214,7 +214,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
  * https://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_response_elements.html
  */
 @SuppressWarnings("HtmlTagCanBeJavadocTag")
-class SearchAmazonHandler
+class AmazonHandler
         extends DefaultHandler {
 
     /** file suffix for cover files. */
@@ -317,8 +317,8 @@ class SearchAmazonHandler
      * @param bookData       Bundle to save results in
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
-    SearchAmazonHandler(@NonNull final Bundle bookData,
-                        final boolean fetchThumbnail) {
+    AmazonHandler(@NonNull final Bundle bookData,
+                  final boolean fetchThumbnail) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
     }

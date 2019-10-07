@@ -390,7 +390,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * </pre>
  * but in both cases, it should be noted that the covers are still available.
  */
-class SearchLibraryThingHandler
+class LibraryThingHandler
         extends DefaultHandler {
 
     /** some common XML attributes. */
@@ -453,7 +453,7 @@ class SearchLibraryThingHandler
      *
      * @param bookData Bundle to save results in
      */
-    SearchLibraryThingHandler(@NonNull final Bundle /* out */bookData) {
+    LibraryThingHandler(@NonNull final Bundle /* out */bookData) {
         mBookData = bookData;
     }
 

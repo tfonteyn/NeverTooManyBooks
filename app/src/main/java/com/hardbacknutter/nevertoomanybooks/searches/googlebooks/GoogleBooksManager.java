@@ -114,11 +114,11 @@ public final class GoogleBooksManager
         SAXParserFactory factory = SAXParserFactory.newInstance();
 
         // The main handler can return multiple books ('entry' elements)
-        SearchGoogleBooksHandler handler = new SearchGoogleBooksHandler();
+        GoogleBooksHandler handler = new GoogleBooksHandler();
 
         // The entry handler takes care of an individual book ('entry')
-        SearchGoogleBooksEntryHandler entryHandler =
-                new SearchGoogleBooksEntryHandler(bookData, fetchThumbnail, isbn);
+        GoogleBooksEntryHandler entryHandler =
+                new GoogleBooksEntryHandler(bookData, fetchThumbnail, isbn);
 
         String url = getBaseURL() + "/books/feeds/volumes?" + query;
 

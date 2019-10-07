@@ -137,10 +137,10 @@ public class IsfdbManager
                          final boolean fetchThumbnail)
             throws IOException {
 
-        List<Editions.Edition> editions;
+        List<IsfdbEditionsHandler.Edition> editions;
 
         if (ISBN.isValid(isbn)) {
-            editions = new Editions().fetch(isbn);
+            editions = new IsfdbEditionsHandler().fetch(isbn);
 
         } else {
             String url = getBaseURL() + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
@@ -186,14 +186,14 @@ public class IsfdbManager
             // &USE_5=pub_title&O_5=exact&TERM_5=
             // &USE_6=pub_title&O_6=exact&TERM_6=
 
-            editions = new Editions().fetchPath(url);
+            editions = new IsfdbEditionsHandler().fetchPath(url);
         }
 
         if (!editions.isEmpty()) {
             boolean addSeriesFromToc =
                     PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                                      .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC, false);
-            return new IsfdbBook().fetch(editions, addSeriesFromToc, fetchThumbnail);
+            return new IsfdbBookHandler().fetch(editions, addSeriesFromToc, fetchThumbnail);
         } else {
             return new Bundle();
         }

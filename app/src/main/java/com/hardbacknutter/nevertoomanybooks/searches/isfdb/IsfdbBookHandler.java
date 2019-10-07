@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
-public class IsfdbBook
+public class IsfdbBookHandler
         extends AbstractBase {
 
     /** file suffix for cover files. */
@@ -146,7 +146,7 @@ public class IsfdbBook
     /** The fully qualified ISFDB search url. */
     private String mPath;
     /** List of all editions (ISFDB 'publicationRecord') of this book. */
-    private List<Editions.Edition> mEditions;
+    private List<IsfdbEditionsHandler.Edition> mEditions;
 
     /** set during book load, used during content table load. */
     @Nullable
@@ -158,7 +158,7 @@ public class IsfdbBook
     /**
      * Constructor.
      */
-    IsfdbBook() {
+    IsfdbBookHandler() {
         super();
     }
 
@@ -168,12 +168,12 @@ public class IsfdbBook
      * @param doc the JSoup Document.
      */
     @VisibleForTesting
-    IsfdbBook(@NonNull final Document doc) {
+    IsfdbBookHandler(@NonNull final Document doc) {
         super(doc);
     }
 
     @Nullable
-    public List<Editions.Edition> getEditions() {
+    public List<IsfdbEditionsHandler.Edition> getEditions() {
         return mEditions;
     }
 
@@ -238,14 +238,14 @@ public class IsfdbBook
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    public Bundle fetch(@Size(min = 1) @NonNull final List<Editions.Edition> editions,
+    public Bundle fetch(@Size(min = 1) @NonNull final List<IsfdbEditionsHandler.Edition> editions,
                         final boolean addSeriesFromToc,
                         final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
         mEditions = editions;
 
-        Editions.Edition edition = editions.get(0);
+        IsfdbEditionsHandler.Edition edition = editions.get(0);
         mPath = IsfdbManager.getBaseURL() + String.format(BOOK_URL, edition.isfdbId);
 
         // check if we already got the book

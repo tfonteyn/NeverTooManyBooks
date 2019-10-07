@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class IsfdbGetEditionsTask
-        extends AsyncTask<Void, Void, ArrayList<Editions.Edition>> {
+        extends AsyncTask<Void, Void, ArrayList<IsfdbEditionsHandler.Edition>> {
 
     @NonNull
     private final String mIsbn;
@@ -66,10 +66,10 @@ public class IsfdbGetEditionsTask
     @Override
     @Nullable
     @WorkerThread
-    protected ArrayList<Editions.Edition> doInBackground(final Void... params) {
+    protected ArrayList<IsfdbEditionsHandler.Edition> doInBackground(final Void... params) {
         Thread.currentThread().setName("IsfdbGetEditionsTask " + mIsbn);
         try {
-            return new Editions().fetch(mIsbn);
+            return new IsfdbEditionsHandler().fetch(mIsbn);
         } catch (@NonNull final SocketTimeoutException e) {
             Logger.warn(this, "doInBackground", e.getLocalizedMessage());
             return null;
@@ -78,7 +78,7 @@ public class IsfdbGetEditionsTask
 
     @Override
     @UiThread
-    protected void onPostExecute(@Nullable final ArrayList<Editions.Edition> result) {
+    protected void onPostExecute(@Nullable final ArrayList<IsfdbEditionsHandler.Edition> result) {
         // always send result, even if empty
         if (mTaskListener.get() != null) {
             mTaskListener.get().onGotIsfdbEditions(result);

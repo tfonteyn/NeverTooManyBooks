@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * <p>
  * Uses JSoup screen scraping.
  */
-public class Editions
+public class IsfdbEditionsHandler
         extends AbstractBase {
 
     /** Search URL template. */
@@ -59,7 +59,7 @@ public class Editions
     /**
      * Constructor.
      */
-    public Editions() {
+    public IsfdbEditionsHandler() {
     }
 
     /**

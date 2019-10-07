@@ -232,7 +232,7 @@ public class LibraryThingManager
         String url = String.format(EDITIONS_URL, isbn);
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        SearchLibraryThingEditionHandler handler = new SearchLibraryThingEditionHandler(editions);
+        LibraryThingEditionHandler handler = new LibraryThingEditionHandler(editions);
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
         THROTTLER.waitUntilRequestAllowed();
@@ -316,7 +316,7 @@ public class LibraryThingManager
         Bundle bookData = new Bundle();
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        SearchLibraryThingHandler handler = new SearchLibraryThingHandler(bookData);
+        LibraryThingHandler handler = new LibraryThingHandler(bookData);
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
         THROTTLER.waitUntilRequestAllowed();

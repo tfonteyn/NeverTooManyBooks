@@ -43,7 +43,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * The response gives us a "feed" with multiple "entry" elements.
  * What our code does it get the first "entry" and read the "id" element,
  * which is a URL to the entry.
- * We then pass this URL to {@link SearchGoogleBooksEntryHandler} which FETCHES THAT URL
+ * We then pass this URL to {@link GoogleBooksEntryHandler} which FETCHES THAT URL
  * and parses it.
  * <p>
  * FIXME: the GoogleBooks feed/entry fetching is sub-optimal and ambiguous.
@@ -670,7 +670,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *     }
  * </pre>
  */
-class SearchGoogleBooksHandler
+class GoogleBooksHandler
         extends DefaultHandler {
 
     /** XML tags/attrs we look for. */

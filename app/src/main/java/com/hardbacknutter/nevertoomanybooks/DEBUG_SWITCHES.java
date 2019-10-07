@@ -32,7 +32,8 @@ import android.app.Activity;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbBook;
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbBookHandler;
+import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoBookHandler;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -119,11 +120,11 @@ public final class DEBUG_SWITCHES {
     /* ****************************************************************************************** */
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager}. */
     public static final boolean LIBRARY_THING_MANAGER = false;
-    /** {@link IsfdbBook}. */
+    /** {@link IsfdbBookHandler}. */
     public static final boolean ISFDB_SEARCH = false;
-    /** {@link IsfdbBook}. */
+    /** {@link IsfdbBookHandler}. */
     public static final boolean ISFDB_LOAD_PAGE = false;
-    /** {@link com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoBook}. */
+    /** {@link StripInfoBookHandler}. */
     public static final boolean STRIP_INFO_LOAD_PAGE = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager}. */
     public static final boolean OPEN_LIBRARY_SEARCH = false;

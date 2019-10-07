@@ -157,7 +157,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * <p>
  * 0340198273
  */
-class SearchGoogleBooksEntryHandler
+class GoogleBooksEntryHandler
         extends DefaultHandler {
 
     /** file suffix for cover files. */
@@ -239,9 +239,9 @@ class SearchGoogleBooksEntryHandler
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      * @param isbn           of the book
      */
-    SearchGoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
-                                  final boolean fetchThumbnail,
-                                  @Nullable final String isbn) {
+    GoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
+                            final boolean fetchThumbnail,
+                            @Nullable final String isbn) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
         mIsbn = isbn;
