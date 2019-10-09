@@ -74,39 +74,41 @@ public class EditBookPublicationFragment
 
         // book fields
 
-        fields.add(R.id.pages, DBDefinitions.KEY_PAGES)
+        fields.addString(R.id.pages, DBDefinitions.KEY_PAGES)
               .setRelatedFields(R.id.lbl_pages);
 
-        field = fields.add(R.id.format, DBDefinitions.KEY_FORMAT)
+        field = fields.addString(R.id.format, DBDefinitions.KEY_FORMAT)
                       .setFormatter(new Fields.FormatFormatter())
                       .setRelatedFields(R.id.lbl_format);
         initValuePicker(field, R.string.lbl_format, R.id.btn_format,
                         mBookModel.getFormats());
 
-        field = fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
+        field = fields.addString(R.id.language, DBDefinitions.KEY_LANGUAGE)
                       .setFormatter(new Fields.LanguageFormatter())
                       .setRelatedFields(R.id.lbl_language);
         initValuePicker(field, R.string.lbl_language, R.id.btn_language,
                         mBookModel.getLanguagesCodes());
 
-        field = fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER)
+        field = fields.addString(R.id.publisher, DBDefinitions.KEY_PUBLISHER)
                       .setRelatedFields(R.id.lbl_publisher);
         initValuePicker(field, R.string.lbl_publisher, R.id.btn_publisher,
                         mBookModel.getPublishers());
 
-        field = fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
+        field = fields.addString(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
                       .setFormatter(dateFormatter)
                       .setRelatedFields(R.id.lbl_date_published);
         initPartialDatePicker(field, R.string.lbl_date_published, false);
 
-        field = fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
+        field = fields.addString(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
                       .setFormatter(dateFormatter)
                       .setRelatedFields(R.id.lbl_first_publication);
         initPartialDatePicker(field, R.string.lbl_first_publication, false);
 
-        fields.addMonetary(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED);
+        fields.addMonetary(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED)
+              .setInputIsDecimal();
 
-        field = fields.add(R.id.price_listed_currency, DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
+        field = fields
+                .addString(R.id.price_listed_currency, DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
                       .setRelatedFields(R.id.lbl_price_listed, R.id.price_listed_currency);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_listed_currency,
                         mBookModel.getListPriceCurrencyCodes());

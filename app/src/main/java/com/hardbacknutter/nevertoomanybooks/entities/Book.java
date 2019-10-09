@@ -135,7 +135,7 @@ public class Book
      * <p>
      * 0%10000000 = book club
      * <p>
-     * NEWTHINGS: edition
+     * NEWTHINGS: edition: add bit flag
      * Never change the bit value!
      */
     /** first edition ever of this work/content/story. */
@@ -153,7 +153,7 @@ public class Book
     private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
 
     /*
-     * NEWTHINGS: edition.
+     * NEWTHINGS: edition: add label for the type
      *
      * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
      */
@@ -309,8 +309,8 @@ public class Book
                          getLong(DBDefinitions.KEY_TOC_BITMASK));
         bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
                            getString(DBDefinitions.KEY_DATE_PUBLISHED));
-        bookData.putString(DBDefinitions.KEY_PRICE_LISTED,
-                           getString(DBDefinitions.KEY_PRICE_LISTED));
+        bookData.putDouble(DBDefinitions.KEY_PRICE_LISTED,
+                           getDouble(DBDefinitions.KEY_PRICE_LISTED));
         bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                            getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
         bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
@@ -354,8 +354,8 @@ public class Book
                            getString(DBDefinitions.KEY_READ_END));
         bookData.putString(DBDefinitions.KEY_DATE_ACQUIRED,
                            getString(DBDefinitions.KEY_DATE_ACQUIRED));
-        bookData.putString(DBDefinitions.KEY_PRICE_PAID,
-                           getString(DBDefinitions.KEY_PRICE_PAID));
+        bookData.putDouble(DBDefinitions.KEY_PRICE_PAID,
+                           getDouble(DBDefinitions.KEY_PRICE_PAID));
         bookData.putString(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
                            getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
 
@@ -435,12 +435,14 @@ public class Book
             return this;
         }
 
-        try (BookCursor book = db.fetchBookById(bookId)) {
-            if (book.moveToFirst()) {
+        try (BookCursor bookCursor = db.fetchBookById(bookId)) {
+            if (bookCursor.moveToFirst()) {
                 // clean slate
                 clear();
+                // allow the BookCursor to retrieve the real column types.
+                bookCursor.setDb(db);
                 // Put all cursor fields in collection
-                putAll(book);
+                putAll(bookCursor);
                 // load lists (or init with empty lists)
                 //ENHANCE: use SQL GROUP_CONCAT() to get these lists at the same time as the book.
                 //pro: one call for book and sublist(s)
@@ -721,6 +723,20 @@ public class Book
             // if not, take the long road.
             return db.getLoaneeByBookId(getId());
         }
+    }
+
+    /**
+     * Check if this book has at least one valid external id.
+     *
+     * @return {@code true} if we have an id
+     */
+    public boolean hasExternalId() {
+        //NEWTHINGS: add new site specific ID: add
+        return 0 != getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)
+               || 0 != getLong(DBDefinitions.KEY_LIBRARY_THING_ID)
+               || 0 != getLong(DBDefinitions.KEY_STRIP_INFO_BE_ID)
+               || 0 != getLong(DBDefinitions.KEY_ISFDB_ID)
+               || !getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty();
     }
 
     /**

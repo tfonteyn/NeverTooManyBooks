@@ -67,8 +67,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -177,7 +175,7 @@ public class Fields {
         mAfterFieldChangeListener = listener;
     }
 
-    private void afterFieldChange(@NonNull final Field field,
+    private void afterFieldChange(@NonNull final Field<?> field,
                                   @Nullable final Object newValue) {
         if (mAfterFieldChangeListener != null) {
             //noinspection unchecked
@@ -206,15 +204,34 @@ public class Fields {
      * @return The resulting Field.
      */
     @NonNull
-    public Field<String> add(@IdRes final int fieldId,
-                             @NonNull final String key) {
+    public Field<String> addString(@IdRes final int fieldId,
+                                   @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
             if (key.isEmpty()) {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<String> field = Field.newField(this, fieldId, key, key);
+        Field<String> field = new Field<>(this, fieldId, key, key);
+        mAllFields.put(fieldId, field);
+        return field;
+    }
+
+    /**
+     * Add a field to this collection.
+     *
+     * @param fieldId         Layout ID
+     * @param key             Key used to access a {@link DataManager} or {@code Bundle}.
+     *                        Set to "" to suppress all access.
+     * @param visibilityGroup Group name to determine visibility.
+     *
+     * @return The resulting Field.
+     */
+    @NonNull
+    public Field<String> addString(@IdRes final int fieldId,
+                                   @NonNull final String key,
+                                   @NonNull final String visibilityGroup) {
+        Field<String> field = new Field<>(this, fieldId, key, visibilityGroup);
         mAllFields.put(fieldId, field);
         return field;
     }
@@ -236,7 +253,30 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<Boolean> field = Field.newField(this, fieldId, key, key);
+        Field<Boolean> field = new Field<>(this, fieldId, key, key);
+        mAllFields.put(fieldId, field);
+        return field;
+    }
+
+    /**
+     * Add a Long field to this collection.
+     *
+     * @param fieldId Layout ID
+     * @param key     Key used to access a {@link DataManager} or {@code Bundle}.
+     *
+     * @return The resulting Field.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    public Field<Long> addLong(@IdRes final int fieldId,
+                               @NonNull final String key) {
+        if (BuildConfig.DEBUG /* always */) {
+            // sanity check
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException("key should not be empty");
+            }
+        }
+        Field<Long> field = new Field<>(this, fieldId, key, key);
         mAllFields.put(fieldId, field);
         return field;
     }
@@ -259,7 +299,7 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<Float> field = Field.newField(this, fieldId, key, key);
+        Field<Float> field = new Field<>(this, fieldId, key, key);
         mAllFields.put(fieldId, field);
         return field;
     }
@@ -273,7 +313,7 @@ public class Fields {
      * @return The resulting Field.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Field<String> addMonetary(@IdRes final int fieldId,
+    public Field<Double> addMonetary(@IdRes final int fieldId,
                                      @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
@@ -281,103 +321,40 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<String> field = Field.newField(this, fieldId, key, key);
+        Field<Double> field = new Field<>(this, fieldId, key, key);
         mAllFields.put(fieldId, field);
-
-        initDecimalField(field);
-
         return field;
     }
 
     /**
-     * URGENT: the input panel only allows '.' parsing sees that (correctly) as a thousands sep.
+     * Add a Monetary field to this collection.
      *
-     * @param field {@link Field} to process
-     */
-    private void initDecimalField(@NonNull final Field<String> field) {
-
-        DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
-        DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
-
-        //String thousandSeparator = Character.toString(symbols.getGroupingSeparator());
-
-        final String decimalSeparator = Character.toString(symbols.getDecimalSeparator());
-
-        final TextView editText = field.getView();
-
-        editText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void beforeTextChanged(CharSequence s,
-                                          int start,
-                                          int count,
-                                          int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s,
-                                      int start,
-                                      int before,
-                                      int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(@NonNull final Editable editable) {
-                // allow only one decimal separator
-                if (editable.toString().contains(decimalSeparator)) {
-                    editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
-                } else {
-                    editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"
-                                                                          + decimalSeparator));
-                }
-            }
-        });
-    }
-
-    /**
-     * Add a field to this collection.
-     *
-     * @param fieldId         Layout ID
-     * @param key             Key used to access a {@link DataManager} or {@code Bundle}.
-     *                        Set to "" to suppress all access.
-     * @param visibilityGroup Group name to determine visibility.
+     * @param fieldId Layout ID
+     * @param key     Key used to access a {@link DataManager} or {@code Bundle}.
      *
      * @return The resulting Field.
      */
-    @NonNull
-    public Field<String> add(@IdRes final int fieldId,
-                             @NonNull final String key,
-                             @NonNull final String visibilityGroup) {
-        Field<String> field = Field.newField(this, fieldId, key, visibilityGroup);
+    @SuppressWarnings("UnusedReturnValue")
+    public Field<Double> addMonetary(@IdRes final int fieldId,
+                                     @NonNull final String key,
+                                     @NonNull final String visibilityGroup) {
+        Field<Double> field = new Field<>(this, fieldId, key, visibilityGroup);
         mAllFields.put(fieldId, field);
         return field;
-    }
-
-    /**
-     * Check if the field exists in this collection.
-     *
-     * @param fieldId to test
-     *
-     * @return {@code true} if present
-     */
-    public boolean contains(@IdRes final int fieldId) {
-        return mAllFields.get(fieldId) != null;
     }
 
     /**
      * Return the Field associated with the passed layout ID.
-     * <p>
-     * Use {@link #contains(int)} for to check if needed.
+     *
+     * @param <T> type of Field value.
      *
      * @return Associated Field.
      *
      * @throws IllegalArgumentException if the field does not exist.
      */
     @NonNull
-    public Field getField(@IdRes final int fieldId) {
-        Field field = mAllFields.get(fieldId);
+    public <T> Field<T> getField(@IdRes final int fieldId) {
+        Field<T> field = (Field<T>) mAllFields.get(fieldId);
         if (field != null) {
             return field;
         }
@@ -416,7 +393,7 @@ public class Fields {
         } else {
             for (Field field : mAllFields.values()) {
                 if (!field.mKey.isEmpty() && rawData.containsKey(field.mKey)) {
-                    String value = rawData.getString(field.mKey);
+                    Object value = rawData.get(field.mKey);
                     if (value != null) {
                         field.setValue(value);
                     }
@@ -460,6 +437,8 @@ public class Fields {
 
     /**
      * added to the Fields collection with (2018-11-11) a simple call to setDirty(true).
+     *
+     * @param <T> type of Field value.
      */
     public interface AfterFieldChangeListener<T> {
 
@@ -471,70 +450,94 @@ public class Fields {
      * Interface for view-specific accessors. One of these must be implemented for
      * each view type that is supported.
      *
-     * @param <T> type of Field
+     * @param <T> type of Field value.
      */
     public interface FieldDataAccessor<T> {
 
+        /**
+         * Set the optional formatter.
+         *
+         * @param formatter to use
+         */
         void setFormatter(@NonNull FieldFormatter formatter);
 
+        /**
+         * Call the wrapped formatter. See {@link FieldFormatter}.
+         *
+         * @param source Input value
+         *
+         * @return The formatted value.
+         */
         @NonNull
-        String format(@NonNull Field<T> field,
-                      @Nullable T source);
+        String format(@Nullable T source);
 
+        /**
+         * Call the wrapped formatter. See {@link FieldFormatter}.
+         *
+         * @param source The value to be back-translated
+         *
+         * @return The extracted value
+         */
         @NonNull
-        String extract(@NonNull Field<T> field,
-                       @NonNull String source);
+        T extract(@NonNull String source);
 
         /**
          * Get the value from the view associated with the Field and return it as an Object.
          *
-         * @param field Field
+         * <strong>Note:</strong> an implementation should always return a value.
+         * This would/should usually be the default the Widget.
+         * e.g. a text based widget should return "" even if the value was never set.
          *
-         * @return The most natural value to associate with the View value.
+         * @return the value
          */
         @NonNull
-        T getValue(@NonNull Field<T> field);
+        T getValue();
 
         /**
-         * Use the passed String to set the Field.
+         * Use the passed value to set the Field.
+         * <p>
+         * If {@code null} is passed in, the implementation should set the widget to
+         * its native default value.
          *
-         * @param source String value to set.
-         * @param target Field to set the value on
+         * @param value to set.
          */
-        void setValue(@NonNull T source,
-                      @NonNull Field<T> target);
+        void setValue(@Nullable T value);
 
         /**
          * Fetch the value from the passed Bundle, and set the Field.
          *
          * @param source Collection to load data from.
-         * @param target Field to set the value on
          */
-        void setValue(@NonNull Bundle source,
-                      @NonNull Field<T> target);
+        void setValue(@NonNull Bundle source);
 
         /**
          * Fetch the value from the passed DataManager, and set the Field.
          *
          * @param source Collection to load data from.
-         * @param target Field to set the value on
          */
-        void setValue(@NonNull DataManager source,
-                      @NonNull Field<T> target);
+        void setValue(@NonNull DataManager source);
 
         /**
          * Get the value from the view associated with the Field
-         * and store a <strong>native typed value</strong> in the passed collection.
+         * and put a <strong>native typed value</strong> in the passed collection.
          *
-         * @param source Field
          * @param target Collection to save value into.
          */
-        void putValueInto(@NonNull Field<T> source,
-                          @NonNull DataManager target);
+        void getValueAndPut(@NonNull DataManager target);
+
+        /**
+         * Check if this field is considered to be 'empty'.
+         * The encapsulated type decides what 'empty' means.
+         *
+         * @return {@code true} if empty.
+         */
+        boolean isEmpty();
     }
 
     /**
      * Interface definition for Field formatter.
+     *
+     * @param <T> type of Field value.
      */
     public interface FieldFormatter<T> {
 
@@ -562,8 +565,8 @@ public class Fields {
          * @return The extracted value
          */
         @NonNull
-        String extract(@NonNull Field<T> field,
-                       @NonNull String source);
+        T extract(@NonNull Field<T> field,
+                  @NonNull String source);
     }
 
     /**
@@ -581,14 +584,16 @@ public class Fields {
 
     /**
      * TextWatcher for EditText fields. Sets the Field value after each EditText change.
+     *
+     * @param <T> type of Field value.
      */
-    private static class EditTextWatcher
+    private static class EditTextWatcher<T>
             implements TextWatcher {
 
         @NonNull
-        private final Field<String> field;
+        private final Field<T> field;
 
-        EditTextWatcher(@NonNull final Field<String> field) {
+        EditTextWatcher(@NonNull final Field<T> field) {
             this.field = field;
         }
 
@@ -609,7 +614,7 @@ public class Fields {
         @Override
         public void afterTextChanged(@NonNull final Editable s) {
             // extract to native value
-            String value = field.extract(s.toString().trim());
+            T value = field.extract(s.toString().trim());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_FORMATTER) {
                 Logger.debug(this, "afterTextChanged",
@@ -625,13 +630,22 @@ public class Fields {
     }
 
 
-    /** Base implementation. */
+    /**
+     * Base implementation.
+     *
+     * @param <T> type of Field value.
+     */
     private abstract static class BaseDataAccessor<T>
             implements FieldDataAccessor<T> {
 
+        @NonNull
+        final Field<T> mField;
         @Nullable
         private FieldFormatter<T> mFormatter;
 
+        BaseDataAccessor(@NonNull final Field<T> field) {
+            mField = field;
+        }
 
         public void setFormatter(@NonNull final FieldFormatter formatter) {
             //noinspection unchecked
@@ -641,17 +655,26 @@ public class Fields {
         /**
          * Wrapper around {@link FieldFormatter#format}.
          *
-         * @param field  whose FieldFormatter will be used
          * @param source Input value
          *
          * @return The formatted value
          */
         @NonNull
-        public String format(@NonNull final Field<T> field,
-                             @Nullable final T source) {
+        public String format(@Nullable final T source) {
             if (mFormatter != null) {
-                return mFormatter.format(field, source);
-            } else if (source != null) {
+                try {
+                    return mFormatter.format(mField, source);
+
+                } catch (@NonNull final ClassCastException e) {
+                    // Due to the way a Book loads data from the database,
+                    // it's possible that it gets the column type wrong.
+                    // See {@link BookCursor} class docs.
+                    Logger.error(this, e, source);
+                }
+            }
+
+            // if we don't have a formatter, or if we had a ClassCastException:
+            if (source != null) {
                 return source.toString();
             } else {
                 return "";
@@ -661,18 +684,18 @@ public class Fields {
         /**
          * Wrapper around {@link FieldFormatter#extract}.
          *
-         * @param field  whose FieldFormatter will be used
          * @param source The value to be back-translated
          *
          * @return The extracted value
          */
         @NonNull
-        public String extract(@NonNull final Field<T> field,
-                              @NonNull final String source) {
+        public T extract(@NonNull final String source) {
             if (mFormatter != null) {
-                return mFormatter.extract(field, source);
+                return mFormatter.extract(mField, source);
             } else {
-                return source;
+                // all non-String field should have formatters. The remaining should be String.
+                // If they are not, then we get an Exception as the developer made a boo-boo.
+                return (T) source;
             }
         }
     }
@@ -689,35 +712,86 @@ public class Fields {
         @NonNull
         private String mLocalValue = "";
 
+        StringDataAccessor(@NonNull final Field<String> field) {
+            super(field);
+        }
+
         @Override
-        public void putValueInto(@NonNull final Field<String> source,
-                                 @NonNull final DataManager target) {
-            target.putString(source.mKey, getValue(source));
+        public void getValueAndPut(@NonNull final DataManager target) {
+            target.putString(mField.mKey, getValue());
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return mLocalValue.isEmpty();
         }
 
         @NonNull
         @Override
-        public String getValue(@NonNull final Field<String> field) {
+        public String getValue() {
             return mLocalValue.trim();
         }
 
         @Override
-        public void setValue(@NonNull final String source,
-                             @NonNull final Field<String> target) {
-            mLocalValue = source;
+        public void setValue(@Nullable final String value) {
+            mLocalValue = value != null ? value : "";
         }
 
         @Override
-        public void setValue(@NonNull final Bundle source,
-                             @NonNull final Field<String> target) {
-            setValue(source.getString(target.mKey, ""), target);
+        public void setValue(@NonNull final Bundle source) {
+            setValue(source.getString(mField.mKey, ""));
         }
 
         @Override
-        public void setValue(@NonNull final DataManager source,
-                             @NonNull final Field<String> target) {
-            setValue(source.getString(target.mKey), target);
+        public void setValue(@NonNull final DataManager source) {
+            setValue(source.getString(mField.mKey));
         }
+    }
+
+    /**
+     * Base implementation for TextView/EditText.
+     *
+     * @param <T> type of Field value.
+     */
+    private abstract static class TextFieldAccessor<T>
+            extends BaseDataAccessor<T> {
+
+        /**
+         * Constructor.
+         *
+         * @param field to use
+         */
+        TextFieldAccessor(@NonNull final Field<T> field) {
+            super(field);
+        }
+
+        @Override
+        public boolean isEmpty() {
+            String value = getValue().toString();
+            return value.isEmpty()
+                   // Integer/Long
+                   || "0".equals(value)
+                   // Float/Double
+                   || "0.0".equals(value)
+                   // Boolean (theoretically this should not happen... but paranoia... ).
+                   || "false".equals(value);
+        }
+
+        @Override
+        public void getValueAndPut(@NonNull final DataManager target) {
+            target.put(mField.mKey, getValue());
+        }
+
+        @Override
+        public void setValue(@NonNull final Bundle source) {
+            setValue((T) source.get(mField.mKey));
+        }
+
+        @Override
+        public void setValue(@NonNull final DataManager source) {
+            setValue((T) source.get(mField.mKey));
+        }
+
     }
 
     /**
@@ -727,33 +801,44 @@ public class Fields {
      * The actual value is simply stored in a local variable. No attempt to extract is done.
      * <p>
      * Uses {@link FieldFormatter#format} only.
+     *
+     * @param <T> type of Field value.
      */
-    private static class TextViewAccessor
-            extends BaseDataAccessor<String> {
+    private static class TextViewAccessor<T>
+            extends TextFieldAccessor<T> {
 
         private boolean mFormatHtml;
-        @NonNull
-        private String mRawValue = "";
 
-        @Override
-        public void putValueInto(@NonNull final Field<String> source,
-                                 @NonNull final DataManager target) {
-            target.putString(source.mKey, getValue(source));
+        @Nullable
+        private T mRawValue;
+
+        /**
+         * Constructor.
+         *
+         * @param field to use
+         */
+        TextViewAccessor(@NonNull final Field<T> field) {
+            super(field);
         }
 
         @NonNull
         @Override
-        public String getValue(@NonNull final Field<String> field) {
-            return mRawValue;
+        public T getValue() {
+            if (mRawValue != null) {
+                return mRawValue;
+            } else {
+                // The only situation where mRawValue would be null is when T is a String.
+                // If we violate that, the next line will cause an Exception
+                return (T) "";
+            }
         }
 
         @Override
-        public void setValue(@NonNull final String source,
-                             @NonNull final Field<String> target) {
-            mRawValue = source.trim();
-            TextView view = target.getView();
+        public void setValue(@Nullable final T value) {
+            mRawValue = value;
+            TextView view = mField.getView();
             if (mFormatHtml) {
-                String body = format(target, mRawValue);
+                String body = format(mRawValue);
 
                 view.setText(LinkifyUtils.fromHtml(body));
                 view.setMovementMethod(LinkMovementMethod.getInstance());
@@ -762,20 +847,8 @@ public class Fields {
                 view.setTextIsSelectable(true);
 
             } else {
-                view.setText(format(target, mRawValue));
+                view.setText(format(mRawValue));
             }
-        }
-
-        @Override
-        public void setValue(@NonNull final Bundle source,
-                             @NonNull final Field<String> target) {
-            setValue(source.getString(target.mKey, ""), target);
-        }
-
-        @Override
-        public void setValue(@NonNull final DataManager source,
-                             @NonNull final Field<String> target) {
-            setValue(source.getString(target.mKey), target);
         }
 
         /**
@@ -793,43 +866,44 @@ public class Fields {
      * Implementation that stores and retrieves data from an EditText.
      * <p>
      * Uses {@link FieldFormatter#format} and {@link FieldFormatter#extract}.
+     *
+     * @param <T> type of Field value.
      */
-    private static class EditTextAccessor
-            extends BaseDataAccessor<String> {
+    private static class EditTextAccessor<T>
+            extends TextFieldAccessor<T> {
 
         @NonNull
         private final TextWatcher mTextWatcher;
 
-        EditTextAccessor(@NonNull final EditText view,
-                         @NonNull final Field<String> field) {
-            mTextWatcher = new EditTextWatcher(field);
+        /**
+         * Constructor.
+         *
+         * @param field to use
+         */
+        EditTextAccessor(@NonNull final Field<T> field) {
+            super(field);
+            mTextWatcher = new EditTextWatcher<>(field);
+            EditText view = field.getView();
             view.addTextChangedListener(mTextWatcher);
-        }
-
-        @Override
-        public void putValueInto(@NonNull final Field<String> source,
-                                 @NonNull final DataManager target) {
-            target.putString(source.mKey, getValue(source));
         }
 
         @NonNull
         @Override
-        public String getValue(@NonNull final Field<String> field) {
-            EditText view = field.getView();
-            return extract(field, view.getText().toString().trim());
+        public T getValue() {
+            EditText view = mField.getView();
+            return extract(view.getText().toString().trim());
         }
 
         @Override
-        public void setValue(@NonNull final String source,
-                             @NonNull final Field<String> target) {
-            EditText view = target.getView();
+        public void setValue(@Nullable final T value) {
+            EditText view = mField.getView();
             // 2018-12-11: There was recursion due to the setText call.
             // So now disabling the TextWatcher while doing the latter.
             // We don't want another thread re-enabling the listener before we're done
             synchronized (mTextWatcher) {
                 view.removeTextChangedListener(mTextWatcher);
 
-                String newVal = format(target, source);
+                String newVal = format(value);
                 // do not use extract, we compare formatted/formatted value
                 String oldVal = view.getText().toString().trim();
                 if (!newVal.equals(oldVal)) {
@@ -845,17 +919,78 @@ public class Fields {
             }
         }
 
-        @Override
-        public void setValue(@NonNull final Bundle source,
-                             @NonNull final Field<String> target) {
-            setValue(source.getString(target.mKey, ""), target);
-        }
+        /**
+         * For Locales which use ',' as the decimal separator, the input panel only allows '.'.
+         * See class docs: {@link com.hardbacknutter.nevertoomanybooks.utils.ParseUtils}.
+         */
+        void setInputIsDecimal() {
 
-        @Override
-        public void setValue(@NonNull final DataManager source,
-                             @NonNull final Field<String> target) {
-            setValue(source.getString(target.mKey), target);
+            DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
+            DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
+            final String decimalSeparator = Character.toString(symbols.getDecimalSeparator());
+
+            final EditText view = mField.getView();
+
+            view.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void beforeTextChanged(CharSequence s,
+                                              int start,
+                                              int count,
+                                              int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s,
+                                          int start,
+                                          int before,
+                                          int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(@NonNull final Editable editable) {
+                    // allow only one decimal separator
+                    if (editable.toString().contains(decimalSeparator)) {
+                        view.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+                    } else {
+                        view.setKeyListener(DigitsKeyListener.getInstance("0123456789"
+                                                                          + decimalSeparator));
+                    }
+                }
+            });
         }
+//    public static class DecimalDigitsInputFilter implements InputFilter {
+//
+//        Pattern mPattern;
+//
+//        public DecimalDigitsInputFilter(int digitsBeforeZero,
+//                                        int digitsAfterZero) {
+//            DecimalFormatSymbols d = new DecimalFormatSymbols(Locale.getDefault());
+//            String s = "\\" + d.getDecimalSeparator();
+//            mPattern = Pattern.compile(
+//                    "[0-9]{0," + (digitsBeforeZero - 1) + "}+"
+//                    + "((" + s + "[0-9]{0," + (digitsAfterZero - 1) + "})?)"
+//                    + ""
+//                    + "|(" + s + ")?");
+//        }
+//
+//        @Override
+//        public CharSequence filter(CharSequence source,
+//                                   int start,
+//                                   int end,
+//                                   Spanned dest,
+//                                   int dstart,
+//                                   int dend) {
+//
+//            Matcher matcher = mPattern.matcher(dest);
+//            if (!matcher.matches())
+//                return "";
+//            return null;
+//        }
+//    }
+
     }
 
     /**
@@ -867,31 +1002,38 @@ public class Fields {
     private static class SpinnerAccessor
             extends BaseDataAccessor<String> {
 
+        SpinnerAccessor(@NonNull final Field<String> field) {
+            super(field);
+        }
+
         @Override
-        public void putValueInto(@NonNull final Field<String> source,
-                                 @NonNull final DataManager target) {
-            target.putString(source.mKey, getValue(source));
+        public void getValueAndPut(@NonNull final DataManager target) {
+            target.putString(mField.mKey, getValue());
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return getValue().isEmpty();
         }
 
         @Override
         @NonNull
-        public String getValue(@NonNull final Field<String> field) {
-            Spinner spinner = field.getView();
+        public String getValue() {
+            Spinner spinner = mField.getView();
             Object selItem = spinner.getSelectedItem();
             if (selItem != null) {
-                return extract(field, selItem.toString().trim());
+                return extract(selItem.toString().trim());
             } else {
                 return "";
             }
         }
 
         @Override
-        public void setValue(@Nullable final String source,
-                             @NonNull final Field<String> target) {
-            Spinner spinner = target.getView();
-            String value = format(target, source);
+        public void setValue(@Nullable final String value) {
+            Spinner spinner = mField.getView();
+            String formatted = format(value);
             for (int i = 0; i < spinner.getCount(); i++) {
-                if (spinner.getItemAtPosition(i).equals(value)) {
+                if (spinner.getItemAtPosition(i).equals(formatted)) {
                     spinner.setSelection(i);
                     return;
                 }
@@ -899,15 +1041,13 @@ public class Fields {
         }
 
         @Override
-        public void setValue(@NonNull final Bundle source,
-                             @NonNull final Field<String> target) {
-            setValue(source.getString(target.mKey, ""), target);
+        public void setValue(@NonNull final Bundle source) {
+            setValue(source.getString(mField.mKey, ""));
         }
 
         @Override
-        public void setValue(@NonNull final DataManager source,
-                             @NonNull final Field<String> target) {
-            setValue(source.getString(target.mKey), target);
+        public void setValue(@NonNull final DataManager source) {
+            setValue(source.getString(mField.mKey));
         }
     }
 
@@ -927,41 +1067,46 @@ public class Fields {
     private static class CheckableAccessor
             extends BaseDataAccessor<Boolean> {
 
+        CheckableAccessor(@NonNull final Field<Boolean> field) {
+            super(field);
+        }
+
         @Override
-        public void putValueInto(@NonNull final Field<Boolean> source,
-                                 @NonNull final DataManager target) {
-            target.putBoolean(source.mKey, getValue(source));
+        public void getValueAndPut(@NonNull final DataManager target) {
+            target.putBoolean(mField.mKey, getValue());
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return getValue();
         }
 
         @NonNull
         @Override
-        public Boolean getValue(@NonNull final Field<Boolean> field) {
-            Checkable cb = field.getView();
+        public Boolean getValue() {
+            Checkable cb = mField.getView();
             return cb.isChecked();
         }
 
         @Override
-        public void setValue(@Nullable final Boolean source,
-                             @NonNull final Field<Boolean> target) {
-            Checkable cb = target.getView();
-            if (source != null) {
-                ((View) cb).setVisibility(source ? View.VISIBLE : View.GONE);
-                cb.setChecked(source);
+        public void setValue(@Nullable final Boolean value) {
+            Checkable cb = mField.getView();
+            if (value != null) {
+                ((View) cb).setVisibility(value ? View.VISIBLE : View.GONE);
+                cb.setChecked(value);
             } else {
                 cb.setChecked(false);
             }
         }
 
         @Override
-        public void setValue(@NonNull final Bundle source,
-                             @NonNull final Field<Boolean> target) {
-            setValue(source.getBoolean(target.mKey), target);
+        public void setValue(@NonNull final Bundle source) {
+            setValue(source.getBoolean(mField.mKey));
         }
 
         @Override
-        public void setValue(@NonNull final DataManager source,
-                             @NonNull final Field<Boolean> target) {
-            setValue(source.getBoolean(target.mKey), target);
+        public void setValue(@NonNull final DataManager source) {
+            setValue(source.getBoolean(mField.mKey));
         }
     }
 
@@ -973,40 +1118,45 @@ public class Fields {
     private static class RatingBarAccessor
             extends BaseDataAccessor<Float> {
 
+        RatingBarAccessor(@NonNull final Field<Float> field) {
+            super(field);
+        }
+
         @Override
-        public void putValueInto(@NonNull final Field<Float> source,
-                                 @NonNull final DataManager target) {
-            target.putFloat(source.mKey, getValue(source));
+        public void getValueAndPut(@NonNull final DataManager target) {
+            target.putFloat(mField.mKey, getValue());
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return getValue().equals(0.0f);
         }
 
         @NonNull
         @Override
-        public Float getValue(@NonNull final Field<Float> field) {
-            RatingBar bar = field.getView();
+        public Float getValue() {
+            RatingBar bar = mField.getView();
             return bar.getRating();
         }
 
         @Override
-        public void setValue(@Nullable final Float source,
-                             @NonNull final Field<Float> target) {
-            RatingBar bar = target.getView();
-            if (source != null) {
-                bar.setRating(source);
+        public void setValue(@Nullable final Float value) {
+            RatingBar bar = mField.getView();
+            if (value != null) {
+                bar.setRating(value);
             } else {
                 bar.setRating(0.0f);
             }
         }
 
         @Override
-        public void setValue(@NonNull final Bundle source,
-                             @NonNull final Field<Float> target) {
-            setValue(source.getFloat(target.mKey), target);
+        public void setValue(@NonNull final Bundle source) {
+            setValue(source.getFloat(mField.mKey));
         }
 
         @Override
-        public void setValue(@NonNull final DataManager source,
-                             @NonNull final Field<Float> target) {
-            setValue(source.getFloat(target.mKey), target);
+        public void setValue(@NonNull final DataManager source) {
+            setValue(source.getFloat(mField.mKey));
         }
     }
 
@@ -1024,12 +1174,13 @@ public class Fields {
 
         /**
          * Constructor.
-         *
-         * @param scale to apply
+         * Sets the scale to the default {@link ImageUtils#SCALE_MEDIUM}.
+         * Override with {@link #setScale(int)}.
          */
         @SuppressWarnings("SameParameterValue")
-        ImageViewAccessor(final int scale) {
-            setScale(scale);
+        ImageViewAccessor(@NonNull final Field<String> field) {
+            super(field);
+            setScale(ImageUtils.SCALE_MEDIUM);
         }
 
         public void setScale(final int scale) {
@@ -1039,34 +1190,35 @@ public class Fields {
         }
 
         @Override
-        public void putValueInto(@NonNull final Field<String> source,
-                                 @NonNull final DataManager target) {
-            // not applicable
+        public void getValueAndPut(@NonNull final DataManager target) {
+            // not applicable; do NOT put the uuid into the target!
+        }
+
+        @Override
+        public boolean isEmpty() {
+            // should really get the view, and check if it has a bitmap; but this will do for now.
+            return getValue().isEmpty();
         }
 
         /**
          * Not really used, but returning the uuid makes sense.
          *
-         * @param field to get the value of
-         *
          * @return the UUID
          */
         @NonNull
         @Override
-        public String getValue(@NonNull final Field<String> field) {
-            return (String) field.getView().getTag(R.id.TAG_UUID);
+        public String getValue() {
+            return (String) mField.getView().getTag(R.id.TAG_UUID);
         }
 
         /**
          * Populates the view and sets the UUID (incoming value) as a tag on the view.
          *
-         * @param uuid   the book UUID
-         * @param target Field to set the value on
+         * @param uuid the book UUID
          */
         @Override
-        public void setValue(@Nullable final String uuid,
-                             @NonNull final Field<String> target) {
-            ImageView imageView = target.getView();
+        public void setValue(@Nullable final String uuid) {
+            ImageView imageView = mField.getView();
 
             if (uuid != null) {
                 File imageFile;
@@ -1083,15 +1235,13 @@ public class Fields {
         }
 
         @Override
-        public void setValue(@NonNull final Bundle source,
-                             @NonNull final Field<String> target) {
-            setValue(source.getString(target.mKey, ""), target);
+        public void setValue(@NonNull final Bundle source) {
+            setValue(source.getString(mField.mKey, ""));
         }
 
         @Override
-        public void setValue(@NonNull final DataManager source,
-                             @NonNull final Field<String> target) {
-            setValue(source.getString(target.mKey), target);
+        public void setValue(@NonNull final DataManager source) {
+            setValue(source.getString(mField.mKey));
         }
     }
 
@@ -1136,12 +1286,9 @@ public class Fields {
 
     /**
      * Formatter for price fields.
-     * Note this is {@code String} typed due to backwards compatibility.
-     * <p>
-     * e.g. pre-decimal UK "Shilling/Pence" is in effect a string.
      */
     public static class MonetaryFormatter
-            implements FieldFormatter<String> {
+            implements FieldFormatter<Double> {
 
         /**
          * This is used for error logging only, and is normally always the app context
@@ -1154,12 +1301,9 @@ public class Fields {
         @Nullable
         private Locale mLocale;
 
-        /** Optional; but should really be set. */
+        /** Optional. */
         @Nullable
         private String mCurrencyCode;
-
-        /** pattern for pure floats. */
-        private Pattern FLOAT_PATTERN = Pattern.compile("^\\s*\\d+\\.?\\d*\\s*$");
 
         /**
          * Constructor.
@@ -1200,19 +1344,13 @@ public class Fields {
 
         @NonNull
         @Override
-        public String format(@NonNull final Field<String> field,
-                             @Nullable final String source) {
-            if (source == null || source.isEmpty()) {
+        public String format(@NonNull final Field<Double> field,
+                             @Nullable final Double source) {
+            if (source == null) {
                 return "";
             }
             if (mCurrencyCode == null || mCurrencyCode.isEmpty()) {
-                return source;
-            }
-
-            // anything that does not match a float will be displayed as-is.
-            Matcher m = FLOAT_PATTERN.matcher(source);
-            if (!m.find()) {
-                return source;
+                return String.valueOf(source);
             }
 
             if (mLocale == null) {
@@ -1220,41 +1358,28 @@ public class Fields {
             }
 
             try {
-                // parse without a Locale as the incoming value *should* be a pure float.
-                float money = Float.parseFloat(source);
-
                 // Always use the current Locale for formatting
-                DecimalFormat nf = (DecimalFormat)
-                        DecimalFormat.getCurrencyInstance(mLocale);
-                if (mCurrencyCode != null) {
-                    nf.setCurrency(Currency.getInstance(mCurrencyCode));
-                }
+                DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(mLocale);
+                nf.setCurrency(Currency.getInstance(mCurrencyCode));
                 // the result is rather dire... most currency symbols are shown as 3-char codes
                 // e.g. 'EUR','US$',...
-                return nf.format(money);
+                return nf.format(source);
 
             } catch (@NonNull final IllegalArgumentException e) {
                 Logger.error(mContext, this, e,
                              "currencyCode=`" + mCurrencyCode + "`,"
                              + " source=`" + source + '`');
 
-                // fallback
-                if (mCurrencyCode != null) {
-                    return mCurrencyCode + ' ' + source;
-                } else {
-                    return source;
-                }
+                // fallback if getting a Currency instance fail.
+                return mCurrencyCode + ' ' + String.format(mLocale, "%.2f", source);
             }
         }
 
-        /**
-         * NOT SUPPORTED.
-         */
         @NonNull
         @Override
-        public String extract(@NonNull final Field<String> field,
+        public Double extract(@NonNull final Field<Double> field,
                               @NonNull final String source) {
-            return source;
+            return Double.parseDouble(source);
         }
 
         // The ICU NumberFormatter is only available from ICU level 60, but Android lags behind:
@@ -1322,8 +1447,11 @@ public class Fields {
                              @Nullable final String source) {
             if (source != null && !source.isEmpty()) {
                 Context context = field.getView().getContext();
-                LocaleUtils.insanityCheck(context);
-                return Format.map(context, source);
+                if (Format.isMappingAllowed(context)) {
+                    return Format.map(context, source);
+                } else {
+                    return source;
+                }
             }
             return "";
         }
@@ -1387,7 +1515,7 @@ public class Fields {
      * {@link #extract} returns "dummy";
      */
     public static class BitMaskFormatter
-            implements FieldFormatter<String> {
+            implements FieldFormatter<Long> {
 
         @NonNull
         private final Map<Integer, Integer> mMap;
@@ -1398,20 +1526,14 @@ public class Fields {
 
         @NonNull
         @Override
-        public String format(@NonNull final Field<String> field,
-                             @Nullable final String source) {
-            if (source == null || source.isEmpty()) {
+        public String format(@NonNull final Field<Long> field,
+                             @Nullable final Long source) {
+            if (source == null || source == 0) {
                 return "";
             }
 
-            int bitmask;
-            try {
-                bitmask = Integer.parseInt(source);
-            } catch (@NonNull final NumberFormatException ignore) {
-                return source;
-            }
             Context context = field.getView().getContext();
-            return TextUtils.join(", ", Csv.bitmaskToList(context, mMap, bitmask));
+            return TextUtils.join(", ", Csv.bitmaskToList(context, mMap, source));
         }
 
         // theoretically we should support the extract method as this formatter is used on
@@ -1419,9 +1541,9 @@ public class Fields {
         // and stores the actual value directly. (dialog/listener setup).
         @NonNull
         @Override
-        public String extract(@NonNull final Field<String> field,
-                              @NonNull final String source) {
-            return "dummy";
+        public Long extract(@NonNull final Field<Long> field,
+                            @NonNull final String source) {
+            return Long.parseLong(source);
         }
     }
 
@@ -1497,6 +1619,8 @@ public class Fields {
     /**
      * Field definition contains all information and methods necessary to manage display and
      * extraction of data in a view.
+     *
+     * @param <T> type of Field value.
      */
     public static class Field<T> {
 
@@ -1532,10 +1656,7 @@ public class Fields {
          * Encapsulates the formatter.
          */
         @NonNull
-        private final FieldDataAccessor mFieldDataAccessor;
-
-        /** indicates that "0" should be seen as "". Used for boolean/int type fields. */
-        private boolean mZeroIsEmpty;
+        private final FieldDataAccessor<T> mFieldDataAccessor;
 
         /** Is the field in use; i.e. is it enabled in the user-preferences. **/
         private boolean mIsUsed;
@@ -1584,24 +1705,6 @@ public class Fields {
         }
 
         /**
-         * Factory method to get a new auto-type-detection field.
-         *
-         * @param fields          Parent collection
-         * @param fieldId         Layout ID
-         * @param key             Key used to access a {@link DataManager} or {@code Bundle}.
-         *                        Set to "" to suppress all access.
-         * @param visibilityGroup Visibility mGroup. Can be blank.
-         *
-         * @return new Field
-         */
-        static <T> Field<T> newField(@NonNull final Fields fields,
-                                     @IdRes final int fieldId,
-                                     @NonNull final String key,
-                                     @NonNull final String visibilityGroup) {
-            return new Field<>(fields, fieldId, key, visibilityGroup);
-        }
-
-        /**
          * Automatically determine a suitable FieldDataAccessor based on the View type.
          *
          * @param view to process
@@ -1609,46 +1712,51 @@ public class Fields {
          * @return FieldDataAccessor
          */
         @NonNull
-        private FieldDataAccessor createAccessor(@NonNull final View view) {
+        private FieldDataAccessor<T> createAccessor(@NonNull final View view) {
 
             FieldDataAccessor accessor;
 
-            // Set the appropriate accessor
+            // this was nasty... a MaterialButton implements Checkable,
+            // but you have to double check (pardon the pun) whether it IS checkable.
             if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
-                // this was nasty... a MaterialButton implements Checkable,
-                // but you have to double check (pardon the pun) whether it IS checkable.
-                accessor = new CheckableAccessor();
+                //noinspection unchecked
+                accessor = new CheckableAccessor((Field<Boolean>) this);
                 addTouchSignalsDirty(view);
 
             } else if (!((view instanceof MaterialButton)) && (view instanceof Checkable)) {
-                // the opposite, do not accept the MaterialButton here.
-                accessor = new CheckableAccessor();
+                // the opposite of above, do not accept the MaterialButton.
+                //noinspection unchecked
+                accessor = new CheckableAccessor((Field<Boolean>) this);
                 addTouchSignalsDirty(view);
 
             } else if (view instanceof EditText) {
-                //noinspection unchecked
-                accessor = new EditTextAccessor((EditText) view, (Field<String>) this);
+                accessor = new EditTextAccessor<>(this);
 
             } else if (view instanceof Button) {
-                // a Button *is* a TextView, but this is cleaner
-                accessor = new TextViewAccessor();
+                // a Button *is* a TextView, but we need an explicit default.
+                accessor = new TextViewAccessor<>(this);
+                accessor.setValue("");
 
             } else if (view instanceof TextView) {
-                accessor = new TextViewAccessor();
+                accessor = new TextViewAccessor<>(this);
 
             } else if (view instanceof ImageView) {
-                accessor = new ImageViewAccessor(ImageUtils.SCALE_MEDIUM);
+                //noinspection unchecked
+                accessor = new ImageViewAccessor((Field<String>) this);
 
             } else if (view instanceof RatingBar) {
-                accessor = new RatingBarAccessor();
+                //noinspection unchecked
+                accessor = new RatingBarAccessor((Field<Float>) this);
                 addTouchSignalsDirty(view);
 
             } else if (view instanceof Spinner) {
-                accessor = new SpinnerAccessor();
+                //noinspection unchecked
+                accessor = new SpinnerAccessor((Field<String>) this);
 
             } else {
                 // field has no layout, store in a dummy String.
-                accessor = new StringDataAccessor();
+                //noinspection unchecked
+                accessor = new StringDataAccessor((Field<String>) this);
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.debug(this, "Field",
                                  "Using StringDataAccessor",
@@ -1666,7 +1774,6 @@ public class Fields {
                    + "mId=" + mId
                    + ", mGroup='" + mGroup + '\''
                    + ", mKey='" + mKey + '\''
-                   + ", mZeroIsEmpty=" + mZeroIsEmpty
                    + ", mIsUsed=" + mIsUsed
                    + ", mDoNoFetch=" + mDoNoFetch
                    + ", mFieldDataAccessor=" + mFieldDataAccessor
@@ -1686,7 +1793,7 @@ public class Fields {
         }
 
         /**
-         * If a text field, set the TextViewAccessor to support HTML.
+         * Enable HTML (only applicable to TextView based fields).
          *
          * @return field (for chaining)
          */
@@ -1695,12 +1802,30 @@ public class Fields {
         public Field<T> setShowHtml(final boolean showHtml) {
             if (mFieldDataAccessor instanceof TextViewAccessor) {
                 ((TextViewAccessor) mFieldDataAccessor).setShowHtml(showHtml);
+            } else if (BuildConfig.DEBUG /* always */) {
+                throw new IllegalStateException("Field is not a TextView");
             }
             return this;
         }
 
         /**
-         * Set scaling (if the field type supports it).
+         * Enable decimal editing restriction(only applicable to EditText based fields).
+         *
+         * @return field (for chaining)
+         */
+        @SuppressWarnings("UnusedReturnValue")
+        @NonNull
+        public Field<T> setInputIsDecimal() {
+            if (mFieldDataAccessor instanceof EditTextAccessor) {
+                ((EditTextAccessor) mFieldDataAccessor).setInputIsDecimal();
+            } else if (BuildConfig.DEBUG /* always */) {
+                throw new IllegalStateException("Field is not an EditText");
+            }
+            return this;
+        }
+
+        /**
+         * Set scaling (only applicable to ImageView based fields).
          *
          * @return field (for chaining)
          */
@@ -1708,6 +1833,8 @@ public class Fields {
         public Field<T> setScale(final int scale) {
             if (mFieldDataAccessor instanceof ImageViewAccessor) {
                 ((ImageViewAccessor) mFieldDataAccessor).setScale(scale);
+            } else if (BuildConfig.DEBUG /* always */) {
+                throw new IllegalStateException("Field is not an ImageView");
             }
             return this;
         }
@@ -1720,19 +1847,6 @@ public class Fields {
         @NonNull
         public Field<T> setDoNotFetch(final boolean doNoFetch) {
             mDoNoFetch = doNoFetch;
-            return this;
-        }
-
-        /**
-         * To be called if a "0" content should be treated as an 'empty field'.
-         * Used for (not) displaying boolean and integer fields.
-         *
-         * @return field (for chaining)
-         */
-        @SuppressWarnings("UnusedReturnValue")
-        @NonNull
-        public Field<T> setZeroIsEmpty(final boolean zeroIsEmpty) {
-            mZeroIsEmpty = zeroIsEmpty;
             return this;
         }
 
@@ -1797,8 +1911,8 @@ public class Fields {
          */
         @SuppressLint("ClickableViewAccessibility")
         private void addTouchSignalsDirty(@NonNull final View view) {
-            // Touching this is considered a change
-            //TODO: We need to introduce a better way to handle this.
+            // Touching this View is considered a change to the field.
+            //TODO: We need to find a better way to handle this as this can cause a false-positive
             view.setOnTouchListener((v, event) -> {
                 if (MotionEvent.ACTION_UP == event.getAction()) {
                     mFields.get().afterFieldChange(this, null);
@@ -1884,7 +1998,7 @@ public class Fields {
          */
         @NonNull
         public T getValue() {
-            return (T) mFieldDataAccessor.getValue(this);
+            return mFieldDataAccessor.getValue();
         }
 
         /**
@@ -1892,8 +2006,8 @@ public class Fields {
          *
          * @param source New value
          */
-        public void setValue(@NonNull final Object source) {
-            mFieldDataAccessor.setValue(source, this);
+        public void setValue(@NonNull final T source) {
+            mFieldDataAccessor.setValue(source);
             mFields.get().afterFieldChange(this, source);
         }
 
@@ -1903,19 +2017,14 @@ public class Fields {
          * @return {@code true} if this field is empty.
          */
         public boolean isEmpty() {
-            String value = mFieldDataAccessor.getValue(this).toString();
-            if (value.isEmpty() || (mZeroIsEmpty && "0".equals(value))) {
-                return true;
-            }
-
-            return "false".equalsIgnoreCase(value);
+            return mFieldDataAccessor.isEmpty();
         }
 
         /**
          * Get the current value of this field and put it into the DataManager.
          */
         void putValueInto(@NonNull final DataManager target) {
-            mFieldDataAccessor.putValueInto(this, target);
+            mFieldDataAccessor.getValueAndPut(target);
         }
 
         /**
@@ -1924,7 +2033,7 @@ public class Fields {
          */
         void setValueFrom(@NonNull final Bundle source) {
             if (!mKey.isEmpty() && !mDoNoFetch) {
-                mFieldDataAccessor.setValue(source, this);
+                mFieldDataAccessor.setValue(source);
             }
         }
 
@@ -1934,7 +2043,7 @@ public class Fields {
          */
         public void setValueFrom(@NonNull final DataManager source) {
             if (!mKey.isEmpty() && !mDoNoFetch) {
-                mFieldDataAccessor.setValue(source, this);
+                mFieldDataAccessor.setValue(source);
             }
         }
 
@@ -1950,22 +2059,19 @@ public class Fields {
             if (source == null) {
                 return "";
             }
-            return mFieldDataAccessor.format(this, source);
+            return mFieldDataAccessor.format(source);
         }
 
         /**
-         * Wrapper to {@link FieldDataAccessor#extract(Field, String)}.
+         * Wrapper to {@link FieldDataAccessor#extract(String)}.
          *
          * @param source String to extract
          *
-         * @return The extracted value. Or "" if the source is {@code null}.
+         * @return The extracted value
          */
         @NonNull
-        String extract(@Nullable final String source) {
-            if (source == null) {
-                return "";
-            }
-            return mFieldDataAccessor.extract(this, source);
+        T extract(@NonNull final String source) {
+            return mFieldDataAccessor.extract(source);
         }
     }
 }
