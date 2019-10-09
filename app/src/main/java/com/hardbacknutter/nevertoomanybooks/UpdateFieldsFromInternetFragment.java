@@ -242,6 +242,8 @@ public class UpdateFieldsFromInternetFragment
 
         addField(R.string.lbl_publisher, CopyIfBlank,
                  DBDefinitions.KEY_PUBLISHER);
+        addField(R.string.lbl_print_run, CopyIfBlank,
+                 DBDefinitions.KEY_PRINT_RUN);
         addField(R.string.lbl_date_published, CopyIfBlank,
                  DBDefinitions.KEY_DATE_PUBLISHED);
         addField(R.string.lbl_first_publication, CopyIfBlank,

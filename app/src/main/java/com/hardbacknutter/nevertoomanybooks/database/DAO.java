@@ -133,6 +133,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PRICE_PAID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PRINT_RUN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PRIVATE_NOTES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_RATING;
@@ -1236,6 +1237,7 @@ public class DAO
                 // Basically we want "NOT NULL" fields which have STRING default.
                 DBDefinitions.KEY_ISBN,
                 DBDefinitions.KEY_PUBLISHER,
+                DBDefinitions.KEY_PRINT_RUN,
                 DBDefinitions.KEY_DATE_PUBLISHED,
                 DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
 
@@ -4452,6 +4454,7 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PUBLISHER)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_TOC_BITMASK)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_PUBLISHED)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRINT_RUN)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED_CURRENCY)
                 + ',' + TBL_BOOKS.dotAs(DOM_DATE_FIRST_PUBLICATION)

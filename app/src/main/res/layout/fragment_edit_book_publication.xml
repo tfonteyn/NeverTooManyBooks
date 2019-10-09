@@ -100,7 +100,7 @@
             />
 
         <TextView
-            android:id="@+id/lbl_publication_section"
+            android:id="@+id/lbl_publisher"
             style="@style/Label.Field"
             android:labelFor="@id/publisher"
             android:text="@string/lbl_publisher"
@@ -113,7 +113,7 @@
             style="@style/personalNameTextEntry"
             app:layout_constraintEnd_toStartOf="@id/btn_publisher"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_publication_section"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
             />
 
         <ImageButton
@@ -126,6 +126,25 @@
             app:layout_constraintTop_toTopOf="@id/publisher"
             />
 
+        <TextView
+            android:id="@+id/lbl_print_run"
+            style="@style/Label.Field"
+            android:labelFor="@id/print_run"
+            android:text="@string/lbl_print_run"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/publisher"
+            />
+
+        <EditText
+            android:id="@+id/print_run"
+            style="@style/simpleTextEntry"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
+            tools:ignore="Autofill"
+            tools:text="limited to 150 copies"
+            />
+
         <!-- This invisible View is needed to allow individual show/hide while
              maintaining the baseline -->
         <TextView
@@ -135,7 +154,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/publisher"
+            app:layout_constraintTop_toBottomOf="@id/print_run"
             tools:ignore="SelectableText"
             />
 

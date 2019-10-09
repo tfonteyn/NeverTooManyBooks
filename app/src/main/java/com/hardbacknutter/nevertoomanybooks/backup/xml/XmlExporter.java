@@ -737,6 +737,8 @@ public class XmlExporter
 
                       .append(attr(DBDefinitions.KEY_PUBLISHER,
                                 bookCursor.getString(DBDefinitions.KEY_PUBLISHER)))
+                      .append(attr(DBDefinitions.KEY_PRINT_RUN,
+                                   bookCursor.getString(DBDefinitions.KEY_PRINT_RUN)))
                       .append(attr(DBDefinitions.KEY_DATE_PUBLISHED,
                                 bookCursor.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
                       .append(attr(DBDefinitions.KEY_PRICE_LISTED,

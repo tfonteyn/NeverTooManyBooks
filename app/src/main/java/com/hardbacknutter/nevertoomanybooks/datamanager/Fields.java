@@ -1733,9 +1733,8 @@ public class Fields {
                 accessor = new EditTextAccessor<>(this);
 
             } else if (view instanceof Button) {
-                // a Button *is* a TextView, but we need an explicit default.
+                // a Button *is* a TextView
                 accessor = new TextViewAccessor<>(this);
-                accessor.setValue("");
 
             } else if (view instanceof TextView) {
                 accessor = new TextViewAccessor<>(this);

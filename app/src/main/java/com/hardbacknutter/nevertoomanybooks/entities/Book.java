@@ -305,6 +305,8 @@ public class Book
         // publication data
         bookData.putString(DBDefinitions.KEY_PUBLISHER,
                            getString(DBDefinitions.KEY_PUBLISHER));
+        bookData.putString(DBDefinitions.KEY_PRINT_RUN,
+                           getString(DBDefinitions.KEY_PRINT_RUN));
         bookData.putLong(DBDefinitions.KEY_TOC_BITMASK,
                          getLong(DBDefinitions.KEY_TOC_BITMASK));
         bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,

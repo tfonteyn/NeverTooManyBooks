@@ -99,6 +99,9 @@ public class EditBookPublicationFragment
                       .setRelatedFields(R.id.lbl_date_published);
         initPartialDatePicker(field, R.string.lbl_date_published, false);
 
+        fields.addString(R.id.print_run, DBDefinitions.KEY_PRINT_RUN)
+              .setRelatedFields(R.id.lbl_print_run);
+
         field = fields.addString(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
                       .setFormatter(dateFormatter)
                       .setRelatedFields(R.id.lbl_first_publication);
@@ -109,7 +112,7 @@ public class EditBookPublicationFragment
 
         field = fields
                 .addString(R.id.price_listed_currency, DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
-                      .setRelatedFields(R.id.lbl_price_listed, R.id.price_listed_currency);
+                .setRelatedFields(R.id.lbl_price_listed, R.id.price_listed_currency);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_listed_currency,
                         mBookModel.getListPriceCurrencyCodes());
     }

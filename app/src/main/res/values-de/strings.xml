@@ -496,7 +496,7 @@
     <string name="pv_bob_author_name_family_first">Familienname zuerst (z.B. „Kafka, Franz“)</string>
     <string name="pv_bob_author_name_given_first">Vorname zuerst (z.B. „Franz  Kafka“)</string>
     <string name="pv_reformat_titles_prefixes">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
-    <string name="rebuild_fts">FTS neu aufbauen\n(nur alpha!)</string>
+    <string name="menu_rebuild_fts">FTS neu aufbauen</string>
     <string name="retry">Wiederholen</string>
     <string name="style_builtin_acquired_date">Datum erworben</string>
     <string name="style_builtin_added_date">Erfassungsdatum</string>
@@ -643,4 +643,7 @@
     <string name="lbl_standard">Normal</string>
     <string name="pt_search_form">Lokales Suchformular</string>
     <string name="pg_internet_search">Websuchen</string>
+    <string name="lbl_print_run">Druckauflage</string>
+    <string name="pv_bob_header_style_name">Stilname</string>
+    <string name="warning_rebuild_orderby_columns">Dadurch werden die Sortierdaten neu erstellt, wenn die App neu gestartet wird. Bist du dir sicher, dass du weitermachen willst ?</string>
 </resources>

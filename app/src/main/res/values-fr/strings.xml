@@ -500,7 +500,7 @@
     <string name="pv_bob_author_name_family_first">Nom de famille en premier, par exemple «Verne, Jules»</string>
     <string name="pv_bob_author_name_given_first">Prénom en premier, par exemple «Jules Verne»</string>
     <string name="pv_reformat_titles_prefixes">le|Le|la|La|les|Les|un|Un|une|Une</string>
-    <string name="rebuild_fts">Re-construire FTS\n(alpha uniquement !)</string>
+    <string name="menu_rebuild_fts">Re-construire FTS</string>
     <string name="retry">Ré-essayer</string>
     <string name="style_builtin_acquired_date">Date d\'acquisition</string>
     <string name="style_builtin_added_date">Ajouté le</string>
@@ -646,5 +646,8 @@
     <string name="lbl_standard">Standard</string>
     <string name="pt_search_form">Formulaire de recherche locale</string>
     <string name="pg_internet_search">Recherches sur le web</string>
+    <string name="lbl_print_run">Tirage</string>
+    <string name="pv_bob_header_style_name">Nom du style</string>
+    <string name="warning_rebuild_orderby_columns">Cela reconstruira les données de tri au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
 
 </resources>

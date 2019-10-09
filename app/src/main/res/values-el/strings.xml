@@ -495,7 +495,7 @@
     <string name="pv_bob_author_name_family_first">Επώνυμο πρώτα πχ «Παλαμάς, Κωστής»</string>
     <string name="pv_bob_author_name_given_first">Μικρό όνομα πρώτα πχ «Κωστής  Παλαμάς»</string>
     <string name="pv_reformat_titles_prefixes">ο|η|το|οι|οι|τα|ένας|μια|ένα</string>
-    <string name="rebuild_fts">Ανακατασκευή FTS\n(alpha μονο!)</string>
+    <string name="menu_rebuild_fts">Ανακατασκευή FTS</string>
     <string name="retry">Επανάληψη</string>
     <string name="style_builtin_acquired_date">Επίκτητος</string>
     <string name="style_builtin_added_date">Ημερομηνία προσθήκης</string>
@@ -641,5 +641,8 @@
     <string name="lbl_standard">κανονικός</string>
     <string name="pt_search_form">Φόρμα τοπικής αναζήτησης</string>
     <string name="pg_internet_search">αναζητήσεις στο διαδίκτυο</string>
+    <string name="lbl_print_run">Εκτέλεση εκτύπωσης</string>
+    <string name="pv_bob_header_style_name">Όνομα στυλ</string>
+    <string name="warning_rebuild_orderby_columns">Αυτό θα επαναδημιουργήσει τα δεδομένα ταξινόμησης κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
 
 </resources>

@@ -215,6 +215,12 @@
         We suggest you retry first, but if it keeps failing please reinstall your scanner,
         or install another scanner.
     </string>
+
+    <!-- displayed when the user changes their sorting preference.
+        When doing this, the sorting information in the database needs to be rebuild.
+    -->
+    <string name="warning_rebuild_orderby_columns">This will rebuild the sorting data when the app is restarted. Are you sure you want to continue ?</string>
+
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
     <!-- ####################################################################################### -->
@@ -817,6 +823,7 @@
     <string name="pv_bob_header_nr_of_books">Number of books</string>
     <string name="pv_bob_header_level_1">1st level heading</string>
     <string name="pv_bob_header_level_2">2nd level heading</string>
+    <string name="pv_bob_header_style_name">Style name</string>
 
     <!-- ListPreference - Scale text. -->
     <string name="pt_bob_text_size">Size of book list text</string>
@@ -952,6 +959,8 @@
     <string name="menu_add_book_manually">Add Manually</string>
     <!-- menu option -->
     <string name="menu_sort_and_style_ellipsis">Sorting &amp; Styles…</string>
+    <!-- menu option -->
+    <string name="menu_rebuild_fts">Rebuild FTS</string>
 
     <!-- menu option -->
     <string name="menu_level_reset">Default expanded level</string>
@@ -1217,6 +1226,7 @@
     <string name="lbl_publisher">Publisher</string>
     <string name="lbl_first_publication">First Publication</string>
     <string name="lbl_date_published">Date Published</string>
+    <string name="lbl_print_run">Print run</string>
 
     <string name="lbl_book">Book</string>
     <string name="lbl_books">Books</string>
@@ -1496,16 +1506,8 @@
     <!-- ========== likely to change still  ========== -->
     <!-- ####################################################################################### -->
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
-    <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
 
-    <string name="warning_rebuild_orderby_columns">
-        This will rebuild the sorting data when the app is restarted.
-        Are you sure you want to continue ?
-    </string>
-    <string name="lbl_clear_search_history">Clear search history</string>
 
-    <string name="pv_bob_header_style_name">Style name</string>
     <string name="pt_booklist_level_default">Default expanded level</string>
-
 
 </resources>

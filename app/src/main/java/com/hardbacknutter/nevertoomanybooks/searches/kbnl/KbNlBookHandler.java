@@ -161,6 +161,22 @@ class KbNlBookHandler
                 // [2e dr.]
                 break;
 
+            case "Note":
+            case "Annotatie":
+                // Omslag vermeldt: K2
+                //Opl. van 750 genummerde ex
+                //Vert. van: Cromwell Stone. - Delcourt, cop. 1993
+                break;
+
+            //case "Note": in english used a second time for a different field. Unique in dutch.
+            case "Noot":
+                break;
+
+            case "Annex":
+            case "Bĳlage":
+                // kleurenprent van oorspr. cover
+                break;
+
             case "Subject heading Depot":
             case "Trefwoord Depot":
                 // not used

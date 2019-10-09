@@ -490,7 +490,7 @@
     <string name="pv_bob_books_under_multiple_primary_1s_only">Yalnızca birincil %1$s altında</string>
     <string name="pv_bob_author_name_family_first">Soyad başta, örneğin “Nesin, Aziz”</string>
     <string name="pv_bob_author_name_given_first">Ad başta, örneğin “Aziz Nesin”</string>
-    <string name="rebuild_fts">FTS\'yi yeniden yapıla\n(aşırı deneysel)</string>
+    <string name="menu_rebuild_fts">FTS\'yi yeniden yapıla</string>
     <string name="retry">Yeniden dene</string>
     <string name="style_builtin_acquired_date">Edinilen</string>
     <string name="style_builtin_added_date">Eklenen günay</string>
@@ -637,5 +637,8 @@
     <string name="lbl_standard">Standart</string>
     <string name="pt_search_form">Yerel Arama Formu</string>
     <string name="pg_internet_search">Web aramaları</string>
+    <string name="lbl_print_run">Baskı çalıştırmak</string>
+    <string name="pv_bob_header_style_name">Stil adı</string>
+    <string name="warning_rebuild_orderby_columns">Bu, uygulama yeniden başlatıldığında sıralama verilerini yeniden oluşturacaktır. Devam etmek istediğine emin misin ?</string>
 
 </resources>

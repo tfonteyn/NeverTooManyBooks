@@ -489,7 +489,7 @@
     <string name="pv_bob_books_under_multiple_primary_1s_only">Только под первым %1$s</string>
     <string name="pv_bob_author_name_family_first">Первая фамилия, например «Достоевский, Фёдор»</string>
     <string name="pv_bob_author_name_given_first">Первое имя, например «Фёдор Достоевский»</string>
-    <string name="rebuild_fts">Переобрать FTS\n(только альфа-версия!)</string>
+    <string name="menu_rebuild_fts">Переобрать FTS</string>
     <string name="retry">Повторить</string>
     <string name="style_builtin_acquired_date">приобретенный</string>
     <string name="style_builtin_added_date">Дата добавления</string>
@@ -635,5 +635,8 @@
     <string name="lbl_standard">стандартный</string>
     <string name="pt_search_form">Форма локального поиска</string>
     <string name="pg_internet_search">веб-поиск</string>
+    <string name="lbl_print_run">Тираж</string>
+    <string name="pv_bob_header_style_name">Название стиля</string>
+    <string name="warning_rebuild_orderby_columns">Это восстановит данные сортировки при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
 
 </resources>

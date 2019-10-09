@@ -327,6 +327,9 @@ public class BookFragment
               .setFormatter(dateFormatter)
               .setRelatedFields(R.id.lbl_first_publication);
 
+        fields.addString(R.id.print_run, DBDefinitions.KEY_PRINT_RUN)
+              .setRelatedFields(R.id.lbl_print_run);
+
         // defined, but fetched manually
         fields.addMonetary(R.id.price_listed, "", DBDefinitions.KEY_PRICE_LISTED)
               .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);

@@ -494,7 +494,7 @@
     <string name="pv_bob_author_name_family_first">Prima il cognome, ad es. «Alighieri, Dante»</string>
     <string name="pv_bob_author_name_given_first">Prima il nome, ad es. «Dante Alighieri»</string>
     <string name="pv_reformat_titles_prefixes">il|lo|la|l\'|i||gli|le|un\'|uno|una|un</string>
-    <string name="rebuild_fts">Ricrea FTS\n(sperimentale!)</string>
+    <string name="menu_rebuild_fts">Ricrea FTS</string>
     <string name="retry">Riprova</string>
     <string name="style_builtin_acquired_date">Data di acquisizione</string>
     <string name="style_builtin_added_date">Data di inserimento</string>
@@ -640,5 +640,8 @@
     <string name="lbl_standard">Standard</string>
     <string name="pt_search_form">Modulo di ricerca locale</string>
     <string name="pg_internet_search">Ricerche sul web</string>
+    <string name="lbl_print_run">Tiratura</string>
+    <string name="pv_bob_header_style_name">Nome dello stile</string>
+    <string name="warning_rebuild_orderby_columns">Ciò ricostruirà i dati di ordinamento al riavvio dell\'app. Sei sicuro di voler continuare ?</string>
 
 </resources>

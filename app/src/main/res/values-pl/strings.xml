@@ -491,7 +491,7 @@
     <string name="pv_bob_books_under_multiple_primary_1s_only">Pod głównym tylko %1$s</string>
     <string name="pv_bob_author_name_family_first">Najpierw imię rodziny, np. „Lem, Stanisław”</string>
     <string name="pv_bob_author_name_given_first">Pierwsze imię, np. „Stanisław Lem”</string>
-    <string name="rebuild_fts">Odbuduj FTS (eksperymentalne!)</string>
+    <string name="menu_rebuild_fts">Odbuduj FTS</string>
     <string name="retry">spróbować\nponownie</string>
     <string name="style_builtin_acquired_date">Nabyty</string>
     <string name="style_builtin_added_date">Data dodania</string>
@@ -637,4 +637,7 @@
     <string name="lbl_standard">Normalny</string>
     <string name="pt_search_form">Lokalny formularz wyszukiwania</string>
     <string name="pg_internet_search">Wyszukiwania w Internecie</string>
+    <string name="lbl_print_run">Wersja do wydruku</string>
+    <string name="pv_bob_header_style_name">Nazwa stylu</string>
+    <string name="warning_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
 </resources>

@@ -500,7 +500,7 @@
     <string name="pv_bob_author_name_family_first">Achternaam eerst bvb. „Reve, Gerard”</string>
     <string name="pv_bob_author_name_given_first">Voornaam eerst bvb. „Gerard Reve”</string>
     <string name="pv_reformat_titles_prefixes">de|De|een|Een|het|Het</string>
-    <string name="rebuild_fts">FTS opnieuw opbouwen\n(Experimenteel!)</string>
+    <string name="menu_rebuild_fts">FTS opnieuw opbouwen</string>
     <string name="retry">Opnieuw\nproberen</string>
     <string name="style_builtin_acquired_date">Datum verworven</string>
     <string name="style_builtin_added_date">Datum toegevoegd</string>
@@ -646,5 +646,8 @@
     <string name="lbl_standard">Standaard</string>
     <string name="pt_search_form">Lokaal zoekformulier</string>
     <string name="pg_internet_search">Internet Zoekopdrachten</string>
+    <string name="lbl_print_run">Oplage</string>
+    <string name="pv_bob_header_style_name">Stijl naam</string>
+    <string name="warning_rebuild_orderby_columns">Hiermee worden de sorteergegevens opnieuw opgebouwd wanneer de app opnieuw wordt gestart. Weet je zeker dat je door wilt gaan ?</string>
 
 </resources>

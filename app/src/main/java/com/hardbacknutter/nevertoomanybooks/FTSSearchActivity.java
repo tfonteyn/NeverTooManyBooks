@@ -223,7 +223,7 @@ public class FTSSearchActivity
             .setIcon(R.drawable.ic_keyboard_hide)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.rebuild_fts)
+        menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.menu_rebuild_fts)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         return super.onCreateOptionsMenu(menu);

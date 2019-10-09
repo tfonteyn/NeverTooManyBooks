@@ -84,6 +84,7 @@ public class CsvExporter
             + '"' + DBDefinitions.KEY_TITLE + "\","
             + '"' + DBDefinitions.KEY_ISBN + "\","
             + '"' + DBDefinitions.KEY_PUBLISHER + "\","
+            + '"' + DBDefinitions.KEY_PRINT_RUN + "\","
             + '"' + DBDefinitions.KEY_DATE_PUBLISHED + "\","
             + '"' + DBDefinitions.KEY_DATE_FIRST_PUBLICATION + "\","
             + '"' + DBDefinitions.KEY_EDITION_BITMASK + "\","
@@ -211,6 +212,7 @@ public class CsvExporter
                    .append(format(title))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_ISBN)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_PUBLISHER)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_PRINT_RUN)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
                    .append(format(bookCursor.getLong(DBDefinitions.KEY_EDITION_BITMASK)))

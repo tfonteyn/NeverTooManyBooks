@@ -104,7 +104,7 @@ public class BooklistAdapter
     @Nullable
     private Cursor mCursor;
     @NonNull
-    private BooklistStyle mStyle;
+    private final BooklistStyle mStyle;
     @Nullable
     private View.OnClickListener mOnItemClick;
     @Nullable

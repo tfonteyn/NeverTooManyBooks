@@ -496,7 +496,7 @@
     <string name="pv_bob_author_name_family_first">Apellido primero, por ejemplo «Pérez Galdós, Benito»</string>
     <string name="pv_bob_author_name_given_first">Nombre primero, por ejemplo «Benito Pérez Galdós»</string>
     <string name="pv_reformat_titles_prefixes">el|la|lo|los|las|un|una|unos|unas</string>
-    <string name="rebuild_fts">Reconstruir FTS\n(alpha only!)</string>
+    <string name="menu_rebuild_fts">Reconstruir FTS</string>
     <string name="retry">Reintentar</string>
     <string name="style_builtin_acquired_date">Fecha de adquisición</string>
     <string name="style_builtin_added_date">Fecha de inclusión</string>
@@ -642,5 +642,8 @@
     <string name="lbl_standard">Estándar</string>
     <string name="pt_search_form">Formulario de búsqueda local</string>
     <string name="pg_internet_search">Búsquedas web</string>
+    <string name="lbl_print_run">Ejecución de impresión</string>
+    <string name="pv_bob_header_style_name">Nombre de estilo</string>
+    <string name="warning_rebuild_orderby_columns">Esto reconstruirá los datos de clasificación cuando se reinicie la aplicación. Estás seguro de que quieres continuar ?</string>
 
 </resources>

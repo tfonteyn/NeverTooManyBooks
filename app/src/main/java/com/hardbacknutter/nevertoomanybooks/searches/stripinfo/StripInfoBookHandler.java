@@ -225,7 +225,7 @@ public class StripInfoBookHandler
                         break;
 
                     case "Oplage":
-                        i += processText(td, StripInfoField.OPLAGE, bookData);
+                        i += processText(td, DBDefinitions.KEY_PRINT_RUN, bookData);
                         break;
 
                     case "Barcode":
