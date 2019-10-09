@@ -146,18 +146,15 @@ class LanguageUtilsTest {
         assertEquals("English", LanguageUtils.getDisplayName(Locale.ENGLISH, "en"));
         assertEquals("English", LanguageUtils.getDisplayName(Locale.ENGLISH, "eng"));
 
-        // Note the upper case
         assertEquals("German", LanguageUtils.getDisplayName(Locale.ENGLISH, "de"));
-        // Note the lower case.
         assertEquals("allemand", LanguageUtils.getDisplayName(Locale.FRENCH, "de"));
-        // Note the upper case.
         assertEquals("Duits", LanguageUtils.getDisplayName(new Locale("nl"), "de"));
 
 
         assertEquals("German", LanguageUtils.getDisplayName(Locale.ENGLISH, "ger"));
         assertEquals("German", LanguageUtils.getDisplayName(Locale.ENGLISH, "deu"));
 
-        assertEquals("Allemand", LanguageUtils.getDisplayName(Locale.FRENCH, "ger"));
-        assertEquals("Allemand", LanguageUtils.getDisplayName(Locale.FRENCH, "deu"));
+        assertEquals("allemand", LanguageUtils.getDisplayName(Locale.FRENCH, "ger"));
+        assertEquals("allemand", LanguageUtils.getDisplayName(Locale.FRENCH, "deu"));
     }
 }

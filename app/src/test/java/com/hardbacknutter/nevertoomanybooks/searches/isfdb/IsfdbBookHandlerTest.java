@@ -143,7 +143,7 @@ class IsfdbBookHandlerTest {
         assertEquals("0413600106", bookData.getString(DBDefinitions.KEY_ISBN));
         assertEquals("9780413600103", bookData.getString(IsfdbBookHandler.BookField.ISBN_2));
         assertEquals("Methuen", bookData.getString(DBDefinitions.KEY_PUBLISHER));
-        assertEquals("1.95", bookData.getString(DBDefinitions.KEY_PRICE_LISTED));
+        assertEquals(1.95d, bookData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
         assertEquals("GBP", bookData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
         assertEquals("159", bookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("pb", bookData.getString(DBDefinitions.KEY_FORMAT));

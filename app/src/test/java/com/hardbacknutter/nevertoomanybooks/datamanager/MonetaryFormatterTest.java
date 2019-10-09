@@ -59,7 +59,7 @@ class MonetaryFormatterTest {
                 .setCurrencyCode("USD")
                 .setLocale(Locale.US);
         //noinspection ConstantConditions
-        assertEquals("$10.50", f.format(null, "10.50"));
+        assertEquals("$10.50", f.format(null, 10.50d));
     }
 
     @Test
@@ -68,7 +68,7 @@ class MonetaryFormatterTest {
                 .setCurrencyCode("USD")
                 .setLocale(Locale.UK);
         //noinspection ConstantConditions
-        assertEquals("USD10.50", f.format(null, "10.50"));
+        assertEquals("USD10.50", f.format(null, 10.50d));
     }
 
     @Test
@@ -77,7 +77,7 @@ class MonetaryFormatterTest {
                 .setCurrencyCode("USD")
                 .setLocale(Locale.GERMANY);
         //noinspection ConstantConditions
-        assertEquals("10,50 USD", f.format(null, "10.50"));
+        assertEquals("10,50 USD", f.format(null, 10.50d));
     }
 
 
@@ -90,7 +90,7 @@ class MonetaryFormatterTest {
                 .setCurrencyCode("EUR")
                 .setLocale(Locale.GERMANY);
         //noinspection ConstantConditions
-        assertEquals("EUR 10,50", f.format(null, "10,50"));
+        assertEquals("10,50 €", f.format(null, 10.50d));
     }
 
     /**
@@ -102,6 +102,6 @@ class MonetaryFormatterTest {
                 .setCurrencyCode("EUR")
                 .setLocale(Locale.UK);
         //noinspection ConstantConditions
-        assertEquals("EUR 10,50", f.format(null, "10,50"));
+        assertEquals("€10.50", f.format(null, 10.50d));
     }
 }

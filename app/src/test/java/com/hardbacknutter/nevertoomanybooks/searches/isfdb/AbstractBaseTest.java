@@ -48,6 +48,8 @@ import static org.mockito.Mockito.when;
  */
 class AbstractBaseTest {
 
+    private static final String sBaseUrl = "http://www.isfdb.org";
+
     @Mock
     Context mContext;
 
@@ -70,10 +72,9 @@ class AbstractBaseTest {
 
         DummyLoader loader = new DummyLoader();
 
-        String url = IsfdbManager.getBaseURL() + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
+        String url = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
         String resultingUrl = loader.loadPage(url);
-        assertEquals(IsfdbManager.getBaseURL() + "/cgi-bin/pl.cgi?326539",
-                     resultingUrl);
+        assertEquals(sBaseUrl + "/cgi-bin/pl.cgi?326539", resultingUrl);
     }
 
 
@@ -87,13 +88,13 @@ class AbstractBaseTest {
 
         DummyLoader loader = new DummyLoader();
 
-        String url = IsfdbManager.getBaseURL() + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
+        String url = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
         String resultingUrl = loader.loadPage(url);
-        assertEquals(IsfdbManager.getBaseURL() + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN",
-                     resultingUrl);
+        assertEquals(sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN", resultingUrl);
     }
 
     private static class DummyLoader
             extends AbstractBase {
+
     }
 }
