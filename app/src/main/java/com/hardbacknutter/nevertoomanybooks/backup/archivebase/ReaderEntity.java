@@ -78,7 +78,7 @@ public interface ReaderEntity {
     /**
      * Save the data to a suitable directory, using the original file name.
      *
-     * @param context Curent context
+     * @param context Current context
      *
      * @throws IOException on failure
      */

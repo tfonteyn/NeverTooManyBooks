@@ -114,7 +114,7 @@ dependencies {
 //    implementation 'androidx.viewpager2:viewpager2:1.0.0-beta03'
 
 
-    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation 'com.google.android.material:material:1.1.0-beta01'
     // barcode decoder using https://developers.google.com/android/guides/setup
     implementation 'com.google.android.gms:play-services-vision:18.0.0'
 
@@ -132,7 +132,7 @@ dependencies {
     //    implementation 'org.jsoup:jsoup:1.12.1'
     implementation 'org.jsoup:jsoup:1.11.3'
 
-    testImplementation 'org.mockito:mockito-core:3.0.0'
+    testImplementation 'org.mockito:mockito-core:3.1.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
 }
 

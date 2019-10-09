@@ -53,7 +53,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -241,9 +240,6 @@ public class EditBookSeriesActivity
         /** Fragment manager tag. */
         private static final String TAG = "EditBookSeriesDialogFragment";
 
-        /** Database Access. */
-        protected DAO mDb;
-
         private EditBookSeriesActivity mHostActivity;
 
         private AutoCompleteTextView mTitleView;
@@ -286,7 +282,7 @@ public class EditBookSeriesActivity
 
             Bundle args = requireArguments();
             mSeries = args.getParcelable(DBDefinitions.KEY_FK_SERIES);
-            Objects.requireNonNull(mSeries);
+            Objects.requireNonNull(mSeries, "no Series passed");
             if (savedInstanceState == null) {
                 mSeriesName = mSeries.getTitle();
                 mSeriesIsComplete = mSeries.isComplete();
@@ -362,14 +358,6 @@ public class EditBookSeriesActivity
             mSeriesNumber = mNumberView.getText().toString().trim();
 
             super.onPause();
-        }
-
-        @Override
-        public void onDestroy() {
-            if (mDb != null) {
-                mDb.close();
-            }
-            super.onDestroy();
         }
     }
 

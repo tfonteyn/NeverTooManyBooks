@@ -132,6 +132,7 @@ public class ReviewEditApiHandler
             parameters.put("review[rating]", String.valueOf(rating));
         }
 
+        //ENHANCE: see if we 'somehow' can sync our personal notes with the site private notes.
         // This was a pure guess... and it was rejected by the site.
 //        if (privateNotes != null) {
 //            parameters.put("review[notes]", review);

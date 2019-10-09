@@ -5,12 +5,8 @@ https://github.com/eleybourn/Book-Catalogue/wiki/Developer-Notes-Suggestions-Gui
 Small notes in addition (with a pinch of salt... as I change my own mind from time to time)
 
 * trimming
-    The database (checked with v82) will/can contain untrimmed strings.
     Wherever a View is READ as a String, a trim should be done
        view.getText().toString().trim();
-
-    Eventually the database will then be trim-proof.
-    No doubt some places do a trim which is not really needed, something for a rainy day.
 
 * Layout in code:
     * Use a ViewGroup instead of e.g. LinearLayout where possible.

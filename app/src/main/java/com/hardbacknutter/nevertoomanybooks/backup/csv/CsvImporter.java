@@ -114,9 +114,9 @@ public class CsvImporter
     /** log error string. */
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
 
-    /** Present in pre-v1000 CSV files. Obsolete, not used. */
+    /** Present in BookCatalogue CSV files. Obsolete, not used. */
     private static final String LEGACY_BOOKSHELF_ID = "bookshelf_id";
-    /** When present in pre-v1000 CSV files, we should use it as the bookshelf name. */
+    /** When present in BookCatalogue CSV files, we should use it as the bookshelf name. */
     private static final String LEGACY_BOOKSHELF_TEXT_COLUMN = "bookshelf_text";
 
     /** Database Access. */

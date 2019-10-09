@@ -72,7 +72,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textIsSelectable="true"
                 android:textStyle="bold"
-                tools:text="6.0.0"
+                tools:text="1.0.0"
                 />
         </LinearLayout>
 

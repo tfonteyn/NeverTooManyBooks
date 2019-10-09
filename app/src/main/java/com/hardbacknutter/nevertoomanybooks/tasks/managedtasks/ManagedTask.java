@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,8 +87,6 @@ public abstract class ManagedTask
     /** message to send to the TaskManager when all is said and done. */
     @Nullable
     protected String mFinalMessage;
-    /** Flag indicating the main runTask method has completed. Set in thread run. */
-    private boolean mFinished;
     /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
     private boolean mCancelFlg;
 
@@ -156,21 +155,19 @@ public abstract class ManagedTask
             Logger.error(this, e);
         }
 
-        mFinished = true;
         // Let the implementation know it is finished
         onTaskFinish();
 
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
         MESSAGE_SWITCH.send(mMessageSenderId, listener -> {
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                                    Logger.debug(this, "run",
-                                                 "ManagedTask=" + getName(),
-                                                 "Delivering 'onTaskFinished' to: " + listener);
-                                }
-                                listener.onTaskFinished(this);
-                                return false;
-                            }
-                           );
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+                Logger.debug(this, "run",
+                             "ManagedTask=" + getName(),
+                             "Delivering 'onTaskFinished' to: " + listener);
+            }
+            listener.onTaskFinished(this);
+            return false;
+        });
     }
 
     /**
@@ -189,13 +186,6 @@ public abstract class ManagedTask
      */
     public boolean isCancelled() {
         return mCancelFlg;
-    }
-
-    /**
-     * Accessor to check if task finished.
-     */
-    public boolean isFinished() {
-        return mFinished;
     }
 
     public long getSenderId() {

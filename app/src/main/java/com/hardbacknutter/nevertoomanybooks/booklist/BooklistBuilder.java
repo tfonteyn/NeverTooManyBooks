@@ -479,7 +479,7 @@ public class BooklistBuilder
         // We can not use triggers to fill in headings in API < 8 since
         // SQLite 3.5.9 (2008-05-14) is broken.
         // Allow for the user preferences to override in case another build is broken.
-        // 2019-09-20: v1000 is targeting API 23, which would be SqLite 3.8
+        // 2019-09-20: targeting API 23, which would be SqLite 3.8
         //ENHANCE: time to remove sqlite pre-trigger use logic ?
         initCompatibilityMode();
 

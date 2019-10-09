@@ -353,8 +353,8 @@ public class EditBookAuthorsActivity
             mAuthorTypeIsUsed = App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE);
 
             Bundle args = requireArguments();
-            mAuthor = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR));
-            Objects.requireNonNull(mAuthor);
+            mAuthor = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR),
+                                             "no author passed");
             if (savedInstanceState == null) {
                 mFamilyName = mAuthor.getFamilyName();
                 mGivenNames = mAuthor.getGivenNames();

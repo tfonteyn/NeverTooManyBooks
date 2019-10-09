@@ -36,7 +36,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -158,6 +157,10 @@ class KbNlBookHandler
                 // Formaat: 30 cm
                 break;
 
+            case "Editie":
+                // [2e dr.]
+                break;
+
             case "Subject heading Depot":
             case "Trefwoord Depot":
                 // not used
@@ -173,8 +176,9 @@ class KbNlBookHandler
                 break;
 
             default:
-                Logger.warn(this, "processEntry",
-                            "currentLabel=" + currentLabel);
+                // to many...
+//                Logger.warn(this, "processEntry",
+//                            "currentLabel=" + currentLabel);
                 break;
         }
     }

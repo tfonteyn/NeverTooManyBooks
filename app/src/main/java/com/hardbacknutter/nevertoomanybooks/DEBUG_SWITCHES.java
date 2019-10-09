@@ -209,7 +209,7 @@ public final class DEBUG_SWITCHES {
     static final boolean THEME = false;
     public static final boolean USER_MESSAGE_STACK_TRACE = false;
     public static final boolean PRUNE_LIST = false;
-    public static final boolean FIELD_FORMATTER = true;
+    public static final boolean FIELD_FORMATTER = false;
     public static final boolean BOOK_LOCALE = false;
 
     private DEBUG_SWITCHES() {

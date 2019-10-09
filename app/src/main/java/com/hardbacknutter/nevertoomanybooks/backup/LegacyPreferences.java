@@ -52,14 +52,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 public final class LegacyPreferences {
 
-    /** Legacy preferences name, pre-v1000. */
+    /** Legacy preferences name. */
     public static final String PREF_LEGACY_PREFS = "bookCatalogue";
 
     private LegacyPreferences() {
     }
 
     /**
-     * v1000 brought a cleanup and re-structuring of the preferences.
+     * Migrate BookCatalogue preferences.
+     *
+     * Refactoring brought a cleanup and re-structuring of the preferences.
      * Some of these are real migrations,
      * some just for aesthetics's making the key's naming standard.
      *

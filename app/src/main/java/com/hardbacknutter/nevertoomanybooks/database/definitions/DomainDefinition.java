@@ -168,6 +168,18 @@ public class DomainDefinition
     }
 
     /**
+     * add a numerical default constraint.
+     *
+     * @param value to use as default
+     *
+     * @return this for chaining.
+     */
+    @NonNull
+    public DomainDefinition setDefault(final double value) {
+        mConstraints.add("DEFAULT " + value);
+        return this;
+    }
+    /**
      * add a string default constraint.
      *
      * @param value to add (a string default must include the quotes!)

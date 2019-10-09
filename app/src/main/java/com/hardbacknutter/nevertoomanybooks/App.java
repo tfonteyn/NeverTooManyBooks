@@ -142,7 +142,7 @@ public class App
     /** Checked in onResume() so not to start tasks etc. */
     private static final int ACTIVITY_IS_RECREATING = 2;
     /**
-     * NEWTHINGS: APP THEME.
+     * NEWTHINGS: APP THEME: adding
      * <ol>
      * <li>add it to themes.xml</li>
      * <li>add it to R.array.pv_ui_theme, the array order must match the APP_THEMES order</li>

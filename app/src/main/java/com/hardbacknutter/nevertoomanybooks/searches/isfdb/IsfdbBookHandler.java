@@ -514,7 +514,8 @@ public class IsfdbBookHandler
 
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
                     tmpString = li.childNode(2).toString().trim();
-                    CurrencyUtils.splitPrice(IsfdbManager.SITE_LOCALE, tmpString,
+                    CurrencyUtils.splitPrice(IsfdbManager.SITE_LOCALE,
+                                             tmpString,
                                              DBDefinitions.KEY_PRICE_LISTED,
                                              DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                                              bookData);

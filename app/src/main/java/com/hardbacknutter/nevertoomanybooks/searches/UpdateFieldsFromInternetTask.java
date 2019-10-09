@@ -62,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 /**
  * ManagedTask to update requested fields by doing a search.
  * <p>
- * NEWTHINGS must stay in sync with {@link UpdateFieldsFromInternetActivity}
+ * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsFromInternetActivity}
  */
 public class UpdateFieldsFromInternetTask
         extends ManagedTask {
@@ -278,33 +278,34 @@ public class UpdateFieldsFromInternetTask
 
         Context context = getContext();
 
-        try (BookCursor books = mDb.fetchBooks(mBookIds, mCurrentBookId)) {
+        try (BookCursor bookCursor = mDb.fetchBooks(mBookIds, mCurrentBookId)) {
 
-            int langCol = books.getColumnIndex(DBDefinitions.KEY_LANGUAGE);
+            int langCol = bookCursor.getColumnIndex(DBDefinitions.KEY_LANGUAGE);
 
-            mTaskManager.setMaxProgress(this, books.getCount());
-            while (books.moveToNext() && !isCancelled()) {
+            mTaskManager.setMaxProgress(this, bookCursor.getCount());
+            while (bookCursor.moveToNext() && !isCancelled()) {
                 progressCounter++;
 
                 // Copy the fields from the cursor and build a complete set of data for this book.
                 // This only needs to include data that we can fetch (so, for example,
                 // bookshelves are ignored).
                 mOriginalBookData = new Bundle();
-                for (int i = 0; i < books.getColumnCount(); i++) {
-                    mOriginalBookData.putString(books.getColumnName(i), books.getString(i));
+                for (int i = 0; i < bookCursor.getColumnCount(); i++) {
+                    mOriginalBookData
+                            .putString(bookCursor.getColumnName(i), bookCursor.getString(i));
                 }
 
                 // always add the language to the ORIGINAL data if we have one,
                 // so we can use it for the Locale details when processing the results.
                 if (langCol > 0) {
-                    String lang = books.getString(langCol);
+                    String lang = bookCursor.getString(langCol);
                     if (lang != null && !lang.isEmpty()) {
                         mOriginalBookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
                     }
                 }
 
                 // Get the book ID
-                mCurrentBookId = books.getId();
+                mCurrentBookId = bookCursor.getId();
                 // Get the book UUID
                 mCurrentUuid = mOriginalBookData.getString(DBDefinitions.KEY_BOOK_UUID);
 

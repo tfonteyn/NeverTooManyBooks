@@ -111,6 +111,38 @@ public class ColumnInfo {
         return "PRAGMA table_info(" + tableName + ')';
     }
 
+    /**
+     * Returns the type of the field for this column.
+     * <p>
+     * The returned field types are:
+     * <ul>
+     * <li>{@link Cursor#FIELD_TYPE_INTEGER}</li>
+     * <li>{@link Cursor#FIELD_TYPE_FLOAT}</li>
+     * <li>{@link Cursor#FIELD_TYPE_STRING}</li>
+     * <li>{@link Cursor#FIELD_TYPE_BLOB}</li>
+     * </ul>
+     * </p>
+     * <p>
+     * If for whatever reason the type is not recognised,
+     * {@link Cursor#FIELD_TYPE_STRING} is returned.
+     *
+     * @return The field type.
+     */
+    public int getType() {
+        switch (storageClass) {
+            case Integer:
+                return Cursor.FIELD_TYPE_INTEGER;
+            case Real:
+                return Cursor.FIELD_TYPE_FLOAT;
+            case Blob:
+                return Cursor.FIELD_TYPE_BLOB;
+
+            case Text:
+            default:
+                return Cursor.FIELD_TYPE_STRING;
+        }
+    }
+
     @Override
     @NonNull
     public String toString() {

@@ -158,7 +158,7 @@ public abstract class BookBaseFragment
      * @return the field
      */
     @NonNull
-    Field getField(@IdRes final int fieldId) {
+    <T> Field<T> getField(@IdRes final int fieldId) {
         return mFields.getField(fieldId);
     }
 

@@ -29,9 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +40,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.hardbacknutter.nevertoomanybooks.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -59,7 +56,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Currently this test will fail as we don't mock the right id for the objects.
- *
+ * <p>
  * isUniqueById().
  * - 'true' for Author, Bookshelf, TocEntry
  * - 'false' for Series
@@ -75,10 +72,6 @@ class PruneListTest {
     SharedPreferences mSharedPreferences;
     @Mock
     Resources mResources;
-    @Mock
-    Configuration mConfiguration;
-    @Mock
-    Bundle mBundle;
 
     @Mock
     DAO mDb;
@@ -88,11 +81,9 @@ class PruneListTest {
     void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mBundle = BundleMock.mock();
         mContext = mock(Context.class);
         mResources = mock(Resources.class);
         mSharedPreferences = mock(SharedPreferences.class);
-        mConfiguration = mock(Configuration.class);
 
         when(mContext.getApplicationContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
@@ -195,7 +186,7 @@ class PruneListTest {
     /**
      * While {@link Series#pruneList} does call {@link ItemWithFixableId#pruneList},
      * this Series data is only setup for testing {@link Series#pruneList} itself.
-     *
+     * <p>
      * The {@link #pruneAuthorList()} is used to test {@link ItemWithFixableId#pruneList}.
      */
     @Test

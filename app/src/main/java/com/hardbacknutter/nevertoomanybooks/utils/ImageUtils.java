@@ -111,11 +111,15 @@ public final class ImageUtils {
     public static final int SCALE_X_LARGE = 8;
     /** Thumbnail Scaling. */
     public static final int SCALE_2X_LARGE = 12;
+
+    //URGENT: add a new interface for scale.
+
     // temp debug
     public static final AtomicLong cacheTicks = new AtomicLong();
     public static final AtomicLong fileTicks = new AtomicLong();
     public static final AtomicInteger cacheChecks = new AtomicInteger();
     public static final AtomicInteger fileChecks = new AtomicInteger();
+
     private static final int BUFFER_SIZE = 32768;
 
     private ImageUtils() {

@@ -52,7 +52,7 @@
             android:key="App.Locale"
             android:title="@string/pt_ui_language" />
 
-        <!-- NEWTHINGS: APP THEME. -->
+        <!-- NEWTHINGS: APP THEME: set the default -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_ui_theme"

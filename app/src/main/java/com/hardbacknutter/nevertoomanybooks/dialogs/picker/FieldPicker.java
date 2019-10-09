@@ -70,7 +70,7 @@ public class FieldPicker<T>
 
         FieldListAdapter<T> adapter = new FieldListAdapter<>(context, field, list, item -> {
             dismiss();
-            field.setValue(item.toString());
+            field.setValue(item);
         });
         setAdapter(adapter, adapter.getPreSelectedPosition());
     }

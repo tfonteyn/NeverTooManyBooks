@@ -308,18 +308,18 @@ class ImportLegacyTask
 
         // Find the books in our database - there may be more than one!
         // First look by Goodreads book ID
-        BookCursor cursor = db.fetchBooksByGoodreadsBookId(grBookId);
+        BookCursor bookCursor = db.fetchBooksByGoodreadsBookId(grBookId);
         try {
-            boolean found = cursor.moveToFirst();
+            boolean found = bookCursor.moveToFirst();
             if (!found) {
                 // Not found by Goodreads id, look via ISBNs
-                cursor.close();
-                cursor = null;
+                bookCursor.close();
+                bookCursor = null;
 
                 List<String> list = extractIsbnList(review);
                 if (!list.isEmpty()) {
-                    cursor = db.fetchBooksByIsbnList(list);
-                    found = cursor.moveToFirst();
+                    bookCursor = db.fetchBooksByIsbnList(list);
+                    found = bookCursor.moveToFirst();
                 }
             }
 
@@ -330,15 +330,15 @@ class ImportLegacyTask
                     if (isAborting()) {
                         break;
                     }
-                    updateBook(context, db, cursor, review);
-                } while (cursor.moveToNext());
+                    updateBook(context, db, bookCursor, review);
+                } while (bookCursor.moveToNext());
             } else {
                 // Create the book
                 insertBook(context, db, review);
             }
         } finally {
-            if (cursor != null) {
-                cursor.close();
+            if (bookCursor != null) {
+                bookCursor.close();
             }
         }
     }

@@ -182,11 +182,11 @@ public class TarBackupReader
         } else if (TarBackupContainer.DB_FILE.equalsIgnoreCase(name)) {
             return Type.Database;
 
-            // pre-v1000
+            // BookCatalogue
         } else if (LEGACY_STYLES_PATTERN.matcher(name).find()) {
             return Type.LegacyBooklistStyles;
 
-            // pre-v1000
+            // BookCatalogue
         } else if ("preferences".equals(name)) {
             return Type.LegacyPreferences;
 

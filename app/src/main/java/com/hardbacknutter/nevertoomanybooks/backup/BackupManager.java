@@ -50,11 +50,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
  */
 public final class BackupManager {
 
-    /** Only used for displaying to the user. */
-    public static final String EXTENSIONS = "*.ntmb/*.bcbk";
     /** Last full backup date. */
     private static final String PREF_LAST_FULL_BACKUP_DATE = "Backup.LastDate";
-    /** Proposed extension for backup files. Not binding. */
+    /** Proposed extension for backup files. Not mandatory. */
     private static final String ARCHIVE_EXTENSION = ".ntmb";
 
     /** Constructor. */
@@ -129,7 +127,7 @@ public final class BackupManager {
         try (BackupReader reader = getReader(context, uri)) {
             BackupInfo info = reader.getInfo();
             reader.close();
-            hasValidDates = info.getAppVersionCode() >= 152;
+            hasValidDates = info.hasValidDates();
         } catch (@NonNull final IOException | InvalidArchiveException e) {
             Logger.error(context, context, e);
             hasValidDates = false;

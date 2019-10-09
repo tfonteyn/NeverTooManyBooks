@@ -239,8 +239,8 @@ public final class CsvCoder {
                  * <li>(YYYY-MM-DD)</li>
                  * <li>(YYYY-DD-MM) might work depending on the user's Locale. Not tested.</li>
                  * </ul>
-                 * v82 had no dates: Giants In The Sky * Blish, James
-                 * <ul>V1000+ also accepts:
+                 * BookCatalogue had no dates: Giants In The Sky * Blish, James
+                 * <ul>We now also accept:
                  * <li>Giants In The Sky (1952) * Blish, James</li>
                  * <li>Giants In The Sky (1952-03) * Blish, James</li>
                  * <li>Giants In The Sky (1952-03-22) * Blish, James</li>

@@ -30,3 +30,35 @@ and commit back.
 
 This is a simple book catalogue application, to store a list of your books.
 Books can be added either manually, by ISBN, or by barcode.
+
+Compared to BookCatalogue 5.2.2, this application brings:
+
+Version 1.0.0:
+* Modernisation to Android 6 (Marshmallow) bringing lots of new UI goodies.
+* Generally more consistent in usage and layout.
+* UI translations 99\% complete.
+* Cover thumbnails and log files moved to dedicated sub folders.
+* Configurable websites to search for data.
+* New Search websites: isfdb.org, kb.nl, stripinfo.be
+* Better Anthology support (Edit/View/cross-book) and morphed into “Table of Content” or “TOC”
+* TOC auto populated (ISFDB site only!).
+* List of all works of an author.
+* Reformatting of titles configurable.
+* Language field shows the translated name in the current locale.
+* More Locale support in general (Formatting & Sorting)
+* Books & Anthology/TOC titles now have a “first published” field.
+* Book Formats standardization.
+* Book Editions (1st, book-club, etc).
+* Book paid price.
+* Book date acquired.
+* Book pages is now alphanumeric
+* Currency support for prices.
+* Styles exported/imported in XML format.
+* Export of all tables can also be done in XML (no import yet).
+* Full support for rotating the screen at any time.
+* External site id usage for direct identification & links.
+* Experimental: New Search website: OpenLibrary
+* Removed: The old “Classic” view is gone.
+* Bug fixes
+
+

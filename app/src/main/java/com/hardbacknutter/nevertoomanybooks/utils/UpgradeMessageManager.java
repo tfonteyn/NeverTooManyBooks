@@ -39,7 +39,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 
 /**
@@ -56,7 +55,7 @@ public final class UpgradeMessageManager {
      * List of version-specific messages.
      */
     private static final int[][] UPGRADE_MESSAGES = {
-            {1000, R.string.new_in_600},
+//            {2, R.string.new_in_101},
             };
     private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 
@@ -83,7 +82,6 @@ public final class UpgradeMessageManager {
 
         final StringBuilder message = new StringBuilder();
 
-        // See if we have a saved version ID; if it's 0, it's an upgrade from a pre-98 install.
         long lastVersion = PreferenceManager.getDefaultSharedPreferences(context)
                                             .getLong(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
 

@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.cursors;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 
@@ -37,11 +38,23 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 
 import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 
 /**
  * Cursor implementation for book-related queries.
+ *
+ * <strong>IMPORTANT:</strong> when using {@link Cursor#getType} it will return the type
+ * <strong>based on the data currently in the column</strong>. This is not always the type of
+ * the column as defined at database creation time.<br>
+ * Example: a 'date' column with content "1980" will report {@link Cursor#FIELD_TYPE_INTEGER}.
+ * <p>
+ * If this is a problem, call {@link #setDb(DAO)} before accessing {@link #getType(int)}.
+ * This will force getting the real type for the column.<br>
+ * <strong>Note:</strong> we only get the {@link DBDefinitions#TBL_BOOKS} column data!
  */
 public class BookCursor
         extends TrackedCursor
@@ -50,6 +63,11 @@ public class BookCursor
     /** Helper to fetch columns by name. */
     @Nullable
     private CursorMapper mMapper;
+    /** Populated on first use. */
+    @Nullable
+    private TableInfo mTableInfo;
+    @Nullable
+    private DAO mDb;
 
     /**
      * Constructor.
@@ -64,6 +82,38 @@ public class BookCursor
                       @NonNull final SQLiteQuery query,
                       @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
+    }
+
+    /**
+     * See class docs.
+     *
+     * @param db Database Access; needed to get the real meta data for the columns.
+     */
+    public void setDb(@NonNull final DAO db) {
+        mDb = db;
+    }
+
+    /**
+     * See class docs.<br>
+     * <p>
+     * {@inheritDoc}
+     */
+    @Override
+    public int getType(final int columnIndex) {
+
+        if (mDb != null && mTableInfo == null) {
+            mTableInfo = DBDefinitions.TBL_BOOKS.getTableInfo(mDb.getUnderlyingDatabase());
+        }
+
+        if (mTableInfo != null) {
+            ColumnInfo columnInfo = mTableInfo.getColumn(getColumnName(columnIndex));
+            if (columnInfo != null) {
+                return columnInfo.getType();
+            }
+        }
+
+        // fallback
+        return super.getType(columnIndex);
     }
 
     /**
@@ -97,10 +147,6 @@ public class BookCursor
     public void close() {
         super.close();
         mMapper = null;
-    }
-
-    public boolean contains(@NonNull final String key) {
-        return getCursorMapper().contains(key);
     }
 
     @NonNull

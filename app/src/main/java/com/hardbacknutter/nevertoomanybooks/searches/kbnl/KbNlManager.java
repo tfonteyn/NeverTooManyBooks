@@ -36,6 +36,7 @@ import androidx.annotation.StringRes;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -66,6 +67,8 @@ public class KbNlManager
 
     /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+
+    public static final Locale SITE_LOCALE = new Locale("nl", "NL");
 
     /**
      * RELEASE: Chrome 2019-08-12. Continuously update to latest version.

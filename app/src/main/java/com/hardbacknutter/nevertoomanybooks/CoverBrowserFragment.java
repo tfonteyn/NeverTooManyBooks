@@ -134,7 +134,7 @@ public class CoverBrowserFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Objects.requireNonNull(getTargetFragment());
+        Objects.requireNonNull(getTargetFragment(), "no target fragment set");
 
         mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_MEDIUM);
 

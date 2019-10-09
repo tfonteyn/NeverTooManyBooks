@@ -80,16 +80,15 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public final class CoversDAO
         implements AutoCloseable {
 
-    /** Compresses images to 80%. */
+    /** Compresses images to 80% to store in the cache. This does not affect the file itself. */
     private static final int IMAGE_QUALITY_PERCENTAGE = 80;
 
     /** DB name. */
     private static final String COVERS_DATABASE_NAME = "covers.db";
     /**
      * DB Version.
-     * v2: dropped size/type columns + shortened 'filename'.
      */
-    private static final int COVERS_DATABASE_VERSION = 2;
+    private static final int COVERS_DATABASE_VERSION = 1;
 
     /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();

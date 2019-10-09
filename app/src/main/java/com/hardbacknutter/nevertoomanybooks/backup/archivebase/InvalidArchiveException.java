@@ -32,11 +32,7 @@ import androidx.annotation.NonNull;
 public class InvalidArchiveException
         extends Exception {
 
-
-    private static final long serialVersionUID = -7625001337243016631L;
-
-    public InvalidArchiveException() {
-    }
+    private static final long serialVersionUID = 3492827673584239777L;
 
     @SuppressWarnings("WeakerAccess")
     public InvalidArchiveException(@NonNull final String message) {

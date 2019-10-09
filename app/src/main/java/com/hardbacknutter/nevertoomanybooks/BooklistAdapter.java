@@ -139,15 +139,6 @@ public class BooklistAdapter
         notifyDataSetChanged();
     }
 
-    /**
-     * Set the (new) style.
-     *
-     * @param style to use
-     */
-    public void setStyle(@NonNull final BooklistStyle style) {
-        mStyle = style;
-    }
-
     void setOnItemClickListener(@NonNull final View.OnClickListener onItemClick) {
         mOnItemClick = onItemClick;
     }

@@ -236,7 +236,7 @@ public abstract class BackupReaderAbstract
                         break;
 
                     case LegacyPreferences: {
-                        // pre-v1000 format
+                        // BookCatalogue format
                         if (incPrefs) {
                             progressListener.onProgressStep(1, mProcessPreferences);
                             // read them into the 'old' prefs. Migration is done at a later stage.
@@ -250,7 +250,7 @@ public abstract class BackupReaderAbstract
                         break;
                     }
                     case LegacyBooklistStyles:
-                        // pre-v1000 format was a serialized binary. No longer supported.
+                        // BookCatalogue format was a serialized binary. No longer supported.
                         break;
 
                     case Unknown:

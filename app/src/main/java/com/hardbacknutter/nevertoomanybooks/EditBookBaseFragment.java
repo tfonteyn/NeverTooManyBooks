@@ -254,7 +254,7 @@ public abstract class EditBookBaseFragment<T>
      * @param listGetter    {@link CheckListDialogFragment.CheckListEditorListGetter}
      *                      interface to get the *current* list
      */
-    void initCheckListEditor(@NonNull final Field<String> field,
+    void initCheckListEditor(@NonNull final Field<?> field,
                              @StringRes final int dialogTitleId,
                              @NonNull final
                              CheckListDialogFragment.CheckListEditorListGetter<T> listGetter) {

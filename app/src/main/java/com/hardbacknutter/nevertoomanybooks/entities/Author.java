@@ -84,7 +84,7 @@ public class Author
 
     /*
      * {@link DBDefinitions#DOM_BOOK_AUTHOR_TYPE_BITMASK}.
-     * NEWTHINGS: author type
+     * NEWTHINGS: author type: add a bit flag
      * Never change the bit value!
      */
     /**
@@ -173,7 +173,7 @@ public class Author
     private static final Map<String, Integer> TYPES_MAPPER = new HashMap<>();
 
     /*
-     * NEWTHINGS: author type.
+     * NEWTHINGS: author type: add the label for the type
      *
      * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
      */

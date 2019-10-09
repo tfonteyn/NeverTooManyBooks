@@ -28,8 +28,10 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -37,6 +39,7 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -83,8 +86,10 @@ public final class Format {
     }
 
     /**
-     * Try to map website terminology to our own localised.
+     * <strong>Unconditionally</strong> try to map website terminology to our own localised.
      * This should be / is used at 'edit' time (a formatter) and again at 'save' time
+     * <p>
+     * Caller should use {@link #isMappingAllowed(Context)} if required.
      *
      * @param context Current context
      * @param source  string to map
@@ -96,5 +101,52 @@ public final class Format {
         LocaleUtils.insanityCheck(context);
         Integer resId = MAPPER.get(source.toLowerCase(Locale.getDefault()));
         return resId != null ? context.getString(resId) : source;
+    }
+
+    /**
+     * Conditionally try to map website terminology to our own localised.
+     * This should be / is used at 'edit' time (a formatter) and again at 'save' time
+     * <p>
+     * The current value is read from the bundle, and replaced by the mapped value.
+     *
+     * @param context  Current context
+     * @param bookData with {@link DBDefinitions#KEY_FORMAT} entry to map
+     */
+    public static void map(@NonNull final Context context,
+                           @NonNull final Bundle bookData) {
+
+        if (isMappingAllowed(context)) {
+            String format = bookData.getString(DBDefinitions.KEY_FORMAT);
+            if (format != null && !format.isEmpty()) {
+                format = map(context, format);
+                bookData.putString(DBDefinitions.KEY_FORMAT, format);
+            }
+        }
+    }
+
+    /**
+     * Conditionally try to map website terminology to our own localised.
+     * This should be / is used at 'edit' time (a formatter) and again at 'save' time
+     * <p>
+     * The current value is read from the bundle, and replaced by the mapped value.
+     *
+     * @param context Current context
+     * @param book    with {@link DBDefinitions#KEY_FORMAT} entry to map
+     */
+    public static void map(@NonNull final Context context,
+                           @NonNull final Book book) {
+
+        if (isMappingAllowed(context)) {
+            String format = book.getString(DBDefinitions.KEY_FORMAT);
+            if (!format.isEmpty()) {
+                format = map(context, format);
+                book.putString(DBDefinitions.KEY_FORMAT, format);
+            }
+        }
+    }
+
+    public static boolean isMappingAllowed(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_reformat_formats, false);
     }
 }

@@ -1958,7 +1958,7 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
             style.setShowExtra(DBDefinitions.KEY_AUTHOR_FORMATTED, true);
 
-            // NEWTHINGS: BooklistStyle
+            // NEWTHINGS: BooklistStyle: add a new builtin style
         }
     }
 }

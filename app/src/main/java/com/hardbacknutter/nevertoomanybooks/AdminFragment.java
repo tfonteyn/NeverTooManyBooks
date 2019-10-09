@@ -103,8 +103,7 @@ public class AdminFragment
     private static final int REQ_PICK_FILE_FOR_ARCHIVE_BACKUP = 3;
     private static final int REQ_PICK_FILE_FOR_ARCHIVE_IMPORT = 4;
 
-    private static final int REQ_CSV_EXPORT_EMAILED = 10;
-    private static final int REQ_EXPORT_DATABASE = 11;
+    private static final int REQ_EXPORT_DATABASE = 10;
 
     private ProgressDialogFragment mProgressDialog;
 
@@ -691,7 +690,7 @@ public class AdminFragment
     private void onImportFinished(@StringRes final int titleId,
                                   @NonNull final ImportHelper importHelper) {
 
-        // See if there are any pre-1000 preferences that need migrating.
+        // See if there are any BookCatalogue preferences that need migrating.
         if ((importHelper.options & Options.PREFERENCES) != 0) {
             //noinspection ConstantConditions
             LegacyPreferences.migrateLegacyPreferences(getContext());

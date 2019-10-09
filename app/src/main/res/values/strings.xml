@@ -954,7 +954,7 @@
     <string name="menu_sort_and_style_ellipsis">Sorting &amp; Styles…</string>
 
     <!-- menu option -->
-    <string name="menu_level_reset">Preferred expansion</string>
+    <string name="menu_level_reset">Default expanded level</string>
     <!-- menu option -->
     <string name="menu_level_expand">Expand All</string>
     <!-- menu option -->
@@ -1285,7 +1285,7 @@
 
     <!-- Book edition -->
     <string name="lbl_edition">Edition</string>
-    <!-- Book editions flags NEWTHINGS: edition. -->
+    <!-- Book editions flags NEWTHINGS: add book edition: add label. -->
     <string name="lbl_edition_first_edition">First Edition</string>
     <string name="lbl_edition_first_impression">First impression</string>
     <string name="lbl_edition_limited">Limited</string>

@@ -68,11 +68,7 @@ public class BackupInfo {
     /** Note the '2'. Legacy serialized styles are ignored. */
     private static final String INFO_HAS_BOOKLIST_STYLES = "HasBooklistStyles2";
 
-    /**
-     * Stores the database version.
-     *
-     * @since v1000
-     */
+    /** Stores the database version. */
     private static final String INFO_DATABASE_VERSION = "DatabaseVersionCode";
 
     /** Bundle retrieved from the archive for this instance. */
@@ -167,6 +163,11 @@ public class BackupInfo {
         return mBundle.getString(INFO_APP_VERSION_NAME);
     }
 
+    /**
+     * Get the version of the <strong>application</strong> this archive was generated from.
+     *
+     * @return version
+     */
     public long getAppVersionCode() {
         // old archives used an Integer, newer use Long.
         Object vo = mBundle.get(INFO_APP_VERSION_CODE);
@@ -182,17 +183,12 @@ public class BackupInfo {
     }
 
     /**
-     * @return version of the *database* this archive was generated from;
-     * or 0 for a database version 81 or earlier
+     * Get the version of the <strong>database</strong> this archive was generated from.
      *
-     * @since v1000
+     * @return version
      */
     @SuppressWarnings("unused")
     public int getDatabaseVersionCode() {
-        if (getAppVersionCode() == 179L) {
-            // 5.2.2
-            return 82;
-        }
         return mBundle.getInt(INFO_DATABASE_VERSION, 0);
     }
 
@@ -292,5 +288,13 @@ public class BackupInfo {
         if (!mBundle.containsKey(INFO_ARCHIVER_VERSION)) {
             throw new InvalidArchiveException("info block lacks version field");
         }
+    }
+
+    /**
+     * Legacy BookCatalogue.
+     * RELEASE: if this app reaches version 152 we will need to remove support for old archives.
+     */
+    public boolean hasValidDates() {
+        return getAppVersionCode() >= 152;
     }
 }

@@ -221,6 +221,35 @@ public class DataManager {
     }
 
     /**
+     * Store a Object value. The object will be casted to one of the supported types.
+     * Does not cover {@link #putParcelableArrayList}
+     * or {@link #putSerializable}
+     *
+     * @param key   Key of data object
+     * @param value to store
+     *
+     * @throws UnexpectedValueException if the type of the Object is not supported.
+     */
+    public void put(@NonNull final String key,
+                    @NonNull final Object value) {
+        if (value instanceof String) {
+            putString(key, (String) value);
+        } else if (value instanceof Boolean) {
+            putBoolean(key, (boolean) value);
+        } else if (value instanceof Double) {
+            putDouble(key, (double) value);
+        } else if (value instanceof Float) {
+            putFloat(key, (float) value);
+        } else if (value instanceof Long) {
+            putLong(key, (long) value);
+        } else if (value instanceof Integer) {
+            putInt(key, (int) value);
+        } else {
+            throw new UnexpectedValueException(value.getClass().getName());
+        }
+    }
+
+    /**
      * Get the data object specified by the passed key.
      *
      * @param key Key of data object
@@ -283,8 +312,8 @@ public class DataManager {
      * @param key   Key of data object
      * @param value to store
      */
-    private void putDouble(@NonNull final String key,
-                           final double value) {
+    public void putDouble(@NonNull final String key,
+                          final double value) {
         if (mDataAccessorsMap.containsKey(key)) {
             //noinspection ConstantConditions
             mDataAccessorsMap.get(key).put(mRawData, value);

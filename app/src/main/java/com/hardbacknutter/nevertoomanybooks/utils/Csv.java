@@ -147,7 +147,7 @@ public final class Csv {
      */
     public static List<String> bitmaskToList(@NonNull final Context context,
                                              @NonNull final Map<Integer, Integer> map,
-                                             final int bitmask) {
+                                             final long bitmask) {
         List<String> list = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
             if ((entry.getKey() & bitmask) != 0) {

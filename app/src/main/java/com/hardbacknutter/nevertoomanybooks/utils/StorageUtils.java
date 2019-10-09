@@ -369,7 +369,7 @@ public final class StorageUtils {
      */
     public static int saveInputStreamToFile(@Nullable final InputStream is,
                                             @NonNull final File file) {
-        Objects.requireNonNull(is);
+        Objects.requireNonNull(is, "no InputStream");
 
         File tmpFile = getTempCoverFile("is");
         try {
