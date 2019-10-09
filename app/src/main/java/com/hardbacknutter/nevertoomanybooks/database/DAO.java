@@ -43,7 +43,6 @@ import android.widget.AutoCompleteTextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
 import java.text.Normalizer;
@@ -91,7 +90,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Format;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -102,6 +100,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_ASIN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
@@ -142,6 +141,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ_START;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SIGNED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_STRIP_INFO_BE_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_UUID;
@@ -1195,19 +1195,16 @@ public class DAO
         preprocessPrices(book);
 
         // Map website formats to standard ones if enabled by the user.
-        if (book.containsKey(DBDefinitions.KEY_FORMAT)
-            && PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_reformat_formats, false)) {
-            String format = Format.map(context, book.getString(DBDefinitions.KEY_FORMAT));
-            book.putString(DBDefinitions.KEY_FORMAT, format);
-        }
+        Format.map(context, book);
 
         // Remove blank external ID's
         for (DomainDefinition domain : new DomainDefinition[]{
-                DBDefinitions.DOM_ASIN,
+                //NEWTHINGS: add new site specific ID: add column
+                DOM_ASIN,
                 DOM_BOOK_ISFDB_ID,
                 DOM_BOOK_OPEN_LIBRARY_ID,
                 DOM_BOOK_LIBRARY_THING_ID,
+                DOM_BOOK_STRIP_INFO_BE_ID,
                 DOM_BOOK_GOODREADS_ID,
                 }) {
             if (book.containsKey(domain.getName())) {
@@ -1293,7 +1290,7 @@ public class DAO
     }
 
     private void preprocessPrices(@NonNull final Book book) {
-
+        //URGENT: source field as String.. does this ever happen?
         // handle a price without a currency.
         if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED)
             && !book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
@@ -1307,7 +1304,8 @@ public class DAO
         if (book.containsKey(DBDefinitions.KEY_PRICE_PAID)
             && !book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
             // we presume the user bought the book in their own currency.
-            preprocessPrice(book, DBDefinitions.KEY_PRICE_PAID,
+            preprocessPrice(book,
+                            DBDefinitions.KEY_PRICE_PAID,
                             DBDefinitions.KEY_PRICE_PAID,
                             DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         }
@@ -1328,10 +1326,10 @@ public class DAO
     /**
      * Preprocess a price field, splitting it into value and currency fields.
      * On any failure, no changes are made.
-     * On success, the 'keyPriceWithCurrency' is removed.
+     * On success, the 'keyInput' is removed.
      *
      * @param book              with price fields / where to store the result.
-     * @param keyInput          key to get the combined field
+     * @param keyInput          key to get the <strong>String typed</strong> combined field
      * @param keyOutputPrice    key to store the value
      * @param keyOutputCurrency key to store the currency
      */
@@ -1342,14 +1340,13 @@ public class DAO
         Bundle tmpDest = new Bundle();
         CurrencyUtils.splitPrice(book.getLocale(), book.getString(keyInput),
                                  keyOutputPrice, keyOutputCurrency, tmpDest);
-        String price = tmpDest.getString(keyOutputPrice);
-        if (price != null) {
+        if (tmpDest.containsKey(keyOutputPrice)) {
+            double price = tmpDest.getDouble(keyOutputPrice);
             book.remove(keyInput);
-            book.putString(keyOutputPrice, price);
+            book.putDouble(keyOutputPrice, price);
             String currency = tmpDest.getString(keyOutputCurrency);
             book.putString(keyOutputCurrency, currency != null ? currency : "");
         }
-        // else do not change the input
     }
 
     /**
@@ -4075,10 +4072,10 @@ public class DAO
                 stmt = mStatements.add(STMT_INSERT_FTS, SqlFTS.INSERT);
             }
 
-            try (BookCursor books = (BookCursor) sSyncedDb.rawQueryWithFactory(
+            try (BookCursor bookCursor = (BookCursor) sSyncedDb.rawQueryWithFactory(
                     BOOKS_CURSOR_FACTORY,
                     SqlSelect.BOOK_BY_ID, new String[]{String.valueOf(bookId)}, "")) {
-                ftsSendBooks(books, stmt);
+                ftsSendBooks(bookCursor, stmt);
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
@@ -4103,10 +4100,10 @@ public class DAO
             if (stmt == null) {
                 stmt = mStatements.add(STMT_UPDATE_FTS, SqlFTS.UPDATE);
             }
-            try (BookCursor books = (BookCursor) sSyncedDb.rawQueryWithFactory(
+            try (BookCursor bookCursor = (BookCursor) sSyncedDb.rawQueryWithFactory(
                     BOOKS_CURSOR_FACTORY,
                     SqlSelect.BOOK_BY_ID, new String[]{String.valueOf(bookId)}, "")) {
-                ftsSendBooks(books, stmt);
+                ftsSendBooks(bookCursor, stmt);
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
@@ -4166,9 +4163,9 @@ public class DAO
 
             try (SynchronizedStatement insert = sSyncedDb.compileStatement(
                     "INSERT INTO " + ftsTemp.getName() + SqlFTS.INSERT_BODY);
-                 BookCursor books = (BookCursor) sSyncedDb.rawQueryWithFactory(
+                 BookCursor bookCursor = (BookCursor) sSyncedDb.rawQueryWithFactory(
                          BOOKS_CURSOR_FACTORY, SqlSelectFullTable.BOOKS, null, "")) {
-                ftsSendBooks(books, insert);
+                ftsSendBooks(bookCursor, insert);
             }
 
             sSyncedDb.setTransactionSuccessful();
@@ -4482,7 +4479,9 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_ADDED)
                 + ',' + TBL_BOOKS.dotAs(DOM_DATE_LAST_UPDATED)
                 // external links
+                //NEWTHINGS: add new site specific ID: add column
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LIBRARY_THING_ID)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_STRIP_INFO_BE_ID)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_OPEN_LIBRARY_ID)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISFDB_ID)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_ID)

@@ -59,6 +59,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_ISFDB_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LIBRARY_THING_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_STRIP_INFO_BE_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
@@ -95,10 +96,9 @@ public final class DBHelper
     /**
      * RELEASE: Update database version.
      * <p>
-     * db1000 == app1000 == 6.0.0
-     * db82 == app179 == 5.2.2 == "Book Catalogue" version from which we forked.
+     * db1 == app1 == 1.0.0
      */
-    public static final int DATABASE_VERSION = 1000;
+    public static final int DATABASE_VERSION = 1;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -285,9 +285,6 @@ public final class DBHelper
                               "Old database version: " + oldVersion,
                               "Upgrading database: " + db.getPath());
         }
-        if (oldVersion < 1000) {
-            throw new UpgradeException();
-        }
 
         StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {
@@ -300,14 +297,15 @@ public final class DBHelper
                                                      "DbUpgrade-" + oldVersion + '-' + newVersion));
         }
 
-        int curVersion = oldVersion;
         SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
-        // db1000 == app1000 == 6.0.0;
-//        if (curVersion < newVersion && curVersion == 1000) {
+//        int curVersion = oldVersion;
+
+        // db1 == app1 == 1.0.0;
+//        if (curVersion < newVersion && curVersion == 1) {
 //            //noinspection UnusedAssignment
-//            curVersion = 1001;
-//            UpgradeDatabase.toDb1001(db, syncedDb);
+//            curVersion = 2;
+//            UpgradeDatabase.toDb2(db, syncedDb);
 //        }
 
         // Rebuild all indices
@@ -528,10 +526,12 @@ public final class DBHelper
                + " WHEN New." + DOM_BOOK_ISBN + " <> Old." + DOM_BOOK_ISBN + '\n'
                + " BEGIN\n"
                + "    UPDATE " + TBL_BOOKS + " SET "
+               //NEWTHINGS: add new site specific ID: add a reset value
                + /* */ DOM_BOOK_GOODREADS_ID + "=0"
                + ',' + DOM_BOOK_ISFDB_ID + "=0"
                + ',' + DOM_BOOK_LIBRARY_THING_ID + "=0"
                + ',' + DOM_BOOK_OPEN_LIBRARY_ID + "=0"
+               + ',' + DOM_BOOK_STRIP_INFO_BE_ID + "=0"
 
                + ',' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=''"
                + /* */ " WHERE " + DOM_PK_ID + "=New." + DOM_PK_ID + ";\n"

@@ -37,6 +37,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
 
 /**
  * Languages.
@@ -392,6 +393,14 @@ public final class LanguageUtils {
 
         // the system default
         createLanguageMappingCache(prefs, App.getSystemLocale());
+
+        //NEWTHINGS: add new site specific ID: if site uses a specific language, add it here
+
+        // Dutch
+        createLanguageMappingCache(prefs, StripInfoManager.SITE_LOCALE);
+        // Dutch
+        //createLanguageMappingCache(prefs, KbNlManager.SITE_LOCALE);
+
         // and English for compatibility with lots of websites.
         createLanguageMappingCache(prefs, Locale.ENGLISH);
     }

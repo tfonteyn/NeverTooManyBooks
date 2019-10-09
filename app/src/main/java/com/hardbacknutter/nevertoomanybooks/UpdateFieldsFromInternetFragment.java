@@ -74,7 +74,7 @@ import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Cop
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
 
 /**
- * NEWTHINGS: must stay in sync with {@link UpdateFieldsFromInternetTask}.
+ * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsFromInternetTask}.
  */
 public class UpdateFieldsFromInternetFragment
         extends Fragment {
@@ -258,10 +258,12 @@ public class UpdateFieldsFromInternetFragment
 
         addField(R.string.lbl_genre, CopyIfBlank, DBDefinitions.KEY_GENRE);
 
+        //NEWTHINGS: add new site specific ID: add a field
         addField(R.string.isfdb, Overwrite, DBDefinitions.KEY_ISFDB_ID);
         addField(R.string.goodreads, Overwrite, DBDefinitions.KEY_GOODREADS_BOOK_ID);
         addField(R.string.library_thing, Overwrite, DBDefinitions.KEY_LIBRARY_THING_ID);
         addField(R.string.open_library, Overwrite, DBDefinitions.KEY_OPEN_LIBRARY_ID);
+        addField(R.string.stripinfo, Overwrite, DBDefinitions.KEY_STRIP_INFO_BE_ID);
     }
 
     /**

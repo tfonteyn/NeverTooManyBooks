@@ -323,35 +323,8 @@ public final class DBDefinitions {
     public static final String KEY_LANGUAGE = "language";
     public static final String KEY_DESCRIPTION = "description";
 
-    static {
-        DOM_BOOK_ISBN =
-                new DomainDefinition(KEY_ISBN, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_PUBLISHER =
-                new DomainDefinition(KEY_PUBLISHER, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_DATE_PUBLISHED =
-                new DomainDefinition(KEY_DATE_PUBLISHED, ColumnInfo.TYPE_DATE, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_PRICE_LISTED =
-                new DomainDefinition(KEY_PRICE_LISTED, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_PRICE_LISTED_CURRENCY =
-                new DomainDefinition(KEY_PRICE_LISTED_CURRENCY, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_PAGES =
-                new DomainDefinition(KEY_PAGES, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_FORMAT =
-                new DomainDefinition(KEY_FORMAT, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_LANGUAGE =
-                new DomainDefinition(KEY_LANGUAGE, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_DESCRIPTION =
-                new DomainDefinition(KEY_DESCRIPTION, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-    }
+    /** We don't store the ASIN (yet) but plumbing has started. ENHANCE: use/store the ASIN */
+    public static final DomainDefinition DOM_ASIN;
 
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_UUID;
@@ -408,6 +381,58 @@ public final class DBDefinitions {
     public static final String KEY_OWNED = "owned";
     public static final String KEY_DATE_ACQUIRED = "date_acquired";
     public static final String KEY_DATE_ADDED = "date_added";
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_STRIP_INFO_BE_ID;
+
+    //NEWTHINGS: add new site specific ID: add a DOM + KEY
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_GOODREADS_ID;
+
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_ISFDB_ID;
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_OPEN_LIBRARY_ID;
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_LIBRARY_THING_ID;
+    public static final String KEY_STRIP_INFO_BE_ID = "si_book_id";
+
+    static {
+        DOM_BOOK_ISBN =
+                new DomainDefinition(KEY_ISBN, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_PUBLISHER =
+                new DomainDefinition(KEY_PUBLISHER, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_DATE_PUBLISHED =
+                new DomainDefinition(KEY_DATE_PUBLISHED, ColumnInfo.TYPE_DATE, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_PRICE_LISTED =
+                new DomainDefinition(KEY_PRICE_LISTED, ColumnInfo.TYPE_REAL, true)
+                        .setDefault(0d);
+        DOM_BOOK_PRICE_LISTED_CURRENCY =
+                new DomainDefinition(KEY_PRICE_LISTED_CURRENCY, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_PAGES =
+                new DomainDefinition(KEY_PAGES, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_FORMAT =
+                new DomainDefinition(KEY_FORMAT, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_LANGUAGE =
+                new DomainDefinition(KEY_LANGUAGE, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_DESCRIPTION =
+                new DomainDefinition(KEY_DESCRIPTION, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+    }
+
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
+
+    public static final String KEY_ASIN = "asin";
+    public static final String KEY_ISFDB_ID = "isfdb_book_id";
+    public static final String KEY_OPEN_LIBRARY_ID = "ol_book_id";
+    public static final String KEY_LIBRARY_THING_ID = "lt_book_id";
 
     static {
         DOM_BOOK_UUID =
@@ -428,8 +453,8 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_DATE_ACQUIRED, ColumnInfo.TYPE_DATE, true)
                         .setDefaultEmptyString();
         DOM_BOOK_PRICE_PAID =
-                new DomainDefinition(KEY_PRICE_PAID, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
+                new DomainDefinition(KEY_PRICE_PAID, ColumnInfo.TYPE_REAL, true)
+                        .setDefault(0d);
         DOM_BOOK_PRICE_PAID_CURRENCY =
                 new DomainDefinition(KEY_PRICE_PAID_CURRENCY, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
@@ -462,27 +487,6 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_PRIVATE_NOTES, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
     }
-
-    /**
-     * We don't store the ASIN (yet) but plumbing has started. ENHANCE: use/store the ASIN
-     */
-    public static final DomainDefinition DOM_ASIN;
-
-    /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_ISFDB_ID;
-    /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_OPEN_LIBRARY_ID;
-    /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_LIBRARY_THING_ID;
-    /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_GOODREADS_ID;
-    /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
-
-    public static final String KEY_ASIN = "asin";
-    public static final String KEY_ISFDB_ID = "isfdb_book_id";
-    public static final String KEY_OPEN_LIBRARY_ID = "ol_book_id";
-    public static final String KEY_LIBRARY_THING_ID = "lt_book_id";
     /** Book ID, not 'work' ID. */
     public static final String KEY_GOODREADS_BOOK_ID = "goodreads_book_id";
     public static final String KEY_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
@@ -501,6 +505,8 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_OPEN_LIBRARY_ID, ColumnInfo.TYPE_TEXT);
         DOM_BOOK_LIBRARY_THING_ID =
                 new DomainDefinition(KEY_LIBRARY_THING_ID, ColumnInfo.TYPE_INTEGER);
+        DOM_BOOK_STRIP_INFO_BE_ID =
+                new DomainDefinition(KEY_STRIP_INFO_BE_ID, ColumnInfo.TYPE_INTEGER);
         DOM_BOOK_GOODREADS_ID =
                 new DomainDefinition(KEY_GOODREADS_BOOK_ID, ColumnInfo.TYPE_INTEGER);
         DOM_BOOK_GOODREADS_LAST_SYNC_DATE =
@@ -869,9 +875,11 @@ public final class DBDefinitions {
                              DOM_BOOK_PRIVATE_NOTES,
 
                              // external id/data
+                             //NEWTHINGS: add new site specific ID: add to table
                              DOM_BOOK_ISFDB_ID,
                              DOM_BOOK_LIBRARY_THING_ID,
                              DOM_BOOK_OPEN_LIBRARY_ID,
+                             DOM_BOOK_STRIP_INFO_BE_ID,
                              DOM_BOOK_GOODREADS_ID,
                              DOM_BOOK_GOODREADS_LAST_SYNC_DATE,
 
@@ -885,8 +893,10 @@ public final class DBDefinitions {
                  .addIndex(DOM_BOOK_ISBN, false, DOM_BOOK_ISBN)
                  .addIndex(DOM_BOOK_PUBLISHER, false, DOM_BOOK_PUBLISHER)
                  .addIndex(DOM_BOOK_UUID, true, DOM_BOOK_UUID)
+                 //NEWTHINGS: add new site specific ID: add index
                  .addIndex(DOM_BOOK_GOODREADS_ID, false, DOM_BOOK_GOODREADS_ID)
                  .addIndex(DOM_BOOK_OPEN_LIBRARY_ID, false, DOM_BOOK_OPEN_LIBRARY_ID)
+                 .addIndex(DOM_BOOK_STRIP_INFO_BE_ID, false, DOM_BOOK_STRIP_INFO_BE_ID)
                  .addIndex(DOM_BOOK_ISFDB_ID, false, DOM_BOOK_ISFDB_ID);
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 

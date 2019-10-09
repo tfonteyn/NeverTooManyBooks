@@ -112,7 +112,9 @@ public class CsvExporter
             + '"' + DBDefinitions.KEY_GENRE + "\","
             + '"' + DBDefinitions.KEY_LANGUAGE + "\","
             + '"' + DBDefinitions.KEY_DATE_ADDED + "\","
+            //NEWTHINGS: add new site specific ID: add column label
             + '"' + DBDefinitions.KEY_LIBRARY_THING_ID + "\","
+            + '"' + DBDefinitions.KEY_STRIP_INFO_BE_ID + "\","
             + '"' + DBDefinitions.KEY_OPEN_LIBRARY_ID + "\","
             + '"' + DBDefinitions.KEY_ISFDB_ID + "\","
             + '"' + DBDefinitions.KEY_GOODREADS_BOOK_ID + "\","
@@ -222,9 +224,9 @@ public class CsvExporter
                    .append(format(bookCursor.getString(DBDefinitions.KEY_PAGES)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_PRIVATE_NOTES)))
 
-                   .append(format(bookCursor.getString(DBDefinitions.KEY_PRICE_LISTED)))
+                   .append(format(bookCursor.getDouble(DBDefinitions.KEY_PRICE_LISTED)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
-                   .append(format(bookCursor.getString(DBDefinitions.KEY_PRICE_PAID)))
+                   .append(format(bookCursor.getDouble(DBDefinitions.KEY_PRICE_PAID)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
 
@@ -242,7 +244,9 @@ public class CsvExporter
                    .append(format(bookCursor.getString(DBDefinitions.KEY_LANGUAGE)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_DATE_ADDED)))
 
+                   //NEWTHINGS: add new site specific ID: add column value
                    .append(format(bookCursor.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)))
+                   .append(format(bookCursor.getLong(DBDefinitions.KEY_STRIP_INFO_BE_ID)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
                    .append(format(bookCursor.getLong(DBDefinitions.KEY_ISFDB_ID)))
                    .append(format(bookCursor.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)))

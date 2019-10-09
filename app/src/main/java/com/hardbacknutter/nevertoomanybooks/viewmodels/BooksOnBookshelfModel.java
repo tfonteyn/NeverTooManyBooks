@@ -454,6 +454,7 @@ public class BooksOnBookshelfModel
                                false);
 
             // external site ID's
+            //NEWTHINGS: add new site specific ID: add
             blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISFDB_ID,
                                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISFDB_ID),
                                false);
@@ -462,6 +463,9 @@ public class BooksOnBookshelfModel
                                false);
             blb.addExtraDomain(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID,
                                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID),
+                               false);
+            blb.addExtraDomain(DBDefinitions.DOM_BOOK_STRIP_INFO_BE_ID,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_STRIP_INFO_BE_ID),
                                false);
             blb.addExtraDomain(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID,
                                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),

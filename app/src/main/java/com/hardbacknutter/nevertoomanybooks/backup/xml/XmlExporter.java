@@ -740,7 +740,7 @@ public class XmlExporter
                       .append(attr(DBDefinitions.KEY_DATE_PUBLISHED,
                                 bookCursor.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
                       .append(attr(DBDefinitions.KEY_PRICE_LISTED,
-                                bookCursor.getString(DBDefinitions.KEY_PRICE_LISTED)))
+                                   bookCursor.getDouble(DBDefinitions.KEY_PRICE_LISTED)))
                       .append(attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                                 bookCursor.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
                       .append(attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
@@ -757,7 +757,7 @@ public class XmlExporter
                                 bookCursor.getLong(DBDefinitions.KEY_TOC_BITMASK)))
 
                       .append(attr(DBDefinitions.KEY_PRICE_PAID,
-                                bookCursor.getString(DBDefinitions.KEY_PRICE_PAID)))
+                                   bookCursor.getDouble(DBDefinitions.KEY_PRICE_PAID)))
                       .append(attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
                                 bookCursor.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
                       .append(attr(DBDefinitions.KEY_DATE_ACQUIRED,
@@ -772,8 +772,11 @@ public class XmlExporter
                                 bookCursor.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
 
                       // external ID's
+                      //NEWTHINGS: add new site specific ID: add attribute
                       .append(attr(DBDefinitions.KEY_LIBRARY_THING_ID,
                                 bookCursor.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)))
+                      .append(attr(DBDefinitions.KEY_STRIP_INFO_BE_ID,
+                                   bookCursor.getLong(DBDefinitions.KEY_STRIP_INFO_BE_ID)))
                       .append(attr(DBDefinitions.KEY_OPEN_LIBRARY_ID,
                                 bookCursor.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
                       .append(attr(DBDefinitions.KEY_ISFDB_ID,

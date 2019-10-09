@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
+import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
@@ -58,8 +59,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  * <ol>
  * <li>Implement {@link SearchEngine} to create the new engine.</li>
  * <li>Add an identifier (bit) in this class + add it to {@link #SEARCH_ALL}.</li>
+ * <li>Add the identifier to {@link interface Id}</li>
  * <li>Add a name for it to {@link #getName}.<br>
- * This should be a hardcoded, single word, no spaces, and will be user visible.</li>
+ * This should be a hardcoded, single word, no spaces, and will be user visible.<br>
+ * It will be used in SharedPreferences so should never be changed.
+ * </li>
  * <li>Add your new engine to {@link #getSearchEngine};</li>
  * <li>Create+add a new instance to {@link #SEARCH_ORDER_DEFAULTS}<br>
  * and {@link #COVER_SEARCH_ORDER_DEFAULTS}</li>
@@ -67,8 +71,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  * See the Amazon example in that xml file.</li>
  * </ol>
  *
- * <strong>Note:</strong> never change the identifiers (bit flag) of the sites, as they are stored
- * in user preferences.
+ * <strong>Note:</strong> NEVER change the identifiers (bit flag) of the sites,
+ * as they are stored in user preferences.
  */
 public final class SearchSites {
 
@@ -76,51 +80,34 @@ public final class SearchSites {
     /** tag. */
     private static final String TAG = "SearchSites";
     public static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
-    /** search source to use. */
-    private static final int GOOGLE_BOOKS = 1;
-    /** search source to use. */
+    /** Site. */
     static final int AMAZON = 1 << 1;
-    /** search source to use. */
+    /** Site. */
+    private static final int GOOGLE_BOOKS = 1;
+    /** Site. */
     private static final int LIBRARY_THING = 1 << 2;
-    /** search source to use. */
+    /** Site. */
     private static final int GOODREADS = 1 << 3;
-    /**
-     * search source to use.
-     * Speculative Fiction only. i.e. Science-Fiction/Fantasy etc...
-     */
+    /** Site: Speculative Fiction only. i.e. Science-Fiction/Fantasy etc... */
     private static final int ISFDB = 1 << 4;
-    /** search source to use. */
+    /** Site. */
     private static final int OPEN_LIBRARY = 1 << 5;
-    /**
-     * search source to use.
-     * Dutch books & comics.
-     */
-    private static final int KBNL = 1 << 6;
+    /** Site: Dutch language books & comics. */
+    private static final int KB_NL = 1 << 6;
+    /** Site: Dutch language (and to an extend French) comics. */
+    private static final int STRIP_INFO_BE = 1 << 7;
 
     /** Mask including all search sources. */
     public static final int SEARCH_ALL = GOOGLE_BOOKS | AMAZON
                                          | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY
-                                         | KBNL;
-
-    /**
-     * Dutch sites are by *default* only enabled if either the device or this app is running
-     * in Dutch.
-     *
-     * @return {@code true} if Dutch sites should be enabled by default.
-     */
-    private static boolean isDutch() {
-        return "nld".equals(App.getSystemLocale().getISO3Language())
-               || "nld".equals(Locale.getDefault().getISO3Language());
-    }
+                                         | KB_NL | STRIP_INFO_BE;
 
     /** the default search site order for standard data/covers. */
     private static final ArrayList<Site> SEARCH_ORDER_DEFAULTS = new ArrayList<>();
     /** the default search site order for _dedicated_ cover searches. */
     private static final ArrayList<Site> COVER_SEARCH_ORDER_DEFAULTS = new ArrayList<>();
-
     /** ENHANCE: reliability order is not user configurable for now, but plumbing installed. */
     private static final List<Site> PREFERRED_RELIABILITY_ORDER;
-
     /** the users preferred search site order. */
     private static ArrayList<Site> sPreferredSearchOrder;
     /** the users preferred search site order specific for covers. */
@@ -139,7 +126,9 @@ public final class SearchSites {
         SEARCH_ORDER_DEFAULTS.add(Site.newSite(ISFDB, true, priority++, 4));
 
         // Dutch.
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(KBNL, isDutch(), priority++, 5));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(STRIP_INFO_BE, isDutch(), priority++, 5));
+        // Dutch.
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(KB_NL, isDutch(), priority++, 6));
 
         // The proxy site has been broken since around April 2019.
         // 2019-08-11: still broken, disabled by default.
@@ -148,7 +137,7 @@ public final class SearchSites {
         // bottom of the list as the data from this site is not very complete.
         // Disabled by default.
         //noinspection UnusedAssignment
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(OPEN_LIBRARY, false, priority++, 6));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(OPEN_LIBRARY, false, priority++, 7));
     }
 
     /*
@@ -161,7 +150,9 @@ public final class SearchSites {
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOODREADS, true, priority++));
 
         // Dutch.
-        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(KBNL, isDutch(), priority++));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(STRIP_INFO_BE, isDutch(), priority++));
+        // Dutch.
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(KB_NL, isDutch(), priority++));
 
         // The proxy site has been broken since around April 2019.
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(AMAZON, false, priority++));
@@ -200,6 +191,17 @@ public final class SearchSites {
     }
 
     /**
+     * Dutch sites are by *default* only enabled if either the device or this app is running
+     * in Dutch.
+     *
+     * @return {@code true} if Dutch sites should be enabled by default.
+     */
+    private static boolean isDutch() {
+        return "nld".equals(App.getSystemLocale().getISO3Language())
+               || "nld".equals(Locale.getDefault().getISO3Language());
+    }
+
+    /**
      * Return the name for the site. This should/is a hardcoded single word.
      * It is used for:
      * <ol>
@@ -232,9 +234,10 @@ public final class SearchSites {
                 return "LibraryThing";
             case OPEN_LIBRARY:
                 return "OpenLibrary";
-            case KBNL:
+            case KB_NL:
                 return "KBNL";
-
+            case STRIP_INFO_BE:
+                return "StripInfo";
             default:
                 throw new UnexpectedValueException(id);
         }
@@ -266,24 +269,16 @@ public final class SearchSites {
             case OPEN_LIBRARY:
                 return new OpenLibraryManager();
 
-            case KBNL:
+            case KB_NL:
                 return new KbNlManager();
+
+            case STRIP_INFO_BE:
+                return new StripInfoManager();
 
             default:
                 throw new UnexpectedValueException(id);
         }
     }
-
-    /**
-     * Reset all values back to the hardcoded defaults.
-     *
-     * @param context Current context
-     */
-    public static void reset(@NonNull final Context context) {
-        setSearchOrder(context, SEARCH_ORDER_DEFAULTS);
-        setCoverSearchOrder(context, COVER_SEARCH_ORDER_DEFAULTS);
-    }
-
 
     public static boolean usePublisher(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -318,6 +313,7 @@ public final class SearchSites {
      *
      * @return {@code true} if an alert is currently shown
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean alertRegistrationBeneficial(@NonNull final Context context,
                                                       @NonNull final String prefSuffix,
                                                       @SearchSites.Id final int searchSites) {
@@ -385,8 +381,10 @@ public final class SearchSites {
     }
 
     @IntDef(flag = true, value = {
-            GOOGLE_BOOKS, AMAZON, LIBRARY_THING, GOODREADS, ISFDB, OPEN_LIBRARY, KBNL})
+            GOOGLE_BOOKS, AMAZON, LIBRARY_THING, GOODREADS, ISFDB, OPEN_LIBRARY,
+            KB_NL, STRIP_INFO_BE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Id {
+
     }
 }

@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
+import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
 
 /**
  * Handles re-usable menu items; both to create and to handle.
@@ -87,11 +88,7 @@ final class MenuHandler {
 
     static void prepareViewBookSubMenu(@NonNull final Menu menu,
                                        @NonNull final Book book) {
-        menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE)
-            .setVisible(0 != book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)
-                        || 0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)
-                        || 0 != book.getLong(DBDefinitions.KEY_ISFDB_ID)
-                        || !book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
+        menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE).setVisible(book.hasExternalId());
     }
 
     static boolean handleViewBookSubMenu(@NonNull final Context context,
@@ -101,10 +98,13 @@ final class MenuHandler {
             case R.id.SUBMENU_VIEW_BOOK_AT_SITE: {
                 // after the user selects the submenu, we make individual items visible/hidden.
                 SubMenu menu = menuItem.getSubMenu();
+                //NEWTHINGS: add new site specific ID: add
                 menu.findItem(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
                     .setVisible(0 != book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
                 menu.findItem(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
                     .setVisible(0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
+                menu.findItem(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE)
+                    .setVisible(0 != book.getLong(DBDefinitions.KEY_STRIP_INFO_BE_ID));
                 menu.findItem(R.id.MENU_VIEW_BOOK_AT_ISFDB)
                     .setVisible(0 != book.getLong(DBDefinitions.KEY_ISFDB_ID));
                 menu.findItem(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY)
@@ -130,6 +130,13 @@ final class MenuHandler {
                 OpenLibraryManager.openWebsite(context,
                                                book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID));
                 return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE:
+                StripInfoManager.openWebsite(context,
+                                             book.getLong(DBDefinitions.KEY_STRIP_INFO_BE_ID));
+                return true;
+
+            //NEWTHINGS: add new site specific ID: add case
 
             default:
                 return false;

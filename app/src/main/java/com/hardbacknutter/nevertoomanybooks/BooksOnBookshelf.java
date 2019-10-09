@@ -1296,13 +1296,16 @@ public class BooksOnBookshelf
                          MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_fields)
                     .setIcon(R.drawable.ic_cloud_download);
 
+                //NEWTHINGS: add new site specific ID: add boolean / if / submenu if
                 boolean hasIsfdbId = 0 != row.getLong(DBDefinitions.KEY_ISFDB_ID);
                 boolean hasGoodreadsId = 0 != row.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
                 boolean hasLibraryThingId = 0 != row.getLong(DBDefinitions.KEY_LIBRARY_THING_ID);
+                boolean hasStripInfoBeId = 0 != row.getLong(DBDefinitions.KEY_STRIP_INFO_BE_ID);
                 boolean hasOpenLibraryId = !row.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)
                                                .isEmpty();
 
-                if (hasIsfdbId || hasGoodreadsId || hasLibraryThingId || hasOpenLibraryId) {
+                if (hasIsfdbId || hasGoodreadsId || hasLibraryThingId || hasOpenLibraryId
+                    || hasStripInfoBeId) {
                     SubMenu subMenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_VIEW_BOOK_AT_SITE,
                                                       MenuHandler.ORDER_VIEW_BOOK_AT_SITE,
                                                       R.string.menu_view_book_at)
@@ -1325,6 +1328,11 @@ public class BooksOnBookshelf
                     if (hasOpenLibraryId) {
                         subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0,
                                     R.string.open_library)
+                               .setIcon(R.drawable.ic_link);
+                    }
+                    if (hasStripInfoBeId) {
+                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE, 0,
+                                    R.string.stripinfo)
                                .setIcon(R.drawable.ic_link);
                     }
                 }
