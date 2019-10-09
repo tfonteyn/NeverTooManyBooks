@@ -36,6 +36,7 @@ import androidx.annotation.UiThread;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -47,6 +48,8 @@ public final class CurrencyUtils {
      * Split on first digit, but leave it in the second part.
      */
     private static final Pattern SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN = Pattern.compile("(?=\\d)");
+
+    private static final Pattern SHILLING_PENCE_PATTERN = Pattern.compile("(\\d*|-?)/(\\d*|-?)");
 
     /**
      * A Map to translate currency symbols to their official ISO code.
@@ -128,16 +131,17 @@ public final class CurrencyUtils {
      * Takes a combined price field, and returns the value/currency in the Bundle.
      *
      * <strong>Note:</strong>
-     * The UK (GBP) pre-decimal had Shilling/Pence as subdivisions of the pound.
+     * The UK (GBP), pre-decimal 1971, had Shilling/Pence as subdivisions of the pound.
      * UK Shilling was written as "1/-", for example:
      * three shillings and six pence => 3/6
-     * We don't convert this, but return that value as-is.
-     * It's used on the ISFDB web site.
-     * <a href="https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal">
-     * https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal</a>
+     * It's used on the ISFDB web site. We convert it to modern GBP.
+     * <a href="https://en.wikipedia.org/wiki/Decimal_Day">
+     * https://en.wikipedia.org/wiki/Decimal_Day</a>
      *
      * @param locale            Locale to use for parsing the price string
-     * @param priceWithCurrency price, e.g. "Bf459", "$9.99", ...
+     * @param priceWithCurrency price to decode, e.g. "Bf459", "$9.99", "EUR 66", ...
+     *                          The currency part <strong>must</strong> be a prefix.
+     *                          We do not support it as a suffix.
      * @param keyOutputPrice    bundle key for the value
      * @param keyOutputCurrency bundle key for the currency
      * @param result            bundle to add the two keys to.
@@ -157,32 +161,45 @@ public final class CurrencyUtils {
             // if we do have an ISO3 code, split the data as required.
             if (currencyCode != null && currencyCode.length() == 3) {
                 try {
-                    java.util.Currency currency = java.util.Currency.getInstance(currencyCode);
-
-                    int decDigits = currency.getDefaultFractionDigits();
-                    // parse and format with #decDigits decimal places, effectively rounding it.
-                    float price = ParseUtils.parseFloat(data[1], locale);
-                    String priceStr = String.format("%." + decDigits + 'f', price);
-
-                    result.putString(keyOutputPrice, priceStr);
+                    double amount = ParseUtils.parseDouble(data[1], locale);
+                    result.putDouble(keyOutputPrice, amount);
                     // re-get the code just in case it used a recognised but non-standard string
+                    java.util.Currency currency = java.util.Currency.getInstance(currencyCode);
                     result.putString(keyOutputCurrency, currency.getCurrencyCode());
                     return;
 
-                } catch (@NonNull final NumberFormatException e) {
-                    // accept the 'broken' price data[1]
-                    result.putString(keyOutputPrice, data[1]);
-                    result.putString(keyOutputCurrency, currencyCode);
-                    return;
-
                 } catch (@NonNull final IllegalArgumentException ignore) {
-                    // Currency.getInstance sanity catch....
                 }
             }
         }
 
-        // fall back to the input
-        result.putString(keyOutputPrice, priceWithCurrency);
-        result.putString(keyOutputCurrency, "");
+        // let's see if this was UK shillings/pence
+        Matcher m = SHILLING_PENCE_PATTERN.matcher(priceWithCurrency);
+        if (m.find()) {
+            try {
+                int shillings = 0;
+                int pence = 0;
+                String tmp;
+
+                tmp = m.group(1);
+                if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
+                    shillings = Integer.parseInt(tmp);
+                }
+                tmp = m.group(2);
+                if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
+                    pence = Integer.parseInt(tmp);
+                }
+
+                // the British pound was made up of 20 shillings, each of which was
+                // made up of 12 pence, a total of 240 pence.
+                double pounds = ((shillings * 12) + pence) / 240;
+                result.putDouble(keyOutputPrice, pounds);
+                result.putString(keyOutputCurrency, "GBP");
+                //noinspection UnnecessaryReturnStatement
+                return;
+
+            } catch (@NonNull final NumberFormatException ignore) {
+            }
+        }
     }
 }

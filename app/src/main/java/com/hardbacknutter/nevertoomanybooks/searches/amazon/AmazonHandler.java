@@ -353,20 +353,20 @@ class AmazonHandler
      * is $12.34
      */
     private void handleListPrice() {
-        try {
-            int decDigits = java.util.Currency.getInstance(mCurrencyCode)
-                                              .getDefaultFractionDigits();
-            // move the decimal point 'digits' up
-            double price = ((double) Integer.parseInt(mCurrencyAmount)) / Math.pow(10, decDigits);
-            // and format with 'digits' decimal places
-            addIfNotPresent(mBookData, DBDefinitions.KEY_PRICE_LISTED,
-                            String.format("%." + decDigits + 'f', price));
-            addIfNotPresent(mBookData, DBDefinitions.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
-        } catch (@NonNull final NumberFormatException ignore) {
-            if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, "handleListPrice",
-                             "mCurrencyCode=" + mCurrencyCode,
-                             "mCurrencyAmount=" + mCurrencyAmount);
+        if (!mBookData.containsKey(DBDefinitions.KEY_PRICE_LISTED)) {
+            try {
+                int decDigits = java.util.Currency.getInstance(mCurrencyCode)
+                                                  .getDefaultFractionDigits();
+                // move the decimal point 'digits' up
+                double price = Double.parseDouble(mCurrencyAmount) / Math.pow(10, decDigits);
+                mBookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, price);
+                mBookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
+            } catch (@NonNull final NumberFormatException ignore) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.debug(this, "handleListPrice",
+                                 "mCurrencyCode=" + mCurrencyCode,
+                                 "mCurrencyAmount=" + mCurrencyAmount);
+                }
             }
         }
     }

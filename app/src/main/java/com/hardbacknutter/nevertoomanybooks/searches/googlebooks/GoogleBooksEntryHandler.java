@@ -323,10 +323,14 @@ class GoogleBooksEntryHandler
         } else if (XML_MONEY.equalsIgnoreCase(localName)) {
 
             if (mInSuggestedRetailPriceTag) {
-                String currencyCode = attributes.getValue("", "currencyCode");
-                String amount = attributes.getValue("", "amount");
-                mBookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, currencyCode);
-                mBookData.putString(DBDefinitions.KEY_PRICE_LISTED, amount);
+                try {
+                    double amount = Double.parseDouble(attributes.getValue("", "amount"));
+                    mBookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, amount);
+
+                    String currencyCode = attributes.getValue("", "currencyCode");
+                    mBookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, currencyCode);
+                } catch (NumberFormatException ignore) {
+                }
                 mInSuggestedRetailPriceTag = false;
 
             } else if (mInRetailPriceTag) {
