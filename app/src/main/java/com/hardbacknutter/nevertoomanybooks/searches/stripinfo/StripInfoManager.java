@@ -55,7 +55,7 @@ public class StripInfoManager
 
     public static final Locale SITE_LOCALE = new Locale("nl", "BE");
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "STRIPINFO.";
+    private static final String PREF_PREFIX = "stripinfo.";
     /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
 

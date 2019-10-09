@@ -34,8 +34,9 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * All search engines are added here.
@@ -145,8 +146,8 @@ public final class Site
                              final boolean enabled,
                              final int priority) {
 
-        String name = SearchSites.getName(id)
-                      + '-' + App.getLocalizedAppContext().getString(R.string.lbl_covers);
+        // Reminder: the name is used for preferences... so the suffix here must be hardcoded.
+        String name = SearchSites.getName(id) + "-Covers";
         // by default, reliability == order.
         return new Site(id, name, enabled, priority, priority);
     }
@@ -165,15 +166,17 @@ public final class Site
     }
 
     private void loadFromPrefs(@NonNull final SharedPreferences prefs) {
-        mEnabled = prefs.getBoolean(PREF_PREFIX + mName + ".enabled", mEnabled);
-        mPriority = prefs.getInt(PREF_PREFIX + mName + ".order", mPriority);
-        mReliability = prefs.getInt(PREF_PREFIX + mName + ".reliability", mReliability);
+        String lcName = PREF_PREFIX + mName.toLowerCase(Locale.getDefault()) + '.';
+        mEnabled = prefs.getBoolean(lcName + "enabled", mEnabled);
+        mPriority = prefs.getInt(lcName + "order", mPriority);
+        mReliability = prefs.getInt(lcName + "reliability", mReliability);
     }
 
     void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
-        editor.putBoolean(PREF_PREFIX + mName + ".enabled", mEnabled);
-        editor.putInt(PREF_PREFIX + mName + ".order", mPriority);
-        editor.putInt(PREF_PREFIX + mName + ".reliability", mReliability);
+        String lcName = PREF_PREFIX + mName.toLowerCase(Locale.getDefault()) + '.';
+        editor.putBoolean(lcName + "enabled", mEnabled);
+        editor.putInt(lcName + "order", mPriority);
+        editor.putInt(lcName + "reliability", mReliability);
     }
 
     @SuppressWarnings("SameReturnValue")

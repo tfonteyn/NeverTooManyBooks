@@ -80,8 +80,10 @@ final class MenuHandler {
                                           ORDER_VIEW_BOOK_AT_SITE,
                                           R.string.menu_view_book_at)
                               .setIcon(R.drawable.ic_link);
+        //NEWTHINGS: add new site specific ID: add
         subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_GOODREADS, 0, R.string.goodreads);
         subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING, 0, R.string.library_thing);
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE, 0, R.string.stripinfo);
         subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_ISFDB, 0, R.string.isfdb);
         subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0, R.string.open_library);
     }

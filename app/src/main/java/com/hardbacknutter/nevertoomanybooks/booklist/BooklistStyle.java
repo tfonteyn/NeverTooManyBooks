@@ -114,6 +114,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class BooklistStyle
         implements Parcelable, Entity {
 
+    /** Extra book data to show at lowest level. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int EXTRAS_THUMBNAIL = 1 << 8;
+    private static final String PREFS_PREFIX = "BookList.Style.";
+    /** Preference for the current default style UUID to use. */
+    public static final String PREF_BL_STYLE_CURRENT_DEFAULT = PREFS_PREFIX + "Current";
+    /**
+     * Preferred styles / menu order.
+     * Stored in global shared preferences as a CSV String of UUIDs.
+     */
+    public static final String PREF_BL_PREFERRED_STYLES = PREFS_PREFIX + "Preferred.Order";
+
     /** {@link Parcelable}. */
     public static final Creator<BooklistStyle> CREATOR =
             new Creator<BooklistStyle>() {
@@ -146,6 +158,14 @@ public class BooklistStyle
     public static final int EXTRAS_ISBN = 1 << 6;
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_UNUSED_BIT = 1 << 7;
+    /**
+     * Unique name. This is a stored in our preference file (with the same name)
+     * and is used for backup/restore purposes as the 'ID'.
+     * <p>
+     * (this is not a PPref, as we'd need the uuid to store the uuid....)
+     */
+    private static final String PREF_STYLE_UUID = PREFS_PREFIX + "uuid";
+
     /** Mask for the extras that are fetched using {@link BooklistAdapter}.GetBookExtrasTask}. */
     public static final int EXTRAS_BY_TASK = EXTRAS_BOOKSHELVES
                                              | EXTRAS_LOCATION | EXTRAS_FORMAT
@@ -158,15 +178,7 @@ public class BooklistStyle
     /** Text Scaling. */
     @SuppressWarnings("WeakerAccess")
     public static final int TEXT_SCALE_LARGE = 3;
-    /** Preference for the current default style UUID to use. */
-    public static final String PREF_BL_STYLE_CURRENT_DEFAULT = "BookList.Style.Current";
-    /**
-     * Preferred styles / menu order.
-     * Stored in global shared preferences as a CSV String of UUIDs.
-     */
-    public static final String PREF_BL_PREFERRED_STYLES = "BookList.Style.Preferred.Order";
-    /** Extra book data to show at lowest level. */
-    private static final int EXTRAS_THUMBNAIL = 1 << 8;
+
 
     /** the amount of details to show in the header. */
     private static final int SUMMARY_SHOW_BOOK_COUNT = 1;
@@ -181,13 +193,7 @@ public class BooklistStyle
             SUMMARY_SHOW_BOOK_COUNT
             | SUMMARY_SHOW_LEVEL_1 | SUMMARY_SHOW_LEVEL_2
             | SUMMARY_SHOW_STYLE_NAME;
-    /**
-     * Unique name. This is a stored in our preference file (with the same name)
-     * and is used for backup/restore purposes as the 'ID'.
-     * <p>
-     * (this is not a PPref, as we'd need the uuid to store the uuid....)
-     */
-    private static final String PREF_STYLE_UUID = "BookList.Style.uuid";
+
     /**
      * Row id of database row from which this object comes.
      * A '0' is for an as yet unsaved user-style.
@@ -279,7 +285,6 @@ public class BooklistStyle
                           @NonNull final String uuid,
                           @StringRes final int nameId,
                           @NonNull final int... kinds) {
-
         mId = id;
         mUuid = uuid;
         mNameResId = nameId;

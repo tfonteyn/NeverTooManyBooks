@@ -137,7 +137,8 @@
 
         <EditText
             android:id="@+id/print_run"
-            style="@style/simpleTextEntry"
+            style="@style/notesTextEntry"
+            android:maxLines="3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
