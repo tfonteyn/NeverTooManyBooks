@@ -94,11 +94,13 @@
     </string-array>
     <!-- ListPreference - Book list state-related preferences -->
     <string-array name="pe_bob_list_state">
+        <item>@string/pe_bob_list_state_preferred</item>
         <item>@string/pe_bob_list_state_preserve</item>
         <item>@string/pe_bob_list_state_expanded</item>
         <item>@string/pe_bob_list_state_collapsed</item>
     </string-array>
     <string-array name="pv_bob_list_state">
+        <item>3</item>
         <item>0</item>
         <item>1</item>
         <item>2</item>

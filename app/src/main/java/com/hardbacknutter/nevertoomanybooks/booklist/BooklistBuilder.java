@@ -66,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatemen
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -139,9 +138,11 @@ public class BooklistBuilder
         implements AutoCloseable {
 
     /** id values for state preservation property. See {@link ListRebuildMode}. */
-    public static final int PREF_LIST_REBUILD_STATE_PRESERVED = 0;
+    public static final int PREF_LIST_REBUILD_SAVED_STATE = 0;
     public static final int PREF_LIST_REBUILD_ALWAYS_EXPANDED = 1;
     public static final int PREF_LIST_REBUILD_ALWAYS_COLLAPSED = 2;
+    public static final int PREF_LIST_REBUILD_PREFERRED_STATE = 3;
+
     /** BookList Compatibility mode property values. See {@link CompatibilityMode}. */
     public static final int PREF_MODE_DEFAULT = 0;
     public static final int PREF_MODE_NESTED_TRIGGERS = 1;
@@ -177,6 +178,7 @@ public class BooklistBuilder
     private static final String STMT_NAV_IX_1 = "navIx1";
     private static final String STMT_NAV_IX_2 = "navIx2";
     private static final String STMT_IX_1 = "ix1";
+
     /**
      * Collection of statements created by this Builder.
      * Private to this instance, hence no need to synchronize the statements.
@@ -294,7 +296,7 @@ public class BooklistBuilder
      */
     @ListRebuildMode
     public static int getPreferredListRebuildState() {
-        return App.getListPreference(Prefs.pk_bob_list_state, PREF_LIST_REBUILD_STATE_PRESERVED);
+        return App.getListPreference(Prefs.pk_bob_list_state, PREF_LIST_REBUILD_SAVED_STATE);
     }
 
     /**
@@ -466,10 +468,10 @@ public class BooklistBuilder
      * Clear and build the temporary list of books.
      * Criteria must be set before calling this method with one or more of the setCriteria calls.
      *
-     * @param preferredState           State to display: expanded, collapsed or remembered
+     * @param listState                State to display
      * @param previouslySelectedBookId id of book to remember, so we can scroll back to it
      */
-    public void build(@BooklistBuilder.ListRebuildMode final int preferredState,
+    public void build(@BooklistBuilder.ListRebuildMode final int listState,
                       final long previouslySelectedBookId) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             Logger.debugEnter(this, "build",
@@ -648,9 +650,9 @@ public class BooklistBuilder
                 // build the lookup aka navigation table
                 if (mUseTriggers) {
                     // the table is ordered at insert time, so the row id *is* the order.
-                    populateNavigationTable(mListTable.dot(DOM_PK_ID), preferredState);
+                    populateNavigationTable(mListTable.dot(DOM_PK_ID), listState);
                 } else {
-                    populateNavigationTable(baseBuild.getOrderByColumns(), preferredState);
+                    populateNavigationTable(baseBuild.getOrderByColumns(), listState);
                 }
 
                 final long t10_nav_table_build = System.nanoTime();
@@ -720,11 +722,10 @@ public class BooklistBuilder
      * without having to scan the database. This is especially useful in
      * expand/collapse operations.
      *
-     * @param preferredState State to display: expanded, collapsed or remembered
+     * @param listState State to display
      */
     private void populateNavigationTable(@NonNull final String sortExpression,
-                                         @BooklistBuilder.ListRebuildMode
-                                         final int preferredState) {
+                                         @BooklistBuilder.ListRebuildMode final int listState) {
 
         mNavTable.drop(mSyncedDb);
         mNavTable.create(mSyncedDb, true, false);
@@ -763,7 +764,7 @@ public class BooklistBuilder
         mRebuildStmts.add(navStmt);
 
         // On first-time builds, get the Preferences-based list
-        switch (preferredState) {
+        switch (listState) {
             case PREF_LIST_REBUILD_ALWAYS_COLLAPSED: {
                 String sqlCollapse = mNavTable.getInsertInto(DOM_BL_REAL_ROW_ID,
                                                              DOM_BL_NODE_LEVEL,
@@ -778,8 +779,7 @@ public class BooklistBuilder
                                      + " THEN 1 ELSE 0"
                                      + " END"
                                      + ",0"
-                                     + " FROM " + mListTable.ref()
-                                     + " ORDER BY " + sortExpression;
+                                     + " FROM " + mListTable.ref() + " ORDER BY " + sortExpression;
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sqlCollapse)) {
                     stmt.executeInsert();
                 }
@@ -796,21 +796,29 @@ public class BooklistBuilder
                                    + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
                                    + ",1"
                                    + ",1"
-                                   + " FROM " + mListTable.ref()
-                                   + " ORDER BY " + sortExpression;
+                                   + " FROM " + mListTable.ref() + " ORDER BY " + sortExpression;
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sqlExpand)) {
                     stmt.executeInsert();
                 }
                 break;
             }
 
-            case PREF_LIST_REBUILD_STATE_PRESERVED:
+            case PREF_LIST_REBUILD_PREFERRED_STATE:
+                // Use already-defined SQL for preserve state.
+                navStmt.execute();
+                //FIXME: insert + update is wasteful. Create a proper one-step sql stmt
+                int level = mStyle.getDefaultLevel();
+                updateNodesNavigatorTable(level);
+                break;
+
+            case PREF_LIST_REBUILD_SAVED_STATE:
                 // Use already-defined SQL for preserve state.
                 navStmt.execute();
                 break;
 
             default:
-                throw new UnexpectedValueException(preferredState);
+                throw new UnexpectedValueException(listState);
+
         }
     }
 
@@ -1807,14 +1815,6 @@ public class BooklistBuilder
         super.finalize();
     }
 
-    public String debugInfoForTables() {
-        // not calling mListTable.getTableInfo, so we don't cache this data in debug.
-        TableInfo listTableInfo = new TableInfo(mSyncedDb, mListTable.getName());
-        TableInfo navTableInfo = new TableInfo(mSyncedDb, mNavTable.getName());
-
-        return "ListTable\n" + listTableInfo.toString() + '\n' + navTableInfo.toString();
-    }
-
     @NonNull
     public ArrayList<Long> getCurrentBookIdList() {
         String sql = "SELECT " + DBDefinitions.KEY_FK_BOOK
@@ -1857,9 +1857,10 @@ public class BooklistBuilder
 
     /** Define the list of accepted constants and declare the annotation. */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({PREF_LIST_REBUILD_STATE_PRESERVED,
+    @IntDef({PREF_LIST_REBUILD_SAVED_STATE,
              PREF_LIST_REBUILD_ALWAYS_EXPANDED,
-             PREF_LIST_REBUILD_ALWAYS_COLLAPSED})
+             PREF_LIST_REBUILD_ALWAYS_COLLAPSED,
+             PREF_LIST_REBUILD_PREFERRED_STATE})
     public @interface ListRebuildMode {
 
     }
