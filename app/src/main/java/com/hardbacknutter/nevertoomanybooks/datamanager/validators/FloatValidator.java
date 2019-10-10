@@ -69,7 +69,8 @@ public class FloatValidator
     @Override
     @CallSuper
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final String key)
+                         @NonNull final String key,
+                         final int errorLabelId)
             throws ValidatorException {
 
         Float value;
@@ -94,7 +95,7 @@ public class FloatValidator
                     value = ParseUtils.parseFloat(stringValue, Locale.getDefault());
 
                 } catch (@NonNull final NumberFormatException e) {
-                    throw new ValidatorException(R.string.vldt_real_expected_for_x, key);
+                    throw new ValidatorException(R.string.vldt_real_expected_for_x, errorLabelId);
                 }
             }
         }

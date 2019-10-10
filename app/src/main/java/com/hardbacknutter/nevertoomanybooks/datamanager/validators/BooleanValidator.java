@@ -55,7 +55,8 @@ public class BooleanValidator
     @Override
     @CallSuper
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final String key)
+                         @NonNull final String key,
+                         final int errorLabelId)
             throws ValidatorException {
 
         Object o = dataManager.get(key);
@@ -66,7 +67,7 @@ public class BooleanValidator
         try {
             ParseUtils.toBoolean(o);
         } catch (@NonNull final NumberFormatException e) {
-            throw new ValidatorException(R.string.vldt_boolean_expected_for_x, key);
+            throw new ValidatorException(R.string.vldt_boolean_expected_for_x, errorLabelId);
         }
     }
 }

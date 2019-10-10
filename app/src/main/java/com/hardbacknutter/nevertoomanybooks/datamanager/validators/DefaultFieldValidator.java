@@ -54,14 +54,15 @@ public class DefaultFieldValidator
     /**
      * Gets the current value, and if {@code null} or empty,
      * replaces it with the mDefaultValue value.
-     *
-     * @param dataManager The DataManager object
+     *  @param dataManager The DataManager object
      * @param key         key for the data to validate
+     * @param errorLabelId not used.
      */
     @Override
     @CallSuper
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final String key) {
+                         @NonNull final String key,
+                         final int errorLabelId) {
 
         Object value = dataManager.get(key);
         if (value != null && value.toString().trim().isEmpty()) {

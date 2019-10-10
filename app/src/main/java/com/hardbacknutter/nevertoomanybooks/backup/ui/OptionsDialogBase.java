@@ -124,6 +124,7 @@ public abstract class OptionsDialogBase<T extends Options>
 
         //FIXME: large screens will look bad
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // force the dialog to be big enough
             Dialog dialog = getDialog();
             if (dialog != null) {
                 int width = ViewGroup.LayoutParams.MATCH_PARENT;

@@ -40,7 +40,8 @@ public class BlankValidator
 
     @Override
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final String key)
+                         @NonNull final String key,
+                         final int errorLabelId)
             throws ValidatorException {
 
         String s = dataManager.getString(key).trim();
@@ -49,6 +50,6 @@ public class BlankValidator
             dataManager.putString(key, s);
             return;
         }
-        throw new ValidatorException(R.string.vldt_blank_required_for_x, key);
+        throw new ValidatorException(R.string.vldt_blank_required_for_x, errorLabelId);
     }
 }

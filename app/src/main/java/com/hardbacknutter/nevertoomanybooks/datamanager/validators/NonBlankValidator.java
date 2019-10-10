@@ -42,19 +42,20 @@ public class NonBlankValidator
 
     @Override
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final String key)
+                         @NonNull final String key,
+                         final int errorLabelId)
             throws ValidatorException {
 
         Object o = dataManager.get(key);
         if (o == null) {
-            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, key);
+            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, errorLabelId);
 
         } else if ((o instanceof String) && (dataManager.getString(key).trim().isEmpty())) {
-            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, key);
+            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, errorLabelId);
 
         } else if ((o instanceof ArrayList) && (dataManager.getParcelableArrayList(key)
                                                            .isEmpty())) {
-            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, key);
+            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, errorLabelId);
         }
     }
 }

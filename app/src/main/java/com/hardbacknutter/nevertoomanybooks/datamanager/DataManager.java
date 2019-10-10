@@ -34,6 +34,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -80,6 +81,10 @@ public class DataManager {
 
     /** DataValidators. */
     private final Map<String, DataValidator> mValidatorsMap = new UniqueMap<>();
+    /** DataValidators. Sake key as mValidatorsMap; value: @StringRes. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private final Map<String, Integer> mValidatorErrorIdMap = new UniqueMap<>();
+
     /** A list of cross-validators to apply if all fields pass simple validation. */
     private final List<DataCrossValidator> mCrossValidators = new ArrayList<>();
     /** The last validator exception caught by this object. */
@@ -93,12 +98,15 @@ public class DataManager {
     /**
      * Add a validator for the specified key.
      *
-     * @param key       Key for the data
-     * @param validator Validator
+     * @param key          Key for the data
+     * @param validator    Validator
+     * @param errorLabelId string resource id for a user visible message
      */
     protected void addValidator(@NonNull final String key,
-                                @NonNull final DataValidator validator) {
+                                @NonNull final DataValidator validator,
+                                @StringRes final int errorLabelId) {
         mValidatorsMap.put(key, validator);
+        mValidatorErrorIdMap.put(key, errorLabelId);
     }
 
     /**
@@ -571,16 +579,18 @@ public class DataManager {
 
         for (Map.Entry<String, DataValidator> entry : mValidatorsMap.entrySet()) {
             try {
-                entry.getValue().validate(this, entry.getKey());
+                String key = entry.getKey();
+                //noinspection ConstantConditions
+                entry.getValue().validate(this, key, mValidatorErrorIdMap.get(key));
             } catch (@NonNull final ValidatorException e) {
                 mValidationExceptions.add(e);
                 isOk = false;
             }
         }
 
-        for (DataCrossValidator v : mCrossValidators) {
+        for (DataCrossValidator crossValidator : mCrossValidators) {
             try {
-                v.validate(this);
+                crossValidator.validate(this);
             } catch (@NonNull final ValidatorException e) {
                 mValidationExceptions.add(e);
                 isOk = false;
@@ -602,9 +612,9 @@ public class DataManager {
             return null;
         } else {
             StringBuilder message = new StringBuilder();
-            int cnt = 0;
+            int i = 0;
             for (ValidatorException e : mValidationExceptions) {
-                message.append(" (").append(++cnt).append(") ")
+                message.append(" (").append(++i).append(") ")
                        .append(e.getLocalizedMessage(context))
                        .append('\n');
             }

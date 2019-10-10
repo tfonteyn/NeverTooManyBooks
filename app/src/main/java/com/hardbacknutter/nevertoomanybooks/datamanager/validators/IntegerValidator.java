@@ -62,7 +62,8 @@ public class IntegerValidator
     @Override
     @CallSuper
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final String key)
+                         @NonNull final String key,
+                         final int errorLabelId)
             throws ValidatorException {
 
         Integer value;
@@ -81,7 +82,8 @@ public class IntegerValidator
                 try {
                     value = Integer.parseInt(stringValue);
                 } catch (@NonNull final NumberFormatException e) {
-                    throw new ValidatorException(R.string.vldt_integer_expected_for_x, key);
+                    throw new ValidatorException(R.string.vldt_integer_expected_for_x,
+                                                 errorLabelId);
                 }
             }
         }

@@ -58,7 +58,8 @@ public class DateValidator
     @Override
     @CallSuper
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final String key)
+                         @NonNull final String key,
+                         final int errorLabelId)
             throws ValidatorException {
 
         String value = dataManager.getString(key);
@@ -69,7 +70,7 @@ public class DateValidator
             if (date != null) {
                 value = DateUtils.utcSqlDateTime(date);
             } else {
-                throw new ValidatorException(R.string.vldt_date_expected_for_x, key);
+                throw new ValidatorException(R.string.vldt_date_expected_for_x, errorLabelId);
             }
         }
         dataManager.putString(key, value);

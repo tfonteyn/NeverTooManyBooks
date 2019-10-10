@@ -54,12 +54,13 @@ public class AndValidator
 
     @Override
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final String key)
+                         @NonNull final String key,
+                         final int errorLabelId)
             throws ValidatorException {
 
         for (DataValidator validator : this) {
             // Only set the Bundle for the last in the list
-            validator.validate(dataManager, key);
+            validator.validate(dataManager, key, errorLabelId);
         }
     }
 }

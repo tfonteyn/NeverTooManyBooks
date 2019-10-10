@@ -57,12 +57,13 @@ public class OrValidator
 
     @Override
     public void validate(@NonNull final DataManager dataManager,
-                         @NonNull final String key)
+                         @NonNull final String key,
+                         final int errorLabelId)
             throws ValidatorException {
         ValidatorException lastException = null;
         for (DataValidator validator : this) {
             try {
-                validator.validate(dataManager, key);
+                validator.validate(dataManager, key, errorLabelId);
                 // as soon as one is reporting 'ok', we're done.
                 return;
             } catch (@NonNull final ValidatorException e) {
@@ -78,7 +79,7 @@ public class OrValidator
             Logger.warnWithStackTrace(this, "validate",
                                       "no exceptions were thrown in the validator?",
                                       "key=" + key);
-            throw new ValidatorException(R.string.vldt_failed_for_x, key);
+            throw new ValidatorException(R.string.vldt_failed_for_x, errorLabelId);
         }
     }
 }

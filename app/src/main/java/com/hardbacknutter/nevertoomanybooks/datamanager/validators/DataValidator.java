@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -39,12 +40,14 @@ public interface DataValidator {
     /**
      * Validation method. Must throw a ValidatorException if validation fails.
      *
-     * @param dataManager The DataManager object
-     * @param key         key for the data to validate
+     * @param dataManager  The DataManager object
+     * @param key          key for the data to validate
+     * @param errorLabelId string resource id for a user visible message
      *
      * @throws ValidatorException For any validation failure.
      */
     void validate(@NonNull DataManager dataManager,
-                  @NonNull String key)
+                  @NonNull String key,
+                  @StringRes final int errorLabelId)
             throws ValidatorException;
 }

@@ -685,14 +685,17 @@ public class Book
         addAccessor(HAS_MULTIPLE_AUTHORS,
                     new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK, TOC_MULTIPLE_AUTHORS));
 
-        addValidator(DBDefinitions.KEY_TITLE, NON_BLANK_VALIDATOR);
-        addValidator(UniqueId.BKEY_AUTHOR_ARRAY, NON_BLANK_VALIDATOR);
+        addValidator(DBDefinitions.KEY_TITLE, NON_BLANK_VALIDATOR, R.string.lbl_title);
+        addValidator(UniqueId.BKEY_AUTHOR_ARRAY, NON_BLANK_VALIDATOR, R.string.lbl_author);
 
-        addValidator(DBDefinitions.KEY_TOC_BITMASK, INTEGER_VALIDATOR);
-        addValidator(DBDefinitions.KEY_EDITION_BITMASK, INTEGER_VALIDATOR);
+        addValidator(DBDefinitions.KEY_EDITION_BITMASK, INTEGER_VALIDATOR, R.string.lbl_edition);
+        addValidator(DBDefinitions.KEY_TOC_BITMASK, INTEGER_VALIDATOR,
+                     R.string.lbl_table_of_content);
 
-        addValidator(DBDefinitions.KEY_PRICE_LISTED, BLANK_OR_FLOAT_VALIDATOR);
-        addValidator(DBDefinitions.KEY_PRICE_PAID, BLANK_OR_FLOAT_VALIDATOR);
+        addValidator(DBDefinitions.KEY_PRICE_LISTED, BLANK_OR_FLOAT_VALIDATOR,
+                     R.string.lbl_price_listed);
+        addValidator(DBDefinitions.KEY_PRICE_PAID, BLANK_OR_FLOAT_VALIDATOR,
+                     R.string.lbl_price_paid);
 
         addCrossValidator(book -> {
             String start = book.getString(DBDefinitions.KEY_READ_START);
