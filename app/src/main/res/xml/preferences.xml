@@ -216,14 +216,6 @@
             android:title="@string/pg_thumbnails">
 
             <SwitchPreference
-                android:defaultValue="true"
-                android:icon="@drawable/ic_zoom_in"
-                android:key="Image.Zoom.Upscale"
-                android:summaryOff="@string/no"
-                android:summaryOn="@string/yes"
-                android:title="@string/pt_thumbnails_upscale_zoom" />
-
-            <SwitchPreference
                 android:defaultValue="false"
                 android:icon="@drawable/ic_crop_original"
                 android:key="Image.Cropper.FrameIsWholeImage"
@@ -306,18 +298,19 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_sort_by_alpha"
             android:key="reformat.titles.sort"
-            android:summaryOff="@string/pt_bob_titles_summary_original"
-            android:summaryOn="@string/pt_bob_titles_summary_reformatted"
+            android:summaryOff="@string/pt_reformat_titles_summary_original"
+            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
             android:title="@string/pt_bob_titles_sort" />
 
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_reorder"
             android:key="reformat.titles.display"
-            android:summaryOff="@string/pt_bob_titles_summary_original"
-            android:summaryOn="@string/pt_bob_titles_summary_reformatted"
+            android:summaryOff="@string/pt_reformat_titles_summary_original"
+            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
             android:title="@string/pt_bob_titles_display" />
 
+        <!-- the state of the list when starting the app. -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_state"
@@ -334,10 +327,10 @@
             android:entryValues="@array/pv_bob_level_default"
             android:icon="@drawable/ic_view_list"
             android:key="BookList.Style.level.default"
-            android:title="@string/pt_booklist_level_default" />
+            android:title="@string/pt_booklist_state_default" />
 
 
-        <!-- default BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED == 0 -->
+        <!-- default BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE == 0 -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_generation"
@@ -345,15 +338,6 @@
             android:icon="@drawable/ic_manage"
             android:key="BookList.CompatibilityMode"
             android:title="@string/pt_booklist_generation" />
-
-        <!-- default BooklistBuilder.CompatibilitySettings.PREF_MODE_DEFAULT == 0 -->
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_edit"
-            android:key="BooksOnBookshelf.OpenBookReadOnly"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_booklist_open_book_read_only" />
 
     </PreferenceCategory>
 
@@ -452,6 +436,7 @@
         <!--android:inputType="textUri"-->
         <!--android:key="ISFDB.hostUrl"-->
         <!--android:title="@string/ISFDB" />-->
+
     </PreferenceCategory>
 
     <PreferenceCategory

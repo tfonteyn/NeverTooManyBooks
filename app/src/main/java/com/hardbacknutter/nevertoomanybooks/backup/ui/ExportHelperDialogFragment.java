@@ -92,7 +92,7 @@ public class ExportHelperDialogFragment
 
         mRadioSinceLastBackup = root.findViewById(R.id.radioSinceLastBackup);
         mRadioSinceDate = root.findViewById(R.id.radioSinceDate);
-        mDateSinceView = root.findViewById(R.id.txtDate);
+        mDateSinceView = root.findViewById(R.id.date_since);
 
         //noinspection ConstantConditions
         AlertDialog dialog =
@@ -134,7 +134,7 @@ public class ExportHelperDialogFragment
                 String date = mDateSinceView.getText().toString().trim();
                 mExportHelper.setDateFrom(DateUtils.parseDate(date));
             } catch (@NonNull final RuntimeException e) {
-                UserMessage.show(mDateSinceView, R.string.hint_date_not_set_with_brackets);
+                UserMessage.show(mDateSinceView, R.string.warning_date_not_set);
                 mExportHelper.options = Options.NOTHING;
             }
         } else {

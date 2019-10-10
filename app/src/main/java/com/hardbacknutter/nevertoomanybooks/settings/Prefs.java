@@ -91,13 +91,11 @@ public final class Prefs {
     public static final String pk_reformat_formats = "reformat.format.update";
 
     public static final String pk_images_cache_resized = "Image.Cache.Resized";
-    public static final String pk_images_zoom_upscale = "Image.Zoom.Upscale";
     public static final String pk_images_rotate_auto = "Image.Camera.Autorotate";
     public static final String pk_images_external_cropper = "Image.Cropper.UseExternalApp";
     public static final String pk_images_crop_whole_image = "Image.Cropper.FrameIsWholeImage";
     public static final String pk_images_cropper_layer_type = "Image.ViewLayerType";
 
-    public static final String pk_bob_open_book_read_only = "BooksOnBookshelf.OpenBookReadOnly";
     public static final String pk_bob_list_state = "BookList.ListRebuildState";
     public static final String pk_bob_list_generation = "BookList.CompatibilityMode";
 

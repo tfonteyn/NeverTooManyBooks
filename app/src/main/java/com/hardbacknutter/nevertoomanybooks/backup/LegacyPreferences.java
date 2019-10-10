@@ -107,10 +107,6 @@ public final class LegacyPreferences {
                         }
                         break;
 
-                    case "App.OpenBookReadOnly":
-                        ed.putBoolean(Prefs.pk_bob_open_book_read_only, (Boolean) oldValue);
-                        break;
-
                     case "BookList.Global.BooklistState":
                         int oldState = (Integer) oldValue;
                         @BooklistBuilder.ListRebuildMode
@@ -123,7 +119,7 @@ public final class LegacyPreferences {
                                 bobState = BooklistBuilder.PREF_LIST_REBUILD_ALWAYS_COLLAPSED;
                                 break;
                             default:
-                                bobState = BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED;
+                                bobState = BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE;
                                 break;
                         }
                         ed.putString(Prefs.pk_bob_list_state, String.valueOf(bobState));
@@ -214,10 +210,11 @@ public final class LegacyPreferences {
                         break;
 
                     case "BookList.LargeThumbnails":
-                        int tSize = (Boolean) oldValue ? ImageUtils.SCALE_MEDIUM
+                        @ImageUtils.Scale
+                        int scale = (Boolean) oldValue ? ImageUtils.SCALE_MEDIUM
                                                        : ImageUtils.SCALE_SMALL;
                         // this is now a PInteger (a ListPreference), stored as a string
-                        ed.putString(Prefs.pk_bob_cover_size, String.valueOf(tSize));
+                        ed.putString(Prefs.pk_bob_cover_size, String.valueOf(scale));
                         break;
 
                     case "BookList.ShowLocation":
@@ -292,6 +289,7 @@ public final class LegacyPreferences {
                         break;
 
                     // skip obsolete keys
+                    case "App.OpenBookReadOnly":
                     case "StartupActivity.FAuthorSeriesFixupRequired":
                     case "start_in_my_books":
                     case "App.includeClassicView":

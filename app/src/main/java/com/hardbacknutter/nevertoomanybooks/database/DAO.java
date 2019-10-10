@@ -1292,7 +1292,7 @@ public class DAO
     }
 
     private void preprocessPrices(@NonNull final Book book) {
-        //URGENT: source field as String.. does this ever happen?
+        //TEST: source field as String.. does this ever happen?
         // handle a price without a currency.
         if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED)
             && !book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {

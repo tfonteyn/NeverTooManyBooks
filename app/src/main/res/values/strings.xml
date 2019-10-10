@@ -174,6 +174,7 @@
     <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
     <string name="warning_required_at_least_one">At least one field must not be blank</string>
     <string name="warning_missing_name">Name can not be blank</string>
+    <string name="warning_date_not_set">Please add a valid date</string>
     <string name="warning_author_already_in_list">Author is already in the list</string>
     <string name="warning_series_already_in_list">Series is already in the list</string>
     <string name="warning_no_matching_book_found">No matching book found</string>
@@ -400,6 +401,9 @@
 
     <!-- Progress message displayed when importing books/covers.
         param 1: what, e.g. Books,Covers.
+        example:
+            "Books: 4 created, 78 updated"
+            "Covers: 32 created, 4 updated"
         -->
     <string name="progress_msg_n_created_m_updated">%1$s: %2$d created, %3$d updated</string>
 
@@ -676,12 +680,6 @@
     <!-- ####################################################################################### -->
     <!-- == Global preference settings == -->
     <!-- ####################################################################################### -->
-    <!--
-         Not a preference as such.
-         These are the Locale specific title prefixes that will be moved to the end of a title,
-         if reformatting of titles options are enabled by the user.
-    -->
-    <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
 
     <!-- The defaults for MultiSelect fields, i.e. select nothing -->
     <string-array name="empty_array" />
@@ -711,25 +709,31 @@
     <string name="pt_bob_titles_display">Show titles as</string>
     <!-- SwitchPreference - How to sort titles. -->
     <string name="pt_bob_titles_sort">Sort titles by</string>
+
     <!-- example of 'original' title -->
-    <string name="pt_bob_titles_summary_original">The title</string>
+    <string name="pt_reformat_titles_summary_original">The title</string>
     <!-- example of a reformatted title -->
-    <string name="pt_bob_titles_summary_reformatted">title, The</string>
-
-
-    <!-- SwitchPreference -->
-    <string name="pt_reformat_format_on_update">Unify &amp; translate “book format” names</string>
+    <string name="pt_reformat_titles_summary_reformatted">title, The</string>
+    <!--
+     Not a preference as such.
+     These are the Locale specific title prefixes that will be moved to the end of a title,
+     if reformatting of titles options are enabled by the user.
+-->
+    <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
 
 
     <!-- Preference Category -->
     <string name="pg_booklist">Book Lists</string>
-    <!-- SwitchPreference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
-    <string name="pt_booklist_open_book_read_only">Open book in read-only mode</string>
     <!-- ListPreference - Book list state-related preferences -->
     <string name="pt_booklist_state">Book list state</string>
+    <string name="pe_bob_list_state_preferred">Preferred book list state</string>
     <string name="pe_bob_list_state_preserve">Preserve book list state</string>
     <string name="pe_bob_list_state_expanded">Always start book lists expanded</string>
     <string name="pe_bob_list_state_collapsed">Always start book lists collapsed</string>
+    <!-- SwitchPreference -->
+    <string name="pt_booklist_state_default">Default Book list expansion</string>
+
+
     <!--  ListPreference - allows overriding the default method used to generate book lists
           as defined by Android version -->
     <string name="pt_booklist_generation">Book List Generation Option</string>
@@ -752,8 +756,6 @@
 
     <!-- Preference Category -->
     <string name="pg_thumbnails">Thumbnails</string>
-    <!-- SwitchPreference - zooming images should upscale (or only show actual max size) -->
-    <string name="pt_thumbnails_upscale_zoom">Upscale images when zoomed</string>
     <!-- SwitchPreference - start the cropper with the cropper frame set to the whole image -->
     <string name="pt_thumbnails_crop_frame_is_whole_image">Default crop frame is whole image</string>
     <!-- SwitchPreference - use an external app. (Intent) to handle cropping-->
@@ -963,7 +965,7 @@
     <string name="menu_rebuild_fts">Rebuild FTS</string>
 
     <!-- menu option -->
-    <string name="menu_level_reset">Default expanded level</string>
+    <string name="menu_level_reset">Preferred level expansion</string>
     <!-- menu option -->
     <string name="menu_level_expand">Expand All</string>
     <!-- menu option -->
@@ -1078,19 +1080,17 @@
     <!-- Hint text for the drag handle button in re-order-able lists -->
     <string name="hint_btn_drag_handle">Drag me to reorder this list</string>
 
-
     <!-- ####################################################################################### -->
     <!-- == Hints for input fields.  == -->
     <!-- ####################################################################################### -->
     <string name="hint_search_text">Text and/or ISBN</string>
-    <!-- generic hint text for text input fields. -->
+    <!-- generic hint text for DataEntryButton (see styles.xml) fields. -->
     <string name="hint_field_not_set">Not Set</string>
     <!-- generic place holder text for Book list rows -->
     <string name="hint_field_not_set_with_brackets">(Not Set)</string>
-    <string name="hint_date_not_set_with_brackets">(No Date)</string>
     <!-- LibraryThing etc. require the user to configure a personal key -->
     <string name="hint_developer_key">Developer Key</string>
-
+    <!-- hint shown when the user invokes the standard search form (single line, top of screen) -->
     <string name="hint_system_search">Author, Title or ISBN</string>
 
     <!-- ####################################################################################### -->
@@ -1429,24 +1429,7 @@
     <!-- Displayed when a file/open dialog results in selecting a non-existent file -->
     <string name="X_warning_select_an_existing_file">Please select an existing file.</string>
 
-    <!-- prompt to install a scanner. Shown above a menu of Scanners. -->
-    <string name="X_info_install_scanner">
-        To scan ISBN bar codes, please tap below to install one of these barcode scanner applications.
-    </string>
 
-    <!-- translations out of sync. -->
-    <string name="X_info_no_books_yet">
-        There are no books on this Bookshelf.\n
-        Please add some using the button at the bottom of this screen.
-    </string>
-    <string name="X_info_no_authors_yet">
-        There are no authors for this Book.\n
-        Please add some using the text area and button at the top of this screen.
-    </string>
-    <string name="X_info_no_series_yet">
-        There are no series for this Book.\n
-        You can add some using the text area and button at the top of this screen.
-    </string>
     <string name="X_info_reset_tips">
         From time to time this application can display optional messages regarding %1$s.\n
         Press the button below to reset any of these messages that have been disabled.
@@ -1472,21 +1455,20 @@
     <string name="X_title_import">Import</string>
     <!-- Dialog title. -->
     <string name="X_title_install_scan">Install Barcode Scanner</string>
+    <!-- prompt to install a scanner. Shown above a menu of Scanners. -->
+    <string name="X_info_install_scanner">
+        To scan ISBN bar codes, please tap below to install one of these barcode scanner applications.
+    </string>
 
     <string name="X_menu_delete_series">Delete Series…</string>
     <string name="X_menu_search_books">Search Books</string>
-    <string name="X_menu_delete_toc_entry">Delete Title from TOC</string>
 
     <string name="X_btn_do_not_show_again">Do not show again</string>
-    <string name="X_btn_set_authors">Set Authors…</string>
-    <string name="X_btn_set_series">Set Series…</string>
 
     <!-- Shown in lists. Whether a book is available to be loaned out. Should be short -->
     <string name="X_lbl_loan_book_available">Available</string>
 
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
-
-    <string name="X_lbl_author_secondary">co-author</string>
 
     <string name="X_lbl_order">Order</string>
     <string name="X_lbl_other">Other</string>
@@ -1507,7 +1489,7 @@
     <!-- ####################################################################################### -->
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
 
-
-    <string name="pt_booklist_level_default">Default expanded level</string>
+    <!-- SwitchPreference -->
+    <string name="pt_reformat_format_on_update">Standardize “book format” names</string>
 
 </resources>

@@ -71,17 +71,11 @@
     <string name="X_about_help_tap_here">Pulse aquí para acceder a la ayuda online</string>
     <string name="X_anthology_titles">Antologías</string>
     <string name="X_btn_do_not_show_again">No volver a mostrar</string>
-    <string name="X_btn_set_authors">Definir autores…</string>
-    <string name="X_btn_set_series">Definir serie…</string>
     <string name="X_error_file_must_contain_column">El fichero debe tener una columna con el nombre %1$s</string>
-    <string name="X_info_no_authors_yet">El libro no tiene autor.\n Añada alguno utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
-    <string name="X_info_no_books_yet">No hay libros en esta biblioteca.\n Añada alguno utilizando el menú al pie de esta pantalla.</string>
-    <string name="X_info_no_series_yet">El libro no tiene serie.\n Puede especificar una utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
     <string name="X_info_reset_tips">Esta aplicación puede mostrar, de vez en cuando, mensajes relacionados con %1$s.\n Pulse el botón siguiente para resetear cualquiera de los mensajes que hayan sido deshabilitados.</string>
     <string name="X_lbl_loan_book_available">Disponible</string>
     <string name="X_lbl_select_fields_to_update">Seleccione campos para actualizar</string>
     <string name="X_menu_delete_series">Eliminar serie…</string>
-    <string name="X_menu_delete_toc_entry">Eliminar título de una antología</string>
     <string name="title_edit_author">Modificar autor</string>
     <string name="title_edit_series">Modificar serie</string>
     <string name="X_menu_search_books">Buscar libro</string>
@@ -222,7 +216,7 @@
     <string name="gr_tq_title_task_errors">Errores en tareas</string>
     <string name="help">Ayuda</string>
     <string name="hint_btn_drag_handle">Arrástrame para reordenar esta lista.</string>
-    <string name="hint_date_not_set_with_brackets">(sin fecha)</string>
+    <string name="warning_date_not_set">Por favor agregue una fecha válida.</string>
     <string name="hint_developer_key">Clave de desarrollador (Developer Key)</string>
     <string name="hint_field_not_set">No configurado</string>
     <string name="hint_field_not_set_with_brackets">(vacío)</string>
@@ -469,15 +463,14 @@
     <string name="pt_bob_header">Resumen en la cabecera</string>
     <string name="pt_booklist_generation">Generación de listados de libros</string>
     <string name="pt_booklist_state">Estado del listado de libros</string>
-    <string name="pt_booklist_open_book_read_only">Abrir libro en modo sólo lectura</string>
     <string name="pt_bob_authors_sort">Ordenar autores por</string>
     <string name="pt_bob_text_size">Tamaño de los elementos en el listado</string>
     <string name="pt_thumbnails_cache_resized">Miniaturas redimensionadas en caché</string>
     <string name="pt_bob_thumbnails_show">Mostrar miniaturas</string>
     <string name="pt_collect_series_info_from_toc">Recopilar información de la serie de TOC</string>
     <string name="pt_bob_thumbnails_scale">Tamaño de la imagen en listas.</string>
-    <string name="pt_bob_titles_summary_original">El título</string>
-    <string name="pt_bob_titles_summary_reformatted">título, El</string>
+    <string name="pt_reformat_titles_summary_original">El título</string>
+    <string name="pt_reformat_titles_summary_reformatted">título, El</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Pitido si el ISBN escaneado no es válido</string>
     <string name="pt_scanning_beep_if_isbn_valid">Pitido si el ISBN escaneado es válido</string>
     <string name="pt_scanning_preferred_scanner">Escaner preferido</string>
@@ -616,7 +609,6 @@
     <string name="lbl_author_type_contributor">Contribuyente</string>
     <string name="lbl_author_type_colorist">Colorista</string>
     <string name="tip_update_fields_from_internet">Los enlaces externos del sitio solo se procesan si se contacta realmente con el sitio. Como resultado, el menú «Ver en…» solo mostrará lo que está disponible.</string>
-    <string name="X_lbl_author_secondary">coautor</string>
     <string name="lbl_author_type">Tipo de autor</string>
     <string name="pt_bob_show_details_uses_task_off">inmediatamente</string>
     <string name="progress_end_import_partially_complete">Importación parcial realizada</string>
@@ -645,5 +637,7 @@
     <string name="lbl_print_run">Ejecución de impresión</string>
     <string name="pv_bob_header_style_name">Nombre de estilo</string>
     <string name="warning_rebuild_orderby_columns">Esto reconstruirá los datos de clasificación cuando se reinicie la aplicación. Estás seguro de que quieres continuar ?</string>
+    <string name="pt_booklist_state_default">Expansión predeterminada de la lista de libros</string>
+    <string name="menu_level_reset">Expansión de nivel preferido</string>
 
 </resources>

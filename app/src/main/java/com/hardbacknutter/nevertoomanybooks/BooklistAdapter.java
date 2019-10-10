@@ -100,11 +100,11 @@ public class BooklistAdapter
     private final DAO mDb;
     @NonNull
     private final LayoutInflater mInflater;
+    @NonNull
+    private final BooklistStyle mStyle;
     /** The cursor is the equivalent of the 'list of items'. */
     @Nullable
     private Cursor mCursor;
-    @NonNull
-    private final BooklistStyle mStyle;
     @Nullable
     private View.OnClickListener mOnItemClick;
     @Nullable
@@ -251,6 +251,11 @@ public class BooklistAdapter
                     layoutId = R.layout.booksonbookshelf_row_book_2x_large_image;
                     break;
 
+
+                case ImageUtils.SCALE_LARGE:
+                case ImageUtils.SCALE_MEDIUM:
+                case ImageUtils.SCALE_SMALL:
+                case ImageUtils.SCALE_X_SMALL:
                 default:
                     layoutId = R.layout.booksonbookshelf_row_book;
                     break;
@@ -332,28 +337,29 @@ public class BooklistAdapter
      * of the view.
      * <br>So this method only deals with TextView instances.
      *
-     * @param root the view (and its children) we'll scale
+     * @param scaleFactor to apply
+     * @param root        the view (and its children) we'll scale
      */
-    private void scaleTextViews(final float scale,
+    private void scaleTextViews(final float scaleFactor,
                                 @NonNull final View root) {
         // text gets scaled
         if (root instanceof TextView) {
             TextView textView = (TextView) root;
             float px = textView.getTextSize();
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, px * scale);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, px * scaleFactor);
         }
 
         // all elements get scaled padding; using the absolute padding values.
-        root.setPadding((int) (scale * root.getPaddingLeft()),
-                        (int) (scale * root.getPaddingTop()),
-                        (int) (scale * root.getPaddingRight()),
-                        (int) (scale * root.getPaddingBottom()));
+        root.setPadding((int) (scaleFactor * root.getPaddingLeft()),
+                        (int) (scaleFactor * root.getPaddingTop()),
+                        (int) (scaleFactor * root.getPaddingRight()),
+                        (int) (scaleFactor * root.getPaddingBottom()));
 
         // go recursive if needed
         if (root instanceof ViewGroup) {
             ViewGroup viewGroup = (ViewGroup) root;
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                scaleTextViews(scale, viewGroup.getChildAt(i));
+                scaleTextViews(scaleFactor, viewGroup.getChildAt(i));
             }
         }
     }

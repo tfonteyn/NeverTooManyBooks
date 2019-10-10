@@ -71,17 +71,11 @@
     <string name="X_about_help_tap_here">Klicken Sie hier, um die Online-Hilfe aufzurufen</string>
     <string name="X_anthology_titles">Anthologie-Titel</string>
     <string name="X_btn_do_not_show_again">Nicht mehr anzeigen</string>
-    <string name="X_btn_set_authors">Autor angeben…</string>
-    <string name="X_btn_set_series">Serie angeben…</string>
     <string name="X_error_file_must_contain_column">Die Datei muss eine Spalte mit dem Namen %1$s enthalten</string>
-    <string name="X_info_no_authors_yet">Es wurde kein Autor für dieses Buch eingetragen.\n Bitte fügen Sie einen Autor über das Textfeld und den Knopf oben auf diesem Bildschirm hinzu.</string>
-    <string name="X_info_no_books_yet">Es befinden sich keine Bücher im Bücherregal.\n Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.</string>
-    <string name="X_info_no_series_yet">Es besteht keine Serie für dieses Buch.\n Sie können eine Serie über das Textfeld und den Knopf oben auf dieser Seite hinzufügen.</string>
     <string name="X_info_reset_tips">Diese App zeigt fallweise optionale Meldungen zu %1$s an.\n Wenn diese Meldungen deaktiviert wurden können, Sie die Deaktivierung über den Knopf unten zurücksetzen.</string>
     <string name="X_lbl_loan_book_available">Verfügbar</string>
     <string name="X_lbl_select_fields_to_update">Felder für Aktualisierung auswählen</string>
     <string name="X_menu_delete_series">Serie löschen…</string>
-    <string name="X_menu_delete_toc_entry">Titel von Anthologie löschen</string>
     <string name="title_edit_author">Autor bearbeiten</string>
     <string name="title_edit_series">Serie bearbeiten</string>
     <string name="X_menu_search_books">Suche Bücher</string>
@@ -222,7 +216,7 @@
     <string name="gr_tq_title_task_errors">Aufgabenfehler</string>
     <string name="help">Hilfe</string>
     <string name="hint_btn_drag_handle">Ziehen Sie, um diese Liste neu zu ordnen.</string>
-    <string name="hint_date_not_set_with_brackets">(kein Datum)</string>
+    <string name="warning_date_not_set">Bitte geben Sie ein gültiges Datum an.</string>
     <string name="hint_developer_key">Entwicklerschlüssel</string>
     <string name="hint_field_not_set">Nicht gesetzt</string>
     <string name="hint_field_not_set_with_brackets">(leer)</string>
@@ -469,15 +463,14 @@
     <string name="pt_bob_header">Zusammenfassung in der Kopfzeile</string>
     <string name="pt_booklist_generation">Erzeugung der Bücherliste</string>
     <string name="pt_booklist_state">Darstellung der Bücherliste</string>
-    <string name="pt_booklist_open_book_read_only">Buch im schreibgeschützten Modus öffnen</string>
     <string name="pt_bob_authors_sort">Autoren sortieren nach</string>
     <string name="pt_bob_text_size">Größe der Einträge in der Bücherliste</string>
     <string name="pt_thumbnails_cache_resized">Größe der Cover-Bilder ändern zwischenspeichern</string>
     <string name="pt_bob_thumbnails_show">Cover-Bilder anzeigen</string>
     <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
     <string name="pt_bob_thumbnails_scale">Bildgröße in Listen</string>
-    <string name="pt_bob_titles_summary_original">Der Titel</string>
-    <string name="pt_bob_titles_summary_reformatted">Titel, Der</string>
+    <string name="pt_reformat_titles_summary_original">Der Titel</string>
+    <string name="pt_reformat_titles_summary_reformatted">Titel, Der</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Tonsignal, falls die gescannte ISBN ungültig ist</string>
     <string name="pt_scanning_beep_if_isbn_valid">Tonsignal bei gültig gescannter ISBN</string>
     <string name="pt_scanning_preferred_scanner">Bevorzugter Scanner</string>
@@ -618,7 +611,6 @@
     <string name="lbl_author_type_contributor">Mitarbeiter</string>
     <string name="lbl_author_type_colorist">Farbe</string>
     <string name="tip_update_fields_from_internet">Externe Site-Links werden nur verarbeitet, wenn die Site tatsächlich kontaktiert wird. Infolgedessen zeigt das Menü „Anschauen auf…“ ebenfalls nur, was verfügbar ist.</string>
-    <string name="X_lbl_author_secondary">Mitverfasser</string>
     <string name="lbl_author_type">Autorentyp</string>
     <string name="pt_bob_show_details_uses_task_off">sofort</string>
     <string name="progress_end_import_partially_complete">Teilweise importiert</string>
@@ -646,4 +638,6 @@
     <string name="lbl_print_run">Druckauflage</string>
     <string name="pv_bob_header_style_name">Stilname</string>
     <string name="warning_rebuild_orderby_columns">Dadurch werden die Sortierdaten neu erstellt, wenn die App neu gestartet wird. Bist du dir sicher, dass du weitermachen willst ?</string>
+    <string name="pt_booklist_state_default">Standard-Buchlistenebene</string>
+    <string name="menu_level_reset">Bevorzugte Ausbaustufe</string>
 </resources>

@@ -71,17 +71,11 @@
     <string name="X_about_help_tap_here">Пожалуйста, нажмите здесь, чтобы получить справочную информацию в интернете</string>
     <string name="X_anthology_titles">Названия антологий</string>
     <string name="X_btn_do_not_show_again">Больше не показывать</string>
-    <string name="X_btn_set_authors">Установка авторов…</string>
-    <string name="X_btn_set_series">Установка серии…</string>
     <string name="X_error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
-    <string name="X_info_no_authors_yet">Не указаны авторы книги.\n Пожалуйста, добавьте автора(ов), используя текстовую область и кнопку в верхней части этого экрана.</string>
-    <string name="X_info_no_books_yet">На этой полке нет книг.\n Пожалуйста, добавьте книги, используя меню в нижней части этого экрана.</string>
-    <string name="X_info_no_series_yet">Не указана серия книги.\n Вы можете добавить серию используя текстовую область в верхней части этого экрана.</string>
     <string name="X_info_reset_tips">Время от времени приложение может показывать опциональные сообщения о %1$s.\n Нажмите кнопку внизу, чтобы сбросить все отключенные сообщения.</string>
     <string name="X_lbl_loan_book_available">Доступно</string>
     <string name="X_lbl_select_fields_to_update">Выберите поля для обновления</string>
     <string name="X_menu_delete_series">Удаление серии…</string>
-    <string name="X_menu_delete_toc_entry">Удалить название антологии</string>
     <string name="title_edit_author">Редактирование автора</string>
     <string name="title_edit_series">Редактирование серии</string>
     <string name="X_menu_search_books">Искать книги</string>
@@ -218,7 +212,7 @@
     <string name="gr_tq_title_task_errors">Ошибки задач</string>
     <string name="help">Помощь</string>
     <string name="hint_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке.</string>
-    <string name="hint_date_not_set_with_brackets">(без даты)</string>
+    <string name="warning_date_not_set">Пожалуйста, добавьте действительную дату.</string>
     <string name="hint_developer_key">Ключ разработчика</string>
     <string name="hint_field_not_set">Не установлено</string>
     <string name="hint_field_not_set_with_brackets">(пусто)</string>
@@ -465,7 +459,6 @@
     <string name="pt_bob_header">Суммарная информация в заголовке</string>
     <string name="pt_booklist_generation">Составление списка книг</string>
     <string name="pt_booklist_state">Состояние списка книг</string>
-    <string name="pt_booklist_open_book_read_only">Просмотр книги в режиме чтения</string>
     <string name="pt_bob_authors_sort">Сортировать авторов по</string>
     <string name="pt_bob_text_size">Размер элемента списка книг</string>
     <string name="pt_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
@@ -610,7 +603,6 @@
     <string name="lbl_author_type_contributor">участник</string>
     <string name="lbl_author_type_colorist">колорист</string>
     <string name="tip_update_fields_from_internet">Ссылки на внешние сайты обрабатываются только в том случае, если сайт действительно связался. В результате меню «Смотреть на…» также будет показывать только то, что доступно.</string>
-    <string name="X_lbl_author_secondary">соавтор</string>
     <string name="lbl_author_type">Тип автора</string>
     <string name="pt_bob_show_details_uses_task_off">немедленно</string>
     <string name="progress_end_import_partially_complete">Частичный импорт выполнен</string>
@@ -638,5 +630,7 @@
     <string name="lbl_print_run">Тираж</string>
     <string name="pv_bob_header_style_name">Название стиля</string>
     <string name="warning_rebuild_orderby_columns">Это восстановит данные сортировки при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
+    <string name="pt_booklist_state_default">Расширение списка книг по умолчанию</string>
+    <string name="menu_level_reset">Предпочтительный уровень расширения</string>
 
 </resources>

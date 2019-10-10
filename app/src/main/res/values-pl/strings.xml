@@ -71,17 +71,11 @@
     <string name="X_about_help_tap_here">Kliknij tu by wejść do pomocy online</string>
     <string name="X_anthology_titles">Tytuły antologii</string>
     <string name="X_btn_do_not_show_again">Nie pokazuj ponownie</string>
-    <string name="X_btn_set_authors">Przypisz autorów…</string>
-    <string name="X_btn_set_series">Ustaw serię (tom)…</string>
     <string name="X_error_file_must_contain_column">Plik musi zawierać pole %1$s</string>
-    <string name="X_info_no_authors_yet">Brak autora(ów) tej ksiażki.\n Dodaj autora używając pola tekstowego na górze.</string>
-    <string name="X_info_no_books_yet">Na tej półce nie ma książek.\n Dodaj jakąś przy pomocy menu na dole ekranu.</string>
-    <string name="X_info_no_series_yet">Brak serii dla tej ksiażki.\n Dodaj serię używając pola tekstowego na górze.</string>
     <string name="X_info_reset_tips">Od czasu do czasu program może wyświetlać komunikaty z %1$s.\n Naciśnij przycisk poniżej, by przywrócić komunikaty, które były wyłączone.</string>
     <string name="X_lbl_loan_book_available">Dostępny</string>
     <string name="X_lbl_select_fields_to_update">Wybierz pola do aktualizacji</string>
     <string name="X_menu_delete_series">Usuń serię…</string>
-    <string name="X_menu_delete_toc_entry">Usuń pozycję z antologii</string>
     <string name="title_edit_author">Edytuj autora</string>
     <string name="title_edit_series">Edytuj serię</string>
     <string name="X_menu_search_books">Przeszukaj książki</string>
@@ -220,7 +214,7 @@
     <string name="gr_tq_title_task_errors">Błędy zadania</string>
     <string name="help">Pomoc</string>
     <string name="hint_btn_drag_handle">Przeciągnij mnie, aby zmienić kolejność tej listy.</string>
-    <string name="hint_date_not_set_with_brackets">(Brak daty)</string>
+    <string name="warning_date_not_set">Dodaj prawidłową datę.</string>
     <string name="hint_developer_key">Klucz deweloperski</string>
     <string name="hint_field_not_set">Nie wybrany(a)</string>
     <string name="hint_field_not_set_with_brackets">(Nie ustawiony)</string>
@@ -467,7 +461,6 @@
     <string name="pt_bob_header">Szczegóły podsumowujące w nagłówku</string>
     <string name="pt_booklist_generation">Opcja tworzenia listy książek</string>
     <string name="pt_booklist_state">Stan listy książek</string>
-    <string name="pt_booklist_open_book_read_only">Otwórz książkę w trybie tylko do odczytu</string>
     <string name="pt_bob_authors_sort">Sortuj autorów według</string>
     <string name="pt_bob_text_size">Rozmiar tekstu listy książek</string>
     <string name="pt_thumbnails_cache_resized">Zmienione obrazy są buforowane</string>
@@ -611,7 +604,6 @@
     <string name="lbl_author_type_editor">Redaktor</string>
     <string name="lbl_author_type_contributor">Współpracownik</string>
     <string name="tip_update_fields_from_internet">Linki do zewnętrznych stron są przetwarzane tylko wtedy, gdy rzeczywiście nawiązano kontakt ze stroną. W rezultacie menu „Widok na……” pokaże tylko to, co jest dostępne.</string>
-    <string name="X_lbl_author_secondary">współautor</string>
     <string name="lbl_author_type">Rodzaj autora</string>
     <string name="pt_bob_show_details_uses_task_off">natychmiast</string>
     <string name="progress_end_import_partially_complete">Wykonano częściowy import</string>
@@ -640,4 +632,6 @@
     <string name="lbl_print_run">Wersja do wydruku</string>
     <string name="pv_bob_header_style_name">Nazwa stylu</string>
     <string name="warning_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
+    <string name="pt_booklist_state_default">Domyślne rozszerzenie listy książek</string>
+    <string name="menu_level_reset">Preferowany poziom ekspansji</string>
 </resources>

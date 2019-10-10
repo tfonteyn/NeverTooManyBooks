@@ -70,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
@@ -171,7 +170,7 @@ public class BooksOnBookshelfModel
                     if (mListHasBeenLoaded) {
                         // always copy modified fields.
                         mCurrentPositionedBookId = message.result.currentPositionedBookId;
-                        mRebuildState = message.result.rebuildState;
+                        mRebuildState = message.result.listState;
 
                         // always copy these results
                         mTotalBooks = message.result.resultTotalBooks;
@@ -236,7 +235,7 @@ public class BooksOnBookshelfModel
         } else {
             // Unless set by the caller, preserve state when rebuilding/recreating etc
             mRebuildState = currentArgs.getInt(BKEY_LIST_STATE,
-                                               BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED);
+                                               BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE);
         }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -764,19 +763,6 @@ public class BooksOnBookshelfModel
         return mOnGoodreadsTaskListener;
     }
 
-    public String debugBuilderTables() {
-        if (mCursor != null) {
-            return mCursor.getBuilder().debugInfoForTables();
-        } else {
-            return "no cursor";
-        }
-    }
-
-    public boolean isReadOnly(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_bob_open_book_read_only, true);
-    }
-
     /**
      * Holder class for search criteria with some methods to bulk manipulate them.
      */
@@ -960,7 +946,7 @@ public class BooksOnBookshelfModel
          * @param isFullRebuild           Indicates whole table structure needs rebuild,
          * @param currentListCursor       Current displayed list cursor.
          * @param currentPositionedBookId Current position in the list.
-         * @param rebuildState            Requested list state (expanded,collapsed, preserved)
+         * @param listState            Requested list state
          * @param taskListener            TaskListener
          */
         @UiThread
@@ -968,7 +954,7 @@ public class BooksOnBookshelfModel
                         final boolean isFullRebuild,
                         @Nullable final BooklistPseudoCursor currentListCursor,
                         final long currentPositionedBookId,
-                        @BooklistBuilder.ListRebuildMode final int rebuildState,
+                        @BooklistBuilder.ListRebuildMode final int listState,
                         final TaskListener<BuilderHolder> taskListener) {
             super(R.id.TASK_ID_GET_BOOKLIST, taskListener);
 
@@ -977,7 +963,7 @@ public class BooksOnBookshelfModel
             mCurrentListCursor = currentListCursor;
 
             // input/output fields for the task.
-            mHolder = new BuilderHolder(currentPositionedBookId, rebuildState);
+            mHolder = new BuilderHolder(currentPositionedBookId, listState);
         }
 
         /**
@@ -1053,9 +1039,9 @@ public class BooksOnBookshelfModel
                 if (mCurrentListCursor != null && !mIsFullRebuild) {
                     mBooklistBuilder.rebuild();
                 } else {
-                    mBooklistBuilder.build(mHolder.rebuildState, mHolder.currentPositionedBookId);
+                    mBooklistBuilder.build(mHolder.listState, mHolder.currentPositionedBookId);
                     // After first build, always preserve this object state
-                    mHolder.rebuildState = BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED;
+                    mHolder.listState = BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE;
                 }
 
                 if (isCancelled()) {
@@ -1173,7 +1159,7 @@ public class BooksOnBookshelfModel
         long currentPositionedBookId;
         /** input/output field. */
         @BooklistBuilder.ListRebuildMode
-        int rebuildState;
+        int listState;
 
         /**
          * Resulting Cursor; can be {@code null} if the list did not get build.
@@ -1205,9 +1191,9 @@ public class BooksOnBookshelfModel
          * Constructor: these are the fields we need as input.
          */
         BuilderHolder(final long currentPositionedBookId,
-                      @BooklistBuilder.ListRebuildMode final int rebuildState) {
+                      @BooklistBuilder.ListRebuildMode final int listState) {
             this.currentPositionedBookId = currentPositionedBookId;
-            this.rebuildState = rebuildState;
+            this.listState = listState;
         }
 
         @Nullable
@@ -1225,7 +1211,7 @@ public class BooksOnBookshelfModel
         public String toString() {
             return "BuilderHolder{"
                    + ", currentPositionedBookId=" + currentPositionedBookId
-                   + ", rebuildState=" + rebuildState
+                   + ", listState=" + listState
                    + ", resultTotalBooks=" + resultTotalBooks
                    + ", resultUniqueBooks=" + resultUniqueBooks
                    + ", resultListCursor=" + resultListCursor

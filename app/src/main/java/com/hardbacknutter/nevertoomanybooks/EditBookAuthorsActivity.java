@@ -335,7 +335,7 @@ public class EditBookAuthorsActivity
         }
 
         protected int getLayoutId() {
-            return R.layout.dialog_edit_author_book;
+            return R.layout.dialog_edit_book_author;
         }
 
         @Override

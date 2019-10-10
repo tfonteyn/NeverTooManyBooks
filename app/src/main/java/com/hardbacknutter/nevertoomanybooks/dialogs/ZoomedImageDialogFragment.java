@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -37,14 +39,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
@@ -109,17 +109,27 @@ public class ZoomedImageDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
 
-        boolean upscale = PreferenceManager.getDefaultSharedPreferences(view.getContext())
-                                           .getBoolean(Prefs.pk_images_zoom_upscale, true);
-
         DisplayMetrics metrics = getResources().getDisplayMetrics();
 
         ImageView imageView = view.findViewById(R.id.coverImage);
         ImageUtils.setImageView(imageView, mImageFile,
                                 metrics.widthPixels,
                                 metrics.heightPixels,
-                                upscale);
+                                true);
 
         imageView.setOnClickListener(v -> dismiss());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // force the dialog to be big enough
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            //noinspection ConstantConditions
+            dialog.getWindow().setLayout(width, height);
+        }
     }
 }

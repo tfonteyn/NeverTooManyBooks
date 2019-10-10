@@ -70,17 +70,11 @@
     <string name="X_about_help_tap_here">Çevrimiçi yardım sayfalarına erişmek için lütfen dokunun</string>
     <string name="X_anthology_titles">Seçmeler</string>
     <string name="X_btn_do_not_show_again">Bir daha gösterme</string>
-    <string name="X_btn_set_authors">Yazar ekle…</string>
-    <string name="X_btn_set_series">Seri ekle…</string>
     <string name="X_error_file_must_contain_column">Dosya adı %1$s adında bir sütun içermeli</string>
-    <string name="X_info_no_authors_yet">Bu kitap için hiçbir yazar eklenmemiş.\n Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak yazar ekleyin.</string>
-    <string name="X_info_no_books_yet">Bu kitaplıkta hiç kitap yok.\n Lütfen ekranın alt kısmındaki bölümü kullanarak kitap ekleyin.</string>
-    <string name="X_info_no_series_yet">Bu kitap için hiçbir seri eklenmemiş.\n Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak seri ekleyin.</string>
     <string name="X_info_reset_tips">Bazen bu uygulama %1$s\'den isteğe bağlı iletiler gösterebilir.\n Devre dışı kalmış olabilecek bu iletileri sıfırlamak için aşağıdaki düğmeye dokunun.</string>
     <string name="X_lbl_loan_book_available">Uygun</string>
     <string name="X_lbl_select_fields_to_update">Güncellenecek alanları seçin</string>
     <string name="X_menu_delete_series">Serileri sil…</string>
-    <string name="X_menu_delete_toc_entry">Seçkiden eser sil</string>
     <string name="title_edit_author">Yazarı düzenle</string>
     <string name="title_edit_series">Serileri düzenle</string>
     <string name="X_menu_search_books">Kiatp ara</string>
@@ -219,7 +213,7 @@
     <string name="gr_tq_title_task_errors">Görev hataları</string>
     <string name="help">Yardım</string>
     <string name="hint_btn_drag_handle">Bu listeyi yeniden düzenlemek için beni sürükleyin.</string>
-    <string name="hint_date_not_set_with_brackets">(günay yok)</string>
+    <string name="warning_date_not_set">Lütfen geçerli bir tarih ekleyin.</string>
     <string name="hint_developer_key">Geliştirici anahtarı</string>
     <string name="hint_field_not_set">Ayarlı değil</string>
     <string name="hint_field_not_set_with_brackets">(boş)</string>
@@ -466,7 +460,6 @@
     <string name="pt_bob_header">Başlık özet ayrıntıları</string>
     <string name="pt_booklist_generation">Kitap dizelgesi oluşturma seçeneği</string>
     <string name="pt_booklist_state">Kitap dizelgesi durumu</string>
-    <string name="pt_booklist_open_book_read_only">Kitabı salt okunur aç</string>
     <string name="pt_bob_authors_sort">Yazarları sırala</string>
     <string name="pt_bob_text_size">Kitap dizelgesi öğeleri boyutu</string>
     <string name="pt_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
@@ -612,7 +605,6 @@
     <string name="lbl_author_type_contributor">iştirakçi</string>
     <string name="lbl_author_type_colorist">Renk</string>
     <string name="tip_update_fields_from_internet">Dış site bağlantıları yalnızca siteyle gerçekten iletişime geçildiyse işlenir. Sonuç olarak, “Üzerinde görüntülemek…” menüsü de aynı şekilde neyin uygun olduğunu gösterecektir.</string>
-    <string name="X_lbl_author_secondary">yazarlarından</string>
     <string name="lbl_author_type">Yazar tipi</string>
     <string name="pt_bob_show_details_uses_task_off">hemen</string>
     <string name="progress_end_import_partially_complete">Kısmi ithalat yapıldı</string>
@@ -640,5 +632,7 @@
     <string name="lbl_print_run">Baskı çalıştırmak</string>
     <string name="pv_bob_header_style_name">Stil adı</string>
     <string name="warning_rebuild_orderby_columns">Bu, uygulama yeniden başlatıldığında sıralama verilerini yeniden oluşturacaktır. Devam etmek istediğine emin misin ?</string>
+    <string name="pt_booklist_state_default">Varsayılan Kitap listesi genişletme</string>
+    <string name="menu_level_reset">Tercih edilen seviye genişlemesi</string>
 
 </resources>

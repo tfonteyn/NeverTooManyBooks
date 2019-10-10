@@ -857,6 +857,7 @@ public class BooklistStyle
      *
      * @return scale
      */
+    @ImageUtils.Scale
     public int getThumbnailScaleFactor() {
         //noinspection ConstantConditions
         if (!isUsed(UniqueId.BKEY_IMAGE) || mAllExtras.get(UniqueId.BKEY_IMAGE).isFalse()) {

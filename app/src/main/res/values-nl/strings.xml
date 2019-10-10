@@ -69,17 +69,11 @@
     <string name="X_about_help_tap_here">Tik hier voor online help</string>
     <string name="X_anthology_titles">Bloemlezing titels</string>
     <string name="X_btn_do_not_show_again">Niet meer laten zien</string>
-    <string name="X_btn_set_authors">Invullen auteurs…</string>
-    <string name="X_btn_set_series">Invullen Serie…</string>
     <string name="X_error_file_must_contain_column">Import bestand moet een kolom met de naam „%1$s” bevatten.</string>
-    <string name="X_info_no_authors_yet">Er zijn geen auteurs voor dit boek.\n Je kan er een toevoegen met het tekstveld en de knop bovenin dit scherm.</string>
-    <string name="X_info_no_books_yet">Er staan geen boeken op deze boekenplank.\n Voeg er een paar toe via het menu onderaan dit scherm.</string>
-    <string name="X_info_no_series_yet">Er zijn geen series voor dit boek.\n Je kan er een toevoegen met het tekstveld en de knop bovenin dit scherm.</string>
     <string name="X_info_reset_tips">Van tijd tot tijd kan deze toepassing optionele berichten weergeven over %1$s.\nDruk op de knop hieronder om alle berichten die zijn uitgeschakeld te herstellen.</string>
     <string name="X_lbl_loan_book_available">Beschikbaar</string>
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
     <string name="X_menu_delete_series">Verwijderen serie…</string>
-    <string name="X_menu_delete_toc_entry">Verwijder titels uit bloemlezing</string>
     <string name="title_edit_author">Auteur bewerken</string>
     <string name="title_edit_series">Serie bewerken</string>
     <string name="X_menu_search_books">Zoek boeken</string>
@@ -226,7 +220,7 @@
     <string name="gr_tq_title_task_errors">Taakfouten</string>
     <string name="help">Help</string>
     <string name="hint_btn_drag_handle">Sleep om deze lijst opnieuw te ordenen.</string>
-    <string name="hint_date_not_set_with_brackets">(geen datum)</string>
+    <string name="warning_date_not_set">Geef een geldige datum in.</string>
     <string name="hint_developer_key">Ontwikkelaarssleutel</string>
     <string name="hint_field_not_set">Niet Ingevuld</string>
     <string name="hint_field_not_set_with_brackets">(leeg)</string>
@@ -473,15 +467,14 @@
     <string name="pt_bob_header">Details in de koptekst</string>
     <string name="pt_booklist_generation">Optie voor genereren boekenlijst</string>
     <string name="pt_booklist_state">Boekenlijst status</string>
-    <string name="pt_booklist_open_book_read_only">Open boek in alleen-lezen modus</string>
     <string name="pt_bob_authors_sort">Auteurs sorteren op</string>
     <string name="pt_bob_text_size">Grootte van boekenlijst tekst</string>
     <string name="pt_thumbnails_cache_resized">Cache herschaalde miniaturen</string>
     <string name="pt_bob_thumbnails_show">Toon Miniaturen</string>
     <string name="pt_collect_series_info_from_toc">Verzamel Serie-info van de inhouds tabel</string>
     <string name="pt_bob_thumbnails_scale">Miniaturen grootte in lijsten</string>
-    <string name="pt_bob_titles_summary_original">De titel</string>
-    <string name="pt_bob_titles_summary_reformatted">titel, De</string>
+    <string name="pt_reformat_titles_summary_original">De titel</string>
+    <string name="pt_reformat_titles_summary_reformatted">titel, De</string>
     <string name="pt_scanning_beep_if_isbn_invalid">Beep als het gescande ISBN ongeldig is</string>
     <string name="pt_scanning_beep_if_isbn_valid">Beep als gescande ISBN geldig is</string>
     <string name="pt_scanning_preferred_scanner">Voorkeur Scanner</string>
@@ -620,7 +613,6 @@
     <string name="lbl_author_type_editor">Redacteur</string>
     <string name="lbl_author_type_contributor">Medewerker</string>
     <string name="lbl_author_type_writer">schrijver</string>
-    <string name="X_lbl_author_secondary">coauteur</string>
     <string name="lbl_author_type">Auteur type</string>
     <string name="tip_update_fields_from_internet">Externe sitekoppelingen worden alleen verwerkt als er daadwerkelijk contact met de site wordt gemaakt. Als gevolg hiervan zal het menu „Bekijk op…” eveneens alleen weergeven wat beschikbaar is.</string>
     <string name="pt_bob_show_details_uses_task_off">direct</string>
@@ -649,5 +641,7 @@
     <string name="lbl_print_run">Oplage</string>
     <string name="pv_bob_header_style_name">Stijl naam</string>
     <string name="warning_rebuild_orderby_columns">Hiermee worden de sorteergegevens opnieuw opgebouwd wanneer de app opnieuw wordt gestart. Weet je zeker dat je door wilt gaan ?</string>
+    <string name="pt_booklist_state_default">"Standaard boekenlijst niveau "</string>
+    <string name="menu_level_reset">Voorkeur expansieniveau</string>
 
 </resources>

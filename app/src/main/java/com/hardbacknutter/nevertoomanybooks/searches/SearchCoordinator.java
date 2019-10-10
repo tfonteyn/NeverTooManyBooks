@@ -526,6 +526,7 @@ public class SearchCoordinator {
                     }
                 }
             }
+            // good results come first, less reliable ones last in the list.
             results.addAll(uncertain);
             // Add the passed ISBN first; avoid overwriting
             mBookData.putString(DBDefinitions.KEY_ISBN, mIsbn);

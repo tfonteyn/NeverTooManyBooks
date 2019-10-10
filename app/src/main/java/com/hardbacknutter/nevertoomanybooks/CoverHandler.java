@@ -144,7 +144,7 @@ public class CoverHandler {
                  @NonNull final Book book,
                  @NonNull final TextView isbnView,
                  @NonNull final ImageView coverView,
-                 final int scale) {
+                 @ImageUtils.Scale final int scale) {
 
         int maxSize = ImageUtils.getMaxImageSize(scale);
 

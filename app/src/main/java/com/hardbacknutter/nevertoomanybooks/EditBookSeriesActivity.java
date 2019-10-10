@@ -301,7 +301,7 @@ public class EditBookSeriesActivity
             // Reminder: *always* use the activity inflater here.
             //noinspection ConstantConditions
             LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-            View root = layoutInflater.inflate(R.layout.dialog_edit_series_book, null);
+            View root = layoutInflater.inflate(R.layout.dialog_edit_book_series, null);
 
             // the dialog fields != screen fields.
             mTitleView = root.findViewById(R.id.series);

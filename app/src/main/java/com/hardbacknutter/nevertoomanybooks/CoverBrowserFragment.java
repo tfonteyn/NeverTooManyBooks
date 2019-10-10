@@ -394,7 +394,7 @@ public class CoverBrowserFragment
          * Constructor.
          */
         @SuppressWarnings("SameParameterValue")
-        GalleryAdapter(final int scale) {
+        GalleryAdapter(@ImageUtils.Scale final int scale) {
             int maxSize = ImageUtils.getMaxImageSize(scale);
             mWidth = maxSize;
             mHeight = maxSize;

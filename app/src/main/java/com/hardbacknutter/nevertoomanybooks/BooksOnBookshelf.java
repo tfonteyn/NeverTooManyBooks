@@ -120,23 +120,6 @@ public class BooksOnBookshelf
     /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
     private final ExtendedFloatingActionButton[] mFabMenuItems =
             new ExtendedFloatingActionButton[FAB_ITEMS];
-
-    /** Define a scroller to update header detail when the top row changes. */
-    private final RecyclerView.OnScrollListener mUpdateHeaderScrollListener =
-            new RecyclerView.OnScrollListener() {
-                public void onScrolled(@NonNull final RecyclerView recyclerView,
-                                       final int dx,
-                                       final int dy) {
-                    int currentTopRow = mLayoutManager.findFirstVisibleItemPosition();
-                    // Need to check isDestroyed() because BooklistPseudoCursor misbehaves when
-                    // activity terminates and closes cursor
-                    if (mModel.getLastTopRow() != currentTopRow
-                        && !isDestroyed()
-                        && mShowHeaderTexts) {
-                        setHeaderLevelText(currentTopRow);
-                    }
-                }
-            };
     private TextView mFilterTextView;
     /** The View for the list. */
     private RecyclerView mListView;
@@ -151,7 +134,6 @@ public class BooksOnBookshelf
     private ArrayAdapter<String> mBookshelfSpinnerAdapter;
     /** The number of books in the current list. */
     private TextView mBookCountView;
-
     /** The ViewModel. */
     private BooksOnBookshelfModel mModel;
     /** Listener for the Bookshelf Spinner. */
@@ -217,7 +199,6 @@ public class BooksOnBookshelf
             }
         }
     };
-
     /** Apply the style that a user has selected. */
     private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
             new StylePickerDialogFragment.StyleChangedListener() {
@@ -231,9 +212,24 @@ public class BooksOnBookshelf
                     initBookList(true);
                 }
             };
-
     /** Whether to show header texts - this depends on the current style. */
     private boolean mShowHeaderTexts;
+    /** Define a scroller to update header detail when the top row changes. */
+    private final RecyclerView.OnScrollListener mUpdateHeaderScrollListener =
+            new RecyclerView.OnScrollListener() {
+                public void onScrolled(@NonNull final RecyclerView recyclerView,
+                                       final int dx,
+                                       final int dy) {
+                    int currentTopRow = mLayoutManager.findFirstVisibleItemPosition();
+                    // Need to check isDestroyed() because BooklistPseudoCursor misbehaves when
+                    // activity terminates and closes cursor
+                    if (mModel.getLastTopRow() != currentTopRow
+                        && !isDestroyed()
+                        && mShowHeaderTexts) {
+                        setHeaderLevelText(currentTopRow);
+                    }
+                }
+            };
     private TextView mStyleNameView;
 
     /** The normal FAB button; opens or closes the FAB menu. */
@@ -486,7 +482,6 @@ public class BooksOnBookshelf
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, R.string.lbl_style);
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, R.string.debug_history);
-            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TABLES, 0, R.string.debug_bob_tables);
 
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_UNMANGLE, 0, "un-mangle");
 
@@ -573,11 +568,6 @@ public class BooksOnBookshelf
                         case R.id.MENU_DEBUG_TRACKER:
                             Logger.debug(this, "onOptionsItemSelected",
                                          Tracker.getEventsInfo());
-                            return true;
-
-                        case R.id.MENU_DEBUG_TABLES:
-                            Logger.debug(this, "onOptionsItemSelected",
-                                         mModel.debugBuilderTables());
                             return true;
 
                         case R.id.MENU_DEBUG_UNMANGLE:
@@ -1166,23 +1156,14 @@ public class BooksOnBookshelf
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (mapper.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)) {
-            // If it's a book, view or edit it.
             case BooklistGroup.RowKind.BOOK:
-                final long bookId = mapper.getLong(DBDefinitions.KEY_FK_BOOK);
-                if (mModel.isReadOnly(view.getContext())) {
-                    final String listTableName = cursor.getBuilder().createFlattenedBooklist();
-                    final Intent intent =
-                            new Intent(this, BookDetailsActivity.class)
-                                    .putExtra(DBDefinitions.KEY_PK_ID, bookId)
-                                    .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_TABLE, listTableName)
-                                    .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_POSITION, position);
-                    startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
-
-                } else {
-                    final Intent intent = new Intent(this, EditBookActivity.class)
-                            .putExtra(DBDefinitions.KEY_PK_ID, bookId);
-                    startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-                }
+                long bookId = mapper.getLong(DBDefinitions.KEY_FK_BOOK);
+                String listTableName = cursor.getBuilder().createFlattenedBooklist();
+                Intent intent = new Intent(this, BookDetailsActivity.class)
+                        .putExtra(DBDefinitions.KEY_PK_ID, bookId)
+                        .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_TABLE, listTableName)
+                        .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_POSITION, position);
+                startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
                 break;
 
             // If it's a level, expand/collapse. Technically, we could expand/collapse any level

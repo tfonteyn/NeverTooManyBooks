@@ -338,13 +338,13 @@ public abstract class CropImageViewTouchBase
         // there is little choice. We now have no effective limit.
         float widthScale = Math.min(viewWidth / w, SCALE_LIMIT_MAX);
         float heightScale = Math.min(viewHeight / h, SCALE_LIMIT_MAX);
-        float scale = Math.min(widthScale, heightScale);
+        float scaleFactor = Math.min(widthScale, heightScale);
 
         matrix.postConcat(bitmap.getRotateMatrix());
-        matrix.postScale(scale, scale);
+        matrix.postScale(scaleFactor, scaleFactor);
 
-        matrix.postTranslate((viewWidth - w * scale) / 2F,
-                             (viewHeight - h * scale) / 2F);
+        matrix.postTranslate((viewWidth - w * scaleFactor) / 2F,
+                             (viewHeight - h * scaleFactor) / 2F);
     }
 
     /**

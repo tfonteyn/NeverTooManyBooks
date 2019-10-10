@@ -98,6 +98,7 @@ public class BookFragment
     public static final String BKEY_FLAT_BOOKLIST_POSITION = TAG + ":FBL_Position";
 
     /** Size of the cover image to use. */
+    @ImageUtils.Scale
     private static final int IMAGE_SCALE = ImageUtils.SCALE_LARGE;
 
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {

@@ -1183,7 +1183,7 @@ public class Fields {
             setScale(ImageUtils.SCALE_MEDIUM);
         }
 
-        public void setScale(final int scale) {
+        public void setScale(@ImageUtils.Scale final int scale) {
             int maxSize = ImageUtils.getMaxImageSize(scale);
             mMaxHeight = maxSize;
             mMaxWidth = maxSize;
@@ -1829,7 +1829,7 @@ public class Fields {
          * @return field (for chaining)
          */
         @NonNull
-        public Field<T> setScale(final int scale) {
+        public Field<T> setScale(@ImageUtils.Scale final int scale) {
             if (mFieldDataAccessor instanceof ImageViewAccessor) {
                 ((ImageViewAccessor) mFieldDataAccessor).setScale(scale);
             } else if (BuildConfig.DEBUG /* always */) {

@@ -71,17 +71,11 @@
     <string name="X_about_help_tap_here">Klikněte zde pro přístup k online nápovědě</string>
     <string name="X_anthology_titles">Antologické tituly</string>
     <string name="X_btn_do_not_show_again">Příště již nezobrazovat</string>
-    <string name="X_btn_set_authors">Zadat autory…</string>
-    <string name="X_btn_set_series">Zadat série…</string>
     <string name="X_error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %1$s</string>
-    <string name="X_info_no_authors_yet">Tato kniha nemá autora.\n Prosím přidejte jej prostřednictví pole v horní části obrazovky.</string>
-    <string name="X_info_no_books_yet">V této knihovně nemáte v současnosti žádnou knihu.\n Pro přidání knihy použijte menu ve spodní části obrazovky.</string>
-    <string name="X_info_no_series_yet">Pro tuto knihu není zadána žádná série.\n Pro její zadání můžete použít pole v horní části obrazovky.</string>
     <string name="X_info_reset_tips">Čas od času zobrazí aplikace zprávu týkající se %1$s.\n Stiskněte tlačítko níže pro resetování všech těchto zpráv, které byly v minulosti zakázány.</string>
     <string name="X_lbl_loan_book_available">Dostupný</string>
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
     <string name="X_menu_delete_series">Smazat série…</string>
-    <string name="X_menu_delete_toc_entry">Odstranit tento titul z antologií</string>
     <string name="title_edit_author">Upravit autory</string>
     <string name="title_edit_series">Upravit série</string>
     <string name="X_menu_search_books">Hledat knihy</string>
@@ -220,7 +214,7 @@
     <string name="gr_tq_title_task_errors">Chyby v úlohách</string>
     <string name="help">Nápověda</string>
     <string name="hint_btn_drag_handle">Přetažením tohoto seznamu změníte pořadí.</string>
-    <string name="hint_date_not_set_with_brackets">(žádné datum)</string>
+    <string name="warning_date_not_set">Zadejte prosím platné datum.</string>
     <string name="hint_developer_key">Vývojářský klíč</string>
     <string name="hint_field_not_set">Nenastaveno</string>
     <string name="hint_field_not_set_with_brackets">(prázdné)</string>
@@ -467,7 +461,6 @@
     <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
     <string name="pt_booklist_generation">Možnost generování seznamu knih</string>
     <string name="pt_booklist_state">Stav seznamu knih</string>
-    <string name="pt_booklist_open_book_read_only">Otevřete knihu v režimu jen pro čtení</string>
     <string name="pt_bob_authors_sort">Seřadit autory podle</string>
     <string name="pt_bob_text_size">Velikost položek na seznamu knih</string>
     <string name="pt_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
@@ -611,7 +604,6 @@
     <string name="lbl_author_type_contributor">Spolupracovník</string>
     <string name="lbl_author_type_colorist">Barvivo</string>
     <string name="tip_update_fields_from_internet">Externí odkazy na stránky jsou zpracovány pouze v případě, že je web skutečně kontaktován. Výsledkem je, že nabídka „Výhled na…“ také ukáže pouze to, co je k dispozici.</string>
-    <string name="X_lbl_author_secondary">spoluautor</string>
     <string name="lbl_author_type">Typ autora</string>
     <string name="pt_bob_show_details_uses_task_off">ihned</string>
     <string name="progress_end_import_partially_complete">Částečný import byl dokončen</string>
@@ -640,5 +632,7 @@
     <string name="lbl_print_run">Tisk běh</string>
     <string name="pv_bob_header_style_name">Název stylu</string>
     <string name="warning_rebuild_orderby_columns">Po restartování aplikace dojde k opětovnému vytvoření třídicích dat. Jste si jistý, že chcete pokračovat ?</string>
+    <string name="pt_booklist_state_default">Výchozí seznam rozšiřujících knih</string>
+    <string name="menu_level_reset">Upřednostňovaná úroveň expanze</string>
 
 </resources>
