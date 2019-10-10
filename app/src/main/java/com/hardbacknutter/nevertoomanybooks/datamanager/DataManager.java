@@ -560,6 +560,7 @@ public class DataManager {
         mRawData.clear();
         mDataAccessorsMap.clear();
         mValidatorsMap.clear();
+        mValidatorErrorIdMap.clear();
         mCrossValidators.clear();
         mValidationExceptions.clear();
     }

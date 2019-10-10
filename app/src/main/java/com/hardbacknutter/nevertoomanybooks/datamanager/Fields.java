@@ -354,6 +354,7 @@ public class Fields {
      */
     @NonNull
     public <T> Field<T> getField(@IdRes final int fieldId) {
+        //noinspection unchecked
         Field<T> field = (Field<T>) mAllFields.get(fieldId);
         if (field != null) {
             return field;
@@ -693,8 +694,8 @@ public class Fields {
             if (mFormatter != null) {
                 return mFormatter.extract(mField, source);
             } else {
-                // all non-String field should have formatters. The remaining should be String.
-                // If they are not, then we get an Exception as the developer made a boo-boo.
+                // all non-String field should have formatters.
+                // If we get an Exception here then the developer made a boo-boo.
                 return (T) source;
             }
         }
@@ -1247,10 +1248,11 @@ public class Fields {
 
 
     /**
-     * Formatter/Extractor for date fields.
-     * <p>
-     * Can be shared among multiple fields.
-     * Uses the Context/Locale from the field itself.
+     * FieldFormatter for 'date' fields.
+     * <ul>
+     * <li>Multiple fields: <strong>yes</strong></li>
+     * <li>Extract: <strong>SQL date, UTC timezone</strong></li>
+     * </ul>
      */
     public static class DateFieldFormatter
             implements FieldFormatter<String> {
@@ -1285,7 +1287,11 @@ public class Fields {
     }
 
     /**
-     * Formatter for price fields.
+     * FieldFormatter for 'price' fields.
+     * <ul>
+     * <li>Multiple fields: <strong>no</strong></li>
+     * <li>Extract: <strong>local variable</strong></li>
+     * </ul>
      */
     public static class MonetaryFormatter
             implements FieldFormatter<Double> {
@@ -1305,6 +1311,9 @@ public class Fields {
         @Nullable
         private String mCurrencyCode;
 
+        @NonNull
+        private Double mRawValue = 0.0D;
+
         /**
          * Constructor.
          */
@@ -1313,7 +1322,7 @@ public class Fields {
         }
 
         /**
-         * TEST Constructor; unit tests cannot use App.getAppContext().
+         * Constructor; unit tests cannot use App.getAppContext().
          *
          * @param context to use
          */
@@ -1346,9 +1355,12 @@ public class Fields {
         @Override
         public String format(@NonNull final Field<Double> field,
                              @Nullable final Double source) {
-            if (source == null) {
+            if (source == null || source == 0) {
+                mRawValue = 0.0D;
                 return "";
             }
+            mRawValue = source;
+
             if (mCurrencyCode == null || mCurrencyCode.isEmpty()) {
                 return String.valueOf(source);
             }
@@ -1379,7 +1391,7 @@ public class Fields {
         @Override
         public Double extract(@NonNull final Field<Double> field,
                               @NonNull final String source) {
-            return Double.parseDouble(source);
+            return mRawValue;
         }
 
         // The ICU NumberFormatter is only available from ICU level 60, but Android lags behind:
@@ -1397,19 +1409,27 @@ public class Fields {
     }
 
     /**
-     * Formatter for 'page' fields. If the value is numerical, output "x pages"
+     * FieldFormatter for 'page' fields. If the value is numerical, output "x pages"
      * Otherwise outputs the original source value.
-     * <p>
-     * Uses the context from the Field view.
+     * <ul>
+     * <li>Multiple fields: <strong>no</strong></li>
+     * <li>Extract: <strong>local variable</strong></li>
+     * </ul>
      */
     public static class PagesFormatter
             implements FieldFormatter<String> {
 
         @NonNull
+        private String mRawValue = "";
+
+        @NonNull
         @Override
         public String format(@NonNull final Field<String> field,
                              @Nullable final String source) {
+
             if (source != null && !source.isEmpty() && !"0".equals(source)) {
+                mRawValue = source;
+
                 try {
                     int pages = Integer.parseInt(source);
                     Context context = field.getView().getContext();
@@ -1421,6 +1441,8 @@ public class Fields {
                 // stored pages was alphanumeric.
                 return source;
             }
+
+            mRawValue = "";
             return "";
         }
 
@@ -1428,15 +1450,17 @@ public class Fields {
         @Override
         public String extract(@NonNull final Field<String> field,
                               @NonNull final String source) {
-            return source;
+            return mRawValue;
         }
     }
 
     /**
-     * Formatter for 'format' fields. Attempts to standardize the format descriptor
+     * FieldFormatter for 'format' fields. Attempts to standardize the format descriptor
      * before displaying. This is not an internal code, but purely text based.
-     * <p>
-     * Uses the context from the Field view.
+     * <ul>
+     * <li>Multiple fields: <strong>yes</strong></li>
+     * <li>Extract: <strong>returns screen text as-is!</strong></li>
+     * </ul>
      */
     public static class FormatFormatter
             implements FieldFormatter<String> {
@@ -1465,9 +1489,11 @@ public class Fields {
     }
 
     /**
-     * Formatter for language fields.
-     * <p>
-     * Uses the Locale from the Field.
+     * FieldFormatter for language fields.
+     * <ul>
+     * <li>Multiple fields: <strong>yes</strong></li>
+     * <li>Extract: <strong>ISO3 code</strong></li>
+     * </ul>
      */
     public static class LanguageFormatter
             implements FieldFormatter<String> {
@@ -1509,17 +1535,30 @@ public class Fields {
     }
 
     /**
-     * Field Formatter for a bitmask based field.
-     * Formats the checked items as a CSV String.
-     * <p>
-     * {@link #extract} returns "dummy";
+     * FieldFormatter for a 'bitmask' field. Formats the checked items as a CSV String.
+     * <ul>
+     * <li>Multiple fields: <strong>no</strong></li>
+     * <li>Extract: <strong>local variable</strong></li>
+     * </ul>
      */
     public static class BitMaskFormatter
             implements FieldFormatter<Long> {
 
+        /**
+         * Editions.
+         * Key: the edition bit.
+         * Value: the StringRes id for the label.
+         */
         @NonNull
         private final Map<Integer, Integer> mMap;
 
+        private Long mRawValue = 0L;
+
+        /**
+         * Constructor.
+         *
+         * @param editions a map with all supported editions
+         */
         public BitMaskFormatter(@NonNull final Map<Integer, Integer> editions) {
             mMap = editions;
         }
@@ -1529,21 +1568,20 @@ public class Fields {
         public String format(@NonNull final Field<Long> field,
                              @Nullable final Long source) {
             if (source == null || source == 0) {
+                mRawValue = 0L;
                 return "";
             }
 
+            mRawValue = source;
             Context context = field.getView().getContext();
-            return TextUtils.join(", ", Csv.bitmaskToList(context, mMap, source));
+            return TextUtils.join(", ", Csv.bitmaskToList(context, mMap, mRawValue));
         }
 
-        // theoretically we should support the extract method as this formatter is used on
-        // 'edit' fragments. But the implementation only ever sets the text on the screen
-        // and stores the actual value directly. (dialog/listener setup).
         @NonNull
         @Override
         public Long extract(@NonNull final Field<Long> field,
                             @NonNull final String source) {
-            return Long.parseLong(source);
+            return mRawValue;
         }
     }
 
@@ -1763,7 +1801,8 @@ public class Fields {
                 }
             }
 
-            return accessor;
+            //noinspection unchecked
+            return (FieldDataAccessor<T>) accessor;
         }
 
         @Override

@@ -3,6 +3,11 @@ TODO: performance tuning.
  * book extra details task/immediate from style. Default on ? (but need to fix 'bookshelves')
  * find some rule to switch task/immediate automatically depending on number of books ?
 
+TODO: usage "profile": comics versus fiction books versus non-fiction books.
+ * optimize all search engines
+ * optimize visible fields.
+ * optimize maybe different author types.
+
 TODO: New anthology stuff:
  * when to delete entries in ANTHOLOGY ? when last book is gone? or keep them for adding
    to new books / wish list?
@@ -48,7 +53,6 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/799 - original title
 
 General:
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/812 - syn Goodreads notes
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/804 - custom location for cover images (804 == a number of older ones)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/317 - Add statistics to 'About' tab
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542 - Feature request: collapsed series
 -> now possible to collapse/expand any level but the state is NOT saved.
@@ -100,9 +104,15 @@ https://github.com/eleybourn/Book-Catalogue/issues/547 - UPC bar-codes
 https://github.com/eleybourn/Book-Catalogue/issues/534 - Display Anthology Titles in Read-only view
 https://github.com/eleybourn/Book-Catalogue/issues/519 - == 721
 https://github.com/eleybourn/Book-Catalogue/issues/493 - auto fill 'read end date' when checkbox "I've read this book" is clicked.
+https://github.com/eleybourn/Book-Catalogue/issues/481 - field for the number of a limited series -> "print run"
 https://github.com/eleybourn/Book-Catalogue/issues/451 - Suffixed in names not handled well. eg "William F. Buckley, Jr
 https://github.com/eleybourn/Book-Catalogue/issues/325 - Add an optional extra 'On Loan' indicator to book list
 https://github.com/eleybourn/Book-Catalogue/issues/323 - Add Field for Editions
 https://github.com/eleybourn/Book-Catalogue/issues/281 - A field for copyright date
 https://github.com/eleybourn/Book-Catalogue/issues/239 - Currency field in list price
 https://github.com/eleybourn/Book-Catalogue/issues/113 - Add a 'Date Bought' Field
+
+https://github.com/eleybourn/Book-Catalogue/issues/804 - custom location for cover images
+--> images now in private app files folder. Having them in public storage is to slippery
+    considering android permissions and the direction Google pushes them.
+

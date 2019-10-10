@@ -65,8 +65,9 @@ public class EditBookNotesFragment
         super.initFields();
         Fields fields = getFields();
 
-        // multiple use
+        // A DateFieldFormatter can be shared between multiple fields.
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
+
         // ENHANCE: Add a partial date validator. Or not.
         //FieldValidator blankOrDateValidator = new Fields.OrValidator(
         //     new Fields.BlankValidator(), new Fields.DateValidator());

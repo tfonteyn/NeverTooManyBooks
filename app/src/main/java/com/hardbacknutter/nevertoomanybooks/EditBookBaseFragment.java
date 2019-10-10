@@ -80,12 +80,11 @@ public abstract class EditBookBaseFragment<T>
         if (fieldId == R.id.bookshelves) {
             ArrayList<Bookshelf> bsList = (ArrayList<Bookshelf>) list;
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
-            getField(fieldId).setValue(Csv.join(", ", bsList, Bookshelf::getName));
+            getField(R.id.bookshelves).setValue(Csv.join(", ", bsList, Bookshelf::getName));
 
         } else if (fieldId == R.id.edition) {
             book.putEditions((ArrayList<Integer>) list);
-            getField(fieldId)
-                    .setValue(String.valueOf(book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
+            getField(R.id.edition).setValue(book.getLong(DBDefinitions.KEY_EDITION_BITMASK));
         }
     };
 

@@ -505,7 +505,7 @@ public class Book
     public void putEditions(@NonNull final ArrayList<Integer> editions) {
         int bitmask = 0;
         for (Integer bit : editions) {
-            bitmask += bit;
+            bitmask |= bit;
         }
         putLong(DBDefinitions.KEY_EDITION_BITMASK, bitmask);
     }

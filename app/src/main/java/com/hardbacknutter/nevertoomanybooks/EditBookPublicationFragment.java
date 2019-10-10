@@ -67,7 +67,7 @@ public class EditBookPublicationFragment
         super.initFields();
         Fields fields = getFields();
 
-        // multiple use
+        // A DateFieldFormatter can be shared between multiple fields.
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
         Field<String> field;
