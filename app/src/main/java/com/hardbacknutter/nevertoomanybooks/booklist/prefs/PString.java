@@ -59,6 +59,7 @@ public class PString
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             String value = getPrefs().getString(getKey(), null);
+            // empty is invalid.
             if (value == null || value.isEmpty()) {
                 // not present, fallback to global/default
                 value = getGlobal().getString(getKey(), mDefaultValue);

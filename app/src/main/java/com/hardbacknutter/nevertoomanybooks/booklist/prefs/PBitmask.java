@@ -107,12 +107,14 @@ public class PBitmask
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             Set<String> value = getPrefs().getStringSet(getKey(), null);
-            if (value == null || value.isEmpty()) {
+            if (value == null) {
                 // not present, fallback to global.
                 value = getGlobal().getStringSet(getKey(), null);
                 if (value == null || value.isEmpty()) {
                     return mDefaultValue;
                 }
+            } else if (value.isEmpty()) {
+                return 0;
             }
             return Prefs.toInteger(value);
         }

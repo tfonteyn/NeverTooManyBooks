@@ -78,12 +78,14 @@ public class PIntList
         } else {
             // reminder: it's a CSV string
             String values = getPrefs().getString(getKey(), null);
-            if (values == null || values.isEmpty()) {
+            if (values == null) {
                 // not present, fallback to global/default
                 values = getGlobal().getString(getKey(), null);
                 if (values == null || values.isEmpty()) {
                     return mDefaultValue;
                 }
+            } else if (values.isEmpty()) {
+                return new ArrayList<>();
             }
 
             return getAsList(values);

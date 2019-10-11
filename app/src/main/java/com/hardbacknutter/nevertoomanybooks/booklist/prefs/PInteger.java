@@ -65,12 +65,14 @@ public class PInteger
         } else {
             // reminder: Integer is stored as a String
             String value = getPrefs().getString(getKey(), null);
-            if (value == null || value.isEmpty()) {
+            if (value == null) {
                 // not present, fallback to global/default
                 value = getGlobal().getString(getKey(), null);
                 if (value == null || value.isEmpty()) {
                     return mDefaultValue;
                 }
+            } else if (value.isEmpty()) {
+                return 0;
             }
             return Integer.parseInt(value);
         }
