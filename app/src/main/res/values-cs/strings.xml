@@ -223,7 +223,7 @@
     <string name="import_export_option_csv">Knihy (*.csv)</string>
     <string name="import_export_option_xml">Všechna data ve formátu XML</string>
     <string name="import_export_option_xml_info">XML je pouze export, bez importu.</string>
-    <string name="import_option_info_all_books">Budou přidány nové knihy; stávající knihy budou aktualizovány.</string>
+    <string name="import_option_info_all_books">Budou přidány nové knihy.\nStávající knihy budou aktualizovány.</string>
     <string name="import_option_info_new_and_changed_books">Importujte pouze knihy, které jsou nové nebo které byly aktualizovány v archivu. To je užitečné při synchronizaci dvou zařízení.</string>
     <string name="import_option_new_and_changed_books">Nové a aktualizované knihy</string>
     <string name="import_options_dialog_title">Vyberte, co bude importováno.</string>

@@ -225,7 +225,7 @@
     <string name="import_export_option_csv">Los libros (*.csv)</string>
     <string name="import_export_option_xml">Todos los datos en formato XML</string>
     <string name="import_export_option_xml_info">XML es solo de exportación, no de importación.</string>
-    <string name="import_option_info_all_books">Se agregarán nuevos libros; los libros existentes serán actualizados.</string>
+    <string name="import_option_info_all_books">Se agregarán nuevos libros.\nLos libros existentes serán actualizados.</string>
     <string name="import_option_info_new_and_changed_books">Importar sólo los libros nuevos, o los que tienen fecha de actualización más reciente en el fichero. Esto es útil para sincronizar dispositivos.</string>
     <string name="import_option_new_and_changed_books">Libros nuevos y actualizados</string>
     <string name="import_options_dialog_title">Seleccione lo que se importará.</string>

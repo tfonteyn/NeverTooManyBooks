@@ -224,7 +224,7 @@
     <string name="import_export_option_csv">βιβλία (*.csv)</string>
     <string name="import_export_option_xml">Όλα τα δεδομένα σε μορφή XML</string>
     <string name="import_export_option_xml_info">Η XML είναι μόνο εξαγωγή, χωρίς εισαγωγή.</string>
-    <string name="import_option_info_all_books">Θα προστεθούν νέα βιβλία. τα υπάρχοντα βιβλία θα ενημερωθούν.</string>
+    <string name="import_option_info_all_books">Θα προστεθούν νέα βιβλία.\nτα υπάρχοντα βιβλία θα ενημερωθούν.</string>
     <string name="import_option_info_new_and_changed_books">Εισαγωγή μόνο βιβλίων που είναι καινούρια, ή που έχουν ενημερωθεί πιο πρόσφατα στο Αρχείο. Χρήσιμο όταν συγχρονίζετε δύο συσκευές.</string>
     <string name="import_option_new_and_changed_books">Καινούρια και ενημερωμένα βιβλία</string>
     <string name="import_options_dialog_title">Επιλέξτε τι θα εισαχθεί.</string>

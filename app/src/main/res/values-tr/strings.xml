@@ -222,7 +222,7 @@
     <string name="import_export_option_csv">Kitaplar (*.csv)</string>
     <string name="import_export_option_xml">Tüm veriler XML formatında</string>
     <string name="import_export_option_xml_info">Yalnızca XML dışa aktarma, içe aktarma yok.</string>
-    <string name="import_option_info_all_books">Yeni kitaplar eklenecek; mevcut kitaplar güncellenecek.</string>
+    <string name="import_option_info_all_books">Yeni kitaplar eklenecek.\nMevcut kitaplar güncellenecek.</string>
     <string name="import_option_info_new_and_changed_books">Yalnızca yeni olan veya son zamanlarda arşivde güncellenmiş kitapları içe aktar. Bu seçenek özellikle örneğin iki aygıtı eşlerken yararlıdır.</string>
     <string name="import_option_new_and_changed_books">Yeni ve güncellenmiş kitaplar</string>
     <string name="import_options_dialog_title">Neyin içe aktarılacağını seçin</string>

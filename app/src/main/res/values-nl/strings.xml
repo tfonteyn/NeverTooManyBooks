@@ -229,7 +229,7 @@
     <string name="import_export_option_csv">Boeken (*.csv)</string>
     <string name="import_export_option_xml">Alle gegevens in XML formaat</string>
     <string name="import_export_option_xml_info">XML is enkel export, geen import.</string>
-    <string name="import_option_info_all_books">Nieuwe boeken worden toegevoegd; bestaande boeken worden bijgewerkt.</string>
+    <string name="import_option_info_all_books">Nieuwe boeken worden toegevoegd.\nBestaande boeken worden bijgewerkt.</string>
     <string name="import_option_info_new_and_changed_books">Alleen nieuwe boeken importeren of boeken die onlangs zijn bijgewerkt in het archief. Dit is handig bij het synchroniseren van twee apparaten.</string>
     <string name="import_option_new_and_changed_books">Nieuwe en bijgewerkte boeken</string>
     <string name="import_options_dialog_title">Selecteer wat je wil importeren.</string>

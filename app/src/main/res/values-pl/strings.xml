@@ -223,7 +223,7 @@
     <string name="import_export_option_csv">Książki (*.csv)</string>
     <string name="import_export_option_xml">Wszystkie dane w formacie XML</string>
     <string name="import_export_option_xml_info">XML jest tylko eksportem, bez importu.</string>
-    <string name="import_option_info_all_books">Nowe książki zostaną dodane; istniejące książki zostaną zaktualizowane.</string>
+    <string name="import_option_info_all_books">Nowe książki zostaną dodane.\nIstniejące książki zostaną zaktualizowane.</string>
     <string name="import_option_info_new_and_changed_books">Importuj tylko książki, które są nowe lub zostały zaktualizowane w archiwum ostatnio. Jest to przydatne podczas synchronizacji dwóch urządzeń.</string>
     <string name="import_option_new_and_changed_books">Nowe i zaktualizowane książki</string>
     <string name="import_options_dialog_title">Wybierz, co zostanie zaimportowane.</string>

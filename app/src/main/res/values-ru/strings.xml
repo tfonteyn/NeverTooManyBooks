@@ -221,7 +221,7 @@
     <string name="import_export_option_csv">книги (*.csv)</string>
     <string name="import_export_option_xml">Все данные в формате XML</string>
     <string name="import_export_option_xml_info">Только экспорт XML, без импорта.</string>
-    <string name="import_option_info_all_books">Будут добавлены новые книги; существующие книги будут обновлены.</string>
+    <string name="import_option_info_all_books">Будут добавлены новые книги.\nсуществующие книги будут обновлены.</string>
     <string name="import_option_info_new_and_changed_books">Импортировать только новые книги или только те, что обновлены более поздно. Это удобно, когда синхронизируются несклоько устройств.</string>
     <string name="import_option_new_and_changed_books">Новые и обновленные книги</string>
     <string name="import_options_dialog_title">Выберите, что будет импортировано.</string>

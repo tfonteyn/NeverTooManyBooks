@@ -637,7 +637,7 @@
     <string name="import_options_dialog_title">Select what will be imported.</string>
     <!-- Explanatory note of the 'import from archive' "all books" option -->
     <string name="import_option_info_all_books">
-        New books will be added; existing books will be updated.
+        New books will be added.\nExisting books will be updated.
     </string>
     <!-- Text for the 'export to archive' option -->
     <string name="import_option_new_and_changed_books">New and updated books</string>
