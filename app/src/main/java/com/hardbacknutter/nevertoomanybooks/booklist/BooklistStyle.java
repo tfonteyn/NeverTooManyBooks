@@ -117,15 +117,6 @@ public class BooklistStyle
     /** Extra book data to show at lowest level. */
     @SuppressWarnings("WeakerAccess")
     public static final int EXTRAS_THUMBNAIL = 1 << 8;
-    private static final String PREFS_PREFIX = "BookList.Style.";
-    /** Preference for the current default style UUID to use. */
-    public static final String PREF_BL_STYLE_CURRENT_DEFAULT = PREFS_PREFIX + "Current";
-    /**
-     * Preferred styles / menu order.
-     * Stored in global shared preferences as a CSV String of UUIDs.
-     */
-    public static final String PREF_BL_PREFERRED_STYLES = PREFS_PREFIX + "Preferred.Order";
-
     /** {@link Parcelable}. */
     public static final Creator<BooklistStyle> CREATOR =
             new Creator<BooklistStyle>() {
@@ -139,7 +130,6 @@ public class BooklistStyle
                     return new BooklistStyle[size];
                 }
             };
-
     /** default style when none is set yet. */
     public static final int DEFAULT_STYLE_ID = Builtin.AUTHOR_THEN_SERIES_ID;
     /** Extra book data to show at lowest level. (the bit numbers are not stored anywhere) */
@@ -158,14 +148,6 @@ public class BooklistStyle
     public static final int EXTRAS_ISBN = 1 << 6;
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_UNUSED_BIT = 1 << 7;
-    /**
-     * Unique name. This is a stored in our preference file (with the same name)
-     * and is used for backup/restore purposes as the 'ID'.
-     * <p>
-     * (this is not a PPref, as we'd need the uuid to store the uuid....)
-     */
-    private static final String PREF_STYLE_UUID = PREFS_PREFIX + "uuid";
-
     /** Mask for the extras that are fetched using {@link BooklistAdapter}.GetBookExtrasTask}. */
     public static final int EXTRAS_BY_TASK = EXTRAS_BOOKSHELVES
                                              | EXTRAS_LOCATION | EXTRAS_FORMAT
@@ -178,8 +160,21 @@ public class BooklistStyle
     /** Text Scaling. */
     @SuppressWarnings("WeakerAccess")
     public static final int TEXT_SCALE_LARGE = 3;
-
-
+    private static final String PREFS_PREFIX = "BookList.Style.";
+    /** Preference for the current default style UUID to use. */
+    public static final String PREF_BL_STYLE_CURRENT_DEFAULT = PREFS_PREFIX + "Current";
+    /**
+     * Preferred styles / menu order.
+     * Stored in global shared preferences as a CSV String of UUIDs.
+     */
+    public static final String PREF_BL_PREFERRED_STYLES = PREFS_PREFIX + "Preferred.Order";
+    /**
+     * Unique name. This is a stored in our preference file (with the same name)
+     * and is used for backup/restore purposes as the 'ID'.
+     * <p>
+     * (this is not a PPref, as we'd need the uuid to store the uuid....)
+     */
+    private static final String PREF_STYLE_UUID = PREFS_PREFIX + "uuid";
     /** the amount of details to show in the header. */
     private static final int SUMMARY_SHOW_BOOK_COUNT = 1;
     /** the amount of details to show in the header. */
@@ -861,7 +856,7 @@ public class BooklistStyle
     public int getThumbnailScaleFactor() {
         //noinspection ConstantConditions
         if (!isUsed(UniqueId.BKEY_IMAGE) || mAllExtras.get(UniqueId.BKEY_IMAGE).isFalse()) {
-            return 0;
+            return ImageUtils.SCALE_NOT_DISPLAYED;
         }
 
         return mThumbnailScale.get();

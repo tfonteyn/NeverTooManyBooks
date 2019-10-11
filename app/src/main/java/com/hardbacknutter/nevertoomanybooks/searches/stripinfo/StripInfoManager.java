@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 /**
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
  * <p>
- * Dutch language (and to an extend French) comics website.
+ * Dutch language (and to an extend French and a minimal amount of other languages) comics website.
  */
 public class StripInfoManager
         implements SearchEngine {

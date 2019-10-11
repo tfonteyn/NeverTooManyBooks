@@ -256,6 +256,7 @@ public class BooklistAdapter
                 case ImageUtils.SCALE_MEDIUM:
                 case ImageUtils.SCALE_SMALL:
                 case ImageUtils.SCALE_X_SMALL:
+                case ImageUtils.SCALE_NOT_DISPLAYED:
                 default:
                     layoutId = R.layout.booksonbookshelf_row_book;
                     break;
@@ -1236,11 +1237,17 @@ public class BooklistAdapter
             super(itemView, columnIndex, noDataId, DBDefinitions.KEY_SERIES_IS_COMPLETE);
         }
 
+        /**
+         * @param text  String to display; can be {@code null} or empty
+         * @param level for this row
+         */
         @Override
         public void setText(@Nullable final String text,
                             final int level) {
             if (text != null && Prefs.reorderTitleForDisplaying(App.getAppContext())) {
                 // URGENT: translated series are not reordered unless the app runs in that language
+                // solution/problem: we would need the Series id (and not just the titel)
+                // to call {@link DAO#getSeriesLanguage(long)}
                 super.setText(LocaleUtils.reorderTitle(App.getAppContext(), text,
                                                        Locale.getDefault()), level);
             } else {

@@ -214,12 +214,17 @@ public class Author
         TYPES_MAPPER.put("Tekeningen", TYPE_ARTIST);
         TYPES_MAPPER.put("Inkleuring", TYPE_COLORIST);
 
+        // German, unless listed above
+        TYPES_MAPPER.put("Übersetzer", TYPE_TRANSLATOR);
+
         // Italian, unless listed above
         TYPES_MAPPER.put("Testi", TYPE_WRITER);
         TYPES_MAPPER.put("Disegni", TYPE_ARTIST);
 
-        // There are no doubt MANY missing.... will add them when/as they show up.
-        // Maybe better if this is done in an external file
+        // There are obviously MANY missing.... both for the listed languages above and for
+        // other languages not even considered here.
+        // Will need to add them when/as they show up.
+        // Maybe better if this is done in an external file on a per language basis ?
     }
 
     /** Row ID. */
@@ -384,8 +389,22 @@ public class Author
         return mType;
     }
 
+    /**
+     * Set the type(s).
+     *
+     * @param type to set
+     */
     public void setType(final int type) {
         mType = type & TYPE_MASK;
+    }
+
+    /**
+     * Add a type to the current type(s).
+     *
+     * @param type to add
+     */
+    public void addType(final int type) {
+        mType |= (type & TYPE_MASK);
     }
 
     public void setType(@NonNull final String type) {
@@ -603,6 +622,7 @@ public class Author
      * <li>it's the same Object</li>
      * <li>one or both of them are 'new' (e.g. id == 0) or have the same ID<br>
      * AND family/given-names are equal</li>
+     * <li>if both are 'new' check if family/given-names are equal</li>
      * <p>
      * <strong>Compare is CASE SENSITIVE</strong>:
      * This allows correcting case mistakes even with identical ID.<br>

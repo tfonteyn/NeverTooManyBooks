@@ -396,6 +396,7 @@ public class Fields {
                 if (!field.mKey.isEmpty() && rawData.containsKey(field.mKey)) {
                     Object value = rawData.get(field.mKey);
                     if (value != null) {
+                        //noinspection unchecked
                         field.setValue(value);
                     }
                 }

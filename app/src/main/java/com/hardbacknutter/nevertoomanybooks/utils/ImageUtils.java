@@ -102,7 +102,8 @@ public final class ImageUtils {
      * res/xml/preferences_book_style.xml contains the default set to 2
      */
     /** Thumbnail Scaling. */
-    @SuppressWarnings("unused")
+    public static final int SCALE_NOT_DISPLAYED = 0;
+    /** Thumbnail Scaling. */
     public static final int SCALE_X_SMALL = 1;
     /** Thumbnail Scaling. */
     public static final int SCALE_SMALL = 2;
@@ -643,9 +644,9 @@ public final class ImageUtils {
             return true;
         }
 
-        // We load the file and first scale it to scale 10 x the "standard" display size.
+        // We load the file and first scale it up.
         // Keep in mind this means it could be up- or downscaled from the original !
-        int imageSize = getMaxImageSize(10);
+        int imageSize = getMaxImageSize(SCALE_2X_LARGE);
 
         // we'll try it twice with a gc in between
         int attempts = 2;
@@ -722,7 +723,8 @@ public final class ImageUtils {
         }
     }
 
-    @IntDef({SCALE_X_SMALL, SCALE_SMALL, SCALE_MEDIUM, SCALE_LARGE, SCALE_X_LARGE, SCALE_2X_LARGE})
+    @IntDef({SCALE_NOT_DISPLAYED, SCALE_X_SMALL, SCALE_SMALL, SCALE_MEDIUM,
+             SCALE_LARGE, SCALE_X_LARGE, SCALE_2X_LARGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Scale {
 
