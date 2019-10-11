@@ -69,6 +69,7 @@ public class BookBaseFragmentModel
     private DAO mDb;
     /** Flag to indicate we're dirty. */
     private boolean mIsDirty;
+
     /** The Book this model represents. */
     private Book mBook;
     /**
@@ -101,7 +102,7 @@ public class BookBaseFragmentModel
 
     /**
      * Pseudo constructor.
-     *
+     * <p>
      * Loads the book data upon first start.
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}

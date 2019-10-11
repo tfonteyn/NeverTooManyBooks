@@ -70,7 +70,7 @@ public class AuthorWorksActivity
     public void onBackPressed() {
         AuthorWorksModel model = new ViewModelProvider(this).get(AuthorWorksModel.class);
         if (model.isAtLeastOneBookDeleted()) {
-            Intent data = new Intent().putExtra(UniqueId.BKEY_DELETED_SOMETHING, true);
+            Intent data = new Intent().putExtra(UniqueId.BKEY_SOMETHING_WAS_DELETED, true);
             setResult(Activity.RESULT_OK, data);
         }
         super.onBackPressed();

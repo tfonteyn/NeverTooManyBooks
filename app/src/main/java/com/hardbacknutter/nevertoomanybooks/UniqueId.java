@@ -250,7 +250,14 @@ public final class UniqueId {
      * <br>type: {@code boolean}
      * setResult
      */
-    public static final String BKEY_DELETED_SOMETHING = "deletedSomething";
+    public static final String BKEY_SOMETHING_WAS_DELETED = "deletedSomething";
+    /**
+     * Something was modified (or not).
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_SOMETHING_WAS_MODIFIED = "modifiedSomething";
 
     private UniqueId() {
     }

@@ -96,7 +96,7 @@ public final class DEBUG_SWITCHES {
      * {@link com.hardbacknutter.nevertoomanybooks.viewmodels
      * .BooksOnBookshelfModel#initBookList}.
      */
-    public static final boolean BOB_INIT_BOOK_LIST = false;
+    public static final boolean BOB_INIT_BOOK_LIST = true;
     /** {@link CoverBrowserFragment}. */
     public static final boolean COVER_BROWSER = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.utils.ImageUtils}. */

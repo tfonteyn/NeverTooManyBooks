@@ -83,6 +83,10 @@ public class BookDetailsActivity
     public void onBackPressed() {
         BookBaseFragmentModel model = new ViewModelProvider(this).get(BookBaseFragmentModel.class);
         Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
+        //URGENT: we should only set this flag is a book was actually modified.
+        // but we need to set it for now as we cannot be sure it wasn't modified.
+        data.putExtra(UniqueId.BKEY_SOMETHING_WAS_MODIFIED, true);
+
         setResult(Activity.RESULT_OK, data);
         super.onBackPressed();
     }

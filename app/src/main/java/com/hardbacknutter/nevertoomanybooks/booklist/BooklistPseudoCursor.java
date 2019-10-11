@@ -297,6 +297,7 @@ public class BooklistPseudoCursor
         clearCursors();
     }
 
+
     /**
      * Handle a position change. Manage cursor based on new position.
      */
@@ -400,7 +401,7 @@ public class BooklistPseudoCursor
     @NonNull
     public String toString() {
         return "BooklistPseudoCursor{"
-               + ", mPseudoCount=" + mPseudoCount
+               + "mPseudoCount=" + mPseudoCount
                + ", mMruList=" + Arrays.toString(mMruList)
                + ", mMruListPos=" + mMruListPos
                + ", " + super.toString()

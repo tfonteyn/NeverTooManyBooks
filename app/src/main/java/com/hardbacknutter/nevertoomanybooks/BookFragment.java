@@ -516,7 +516,7 @@ public class BookFragment
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBookAlert(getContext(), title, authors, () -> {
                     mBookModel.getDb().deleteBook(book.getId());
-                    Intent data = new Intent().putExtra(UniqueId.BKEY_DELETED_SOMETHING, true);
+                    Intent data = new Intent().putExtra(UniqueId.BKEY_SOMETHING_WAS_DELETED, true);
                     mHostActivity.setResult(Activity.RESULT_OK, data);
                     mHostActivity.finish();
                 });
