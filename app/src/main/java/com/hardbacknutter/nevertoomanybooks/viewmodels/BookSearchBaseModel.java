@@ -51,9 +51,9 @@ public class BookSearchBaseModel
     /** Database Access. */
     private DAO mDb;
 
-    /** sites to search on. Can be overridden by the user (option menu). */
+    /** Bitmask with sites to search on. */
     @SearchSites.Id
-    private int mSearchSites = SearchSites.SEARCH_ALL;
+    private int mSearchSites;
 
     /** Objects managing current search. */
     private long mSearchCoordinatorId;
@@ -92,7 +92,8 @@ public class BookSearchBaseModel
 
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
 
-        mSearchSites = currentArgs.getInt(UniqueId.BKEY_SEARCH_SITES, mSearchSites);
+        mSearchSites = currentArgs.getInt(UniqueId.BKEY_SEARCH_SITES,
+                                          SearchSites.getEnabledSitesAsBitmask());
 
         mIsbnSearchText = currentArgs.getString(DBDefinitions.KEY_ISBN, mIsbnSearchText);
 

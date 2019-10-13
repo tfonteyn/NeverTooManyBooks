@@ -29,12 +29,10 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -57,7 +55,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
@@ -159,20 +156,7 @@ public class EditBookFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        //noinspection ConstantConditions
-        LocaleUtils.insanityCheck(getContext());
-        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD, MenuHandler.ORDER_HIDE_KEYBOARD,
-                 R.string.menu_hide_keyboard)
-            .setIcon(R.drawable.ic_keyboard_hide)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        // sing FAB now
-//        int saveOrAddText = mBookModel.isExistingBook() ? R.string.btn_confirm_save
-//                                                        : R.string.btn_confirm_add;
-//        menu.add(Menu.NONE, R.id.MENU_SAVE, MenuHandler.ORDER_SAVE, saveOrAddText)
-//            .setIcon(R.drawable.ic_save)
-//            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
+        // onOptionsItemSelected: MENU_BOOK_UPDATE_FROM_INTERNET handled in super.
         menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, MenuHandler.ORDER_UPDATE_FIELDS,
                  R.string.menu_update_fields)
             .setIcon(R.drawable.ic_cloud_download);
@@ -189,25 +173,6 @@ public class EditBookFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.findItem(R.id.MENU_UPDATE_FROM_INTERNET).setVisible(mBookModel.isExistingBook());
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.MENU_SAVE:
-                doSave();
-                return true;
-
-            case R.id.MENU_HIDE_KEYBOARD:
-                //noinspection ConstantConditions
-                App.hideKeyboard(getView());
-                return true;
-
-            default:
-                // MENU_BOOK_UPDATE_FROM_INTERNET handled in super.
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     /**
@@ -273,8 +238,8 @@ public class EditBookFragment
     private void saveBook() {
         //noinspection ConstantConditions
         Book book = mBookModel.saveBook(getContext());
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, book.getId());
-        mHostActivity.setResult(Activity.RESULT_OK, data);
+        mResultDataModel.putExtra(DBDefinitions.KEY_PK_ID, book.getId());
+        mHostActivity.setResult(Activity.RESULT_OK, mResultDataModel.getData());
         mHostActivity.finish();
     }
 

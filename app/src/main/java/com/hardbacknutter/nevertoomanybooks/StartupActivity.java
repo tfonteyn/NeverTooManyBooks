@@ -62,8 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 public class StartupActivity
         extends AppCompatActivity {
 
-    /** the 'LastVersion' i.e. the version which was installed before the current one. */
-    public static final String PREF_STARTUP_LAST_VERSION = "Startup.LastVersion";
     /** Indicates the upgrade message has been shown. */
     private static boolean sUpgradeMessageShown;
     /** Self reference for use by tasks and during upgrades. */

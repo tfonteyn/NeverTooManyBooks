@@ -1083,15 +1083,34 @@
     <!-- ####################################################################################### -->
     <!-- == Hints for input fields.  == -->
     <!-- ####################################################################################### -->
-    <string name="hint_search_text">Text and/or ISBN</string>
-    <!-- generic hint text for DataEntryButton (see styles.xml) fields. -->
-    <string name="hint_field_not_set">Not Set</string>
-    <!-- generic place holder text for Book list rows -->
-    <string name="hint_field_not_set_with_brackets">(Not Set)</string>
     <!-- LibraryThing etc. require the user to configure a personal key -->
     <string name="hint_developer_key">Developer Key</string>
     <!-- hint shown when the user invokes the standard search form (single line, top of screen) -->
     <string name="hint_system_search">Author, Title or ISBN</string>
+    <!-- Goodreads search specific -->
+    <string name="hint_search_text">Text and/or ISBN</string>
+
+    <!-- generic hint text for DataEntryButton (see styles.xml) fields. -->
+    <string name="hint_field_not_set">Not Set</string>
+
+    <!-- generic place holder text for Book list rows. -->
+    <string name="hint_empty_field">(Not Set)</string>
+
+    <!-- specific place holder text for Rating rows. -->
+    <string name="hint_empty_rating">(Not rated)</string>
+    <!-- specific place holder text for Series rows. -->
+    <string name="hint_empty_series">(No Series)</string>
+    <!-- specific place holder text for Month rows. -->
+    <string name="hint_empty_month">(No month set)</string>
+    <!-- specific place holder text for Language rows. -->
+    <string name="hint_empty_language">(No language set)</string>
+
+    <!-- specific place holder text for Read/Unread rows.
+         Theoretically this string will never be shown unless there is ever bad data. -->
+    <string name="hint_empty_read_status">(Read status unknown)</string>
+    <!-- specific place holder text for Author rows.
+         Theoretically this string will never be shown unless there is ever bad data. -->
+    <string name="hint_empty_author">(The author is missing)</string>
 
     <!-- ####################################################################################### -->
     <!-- == Size measurements; for now only file-sizes.  == -->
@@ -1422,7 +1441,6 @@
     <string name="X_warning_required_field_x">%1$s must not be blank</string>
     <string name="X_warning_required_title">Title must be specified</string>
     <string name="X_warning_missing_title_author">The title and/or author is missing.</string>
-    <string name="X_warning_missing_author">The author is missing.</string>
     <string name="X_warning_missing_title">The title is missing.</string>
     <!-- Displayed when a file/save dialog results in an invalid file -->
     <string name="X_warning_enter_valid_filename">Please enter a valid file name.</string>
@@ -1491,5 +1509,6 @@
 
     <!-- SwitchPreference -->
     <string name="pt_reformat_format_on_update">Standardize “book format” names</string>
+
 
 </resources>

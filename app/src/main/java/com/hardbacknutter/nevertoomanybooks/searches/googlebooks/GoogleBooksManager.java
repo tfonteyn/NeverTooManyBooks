@@ -61,10 +61,10 @@ public final class GoogleBooksManager
         implements SearchEngine {
 
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "GoogleBooks.";
+    private static final String PREF_PREFIX = "googlebooks.";
 
     /** Type: {@code String}. */
-    private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+    private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
     private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
 
     /**

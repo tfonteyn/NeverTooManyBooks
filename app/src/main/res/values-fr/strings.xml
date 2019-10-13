@@ -87,7 +87,7 @@
     <string name="X_updated">Mis à jour</string>
     <string name="X_use_default_setting">Utiliser les réglages par défaut</string>
     <string name="X_warning_cover_corrupt">Couverture corrompue</string>
-    <string name="X_warning_missing_author">L\'auteur est manquant.</string>
+    <string name="hint_empty_author">(L\'auteur est manquant)</string>
     <string name="X_warning_missing_title">Le titre est manquant.</string>
     <string name="X_warning_missing_title_author">Le titre et / ou l\'auteur sont manquants.</string>
     <string name="X_warning_required_author">Le champ «auteur» est vide</string>
@@ -223,7 +223,7 @@
     <string name="warning_date_not_set">S\'il vous plaît ajouter une date valide.</string>
     <string name="hint_developer_key">Clé développeur</string>
     <string name="hint_field_not_set">Non défini</string>
-    <string name="hint_field_not_set_with_brackets">(vide)</string>
+    <string name="hint_empty_field">(vide)</string>
     <string name="hint_search_text">Texte et/ou ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
     <string name="import_export_option_csv">Livres (*.csv)</string>
@@ -643,5 +643,10 @@
     <string name="warning_rebuild_orderby_columns">Cela reconstruira les données de tri au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
     <string name="pt_booklist_state_default">Liste de livres d\'expansion par défaut</string>
     <string name="menu_level_reset">Niveau d\'expansion préféré</string>
+    <string name="hint_empty_rating">(Non classé)</string>
+    <string name="hint_empty_language">(Aucune langue renseignée)</string>
+    <string name="hint_empty_series">(Pas de série)</string>
+    <string name="hint_empty_month">(Pas de mois renseigné)</string>
+    <string name="hint_empty_read_status">(Statut lu inconnu)</string>
 
 </resources>

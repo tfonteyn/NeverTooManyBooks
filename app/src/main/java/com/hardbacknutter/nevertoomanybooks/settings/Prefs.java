@@ -73,80 +73,85 @@ public final class Prefs {
 
 
     /** Preference Key. */
-    public static final String pk_ui_language = "App.Locale";
-    public static final String pk_ui_theme = "App.Theme";
-    public static final String pk_ui_messages_use = "App.UserMessage";
+    public static final String pk_ui_locale = "ui.locale";
+    public static final String pk_ui_theme = "ui.theme";
+    public static final String pk_ui_messages_use = "ui.messages.use";
 
-    public static final String pk_network_allow_metered_data = "network.mobile_data";
+    public static final String pk_network_allow_metered = "network.allow.metered";
+
+    public static final String pk_scanner_preferred = "scanner.preferred";
 
     public static final String pk_search_form_advanced = "search.form.advanced";
 
-    public static final String pk_scanner_preferred = "ScannerManager.PreferredScanner";
+    public static final String pk_sounds_scan_isbn_valid = "sounds.scan.isbn.valid";
+    public static final String pk_sounds_scan_isbn_invalid = "sounds.scan.isbn.invalid";
 
-    public static final String pk_scanner_beep_if_valid = "SoundManager.BeepIfScannedIsbnValid";
-    public static final String pk_scanner_beep_if_invalid = "SoundManager.BeepIfScannedIsbnInvalid";
+    public static final String pk_reformat_titles_sort = "reformat.titles.sort";
+    public static final String pk_reformat_titles_display = "reformat.titles.display";
+    public static final String pk_reformat_format_update = "reformat.format.update";
 
-    public static final String pk_reorder_titles_for_sorting = "reformat.titles.sort";
-    public static final String pk_reorder_titles_for_displaying = "reformat.titles.display";
-    public static final String pk_reformat_formats = "reformat.format.update";
+    public static final String pk_camera_image_autorotate = "camera.image.autorotate";
 
-    public static final String pk_images_cache_resized = "Image.Cache.Resized";
-    public static final String pk_images_rotate_auto = "Image.Camera.Autorotate";
-    public static final String pk_images_external_cropper = "Image.Cropper.UseExternalApp";
-    public static final String pk_images_crop_whole_image = "Image.Cropper.FrameIsWholeImage";
-    public static final String pk_images_cropper_layer_type = "Image.ViewLayerType";
+    public static final String pk_image_cropper_external = "image.cropper.external";
+    public static final String pk_image_cropper_frame_whole = "image.cropper.frame.whole";
+    public static final String pk_image_cache_resized = "image.cache.resized";
 
-    public static final String pk_bob_list_state = "BookList.ListRebuildState";
-    public static final String pk_bob_list_generation = "BookList.CompatibilityMode";
+    public static final String pk_bob_levels_rebuild_state = "style.booklist.levels.rebuild.state";
+    public static final String pk_bob_levels_default = "style.booklist.levels.default";
 
-    public static final String pk_bob_use_task_for_extras = "BookList.UseTaskFor.BookDetails";
+    public static final String pk_bob_use_task_for_extras = "style.booklist.task.extras";
 
-    public static final String pk_bob_default_level = "BookList.Style.level.default";
+    public static final String pk_compat_booklist_mode = "compat.booklist.mode";
+    public static final String pk_compat_image_cropper_layer_type =
+            "compat.image.cropper.viewlayertype";
 
-    public static final String pk_bob_style_name = "BookList.Style.Name";
-    public static final String pk_bob_groups = "BookList.Style.Groups";
-    public static final String pk_bob_preferred_style = "BookList.Style.Preferred";
-    public static final String pk_bob_text_size = "BookList.Style.Scaling";
-    public static final String pk_bob_cover_size = "BookList.Style.Scaling.Thumbnails";
 
-    public static final String pk_bob_books_under_multiple_authors =
-            "BookList.Style.Group.Authors.ShowAll";
+    public static final String pk_bob_style_name = "style.booklist.name";
+
+    public static final String pk_bob_groups = "style.booklist.groups";
+    public static final String pk_bob_preferred_style = "style.booklist.preferred";
+    public static final String pk_bob_text_size = "style.booklist.scale.text";
+    public static final String pk_bob_cover_size = "style.booklist.scale.thumbnails";
+
     public static final String pk_bob_books_under_multiple_series =
-            "BookList.Style.Group.Series.ShowAll";
+            "style.booklist.group.series.show.all";
+    public static final String pk_bob_books_under_multiple_authors =
+            "style.booklist.group.authors.show.all";
     public static final String pk_bob_format_author_name =
-            "BookList.Style.Group.Authors.DisplayFirstThenLast";
+            "style.booklist.group.authors.show.first_last";
+
     public static final String pk_bob_sort_author_name =
-            "BookList.Style.Sort.Author.GivenFirst";
+            "style.booklist.sort.author.given_first";
 
     /** MultiSelectListPreference. */
-    public static final String pk_bob_header = "BookList.Style.Show.HeaderInfo";
+    public static final String pk_bob_header = "style.booklist.show.header";
     /** Show the cover image for each book. */
-    public static final String pk_bob_show_thumbnails = "BookList.Style.Show.Thumbnails";
+    public static final String pk_bob_show_thumbnails = "style.booklist.show.thumbnails";
     /** Show list of bookshelves for each book. */
-    public static final String pk_bob_show_bookshelves = "BookList.Style.Show.Bookshelves";
+    public static final String pk_bob_show_bookshelves = "style.booklist.show.bookshelves";
     /** Show location for each book. */
-    public static final String pk_bob_show_location = "BookList.Style.Show.Location";
+    public static final String pk_bob_show_location = "style.booklist.show.location";
     /** Show author for each book. */
-    public static final String pk_bob_show_author = "BookList.Style.Show.Author";
+    public static final String pk_bob_show_author = "style.booklist.show.author";
     /** Show publisher for each book. */
-    public static final String pk_bob_show_publisher = "BookList.Style.Show.Publisher";
+    public static final String pk_bob_show_publisher = "style.booklist.show.publisher";
     /** Show publication date for each book. */
-    public static final String pk_bob_show_pub_date = "BookList.Style.Show.Publication.Date";
+    public static final String pk_bob_show_pub_date = "style.booklist.show.publication.date";
     /** Show ISBN for each book. */
-    public static final String pk_bob_show_isbn = "BookList.Style.Show.ISBN";
+    public static final String pk_bob_show_isbn = "style.booklist.show.isbn";
     /** Show format for each book. */
-    public static final String pk_bob_show_format = "BookList.Style.Show.Format";
+    public static final String pk_bob_show_format = "style.booklist.show.format";
 
     /** Booklist Filter - ListPreference. */
-    public static final String pk_bob_filter_read = "BookList.Style.Filter.Read";
+    public static final String pk_bob_filter_read = "style.booklist.filter.read";
     /** Booklist Filter - ListPreference. */
-    public static final String pk_bob_filter_signed = "BookList.Style.Filter.Signed";
+    public static final String pk_bob_filter_signed = "style.booklist.filter.signed";
     /** Booklist Filter - ListPreference. */
-    public static final String pk_bob_filter_loaned = "BookList.Style.Filter.Loaned";
+    public static final String pk_bob_filter_loaned = "style.booklist.filter.loaned";
     /** Booklist Filter - ListPreference. */
-    public static final String pk_bob_filter_anthology = "BookList.Style.Filter.Anthology";
+    public static final String pk_bob_filter_anthology = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
-    public static final String pk_bob_filter_editions = "BookList.Style.Filter.Editions";
+    public static final String pk_bob_filter_editions = "style.booklist.filter.editions";
 
     private Prefs() {
     }
@@ -301,6 +306,6 @@ public final class Prefs {
      */
     public static boolean reorderTitleForDisplaying(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_reorder_titles_for_displaying, true);
+                                .getBoolean(Prefs.pk_reformat_titles_display, true);
     }
 }

@@ -86,7 +86,7 @@
     <string name="X_updated">Geändert</string>
     <string name="X_use_default_setting">Standardeinstellung verwenden</string>
     <string name="X_warning_cover_corrupt">Das Cover ist unbrauchbar</string>
-    <string name="X_warning_missing_author">Der Autor fehlt.</string>
+    <string name="hint_empty_author">(Der Autor fehlt)</string>
     <string name="X_warning_missing_title">Der Titel fehlt.</string>
     <string name="X_warning_missing_title_author">Der Titel und / oder Autor fehlt.</string>
     <string name="X_warning_required_author">Das Feld des Autors ist leer</string>
@@ -219,7 +219,7 @@
     <string name="warning_date_not_set">Bitte geben Sie ein gültiges Datum an.</string>
     <string name="hint_developer_key">Entwicklerschlüssel</string>
     <string name="hint_field_not_set">Nicht gesetzt</string>
-    <string name="hint_field_not_set_with_brackets">(leer)</string>
+    <string name="hint_empty_field">(leer)</string>
     <string name="hint_search_text">Text und/oder ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Die Datei muss eine Spalte mit den folgenden Namen enthalten: %1$s</string>
     <string name="import_export_option_csv">Bücher (*.csv)</string>
@@ -640,4 +640,9 @@
     <string name="warning_rebuild_orderby_columns">Dadurch werden die Sortierdaten neu erstellt, wenn die App neu gestartet wird. Bist du dir sicher, dass du weitermachen willst ?</string>
     <string name="pt_booklist_state_default">Standard-Buchlistenebene</string>
     <string name="menu_level_reset">Bevorzugte Ausbaustufe</string>
+    <string name="hint_empty_rating">(nicht bewertet)</string>
+    <string name="hint_empty_language">(Keine Sprache ausgefüllt)</string>
+    <string name="hint_empty_series">(Keine Serie)</string>
+    <string name="hint_empty_month">(Kein Monat ausgefüllt)</string>
+    <string name="hint_empty_read_status">(Lesestatus unbekannt)</string>
 </resources>

@@ -1292,7 +1292,7 @@ public class DAO
     }
 
     private void preprocessPrices(@NonNull final Book book) {
-        //TEST: source field as String.. does this ever happen?
+        //TEST: source field as String.. does this ever happen after we changed prices to 'long' ?
         // handle a price without a currency.
         if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED)
             && !book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
@@ -4145,7 +4145,7 @@ public class DAO
             throw new TransactionException();
         }
 
-        long t0;
+        long t0 = 0;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             t0 = System.nanoTime();
         }

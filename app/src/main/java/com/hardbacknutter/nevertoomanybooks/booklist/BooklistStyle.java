@@ -1308,7 +1308,7 @@ public class BooklistStyle
      */
     @IntRange(from = 1)
     public int getDefaultLevel() {
-        int level = App.getListPreference(Prefs.pk_bob_default_level, 1);
+        int level = App.getListPreference(Prefs.pk_bob_levels_default, 1);
         if (level > mStyleGroups.size()) {
             level = mStyleGroups.size();
         }

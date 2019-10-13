@@ -85,7 +85,7 @@
     <string name="X_updated">Aggiornato</string>
     <string name="X_use_default_setting">Usa i parametri predefiniti</string>
     <string name="X_warning_cover_corrupt">Copertina danneggiata</string>
-    <string name="X_warning_missing_author">L\'autore è mancante.</string>
+    <string name="hint_empty_author">(L\'autore è mancante)</string>
     <string name="X_warning_missing_title">Il titolo manca</string>
     <string name="X_warning_missing_title_author">Manca il titolo e / o l\'autore.</string>
     <string name="X_warning_required_author">Il campo Autore è vuoto</string>
@@ -217,7 +217,7 @@
     <string name="warning_date_not_set">Si prega di aggiungere una data valida.</string>
     <string name="hint_developer_key">Chiave sviluppatore</string>
     <string name="hint_field_not_set">Non impostato</string>
-    <string name="hint_field_not_set_with_brackets">(vuoto)</string>
+    <string name="hint_empty_field">(vuoto)</string>
     <string name="hint_search_text">Testo e/o ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
     <string name="import_export_option_csv">Libri (*.csv)</string>
@@ -637,5 +637,10 @@
     <string name="warning_rebuild_orderby_columns">Ciò ricostruirà i dati di ordinamento al riavvio dell\'app. Sei sicuro di voler continuare ?</string>
     <string name="pt_booklist_state_default">Espansione elenco libri predefinito</string>
     <string name="menu_level_reset">Livello di espansione preferito</string>
+    <string name="hint_empty_rating">(Non valutato)</string>
+    <string name="hint_empty_language">(Nessuna lingua compilata)</string>
+    <string name="hint_empty_series">(Nessuna serie)</string>
+    <string name="hint_empty_month">(Nessun mese compilato)</string>
+    <string name="hint_empty_read_status">(Leggi lo stato sconosciuto)</string>
 
 </resources>

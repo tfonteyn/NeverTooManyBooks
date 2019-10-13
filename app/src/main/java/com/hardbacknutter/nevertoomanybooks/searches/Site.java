@@ -39,7 +39,10 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.App;
 
 /**
- * All search engines are added here.
+ * Represents a site we will search.
+ * Acts as a container for the site's {@link SearchEngine}.
+ *
+ * The class {@link SearchSites} defines and links up all actual sites and their search engines.
  */
 public final class Site
         implements Parcelable {
@@ -59,7 +62,7 @@ public final class Site
             };
 
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "SearchSite.";
+    private static final String PREF_PREFIX = "search.site.";
 
     /** Internal ID, bitmask based, not stored in prefs. */
     @SearchSites.Id

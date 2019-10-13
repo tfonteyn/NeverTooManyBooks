@@ -303,8 +303,8 @@ public class EditBookTocFragment
             mBookAuthor = authorList.get(0);
         } else {
             // not ideal, but oh well.
-            String unknown = getString(R.string.unknown);
-            mBookAuthor = new Author(unknown, unknown);
+            String unknownString = getString(R.string.unknown);
+            mBookAuthor = new Author(unknownString, unknownString);
         }
 
         // used to call Search sites to populate the TOC

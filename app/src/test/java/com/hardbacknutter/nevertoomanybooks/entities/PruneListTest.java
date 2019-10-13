@@ -90,7 +90,7 @@ class PruneListTest {
         when(mContext.createConfigurationContext(any())).thenReturn(mContext);
         when(mContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mSharedPreferences);
 
-        when(mSharedPreferences.getString(eq(Prefs.pk_ui_language),
+        when(mSharedPreferences.getString(eq(Prefs.pk_ui_locale),
                                           eq(LocaleUtils.SYSTEM_LANGUAGE)))
                 .thenReturn(LocaleUtils.SYSTEM_LANGUAGE);
 

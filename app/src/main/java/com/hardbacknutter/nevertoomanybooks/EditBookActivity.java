@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -42,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * The hosting activity for editing a book.
@@ -83,17 +83,15 @@ public class EditBookActivity
                 .get(BookBaseFragmentModel.class);
 
         if (model.isDirty()) {
-            StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
-                // runs when user clicks 'exit'
-                setResult(Activity.RESULT_CANCELED);
-                finish();
-            });
+            // runs when user clicks 'exit'
+            StandardDialogs.showConfirmUnsavedEditsDialog(this, this::finish);
             return;
         }
 
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
+        ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
+        resultDataModel.putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
         //ENHANCE: global changes not detected, so assume they happened.
-        setResult(Activity.RESULT_OK, data);
+        setResult(Activity.RESULT_OK, resultDataModel.getData());
         super.onBackPressed();
     }
 }

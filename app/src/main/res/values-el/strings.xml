@@ -86,7 +86,7 @@
     <string name="X_updated">Ενημερωμένο</string>
     <string name="X_use_default_setting">Χρήση προεπιλεγμένης ρύθμισης</string>
     <string name="X_warning_cover_corrupt">Το εξώφυλλο είναι κατεστραμμένο</string>
-    <string name="X_warning_missing_author">Ο συγγραφέας λείπει.</string>
+    <string name="hint_empty_author">(Ο συγγραφέας λείπει)</string>
     <string name="X_warning_missing_title">Ο τίτλος λείπει.</string>
     <string name="X_warning_missing_title_author">Ο τίτλος ή / και ο συντάκτης λείπει.</string>
     <string name="X_warning_required_author">Το πεδίο συγγραφέας είναι κενό</string>
@@ -218,7 +218,7 @@
     <string name="warning_date_not_set">Προσθέστε μια έγκυρη ημερομηνία.</string>
     <string name="hint_developer_key">Κλειδί Developer</string>
     <string name="hint_field_not_set">Μη ορισμένο</string>
-    <string name="hint_field_not_set_with_brackets">(άδειο)</string>
+    <string name="hint_empty_field">(άδειο)</string>
     <string name="hint_search_text">Κείμενο και/ή ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
     <string name="import_export_option_csv">βιβλία (*.csv)</string>
@@ -638,5 +638,10 @@
     <string name="warning_rebuild_orderby_columns">Αυτό θα επαναδημιουργήσει τα δεδομένα ταξινόμησης κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="pt_booklist_state_default">Προεπιλογή επέκτασης λίστας</string>
     <string name="menu_level_reset">Προτιμώμενο επίπεδο επέκτασης</string>
+    <string name="hint_empty_rating">(δεν έχει αξιολογηθεί)</string>
+    <string name="hint_empty_language">(Δεν υπάρχει πλήρης γλώσσα)</string>
+    <string name="hint_empty_series">(Χωρίς σειρά)</string>
+    <string name="hint_empty_month">(Δεν συμπληρώθηκε μήνα)</string>
+    <string name="hint_empty_read_status">(Ανάγνωση άγνωστης κατάστασης)</string>
 
 </resources>

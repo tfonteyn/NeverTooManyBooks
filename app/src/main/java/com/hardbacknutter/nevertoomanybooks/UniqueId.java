@@ -115,7 +115,8 @@ public final class UniqueId {
      * <p>
      * <br>type: {@code int} (bitmask)
      */
-    public static final String BKEY_SEARCH_SITES = "searchFlags";
+    public static final String BKEY_SEARCH_SITES = "searchSites";
+    public static final String BKEY_SEARCH_SITES_FOR_COVERS = "searchSitesForCovers";
 
     /**
      * Single fileSpecs or uri.

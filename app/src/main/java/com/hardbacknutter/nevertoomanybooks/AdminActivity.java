@@ -38,7 +38,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.AdminModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * Hosting activity for admin functions.
@@ -69,10 +69,9 @@ public class AdminActivity
 
     @Override
     public void onBackPressed() {
-        AdminModel model = new ViewModelProvider(this).get(AdminModel.class);
-        Intent data = model.getResultData();
-        Bundle extras = data.getExtras();
-        if (extras != null && extras.size() > 0) {
+        ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
+        Intent data = resultDataModel.getData();
+        if (data.getExtras() != null) {
             setResult(Activity.RESULT_OK, data);
         }
 

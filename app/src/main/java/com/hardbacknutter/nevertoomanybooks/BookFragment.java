@@ -438,10 +438,7 @@ public class BookFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        // using FAB now
-//        menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-//            .setIcon(R.drawable.ic_edit)
-//            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
         menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
@@ -506,18 +503,15 @@ public class BookFragment
 
         switch (item.getItemId()) {
 
-            case R.id.MENU_EDIT:
-                startEditBook();
-                return true;
-
             case R.id.MENU_DELETE:
                 String title = book.getString(DBDefinitions.KEY_TITLE);
                 List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBookAlert(getContext(), title, authors, () -> {
                     mBookModel.getDb().deleteBook(book.getId());
-                    Intent data = new Intent().putExtra(UniqueId.BKEY_SOMETHING_WAS_DELETED, true);
-                    mHostActivity.setResult(Activity.RESULT_OK, data);
+
+                    mResultDataModel.putExtra(UniqueId.BKEY_SOMETHING_WAS_DELETED, true);
+                    mHostActivity.setResult(Activity.RESULT_OK, mResultDataModel.getData());
                     mHostActivity.finish();
                 });
                 return true;
@@ -608,7 +602,7 @@ public class BookFragment
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         Field<String> field = getField(R.id.author);
         field.setValue(Csv.join("<br>", list, false, "• ",
-                                                this::formatAuthor));
+                                this::formatAuthor));
     }
 
     /**
@@ -809,7 +803,7 @@ public class BookFragment
                     long bookId = fbl.getBookId();
                     // only reload if it's a new book
                     if (bookId != mBookModel.getBook().getId()) {
-                        mBookModel.reload(bookId);
+                        mBookModel.moveTo(bookId);
                         loadFields();
                     }
                 }

@@ -36,17 +36,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Arrays;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
  * CursorRow object for the BooklistCursor.
@@ -161,15 +155,16 @@ public class BooklistMappedCursorRow {
         try {
             //boom
             String text = mCursor.getString(columnIndex);
-
-            return formatRowGroup(context, level, text);
-
+            if (text != null) {
+                return formatLevelText(context, level, text);
+            }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
             //DO NOT add this.toString() ... will recursively throw CursorIndexOutOfBoundsException
             Logger.error(context, this, e, "level=" + level,
                          "columnIndex=" + columnIndex);
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -182,19 +177,10 @@ public class BooklistMappedCursorRow {
      * @return Formatted string, or original string when no special format
      * was needed or on any failure
      */
-    @Nullable
-    private String formatRowGroup(@NonNull final Context context,
-                                  @IntRange(from = 1) final int level,
-                                  @Nullable final String source) {
-        if (source == null) {
-            return null;
-        }
-
-        // BooklistBuilder will insert 'UNKNOWN' in the SQL row returned if the data is not set.
-        if (source.equalsIgnoreCase(context.getString(R.string.unknown))) {
-            return source;
-        }
-
+    @NonNull
+    private String formatLevelText(@NonNull final Context context,
+                                   @IntRange(from = 1) final int level,
+                                   @NonNull final String source) {
         // sanity check.
         if (mStyle.groupCount() < level) {
             throw new IllegalArgumentException(
@@ -204,83 +190,7 @@ public class BooklistMappedCursorRow {
         int index = level - 1;
         @BooklistGroup.RowKind.Kind
         int kind = mStyle.getGroupKindAt(index);
-        switch (kind) {
-            case BooklistGroup.RowKind.READ_STATUS: {
-                switch (source) {
-                    case "0":
-                        return context.getString(R.string.lbl_unread);
-                    case "1":
-                        return context.getString(R.string.lbl_read);
-                    default:
-                        break;
-                }
-                break;
-            }
-            case BooklistGroup.RowKind.LANGUAGE: {
-                return LanguageUtils.getDisplayName(Locale.getDefault(), source);
-            }
-            case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
-            case BooklistGroup.RowKind.DATE_ADDED_MONTH:
-            case BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH:
-            case BooklistGroup.RowKind.DATE_PUBLISHED_MONTH:
-            case BooklistGroup.RowKind.DATE_READ_MONTH: {
-                try {
-                    int i = Integer.parseInt(source);
-                    // If valid, get the short name
-                    if (i > 0 && i <= 12) {
-                        return DateUtils.getMonthName(i, false);
-                    }
-                } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(context, this, e);
-                }
-                break;
-            }
-            case BooklistGroup.RowKind.RATING: {
-                try {
-                    int i = Integer.parseInt(source);
-                    // If valid, get the name
-                    if (i >= 0 && i <= Book.RATING_STARS) {
-                        return context.getResources().getQuantityString(R.plurals.n_stars, i, i);
-                    }
-                } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(context, this, e);
-                }
-                break;
-            }
-
-            case BooklistGroup.RowKind.AUTHOR:
-            case BooklistGroup.RowKind.BOOKSHELF:
-            case BooklistGroup.RowKind.BOOK:
-            case BooklistGroup.RowKind.DATE_ACQUIRED_DAY:
-            case BooklistGroup.RowKind.DATE_ACQUIRED_YEAR:
-            case BooklistGroup.RowKind.DATE_ADDED_DAY:
-            case BooklistGroup.RowKind.DATE_ADDED_YEAR:
-            case BooklistGroup.RowKind.DATE_FIRST_PUBLICATION_MONTH:
-            case BooklistGroup.RowKind.DATE_FIRST_PUBLICATION_YEAR:
-            case BooklistGroup.RowKind.DATE_LAST_UPDATE_DAY:
-            case BooklistGroup.RowKind.DATE_LAST_UPDATE_YEAR:
-            case BooklistGroup.RowKind.DATE_PUBLISHED_YEAR:
-            case BooklistGroup.RowKind.DATE_READ_DAY:
-            case BooklistGroup.RowKind.DATE_READ_YEAR:
-            case BooklistGroup.RowKind.FORMAT:
-            case BooklistGroup.RowKind.GENRE:
-            case BooklistGroup.RowKind.LOANED:
-            case BooklistGroup.RowKind.LOCATION:
-            case BooklistGroup.RowKind.PUBLISHER:
-            case BooklistGroup.RowKind.SERIES:
-            case BooklistGroup.RowKind.TITLE_LETTER:
-                // no special formatting needed.
-                return source;
-
-            default:
-                throw new UnexpectedValueException(kind);
-
-        }
-        Logger.warnWithStackTrace(context, this, "formatRowGroup",
-                                  "source=" + source,
-                                  "level=" + level,
-                                  "kind=" + kind);
-        return source;
+        return BooklistGroup.RowKind.format(context, kind, source);
     }
 
     @NonNull

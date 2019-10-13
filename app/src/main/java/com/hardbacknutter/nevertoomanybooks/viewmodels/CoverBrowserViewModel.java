@@ -89,9 +89,7 @@ public class CoverBrowserViewModel
     public void init(@NonNull final Bundle args) {
         if (mBaseIsbn == null) {
             mBaseIsbn = Objects.requireNonNull(args.getString(DBDefinitions.KEY_ISBN));
-            int initialSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES,
-                                                 SearchSites.SEARCH_ALL);
-            mFileManager = new FileManager(initialSearchSites);
+            mFileManager = new FileManager(args);
         }
     }
 
@@ -302,17 +300,21 @@ public class CoverBrowserViewModel
          */
         private final Map<String, FileInfo> mFiles = Collections.synchronizedMap(new HashMap<>());
 
-        /** Sites the user wants to search. */
-        private final int mSearchSites;
+        /** Sites the user wants to search for cover images. */
+        private final int mSearchSitesForCovers;
 
         /**
          * Constructor.
-         *
-         * @param initialSearchSites bitmask with sites to search,
-         *                           see {@link SearchSites#SEARCH_ALL} and individual flags
          */
-        FileManager(final int initialSearchSites) {
-            mSearchSites = initialSearchSites;
+        FileManager(@Nullable final Bundle args) {
+            // 2019-10-12: this is a dummy check as for now we never pass in this argument
+            if (args != null) {
+                mSearchSitesForCovers =
+                        args.getInt(UniqueId.BKEY_SEARCH_SITES_FOR_COVERS,
+                                    SearchSites.getEnabledSitesForCoverSearchesAsBitmask());
+            } else {
+                mSearchSitesForCovers = SearchSites.getEnabledSitesForCoverSearchesAsBitmask();
+            }
         }
 
         /**
@@ -372,7 +374,7 @@ public class CoverBrowserViewModel
 
             // use a local copy so we can disable sites on the fly.
             @SearchSites.Id
-            int currentSearchSites = mSearchSites;
+            int currentSearchSites = mSearchSitesForCovers;
 
             // we need to use the size as the outer loop (and not inside of getCoverImage itself).
             // the idea is to check all sites for the same size first.
@@ -399,17 +401,18 @@ public class CoverBrowserViewModel
                     mFiles.remove(key);
                 }
 
+                // get ALL sites, as the local currentSearchSites overrides the global.
                 for (Site site : SearchSites.getSitesForCoverSearches()) {
-                    // Are we allowed to search this site ? and should we search this site ?
-                    if (site.isEnabled() && ((currentSearchSites & site.id) != 0)) {
+                    // Should we search this site ?
+                    if ((currentSearchSites & site.id) != 0) {
 
                         fileInfo = downloadFromSite(site, isbn, size);
                         if (fileInfo != null) {
                             return fileInfo;
                         }
 
-                        // if the site we just searched only supports one image, disable it
-                        // for THIS search
+                        // if the site we just searched only supports one image,
+                        // disable it for THIS search
                         if (!site.getSearchEngine().siteSupportsMultipleSizes()) {
                             currentSearchSites &= ~site.id;
                         }

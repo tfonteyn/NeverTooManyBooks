@@ -342,7 +342,6 @@ public class CropImageActivity
             fabButton.setOnClickListener(v -> onSaveClicked());
             startFaceDetection();
         } else {
-            setResult(Activity.RESULT_CANCELED);
             finish();
         }
     }
@@ -522,7 +521,6 @@ public class CropImageActivity
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
                 Logger.error(this, this, e);
-                setResult(Activity.RESULT_CANCELED);
             }
         }
         // clean up and quit.

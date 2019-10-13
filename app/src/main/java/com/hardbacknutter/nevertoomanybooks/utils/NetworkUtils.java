@@ -110,7 +110,7 @@ public final class NetworkUtils {
 
     private static boolean allowMeteredNetwork(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_network_allow_metered_data, false);
+                                .getBoolean(Prefs.pk_network_allow_metered, false);
     }
 
     /**

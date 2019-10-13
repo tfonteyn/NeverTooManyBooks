@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Edit the language field.
@@ -68,7 +69,7 @@ public class EditLanguageDialog
         if (lang.length() > 3) {
             editLang = lang;
         } else {
-            Locale loc = new Locale(lang);
+            Locale loc = LocaleUtils.createLocale(lang);
             editLang = loc.getDisplayLanguage();
         }
         super.edit(editLang, R.layout.dialog_edit_language, R.string.lbl_language);

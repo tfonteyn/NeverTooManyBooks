@@ -147,7 +147,7 @@ public class GoodreadsManager
     private static final String ACCESS_TOKEN_ENDPOINT_URL = BASE_URL + "/oauth/access_token";
 
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "GoodReads.";
+    public static final String PREF_PREFIX = "goodreads.";
     /** Preference that controls display of alert about Goodreads. */
     private static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
     /** last time we synced with Goodreads. */
@@ -363,7 +363,7 @@ public class GoodreadsManager
     public static boolean alertRegistrationBeneficial(@NonNull final Context context,
                                                       final boolean required,
                                                       @NonNull final String prefSuffix) {
-        if (!hasKey()) {
+        if (!hasCredentials()) {
             return alertRegistrationNeeded(context, required, prefSuffix);
         }
         return false;
@@ -858,6 +858,8 @@ public class GoodreadsManager
     @Override
     @WorkerThread
     public boolean isAvailable() {
+        // hasKey() is only here for when the developer forgot to add the dev key.
+        // Checking it avoids confusion and endless debugging elsewhere.
         return hasKey()
                && hasCredentials()
                && NetworkUtils.isAlive(getBaseURL());

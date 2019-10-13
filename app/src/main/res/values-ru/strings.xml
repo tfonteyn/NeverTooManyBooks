@@ -86,7 +86,7 @@
     <string name="X_updated">Обновлено</string>
     <string name="X_use_default_setting">Использовать настройки по умолчанию</string>
     <string name="X_warning_cover_corrupt">Обложка испорчена</string>
-    <string name="X_warning_missing_author">Автор отсутствует.</string>
+    <string name="hint_empty_author">(Автор отсутствует)</string>
     <string name="X_warning_missing_title">Название отсутствует.</string>
     <string name="X_warning_missing_title_author">Название и / или автор отсутствует.</string>
     <string name="X_warning_required_author">Не заполнено поле Автор</string>
@@ -215,7 +215,7 @@
     <string name="warning_date_not_set">Пожалуйста, добавьте действительную дату.</string>
     <string name="hint_developer_key">Ключ разработчика</string>
     <string name="hint_field_not_set">Не установлено</string>
-    <string name="hint_field_not_set_with_brackets">(пусто)</string>
+    <string name="hint_empty_field">(пусто)</string>
     <string name="hint_search_text">Текст и/или ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
     <string name="import_export_option_csv">книги (*.csv)</string>
@@ -632,5 +632,10 @@
     <string name="warning_rebuild_orderby_columns">Это восстановит данные сортировки при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
     <string name="pt_booklist_state_default">Расширение списка книг по умолчанию</string>
     <string name="menu_level_reset">Предпочтительный уровень расширения</string>
+    <string name="hint_empty_rating">(без рейтинга)</string>
+    <string name="hint_empty_language">(Язык не указан)</string>
+    <string name="hint_empty_series">(Нет серии)</string>
+    <string name="hint_empty_month">(Месяц не заполнен)</string>
+    <string name="hint_empty_read_status">(Статус чтения неизвестен)</string>
 
 </resources>

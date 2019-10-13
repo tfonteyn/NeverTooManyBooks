@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -46,6 +45,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * Hosting activity for showing a book.
@@ -82,12 +82,16 @@ public class BookDetailsActivity
     @Override
     public void onBackPressed() {
         BookBaseFragmentModel model = new ViewModelProvider(this).get(BookBaseFragmentModel.class);
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
-        //URGENT: we should only set this flag is a book was actually modified.
-        // but we need to set it for now as we cannot be sure it wasn't modified.
-        data.putExtra(UniqueId.BKEY_SOMETHING_WAS_MODIFIED, true);
 
-        setResult(Activity.RESULT_OK, data);
+        ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
+        // set the current book, so the BoB list can reposition correctly.
+        resultDataModel.putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
+
+        if (model.isModified()) {
+            resultDataModel.putExtra(UniqueId.BKEY_SOMETHING_WAS_MODIFIED, true);
+        }
+
+        setResult(Activity.RESULT_OK, resultDataModel.getData());
         super.onBackPressed();
     }
 

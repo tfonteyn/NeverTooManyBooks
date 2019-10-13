@@ -126,10 +126,6 @@ public class BooklistPseudoCursor
         for (int i = 0; i < MRU_LIST_SIZE; i++) {
             mMruList[i] = -1;
         }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            Logger.debugExit(this, "BooklistPseudoCursor " + this);
-        }
     }
 
     /**
@@ -174,7 +170,7 @@ public class BooklistPseudoCursor
         }
         // Purge them
         for (Integer i : toPurge) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
                 Logger.debug(this, "purgeOldCursors", "Removing cursor at " + i);
             }
             BooklistCursor c = mCursors.remove(i);
@@ -275,7 +271,7 @@ public class BooklistPseudoCursor
     @Override
     @CallSuper
     public boolean requery() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
             Logger.debugEnter(this, "requery ", this);
         }
 
@@ -305,8 +301,15 @@ public class BooklistPseudoCursor
     public boolean onMove(final int oldPosition,
                           final int newPosition) {
         if (newPosition < 0 || newPosition >= getCount()) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
+                Logger.debugEnter(this, "onMove",
+                                  "illegal position",
+                                  "newPosition=" + newPosition,
+                                  "getCount()=" + getCount());
+            }
             return false;
         }
+
         // Get the id we use for the cursor at the new position
         Integer cursorId = newPosition / CURSOR_SIZE;
         // Determine the actual start position
@@ -378,11 +381,11 @@ public class BooklistPseudoCursor
             //noinspection ConstantConditions
             mActiveCursor.moveToPosition(newPosition - cursorStartPos);
 
-//            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-//                Logger.debugExit(this, "onMove",
-//                             "cursorId=" + cursorId,
-//                             "mActiveCursor=" + mActiveCursor);
-//            }
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
+                Logger.debugExit(this, "onMove",
+                                 "cursorId=" + cursorId,
+                                 "mActiveCursor=" + mActiveCursor);
+            }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {

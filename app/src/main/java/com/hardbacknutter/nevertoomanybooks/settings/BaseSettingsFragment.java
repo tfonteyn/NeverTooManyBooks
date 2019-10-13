@@ -34,6 +34,7 @@ import android.text.TextUtils;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -44,6 +45,7 @@ import androidx.preference.PreferenceScreen;
 import java.util.Arrays;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * Base settings page.
@@ -62,13 +64,24 @@ public abstract class BaseSettingsFragment
     @Nullable
     private String mAutoScrollToKey;
 
+    ResultDataModel mResultDataModel;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Bundle args = getArguments();
         if (args != null) {
             mAutoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
         }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        //noinspection ConstantConditions
+        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
     }
 
     @Override

@@ -42,7 +42,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -138,7 +137,7 @@ public class BookSearchByIsbnFragment
     @Nullable
     private CompoundButton mAllowAsinCb;
 
-    private ScannerViewModel mModel;
+    private ScannerViewModel mScannerModel;
 
     private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
             new SearchCoordinator.SearchFinishedListener() {
@@ -171,7 +170,7 @@ public class BookSearchByIsbnFragment
                             }
                         } else {
                             // the search was cancelled, resume scanning
-                            if (mModel.isScanMode()) {
+                            if (mScannerModel.isScanMode()) {
                                 startScannerActivity();
                             }
                         }
@@ -188,8 +187,8 @@ public class BookSearchByIsbnFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mModel = new ViewModelProvider(this).get(ScannerViewModel.class);
-        mModel.init(getArguments());
+        mScannerModel = new ViewModelProvider(this).get(ScannerViewModel.class);
+        mScannerModel.init(getArguments());
     }
 
     @Override
@@ -199,12 +198,13 @@ public class BookSearchByIsbnFragment
                              @Nullable final Bundle savedInstanceState) {
 
         // If we're in scan mode, we don't have a UI.
-        if (mModel.isScanMode()) {
+        if (mScannerModel.isScanMode()) {
             return null;
         }
 
         View view = inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
         mIsbnView = view.findViewById(R.id.isbn);
+        //URGENT: move asin to options menu + add to preferences
         mAllowAsinCb = view.findViewById(R.id.cbx_allow_asin);
         return view;
     }
@@ -228,9 +228,9 @@ public class BookSearchByIsbnFragment
         }
 
         // scan mode ?
-        if (mModel.isScanMode()) {
-            if (mModel.isFirstStart()) {
-                mModel.clearFirstStart();
+        if (mScannerModel.isScanMode()) {
+            if (mScannerModel.isFirstStart()) {
+                mScannerModel.clearFirstStart();
                 startScannerActivity();
             }
         } else {
@@ -250,21 +250,23 @@ public class BookSearchByIsbnFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.title_search_isbn);
 
-        initKeypadButton(R.id.isbn_0, "0");
-        initKeypadButton(R.id.isbn_1, "1");
-        initKeypadButton(R.id.isbn_2, "2");
-        initKeypadButton(R.id.isbn_3, "3");
-        initKeypadButton(R.id.isbn_4, "4");
-        initKeypadButton(R.id.isbn_5, "5");
-        initKeypadButton(R.id.isbn_6, "6");
-        initKeypadButton(R.id.isbn_7, "7");
-        initKeypadButton(R.id.isbn_8, "8");
-        initKeypadButton(R.id.isbn_9, "9");
-        initKeypadButton(R.id.isbn_X, "X");
+        View view = getView();
 
         //noinspection ConstantConditions
-        getView().findViewById(R.id.isbn_del).setOnClickListener(v -> handleDeleteButton());
-        getView().findViewById(R.id.btn_search).setOnClickListener(v -> {
+        view.findViewById(R.id.isbn_0).setOnClickListener(v -> handleIsbnKey("0"));
+        view.findViewById(R.id.isbn_1).setOnClickListener(v -> handleIsbnKey("1"));
+        view.findViewById(R.id.isbn_2).setOnClickListener(v -> handleIsbnKey("2"));
+        view.findViewById(R.id.isbn_3).setOnClickListener(v -> handleIsbnKey("3"));
+        view.findViewById(R.id.isbn_4).setOnClickListener(v -> handleIsbnKey("4"));
+        view.findViewById(R.id.isbn_5).setOnClickListener(v -> handleIsbnKey("5"));
+        view.findViewById(R.id.isbn_6).setOnClickListener(v -> handleIsbnKey("6"));
+        view.findViewById(R.id.isbn_7).setOnClickListener(v -> handleIsbnKey("7"));
+        view.findViewById(R.id.isbn_8).setOnClickListener(v -> handleIsbnKey("8"));
+        view.findViewById(R.id.isbn_9).setOnClickListener(v -> handleIsbnKey("9"));
+        view.findViewById(R.id.isbn_X).setOnClickListener(v -> handleIsbnKey("X"));
+
+        view.findViewById(R.id.isbn_del).setOnClickListener(v -> handleDeleteButton());
+        view.findViewById(R.id.btn_search).setOnClickListener(v -> {
             //noinspection ConstantConditions
             mBookSearchBaseModel.setIsbnSearchText(mIsbnView.getText().toString().trim());
             prepareSearch();
@@ -273,6 +275,19 @@ public class BookSearchByIsbnFragment
         if (mAllowAsinCb != null) {
             mAllowAsinCb.setOnCheckedChangeListener((v, isChecked) -> handleAsinClick(isChecked));
         }
+    }
+
+    /**
+     * Handle character insertion at cursor position in EditText.
+     *
+     * @param keyChar the character generated by the virtual keypad.
+     */
+    private void handleIsbnKey(@NonNull final String keyChar) {
+        @SuppressWarnings("ConstantConditions")
+        int start = mIsbnView.getSelectionStart();
+        int end = mIsbnView.getSelectionEnd();
+        mIsbnView.getText().replace(start, end, keyChar);
+        mIsbnView.setSelection(start + 1, start + 1);
     }
 
     private void handleDeleteButton() {
@@ -313,31 +328,6 @@ public class BookSearchByIsbnFragment
         mIsbnView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
     }
 
-    /**
-     * Add an onClickListener to the individual key of the keypad.
-     *
-     * @param id   of key
-     * @param text which the key will 'generate' upon being pressed.
-     */
-    private void initKeypadButton(@IdRes final int id,
-                                  @NonNull final String text) {
-        //noinspection ConstantConditions
-        getView().findViewById(id).setOnClickListener(v -> handleIsbnKey(text));
-    }
-
-    /**
-     * Handle character insertion at cursor position in EditText.
-     *
-     * @param keyChar the character generated by the virtual keypad.
-     */
-    private void handleIsbnKey(@NonNull final String keyChar) {
-        @SuppressWarnings("ConstantConditions")
-        int start = mIsbnView.getSelectionStart();
-        int end = mIsbnView.getSelectionEnd();
-        mIsbnView.getText().replace(start, end, keyChar);
-        mIsbnView.setSelection(start + 1, start + 1);
-    }
-
     @Override
     SearchCoordinator.SearchFinishedListener getSearchFinishedListener() {
         return mSearchFinishedListener;
@@ -352,7 +342,7 @@ public class BookSearchByIsbnFragment
 
         switch (requestCode) {
             case UniqueId.REQ_IMAGE_FROM_SCANNER: {
-                mModel.setScannerStarted(false);
+                mScannerModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
                     //reminder: data will be null if we get a full size pic.
 
@@ -377,7 +367,7 @@ public class BookSearchByIsbnFragment
                             }
                         }
                     }
-                    Scanner scanner = mModel.getScanner();
+                    Scanner scanner = mScannerModel.getScanner();
                     //noinspection ConstantConditions
                     String barCode = scanner.getBarcode(data);
                     if (barCode != null) {
@@ -393,7 +383,7 @@ public class BookSearchByIsbnFragment
             case UniqueId.REQ_BOOK_EDIT: {
                 // first do the common action when the user has saved the data for the book.
                 super.onActivityResult(requestCode, resultCode, data);
-                if (mModel.isScanMode()) {
+                if (mScannerModel.isScanMode()) {
                     // go scan next book until the user cancels scanning.
                     startScannerActivity();
                 }
@@ -401,7 +391,7 @@ public class BookSearchByIsbnFragment
             }
             case UniqueId.REQ_NAV_PANEL_SETTINGS: {
                 // Make sure the scanner gets re-initialised.
-                mModel.setScanner(null);
+                mScannerModel.setScanner(null);
                 startScannerActivity();
                 break;
             }
@@ -465,7 +455,7 @@ public class BookSearchByIsbnFragment
             return;
         }
         // at this point, we have a valid isbn/asin.
-        if (mModel.isScanMode()) {
+        if (mScannerModel.isScanMode()) {
             // Optionally beep if scan was valid.
             //noinspection ConstantConditions
             SoundManager.beepHigh(getContext());
@@ -486,7 +476,7 @@ public class BookSearchByIsbnFragment
      */
     boolean startSearch() {
         if (!super.startSearch()) {
-            if (mModel.isScanMode()) {
+            if (mScannerModel.isScanMode()) {
                 // we don't have an isbn, but we're scanning. Restart scanner.
                 startScannerActivity();
             }
@@ -524,7 +514,7 @@ public class BookSearchByIsbnFragment
                          (d, which) -> {
                              // reset the now-discarded details
                              mBookSearchBaseModel.clearSearchText();
-                             if (mModel.isScanMode()) {
+                             if (mScannerModel.isScanMode()) {
                                  startScannerActivity();
                              }
                          });
@@ -539,7 +529,7 @@ public class BookSearchByIsbnFragment
      */
     private void isbnInvalid(@NonNull final String isbn,
                              final boolean allowAsin) {
-        if (mModel.isScanMode()) {
+        if (mScannerModel.isScanMode()) {
             // Optionally beep if scan failed.
             //noinspection ConstantConditions
             SoundManager.beepLow(getContext());
@@ -551,7 +541,7 @@ public class BookSearchByIsbnFragment
             msg = R.string.warning_x_is_not_a_valid_isbn;
         }
 
-        if (mModel.isScanMode()) {
+        if (mScannerModel.isScanMode()) {
             //noinspection ConstantConditions
             UserMessage.show(getActivity(), getString(msg, isbn));
             // reset the now-discarded details
@@ -567,7 +557,7 @@ public class BookSearchByIsbnFragment
      * Start scanner activity.
      */
     private void startScannerActivity() {
-        Scanner scanner = mModel.getScanner();
+        Scanner scanner = mScannerModel.getScanner();
         try {
             if (scanner == null) {
                 scanner = ScannerManager.getScanner(mHostActivity);
@@ -575,7 +565,7 @@ public class BookSearchByIsbnFragment
                     noScanner();
                     return;
                 }
-                mModel.setScanner(scanner);
+                mScannerModel.setScanner(scanner);
             }
 
             // this is really for the Google barcode library which is loaded on first access.
@@ -596,13 +586,13 @@ public class BookSearchByIsbnFragment
             }
 
             // ready or not, go scan
-            if (!mModel.isScannerStarted()) {
+            if (!mScannerModel.isScannerStarted()) {
                 if (!scanner.startActivityForResult(this, UniqueId.REQ_IMAGE_FROM_SCANNER)) {
                     // the scanner was loaded, but (still) refuses to start.
                     scannerStartFailed();
                     return;
                 }
-                mModel.setScannerStarted(true);
+                mScannerModel.setScannerStarted(true);
             }
 
         } catch (@NonNull final RuntimeException e) {
@@ -669,8 +659,6 @@ public class BookSearchByIsbnFragment
         Intent lastBookData = mBookSearchBaseModel.getLastBookData();
         if (lastBookData != null) {
             mHostActivity.setResult(Activity.RESULT_OK, lastBookData);
-        } else {
-            mHostActivity.setResult(Activity.RESULT_CANCELED);
         }
 
         // and exit if no dialog present.

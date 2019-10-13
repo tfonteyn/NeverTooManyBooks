@@ -81,9 +81,9 @@ public final class AmazonManager
 
     private static final String UTF_8 = "UTF-8";
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "Amazon.";
+    private static final String PREF_PREFIX = "amazon.";
     /** Type: {@code String}. */
-    private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+    private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
     /** Can only send requests at a throttled speed. */
     @NonNull
     private static final Throttler THROTTLER = new Throttler();

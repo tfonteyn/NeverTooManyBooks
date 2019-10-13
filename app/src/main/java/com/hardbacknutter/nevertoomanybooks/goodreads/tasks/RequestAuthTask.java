@@ -60,6 +60,11 @@ public class RequestAuthTask
     @UiThread
     public RequestAuthTask(@NonNull final TaskListener<Integer> taskListener) {
         super(R.id.TASK_ID_GR_REQUEST_AUTH, taskListener);
+
+        // should only happen if the developer forgot to add the Goodreads keys.... (me)
+        if (!GoodreadsManager.hasKey()) {
+            throw new IllegalStateException("Developer forgot to add they dev key");
+        }
     }
 
     /**
@@ -96,10 +101,7 @@ public class RequestAuthTask
             return R.string.error_network_no_connection;
         }
         GoodreadsManager grManager = new GoodreadsManager();
-        // should only happen if the developer forgot to add the Goodreads keys.... (me)
-        if (!GoodreadsManager.hasKey()) {
-            return R.string.gr_auth_error;
-        }
+
 
         // This next step can take several seconds....
         if (!grManager.hasValidCredentials()) {

@@ -99,10 +99,10 @@ public class OpenLibraryManager
         implements SearchEngine {
 
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "OpenLibrary.";
+    private static final String PREF_PREFIX = "openlibrary.";
 
     /** Type: {@code String}. */
-    private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+    private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
 
     /** param 1: isbn, param 2: L/M/S for the size. */
     private static final String BASE_COVER_URL

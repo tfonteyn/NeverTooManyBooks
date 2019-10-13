@@ -59,7 +59,6 @@ import java.util.concurrent.RejectedExecutionException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
@@ -104,19 +103,15 @@ public class CoverBrowserFragment
     private CoverBrowserViewModel.FileInfo mSwitcherImageFileInfo;
 
     /**
-     * WARNING: LibraryThing is in fact the only site searched for alternative editions!
+     * <strong>WARNING:</strong> LibraryThing is in fact the only site searched for alternative editions!
      * See {@link CoverBrowserViewModel} GetEditionsTask.
-     * <p>
-     * Images themselves are searched from the 'searchSites' as usual.
      *
-     * @param isbn        ISBN of book
-     * @param searchSites bitmask with sites to search, see {@link SearchSites#SEARCH_ALL}.
+     * @param isbn ISBN of book
      *
      * @return the instance
      */
     @NonNull
-    public static CoverBrowserFragment newInstance(@NonNull final String isbn,
-                                                   @SearchSites.Id final int searchSites) {
+    public static CoverBrowserFragment newInstance(@NonNull final String isbn) {
 
         if (!LibraryThingManager.hasKey()) {
             throw new IllegalStateException("LibraryThing Key must be tested before calling this");
@@ -124,7 +119,6 @@ public class CoverBrowserFragment
 
         CoverBrowserFragment frag = new CoverBrowserFragment();
         Bundle args = new Bundle();
-        args.putInt(UniqueId.BKEY_SEARCH_SITES, searchSites);
         args.putString(DBDefinitions.KEY_ISBN, isbn);
         frag.setArguments(args);
         return frag;
@@ -211,8 +205,8 @@ public class CoverBrowserFragment
 
         //noinspection ConstantConditions
         return new AlertDialog.Builder(getContext())
-                       .setView(root)
-                       .create();
+                .setView(root)
+                .create();
     }
 
     @Override

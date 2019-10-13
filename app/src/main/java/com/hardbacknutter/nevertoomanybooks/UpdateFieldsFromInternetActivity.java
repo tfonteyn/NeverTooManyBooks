@@ -59,4 +59,23 @@ public class UpdateFieldsFromInternetActivity
               .commit();
         }
     }
+
+    // TODO: implement UpdateFieldsModel
+//    @Override
+//    public void onActivityResult(final int requestCode,
+//                                 final int resultCode,
+//                                 @Nullable final Intent data) {
+//        if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
+//            if (resultCode == Activity.RESULT_OK && data != null) {
+//                int searchSites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES, 0);
+//                if (searchSites != 0) {
+//                    UpdateFieldsModel mUpdateFieldsModel =
+//                            new ViewModelProvider(this).get(UpdateFieldsModel.class);
+//                    mUpdateFieldsModel.setSearchSites(searchSites);
+//                }
+//            }
+//        }
+//
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
 }

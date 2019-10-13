@@ -142,7 +142,7 @@ public final class ImageUtils {
      */
     public static boolean imagesAreCached() {
         return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                .getBoolean(Prefs.pk_images_cache_resized, false);
+                                .getBoolean(Prefs.pk_image_cache_resized, false);
     }
 
     /**

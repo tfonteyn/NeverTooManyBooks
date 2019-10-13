@@ -32,7 +32,8 @@
     <!-- each language listed here must be written in its own language and spelling. -->
     <string-array name="pe_ui_language">
         <item translatable="false">@string/pt_ui_system_locale</item>
-        <item translatable="false">English</item>
+        <item translatable="false">English Intl.</item>
+        <item translatable="false">English US</item>
         <item translatable="false">Deutsch</item>
         <item translatable="false">Français</item>
         <item translatable="false">Nederlands</item>
@@ -44,7 +45,10 @@
     </string-array>
     <string-array name="pv_ui_language">
         <item translatable="false">system</item>
-        <item translatable="false">en</item>
+        <!-- pretend UK == international. The main thing is the date format: day-month-year. -->
+        <item translatable="false">en_GB</item>
+        <!-- date format: month-day-year. -->
+        <item translatable="false">en_US</item>
         <item translatable="false">de</item>
         <item translatable="false">fr</item>
         <item translatable="false">nl</item>

@@ -85,7 +85,7 @@
     <string name="X_updated">Güncellenmiş</string>
     <string name="X_use_default_setting">Öntanımlı ayarları kullan</string>
     <string name="X_warning_cover_corrupt">Kapak hasarlı</string>
-    <string name="X_warning_missing_author">Yazar eksik.</string>
+    <string name="hint_empty_author">(Yazar eksik)</string>
     <string name="X_warning_missing_title">Başlık eksik.</string>
     <string name="X_warning_missing_title_author">Başlık ve / veya yazar eksik.</string>
     <string name="X_warning_required_author">Yazar alanı boş</string>
@@ -216,7 +216,7 @@
     <string name="warning_date_not_set">Lütfen geçerli bir tarih ekleyin.</string>
     <string name="hint_developer_key">Geliştirici anahtarı</string>
     <string name="hint_field_not_set">Ayarlı değil</string>
-    <string name="hint_field_not_set_with_brackets">(boş)</string>
+    <string name="hint_empty_field">(boş)</string>
     <string name="hint_search_text">Metin ve/veya ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
     <string name="import_export_option_csv">Kitaplar (*.csv)</string>
@@ -634,5 +634,10 @@
     <string name="warning_rebuild_orderby_columns">Bu, uygulama yeniden başlatıldığında sıralama verilerini yeniden oluşturacaktır. Devam etmek istediğine emin misin ?</string>
     <string name="pt_booklist_state_default">Varsayılan Kitap listesi genişletme</string>
     <string name="menu_level_reset">Tercih edilen seviye genişlemesi</string>
+    <string name="hint_empty_rating">(Oylanmamış)</string>
+    <string name="hint_empty_language">(Doldurulmuş dil yok)</string>
+    <string name="hint_empty_series">(Seri yok)</string>
+    <string name="hint_empty_month">(Hiçbir ay doldurulmadı)</string>
+    <string name="hint_empty_read_status">(Okuma durumu bilinmiyor)</string>
 
 </resources>

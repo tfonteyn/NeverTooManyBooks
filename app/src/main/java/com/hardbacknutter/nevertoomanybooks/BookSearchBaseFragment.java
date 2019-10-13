@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -57,7 +56,10 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
 
 /**
  * Optionally limit the sites to search on by setting {@link UniqueId#BKEY_SEARCH_SITES}.
- * By default uses {@link SearchSites#SEARCH_ALL}.
+ *
+ * <strong>IMPORTANT:</strong> do not assume {@link #getView()} is valid.
+ * We do NOT have a view when running in scan mode.
+ * Hence, calls for example to {@link UserMessage#show} <strong>must</strong> use the Activity.
  */
 public abstract class BookSearchBaseFragment
         extends Fragment {
@@ -93,8 +95,7 @@ public abstract class BookSearchBaseFragment
 
         // Check general network connectivity. If none, warn the user.
         if (NetworkUtils.networkUnavailable()) {
-            //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_network_no_connection);
+            UserMessage.show(getActivity(), R.string.error_network_no_connection);
         }
     }
 
@@ -143,11 +144,6 @@ public abstract class BookSearchBaseFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
-            .setIcon(R.drawable.ic_keyboard_hide)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
                  MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_websites)
             .setIcon(R.drawable.ic_search)
@@ -159,12 +155,8 @@ public abstract class BookSearchBaseFragment
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
-            case R.id.MENU_HIDE_KEYBOARD:
-                //noinspection ConstantConditions
-                App.hideKeyboard(getView());
-                return true;
-
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
@@ -197,13 +189,13 @@ public abstract class BookSearchBaseFragment
         //sanity check
         if (!mBookSearchBaseModel.hasSearchData()) {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.warning_required_at_least_one);
+            UserMessage.show(getActivity(), R.string.warning_required_at_least_one);
             return false;
         }
         // Don't start search if we have no approved network... FAIL.
         if (NetworkUtils.networkUnavailable()) {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_network_no_connection);
+            UserMessage.show(getActivity(), R.string.error_network_no_connection);
             return false;
         }
 
@@ -231,10 +223,9 @@ public abstract class BookSearchBaseFragment
             //noinspection ConstantConditions
             Logger.error(getContext(), this, e);
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_search_failed);
+            UserMessage.show(getActivity(), R.string.error_search_failed);
 
         }
-        mHostActivity.setResult(Activity.RESULT_CANCELED);
         mHostActivity.finish();
         return false;
     }
@@ -250,9 +241,9 @@ public abstract class BookSearchBaseFragment
             case UniqueId.REQ_PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-                    mBookSearchBaseModel.setSearchSites(
-                            data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,
-                                             mBookSearchBaseModel.getSearchSites()));
+                    int sites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES,
+                                                 mBookSearchBaseModel.getSearchSites());
+                    mBookSearchBaseModel.setSearchSites(sites);
                 }
                 break;
             }
@@ -263,6 +254,11 @@ public abstract class BookSearchBaseFragment
                 }
                 break;
             }
+//            case UniqueId.REQ_NAV_PANEL_SETTINGS: {
+//
+//                mBookSearchBaseModel.setSearchSites(sites);
+//            }
+
             default: {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debugWithStackTrace(this, "BookSearchBaseFragment.onActivityResult",

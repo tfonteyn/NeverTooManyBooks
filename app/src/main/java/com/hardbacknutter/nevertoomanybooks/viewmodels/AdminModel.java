@@ -27,9 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import android.content.Intent;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
@@ -37,17 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 
 public class AdminModel
         extends ViewModel {
-
-    /** collected from all started activities, will be passed up the chain in our own setResult. */
-    private final Intent mResultData = new Intent();
-
-    public void addToResults(@NonNull final Intent data) {
-        mResultData.putExtras(data);
-    }
-
-    public Intent getResultData() {
-        return mResultData;
-    }
 
     @Nullable
     private TaskBase mTask;

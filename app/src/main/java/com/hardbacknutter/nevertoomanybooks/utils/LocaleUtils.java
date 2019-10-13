@@ -49,7 +49,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -120,7 +119,7 @@ public final class LocaleUtils {
     @NonNull
     public static String getPersistedLocaleSpec(@NonNull final Context context) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        return p.getString(Prefs.pk_ui_language, SYSTEM_LANGUAGE);
+        return p.getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
     }
 
     /**
@@ -162,33 +161,8 @@ public final class LocaleUtils {
      */
     public static boolean isChanged(@NonNull final Context context,
                                     @Nullable final String localeSpec) {
-        if (BuildConfig.DEBUG /* always */) {
-            // developer sanity check: for now, we don't use/support full local tags
-            if (localeSpec != null && localeSpec.contains("_")) {
-                throw new IllegalStateException("incoming localeSpec is a tag instead of a lang: "
-                                                + localeSpec);
-            }
-        }
         return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec(context));
     }
-
-//    /**
-//     * this call is not needed. Use Locale.getDefault();
-//     */
-//    @NonNull
-//    @AnyThread
-//    public static Locale getLocale(@NonNull final Context context) {
-//        String localeSpec = getPersistedLocaleSpec();
-//
-//        // create the Locale at first access, or if the requested is different from the current.
-//        if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
-//            sPreferredLocaleSpec = localeSpec;
-//            sPreferredLocale = createLocale(localeSpec);
-//        }
-//
-//        insanityCheck(context);
-//        return sPreferredLocale;
-//    }
 
     /**
      * Set the context's Locale to the user preferred localeSpec and return the updated context.
@@ -232,7 +206,7 @@ public final class LocaleUtils {
      * @return a new Locale
      */
     @NonNull
-    private static Locale createLocale(@Nullable final String localeSpec) {
+    public static Locale createLocale(@Nullable final String localeSpec) {
 
         if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
             return getSystemLocale();
@@ -382,7 +356,7 @@ public final class LocaleUtils {
     public static Locale getLocale(@NonNull final String iso3Language) {
         Locale locale = LOCALE_MAP.get(iso3Language);
         if (locale == null) {
-            locale = new Locale(LanguageUtils.iso3ToBibliographic(iso3Language));
+            locale = createLocale(LanguageUtils.iso3ToBibliographic(iso3Language));
             if (isValid(locale)) {
                 LOCALE_MAP.put(iso3Language, locale);
             } else {

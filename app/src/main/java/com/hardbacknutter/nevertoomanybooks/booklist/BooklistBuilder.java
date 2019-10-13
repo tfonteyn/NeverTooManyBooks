@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
@@ -44,7 +43,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -53,7 +51,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ListOfValuesFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.WildcardFilter;
@@ -68,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinitio
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
@@ -131,6 +127,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  * Class used to build and populate temporary tables with details of a flattened book
  * list used to display books in a list control and perform operation like
  * 'expand/collapse' on pseudo nodes in the list.
+ *
+ * <strong>IMPORTANT:</strong> {@link #rebuild()} was giving to many problems
+ * (remember it did not work in BookCatalogue 5.2.2 except in classic mode)
+ * The code for it has not been removed here yet, might get revisited later.
  * <p>
  * TODO: [0123456789] replace by [0..9]
  */
@@ -141,6 +141,7 @@ public class BooklistBuilder
     public static final int PREF_LIST_REBUILD_SAVED_STATE = 0;
     public static final int PREF_LIST_REBUILD_ALWAYS_EXPANDED = 1;
     public static final int PREF_LIST_REBUILD_ALWAYS_COLLAPSED = 2;
+    @SuppressWarnings("WeakerAccess")
     public static final int PREF_LIST_REBUILD_PREFERRED_STATE = 3;
 
     /** BookList Compatibility mode property values. See {@link CompatibilityMode}. */
@@ -221,13 +222,10 @@ public class BooklistBuilder
             (db, masterQuery, editTable, query) ->
                     new BooklistCursor(masterQuery, editTable, query,
                                        DAO.getSynchronizer(), BooklistBuilder.this);
-    /** The word 'UNKNOWN', used for year/month if those are (doh) unknown. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private final String mUnknown;
     /** the list of Filters. */
     private final ArrayList<Filter> mFilters = new ArrayList<>();
     /**
-     * Collection of statements used to build the data tables.
+     * Collection of statements used to {@link #rebuild()}.
      * <p>
      * Needs to be re-usable WITHOUT parameter binding.
      */
@@ -256,31 +254,27 @@ public class BooklistBuilder
      */
     @SuppressWarnings("FieldNotUsedInToString")
     private TableDefinition mNavTable;
-    /** Object used in constructing the output table. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private SummaryBuilder mSummary;
     /** A bookshelf id to use as a filter; i.e. show only books on this bookshelf. */
     private long mFilterOnBookshelfId;
     /** DEBUG: Indicates close() has been called. */
     private boolean mCloseWasCalled;
+    /** Object used in constructing the output table. Global for {@link #rebuild()}. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private SummaryBuilder mRebuildSummary;
+
 
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param style   Book list style to use
+     * @param style Book list style to use
      */
-    public BooklistBuilder(@NonNull final Context context,
-                           @NonNull final BooklistStyle style) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+    public BooklistBuilder(@NonNull final BooklistStyle style) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             Logger.debugEnter(this, "BooklistBuilder",
                               "instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet());
         }
         // Allocate ID
         mBooklistBuilderId = ID_COUNTER.incrementAndGet();
-
-        mUnknown = context.getString(R.string.unknown).toUpperCase(Locale.getDefault());
-        LocaleUtils.insanityCheck(context);
 
         // Save the requested style
         mStyle = style;
@@ -296,7 +290,8 @@ public class BooklistBuilder
      */
     @ListRebuildMode
     public static int getPreferredListRebuildState() {
-        return App.getListPreference(Prefs.pk_bob_list_state, PREF_LIST_REBUILD_SAVED_STATE);
+        return App.getListPreference(Prefs.pk_bob_levels_rebuild_state,
+                                     PREF_LIST_REBUILD_SAVED_STATE);
     }
 
     /**
@@ -451,13 +446,13 @@ public class BooklistBuilder
      * Drop and recreate all the data based on previous criteria.
      */
     public void rebuild() {
-        mSummary.recreateTable();
+        mRebuildSummary.recreateTable();
 
         mNavTable.drop(mSyncedDb);
         mNavTable.create(mSyncedDb, true, false);
 
         for (SynchronizedStatement stmt : mRebuildStmts) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Logger.debug(this, "rebuild", "mRebuildStmts|" + stmt + '\n');
             }
             stmt.execute();
@@ -473,7 +468,7 @@ public class BooklistBuilder
      */
     public void build(@BooklistBuilder.ListRebuildMode final int listState,
                       final long previouslySelectedBookId) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             Logger.debugEnter(this, "build",
                               "mBooklistBuilderId=" + mBooklistBuilderId);
         }
@@ -704,13 +699,14 @@ public class BooklistBuilder
                 }
                 mSyncedDb.setTransactionSuccessful();
 
-                mSummary = summary;
+                // keep around for {@link #rebuild()}
+                mRebuildSummary = summary;
 
             } finally {
                 mSyncedDb.endTransaction(txLock);
             }
         } finally {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Logger.debugExit(this, "build", mBooklistBuilderId);
             }
         }
@@ -806,9 +802,9 @@ public class BooklistBuilder
             case PREF_LIST_REBUILD_PREFERRED_STATE:
                 // Use already-defined SQL for preserve state.
                 navStmt.execute();
-                //FIXME: insert + update is wasteful. Create a proper one-step sql stmt
-                int level = mStyle.getDefaultLevel();
-                updateNodesNavigatorTable(level);
+//                //FIXME: insert + update is wasteful. Create a proper one-step sql stmt
+//                int level = mStyle.getDefaultLevel();
+//                updateNodesNavigatorTable(level);
                 break;
 
             case PREF_LIST_REBUILD_SAVED_STATE:
@@ -926,7 +922,7 @@ public class BooklistBuilder
                            + "\n END";
             SynchronizedStatement stmt = mStatements.add(tgName, tgSql);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Logger.debug(this, "makeNestedTriggers", "add",
                              tgName, stmt.toString());
             }
@@ -949,7 +945,7 @@ public class BooklistBuilder
                        + "\n END";
 
         SynchronizedStatement stmt = mStatements.add(currentValueTriggerName, tgSql);
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             Logger.debug(this, "makeNestedTriggers", "add",
                          currentValueTriggerName, stmt);
         }
@@ -1179,7 +1175,8 @@ public class BooklistBuilder
      * Save the currently expanded top level nodes, and the top level group kind, to the database
      * so that the next time this view is opened, the user will see the same opened/closed nodes.
      */
-    private void saveListNodeSettings() {
+    private void saveListNodeSettings(@SuppressWarnings("SameParameterValue")
+                                      @IntRange(from = 1) final int level) {
         SyncLock txLock = null;
         try {
             if (!mSyncedDb.inTransaction()) {
@@ -1195,12 +1192,14 @@ public class BooklistBuilder
                                      .getInsertInto(DOM_BL_NODE_ROW_KIND, DOM_BL_ROOT_KEY)
                              + " SELECT DISTINCT ?," + DOM_BL_ROOT_KEY + " FROM " + mNavTable
                              + " WHERE " + DOM_BL_NODE_EXPANDED + "=1"
-                             + " AND " + DOM_BL_NODE_LEVEL + "=1";
+                             // top-level == 1
+                             + " AND " + DOM_BL_NODE_LEVEL + "<=?";
 
                 stmt = mStatements.add(STMT_SAVE_ALL_LIST_NODE_SETTINGS, sql);
             }
 
             stmt.bindLong(1, mStyle.getGroupKindAt(0));
+            stmt.bindLong(2, level);
             stmt.execute();
 
             if (txLock != null) {
@@ -1334,6 +1333,9 @@ public class BooklistBuilder
      */
     @NonNull
     public BooklistPseudoCursor getNewListCursor() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            Logger.debugWithStackTrace(this, "getNewListCursor");
+        }
         return new BooklistPseudoCursor(this);
     }
 
@@ -1443,7 +1445,7 @@ public class BooklistBuilder
      * {@code null} if not present.
      */
     @Nullable
-    public ArrayList<BookRowInfo> getBookAbsolutePositions(final long bookId) {
+    private ArrayList<BookRowInfo> getBookAbsolutePositions(final long bookId) {
         String sql = "SELECT "
                      + mNavTable.dot(DOM_PK_ID) + ',' + mNavTable.dot(DOM_BL_NODE_VISIBLE)
                      + " FROM " + mListTable + " bl " + mListTable.join(mNavTable)
@@ -1467,7 +1469,7 @@ public class BooklistBuilder
     /**
      * Find the visible root node for a given absolute position and ensure it is visible.
      */
-    public void ensureAbsolutePositionVisible(final long absPos) {
+    private void ensureAbsolutePositionVisible(final long absPos) {
         // If <0 then no previous node.
         if (absPos < 0) {
             return;
@@ -1499,6 +1501,64 @@ public class BooklistBuilder
         } catch (@NonNull final SQLiteDoneException ignore) {
             // query returned zero rows
         }
+    }
+
+    /**
+     * Try to sync the previously selected book ID.
+     *
+     * @return the target rows, or {@code null} if none.
+     */
+    @Nullable
+    public ArrayList<BookRowInfo> syncPreviouslySelectedBookId(final long currentPositionedBookId) {
+        // no input, no output...
+        if (currentPositionedBookId == 0) {
+            return null;
+        }
+
+        // get all positions of the book
+        ArrayList<BookRowInfo> rows = getBookAbsolutePositions(currentPositionedBookId);
+
+        if (rows != null && !rows.isEmpty()) {
+            // First, get the ones that are currently visible...
+            ArrayList<BookRowInfo> visibleRows = new ArrayList<>();
+            for (BookRowInfo rowInfo : rows) {
+                if (rowInfo.visible) {
+                    visibleRows.add(rowInfo);
+                }
+            }
+
+            // If we have any visible rows, only consider those for the new position
+            if (!visibleRows.isEmpty()) {
+                rows = visibleRows;
+            } else {
+                // Make them all visible
+                for (BookRowInfo rowInfo : rows) {
+                    if (!rowInfo.visible) {
+                        ensureAbsolutePositionVisible(rowInfo.absolutePosition);
+                    }
+                }
+                // Recalculate all positions
+                for (BookRowInfo rowInfo : rows) {
+                    rowInfo.listPosition = getPosition(rowInfo.absolutePosition);
+                }
+            }
+            // This was commented out in the original code.
+//            // Find the nearest row to the recorded 'top' row.
+//            int targetRow = rows.get(0).absolutePosition;
+//            int minDist = Math.abs(mModel.getTopRow() - getPosition(targetRow));
+//            for (int i = 1; i < rows.size(); i++) {
+//                int pos = getPosition(rows.get(i).absolutePosition);
+//                int dist = Math.abs(mModel.getTopRow() - pos);
+//                if (dist < minDist) {
+//                    targetRow = rows.get(i).absolutePosition;
+//                }
+//            }
+//            // Make sure the target row is visible/expanded.
+//            ensureAbsolutePositionVisible(targetRow);
+//            // Now find the position it will occupy in the view
+//            mTargetPos = getPosition(targetRow);
+        }
+        return rows;
     }
 
     /**
@@ -1534,11 +1594,12 @@ public class BooklistBuilder
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                     stmt.executeUpdateDelete();
                 }
-                saveListNodeSettings();
+                saveListNodeSettings(1);
 
             } else {
                 updateNodesNavigatorTable(level);
-                saveListNodeSettings();
+                //TEST: saveListNodeSettings(level);
+                saveListNodeSettings(1);
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
@@ -1716,7 +1777,7 @@ public class BooklistBuilder
         mCloseWasCalled = true;
 
         if (!mStatements.isEmpty()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Logger.debug(this, "close",
                              "Has active mStatements (this is not an error): ");
                 for (String name : mStatements.getNames()) {
@@ -1727,7 +1788,7 @@ public class BooklistBuilder
         }
 
         if (mNavTable != null) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Logger.debug(this, "close",
                              "Dropping mNavTable (this is not an error)");
             }
@@ -1741,7 +1802,7 @@ public class BooklistBuilder
         }
 
         if (mListTable != null) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Logger.debug(this, "close",
                              "Dropping mListTable (this is not an error)");
             }
@@ -1756,7 +1817,7 @@ public class BooklistBuilder
 
         mDb.close();
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             if (!mDebugReferenceDecremented) {
                 // Only de-reference once! Paranoia ... close() might be called twice?
                 Logger.debug(this, "close",
@@ -1794,7 +1855,7 @@ public class BooklistBuilder
                + ", mUseTriggers=" + mUseTriggers
                + ", mUseNestedTriggers=" + mUseNestedTriggers
                + ", mCloseWasCalled=" + mCloseWasCalled
-               + ", mRebuildStmts=" + mRebuildStmts
+               //+ ", mRebuildStmts=" + mRebuildStmts
                + ", mFilters=" + mFilters
                + ", mFilterOnBookshelfId=" + mFilterOnBookshelfId
                + '}';
@@ -1836,7 +1897,7 @@ public class BooklistBuilder
 
     private void initCompatibilityMode() {
         @CompatibilityMode
-        int mode = App.getListPreference(Prefs.pk_bob_list_generation, PREF_MODE_DEFAULT);
+        int mode = App.getListPreference(Prefs.pk_compat_booklist_mode, PREF_MODE_DEFAULT);
         // we'll always use triggers unless we're in 'ancient' mode
         mUseTriggers = mode != PREF_MODE_OLD_STYLE;
 
@@ -1847,7 +1908,7 @@ public class BooklistBuilder
                 // or if the user explicitly asked for them
                 || (mode == PREF_MODE_NESTED_TRIGGERS);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             Logger.debug(this, "initCompatibilityMode",
                          "\nlistMode          : " + mode,
                          "\nmUseTriggers      : " + mUseTriggers,
@@ -2134,8 +2195,8 @@ public class BooklistBuilder
     public static class BookRowInfo {
 
         public final int absolutePosition;
-        public final boolean visible;
         public int listPosition;
+        public final boolean visible;
 
         BookRowInfo(final int absolutePosition,
                     final int listPosition,
@@ -2301,7 +2362,7 @@ public class BooklistBuilder
             return "CASE WHEN " + fieldSpec
                    + " glob '[0123456789][01234567890][01234567890][01234567890]*'"
                    + " THEN substr(" + fieldSpec + ",1,4)"
-                   + " ELSE '" + mUnknown + '\''
+                   + " ELSE ''"
                    + " END";
         }
 
@@ -2330,7 +2391,7 @@ public class BooklistBuilder
                    + " glob '[0123456789][01234567890][01234567890][01234567890]"
                    + "-[0123456789]*'"
                    + " THEN substr(" + fieldSpec + ",6,1)"
-                   + " ELSE '" + mUnknown + '\''
+                   + " ELSE ''"
                    + " END";
         }
 

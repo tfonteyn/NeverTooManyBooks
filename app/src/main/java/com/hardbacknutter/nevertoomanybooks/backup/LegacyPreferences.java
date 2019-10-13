@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
@@ -60,7 +61,7 @@ public final class LegacyPreferences {
 
     /**
      * Migrate BookCatalogue preferences.
-     *
+     * <p>
      * Refactoring brought a cleanup and re-structuring of the preferences.
      * Some of these are real migrations,
      * some just for aesthetics's making the key's naming standard.
@@ -103,7 +104,7 @@ public final class LegacyPreferences {
                     case "App.Locale":
                         String tmp = (String) oldValue;
                         if (!tmp.isEmpty()) {
-                            ed.putString(Prefs.pk_ui_language, tmp);
+                            ed.putString(Prefs.pk_ui_locale, tmp);
                         }
                         break;
 
@@ -122,7 +123,7 @@ public final class LegacyPreferences {
                                 bobState = BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE;
                                 break;
                         }
-                        ed.putString(Prefs.pk_bob_list_state, String.valueOf(bobState));
+                        ed.putString(Prefs.pk_bob_levels_rebuild_state, String.valueOf(bobState));
                         break;
 
                     case "App.BooklistGenerationMode":
@@ -143,12 +144,15 @@ public final class LegacyPreferences {
                                 compatMode = BooklistBuilder.PREF_MODE_DEFAULT;
                                 break;
                         }
-                        ed.putString(Prefs.pk_bob_list_generation, String.valueOf(compatMode));
+                        ed.putString(Prefs.pk_compat_booklist_mode, String.valueOf(compatMode));
                         break;
 
                     case "SoundManager.BeepIfScannedIsbnInvalid":
+                        ed.putBoolean(Prefs.pk_sounds_scan_isbn_invalid, (Boolean) oldValue);
+                        break;
+
                     case "SoundManager.BeepIfScannedIsbnValid":
-                        ed.putBoolean(entry.getKey(), (Boolean) oldValue);
+                        ed.putBoolean(Prefs.pk_sounds_scan_isbn_valid, (Boolean) oldValue);
                         break;
 
                     case "ScannerManager.PreferredScanner":
@@ -171,23 +175,23 @@ public final class LegacyPreferences {
                                 scanner = ScannerManager.GOOGLE_PLAY_SERVICES;
                                 break;
                         }
-                        ed.putString(entry.getKey(), String.valueOf(scanner));
+                        ed.putString(Prefs.pk_scanner_preferred, String.valueOf(scanner));
                         break;
 
                     case "App.CropFrameWholeImage":
-                        ed.putBoolean(Prefs.pk_images_crop_whole_image, (Boolean) oldValue);
+                        ed.putBoolean(Prefs.pk_image_cropper_frame_whole, (Boolean) oldValue);
                         break;
 
                     case "App.UseExternalImageCropper":
-                        ed.putBoolean(Prefs.pk_images_external_cropper, (Boolean) oldValue);
+                        ed.putBoolean(Prefs.pk_image_cropper_external, (Boolean) oldValue);
                         break;
 
                     case "BookList.Global.CacheThumbnails":
-                        ed.putBoolean(Prefs.pk_images_cache_resized, (Boolean) oldValue);
+                        ed.putBoolean(Prefs.pk_image_cache_resized, (Boolean) oldValue);
                         break;
 
                     case "App.AutorotateCameraImages":
-                        ed.putString(Prefs.pk_images_rotate_auto, String.valueOf(oldValue));
+                        ed.putString(Prefs.pk_camera_image_autorotate, String.valueOf(oldValue));
                         break;
 
                     /*
@@ -315,13 +319,9 @@ public final class LegacyPreferences {
                         if (entry.getKey().startsWith("GoodReads")) {
                             String tmp1 = (String) oldValue;
                             if (!tmp1.isEmpty()) {
-                                ed.putString(entry.getKey(), tmp1);
-                            }
-
-                        } else if (entry.getKey().startsWith("Backup")) {
-                            String tmp1 = (String) oldValue;
-                            if (!tmp1.isEmpty()) {
-                                ed.putString(entry.getKey(), tmp1);
+                                ed.putString(entry.getKey().replace("GoodReads.",
+                                                                    GoodreadsManager.PREF_PREFIX),
+                                             tmp1);
                             }
 
                         } else if (entry.getKey().startsWith("HintManager.Hint.hint_")) {
@@ -357,7 +357,8 @@ public final class LegacyPreferences {
                                     break;
                             }
 
-                        } else if (!entry.getKey().startsWith("state_current_group")) {
+                        } else if (!entry.getKey().startsWith("state_current_group")
+                                   && !entry.getKey().startsWith("Backup")) {
                             Logger.info(context, Prefs.class, "migrateLegacyPreferences",
                                         "unknown key=" + entry.getKey(),
                                         "value=" + oldValue);

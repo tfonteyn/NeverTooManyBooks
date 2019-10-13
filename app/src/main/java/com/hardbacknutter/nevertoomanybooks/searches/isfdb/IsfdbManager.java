@@ -95,13 +95,13 @@ public class IsfdbManager
 
 
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "ISFDB.";
+    private static final String PREF_PREFIX = "isfdb.";
     /** Type: {@code boolean}. */
-    public static final String PREFS_SERIES_FROM_TOC = PREF_PREFIX + "seriesFromToc";
+    public static final String PREFS_SERIES_FROM_TOC = PREF_PREFIX + "search.toc.series";
     /** Type: {@code boolean}. */
-    public static final String PREFS_USE_PUBLISHER = PREF_PREFIX + "uses.publisher";
+    public static final String PREFS_USE_PUBLISHER = PREF_PREFIX + "search.uses.publisher";
     /** Type: {@code String}. */
-    private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+    private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
 
 
     /**

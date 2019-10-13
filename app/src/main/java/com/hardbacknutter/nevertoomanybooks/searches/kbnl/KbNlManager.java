@@ -63,10 +63,10 @@ public class KbNlManager
         implements SearchEngine {
 
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "KBNL.";
+    private static final String PREF_PREFIX = "kbnl.";
 
     /** Type: {@code String}. */
-    private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+    private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
 
     public static final Locale SITE_LOCALE = new Locale("nl", "NL");
 

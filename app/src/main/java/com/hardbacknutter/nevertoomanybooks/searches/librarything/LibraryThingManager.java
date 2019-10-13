@@ -96,7 +96,7 @@ public class LibraryThingManager
         implements SearchEngine {
 
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "LibraryThing.";
+    private static final String PREF_PREFIX = "librarything.";
 
     /** Preference that contains the dev key for the user. Type: {@code String}. */
     public static final String PREFS_DEV_KEY = PREF_PREFIX + "dev_key";

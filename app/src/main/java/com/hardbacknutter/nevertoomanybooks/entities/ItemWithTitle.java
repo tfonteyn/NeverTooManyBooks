@@ -60,7 +60,7 @@ public interface ItemWithTitle {
                                           @NonNull final Locale titleLocale) {
 
         if (PreferenceManager.getDefaultSharedPreferences(userContext)
-                             .getBoolean(Prefs.pk_reorder_titles_for_sorting, true)) {
+                             .getBoolean(Prefs.pk_reformat_titles_sort, true)) {
 
             return LocaleUtils.reorderTitle(userContext, getTitle(), titleLocale);
         } else {

@@ -285,14 +285,14 @@ abstract class SendBooksLegacyTaskBase
             holder.rowId = eventsCursor.getId();
 
             ArrayList<Author> authors = db.getAuthorsByBookId(mBookId);
-            String author;
+            String authorName;
             if (!authors.isEmpty()) {
-                author = authors.get(0).getLabel(context);
+                authorName = authors.get(0).getLabel(context);
                 if (authors.size() > 1) {
-                    author = author + ' ' + context.getString(R.string.and_others);
+                    authorName = authorName + ' ' + context.getString(R.string.and_others);
                 }
             } else {
-                author = context.getString(R.string.unknown).toUpperCase(Locale.getDefault());
+                authorName = context.getString(R.string.unknown).toUpperCase(Locale.getDefault());
             }
 
             String title = db.getBookTitle(mBookId);
@@ -301,7 +301,7 @@ abstract class SendBooksLegacyTaskBase
             }
 
             holder.titleView.setText(title);
-            holder.authorView.setText(context.getString(R.string.lbl_by_author_s, author));
+            holder.authorView.setText(context.getString(R.string.lbl_by_author_s, authorName));
             holder.errorView.setText(getDescription());
 
             String date = DateUtils.toPrettyDateTime(eventsCursor.getEventDate());

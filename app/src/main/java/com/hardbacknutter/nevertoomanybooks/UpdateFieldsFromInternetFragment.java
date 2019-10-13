@@ -75,6 +75,8 @@ import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Ove
 
 /**
  * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsFromInternetTask}.
+ *
+ * TODO: implement UpdateFieldsModel
  */
 public class UpdateFieldsFromInternetFragment
         extends Fragment {
@@ -82,15 +84,10 @@ public class UpdateFieldsFromInternetFragment
     /** Fragment manager tag. */
     public static final String TAG = "UpdateFieldsFromInternetFragment";
 
-    /**
-     * optionally limit the sites to search on.
-     * By default uses {@link SearchSites#SEARCH_ALL}
-     */
-    private static final String REQUEST_BKEY_SEARCH_SITES = TAG + ":SearchSites";
     /** which fields to update and how. */
     private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
-    /** where to look. */
-    private int mSearchSites = SearchSites.SEARCH_ALL;
+    /** Bitmask with sites to search on. */
+    private int mSearchSites;
     /** Book ID's to fetch. {@code null} for all books. */
     private ArrayList<Long> mBookIds;
 
@@ -144,8 +141,8 @@ public class UpdateFieldsFromInternetFragment
             //noinspection unchecked
             mBookIds = (ArrayList<Long>) currentArgs.getSerializable(UniqueId.BKEY_ID_LIST);
 
-            // optional
-            mSearchSites = currentArgs.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
+            mSearchSites = currentArgs.getInt(UniqueId.BKEY_SEARCH_SITES,
+                                              SearchSites.getEnabledSitesAsBitmask());
             // optional activity title
             mTitle = currentArgs.getString(UniqueId.BKEY_DIALOG_TITLE);
         }
@@ -359,8 +356,7 @@ public class UpdateFieldsFromInternetFragment
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-                    mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,
-                                                    mSearchSites);
+                    mSearchSites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES, mSearchSites);
                 }
                 break;
 
@@ -377,7 +373,7 @@ public class UpdateFieldsFromInternetFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(UniqueId.BKEY_ID_LIST, mBookIds);
-        outState.putInt(REQUEST_BKEY_SEARCH_SITES, mSearchSites);
+        outState.putInt(UniqueId.BKEY_SEARCH_SITES, mSearchSites);
         outState.putString(UniqueId.BKEY_DIALOG_TITLE, mTitle);
     }
 

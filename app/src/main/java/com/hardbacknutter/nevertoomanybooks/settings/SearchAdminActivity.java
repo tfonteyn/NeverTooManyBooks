@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
@@ -65,8 +66,6 @@ public class SearchAdminActivity
      * if we should *only* show that tab, and NOT save the new setting (i.e. the "use" scenario).
      */
     public static final String REQUEST_BKEY_TAB = "tab";
-    /** Bundle key with the resulting site usage for the "use" scenario. */
-    public static final String RESULT_SEARCH_SITES = "resultSearchSites";
 
     public static final int TAB_ORDER = 0;
     public static final int TAB_COVER_ORDER = 1;
@@ -137,11 +136,22 @@ public class SearchAdminActivity
 
     @Override
     public void onBackPressed() {
+        Intent data = null;
+
+        ArrayList<Site> list;
+
         if (mUseScenario) {
-            doUse();
+            list = doUse();
         } else {
-            doSave();
+            list = doSave();
         }
+
+        if (list != null) {
+            data = new Intent().putExtra(UniqueId.BKEY_SEARCH_SITES,
+                                         SearchSites.getEnabledSitesAsBitmask(list));
+        }
+
+        setResult(Activity.RESULT_OK, data);
         super.onBackPressed();
     }
 
@@ -189,48 +199,36 @@ public class SearchAdminActivity
     /**
      * Prepares and sets the activity result.
      */
-    private void doUse() {
+    @Nullable
+    private ArrayList<Site> doUse() {
+        return ((SearchOrderFragment) mAdapter.getItem(mViewPager.getCurrentItem())).getList();
 
-        int sites = SearchSites.SEARCH_ALL;
-        ArrayList<Site> list = ((SearchOrderFragment)
-                                        mAdapter.getItem(mViewPager.getCurrentItem())).getList();
-        //noinspection ConstantConditions
-        for (Site site : list) {
-            if (site.isEnabled()) {
-                // add the site
-                sites = sites | site.id;
-            } else {
-                // remove the site
-                sites = sites & ~site.id;
-            }
-        }
-        Intent data = new Intent().putExtra(RESULT_SEARCH_SITES, sites);
-        // don't commit any changes, we got data to use temporarily
-        setResult(Activity.RESULT_OK, data);
     }
 
     /**
      * Saves the settings & sets the activity result.
+     * <p>
+     * setResult with UniqueId.BKEY_SEARCH_SITES
      */
-    private void doSave() {
-
+    @Nullable
+    private ArrayList<Site> doSave() {
+        ArrayList<Site> siteList = null;
         if (mIsDirty) {
-            ArrayList<Site> list;
+
             //ENHANCE: compare this approach to what is used in EditBookFragment & children.
             // Decide later...
-            list = ((SearchOrderFragment) mAdapter.getItem(TAB_ORDER)).getList();
-            if (list != null) {
-                SearchSites.setSearchOrder(this, list);
+            siteList = ((SearchOrderFragment) mAdapter.getItem(TAB_ORDER)).getList();
+            if (siteList != null) {
+                SearchSites.setSearchOrder(this, siteList);
             }
 
-            list = ((SearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).getList();
-            if (list != null) {
-                SearchSites.setCoverSearchOrder(this, list);
+            ArrayList<Site> coverList =
+                    ((SearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).getList();
+            if (coverList != null) {
+                SearchSites.setCoverSearchOrder(this, coverList);
             }
         }
-
-        // no data to return
-        setResult(Activity.RESULT_OK);
+        return siteList;
     }
 
     private static class ViewPagerAdapter

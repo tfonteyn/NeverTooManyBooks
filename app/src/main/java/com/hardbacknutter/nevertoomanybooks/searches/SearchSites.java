@@ -52,13 +52,13 @@ import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
- * Manages the setup of search engines/sites.
+ * Manages the setup of {@link SearchEngine} and {@link Site} instances.
  * <p>
  * <br>NEWTHINGS: adding a new search engine:
  * To make it available, follow these steps:
  * <ol>
  * <li>Implement {@link SearchEngine} to create the new engine.</li>
- * <li>Add an identifier (bit) in this class + add it to {@link #SEARCH_ALL}.</li>
+ * <li>Add an identifier (bit) in this class + add it to {@link #SEARCH_FLAG_MASK}.</li>
  * <li>Add the identifier to {@link interface Id}</li>
  * <li>Add a name for it to {@link #getName}.<br>
  * This should be a hardcoded, single word, no spaces, and will be user visible.<br>
@@ -76,12 +76,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  */
 public final class SearchSites {
 
-
+    /** Site. */
+    static final int AMAZON = 1 << 1;
     /** tag. */
     private static final String TAG = "SearchSites";
     public static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
-    /** Site. */
-    static final int AMAZON = 1 << 1;
     /** Site. */
     private static final int GOOGLE_BOOKS = 1;
     /** Site. */
@@ -98,9 +97,9 @@ public final class SearchSites {
     private static final int STRIP_INFO_BE = 1 << 7;
 
     /** Mask including all search sources. */
-    public static final int SEARCH_ALL = GOOGLE_BOOKS | AMAZON
-                                         | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY
-                                         | KB_NL | STRIP_INFO_BE;
+    static final int SEARCH_FLAG_MASK = GOOGLE_BOOKS | AMAZON
+                                        | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY
+                                        | KB_NL | STRIP_INFO_BE;
 
     /** the default search site order for standard data/covers. */
     private static final ArrayList<Site> SEARCH_ORDER_DEFAULTS = new ArrayList<>();
@@ -338,9 +337,25 @@ public final class SearchSites {
         return PREFERRED_RELIABILITY_ORDER;
     }
 
+    /**
+     * Get the global search site list in the preferred order.
+     * Includes enabled <strong>AND</strong> disabled sites, in the preferred order.
+     *
+     * @return the list
+     */
     @NonNull
     public static ArrayList<Site> getSites() {
         return sPreferredSearchOrder;
+    }
+
+    /**
+     * Get the global search site list as a bitmask.
+     * Includes <strong>ONLY</strong> the enabled sites.
+     *
+     * @return bitmask
+     */
+    public static int getEnabledSitesAsBitmask() {
+        return getEnabledSitesAsBitmask(sPreferredSearchOrder);
     }
 
     /**
@@ -359,9 +374,26 @@ public final class SearchSites {
         ed.apply();
     }
 
+    /**
+     * Get the global cover-search site list in the preferred order.
+     * Includes enabled <strong>AND</strong> disabled sites, in the preferred order.
+     *
+     * @return the list
+     */
     @NonNull
     public static ArrayList<Site> getSitesForCoverSearches() {
         return sPreferredCoverSearchOrder;
+
+    }
+
+    /**
+     * Get the global cover search site list as a bitmask.
+     * Includes <strong>ONLY</strong> the enabled sites.
+     *
+     * @return bitmask
+     */
+    public static int getEnabledSitesForCoverSearchesAsBitmask() {
+        return getEnabledSitesAsBitmask(sPreferredCoverSearchOrder);
     }
 
     /**
@@ -378,6 +410,28 @@ public final class SearchSites {
             site.saveToPrefs(ed);
         }
         ed.apply();
+    }
+
+
+    /**
+     * Filter the incoming list, returning a new list with the enabled sites.
+     *
+     * @param list to filter
+     *
+     * @return list containing only the enables sites
+     */
+    public static int getEnabledSitesAsBitmask(@NonNull final ArrayList<Site> list) {
+        int sites = SEARCH_FLAG_MASK;
+        for (Site site : list) {
+            if (site.isEnabled()) {
+                // add the site
+                sites = sites | site.id;
+            } else {
+                // remove the site
+                sites = sites & ~site.id;
+            }
+        }
+        return sites;
     }
 
     @IntDef(flag = true, value = {

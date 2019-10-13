@@ -31,8 +31,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -41,7 +39,6 @@ import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -200,32 +197,6 @@ public class EditBookSeriesActivity
         series.copyFrom(newSeriesData, true);
         Series.pruneList(mList, this, mModel.getDb(), fallbackLocale);
         mListAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    @CallSuper
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-
-        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
-            .setIcon(R.drawable.ic_keyboard_hide)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_HIDE_KEYBOARD:
-                App.hideKeyboard(getWindow().getDecorView());
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     /**

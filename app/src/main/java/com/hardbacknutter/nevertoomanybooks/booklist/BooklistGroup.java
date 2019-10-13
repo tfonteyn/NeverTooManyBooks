@@ -48,6 +48,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -58,7 +59,11 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 
@@ -348,8 +353,7 @@ public class BooklistGroup
         @Override
         public void addPreferencesTo(@NonNull final PreferenceScreen screen) {
             Context context = screen.getContext();
-            PreferenceCategory category =
-                    screen.findPreference(Prefs.psk_style_series);
+            PreferenceCategory category = screen.findPreference(Prefs.psk_style_series);
             String description = context.getString(R.string.lbl_series);
             if (category != null) {
                 category.setVisible(true);
@@ -466,8 +470,7 @@ public class BooklistGroup
         @Override
         public void addPreferencesTo(@NonNull final PreferenceScreen screen) {
             Context context = screen.getContext();
-            PreferenceCategory category =
-                    screen.findPreference(Prefs.psk_style_author);
+            PreferenceCategory category = screen.findPreference(Prefs.psk_style_author);
             String description = context.getString(R.string.lbl_author);
             if (category != null) {
                 category.setVisible(true);
@@ -768,6 +771,111 @@ public class BooklistGroup
             Set<Integer> set = ALL_KINDS.keySet();
             set.remove(BOOK);
             return set;
+        }
+
+        /**
+         * Format the source string according to the kind.
+         *
+         * <strong>Developer note::</strong> this is not (yet) complete,
+         * CHECK if the desired kind is covered.
+         * Also see {@link com.hardbacknutter.nevertoomanybooks.BooklistAdapter.GenericStringHolder#setText(String, int)}
+         * TODO: come up with a clean solution to merge these.
+         *
+         * @param context Current context
+         * @param kind    for this row
+         * @param source  text to reformat
+         *
+         * @return reformatted text
+         */
+        public static String format(@NonNull final Context context,
+                                    @Kind final int kind,
+                                    @NonNull final String source) {
+            switch (kind) {
+                case READ_STATUS: {
+                    switch (source) {
+                        case "0":
+                            return context.getString(R.string.lbl_unread);
+                        case "1":
+                            return context.getString(R.string.lbl_read);
+                        default:
+                            return context.getString(R.string.hint_empty_read_status);
+                    }
+                }
+                case LANGUAGE: {
+                    if (source.isEmpty()) {
+                        return context.getString(R.string.hint_empty_language);
+                    } else {
+                        return LanguageUtils.getDisplayName(Locale.getDefault(), source);
+                    }
+                }
+                case RATING: {
+                    if (source.isEmpty()) {
+                        return context.getString(R.string.hint_empty_rating);
+                    }
+                    try {
+                        int i = Integer.parseInt(source);
+                        // If valid, get the name
+                        if (i >= 0 && i <= Book.RATING_STARS) {
+                            return context.getResources()
+                                          .getQuantityString(R.plurals.n_stars, i, i);
+                        }
+                    } catch (@NonNull final NumberFormatException e) {
+                        Logger.error(context, RowKind.class, e);
+                    }
+                    return source;
+                }
+
+                case DATE_ACQUIRED_MONTH:
+                case DATE_ADDED_MONTH:
+                case DATE_LAST_UPDATE_MONTH:
+                case DATE_PUBLISHED_MONTH:
+                case DATE_READ_MONTH: {
+                    if (source.isEmpty()) {
+                        return context.getString(R.string.hint_empty_month);
+                    }
+                    try {
+                        int i = Integer.parseInt(source);
+                        // If valid, get the short name
+                        if (i > 0 && i <= 12) {
+                            return DateUtils.getMonthName(i, false);
+                        }
+                    } catch (@NonNull final NumberFormatException e) {
+                        Logger.error(context, RowKind.class, e);
+                    }
+                    return source;
+                }
+
+                case AUTHOR:
+                case BOOKSHELF:
+                case BOOK:
+                case DATE_ACQUIRED_DAY:
+                case DATE_ACQUIRED_YEAR:
+                case DATE_ADDED_DAY:
+                case DATE_ADDED_YEAR:
+                case DATE_FIRST_PUBLICATION_MONTH:
+                case DATE_FIRST_PUBLICATION_YEAR:
+                case DATE_LAST_UPDATE_DAY:
+                case DATE_LAST_UPDATE_YEAR:
+                case DATE_PUBLISHED_YEAR:
+                case DATE_READ_DAY:
+                case DATE_READ_YEAR:
+                case FORMAT:
+                case GENRE:
+                case LOANED:
+                case LOCATION:
+                case PUBLISHER:
+                case SERIES:
+                case TITLE_LETTER:
+                    // no specific formatting done.
+                    return source;
+
+                default:
+                    Logger.warnWithStackTrace(context, RowKind.class, "format",
+                                              "source=" + source,
+                                              "kind=" + kind);
+                    throw new UnexpectedValueException(kind);
+
+            }
         }
 
         /**

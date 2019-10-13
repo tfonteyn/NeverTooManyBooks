@@ -984,40 +984,45 @@ public class XmlImporter
         public void putString(@NonNull final String key,
                               @NonNull final String value) {
             PString p = (PString) mStylePrefs.get(key);
-            //noinspection ConstantConditions
-            p.set(value);
+            if (p != null) {
+                p.set(value);
+            }
         }
 
         @Override
         public void putBoolean(@NonNull final String key,
                                final boolean value) {
             PBoolean p = (PBoolean) mStylePrefs.get(key);
-            //noinspection ConstantConditions
-            p.set(value);
+            if (p != null) {
+                p.set(value);
+            }
         }
 
         @Override
         public void putInt(@NonNull final String key,
                            final int value) {
             PInt p = (PInt) mStylePrefs.get(key);
-            //noinspection ConstantConditions
-            p.set(value);
+            if (p != null) {
+                p.set(value);
+            }
         }
 
         @Override
         public void putStringSet(@NonNull final String key,
                                  @NonNull final Iterable<String> value) {
             PCollection p = (PCollection) mStylePrefs.get(key);
-            //noinspection ConstantConditions
-            p.set(value);
+            if (p != null) {
+                p.set(value);
+            }
         }
 
         @Override
         public void putStringList(@NonNull final String key,
                                   @NonNull final Iterable<String> value) {
             PCollection p = (PCollection) mStylePrefs.get(key);
-            //noinspection ConstantConditions
-            p.set(value);
+            if (p != null) {
+                p.set(value);
+            }
         }
     }
 

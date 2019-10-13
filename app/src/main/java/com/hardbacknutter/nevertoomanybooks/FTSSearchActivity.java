@@ -218,11 +218,6 @@ public class FTSSearchActivity
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
-        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
-            .setIcon(R.drawable.ic_keyboard_hide)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
         menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.menu_rebuild_fts)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
@@ -232,11 +227,8 @@ public class FTSSearchActivity
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
-            case R.id.MENU_HIDE_KEYBOARD:
-                App.hideKeyboard(getWindow().getDecorView());
-                return true;
-
             case R.id.MENU_REBUILD_FTS:
                 mDb.rebuildFts();
                 return true;

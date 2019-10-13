@@ -84,6 +84,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AdminModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ExportHelperModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.GoodreadsTaskModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ImportHelperModel;
@@ -109,6 +110,8 @@ public class AdminFragment
 
     /** ViewModel. */
     private AdminModel mModel;
+    /** ViewModel. */
+    private ResultDataModel mResultDataModel;
 
     /** ViewModel for task control. */
     private GoodreadsTaskModel mGoodreadsTaskModel;
@@ -151,6 +154,7 @@ public class AdminFragment
         // Activity scope
         //noinspection ConstantConditions
         mModel = new ViewModelProvider(getActivity()).get(AdminModel.class);
+        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
         mGoodreadsTaskModel = new ViewModelProvider(this).get(GoodreadsTaskModel.class);
         mGoodreadsTaskModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
@@ -311,7 +315,7 @@ public class AdminFragment
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         // collect all data for passing to the calling Activity
         if (data != null) {
-            mModel.addToResults(data);
+            mResultDataModel.putAll(data);
         }
 
         switch (requestCode) {
@@ -702,10 +706,9 @@ public class AdminFragment
                 .setTitle(titleId)
                 .setMessage(msg)
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
-                    Intent data = new Intent().putExtra(UniqueId.BKEY_IMPORT_RESULT,
-                                                        importHelper.options);
+                    mResultDataModel.putExtra(UniqueId.BKEY_IMPORT_RESULT, importHelper.options);
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, data);
+                    getActivity().setResult(Activity.RESULT_OK, mResultDataModel.getData());
                     getActivity().finish();
                 })
                 .create()
@@ -861,11 +864,11 @@ public class AdminFragment
                                     .setTitle(R.string.progress_end_backup_success)
                                     .setMessage(msg)
                                     .setPositiveButton(android.R.string.ok, (d, which) -> {
-                                        Intent data = new Intent()
-                                                .putExtra(UniqueId.BKEY_EXPORT_RESULT,
-                                                          exportHelper.options);
+                                        mResultDataModel.putExtra(UniqueId.BKEY_EXPORT_RESULT,
+                                                                  exportHelper.options);
                                         //noinspection ConstantConditions
-                                        getActivity().setResult(Activity.RESULT_OK, data);
+                                        getActivity().setResult(Activity.RESULT_OK,
+                                                                mResultDataModel.getData());
                                         getActivity().finish();
                                     })
                                     .create()
@@ -907,16 +910,15 @@ public class AdminFragment
                                     .setTitle(R.string.progress_end_backup_success)
                                     .setMessage(msg)
                                     .setNegativeButton(android.R.string.cancel, (d, which) -> {
-                                        Intent data = new Intent()
-                                                .putExtra(UniqueId.BKEY_EXPORT_RESULT,
-                                                          exportHelper.options);
+                                        mResultDataModel.putExtra(UniqueId.BKEY_EXPORT_RESULT,
+                                                                  exportHelper.options);
                                         //noinspection ConstantConditions
-                                        getActivity().setResult(Activity.RESULT_OK, data);
+                                        getActivity().setResult(Activity.RESULT_OK,
+                                                                mResultDataModel.getData());
                                         getActivity().finish();
                                     })
-                                    .setPositiveButton(android.R.string.ok,
-                                                       (d, which) -> emailExportFile(
-                                                               exportHelper))
+                                    .setPositiveButton(android.R.string.ok, (d, which) ->
+                                            emailExportFile(exportHelper))
                                     .create()
                                     .show();
                         }

@@ -38,6 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
@@ -51,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * Hosting activity for Preference editing.
@@ -177,7 +179,7 @@ public class SettingsActivity
                 break;
 
             // Trigger a recreate of this activity, if this setting has changed.
-            case Prefs.pk_ui_language:
+            case Prefs.pk_ui_locale:
                 if (LocaleUtils.isChanged(this, mInitialLocaleSpec)) {
                     LocaleUtils.onLocaleChanged();
                     App.setIsRecreating();
@@ -191,7 +193,31 @@ public class SettingsActivity
 
         // set the result (and again and again...). Also see the fragment method.
         // TODO: make the response conditional, not all changes warrant a recreate!
-        Intent data = new Intent().putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
-        setResult(Activity.RESULT_OK, data);
+        ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
+        resultDataModel.putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+        if (data != null) {
+            ResultDataModel resultDataModel =
+                    new ViewModelProvider(this).get(ResultDataModel.class);
+            resultDataModel.putAll(data);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
+        Intent data = resultDataModel.getData();
+        if (data.getExtras() != null) {
+            setResult(Activity.RESULT_OK, data);
+        }
+
+        super.onBackPressed();
     }
 }

@@ -74,7 +74,7 @@ public class UpdateFieldsFromInternetTask
     private final ReentrantLock mSearchLock = new ReentrantLock();
     /** Signal for available items. */
     private final Condition mSearchDone = mSearchLock.newCondition();
-    /** Sites to search. */
+    /** Bitmask with sites to search on. */
     @SearchSites.Id
     private final int mSearchSites;
     /** Active search manager. */
@@ -145,7 +145,7 @@ public class UpdateFieldsFromInternetTask
      * Constructor.
      *
      * @param taskManager Object to manage background tasks
-     * @param searchSites sites to search, see {@link SearchSites#SEARCH_ALL}
+     * @param searchSites sites to search, see {@link SearchSites#SEARCH_FLAG_MASK}
      * @param fields      fields to update
      * @param listener    where to send our results to
      */

@@ -84,7 +84,7 @@
     <string name="X_updated">Bijgewerkt</string>
     <string name="X_use_default_setting">Gebruik de standaard waarden</string>
     <string name="X_warning_cover_corrupt">Omslagafbeelding is niet geldig</string>
-    <string name="X_warning_missing_author">De auteur ontbreekt.</string>
+    <string name="hint_empty_author">(De auteur ontbreekt)</string>
     <string name="X_warning_missing_title">De titel ontbreekt.</string>
     <string name="X_warning_missing_title_author">De titel en/of de auteur ontbreekt.</string>
     <string name="X_warning_required_author">Auteurveld is leeg</string>
@@ -223,7 +223,7 @@
     <string name="warning_date_not_set">Geef een geldige datum in.</string>
     <string name="hint_developer_key">Ontwikkelaarssleutel</string>
     <string name="hint_field_not_set">Niet Ingevuld</string>
-    <string name="hint_field_not_set_with_brackets">(leeg)</string>
+    <string name="hint_empty_field">(leeg)</string>
     <string name="hint_search_text">Tekst en/of ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
     <string name="import_export_option_csv">Boeken (*.csv)</string>
@@ -643,5 +643,10 @@
     <string name="warning_rebuild_orderby_columns">Hiermee worden de sorteergegevens opnieuw opgebouwd wanneer de app opnieuw wordt gestart. Weet je zeker dat je door wilt gaan ?</string>
     <string name="pt_booklist_state_default">"Standaard boekenlijst niveau "</string>
     <string name="menu_level_reset">Voorkeur expansieniveau</string>
+    <string name="hint_empty_rating">(niet beoordeeld)</string>
+    <string name="hint_empty_language">(Geen taal ingevuld)</string>
+    <string name="hint_empty_series">(Geen serie)</string>
+    <string name="hint_empty_month">(Geen maand ingevuld)</string>
+    <string name="hint_empty_read_status">(Leesstatus onbekend)</string>
 
 </resources>

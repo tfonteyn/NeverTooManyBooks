@@ -63,18 +63,19 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 public class StartupViewModel
         extends ViewModel {
 
-    private static final String TAG = "Startup";
+    private static final String TAG = "startup.";
 
+    /** the 'LastVersion' i.e. the version which was installed before the current one. */
+    public static final String PREF_STARTUP_LAST_VERSION = TAG + "lastVersion";
     /** Number of times the app has been started. */
-    private static final String PREF_STARTUP_COUNT = TAG + ".StartCount";
+    private static final String PREF_STARTUP_COUNT = TAG + "startCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
-    private static final String PREF_STARTUP_COUNTDOWN = TAG + ".StartCountdown";
+    private static final String PREF_STARTUP_COUNTDOWN = TAG + "startCountdown";
     /** Flag to indicate FTS rebuild is required at startup. */
-    private static final String PREF_STARTUP_FTS_REBUILD_REQUIRED =
-            TAG + ".FtsRebuildRequired";
+    private static final String PREF_STARTUP_FTS_REBUILD_REQUIRED = TAG + "rebuild.fts";
     /** Flag to indicate OrderBy columns must be rebuild at startup. */
     private static final String PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED =
-            TAG + ".OrderByTitleRebuildRequired";
+            TAG + "rebuild.ob.title";
 
     /** Number of app startup's between offers to backup. */
 

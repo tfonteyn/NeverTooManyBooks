@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 public final class BackupManager {
 
     /** Last full backup date. */
-    private static final String PREF_LAST_FULL_BACKUP_DATE = "Backup.LastDate";
+    private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
     /** Proposed extension for backup files. Not mandatory. */
     private static final String ARCHIVE_EXTENSION = ".ntmb";
 

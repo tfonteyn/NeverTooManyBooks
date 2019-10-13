@@ -96,16 +96,33 @@ public class BookSearchActivity
     }
 
     @Override
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+
+        if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                int searchSites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES, 0);
+                if (searchSites != 0) {
+                    BookSearchBaseModel model =
+                            new ViewModelProvider(this).get(BookSearchBaseModel.class);
+                    model.setSearchSites(searchSites);
+                }
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     public void onBackPressed() {
 
 //        if (!UpdateFieldsFromInternetFragment.TAG.equals(mTag)) {
-        BookSearchBaseModel mBookSearchBaseModel =
+        BookSearchBaseModel model =
                 new ViewModelProvider(this).get(BookSearchBaseModel.class);
-        Intent lastBookData = mBookSearchBaseModel.getLastBookData();
+        Intent lastBookData = model.getLastBookData();
         if (lastBookData != null) {
             setResult(Activity.RESULT_OK, lastBookData);
-        } else {
-            setResult(Activity.RESULT_CANCELED);
         }
 //        }
         super.onBackPressed();

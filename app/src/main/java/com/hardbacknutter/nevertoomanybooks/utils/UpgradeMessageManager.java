@@ -39,7 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.StartupActivity;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * Class to manage the message that is displayed when the application is upgraded.
@@ -83,7 +83,7 @@ public final class UpgradeMessageManager {
         final StringBuilder message = new StringBuilder();
 
         long lastVersion = PreferenceManager.getDefaultSharedPreferences(context)
-                                            .getLong(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
+                                            .getLong(StartupViewModel.PREF_STARTUP_LAST_VERSION, 0);
 
         boolean first = true;
         for (int[] msg : UPGRADE_MESSAGES) {
@@ -107,7 +107,7 @@ public final class UpgradeMessageManager {
     public static void setUpgradeAcknowledged() {
         PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                          .edit()
-                         .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, getVersion())
+                         .putLong(StartupViewModel.PREF_STARTUP_LAST_VERSION, getVersion())
                          .apply();
     }
 

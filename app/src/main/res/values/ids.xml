@@ -180,8 +180,6 @@
 
     <!-- options menu -->
     <item name="MENU_RESET" type="id" />
-    <!-- options menu -->
-    <item name="MENU_HIDE_KEYBOARD" type="id" />
 
     <!-- Scanner pick list -->
     <item name="MENU_SCANNER_ZXING" type="id" />

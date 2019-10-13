@@ -711,7 +711,7 @@ public class App
     public void onConfigurationChanged(@NonNull final Configuration newConfig) {
         String localeSpec = LocaleUtils.getPersistedLocaleSpec(sInstance.getApplicationContext());
         // override in the new config
-        newConfig.setLocale(new Locale(localeSpec));
+        newConfig.setLocale(LocaleUtils.createLocale(localeSpec));
         // propagate to registered callbacks.
         super.onConfigurationChanged(newConfig);
 

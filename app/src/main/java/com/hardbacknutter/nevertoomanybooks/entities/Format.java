@@ -147,6 +147,6 @@ public final class Format {
 
     public static boolean isMappingAllowed(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_reformat_formats, false);
+                                .getBoolean(Prefs.pk_reformat_format_update, false);
     }
 }

@@ -79,13 +79,13 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 public class BooksOnBookshelfModel
         extends ViewModel {
 
-    private static final String TAG = "BooksOnBookshelf";
+    private static final String TAG = "booklist";
     /** collapsed/expanded. */
     public static final String BKEY_LIST_STATE = TAG + ":list.state";
     /** Preference name - Saved position of last top row. */
-    private static final String PREF_BOB_TOP_ROW = TAG + ".TopRow";
+    private static final String PREF_BOB_TOP_ROW = TAG + ".top.row";
     /** Preference name - Saved position of last top row offset from view top. */
-    private static final String PREF_BOB_TOP_ROW_OFFSET = TAG + ".TopRowOffset";
+    private static final String PREF_BOB_TOP_ROW_OFFSET = TAG + ".top.offset";
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
     /** Allows progress message from a task to update the user. */
@@ -124,17 +124,19 @@ public class BooksOnBookshelfModel
     /**
      * Flag (potentially) set in {@link BooksOnBookshelf} #onActivityResult.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
-     * {@code null} means no rebuild at all, otherwise full or partial rebuild.
      */
-    @Nullable
-    private Boolean mDoFullRebuildAfterOnActivityResult;
+    private boolean mForceRebuildOnResume;
     /** Flag to indicate that a list has been successfully loaded. */
     private boolean mListHasBeenLoaded;
     /** Currently selected bookshelf. */
     @Nullable
     private Bookshelf mCurrentBookshelf;
-    /** Stores the book id for the current list position, e.g. while a book is viewed/edited. */
+    /**
+     * Stores the book id for the current list position, e.g. while a book is viewed/edited.
+     * Gets set after the {@link GetBookListTask} finishes and after edit/view.
+     */
     private long mCurrentPositionedBookId;
+
     /** Used by onScroll to detect when the top row has actually changed. */
     private int mLastTopRow = -1;
     /** Saved position of top row. */
@@ -194,7 +196,6 @@ public class BooksOnBookshelfModel
         if (mCursor != null) {
             mCursor.getBuilder().close();
             mCursor.close();
-            mCursor = null;
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
@@ -242,9 +243,6 @@ public class BooksOnBookshelfModel
         // Restore list position on bookshelf
         mTopRow = prefs.getInt(PREF_BOB_TOP_ROW, 0);
         mTopRowOffset = prefs.getInt(PREF_BOB_TOP_ROW_OFFSET, 0);
-
-        // Debug; makes list structures vary across calls to ensure code is correct...
-        mCurrentPositionedBookId = -1;
     }
 
     /**
@@ -415,83 +413,73 @@ public class BooksOnBookshelfModel
     /**
      * Queue a rebuild of the underlying cursor and data.
      *
-     * @param context       Current context
-     * @param isFullRebuild Indicates whole table structure needs a rebuild,
-     *                      versus just do a reselect of underlying data
+     * @param context Current context
      */
-    public void initBookList(@NonNull final Context context,
-                             final boolean isFullRebuild) {
+    public void initBookList(@NonNull final Context context) {
         Objects.requireNonNull(mCurrentBookshelf);
 
-        BooklistBuilder blb;
+        BooklistStyle style = mCurrentBookshelf.getStyle(mDb);
 
-        if (mCursor != null && !isFullRebuild) {
-            // use the current builder to re-query the underlying data
-            blb = mCursor.getBuilder();
+        // get a new builder and add the required extra domains
+        BooklistBuilder blb = new BooklistBuilder(style);
 
-        } else {
-            BooklistStyle style = mCurrentBookshelf.getStyle(mDb);
+        // Title for displaying + the book language
+        blb.addExtraDomain(DBDefinitions.DOM_TITLE,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
+                           false);
+        blb.addExtraDomain(DBDefinitions.DOM_BOOK_LANGUAGE,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LANGUAGE),
+                           false);
 
-            // get a new builder and add the required extra domains
-            blb = new BooklistBuilder(context, style);
+        // Title for sorting
+        blb.addExtraDomain(DBDefinitions.DOM_TITLE_OB,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE_OB),
+                           true);
+        // The read flag
+        blb.addExtraDomain(DBDefinitions.DOM_BOOK_READ,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
+                           false);
 
-            // Title for displaying + the book language
-            blb.addExtraDomain(DBDefinitions.DOM_TITLE,
-                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
-                               false);
-            blb.addExtraDomain(DBDefinitions.DOM_BOOK_LANGUAGE,
-                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LANGUAGE),
-                               false);
+        // external site ID's
+        //NEWTHINGS: add new site specific ID: add
+        blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISFDB_ID,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISFDB_ID),
+                           false);
+        blb.addExtraDomain(DBDefinitions.DOM_BOOK_GOODREADS_ID,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_GOODREADS_ID),
+                           false);
+        blb.addExtraDomain(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID),
+                           false);
+        blb.addExtraDomain(DBDefinitions.DOM_BOOK_STRIP_INFO_BE_ID,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_STRIP_INFO_BE_ID),
+                           false);
+        blb.addExtraDomain(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),
+                           false);
 
-            // Title for sorting
-            blb.addExtraDomain(DBDefinitions.DOM_TITLE_OB,
-                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE_OB),
-                               true);
-            // The read flag
-            blb.addExtraDomain(DBDefinitions.DOM_BOOK_READ,
-                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
-                               false);
+        /*
+         * If we do not use a background task for the extras, then we need to
+         * add the needed extras columns to the main query.
+         * Depending on the device speed, and how the user uses styles,
+         * BOTH methods can be advantageous.
+         * Hence this is a preference <strong>per style</strong>.
+         */
+        if (!style.useTaskForExtras()) {
+            if (style.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
+                blb.addExtraDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
+                                   BOOKSHELVES_CSV_SOURCE_EXPRESSION, false);
+            }
 
-            // external site ID's
-            //NEWTHINGS: add new site specific ID: add
-            blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISFDB_ID,
-                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISFDB_ID),
-                               false);
-            blb.addExtraDomain(DBDefinitions.DOM_BOOK_GOODREADS_ID,
-                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_GOODREADS_ID),
-                               false);
-            blb.addExtraDomain(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID,
-                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID),
-                               false);
-            blb.addExtraDomain(DBDefinitions.DOM_BOOK_STRIP_INFO_BE_ID,
-                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_STRIP_INFO_BE_ID),
-                               false);
-            blb.addExtraDomain(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID,
-                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),
-                               false);
-
-            /*
-             * If we do not use a background task for the extras, then we need to
-             * add the needed extras columns to the main query.
-             * Depending on the device speed, and how the user uses styles,
-             * BOTH methods can be advantageous.
-             * Hence this is a preference <strong>per style</strong>.
-             */
-            if (!style.useTaskForExtras()) {
-                if (style.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
-                    blb.addExtraDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
-                                       BOOKSHELVES_CSV_SOURCE_EXPRESSION, false);
-                }
-
-                // we fetch ONLY the primary author
-                if (style.isUsed(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
-                    blb.addExtraDomain(DBDefinitions.DOM_AUTHOR_FORMATTED,
-                                       style.showAuthorGivenNameFirst(context)
-                                       ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
-                                       : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
-                                       false);
-                }
-                // and for now, don't get the author type.
+            // we fetch ONLY the primary author
+            if (style.isUsed(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
+                blb.addExtraDomain(DBDefinitions.DOM_AUTHOR_FORMATTED,
+                                   style.showAuthorGivenNameFirst(context)
+                                   ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
+                                   : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
+                                   false);
+            }
+            // and for now, don't get the author type.
 //                if (style.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
 //                    blb.addExtraDomain(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
 //                                      DBDefinitions.TBL_BOOK_AUTHOR
@@ -499,57 +487,56 @@ public class BooksOnBookshelfModel
 //                                      false);
 //                }
 
-                if (style.isUsed(DBDefinitions.KEY_PUBLISHER)) {
-                    blb.addExtraDomain(
-                            DBDefinitions.DOM_BOOK_PUBLISHER,
-                            DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_PUBLISHER),
-                            false);
-                }
-                if (style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
-                    blb.addExtraDomain(
-                            DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
-                            DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_DATE_PUBLISHED),
-                            false);
-                }
-                if (style.isUsed(DBDefinitions.KEY_ISBN)) {
-                    blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISBN,
-                                       DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISBN),
-                                       false);
-                }
-                if (style.isUsed(DBDefinitions.KEY_FORMAT)) {
-                    blb.addExtraDomain(DBDefinitions.DOM_BOOK_FORMAT,
-                                       DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_FORMAT),
-                                       false);
-                }
-                if (style.isUsed(DBDefinitions.KEY_LOCATION)) {
-                    blb.addExtraDomain(DBDefinitions.DOM_BOOK_LOCATION,
-                                       DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LOCATION),
-                                       false);
-                }
+            if (style.isUsed(DBDefinitions.KEY_PUBLISHER)) {
+                blb.addExtraDomain(
+                        DBDefinitions.DOM_BOOK_PUBLISHER,
+                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_PUBLISHER),
+                        false);
             }
-
-            // Always limit to the current bookshelf.
-            blb.setFilterOnBookshelfId(mCurrentBookshelf.getId());
-
-            // if we have a list of ID's, ignore other criteria.
-            if (mSearchCriteria.hasIdList()) {
-                blb.setFilterOnBookIdList(mSearchCriteria.bookList);
-
-            } else {
-                // Criteria supported by FTS
-                blb.setFilter(mSearchCriteria.ftsAuthor,
-                              mSearchCriteria.ftsTitle,
-                              mSearchCriteria.series,
-                              mSearchCriteria.ftsKeywords);
-
-                // non-FTS
-                //blb.setFilterOnSeriesName(mSearchCriteria.series);
-                blb.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
+            if (style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
+                blb.addExtraDomain(
+                        DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
+                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_DATE_PUBLISHED),
+                        false);
+            }
+            if (style.isUsed(DBDefinitions.KEY_ISBN)) {
+                blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISBN,
+                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISBN),
+                                   false);
+            }
+            if (style.isUsed(DBDefinitions.KEY_FORMAT)) {
+                blb.addExtraDomain(DBDefinitions.DOM_BOOK_FORMAT,
+                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_FORMAT),
+                                   false);
+            }
+            if (style.isUsed(DBDefinitions.KEY_LOCATION)) {
+                blb.addExtraDomain(DBDefinitions.DOM_BOOK_LOCATION,
+                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LOCATION),
+                                   false);
             }
         }
 
-        new GetBookListTask(blb, isFullRebuild,
-                            mCursor, mCurrentPositionedBookId, mRebuildState,
+        // Always limit to the current bookshelf.
+        blb.setFilterOnBookshelfId(mCurrentBookshelf.getId());
+
+        // if we have a list of ID's, ignore other criteria.
+        if (mSearchCriteria.hasIdList()) {
+            blb.setFilterOnBookIdList(mSearchCriteria.bookList);
+
+        } else {
+            // Criteria supported by FTS
+            blb.setFilter(mSearchCriteria.ftsAuthor,
+                          mSearchCriteria.ftsTitle,
+                          mSearchCriteria.series,
+                          mSearchCriteria.ftsKeywords);
+
+            // non-FTS
+            //blb.setFilterOnSeriesName(mSearchCriteria.series);
+            blb.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
+        }
+
+
+        new GetBookListTask(blb, mCursor, mCurrentPositionedBookId, mRebuildState,
                             mOnGetBookListTaskListener)
                 .execute();
     }
@@ -587,32 +574,30 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Check if, and which type of, rebuild is needed.
-     * <ul>Returns:
-     * <li>{@code null} if no rebuild is requested</li>
-     * <li>{@code true} if we need a full rebuild.</li>
-     * <li>{@code false} if we need a partial rebuild.</li>
-     * </ul>
+     * Check if a rebuild is needed.
      *
-     * @return rebuild type needed
+     * @return {@code true} if a rebuild is needed
      */
-    @Nullable
-    public Boolean isForceFullRebuild() {
-        return mDoFullRebuildAfterOnActivityResult;
-    }
-
-    public boolean isListLoaded() {
-        return mListHasBeenLoaded;
+    public boolean isForceRebuildOnResume() {
+        return mForceRebuildOnResume;
     }
 
     /**
-     * Request a full or partial rebuild at the next onResume.
+     * Request a rebuild at the next onResume.
      *
-     * @param fullRebuild {@code true} for a full rebuild; {@code false} for a partial rebuild;
-     *                    {@code null} for no rebuild.
+     * @param forceRebuild Flag
      */
-    public void setFullRebuild(@Nullable final Boolean fullRebuild) {
-        mDoFullRebuildAfterOnActivityResult = fullRebuild;
+    public void setOnResumeForceRebuild(final boolean forceRebuild) {
+        mForceRebuildOnResume = forceRebuild;
+    }
+
+    /**
+     * Check if the list has (ever) loaded successfully.
+     *
+     * @return {@code true} if loaded at least once.
+     */
+    public boolean isListLoaded() {
+        return mListHasBeenLoaded;
     }
 
     public void setCurrentPositionedBookId(final long currentPositionedBookId) {
@@ -923,14 +908,9 @@ public class BooksOnBookshelfModel
     private static class GetBookListTask
             extends TaskBase<BuilderHolder> {
 
-        /**
-         * Indicates whole table structure needs rebuild,
-         * versus just do a reselect of underlying data.
-         */
-        private final boolean mIsFullRebuild;
         /** the builder. */
         @NonNull
-        private final BooklistBuilder mBooklistBuilder;
+        private final BooklistBuilder mBuilder;
         /** Holds the input/output and output-only fields to be returned to the activity. */
         @NonNull
         private final BuilderHolder mHolder;
@@ -943,87 +923,26 @@ public class BooksOnBookshelfModel
          * Constructor.
          *
          * @param bookListBuilder         the builder
-         * @param isFullRebuild           Indicates whole table structure needs rebuild,
          * @param currentListCursor       Current displayed list cursor.
          * @param currentPositionedBookId Current position in the list.
-         * @param listState            Requested list state
+         * @param listState               Requested list state
          * @param taskListener            TaskListener
          */
         @UiThread
         GetBookListTask(@NonNull final BooklistBuilder bookListBuilder,
-                        final boolean isFullRebuild,
                         @Nullable final BooklistPseudoCursor currentListCursor,
                         final long currentPositionedBookId,
                         @BooklistBuilder.ListRebuildMode final int listState,
                         final TaskListener<BuilderHolder> taskListener) {
             super(R.id.TASK_ID_GET_BOOKLIST, taskListener);
 
-            mBooklistBuilder = bookListBuilder;
-            mIsFullRebuild = isFullRebuild;
+            mBuilder = bookListBuilder;
             mCurrentListCursor = currentListCursor;
 
             // input/output fields for the task.
             mHolder = new BuilderHolder(currentPositionedBookId, listState);
         }
 
-        /**
-         * Try to sync the previously selected book ID.
-         *
-         * @return the target rows, or {@code null} if none.
-         */
-        private ArrayList<BooklistBuilder.BookRowInfo> syncPreviouslySelectedBookId() {
-            // no input, no output...
-            if (mHolder.currentPositionedBookId == 0) {
-                return null;
-            }
-
-            // get all positions of the book
-            ArrayList<BooklistBuilder.BookRowInfo> rows =
-                    mBooklistBuilder.getBookAbsolutePositions(mHolder.currentPositionedBookId);
-
-            if (rows != null && !rows.isEmpty()) {
-                // First, get the ones that are currently visible...
-                ArrayList<BooklistBuilder.BookRowInfo> visibleRows = new ArrayList<>();
-                for (BooklistBuilder.BookRowInfo rowInfo : rows) {
-                    if (rowInfo.visible) {
-                        visibleRows.add(rowInfo);
-                    }
-                }
-
-                // If we have any visible rows, only consider those for the new position
-                if (!visibleRows.isEmpty()) {
-                    rows = visibleRows;
-                } else {
-                    // Make them all visible
-                    for (BooklistBuilder.BookRowInfo rowInfo : rows) {
-                        if (!rowInfo.visible) {
-                            mBooklistBuilder.ensureAbsolutePositionVisible(
-                                    rowInfo.absolutePosition);
-                        }
-                    }
-                    // Recalculate all positions
-                    for (BooklistBuilder.BookRowInfo rowInfo : rows) {
-                        rowInfo.listPosition = mBooklistBuilder.getPosition(
-                                rowInfo.absolutePosition);
-                    }
-                }
-                // Find the nearest row to the recorded 'top' row.
-//                        int targetRow = bookRows[0];
-//                        int minDist = Math.abs(mModel.getTopRow() - b.getPosition(targetRow));
-//                        for (int i = 1; i < bookRows.length; i++) {
-//                            int pos = b.getPosition(bookRows[i]);
-//                            int dist = Math.abs(mModel.getTopRow() - pos);
-//                            if (dist < minDist) {
-//                                targetRow = bookRows[i];
-//                            }
-//                        }
-//                        // Make sure the target row is visible/expanded.
-//                        b.ensureAbsolutePositionVisible(targetRow);
-//                        // Now find the position it will occupy in the view
-//                        mTargetPos = b.getPosition(targetRow);
-            }
-            return rows;
-        }
 
         @Override
         @NonNull
@@ -1031,57 +950,55 @@ public class BooksOnBookshelfModel
         protected BuilderHolder doInBackground(final Void... params) {
             Thread.currentThread().setName("GetBookListTask");
             try {
-                long t0;
+                long t0 = 0;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     t0 = System.nanoTime();
                 }
                 // Build the underlying data
-                if (mCurrentListCursor != null && !mIsFullRebuild) {
-                    mBooklistBuilder.rebuild();
-                } else {
-                    mBooklistBuilder.build(mHolder.listState, mHolder.currentPositionedBookId);
-                    // After first build, always preserve this object state
-                    mHolder.listState = BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE;
-                }
+                mBuilder.build(mHolder.listState, mHolder.currentPositionedBookId);
+                // preserve this state
+                mHolder.listState = BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE;
 
                 if (isCancelled()) {
                     return mHolder;
                 }
 
-                long t1;
+                long t1_build_done = 0;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t1 = System.nanoTime();
+                    t1_build_done = System.nanoTime();
                 }
 
-                mHolder.resultTargetRows = syncPreviouslySelectedBookId();
+                mHolder.resultTargetRows = mBuilder
+                        .syncPreviouslySelectedBookId(mHolder.currentPositionedBookId);
 
                 if (isCancelled()) {
                     return mHolder;
                 }
 
-                long t2;
+                long t2_sync_done = 0;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t2 = System.nanoTime();
+                    t2_sync_done = System.nanoTime();
                 }
 
                 // Now we have the expanded groups as needed, get the list cursor
-                tempListCursor = mBooklistBuilder.getNewListCursor();
+                tempListCursor = mBuilder.getNewListCursor();
 
                 // Clear it so it won't be reused.
                 mHolder.currentPositionedBookId = 0;
 
-                long t3;
+                long t3_got_new_cursor = 0;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t3 = System.nanoTime();
+                    t3_got_new_cursor = System.nanoTime();
                 }
-                // get a count() from the cursor in background task because the setAdapter() call
-                // will do a count() and potentially block the UI thread while it pages through the
-                // entire cursor. If we do it here, subsequent calls will be fast.
+                // get a count() from the cursor in background task because the setAdapter()
+                // call will do a count() and potentially block the UI thread while it
+                // pages through the entire cursor.
+                // If we do it here, subsequent calls will be fast.
                 int count = tempListCursor.getCount();
 
-                long t4;
+                long t4_count_done = 0;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t4 = System.nanoTime();
+                    t4_count_done = System.nanoTime();
                 }
                 // pre-fetch this count
                 mHolder.resultUniqueBooks = tempListCursor.getBuilder().getUniqueBookCount();
@@ -1090,27 +1007,33 @@ public class BooksOnBookshelfModel
                     return mHolder;
                 }
 
-                long t5;
+                long t5_unique_count_done = 0;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t5 = System.nanoTime();
+                    t5_unique_count_done = System.nanoTime();
                 }
                 // pre-fetch this count
                 mHolder.resultTotalBooks = tempListCursor.getBuilder().getBookCount();
 
-                long t6;
+                long t6_total_count_done = 0;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t6 = System.nanoTime();
+                    t6_total_count_done = System.nanoTime();
                 }
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     Logger.debug(this, "doInBackground",
-                                 "\n Build: " + (t1 - t0),
-                                 "\n Position: " + (t2 - t1),
-                                 "\n Select: " + (t3 - t2),
-                                 "\n Count(" + count + "): " + (t4 - t3)
-                                 + '/' + (t5 - t4) + '/' + (t6 - t5),
-                                 "\n ====== ",
-                                 "\n Total time: " + (t6 - t0) + "nano");
+                                 "\n Build: " + (t1_build_done - t0) / 1_000_000,
+                                 "\n Position: " + (t2_sync_done - t1_build_done) / 1_000_000,
+                                 "\n Select: " + (t3_got_new_cursor - t2_sync_done) / 1_000_000,
+
+                                 "\n count=" + count + " : "
+                                 + (t4_count_done - t3_got_new_cursor) / 1_000_000,
+                                 "\n resultUniqueBooks=" + mHolder.resultUniqueBooks + " : "
+                                 + (t5_unique_count_done - t4_count_done) / 1_000_000,
+                                 "\n resultTotalBooks=" + mHolder.resultTotalBooks + " : "
+                                 + (t6_total_count_done - t5_unique_count_done) / 1_000_000,
+
+                                 "\n ================== ",
+                                 "\n Total time: " + (t6_total_count_done - t0) / 1_000_000);
                 }
 
                 if (isCancelled()) {
@@ -1210,7 +1133,7 @@ public class BooksOnBookshelfModel
         @NonNull
         public String toString() {
             return "BuilderHolder{"
-                   + ", currentPositionedBookId=" + currentPositionedBookId
+                   + "currentPositionedBookId=" + currentPositionedBookId
                    + ", listState=" + listState
                    + ", resultTotalBooks=" + resultTotalBooks
                    + ", resultUniqueBooks=" + resultUniqueBooks

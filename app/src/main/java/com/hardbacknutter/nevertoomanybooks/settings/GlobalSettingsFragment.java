@@ -27,9 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -88,11 +86,11 @@ public class GlobalSettingsFragment
         Context context = getContext();
 
         switch (key) {
-            case Prefs.pk_scanner_beep_if_invalid:
+            case Prefs.pk_sounds_scan_isbn_invalid:
                 SoundManager.beepLow(context);
                 break;
 
-            case Prefs.pk_scanner_beep_if_valid:
+            case Prefs.pk_sounds_scan_isbn_valid:
                 SoundManager.beepHigh(context);
                 break;
 
@@ -105,7 +103,7 @@ public class GlobalSettingsFragment
                 });
                 break;
 
-            case Prefs.pk_reorder_titles_for_sorting:
+            case Prefs.pk_reformat_titles_sort:
                 if (warnAfterChange) {
                     // prevent recursive loop
                     warnAfterChange = false;
@@ -122,16 +120,14 @@ public class GlobalSettingsFragment
 
         // set the result (and again and again...)
         // TODO: make the response conditional, not all changes warrant a recreate!
-        Intent data = new Intent().putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
-        //noinspection ConstantConditions
-        getActivity().setResult(Activity.RESULT_OK, data);
+        mResultDataModel.putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
 
         super.onSharedPreferenceChanged(sharedPreferences, key);
     }
 
     private void handleReorderTitlesForSorting(@NonNull final Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean current = prefs.getBoolean(Prefs.pk_reorder_titles_for_sorting, true);
+        boolean current = prefs.getBoolean(Prefs.pk_reformat_titles_sort, true);
 
         new AlertDialog.Builder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
@@ -139,9 +135,9 @@ public class GlobalSettingsFragment
                 .setCancelable(false)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> {
 //                    prefs.edit()
-//                         .putBoolean(Prefs.pk_reorder_titles_for_sorting, !current)
+//                         .putBoolean(Prefs.pk_reformat_titles_sort, !current)
 //                         .apply();
-                    SwitchPreference sp = findPreference(Prefs.pk_reorder_titles_for_sorting);
+                    SwitchPreference sp = findPreference(Prefs.pk_reformat_titles_sort);
                     //noinspection ConstantConditions
                     sp.setChecked(!current);
                     StartupViewModel.setScheduleOrderByRebuild(false);

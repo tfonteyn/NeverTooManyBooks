@@ -93,6 +93,9 @@ public class BookBaseFragmentModel
     /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
     private TaskListener<Integer> mOnGoodreadsTaskListener;
 
+    /** Should be set after something/anything modified a book. */
+    private boolean mSomethingModified;
+
     @Override
     protected void onCleared() {
         if (mDb != null) {
@@ -144,6 +147,9 @@ public class BookBaseFragmentModel
      */
     public void setDirty(final boolean isDirty) {
         mIsDirty = isDirty;
+        if (mIsDirty) {
+            mSomethingModified = true;
+        }
     }
 
     @NonNull
@@ -169,7 +175,12 @@ public class BookBaseFragmentModel
         mBook.reload(mDb);
     }
 
-    public void reload(final long bookId) {
+    /**
+     * Called after the user swipes back/forwards through the flattened booklist.
+     *
+     * @param bookId to load
+     */
+    public void moveTo(final long bookId) {
         mBook.reload(mDb, bookId);
     }
 
@@ -192,6 +203,9 @@ public class BookBaseFragmentModel
         } else {
             mDb.updateBook(context, mBook.getId(), mBook, 0);
         }
+
+        mSomethingModified = true;
+
         return mBook;
     }
 
@@ -217,6 +231,9 @@ public class BookBaseFragmentModel
     public void deleteLoan() {
         mBook.remove(DBDefinitions.KEY_LOANEE);
         mDb.deleteLoan(mBook.getId());
+
+        // don't do this for now, BoB does not display the loan field.
+        //mSomethingModified = true;
     }
 
     /**
@@ -377,5 +394,14 @@ public class BookBaseFragmentModel
             };
         }
         return mOnGoodreadsTaskListener;
+    }
+
+    /**
+     * Check if *any* book which was displayed during the lifetime of this model, was modified.
+     *
+     * @return {@code true} if *any* book was modified.
+     */
+    public boolean isModified() {
+        return mSomethingModified;
     }
 }

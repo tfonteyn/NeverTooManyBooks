@@ -49,7 +49,7 @@
             android:entries="@array/pe_ui_language"
             android:entryValues="@array/pv_ui_language"
             android:icon="@drawable/ic_language"
-            android:key="App.Locale"
+            android:key="ui.locale"
             android:title="@string/pt_ui_language" />
 
         <!-- NEWTHINGS: APP THEME: set the default -->
@@ -58,7 +58,7 @@
             android:entries="@array/pe_ui_theme"
             android:entryValues="@array/pv_ui_theme"
             android:icon="@drawable/ic_settings_brightness"
-            android:key="App.Theme"
+            android:key="ui.theme"
             android:title="@string/pt_ui_theme" />
 
         <!-- default snackbar == 1 -->
@@ -67,7 +67,7 @@
             android:entries="@array/pe_ui_messages_use"
             android:entryValues="@array/pv_ui_messages_use"
             android:icon="@drawable/ic_message"
-            android:key="App.UserMessage"
+            android:key="ui.messages.use"
             android:title="@string/pt_ui_messages_use" />
 
         <PreferenceScreen
@@ -218,7 +218,7 @@
             <SwitchPreference
                 android:defaultValue="false"
                 android:icon="@drawable/ic_crop_original"
-                android:key="Image.Cropper.FrameIsWholeImage"
+                android:key="image.cropper.frame.whole"
                 android:summaryOff="@string/no"
                 android:summaryOn="@string/yes"
                 android:title="@string/pt_thumbnails_crop_frame_is_whole_image" />
@@ -226,7 +226,7 @@
             <SwitchPreference
                 android:defaultValue="false"
                 android:icon="@drawable/ic_apps"
-                android:key="Image.Cropper.UseExternalApp"
+                android:key="image.cropper.external"
                 android:summaryOff="@string/no"
                 android:summaryOn="@string/yes"
                 android:title="@string/pt_thumbnails_external_cropper" />
@@ -234,7 +234,7 @@
             <SwitchPreference
                 android:defaultValue="false"
                 android:icon="@drawable/ic_cached"
-                android:key="Image.Cache.Resized"
+                android:key="image.cache.resized"
                 android:summaryOff="@string/pe_thumbnails_cache_resized_each_time"
                 android:summaryOn="@string/pe_thumbnails_cache_resized_stored"
                 android:title="@string/pt_thumbnails_cache_resized" />
@@ -245,7 +245,7 @@
                 android:entries="@array/pe_thumbnails_rotate_auto"
                 android:entryValues="@array/pv_thumbnails_rotate_auto"
                 android:icon="@drawable/ic_rotate_right"
-                android:key="Image.Camera.Autorotate"
+                android:key="camera.image.autorotate"
                 android:title="@string/pt_thumbnails_rotate_auto" />
 
             <!-- default CropImageViewTouchBase.LAYER_TYPE_USE_DEFAULT == -1 -->
@@ -255,7 +255,7 @@
                 android:entries="@array/pe_thumbnails_cropper_layer_type"
                 android:entryValues="@array/pv_thumbnails_cropper_layer_type"
                 android:icon="@drawable/ic_manage"
-                android:key="Image.ViewLayerType"
+                android:key="compat.image.cropper.viewlayertype"
                 android:title="@string/pt_thumbnail_cropper_layer_type" />
 
         </PreferenceCategory>
@@ -316,7 +316,7 @@
             android:entries="@array/pe_bob_list_state"
             android:entryValues="@array/pv_bob_list_state"
             android:icon="@drawable/ic_view_list"
-            android:key="BookList.ListRebuildState"
+            android:key="style.booklist.levels.rebuild.state"
             android:title="@string/pt_booklist_state" />
 
 
@@ -326,7 +326,7 @@
             android:entries="@array/pe_bob_level_default"
             android:entryValues="@array/pv_bob_level_default"
             android:icon="@drawable/ic_view_list"
-            android:key="BookList.Style.level.default"
+            android:key="style.booklist.levels.default"
             android:title="@string/pt_booklist_state_default" />
 
 
@@ -336,7 +336,7 @@
             android:entries="@array/pe_bob_list_generation"
             android:entryValues="@array/pv_bob_list_generation"
             android:icon="@drawable/ic_manage"
-            android:key="BookList.CompatibilityMode"
+            android:key="compat.booklist.mode"
             android:title="@string/pt_booklist_generation" />
 
     </PreferenceCategory>
@@ -351,13 +351,13 @@
             android:entries="@array/pe_scanning_preferred_scanner"
             android:entryValues="@array/pv_scanning_preferred_scanner"
             android:icon="@drawable/ic_scanner"
-            android:key="ScannerManager.PreferredScanner"
+            android:key="scanner.preferred"
             android:title="@string/pt_scanning_preferred_scanner" />
 
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_surround_sound"
-            android:key="SoundManager.BeepIfScannedIsbnInvalid"
+            android:key="sounds.scan.isbn.invalid"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_scanning_beep_if_isbn_invalid" />
@@ -365,7 +365,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_surround_sound"
-            android:key="SoundManager.BeepIfScannedIsbnValid"
+            android:key="sounds.scan.isbn.valid"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_scanning_beep_if_isbn_valid" />
@@ -378,7 +378,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_perm_data_setting"
-            android:key="network.mobile_data"
+            android:key="network.allow.metered"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_allow_mobile_data" />
@@ -387,6 +387,7 @@
             android:icon="@drawable/ic_sort"
             android:key="psk_search_site_order"
             android:title="@string/lbl_websites">
+            <!-- URGENT: can't use setResult/onActivityResult -->
             <intent android:action="search.website.order.EDIT" />
         </PreferenceScreen>
 
@@ -396,7 +397,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_search"
-            android:key="ISFDB.uses.publisher"
+            android:key="isfdb.search.uses.publisher"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_uses_publisher" />
@@ -408,7 +409,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_cloud_download"
-            android:key="ISFDB.seriesFromToc"
+            android:key="isfdb.search.toc.series"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_collect_series_info_from_toc" />
@@ -420,21 +421,21 @@
             android:defaultValue="https://www.amazon.com"
             android:icon="@drawable/ic_link"
             android:inputType="textUri"
-            android:key="Amazon.hostUrl"
+            android:key="amazon.host.url"
             android:title="@string/amazon" />
 
         <!--<EditTextPreference-->
         <!--android:defaultValue="https://books.google.com"-->
         <!--android:icon="@drawable/ic_link"-->
         <!--android:inputType="textUri"-->
-        <!--android:key="GoogleBooks.hostUrl"-->
+        <!--android:key="googlebooks.host.url"-->
         <!--android:title="@string/google_books" />-->
 
         <!--<EditTextPreference-->
         <!--android:defaultValue="http://www.isfdb.org"-->
         <!--android:icon="@drawable/ic_link"-->
         <!--android:inputType="textUri"-->
-        <!--android:key="ISFDB.hostUrl"-->
+        <!--android:key="isfdb.host.url"-->
         <!--android:title="@string/ISFDB" />-->
 
     </PreferenceCategory>

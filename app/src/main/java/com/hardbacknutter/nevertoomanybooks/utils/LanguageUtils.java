@@ -136,7 +136,7 @@ public final class LanguageUtils {
             return "eng";
         } else {
             try {
-                Locale bl = new Locale(source.split("-")[0]);
+                Locale bl = LocaleUtils.createLocale(source);
                 return bl.getISO3Language();
             } catch (@NonNull final MissingResourceException ignore) {
                 return source;

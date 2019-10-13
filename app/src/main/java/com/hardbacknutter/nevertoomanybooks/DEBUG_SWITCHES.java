@@ -88,15 +88,18 @@ public final class DEBUG_SWITCHES {
     public static final boolean MANAGED_TASKS = false;
     /** Where listeners are held in a WeakReference, log dead references. */
     public static final boolean TRACE_WEAK_REFERENCES = false;
+    /* ****************************************************************************************** */
+
     /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder} and related. */
-    public static final boolean BOOKLIST_BUILDER = false;
+    public static final boolean BOB_THE_BUILDER = false;
+    /**
+     * {@link com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel#initBookList}.
+     */
+    public static final boolean BOB_INIT_BOOK_LIST = false;
+    public static final boolean BOB_PSEUDO_CURSOR = false;
 
     /* ****************************************************************************************** */
-    /**
-     * {@link com.hardbacknutter.nevertoomanybooks.viewmodels
-     * .BooksOnBookshelfModel#initBookList}.
-     */
-    public static final boolean BOB_INIT_BOOK_LIST = true;
+
     /** {@link CoverBrowserFragment}. */
     public static final boolean COVER_BROWSER = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.utils.ImageUtils}. */
@@ -200,7 +203,7 @@ public final class DEBUG_SWITCHES {
      * Dump (just) the URL used in
      * {@link com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection}.
      */
-    public static final boolean DUMP_HTTP_URL = true;
+    public static final boolean DUMP_HTTP_URL = false;
 
     /** Dump entire HTTP response to System.out. WARNING: can abort the function it's in. */
     public static final boolean DUMP_HTTP_RESPONSE = false;

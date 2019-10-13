@@ -57,7 +57,7 @@ public class StripInfoManager
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "stripinfo.";
     /** Type: {@code String}. */
-    private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+    private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
 
     /**
      * Constructor.

@@ -67,9 +67,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 public final class TipManager {
 
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "TipManager.";
+    private static final String PREF_PREFIX = "tips.";
     /** Preferences prefix for all tips. */
-    public static final String PREF_TIP = PREF_PREFIX + "Tip.";
+    public static final String PREF_TIP = PREF_PREFIX + "tip.";
 
     /** All tips managed by this class. */
     @SuppressLint("UseSparseArrays")

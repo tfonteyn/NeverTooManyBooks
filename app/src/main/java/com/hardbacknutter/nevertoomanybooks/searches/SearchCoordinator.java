@@ -117,9 +117,9 @@ public class SearchCoordinator {
             return SearchCoordinator.this;
         }
     };
-    /** Flags applicable to *current* search. */
+    /** Bitmask with sites to search on. */
     @SearchSites.Id
-    private int mSearchFlags;
+    private int mSearchSites;
     /** Accumulated book data. */
     private Bundle mBookData;
     /** Flag indicating searches will be non-concurrent title/author found via ASIN. */
@@ -217,8 +217,7 @@ public class SearchCoordinator {
     /**
      * Start a search.
      *
-     * @param searchFlags    bitmask with sites to search,
-     *                       see {@link SearchSites#SEARCH_ALL} and individual flags
+     * @param searchSites    sites to search, see {@link SearchSites#SEARCH_FLAG_MASK}
      *                       <p>
      *                       ONE of these three parameters must be !.isEmpty
      * @param isbn           to search for (can be empty)
@@ -227,7 +226,7 @@ public class SearchCoordinator {
      * @param publisher      to search for (can be empty)
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
-    public void search(@SearchSites.Id final int searchFlags,
+    public void search(@SearchSites.Id final int searchSites,
                        @NonNull final String isbn,
                        @NonNull final String author,
                        @NonNull final String title,
@@ -254,7 +253,7 @@ public class SearchCoordinator {
         }
 
         // Developer sanity check
-        if ((searchFlags & SearchSites.SEARCH_ALL) == 0) {
+        if ((searchSites & SearchSites.SEARCH_FLAG_MASK) == 0) {
             throw new IllegalArgumentException("Must specify at least one source to use");
         }
 
@@ -269,7 +268,7 @@ public class SearchCoordinator {
         }
 
         // Save the flags
-        mSearchFlags = searchFlags;
+        mSearchSites = searchSites;
 
         // Save the input and initialize
         mBookData = new Bundle();
@@ -303,7 +302,7 @@ public class SearchCoordinator {
             if (mIsbn != null && !mIsbn.isEmpty()) {
                 mWaitingForIsbn = false;
                 if (mHasValidIsbn) {
-                    tasksStarted = startSearches(mSearchFlags);
+                    tasksStarted = startSearches(mSearchSites);
                 } else {
                     // Assume it's an ASIN, and just search Amazon
                     mSearchingAsin = true;
@@ -330,18 +329,15 @@ public class SearchCoordinator {
 
     /**
      * Start a single task.
-     * <p>
-     * When running in single-stream mode, start the next thread that has no data.
-     * While Google is reputedly most likely to succeed, it also produces garbage a lot of the time.
-     * So we search Amazon, Goodreads, Google and LT last as it REQUIRES an ISBN.
      *
      * @return {@code true} if a search was started, {@code false} if not
      */
     private boolean startNext() {
-        // Loop though in 'search-priority' order
+        // Get ALL sites, as the local mSearchSites overrides the global.
+        // Loop searches in priority order.
         for (Site site : SearchSites.getSites()) {
             // If this search includes the source, check it
-            if (site.isEnabled() && ((mSearchFlags & site.id) != 0)) {
+            if ((mSearchSites & site.id) != 0) {
                 // If the source has not been searched, search it
                 if (!mSearchResults.containsKey(site.id)) {
                     return startOneSearch(site);
@@ -354,20 +350,24 @@ public class SearchCoordinator {
     /**
      * Start all searches listed in passed parameter that have not been run yet.
      *
-     * @param sources bitmask with sites to search
+     * <strong>Note:</strong> we explicitly pass in the searchSites instead of using the global
+     * so we can force an Amazon-only search (ASIN based) when needed.
+     *
+     * @param currentSearchSites sites to search, see {@link SearchSites#SEARCH_FLAG_MASK}
      *
      * @return {@code true} if at least one search was started, {@code false} if none
      */
-    private boolean startSearches(@SearchSites.Id final int sources) {
+    private boolean startSearches(@SearchSites.Id final int currentSearchSites) {
         boolean atLeastOneStarted = false;
-        // Loop searches in priority order
-        for (Site source : SearchSites.getSites()) {
+        // Get ALL sites, as the local mSearchSites overrides the global.
+        // Loop searches in priority order.
+        for (Site site : SearchSites.getSites()) {
             // If this search includes the source, check it
-            if (source.isEnabled() && ((sources & source.id) != 0)) {
+            if ((currentSearchSites & site.id) != 0) {
                 // If the source has not been searched, search it
-                if (!mSearchResults.containsKey(source.id)) {
+                if (!mSearchResults.containsKey(site.id)) {
                     // Run it now
-                    if (startOneSearch(source)) {
+                    if (startOneSearch(site)) {
                         atLeastOneStarted = true;
                     }
                 }
@@ -486,7 +486,7 @@ public class SearchCoordinator {
 
                     // Start the others...even if they have run before.
                     // They will redo the search with the ISBN.
-                    startSearches(mSearchFlags);
+                    startSearches(mSearchSites);
                 } else {
                     // Start next one that has not run.
                     startNext();

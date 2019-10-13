@@ -129,7 +129,9 @@ public abstract class BackupWriterAbstract
             // If we are doing covers, get the exact number by counting them
             if (!mProgressListener.isCancelled() && incCovers) {
                 mProgressListener.onProgress(0, R.string.progress_msg_searching);
+                // the progress bar will NOT be updated.
                 doCovers(true);
+                // set as temporary max, but keep in mind the position itself is still 0
                 mProgressListener.setMax(exportResults.coversExported);
             }
 
@@ -142,14 +144,16 @@ public abstract class BackupWriterAbstract
 
                 Exporter mExporter = new CsvExporter(context, mExportHelper);
                 try (OutputStream os = new FileOutputStream(tmpBookCsvFile)) {
+                    // doBooks will use the max and add the number of books for the new max.
                     mExportHelper.addResults(mExporter.doBooks(os, mProgressListener));
                 }
             }
 
             // we now have a known number of books; add the covers and we've more or less have an
             // exact number of steps. Added arbitrary 10 for the other entities we might do
-            mProgressListener.setMax(exportResults.booksExported
-                                     + exportResults.coversExported + 10);
+            int max = exportResults.booksExported + exportResults.coversExported + 10;
+            // overwrite the max with the exact value
+            mProgressListener.setMax(max);
 
             // Process each component of the Archive, unless we are cancelled.
             if (!mProgressListener.isCancelled()) {
@@ -181,6 +185,7 @@ public abstract class BackupWriterAbstract
             }
             // do covers last
             if (!mProgressListener.isCancelled() && incCovers) {
+                // the progress bar will be updated.
                 doCovers(false);
                 entitiesWritten |= Options.COVERS;
             }
@@ -215,10 +220,10 @@ public abstract class BackupWriterAbstract
                         final boolean hasStyles,
                         final boolean hasPrefs)
             throws IOException {
+
         mProgressListener.onProgressStep(1, null);
 
         ByteArrayOutputStream data = new ByteArrayOutputStream();
-
         try (OutputStreamWriter osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE);
              XmlExporter xmlExporter = new XmlExporter()) {
@@ -226,10 +231,11 @@ public abstract class BackupWriterAbstract
             BackupInfo backupInfo = BackupInfo.newInstance(getContainer(),
                                                            bookCount, coverCount,
                                                            hasStyles, hasPrefs);
-            xmlExporter.doBackupInfoBlock(out, mProgressListener, backupInfo);
+            xmlExporter.doBackupInfoBlock(out, backupInfo);
         }
 
         putInfo(data.toByteArray());
+
     }
 
     /**
@@ -239,6 +245,8 @@ public abstract class BackupWriterAbstract
      */
     private void doXmlTables()
             throws IOException {
+        mProgressListener.onProgressStep(1, null);
+
         // Get a temp file and set for delete
         File tmpFile = File.createTempFile("tmp_xml_", ".tmp");
         tmpFile.deleteOnExit();
@@ -255,33 +263,35 @@ public abstract class BackupWriterAbstract
 
     private void doPreferences()
             throws IOException {
+        mProgressListener.onProgressStep(1, R.string.lbl_settings);
+
         // Turn the preferences into an XML file in a byte array
         ByteArrayOutputStream data = new ByteArrayOutputStream();
 
         try (OutputStreamWriter osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE);
              XmlExporter xmlExporter = new XmlExporter()) {
-            xmlExporter.doPreferences(out, mProgressListener);
+            xmlExporter.doPreferences(out);
         }
 
         putPreferences(data.toByteArray());
-        mProgressListener.onProgressStep(1, null);
     }
 
     private int doStyles()
             throws IOException {
+        mProgressListener.onProgressStep(1, R.string.lbl_styles);
+
         // Turn the styles into an XML file in a byte array
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         int numberOfStyles;
         try (OutputStreamWriter osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE);
              XmlExporter xmlExporter = new XmlExporter()) {
-            numberOfStyles = xmlExporter.doStyles(out, mProgressListener);
+            numberOfStyles = xmlExporter.doStyles(out);
         }
-
         putBooklistStyles(data.toByteArray());
-        mProgressListener.onProgressStep(1, null);
 
+        mProgressListener.onProgressStep(numberOfStyles, null);
         return numberOfStyles;
     }
 

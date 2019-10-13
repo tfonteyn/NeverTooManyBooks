@@ -126,8 +126,10 @@ public class CsvImporter
     @NonNull
     private final ImportHelper mSettings;
 
-    private final String mUnknownText;
-    private final String mBooksText;
+    /** cached localized "unknown" string. */
+    private final String mUnknownString;
+    /** cached localized "Books" string. */
+    private final String mBooksString;
     private final String mProgress_msg_n_created_m_updated;
 
     private final Results mResults = new Results();
@@ -143,8 +145,8 @@ public class CsvImporter
     @AnyThread
     public CsvImporter(@NonNull final Context context,
                        @NonNull final ImportHelper settings) {
-        mUnknownText = context.getString(R.string.unknown);
-        mBooksText = context.getString(R.string.lbl_books);
+        mUnknownString = context.getString(R.string.unknown);
+        mBooksString = context.getString(R.string.lbl_books);
         mProgress_msg_n_created_m_updated =
                 context.getString(R.string.progress_msg_n_created_m_updated);
 
@@ -310,7 +312,7 @@ public class CsvImporter
                 if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL
                     && !progressListener.isCancelled()) {
                     String msg = String.format(mProgress_msg_n_created_m_updated,
-                                               mBooksText,
+                                               mBooksString,
                                                mResults.booksCreated,
                                                mResults.booksUpdated);
                     progressListener.onProgressStep(delta, msg);
@@ -497,7 +499,7 @@ public class CsvImporter
         // (it seems a 'book' record gets written without an 'author' record; should not happen)
         // so we allow blank author_details and fill in a localised version of "Unknown, Unknown"
         if (encodedList.isEmpty()) {
-            encodedList = mUnknownText + ", " + mUnknownText;
+            encodedList = mUnknownString + ", " + mUnknownString;
         }
 
         // Now build the array for authors

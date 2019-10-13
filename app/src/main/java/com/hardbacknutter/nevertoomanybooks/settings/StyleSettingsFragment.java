@@ -142,11 +142,9 @@ public class StyleSettingsFragment
 
         // set the result (and again and again...)
         // Set the style as the Activity result data.
-        Intent data = new Intent()
+        mResultDataModel
                 .putExtra(UniqueId.BKEY_STYLE_MODIFIED, true)
                 .putExtra(UniqueId.BKEY_STYLE, mStyle);
-        //noinspection ConstantConditions
-        getActivity().setResult(Activity.RESULT_OK, data);
     }
 
     @Override

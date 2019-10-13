@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
@@ -401,7 +400,8 @@ public class CoverHandler {
     private void startCamera() {
         if (mCameraHelper == null) {
             mCameraHelper = new CameraHelper();
-            mCameraHelper.setRotationAngle(App.getListPreference(Prefs.pk_images_rotate_auto, 0));
+            mCameraHelper
+                    .setRotationAngle(App.getListPreference(Prefs.pk_camera_image_autorotate, 0));
             mCameraHelper.setUseFullSize(true);
         }
         mCameraHelper.startCamera(mFragment, UniqueId.REQ_ACTION_IMAGE_CAPTURE);
@@ -435,7 +435,7 @@ public class CoverHandler {
             // we must use the same fragment manager as the hosting fragment.
             mCoverBrowser = (CoverBrowserFragment) fm.findFragmentByTag(CoverBrowserFragment.TAG);
             if (mCoverBrowser == null) {
-                mCoverBrowser = CoverBrowserFragment.newInstance(isbn, SearchSites.SEARCH_ALL);
+                mCoverBrowser = CoverBrowserFragment.newInstance(isbn);
                 mCoverBrowser.show(fm, CoverBrowserFragment.TAG);
             }
             mCoverBrowser.setTargetFragment(mFragment, UniqueId.REQ_ACTION_COVER_BROWSER);
@@ -467,7 +467,7 @@ public class CoverHandler {
      */
     private void startChooser() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
-                                .setType(IMAGE_MIME_TYPE);
+                .setType(IMAGE_MIME_TYPE);
         mFragment.startActivityForResult(
                 Intent.createChooser(intent, mContext.getString(R.string.title_select_image)),
                 UniqueId.REQ_ACTION_GET_CONTENT);
@@ -510,7 +510,7 @@ public class CoverHandler {
 
     private void startCropper(@NonNull final File inputFile) {
         boolean external = PreferenceManager.getDefaultSharedPreferences(mContext)
-                                            .getBoolean(Prefs.pk_images_external_cropper, false);
+                                            .getBoolean(Prefs.pk_image_cropper_external, false);
 
         // Get the output file spec, and make sure it does not already exist.
         File outputFile = StorageUtils.getTempCoverFile(CROPPED_COVER_FILENAME);
@@ -532,14 +532,15 @@ public class CoverHandler {
     private void startInternalCropper(@NonNull final File inputFile,
                                       @NonNull final File outputFile) {
         boolean wholeImage = PreferenceManager.getDefaultSharedPreferences(mContext)
-                                              .getBoolean(Prefs.pk_images_crop_whole_image, false);
+                                              .getBoolean(Prefs.pk_image_cropper_frame_whole,
+                                                          false);
 
         Intent intent = new Intent(mContext, CropImageActivity.class)
-                                .putExtra(CropImageActivity.BKEY_IMAGE_ABSOLUTE_PATH,
-                                          inputFile.getAbsolutePath())
-                                .putExtra(CropImageActivity.BKEY_OUTPUT_ABSOLUTE_PATH,
-                                          outputFile.getAbsolutePath())
-                                .putExtra(CropImageActivity.BKEY_WHOLE_IMAGE, wholeImage);
+                .putExtra(CropImageActivity.BKEY_IMAGE_ABSOLUTE_PATH,
+                          inputFile.getAbsolutePath())
+                .putExtra(CropImageActivity.BKEY_OUTPUT_ABSOLUTE_PATH,
+                          outputFile.getAbsolutePath())
+                .putExtra(CropImageActivity.BKEY_WHOLE_IMAGE, wholeImage);
 
         mFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_INTERNAL);
     }
@@ -566,19 +567,19 @@ public class CoverHandler {
 
         //call the standard crop action intent (the device may not support it)
         Intent intent = new Intent("com.android.camera.action.CROP")
-                                // image Uri and type
-                                .setDataAndType(inputUri, IMAGE_MIME_TYPE)
-                                // not interested in faces
-                                .putExtra("noFaceDetection", true)
-                                // {@code true} to return a Bitmap,
-                                // {@code false} to directly save the cropped image
-                                .putExtra("return-data", false)
-                                //indicate we want to crop
-                                .putExtra("crop", true)
-                                // and allow scaling
-                                .putExtra("scale", true)
-                                // Save output image in uri
-                                .putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
+                // image Uri and type
+                .setDataAndType(inputUri, IMAGE_MIME_TYPE)
+                // not interested in faces
+                .putExtra("noFaceDetection", true)
+                // {@code true} to return a Bitmap,
+                // {@code false} to directly save the cropped image
+                .putExtra("return-data", false)
+                //indicate we want to crop
+                .putExtra("crop", true)
+                // and allow scaling
+                .putExtra("scale", true)
+                // Save output image in uri
+                .putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
 
 //                                // other options not needed for now.
 //                                //indicate aspect of desired crop

@@ -103,8 +103,8 @@ public class BooklistAdapter
     @NonNull
     private final BooklistStyle mStyle;
     /** The cursor is the equivalent of the 'list of items'. */
-    @Nullable
-    private Cursor mCursor;
+    @NonNull
+    private final Cursor mCursor;
     @Nullable
     private View.OnClickListener mOnItemClick;
     @Nullable
@@ -121,22 +121,12 @@ public class BooklistAdapter
     public BooklistAdapter(@NonNull final Context context,
                            @NonNull final BooklistStyle style,
                            @NonNull final DAO db,
-                           @Nullable final Cursor cursor) {
+                           @NonNull final Cursor cursor) {
         mInflater = LayoutInflater.from(context);
         mStyle = style;
         mDb = db;
         mCursor = cursor;
         mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.booklist_level_indent);
-    }
-
-    /**
-     * Sets the cursor and notifies the adapter.
-     *
-     * @param cursor to use.
-     */
-    public void setCursor(@Nullable final Cursor cursor) {
-        mCursor = cursor;
-        notifyDataSetChanged();
     }
 
     void setOnItemClickListener(@NonNull final View.OnClickListener onItemClick) {
@@ -160,7 +150,6 @@ public class BooklistAdapter
         }
 
         String columnName = RowKind.get(viewType).getDisplayDomain().getName();
-        //noinspection ConstantConditions
         int columnIndex = mCursor.getColumnIndex(columnName);
         if (columnIndex < 0) {
             throw new ColumnNotPresentException(columnName);
@@ -170,12 +159,10 @@ public class BooklistAdapter
             // NEWTHINGS: ROW_KIND_x
 
             case RowKind.AUTHOR:
-                return new AuthorHolder(itemView, columnIndex,
-                                        R.string.hint_field_not_set_with_brackets);
+                return new AuthorHolder(itemView, columnIndex);
 
             case RowKind.SERIES:
-                return new SeriesHolder(itemView, columnIndex,
-                                        R.string.hint_field_not_set_with_brackets);
+                return new SeriesHolder(itemView, columnIndex);
 
             // Months are displayed by name
             case RowKind.DATE_PUBLISHED_MONTH:
@@ -184,19 +171,15 @@ public class BooklistAdapter
             case RowKind.DATE_ADDED_MONTH:
             case RowKind.DATE_READ_MONTH:
             case RowKind.DATE_LAST_UPDATE_MONTH:
-                return new MonthHolder(itemView, columnIndex,
-                                       R.string.hint_field_not_set_with_brackets);
+                return new MonthHolder(itemView, columnIndex);
 
             // some special formatting holders
             case RowKind.RATING:
-                return new RatingHolder(itemView, columnIndex,
-                                        R.string.hint_field_not_set_with_brackets);
+                return new RatingHolder(itemView, columnIndex);
             case RowKind.LANGUAGE:
-                return new LanguageHolder(itemView, columnIndex,
-                                          R.string.hint_field_not_set_with_brackets);
+                return new LanguageHolder(itemView, columnIndex);
             case RowKind.READ_STATUS:
-                return new ReadUnreadHolder(itemView, columnIndex,
-                                            R.string.hint_field_not_set_with_brackets);
+                return new ReadUnreadHolder(itemView, columnIndex);
 
             // Sanity check
             //noinspection ConstantConditions
@@ -223,14 +206,13 @@ public class BooklistAdapter
             case RowKind.TITLE_LETTER:
             default:
                 return new GenericStringHolder(itemView, columnIndex,
-                                               R.string.hint_field_not_set_with_brackets);
+                                               R.string.hint_empty_field);
         }
     }
 
     private View createView(@NonNull final ViewGroup parent,
                             @RowKind.Kind final int viewType) {
 
-        //noinspection ConstantConditions
         CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
         int level = row.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
         // Indent (0..) based on level (1..)
@@ -298,14 +280,11 @@ public class BooklistAdapter
     @Override
     public void onBindViewHolder(@NonNull final RowViewHolder holder,
                                  final int position) {
-
         // tag for the position, so the click-listeners can get it.
         holder.itemView.setTag(R.id.TAG_POSITION, position);
         holder.itemView.setOnClickListener(mOnItemClick);
         holder.itemView.setOnLongClickListener(mOnItemLongClick);
 
-        // position the data we need to bind.
-        //noinspection ConstantConditions
         mCursor.moveToPosition(position);
         CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
         // actual binding depends on the type of row (i.e. holder), so let the holder do it.
@@ -315,9 +294,6 @@ public class BooklistAdapter
     @Override
     @RowKind.Kind
     public int getItemViewType(final int position) {
-        if (mCursor == null) {
-            return RowKind.BOOK;
-        }
         mCursor.moveToPosition(position);
         CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
         return row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND);
@@ -325,7 +301,7 @@ public class BooklistAdapter
 
     @Override
     public int getItemCount() {
-        return mCursor == null ? 0 : mCursor.getCount();
+        return mCursor.getCount();
     }
 
     /**
@@ -376,14 +352,14 @@ public class BooklistAdapter
                                    final int position) {
 
         // sanity check.
-        if (mCursor == null || position < 0 || position >= getItemCount()) {
+        if (position < 0 || position >= getItemCount()) {
             return null;
         }
 
         String[] section;
 
         // temporary move the cursor to the requested position, restore after we got the text.
-        synchronized (mCursor) {
+        synchronized (this) {
             final int savedPos = mCursor.getPosition();
             mCursor.moveToPosition(position);
             BooklistMappedCursorRow row = ((CursorRowProvider) mCursor).getCursorRow();
@@ -1022,37 +998,37 @@ public class BooklistAdapter
         }
 
         /**
-         * For a simple row, just set the text (or hide it).
+         * For a simple row, just set the text.
          *
          * @param textId String to display
          * @param level  for this row
          */
         public void setText(@StringRes final int textId,
-                            @IntRange(from = 1) final int level) {
-            setText(mTextView.getContext().getString(textId), level);
+                            @SuppressWarnings("unused") @IntRange(from = 1) final int level) {
+            mTextView.setText(mTextView.getContext().getString(textId));
         }
 
         /**
          * For a simple row, just set the text (or hide it).
+         *
+         * <strong>Developer note:</strong> child implementation currently have overlapping code
+         * with {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup.RowKind
+         * #format(Context, int, String)}
          *
          * @param text  String to display; can be {@code null} or empty
          * @param level for this row
          */
         public void setText(@Nullable final String text,
                             @IntRange(from = 1) final int level) {
+            // we used to hide levels > 1 when they had no text.
+            // We're always displaying them now... but maybe this will change later.
             int visibility = View.VISIBLE;
 
             if (text != null && !text.isEmpty()) {
                 // if we have text, show it.
                 mTextView.setText(text);
             } else {
-                // we don't have text, but...
-                if (level == 1) {
-                    // we never hide level 1 and show the place holder text instead.
-                    mTextView.setText(mNoDataId);
-                } else {
-                    visibility = View.GONE;
-                }
+                mTextView.setText(mNoDataId);
             }
 
             mRowDetailsView.setVisibility(visibility);
@@ -1079,34 +1055,32 @@ public class BooklistAdapter
          *
          * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
-         * @param noDataId    String id to use when data is blank
          */
-        @SuppressWarnings("SameParameterValue")
         RatingHolder(@NonNull final View itemView,
-                     final int columnIndex,
-                     @StringRes final int noDataId) {
-            super(itemView, columnIndex, noDataId);
+                     final int columnIndex) {
+            super(itemView, columnIndex, R.string.hint_empty_rating);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final CursorMapper rowData,
-                                     @NonNull final BooklistStyle style) {
-            super.onBindViewHolder(rowData, style);
-
-            String s = rowData.getString(mSourceCol);
-            if (s != null) {
+        public void setText(@Nullable final String text,
+                            final int level) {
+            if (text != null) {
                 try {
                     // Locale independent.
-                    int i = (int) Float.parseFloat(s);
+                    int i = (int) Float.parseFloat(text);
                     // If valid, format the description
                     if (i >= 0 && i <= Book.RATING_STARS) {
-                        s = itemView.getResources().getQuantityString(R.plurals.n_stars, i, i);
+                        super.setText(
+                                itemView.getResources().getQuantityString(R.plurals.n_stars, i, i),
+                                level);
+                        return;
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     Logger.error(this, e);
                 }
             }
-            setText(s, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
+
+            super.setText(text, level);
         }
     }
 
@@ -1121,25 +1095,21 @@ public class BooklistAdapter
          *
          * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
-         * @param noDataId    String id to use when data is blank
          */
         @SuppressWarnings("SameParameterValue")
         LanguageHolder(@NonNull final View itemView,
-                       final int columnIndex,
-                       @StringRes final int noDataId) {
-            super(itemView, columnIndex, noDataId);
+                       final int columnIndex) {
+            super(itemView, columnIndex, R.string.hint_empty_language);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final CursorMapper rowData,
-                                     @NonNull final BooklistStyle style) {
-            super.onBindViewHolder(rowData, style);
-
-            String iso = rowData.getString(mSourceCol);
-            if (iso != null && !iso.isEmpty()) {
-                iso = LanguageUtils.getDisplayName(Locale.getDefault(), iso);
+        public void setText(@Nullable final String text,
+                            final int level) {
+            if (text != null && !text.isEmpty()) {
+                super.setText(LanguageUtils.getDisplayName(Locale.getDefault(), text), level);
+            } else {
+                super.setText(text, level);
             }
-            setText(iso, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
         }
     }
 
@@ -1154,24 +1124,19 @@ public class BooklistAdapter
          *
          * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
-         * @param noDataId    String id to use when data is blank
          */
-        @SuppressWarnings("SameParameterValue")
         ReadUnreadHolder(@NonNull final View itemView,
-                         final int columnIndex,
-                         @StringRes final int noDataId) {
-            super(itemView, columnIndex, noDataId);
+                         final int columnIndex) {
+            super(itemView, columnIndex, R.string.hint_empty_read_status);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final CursorMapper rowData,
-                                     @NonNull final BooklistStyle style) {
-            super.onBindViewHolder(rowData, style);
-
-            if (ParseUtils.parseBoolean(rowData.getString(mSourceCol), true)) {
-                setText(R.string.lbl_read, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
+        public void setText(@Nullable final String text,
+                            final int level) {
+            if (ParseUtils.parseBoolean(text, true)) {
+                super.setText(R.string.lbl_read, level);
             } else {
-                setText(R.string.lbl_unread, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
+                super.setText(R.string.lbl_unread, level);
             }
         }
     }
@@ -1188,33 +1153,28 @@ public class BooklistAdapter
          *
          * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
-         * @param noDataId    String id to use when data is blank
          */
-        @SuppressWarnings("SameParameterValue")
         MonthHolder(@NonNull final View itemView,
-                    final int columnIndex,
-                    @StringRes final int noDataId) {
-            super(itemView, columnIndex, noDataId);
+                    final int columnIndex) {
+            super(itemView, columnIndex, R.string.hint_empty_month);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final CursorMapper rowData,
-                                     @NonNull final BooklistStyle style) {
-            super.onBindViewHolder(rowData, style);
-
-            String s = rowData.getString(mSourceCol);
-            if (s != null) {
+        public void setText(@Nullable final String text,
+                            final int level) {
+            if (text != null && !text.isEmpty()) {
                 try {
-                    int i = Integer.parseInt(s);
+                    int i = Integer.parseInt(text);
                     // If valid, get the short name
                     if (i > 0 && i <= 12) {
-                        s = DateUtils.getMonthName(i, false);
+                        super.setText(DateUtils.getMonthName(i, false), level);
+                        return;
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     Logger.error(this, e);
                 }
             }
-            setText(s, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
+            super.setText(text, level);
         }
     }
 
@@ -1229,12 +1189,11 @@ public class BooklistAdapter
          *
          * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
-         * @param noDataId    String id to use when data is blank
          */
         SeriesHolder(@NonNull final View itemView,
-                     final int columnIndex,
-                     @StringRes final int noDataId) {
-            super(itemView, columnIndex, noDataId, DBDefinitions.KEY_SERIES_IS_COMPLETE);
+                     final int columnIndex) {
+            super(itemView, columnIndex, R.string.hint_empty_series,
+                  DBDefinitions.KEY_SERIES_IS_COMPLETE);
         }
 
         /**
@@ -1244,7 +1203,8 @@ public class BooklistAdapter
         @Override
         public void setText(@Nullable final String text,
                             final int level) {
-            if (text != null && Prefs.reorderTitleForDisplaying(App.getAppContext())) {
+            if (text != null && !text.isEmpty()
+                && Prefs.reorderTitleForDisplaying(App.getAppContext())) {
                 // URGENT: translated series are not reordered unless the app runs in that language
                 // solution/problem: we would need the Series id (and not just the titel)
                 // to call {@link DAO#getSeriesLanguage(long)}
@@ -1267,12 +1227,11 @@ public class BooklistAdapter
          *
          * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
-         * @param noDataId    String id to use when data is blank
          */
         AuthorHolder(@NonNull final View itemView,
-                     final int columnIndex,
-                     @StringRes final int noDataId) {
-            super(itemView, columnIndex, noDataId, DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+                     final int columnIndex) {
+            super(itemView, columnIndex, R.string.hint_empty_author,
+                  DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
         }
     }
 
