@@ -79,13 +79,16 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 public class BooksOnBookshelfModel
         extends ViewModel {
 
-    private static final String TAG = "booklist";
+    private static final String TAG = "BooksOnBookshelfModel";
     /** collapsed/expanded. */
     public static final String BKEY_LIST_STATE = TAG + ":list.state";
+
+    private static final String PREF_PREFIX = "booklist.";
+
     /** Preference name - Saved position of last top row. */
-    private static final String PREF_BOB_TOP_ROW = TAG + ".top.row";
+    private static final String PREF_BOB_TOP_ROW = PREF_PREFIX + ".top.row";
     /** Preference name - Saved position of last top row offset from view top. */
-    private static final String PREF_BOB_TOP_ROW_OFFSET = TAG + ".top.offset";
+    private static final String PREF_BOB_TOP_ROW_OFFSET = PREF_PREFIX + ".top.offset";
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
     /** Allows progress message from a task to update the user. */
@@ -171,7 +174,7 @@ public class BooksOnBookshelfModel
 
                     if (mListHasBeenLoaded) {
                         // always copy modified fields.
-                        mCurrentPositionedBookId = message.result.currentPositionedBookId;
+                        mCurrentPositionedBookId = message.result.bookId;
                         mRebuildState = message.result.listState;
 
                         // always copy these results
@@ -600,8 +603,27 @@ public class BooksOnBookshelfModel
         return mListHasBeenLoaded;
     }
 
-    public void setCurrentPositionedBookId(final long currentPositionedBookId) {
-        mCurrentPositionedBookId = currentPositionedBookId;
+
+    /**
+     * Store the current/desired book id to position the list.
+     *
+     * @param bookId to use
+     */
+    public void setCurrentPositionedBookId(final long bookId) {
+        mCurrentPositionedBookId = bookId;
+    }
+
+    /**
+     * Convenience method to hide the internals.
+     * <p>
+     * Get the target rows based on the current book position.
+     *
+     * @return RowInfo
+     */
+    @Nullable
+    public ArrayList<BooklistBuilder.RowInfo> getCurrentTargetRows() {
+        //noinspection ConstantConditions
+        return getBuilder().syncPreviouslySelectedBookId(mCurrentPositionedBookId);
     }
 
     /**
@@ -922,16 +944,16 @@ public class BooksOnBookshelfModel
         /**
          * Constructor.
          *
-         * @param bookListBuilder         the builder
-         * @param currentListCursor       Current displayed list cursor.
-         * @param currentPositionedBookId Current position in the list.
-         * @param listState               Requested list state
-         * @param taskListener            TaskListener
+         * @param bookListBuilder   the builder
+         * @param currentListCursor Current displayed list cursor.
+         * @param bookId            Current position in the list.
+         * @param listState         Requested list state
+         * @param taskListener      TaskListener
          */
         @UiThread
         GetBookListTask(@NonNull final BooklistBuilder bookListBuilder,
                         @Nullable final BooklistPseudoCursor currentListCursor,
-                        final long currentPositionedBookId,
+                        final long bookId,
                         @BooklistBuilder.ListRebuildMode final int listState,
                         final TaskListener<BuilderHolder> taskListener) {
             super(R.id.TASK_ID_GET_BOOKLIST, taskListener);
@@ -940,7 +962,7 @@ public class BooksOnBookshelfModel
             mCurrentListCursor = currentListCursor;
 
             // input/output fields for the task.
-            mHolder = new BuilderHolder(currentPositionedBookId, listState);
+            mHolder = new BuilderHolder(bookId, listState);
         }
 
 
@@ -955,7 +977,7 @@ public class BooksOnBookshelfModel
                     t0 = System.nanoTime();
                 }
                 // Build the underlying data
-                mBuilder.build(mHolder.listState, mHolder.currentPositionedBookId);
+                mBuilder.build(mHolder.listState, mHolder.bookId);
                 // preserve this state
                 mHolder.listState = BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE;
 
@@ -969,7 +991,7 @@ public class BooksOnBookshelfModel
                 }
 
                 mHolder.resultTargetRows = mBuilder
-                        .syncPreviouslySelectedBookId(mHolder.currentPositionedBookId);
+                        .syncPreviouslySelectedBookId(mHolder.bookId);
 
                 if (isCancelled()) {
                     return mHolder;
@@ -984,7 +1006,7 @@ public class BooksOnBookshelfModel
                 tempListCursor = mBuilder.getNewListCursor();
 
                 // Clear it so it won't be reused.
-                mHolder.currentPositionedBookId = 0;
+                mHolder.bookId = 0;
 
                 long t3_got_new_cursor = 0;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
@@ -1079,7 +1101,7 @@ public class BooksOnBookshelfModel
     public static class BuilderHolder {
 
         /** input/output field. */
-        long currentPositionedBookId;
+        long bookId;
         /** input/output field. */
         @BooklistBuilder.ListRebuildMode
         int listState;
@@ -1108,14 +1130,14 @@ public class BooksOnBookshelfModel
          * Should be ignored if resultListCursor is {@code null}
          */
         @Nullable
-        ArrayList<BooklistBuilder.BookRowInfo> resultTargetRows;
+        ArrayList<BooklistBuilder.RowInfo> resultTargetRows;
 
         /**
          * Constructor: these are the fields we need as input.
          */
-        BuilderHolder(final long currentPositionedBookId,
+        BuilderHolder(final long bookId,
                       @BooklistBuilder.ListRebuildMode final int listState) {
-            this.currentPositionedBookId = currentPositionedBookId;
+            this.bookId = bookId;
             this.listState = listState;
         }
 
@@ -1125,7 +1147,7 @@ public class BooksOnBookshelfModel
         }
 
         @Nullable
-        public ArrayList<BooklistBuilder.BookRowInfo> getResultTargetRows() {
+        public ArrayList<BooklistBuilder.RowInfo> getResultTargetRows() {
             return resultTargetRows;
         }
 
@@ -1133,7 +1155,7 @@ public class BooksOnBookshelfModel
         @NonNull
         public String toString() {
             return "BuilderHolder{"
-                   + "currentPositionedBookId=" + currentPositionedBookId
+                   + "bookId=" + bookId
                    + ", listState=" + listState
                    + ", resultTotalBooks=" + resultTotalBooks
                    + ", resultUniqueBooks=" + resultUniqueBooks

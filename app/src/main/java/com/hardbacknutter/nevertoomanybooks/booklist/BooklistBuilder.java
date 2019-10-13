@@ -802,9 +802,9 @@ public class BooklistBuilder
             case PREF_LIST_REBUILD_PREFERRED_STATE:
                 // Use already-defined SQL for preserve state.
                 navStmt.execute();
-//                //FIXME: insert + update is wasteful. Create a proper one-step sql stmt
-//                int level = mStyle.getDefaultLevel();
-//                updateNodesNavigatorTable(level);
+//                //URGENT: insert + update is wasteful. Create a proper one-step sql stmt
+                int level = mStyle.getDefaultLevel();
+                updateNodesNavigatorTable(level);
                 break;
 
             case PREF_LIST_REBUILD_SAVED_STATE:
@@ -1441,65 +1441,66 @@ public class BooklistBuilder
     /**
      * Get all positions at which the specified book appears.
      *
-     * @return Array of row details, including absolute positions and visibility or
-     * {@code null} if not present.
+     * @return Array of row details, including absolute positions, visibility and level.
+     * Can be empty, but never {@code null}.
      */
-    @Nullable
-    private ArrayList<BookRowInfo> getBookAbsolutePositions(final long bookId) {
+    @NonNull
+    private ArrayList<RowInfo> getBookAbsolutePositions(final long bookId) {
         String sql = "SELECT "
-                     + mNavTable.dot(DOM_PK_ID) + ',' + mNavTable.dot(DOM_BL_NODE_VISIBLE)
+                     + mNavTable.dot(DOM_PK_ID)
+                     + ',' + mNavTable.dot(DOM_BL_NODE_VISIBLE)
+                     + ',' + mNavTable.dot(DOM_BL_NODE_LEVEL)
                      + " FROM " + mListTable + " bl " + mListTable.join(mNavTable)
                      + " WHERE " + mListTable.dot(DOM_FK_BOOK) + "=?";
 
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)})) {
-            ArrayList<BookRowInfo> rows = new ArrayList<>(cursor.getCount());
-            if (cursor.moveToFirst()) {
-                do {
-                    int absPos = cursor.getInt(0) - 1;
-                    rows.add(new BookRowInfo(absPos, getPosition(absPos),
-                                             cursor.getInt(1) == 1));
-                } while (cursor.moveToNext());
-                return rows;
-            } else {
-                return null;
+            ArrayList<RowInfo> rows = new ArrayList<>(cursor.getCount());
+            while (cursor.moveToNext()) {
+                int absPos = cursor.getInt(0) - 1;
+                boolean visible = cursor.getInt(1) == 1;
+                int level = cursor.getInt(2);
+                rows.add(new RowInfo(absPos, getPosition(absPos), visible, level));
             }
+            return rows;
         }
     }
 
     /**
      * Find the visible root node for a given absolute position and ensure it is visible.
+     *
+     * @param row we want to become visible
      */
-    private void ensureAbsolutePositionVisible(final long absPos) {
+    private void ensureAbsolutePositionVisible(@NonNull final RowInfo row) {
+
         // If <0 then no previous node.
-        if (absPos < 0) {
+        if (row.absolutePosition < 0) {
             return;
         }
 
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_NODE_ROOT);
-        if (stmt == null) {
-            stmt = mStatements.add(
-                    STMT_GET_NODE_ROOT,
-                    "SELECT " + DOM_PK_ID + " || '/' || " + DOM_BL_NODE_EXPANDED
-                    + " FROM " + mNavTable
-                    + " WHERE " + DOM_BL_NODE_LEVEL + "=1 AND " + DOM_PK_ID + "<=?"
-                    + " ORDER BY " + DOM_PK_ID + " DESC LIMIT 1");
-        }
+        // reminder: DOM_PK_ID in the mNavTable is the absolute row position,
+        // which is why we do DOM_PK_ID <= (absPos + 1)
+        String sql = "SELECT " + DOM_PK_ID + ',' + DOM_BL_NODE_EXPANDED
+                     + " FROM " + mNavTable
+                     + " WHERE " + DOM_BL_NODE_LEVEL + "<?"
+                     + " AND " + DOM_PK_ID + "<=?"
+                     + " ORDER BY " + DOM_PK_ID + " DESC";
 
-        final long rowId = absPos + 1;
+        long rowId = row.absolutePosition + 1;
 
-        // Get the root node, and expanded flag
-        stmt.bindLong(1, rowId);
-        try {
-            String[] info = stmt.simpleQueryForString().split("/");
-            long rootId = Long.parseLong(info[0]);
-            long isExpanded = Long.parseLong(info[1]);
-            // If root node is not the node we are checking,
-            // and root node is not expanded, expand it.
-            if (rootId != rowId && isExpanded == 0) {
-                toggleExpandNode(rootId - 1);
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{
+                String.valueOf(row.level), String.valueOf(rowId)})) {
+
+            while (cursor.moveToNext()) {
+                // Get the root node and expanded flag
+                long rootId = cursor.getLong(0);
+                long isExpanded = cursor.getLong(1);
+
+                // If root node is not the node we are checking,
+                // and root node is not expanded, expand it.
+                if (rootId != rowId && isExpanded == 0) {
+                    toggleNode(rootId - 1, NodeState.Expand);
+                }
             }
-        } catch (@NonNull final SQLiteDoneException ignore) {
-            // query returned zero rows
         }
     }
 
@@ -1509,40 +1510,44 @@ public class BooklistBuilder
      * @return the target rows, or {@code null} if none.
      */
     @Nullable
-    public ArrayList<BookRowInfo> syncPreviouslySelectedBookId(final long currentPositionedBookId) {
+    public ArrayList<RowInfo> syncPreviouslySelectedBookId(final long bookId) {
         // no input, no output...
-        if (currentPositionedBookId == 0) {
+        if (bookId == 0) {
             return null;
         }
 
         // get all positions of the book
-        ArrayList<BookRowInfo> rows = getBookAbsolutePositions(currentPositionedBookId);
+        ArrayList<RowInfo> rows = getBookAbsolutePositions(bookId);
 
-        if (rows != null && !rows.isEmpty()) {
-            // First, get the ones that are currently visible...
-            ArrayList<BookRowInfo> visibleRows = new ArrayList<>();
-            for (BookRowInfo rowInfo : rows) {
-                if (rowInfo.visible) {
-                    visibleRows.add(rowInfo);
+        if (rows.isEmpty()) {
+            return null;
+        }
+
+        // First, get the ones that are currently visible...
+        ArrayList<RowInfo> visibleRows = new ArrayList<>();
+        for (RowInfo row : rows) {
+            if (row.visible) {
+                visibleRows.add(row);
+            }
+        }
+
+        // If we have any visible rows, only consider those for the new position
+        if (!visibleRows.isEmpty()) {
+            rows = visibleRows;
+        } else {
+            // Make them all visible
+            for (RowInfo row : rows) {
+                if (!row.visible) {
+                    ensureAbsolutePositionVisible(row);
                 }
             }
-
-            // If we have any visible rows, only consider those for the new position
-            if (!visibleRows.isEmpty()) {
-                rows = visibleRows;
-            } else {
-                // Make them all visible
-                for (BookRowInfo rowInfo : rows) {
-                    if (!rowInfo.visible) {
-                        ensureAbsolutePositionVisible(rowInfo.absolutePosition);
-                    }
-                }
-                // Recalculate all positions
-                for (BookRowInfo rowInfo : rows) {
-                    rowInfo.listPosition = getPosition(rowInfo.absolutePosition);
-                }
+            // Recalculate all positions
+            for (RowInfo row : rows) {
+                row.listPosition = getPosition(row.absolutePosition);
             }
-            // This was commented out in the original code.
+        }
+
+        // This was commented out in the original code.
 //            // Find the nearest row to the recorded 'top' row.
 //            int targetRow = rows.get(0).absolutePosition;
 //            int minDist = Math.abs(mModel.getTopRow() - getPosition(targetRow));
@@ -1557,8 +1562,9 @@ public class BooklistBuilder
 //            ensureAbsolutePositionVisible(targetRow);
 //            // Now find the position it will occupy in the view
 //            mTargetPos = getPosition(targetRow);
-        }
+
         return rows;
+
     }
 
     /**
@@ -1598,8 +1604,9 @@ public class BooklistBuilder
 
             } else {
                 updateNodesNavigatorTable(level);
-                //TEST: saveListNodeSettings(level);
-                saveListNodeSettings(1);
+                //URGENT: saveListNodeSettings(level);
+                saveListNodeSettings(level);
+//                saveListNodeSettings(1);
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
@@ -1655,13 +1662,16 @@ public class BooklistBuilder
     /**
      * Toggle the expand/collapse status of the node at the specified absolute position.
      *
-     * @param position of the node in the list
+     * @param position   of the node in the list
+     * @param nodeStatus one of NodeState
      *
-     * @return {@code true} if the new state is expanded.
+     * @return {@code true} if the new state is expanded,
      * {@code false} if collapsed, or if an error occurred.
      */
-    public boolean toggleExpandNode(final long position) {
-        int isExpanded;
+    public boolean toggleNode(final long position,
+                              @NonNull final NodeState nodeStatus) {
+        // bogus init to 1 to satisfy javac
+        int expand = 1;
 
         SyncLock txLock = null;
         try {
@@ -1690,7 +1700,17 @@ public class BooklistBuilder
                 return false;
             }
             long level = Long.parseLong(info[0]);
-            isExpanded = (Integer.parseInt(info[1]) == 1) ? 0 : 1;
+            switch (nodeStatus) {
+                case Toggle:
+                    expand = (Integer.parseInt(info[1]) == 1) ? 0 : 1;
+                    break;
+                case Expand:
+                    expand = 1;
+                    break;
+                case Collapse:
+                    expand = 0;
+                    break;
+            }
 
             // Find the next row at the same level
             SynchronizedStatement getNextAtSameLevelStmt =
@@ -1722,12 +1742,13 @@ public class BooklistBuilder
                         + DOM_BL_NODE_VISIBLE + "=?"
                         + ',' + DOM_BL_NODE_EXPANDED + "=?"
                         + " WHERE " + DOM_PK_ID + ">?"
-                        + " AND " + DOM_BL_NODE_LEVEL + ">? AND " + DOM_PK_ID + "<?");
+                        + " AND " + DOM_BL_NODE_LEVEL + ">?"
+                        + " AND " + DOM_PK_ID + "<?");
             }
             // visible
-            showStmt.bindLong(1, isExpanded);
+            showStmt.bindLong(1, expand);
             // expanded
-            showStmt.bindLong(2, isExpanded);
+            showStmt.bindLong(2, expand);
             showStmt.bindLong(3, rowId);
             showStmt.bindLong(4, level);
             showStmt.bindLong(5, next);
@@ -1742,7 +1763,7 @@ public class BooklistBuilder
                                              + " SET " + DOM_BL_NODE_EXPANDED + "=?"
                                              + " WHERE " + DOM_PK_ID + "=?");
             }
-            expandStmt.bindLong(1, isExpanded);
+            expandStmt.bindLong(1, expand);
             expandStmt.bindLong(2, rowId);
             expandStmt.execute();
 
@@ -1758,7 +1779,7 @@ public class BooklistBuilder
             }
         }
 
-        return isExpanded != 0;
+        return expand != 0;
     }
 
     /**
@@ -1914,6 +1935,10 @@ public class BooklistBuilder
                          "\nmUseTriggers      : " + mUseTriggers,
                          "\nmUseNestedTriggers: " + mUseNestedTriggers);
         }
+    }
+
+    public enum NodeState {
+        Toggle, Expand, Collapse
     }
 
     /** Define the list of accepted constants and declare the annotation. */
@@ -2192,18 +2217,21 @@ public class BooklistBuilder
     /**
      * A data class containing details of the positions of all instances of a single book.
      */
-    public static class BookRowInfo {
+    public static class RowInfo {
 
         public final int absolutePosition;
-        public int listPosition;
         public final boolean visible;
+        public final int level;
+        public int listPosition;
 
-        BookRowInfo(final int absolutePosition,
-                    final int listPosition,
-                    final boolean visible) {
+        RowInfo(final int absolutePosition,
+                final int listPosition,
+                final boolean visible,
+                final int level) {
             this.absolutePosition = absolutePosition;
             this.listPosition = listPosition;
             this.visible = visible;
+            this.level = level;
         }
     }
 

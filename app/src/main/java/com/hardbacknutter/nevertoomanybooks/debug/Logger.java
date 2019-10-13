@@ -110,19 +110,19 @@ public final class Logger {
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
      */
     public static void warnWithStackTrace(@NonNull final Context context,
-                                          @NonNull final Object object,
+                                          @NonNull final Object tag,
                                           @NonNull final Object... params) {
         Throwable e = new Throwable();
         String msg = concat(params);
         writeToLog(context, WARN, msg, e);
         if (BuildConfig.DEBUG /* always */) {
-            Log.w(tag(object), Tracker.State.Running.toString() + '|' + msg, e);
+            Log.w(tag(tag), Tracker.State.Running.toString() + '|' + msg, e);
         }
     }
 
-    public static void warnWithStackTrace(@NonNull final Object object,
+    public static void warnWithStackTrace(@NonNull final Object tag,
                                           @NonNull final Object... params) {
-        warnWithStackTrace(App.getAppContext(), object, params);
+        warnWithStackTrace(App.getAppContext(), tag, params);
     }
 
     /**
@@ -134,20 +134,20 @@ public final class Logger {
      * No stacktrace!
      */
     public static void warn(@NonNull final Context context,
-                            @NonNull final Object object,
+                            @NonNull final Object tag,
                             @NonNull final String methodName,
                             @NonNull final Object... params) {
         String msg = methodName + '|' + concat(params);
         writeToLog(context, WARN, msg, null);
         if (BuildConfig.DEBUG /* always */) {
-            Log.w(tag(object), Tracker.State.Running.toString() + '|' + msg);
+            Log.w(tag(tag), Tracker.State.Running.toString() + '|' + msg);
         }
     }
 
-    public static void warn(@NonNull final Object object,
+    public static void warn(@NonNull final Object tag,
                             @NonNull final String methodName,
                             @NonNull final Object... params) {
-        warn(App.getAppContext(), object, methodName, params);
+        warn(App.getAppContext(), tag, methodName, params);
     }
 
     /**
@@ -158,48 +158,48 @@ public final class Logger {
      * @param context Current context
      */
     public static void info(@NonNull final Context context,
-                            @NonNull final Object object,
+                            @NonNull final Object tag,
                             @NonNull final String methodName,
                             @NonNull final Object... params) {
         String msg = methodName + '|' + concat(params);
         writeToLog(context, INFO, msg, null);
         if (BuildConfig.DEBUG /* always */) {
-            Log.i(tag(object), Tracker.State.Running.toString() + '|' + msg);
+            Log.i(tag(tag), Tracker.State.Running.toString() + '|' + msg);
         }
     }
 
-    public static void debugEnter(@NonNull final Object object,
+    public static void debugEnter(@NonNull final Object tag,
                                   @NonNull final String methodName,
                                   @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(object),
+            Log.d(tag(tag),
                   Tracker.State.Enter.toString() + '|' + methodName + '|' + concat(params));
         }
     }
 
-    public static void debugExit(@NonNull final Object object,
+    public static void debugExit(@NonNull final Object tag,
                                  @NonNull final String methodName,
                                  @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(object),
+            Log.d(tag(tag),
                   Tracker.State.Exit.toString() + '|' + methodName + '|' + concat(params));
         }
     }
 
-    public static void debug(@NonNull final Object object,
+    public static void debug(@NonNull final Object tag,
                              @NonNull final String methodName,
                              @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(object),
+            Log.d(tag(tag),
                   Tracker.State.Running.toString() + '|' + methodName + '|' + concat(params));
         }
     }
 
-    public static void debugWithStackTrace(@NonNull final Object object,
+    public static void debugWithStackTrace(@NonNull final Object tag,
                                            @NonNull final String methodName,
                                            @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(object),
+            Log.d(tag(tag),
                   Tracker.State.Running.toString() + '|' + methodName + '|' + concat(params),
                   new Throwable());
         }
@@ -208,21 +208,23 @@ public final class Logger {
     /**
      * Tracking debug.
      */
-    public static void debugWithStackTrace(@NonNull final Object object,
+    public static void debugWithStackTrace(@NonNull final Object tag,
                                            @NonNull final Throwable e,
                                            @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(object),
+            Log.d(tag(tag),
                   Tracker.State.Running.toString() + '|' + concat(params), e);
         }
     }
 
-    private static String tag(@NonNull final Object object) {
-        if (object instanceof Class) {
-            return ((Class) object).getCanonicalName();
+    private static String tag(@NonNull final Object tag) {
+        if (tag instanceof String) {
+            return (String) tag;
+        } else if (tag instanceof Class) {
+            return ((Class) tag).getCanonicalName();
         } else {
-            return object.getClass().isAnonymousClass() ? "AnonymousClass"
-                                                        : object.getClass().getCanonicalName();
+            return tag.getClass().isAnonymousClass() ? "AnonymousClass"
+                                                     : tag.getClass().getCanonicalName();
         }
     }
 

@@ -59,7 +59,7 @@ public class IsfdbEditionsHandler
     /**
      * Constructor.
      */
-    public IsfdbEditionsHandler() {
+    IsfdbEditionsHandler() {
     }
 
     /**

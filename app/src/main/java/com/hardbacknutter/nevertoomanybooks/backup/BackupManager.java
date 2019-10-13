@@ -129,7 +129,7 @@ public final class BackupManager {
             reader.close();
             hasValidDates = info.hasValidDates();
         } catch (@NonNull final IOException | InvalidArchiveException e) {
-            Logger.error(context, context, e);
+            Logger.error(context, BackupManager.class, e);
             hasValidDates = false;
         }
         return hasValidDates;

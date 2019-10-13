@@ -64,7 +64,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.BookRowInfo;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.RowInfo;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistMappedCursorRow;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor;
@@ -816,8 +816,9 @@ public class BooksOnBookshelf
                 Logger.debug(this, "onResume",
                              "reusing existing list");
             }
+
             //noinspection ConstantConditions
-            displayList(mModel.getBuilder().getNewListCursor(), null);
+            displayList(mModel.getBuilder().getNewListCursor(), mModel.getCurrentTargetRows());
         }
 
         // always reset for next iteration.
@@ -994,7 +995,7 @@ public class BooksOnBookshelf
      * @param targetRows    if set, change the position to targetRows.
      */
     private void displayList(@NonNull final BooklistPseudoCursor newListCursor,
-                             @Nullable final ArrayList<BookRowInfo> targetRows) {
+                             @Nullable final ArrayList<BooklistBuilder.RowInfo> targetRows) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Logger.debugEnter(this, "displayList",
@@ -1077,7 +1078,8 @@ public class BooksOnBookshelf
      * <p>
      * called from {@link #displayList}
      */
-    private void fixPositionWhenDrawn(@NonNull final ArrayList<BookRowInfo> targetRows) {
+    private void fixPositionWhenDrawn(
+            @NonNull final ArrayList<BooklistBuilder.RowInfo> targetRows) {
         // Find the actual extend of the current view and get centre.
         final int first = mLayoutManager.findFirstVisibleItemPosition();
         final int last = mLayoutManager.findLastVisibleItemPosition();
@@ -1087,11 +1089,11 @@ public class BooksOnBookshelf
                          " New List: (" + first + ", " + last + ")<-" + centre);
         }
         // Get the first 'target' and make it 'best candidate'
-        BookRowInfo best = targetRows.get(0);
+        RowInfo best = targetRows.get(0);
         int dist = Math.abs(best.listPosition - centre);
         // Loop all other rows, looking for a nearer one
         for (int i = 1; i < targetRows.size(); i++) {
-            BookRowInfo ri = targetRows.get(i);
+            BooklistBuilder.RowInfo ri = targetRows.get(i);
             int newDist = Math.abs(ri.listPosition - centre);
             if (newDist < dist) {
                 dist = newDist;
@@ -1169,10 +1171,9 @@ public class BooksOnBookshelf
             // but storing and recovering the view becomes unmanageable.
             // ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542
             default:
-                // we don't prohibit other levels any longer, but we don't store/recover them.
-//           if (row.getRowLevel() == 1) {
                 long absPos = mapper.getInt(DBDefinitions.KEY_BL_ABSOLUTE_POSITION);
-                boolean isExpanded = cursor.getBuilder().toggleExpandNode(absPos);
+                boolean isExpanded = cursor.getBuilder()
+                                           .toggleNode(absPos, BooklistBuilder.NodeState.Toggle);
                 // make sure the cursor has valid rows for the new position.
                 cursor.requery();
                 mAdapter.notifyDataSetChanged();
@@ -1185,7 +1186,6 @@ public class BooksOnBookshelf
                         mListView.scrollToPosition(position + 3);
                     }
                 }
-//           }
                 break;
         }
     }

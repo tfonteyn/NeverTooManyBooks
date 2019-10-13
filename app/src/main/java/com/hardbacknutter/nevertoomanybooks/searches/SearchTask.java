@@ -269,7 +269,7 @@ public class SearchTask
         String message = context.getString(error) + "\n\n" + getExceptionMessage(e);
 
         if (e != null) {
-            Logger.warn(this, "setFinalError",
+            Logger.warn(context, this, "setFinalError",
                         "siteName=" + siteName, e);
         }
 
