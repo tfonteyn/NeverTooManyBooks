@@ -468,7 +468,7 @@ public class BooksOnBookshelf
 
         // Disabled for now. It's a bit to easy for the user to select this from here,
         // with potentially huge impact.
-        // This will use the currently displayed book list (the book ID's)
+        // This will use the currently displayed booklist (the book ID's)
 //        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, 0, R.string.lbl_update_fields)
 //            .setIcon(R.drawable.ic_cloud_download);
 
@@ -510,15 +510,15 @@ public class BooksOnBookshelf
                 return true;
 
             case R.id.MENU_LEVEL_RESET:
-                expandNodes(true, mModel.getCurrentStyle().getDefaultLevel());
+                expandNodes(mModel.getCurrentStyle().getTopLevel(), false);
                 return true;
 
             case R.id.MENU_LEVEL_EXPAND:
-                expandNodes(true, 1);
+                expandNodes(1, true);
                 return true;
 
             case R.id.MENU_LEVEL_COLLAPSE:
-                expandNodes(false, 1);
+                expandNodes(1, false);
                 return true;
 
             case R.id.MENU_CLEAR_FILTERS: {
@@ -598,6 +598,24 @@ public class BooksOnBookshelf
                                  @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
+        if (BuildConfig.DEBUG) {
+            if (data != null) {
+                Bundle extras = data.getExtras();
+                if (extras != null) {
+                    if (extras.containsKey(DBDefinitions.KEY_PK_ID)) {
+                        long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, -1);
+                        Logger.debug(this, "onActivityResult",
+                                     "id=" + newId);
+                    } else {
+                        Logger.debug(this, "onActivityResult",
+                                     "data+extras was present, but there was no id");
+                    }
+                } else {
+                    Logger.debug(this, "onActivityResult",
+                                 "data was present, extras was NULL");
+                }
+            }
+        }
         // ??
         //mModel.setCurrentPositionedBookId(0);
 
@@ -608,10 +626,10 @@ public class BooksOnBookshelf
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
 
-                    if (data.getBooleanExtra(UniqueId.BKEY_SOMETHING_WAS_MODIFIED, false)) {
+                    if (data.getBooleanExtra(UniqueId.BKEY_BOOK_MODIFIED, false)) {
                         mModel.setOnResumeForceRebuild(true);
                     }
-                    if (data.getBooleanExtra(UniqueId.BKEY_SOMETHING_WAS_DELETED, false)) {
+                    if (data.getBooleanExtra(UniqueId.BKEY_BOOK_DELETED, false)) {
                         mModel.setOnResumeForceRebuild(true);
                     }
 
@@ -702,18 +720,14 @@ public class BooksOnBookshelf
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
 
-                    if (data.getBooleanExtra(UniqueId.BKEY_PREFERRED_STYLES_MODIFIED, false)) {
-                        mModel.setOnResumeForceRebuild(true);
+                    BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
+                    if (style != null) {
+                        // save the new bookshelf/style combination
+                        mModel.getCurrentBookshelf().setAsPreferred(this);
+                        mModel.setCurrentStyle(this, style);
                     }
 
                     if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
-                        BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
-                        if (style != null) {
-                            // save the new bookshelf/style combination
-                            mModel.getCurrentBookshelf().setAsPreferred(this);
-                            mModel.setCurrentStyle(this, style);
-                        }
-                        // always rebuild even if we did not pass a style back.
                         mModel.setOnResumeForceRebuild(true);
                     }
                 }
@@ -870,11 +884,11 @@ public class BooksOnBookshelf
     /**
      * Expand/Collapse the current position in the list.
      *
-     * @param expand {@code true} to expand, {@code false} to collapse
-     * @param level  the level up-to where we expand/collapse; top level == 1
+     * @param topLevel the desired top-level which must be kept visible
+     * @param expand   {@code true} to expand, {@code false} to collapse
      */
-    private void expandNodes(final boolean expand,
-                             @IntRange(from = 1) final int level) {
+    private void expandNodes(@IntRange(from = 1) final int topLevel,
+                             final boolean expand) {
 
         int layoutPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         // It is possible that the list will be empty, if so, ignore
@@ -891,7 +905,7 @@ public class BooksOnBookshelf
             // get the builder from the current cursor; expand/collapse and save the new position
             BooklistBuilder booklistBuilder = mModel.getBuilder();
             //noinspection ConstantConditions
-            booklistBuilder.expandNodes(expand, level);
+            booklistBuilder.expandNodes(topLevel, expand);
             savePosition(booklistBuilder.getPosition(oldAbsPos));
 
             // pass in the new cursor and display the list.

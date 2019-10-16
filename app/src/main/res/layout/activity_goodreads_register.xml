@@ -73,16 +73,16 @@
                 android:text="@string/gr_auth_blurb_part2"
                 />
 
-            <Button
-                android:id="@+id/authorize"
-                style="@style/WideButton"
-                android:text="@string/gr_title_auth_access"
-                />
-
             <TextView
                 style="@style/Blurb"
                 android:layout_width="match_parent"
                 android:text="@string/gr_auth_blurb_part3"
+                />
+
+            <Button
+                android:id="@+id/authorize"
+                style="@style/WideButton"
+                android:text="@string/gr_title_auth_access"
                 />
 
             <TextView

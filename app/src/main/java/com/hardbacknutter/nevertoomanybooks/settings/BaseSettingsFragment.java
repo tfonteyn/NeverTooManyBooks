@@ -104,25 +104,28 @@ public abstract class BaseSettingsFragment
 
     /**
      * Set the summaries reflecting the current values for all Preferences.
+     * Should usually only be called when a preference fragment is created.
      */
-    void setSummary(@NonNull final PreferenceScreen screen) {
+    void updateSummaries(@NonNull final PreferenceScreen screen) {
         for (String key : screen.getSharedPreferences().getAll().keySet()) {
-            setSummary(key);
+            updateSummary(key);
         }
     }
 
-    private void setSummary(@NonNull final String key) {
+    private void updateSummary(@NonNull final String key) {
         Preference preference = findPreference(key);
         if (preference != null) {
-            preference.setSummary(getSummary(preference));
+            preference.setSummary(getValueAsString(preference));
         }
     }
 
     /**
-     * @return the current string value for a single Preference.
+     * Get the current string value for a single Preference.
+     *
+     * @return the value string
      */
     @NonNull
-    private CharSequence getSummary(@NonNull final Preference preference) {
+    private CharSequence getValueAsString(@NonNull final Preference preference) {
         if (preference instanceof ListPreference) {
             return ((ListPreference) preference).getEntry();
 
@@ -170,6 +173,6 @@ public abstract class BaseSettingsFragment
     @Override
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
                                           @NonNull final String key) {
-        setSummary(key);
+        updateSummary(key);
     }
 }

@@ -505,19 +505,18 @@ public class CropImageActivity
     }
 
     private void saveOutput(@NonNull final Bitmap croppedImage) {
-        Bundle data = new Bundle();
         if (mOptionOutputUri == null) {
             // we were not asked to save anything, but we're ok with that
             setResult(Activity.RESULT_OK);
         } else {
-            Intent intent = new Intent(mOptionOutputUri.toString()).putExtras(data);
+            Intent data = new Intent(mOptionOutputUri.toString());
             try (OutputStream outputStream = getContentResolver()
                                                      .openOutputStream(mOptionOutputUri)) {
                 if (outputStream != null) {
                     croppedImage.compress(defaultCompressFormat, 75, outputStream);
                 }
                 // we saved the image
-                setResult(Activity.RESULT_OK, intent);
+                setResult(Activity.RESULT_OK, data);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
                 Logger.error(this, this, e);

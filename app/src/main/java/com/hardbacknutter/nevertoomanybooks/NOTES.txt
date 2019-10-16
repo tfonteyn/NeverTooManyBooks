@@ -106,7 +106,7 @@ https://github.com/eleybourn/Book-Catalogue/issues/519 - == 721
 https://github.com/eleybourn/Book-Catalogue/issues/493 - auto fill 'read end date' when checkbox "I've read this book" is clicked.
 https://github.com/eleybourn/Book-Catalogue/issues/481 - field for the number of a limited series -> "print run"
 https://github.com/eleybourn/Book-Catalogue/issues/451 - Suffixed in names not handled well. eg "William F. Buckley, Jr
-https://github.com/eleybourn/Book-Catalogue/issues/325 - Add an optional extra 'On Loan' indicator to book list
+https://github.com/eleybourn/Book-Catalogue/issues/325 - Add an optional extra 'On Loan' indicator to booklist
 https://github.com/eleybourn/Book-Catalogue/issues/323 - Add Field for Editions
 https://github.com/eleybourn/Book-Catalogue/issues/281 - A field for copyright date
 https://github.com/eleybourn/Book-Catalogue/issues/239 - Currency field in list price

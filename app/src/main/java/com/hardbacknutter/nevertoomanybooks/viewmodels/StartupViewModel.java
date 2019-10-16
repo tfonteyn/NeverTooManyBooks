@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -56,6 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_SETTINGS;
 
 /**
  * <strong>Note:</strong> yes, this is overkill for the startup. Call it an experiment.
@@ -208,6 +211,13 @@ public class StartupViewModel
 
         try {
             mDb = new DAO();
+            // debugging , to-be-removed
+            // make sure we never do this on a real device
+            if (Build.PRODUCT.startsWith("sdk")) {
+                //URGENT: we're flushing TBL_BOOK_LIST_NODE_SETTINGS at startup
+                TBL_BOOK_LIST_NODE_SETTINGS.deleteAllRows(mDb.getUnderlyingDatabase());
+            }
+
         } catch (@NonNull final DBHelper.UpgradeException e) {
             Logger.error(this, e, "startTasks");
             mTaskException.setValue(e);

@@ -319,21 +319,21 @@ public class Series
      * fred(5) <-- delete
      * fred(6)
      *
-     * <strong>Note:</strong> 'db' can be {@code null} in which case we use the 'bookLocale'
-     * and the id from the item as-is. This should be limited to unit testing.
-     * If set, then we lookup the Locale properly and call {@link #fixId} first.
-     *
-     * @param list       to prune
-     * @param context    Current context
-     * @param db         Database Access;
-     * @param bookLocale Locale to use if the item does not have a Locale of its own.
+     * @param list        to prune
+     * @param context     Current context
+     * @param db          Database Access;
+     * @param bookLocale  Locale to use if the item does not have a Locale of its own.
+     * @param isBatchMode set to {@code true} to force the use of the bookLocale,
+     *                    instead of taking a round trip to the database to try and guess
+     *                    the locale. Should be used for example during an import.
      *
      * @return {@code true} if the list was modified.
      */
     public static boolean pruneList(@NonNull final List<Series> list,
-                                    @Nullable final Context context,
-                                    @Nullable final DAO db,
-                                    @NonNull final Locale bookLocale) {
+                                    @NonNull final Context context,
+                                    @NonNull final DAO db,
+                                    @NonNull final Locale bookLocale,
+                                    final boolean isBatchMode) {
         Map<String, Series> hashMap = new HashMap<>();
         List<Series> toDelete = new ArrayList<>();
         // will be set to true if we modify the list.
@@ -344,12 +344,11 @@ public class Series
             Series series = it.next();
 
             Locale locale;
-            if (db != null) {
-                locale = series.getLocale(db, bookLocale);
-            } else {
+            if (isBatchMode) {
                 locale = bookLocale;
+            } else {
+                locale = series.getLocale(db, bookLocale);
             }
-
 
             String title = series.getTitle().trim().toLowerCase(locale);
             String number = series.getNumber().trim().toLowerCase(locale);
@@ -398,7 +397,7 @@ public class Series
 
         // now repeat but taking the id into account.
         // (the order in the || is important...
-        return ItemWithFixableId.pruneList(list, context, db, bookLocale)
+        return ItemWithFixableId.pruneList(list, context, db, bookLocale, isBatchMode)
                || modified;
     }
 
@@ -533,6 +532,8 @@ public class Series
     public Locale getLocale(@NonNull final DAO db,
                             @NonNull final Locale bookLocale) {
 
+        //FIXME: need a reliable way to cache the Locale here. See also {@link #pruneList}
+        // were we use batch mode.
         String iso3Language = db.getSeriesLanguage(mId);
         if (!iso3Language.isEmpty()) {
             Locale seriesLocale = LocaleUtils.getLocale(iso3Language);

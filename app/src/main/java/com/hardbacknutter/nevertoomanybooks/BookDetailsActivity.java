@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -84,14 +85,11 @@ public class BookDetailsActivity
         BookBaseFragmentModel model = new ViewModelProvider(this).get(BookBaseFragmentModel.class);
 
         ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
-        // set the current book, so the BoB list can reposition correctly.
+        // always set the *current* book, so the BoB list can reposition correctly.
         resultDataModel.putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
 
-        if (model.isModified()) {
-            resultDataModel.putExtra(UniqueId.BKEY_SOMETHING_WAS_MODIFIED, true);
-        }
-
-        setResult(Activity.RESULT_OK, resultDataModel.getData());
+        Intent resultData = resultDataModel.getActivityResultData();
+        setResult(Activity.RESULT_OK, resultData);
         super.onBackPressed();
     }
 

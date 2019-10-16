@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
+import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -52,13 +54,14 @@ public class AuthorWorksModel
     /** Database Access. */
     private DAO mDb;
 
-    private boolean mAtLeastOneBookDeleted;
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    @NonNull
+    private Intent mResultData = new Intent();
 
     @Nullable
     private Author mAuthor;
     @Nullable
     private ArrayList<TocEntry> mTocEntries;
-
     /** Initially we get toc entries and books. */
     private boolean mWithTocEntries = true;
     /** Initially we get toc entries and books. */
@@ -101,6 +104,16 @@ public class AuthorWorksModel
         }
     }
 
+    /**
+     * Get the data intent to pass to {@link Activity#setResult}.
+     *
+     * @return intent
+     */
+    @NonNull
+    public Intent getActivityResultData() {
+        return mResultData;
+    }
+
     public void loadTocEntries(final boolean withTocEntries,
                                final boolean withBooks) {
         mWithTocEntries = withTocEntries;
@@ -132,17 +145,13 @@ public class AuthorWorksModel
             case Book:
                 if (mDb.deleteBook(item.getId()) == 1) {
                     mTocEntries.remove(item);
-                    mAtLeastOneBookDeleted = true;
+                    mResultData.putExtra(UniqueId.BKEY_BOOK_DELETED, true);
                 }
                 break;
 
             default:
                 throw new UnexpectedValueException(item.getType());
         }
-    }
-
-    public boolean isAtLeastOneBookDeleted() {
-        return mAtLeastOneBookDeleted;
     }
 
     public String getScreenTitle(@NonNull final Context context) {

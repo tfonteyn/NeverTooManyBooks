@@ -209,6 +209,7 @@
     <item name="PICKER_MONTH" type="id" />
     <item name="PICKER_YEAR" type="id" />
     <item name="MENU_DEBUG_UNMANGLE" type="id" />
+    <item name="MENU_PREFS_ASIN" type="id" />
 
     <!-- BEGIN used for rows in a {@link RecyclerView} -->
 

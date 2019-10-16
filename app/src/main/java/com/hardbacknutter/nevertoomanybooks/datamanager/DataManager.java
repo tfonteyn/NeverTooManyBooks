@@ -144,19 +144,19 @@ public class DataManager {
                 putString(key, (String) value);
 
             } else if (value instanceof Integer) {
-                putInt(key, (Integer) value);
+                putInt(key, (int) value);
 
             } else if (value instanceof Long) {
-                putLong(key, (Long) value);
+                putLong(key, (long) value);
 
             } else if (value instanceof Double) {
-                putDouble(key, (Double) value);
+                putDouble(key, (double) value);
 
             } else if (value instanceof Float) {
-                putFloat(key, (Float) value);
+                putFloat(key, (float) value);
 
             } else if (value instanceof Boolean) {
-                putBoolean(key, (Boolean) value);
+                putBoolean(key, (boolean) value);
 
             } else if ((value instanceof ArrayList)
                        && (!((ArrayList) value).isEmpty())

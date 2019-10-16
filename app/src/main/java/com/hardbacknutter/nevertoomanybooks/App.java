@@ -674,6 +674,24 @@ public class App
     }
 
     /**
+     * Reads the application version from the manifest.
+     *
+     * @return the version
+     */
+    public static long getVersion() {
+        PackageInfo packageInfo = getPackageInfo(0);
+        if (packageInfo != null) {
+            if (Build.VERSION.SDK_INT >= 28) {
+                return packageInfo.getLongVersionCode();
+            } else {
+                //noinspection deprecation
+                return (long) packageInfo.versionCode;
+            }
+        }
+        return 0;
+    }
+
+    /**
      * Initialize ACRA for a given Application.
      * <p>
      * <br>{@inheritDoc}

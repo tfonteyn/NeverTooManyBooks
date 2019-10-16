@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
  */
 final class MenuHandler {
 
-    static final int ORDER_HIDE_KEYBOARD = 1;
+    static final int ORDER_ASIN = 21;
 
     static final int ORDER_SEARCH_SITES = 20;
 

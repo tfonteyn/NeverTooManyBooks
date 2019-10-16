@@ -76,7 +76,7 @@ public class StyleSettingsFragment
             mStyle = args.getParcelable(UniqueId.BKEY_STYLE);
         }
         if (mStyle == null) {
-            // we're doing the global preferences it seems
+            // we're doing the global preferences
             mStyle = new BooklistStyle();
         }
 
@@ -121,14 +121,26 @@ public class StyleSettingsFragment
             TipManager.display(getContext(), R.string.tip_booklist_style_properties, null);
         }
 
+        // Some PreferenceScreen use a click listener.
+        initClickListeners();
         // Set the summaries reflecting the current values for all basic Preferences.
-        setSummary(screen);
-        updateLocalSummaries();
+        updateSummaries(screen);
+        // and for a set of special ones. See method doc.
+        updateThisScreen();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // pass the non-global style back; whether existing or new.
+        if (!mStyle.getUuid().isEmpty()) {
+            mResultDataModel.putExtra(UniqueId.BKEY_STYLE, mStyle);
+        }
     }
 
     /**
-     * Update the local summaries after a change.
-     * Set the activity result on each change.
+     * Update the local summaries after a change and set the activity result.
      *
      * <p>
      * <br>{@inheritDoc}
@@ -137,21 +149,35 @@ public class StyleSettingsFragment
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
                                           @NonNull final String key) {
         super.onSharedPreferenceChanged(sharedPreferences, key);
-
-        updateLocalSummaries();
+        updateThisScreen();
 
         // set the result (and again and again...)
-        // Set the style as the Activity result data.
-        mResultDataModel
-                .putExtra(UniqueId.BKEY_STYLE_MODIFIED, true)
-                .putExtra(UniqueId.BKEY_STYLE, mStyle);
+        mResultDataModel.putExtra(UniqueId.BKEY_STYLE_MODIFIED, true);
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        updateLocalSummaries();
+        updateThisScreen();
+    }
+
+    /**
+     * Hook up a {@link Preference.OnPreferenceClickListener} to start a dedicated activity.
+     */
+    private void initClickListeners() {
+        Preference preference;
+
+        // the 'groups' in use.
+        preference = findPreference(Prefs.psk_style_groupings);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                Intent intent = new Intent(getContext(), StyleGroupsActivity.class);
+                intent.putExtra(UniqueId.BKEY_STYLE, mStyle);
+                startActivityForResult(intent, UniqueId.REQ_EDIT_STYLE_GROUPS);
+                return true;
+            });
+        }
     }
 
     /**
@@ -161,13 +187,12 @@ public class StyleSettingsFragment
      * <li>hide/show the "Series" category</li>
      * <li>filter labels</li>
      * <li>extras labels</li>
-     * <li>group labels + Adds an onClick to edit the groups for this style.
-     * The groups are a PreferenceScreen of their own, here 'faked' with a new activity.</li>
+     * <li>group labels</li>
      * </ul>
      * <p>
      * Reminder: prefs lookups can return {@code null} as the screen swaps in and out sub screens.
      */
-    private void updateLocalSummaries() {
+    private void updateThisScreen() {
         Preference preference;
         List<String> labels;
 
@@ -200,11 +225,6 @@ public class StyleSettingsFragment
         if (preference != null) {
             //noinspection ConstantConditions
             preference.setSummary(mStyle.getGroupLabels(getContext()));
-            preference.getIntent().putExtra(UniqueId.BKEY_STYLE, mStyle);
-            preference.setOnPreferenceClickListener(p -> {
-                startActivityForResult(p.getIntent(), UniqueId.REQ_EDIT_STYLE_GROUPS);
-                return true;
-            });
         }
 
         // The "Series" category has no settings of its own (in contrast to "Authors").
@@ -213,6 +233,7 @@ public class StyleSettingsFragment
         if (preference != null) {
             preference.setVisible(mStyle.hasGroupKind(BooklistGroup.RowKind.SERIES));
         }
+
         // always visible
 //        preference = findPreference(Prefs.psk_style_author);
 //        if (preference != null) {
@@ -232,8 +253,6 @@ public class StyleSettingsFragment
                     Objects.requireNonNull(data);
                     // replace the current style with the edited copy
                     mStyle = Objects.requireNonNull(data.getParcelableExtra(UniqueId.BKEY_STYLE));
-                    // refresh summaries on screen
-                    updateLocalSummaries();
                 }
                 break;
 

@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * What led to this?
  * <p>
  * 1. The call to getCount() that ListView does when it is passed a cursor added approximately 25%
- * to the total time building a book list. Given the way book lists are constructed (a flat table
+ * to the total time building a booklist. Given the way the booklist is constructed (a flat table
  * with an index table that is ordered by ID), it was worth replacing getCount() with a local
  * version that simply returned the number of 'visible' rows in the nav table.
  * <p>

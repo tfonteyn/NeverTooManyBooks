@@ -109,6 +109,20 @@ public class SynchronizedStatement
     }
 
     /**
+     * Wrapper for binding a boolean to a SQLiteStatement by morphing it to a long(1/0).
+     * <p>
+     * Bind a boolean value to this statement. The value remains bound until
+     * {@link #clearBindings} is called.
+     *
+     * @param index The 1-based index to the parameter to bind
+     * @param value The value to bind
+     */
+    public void bindBoolean(final int index,
+                            final boolean value) {
+        mStatement.bindLong(index, value ? 1 : 0);
+    }
+
+    /**
      * Wrapper for underlying method on SQLiteStatement.
      * <p>
      * Bind a long value to this statement. The value remains bound until

@@ -35,9 +35,10 @@
     <string name="pe_ui_theme_dark">Dunkel</string>
     <string name="pe_ui_theme_light">Licht</string>
 
-    <string name="pe_bob_list_state_preserve">Darstellung beibehalten</string>
-    <string name="pe_bob_list_state_expanded">Bücherliste immer ausklappen</string>
-    <string name="pe_bob_list_state_collapsed">Bücherliste immer einklappen</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Verwende bevorzugten Status</string>
+    <string name="pe_bob_list_rebuild_state_preserve">Darstellung beibehalten</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Alles ausklappen</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Alles einklappen</string>
 
     <string name="pe_bob_list_generation_full">Benutze vollwertigen Modus</string>
     <string name="pe_bob_list_generation_enhanced">Benutze verbesserten Kompatibilitätsmodus</string>
@@ -462,7 +463,7 @@
     <string name="pt_bob_authors_display">Autoren anzeigen als</string>
     <string name="pt_bob_header">Zusammenfassung in der Kopfzeile</string>
     <string name="pt_booklist_generation">Erzeugung der Bücherliste</string>
-    <string name="pt_booklist_state">Darstellung der Bücherliste</string>
+    <string name="pt_bob_list_rebuild_state">Startstatus der Buchliste</string>
     <string name="pt_bob_authors_sort">Autoren sortieren nach</string>
     <string name="pt_bob_text_size">Größe der Einträge in der Bücherliste</string>
     <string name="pt_thumbnails_cache_resized">Größe der Cover-Bilder ändern zwischenspeichern</string>
@@ -638,7 +639,7 @@
     <string name="lbl_print_run">Druckauflage</string>
     <string name="pv_bob_header_style_name">Stilname</string>
     <string name="warning_rebuild_orderby_columns">Dadurch werden die Sortierdaten neu erstellt, wenn die App neu gestartet wird. Bist du dir sicher, dass du weitermachen willst ?</string>
-    <string name="pt_booklist_state_default">Standard-Buchlistenebene</string>
+    <string name="pt_bob_list_state_expansion_level">Standard-Buchlistenebene</string>
     <string name="menu_level_reset">Bevorzugte Ausbaustufe</string>
     <string name="hint_empty_rating">(nicht bewertet)</string>
     <string name="hint_empty_language">(Keine Sprache ausgefüllt)</string>

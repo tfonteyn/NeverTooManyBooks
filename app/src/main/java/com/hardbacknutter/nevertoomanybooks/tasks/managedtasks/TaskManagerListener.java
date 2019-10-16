@@ -36,14 +36,31 @@ import androidx.annotation.NonNull;
  */
 public interface TaskManagerListener {
 
+    /**
+     * A task is finished.
+     *
+     * @param task the task
+     */
     void onTaskFinished(@NonNull ManagedTask task);
 
+    /**
+     * Display a progress message.
+     *
+     * @param absPosition the new value to set
+     * @param max         the (potentially) new estimate maximum value
+     * @param message     to display. Set to "" to close the ProgressDialog
+     */
     default void onTaskProgress(int absPosition,
                                 int max,
                                 @NonNull String message) {
         // ignore
     }
 
+    /**
+     * Display an interactive message.
+     *
+     * @param message to display to the user
+     */
     default void onTaskUserMessage(@NonNull String message) {
         // ignore
     }

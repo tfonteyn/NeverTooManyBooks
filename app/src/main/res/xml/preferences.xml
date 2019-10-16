@@ -271,6 +271,23 @@
 
     <PreferenceCategory
         android:title="@string/lbl_format">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_sort_by_alpha"
+            android:key="reformat.titles.sort"
+            android:summaryOff="@string/pt_reformat_titles_summary_original"
+            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
+            android:title="@string/pt_bob_titles_sort" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_reorder"
+            android:key="reformat.titles.display"
+            android:summaryOff="@string/pt_reformat_titles_summary_original"
+            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
+            android:title="@string/pt_bob_titles_display" />
+
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_edit"
@@ -294,43 +311,17 @@
          />
          -->
 
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_sort_by_alpha"
-            android:key="reformat.titles.sort"
-            android:summaryOff="@string/pt_reformat_titles_summary_original"
-            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
-            android:title="@string/pt_bob_titles_sort" />
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_reorder"
-            android:key="reformat.titles.display"
-            android:summaryOff="@string/pt_reformat_titles_summary_original"
-            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
-            android:title="@string/pt_bob_titles_display" />
-
         <!-- the state of the list when starting the app. -->
+        <!-- default BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE == 0 -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_state"
             android:entryValues="@array/pv_bob_list_state"
             android:icon="@drawable/ic_view_list"
             android:key="style.booklist.levels.rebuild.state"
-            android:title="@string/pt_booklist_state" />
+            android:title="@string/pt_bob_list_rebuild_state" />
 
-
-        <!-- default expanded level for the booklist. -->
-        <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/pe_bob_level_default"
-            android:entryValues="@array/pv_bob_level_default"
-            android:icon="@drawable/ic_view_list"
-            android:key="style.booklist.levels.default"
-            android:title="@string/pt_booklist_state_default" />
-
-
-        <!-- default BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE == 0 -->
+        <!-- compatibility setting on how to generate the booklist -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_generation"
@@ -383,12 +374,11 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_allow_mobile_data" />
 
+        <!-- We set an OnPreferenceClickListener to call startActivityForResult. -->
         <PreferenceScreen
             android:icon="@drawable/ic_sort"
             android:key="psk_search_site_order"
             android:title="@string/lbl_websites">
-            <!-- URGENT: can't use setResult/onActivityResult -->
-            <intent android:action="search.website.order.EDIT" />
         </PreferenceScreen>
 
         <!-- Key hardcoded to ISFDB as no other site has Publisher support for now

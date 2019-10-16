@@ -587,7 +587,7 @@ class ImportLegacyTask
                         seriesList.add(newSeries);
                         bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
 
-                        Series.pruneList(seriesList, context, db, bookLocale);
+                        Series.pruneList(seriesList, context, db, bookLocale, true);
                         bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
                     }
                 }
@@ -627,7 +627,7 @@ class ImportLegacyTask
             }
             //TEST see above
             //--- begin 2019-02-04 ---
-            ItemWithFixableId.pruneList(bsList, context, db, Locale.getDefault());
+            ItemWithFixableId.pruneList(bsList, context, db, Locale.getDefault(), false);
             //--- end 2019-02-04 ---
 
             bookData.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);

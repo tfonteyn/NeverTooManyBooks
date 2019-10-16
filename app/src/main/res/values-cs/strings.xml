@@ -35,9 +35,10 @@
     <string name="pe_ui_theme_dark">Temný</string>
     <string name="pe_ui_theme_light">Světlo</string>
 
-    <string name="pe_bob_list_state_preserve">Zachovat stav seznamu knih</string>
-    <string name="pe_bob_list_state_expanded">Vždy otevřít seznam knih rozbalený</string>
-    <string name="pe_bob_list_state_collapsed">Vždy otevřít seznam knih sbalený</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Použijte upřednostňovaný stav</string>
+    <string name="pe_bob_list_rebuild_state_preserve">Zachovat aktuální stav</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Rozšířit vše</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Složte vše</string>
 
     <string name="pe_bob_list_generation_full">Síla plně vybavený</string>
     <string name="pe_bob_list_generation_enhanced">Vynutit rozšířený režim kompatibility</string>
@@ -460,7 +461,7 @@
     <string name="pt_bob_authors_display">Zobrazit autory jako</string>
     <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
     <string name="pt_booklist_generation">Možnost generování seznamu knih</string>
-    <string name="pt_booklist_state">Stav seznamu knih</string>
+    <string name="pt_bob_list_rebuild_state">Stav spuštění seznamu knih</string>
     <string name="pt_bob_authors_sort">Seřadit autory podle</string>
     <string name="pt_bob_text_size">Velikost položek na seznamu knih</string>
     <string name="pt_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
@@ -632,7 +633,7 @@
     <string name="lbl_print_run">Tisk běh</string>
     <string name="pv_bob_header_style_name">Název stylu</string>
     <string name="warning_rebuild_orderby_columns">Po restartování aplikace dojde k opětovnému vytvoření třídicích dat. Jste si jistý, že chcete pokračovat ?</string>
-    <string name="pt_booklist_state_default">Výchozí seznam rozšiřujících knih</string>
+    <string name="pt_bob_list_state_expansion_level">Výchozí seznam rozšiřujících knih</string>
     <string name="menu_level_reset">Upřednostňovaná úroveň expanze</string>
     <string name="hint_empty_rating">(Nehodnoceno)</string>
     <string name="hint_empty_language">(Není vyplněn žádný jazyk)</string>

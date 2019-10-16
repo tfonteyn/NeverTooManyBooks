@@ -42,8 +42,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
@@ -239,8 +237,7 @@ public abstract class BookSearchBaseFragment
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
             case UniqueId.REQ_PREFERRED_SEARCH_SITES: {
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                if (resultCode == Activity.RESULT_OK && data != null) {
                     int sites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES,
                                                  mBookSearchBaseModel.getSearchSites());
                     mBookSearchBaseModel.setSearchSites(sites);

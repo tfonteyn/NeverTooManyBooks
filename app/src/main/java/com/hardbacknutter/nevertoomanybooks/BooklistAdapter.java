@@ -1063,7 +1063,7 @@ public class BooklistAdapter
 
         @Override
         public void setText(@Nullable final String text,
-                            final int level) {
+                            @IntRange(from = 1) final int level) {
             if (text != null) {
                 try {
                     // Locale independent.
@@ -1104,7 +1104,7 @@ public class BooklistAdapter
 
         @Override
         public void setText(@Nullable final String text,
-                            final int level) {
+                            @IntRange(from = 1) final int level) {
             if (text != null && !text.isEmpty()) {
                 super.setText(LanguageUtils.getDisplayName(Locale.getDefault(), text), level);
             } else {
@@ -1132,7 +1132,7 @@ public class BooklistAdapter
 
         @Override
         public void setText(@Nullable final String text,
-                            final int level) {
+                            @IntRange(from = 1) final int level) {
             if (ParseUtils.parseBoolean(text, true)) {
                 super.setText(R.string.lbl_read, level);
             } else {
@@ -1161,7 +1161,7 @@ public class BooklistAdapter
 
         @Override
         public void setText(@Nullable final String text,
-                            final int level) {
+                            @IntRange(from = 1) final int level) {
             if (text != null && !text.isEmpty()) {
                 try {
                     int i = Integer.parseInt(text);
@@ -1202,7 +1202,7 @@ public class BooklistAdapter
          */
         @Override
         public void setText(@Nullable final String text,
-                            final int level) {
+                            @IntRange(from = 1) final int level) {
             if (text != null && !text.isEmpty()
                 && Prefs.reorderTitleForDisplaying(App.getAppContext())) {
                 // URGENT: translated series are not reordered unless the app runs in that language

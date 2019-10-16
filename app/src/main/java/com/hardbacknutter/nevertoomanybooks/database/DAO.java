@@ -100,7 +100,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_ASIN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
@@ -1201,7 +1200,6 @@ public class DAO
         // Remove blank external ID's
         for (DomainDefinition domain : new DomainDefinition[]{
                 //NEWTHINGS: add new site specific ID: add column
-                DOM_ASIN,
                 DOM_BOOK_ISFDB_ID,
                 DOM_BOOK_OPEN_LIBRARY_ID,
                 DOM_BOOK_LIBRARY_THING_ID,
@@ -2490,7 +2488,7 @@ public class DAO
      *
      * @param tocId id of the entry (story)
      *
-     * @return id-of-book list
+     * @return list with book ids
      */
     public ArrayList<Long> getBookIdsByTocEntry(final long tocId) {
         ArrayList<Long> list = new ArrayList<>();
@@ -2540,7 +2538,7 @@ public class DAO
      *
      * @param authorId id of the author
      *
-     * @return id-of-book list
+     * @return list with book ids
      */
     public ArrayList<Long> getBookIdsByAuthor(final long authorId) {
         ArrayList<Long> list = new ArrayList<>();
@@ -2558,7 +2556,7 @@ public class DAO
      *
      * @param seriesId id of the Series
      *
-     * @return id-of-book list
+     * @return list with book ids
      */
     public ArrayList<Long> getBookIdsBySeries(final long seriesId) {
         ArrayList<Long> list = new ArrayList<>();
@@ -2576,7 +2574,7 @@ public class DAO
      *
      * @param publisher name of the Publisher
      *
-     * @return id-of-book list
+     * @return list with book ids
      */
     public ArrayList<Long> getBookIdsByPublisher(@NonNull final String publisher) {
         ArrayList<Long> list = new ArrayList<>();
@@ -4407,10 +4405,10 @@ public class DAO
     /**
      * 2 forms of usage.
      * <p>
-     * Books linked authors and series
+     * Books linked with Authors and Series
      * PREFIX + ALL_BOOKS [+ where-clause] + SUFFIX
      * <p>
-     * Just the books
+     * Just the books with a primary Author and (if they have one) primary Series
      * ALL_BOOKS [+ where-clause]
      */
     private static class SqlAllBooks {
@@ -4490,27 +4488,29 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_ID)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_LAST_SYNC_DATE)
 
-                // Find the first (i.e. primary) Series
+                // Find the first (i.e. primary) Series id.
                 + ','
                 + "(SELECT " + DOM_FK_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
                 + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
                 + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC LIMIT 1)"
                 + " AS " + DOM_FK_SERIES
 
-                // Find the first (i.e. primary) Series number
+                // Find the Series number for the first (i.e. primary) Series
                 + ','
                 + "(SELECT " + DOM_BOOK_NUM_IN_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
                 + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
                 + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC LIMIT 1"
                 + ") AS " + DOM_BOOK_NUM_IN_SERIES
 
-                // Get the total series count
+                // Get the total series count; we use this to add "et. al."
                 + ','
                 + "(SELECT COUNT(*) FROM " + TBL_BOOK_SERIES.ref()
                 + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
                 + ')' + " AS " + COLUMN_ALIAS_NR_OF_SERIES
 
-                // Find the first (i.e. primary) Author
+                // Find the first (i.e. primary) Author id.
+                //URGENT: allow to select the primary author by type; with fallback.
+                // filter on DOM_BOOK_AUTHOR_TYPE_BITMASK ? get it ? ...
                 + ','
                 + "(SELECT " + DOM_FK_AUTHOR + " FROM " + TBL_BOOK_AUTHOR.ref()
                 + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
@@ -4518,7 +4518,9 @@ public class DAO
                 + ',' + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR) + " LIMIT 1"
                 + ") AS " + DOM_FK_AUTHOR
 
-//                // Get the total author count. No longer needed, but leaving for future use.
+
+//                // Get the total author count; we use this to add "et. al."
+//                // No longer needed, but leaving for future use.
 //                + ','
 //                + "(SELECT COUNT(*) FROM " + TBL_BOOK_AUTHOR.ref()
 //                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
@@ -4542,7 +4544,7 @@ public class DAO
          * {@link #getBookSql(String)}.
          */
         private static final String SUFFIX =
-                // with their primary author
+                // with their Authors
                 " JOIN ("
                 + "SELECT " + DOM_FK_AUTHOR
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
@@ -4556,7 +4558,7 @@ public class DAO
                 + ") a ON a." + DOM_FK_BOOK + "=b." + DOM_PK_ID
                 + " AND a." + DOM_FK_AUTHOR + "=b." + DOM_FK_AUTHOR
 
-                // and (if they have one) their primary series
+                // and (if they have one) their Series
                 + " LEFT OUTER JOIN ("
                 + "SELECT " + DOM_FK_SERIES
                 + ',' + TBL_SERIES.dotAs(DOM_SERIES_TITLE)
@@ -4654,6 +4656,8 @@ public class DAO
                 + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
                 + " THEN '' ELSE " + TBL_BOOK_LOANEE.dot(DOM_LOANEE)
                 + " END";
+
+
         /**
          * Single column, with the formatted name of the Series.
          * <p>
@@ -4678,6 +4682,119 @@ public class DAO
                 + " THEN " + DOM_SERIES_TITLE
                 + " ELSE " + DOM_SERIES_TITLE + " || ' (' || " + DOM_BOOK_NUM_IN_SERIES + " || ')'"
                 + " END";
+
+        /**
+         * Single column, with the Series number of a Book casted to a float
+         * to allow easy sorting.
+         */
+        public static final String EXP_SERIES_NUMBER_AS_FLOAT =
+                "CAST(" + TBL_BOOK_SERIES.dot(DOM_BOOK_NUM_IN_SERIES) + " AS REAL)";
+
+        /**
+         * If the field has a time part, convert it to local time.
+         * This deals with legacy 'date-only' dates.
+         * The logic being that IF they had a time part then it would be UTC.
+         * Without a time part, we assume the zone is local (or irrelevant).
+         */
+        @NonNull
+        private static String localDateExpression(@NonNull final String fieldSpec) {
+            return "CASE WHEN " + fieldSpec + " glob '*-*-* *' "
+                   + " THEN datetime(" + fieldSpec + ", 'localtime')"
+                   + " ELSE " + fieldSpec
+                   + " END";
+        }
+
+        /**
+         * Return a glob expression to get the 'year' from a text date field in a standard way.
+         * <p>
+         * Just look for 4 leading numbers. We don't care about anything else.
+         *
+         * @param fieldSpec fully qualified field name
+         * @param toLocal   convert the fieldSpec to local time from UTC
+         *
+         * @return expression
+         */
+        @NonNull
+        public static String yearGlob(@NonNull String fieldSpec,
+                                      final boolean toLocal) {
+            if (toLocal) {
+                fieldSpec = localDateExpression(fieldSpec);
+            }
+            return "CASE WHEN " + fieldSpec
+                   + " glob '[0123456789][01234567890][01234567890][01234567890]*'"
+                   + " THEN substr(" + fieldSpec + ",1,4)"
+                   + " ELSE ''"
+                   + " END";
+        }
+
+        /**
+         * Returns a glob expression to get the 'month' from a text date field in a standard way.
+         * <p>
+         * Just look for 4 leading numbers followed by 2 or 1 digit.
+         * We don't care about anything else.
+         *
+         * @param fieldSpec fully qualified field name
+         * @param toLocal   convert the fieldSpec to local time from UTC
+         *
+         * @return expression
+         */
+        @NonNull
+        public static String monthGlob(@NonNull String fieldSpec,
+                                       final boolean toLocal) {
+            if (toLocal) {
+                fieldSpec = localDateExpression(fieldSpec);
+            }
+            return "CASE WHEN " + fieldSpec
+                   + " glob '[0123456789][01234567890][01234567890][01234567890]"
+                   + "-[0123456789][01234567890]*'"
+                   + " THEN substr(" + fieldSpec + ",6,2)"
+                   + " WHEN " + fieldSpec
+                   + " glob '[0123456789][01234567890][01234567890][01234567890]"
+                   + "-[0123456789]*'"
+                   + " THEN substr(" + fieldSpec + ",6,1)"
+                   + " ELSE ''"
+                   + " END";
+        }
+
+        /**
+         * Returns a glob expression to get the 'day' from a text date field in a standard way.
+         * <p>
+         * Just look for 4 leading numbers followed by 2 or 1 digit, and then 1 or two digits.
+         * We don't care about anything else.
+         *
+         * @param fieldSpec fully qualified field name
+         * @param toLocal   convert the fieldSpec to local time from UTC
+         *
+         * @return expression
+         */
+        @NonNull
+        public static String dayGlob(@NonNull String fieldSpec,
+                                     final boolean toLocal) {
+            if (toLocal) {
+                fieldSpec = localDateExpression(fieldSpec);
+            }
+            // Just look for 4 leading numbers followed by 2 or 1 digit then another 2 or 1 digit.
+            // We don't care about anything else.
+            return "CASE WHEN " + fieldSpec
+                   + " glob '[0123456789][0123456789][0123456789][0123456789]"
+                   + "-[0123456789][0123456789]-[0123456789][0123456789]*'"
+                   + " THEN substr(" + fieldSpec + ",9,2)"
+                   + " WHEN " + fieldSpec
+                   + " glob '[0123456789][0123456789][0123456789][0123456789]"
+                   + "-[0123456789]-[0123456789][0123456789]*'"
+                   + " THEN substr(" + fieldSpec + ",8,2)"
+                   + " WHEN " + fieldSpec
+                   + " glob '[0123456789][0123456789][0123456789][0123456789]"
+                   + "-[0123456789][0123456789]-[0123456789]*'"
+                   + " THEN substr(" + fieldSpec + ",9,1)"
+                   + " WHEN " + fieldSpec
+                   + " glob '[0123456789][0123456789][0123456789][0123456789]"
+                   + "-[0123456789]-[0123456789]*'"
+                   + " THEN substr(" + fieldSpec + ",8,1)"
+                   + " ELSE " + fieldSpec
+                   + " END";
+        }
+
     }
 
     /**

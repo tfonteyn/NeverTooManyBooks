@@ -99,9 +99,6 @@ public abstract class BaseActivityWithTasks
 
     private final TaskManagerListener mTaskManagerListener = new TaskManagerListener() {
 
-        /**
-         * @param task        task which is finishing.
-         */
         @Override
         public void onTaskFinished(@NonNull final ManagedTask task) {
             String msg = task.getFinalMessage();
@@ -110,13 +107,6 @@ public abstract class BaseActivityWithTasks
             }
         }
 
-        /**
-         * Display a progress message.
-         *
-         * @param absPosition the new value to set
-         * @param max         the (potentially) new estimate maximum value
-         * @param message     to display. Set to "" to close the ProgressDialog
-         */
         @Override
         public void onTaskProgress(final int absPosition,
                                    final int max,
@@ -134,9 +124,6 @@ public abstract class BaseActivityWithTasks
             }
         }
 
-        /**
-         * Display an interactive message.
-         */
         @Override
         public void onTaskUserMessage(@NonNull final String message) {
             UserMessage.show(BaseActivityWithTasks.this, message);

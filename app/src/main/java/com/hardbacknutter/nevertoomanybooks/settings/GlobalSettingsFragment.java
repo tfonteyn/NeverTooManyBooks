@@ -27,7 +27,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -35,15 +37,13 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
@@ -56,30 +56,60 @@ public class GlobalSettingsFragment
 
     /** Fragment manager tag. */
     public static final String TAG = "GlobalSettingsFragment";
+    private boolean warnAfterChange = true;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
+
         PreferenceScreen screen = getPreferenceScreen();
-        setSummary(screen);
+        // Some PreferenceScreen use a click listener.
+        initClickListeners();
+        // Set the summaries reflecting the current values for all basic Preferences.
+        updateSummaries(screen);
     }
 
-    private boolean warnAfterChange = true;
-
     /**
-     * Apply preference changes.
+     * Hook up a {@link Preference.OnPreferenceClickListener} to start a dedicated activity.
      */
+    private void initClickListeners() {
+        Preference preference;
+
+        preference = findPreference(Prefs.psk_search_site_order);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                Intent intent = new Intent(getContext(), SearchAdminActivity.class);
+                startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
+                return true;
+            });
+        }
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (requestCode) {
+            case UniqueId.REQ_PREFERRED_SEARCH_SITES:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    mResultDataModel.putAll(data);
+                }
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+        }
+
+    }
+
     @Override
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
                                           @NonNull final String key) {
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(this, "GlobalSettingsFragment.onSharedPreferenceChanged",
-                              "key=" + key);
-        }
 
         //noinspection ConstantConditions
         @NonNull
@@ -115,12 +145,10 @@ public class GlobalSettingsFragment
                 break;
 
             default:
+                // TODO: make the response conditional, not all changes warrant a recreate!
+                mResultDataModel.putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
                 break;
         }
-
-        // set the result (and again and again...)
-        // TODO: make the response conditional, not all changes warrant a recreate!
-        mResultDataModel.putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
 
         super.onSharedPreferenceChanged(sharedPreferences, key);
     }
@@ -134,6 +162,7 @@ public class GlobalSettingsFragment
                 .setMessage(R.string.warning_rebuild_orderby_columns)
                 .setCancelable(false)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> {
+                    //TEST: should handleReorderTitlesForSorting modify the pref?
 //                    prefs.edit()
 //                         .putBoolean(Prefs.pk_reformat_titles_sort, !current)
 //                         .apply();

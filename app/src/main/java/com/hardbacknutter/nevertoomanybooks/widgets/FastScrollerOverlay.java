@@ -335,7 +335,7 @@ public class FastScrollerOverlay
                 mHasFastScroller = enableFastScrollerAccess(recyclerView);
             }
 
-            // if we did get access, check the state; STATE_DRAGGING == 2.
+            // if we did get access, check if we are dragging; STATE_DRAGGING == 2.
             if (mHasFastScroller) {
                 return mFastScrollerStateField.getInt(mFastScroller) == 2;
             }

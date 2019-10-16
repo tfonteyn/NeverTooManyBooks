@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.PreferredStylesViewModel;
 
 public class StylePickerDialogFragment
         extends DialogFragment {
@@ -135,9 +136,8 @@ public class StylePickerDialogFragment
                 .setView(root)
                 .setNeutralButton(R.string.btn_customize, (d, w) -> {
                     Intent intent = new Intent(getContext(), PreferredStylesActivity.class)
-                            .putExtra(
-                                    PreferredStylesActivity.BKEY_STYLE_UUID,
-                                    mCurrentStyle.getUuid());
+                            .putExtra(PreferredStylesViewModel.BKEY_STYLE_UUID,
+                                      mCurrentStyle.getUuid());
                     // use the activity so we get the results there.
                     getActivity().startActivityForResult(intent,
                                                          UniqueId.REQ_NAV_PANEL_EDIT_STYLES);

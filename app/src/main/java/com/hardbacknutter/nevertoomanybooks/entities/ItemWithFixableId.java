@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -57,22 +56,22 @@ public interface ItemWithFixableId {
      * ENHANCE: Add {@link Series} aliases table to allow further pruning
      * (e.g. 'Amber Series' <==> 'Amber').
      *
-     * <strong>Note:</strong> if the db is null, then context and fallbackLocale are ignored.
-     * If the db is non-null, then context and fallbackLocale must be valid.
-     *
      * @param <T>            ItemWithFixableId object
      * @param list           List to clean up
      * @param context        Current context
-     * @param db             Database Access; can be {@code null} in which case we use the id
-     *                       from the item directly. If set, then we call {@link #fixId} first.
+     * @param db             Database Access
      * @param fallbackLocale Locale to use if the item has none set.
+     * @param isBatchMode    set to {@code true} to force the use of the fallbackLocale,
+     *                       instead of taking a round trip to the database to try and guess
+     *                       the locale. Should be used for example during an import.
      *
      * @return {@code true} if the list was modified.
      */
     static <T extends ItemWithFixableId> boolean pruneList(@NonNull final List<T> list,
-                                                           @Nullable final Context context,
-                                                           @Nullable final DAO db,
-                                                           @Nullable final Locale fallbackLocale) {
+                                                           @NonNull final Context context,
+                                                           @NonNull final DAO db,
+                                                           @NonNull final Locale fallbackLocale,
+                                                           final boolean isBatchMode) {
         // weeding out duplicate ID's
         Set<Long> ids = new HashSet<>();
         // weeding out duplicate hash codes
@@ -84,15 +83,19 @@ public interface ItemWithFixableId {
         while (it.hasNext()) {
             T item = it.next();
             long itemId;
-            // try to find the item.
-            if (db != null) {
-                //noinspection ConstantConditions
-                itemId = item.fixId(context, db, item.getLocale(db, fallbackLocale));
+
+            Locale itemLocale;
+            if (isBatchMode) {
+                itemLocale = fallbackLocale;
             } else {
-                itemId = item.getId();
+                itemLocale = item.getLocale(db, fallbackLocale);
             }
 
+            // try to find the item.
+            itemId = item.fixId(context, db, itemLocale);
+
             Integer hashCode = item.hashCode();
+
             if (ids.contains(itemId) && !item.isUniqueById() && !hashCodes.contains(hashCode)) {
                 // The base object(id) is unique, but other "list-significant" fields are different.
                 ids.add(itemId);

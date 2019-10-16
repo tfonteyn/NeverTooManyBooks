@@ -206,14 +206,6 @@ public final class UniqueId {
     public static final String BKEY_EXPORT_RESULT = "exportResult";
 
     /**
-     * Indicate the called activity made global changes.
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_GLOBAL_CHANGES_MADE = "globalChanges";
-
-    /**
      * Return the status of a startActivityForResult when a task was 'isCancelled'.
      * <p>
      * <br>type: {@code boolean}
@@ -230,7 +222,12 @@ public final class UniqueId {
     public static final String BKEY_RECREATE_ACTIVITY = "recreate";
 
     /**
-     * The current style was modified (or not).
+     * Styles related data was modified (or not).
+     * This includes a Style being modified or deleted,
+     * or the order of the preferred styles modified,
+     * or the selected style,
+     * or ...
+     * ENHANCE: make this fine grained and reduce unneeded rebuilds
      * <p>
      * <br>type: {@code boolean}
      * setResult
@@ -238,27 +235,19 @@ public final class UniqueId {
     public static final String BKEY_STYLE_MODIFIED = "styleModified";
 
     /**
-     * The preferred styles were modified (or not).
+     * One <strong>or more</strong> books were deleted (or not).
      * <p>
      * <br>type: {@code boolean}
      * setResult
      */
-    public static final String BKEY_PREFERRED_STYLES_MODIFIED = "preferredStylesModified";
-
+    public static final String BKEY_BOOK_DELETED = "bookDeleted";
     /**
-     * Something was deleted (or not).
+     * A book and/or its global data (author etc) was modified (or not).
      * <p>
      * <br>type: {@code boolean}
      * setResult
      */
-    public static final String BKEY_SOMETHING_WAS_DELETED = "deletedSomething";
-    /**
-     * Something was modified (or not).
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_SOMETHING_WAS_MODIFIED = "modifiedSomething";
+    public static final String BKEY_BOOK_MODIFIED = "bookModified";
 
     private UniqueId() {
     }

@@ -27,6 +27,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--suppress InconsistentLineSeparators -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hardbacknutter.nevertoomanybooks"
@@ -62,7 +63,7 @@
 
         <meta-data
             android:name="beta.build"
-            android:value="2019-10-09" />
+            android:value="2019-10-16" />
 
         <!-- Application developer keys - stripped out in a git pre-commit script. -->
         <meta-data
@@ -166,35 +167,16 @@
         <!-- Manage Bookshelves -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.EditBookshelfListActivity" />
         <!-- main/global preferences -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity">
-            <intent-filter>
-                <action android:name="Settings.EDIT" />
-
-                <category android:name="android.intent.category.PREFERENCE" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <!-- Edit the user preferred book list styles -->
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity" />
+        <!-- Edit the user preferred booklist styles -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity" />
         <!-- Edit the groups for a style. -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.StyleGroupsActivity">
-            <intent-filter>
-                <action android:name="BooklistStyleGroups.EDIT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.StyleGroupsActivity" />
 
         <!-- Search Sites configuration -->
         <activity
             android:name="com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-            <intent-filter>
-                <action android:name="search.website.order.EDIT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <!-- Credentials LibraryThing -->
         <activity

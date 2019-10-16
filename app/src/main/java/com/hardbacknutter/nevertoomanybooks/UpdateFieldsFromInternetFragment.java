@@ -52,7 +52,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
@@ -354,8 +353,7 @@ public class UpdateFieldsFromInternetFragment
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                if (resultCode == Activity.RESULT_OK && data != null) {
                     mSearchSites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES, mSearchSites);
                 }
                 break;

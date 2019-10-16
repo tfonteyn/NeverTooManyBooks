@@ -156,7 +156,7 @@ class PruneListTest {
 
 
         boolean modified = ItemWithFixableId.pruneList(authorList, mContext,
-                                                       mDb, Locale.getDefault());
+                                                       mDb, Locale.getDefault(), false);
         System.out.println(authorList);
 
         assertTrue(author.isUniqueById());
@@ -217,7 +217,7 @@ class PruneListTest {
         list.add(series);
 
         //System.out.println(list);
-        boolean modified = Series.pruneList(list, mContext, mDb, Locale.getDefault());
+        boolean modified = Series.pruneList(list, mContext, mDb, Locale.getDefault(), false);
         System.out.println(list);
 
         assertFalse(series.isUniqueById());

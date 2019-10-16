@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.FlattenedBooklist;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
 /**
- * In addition to the {@link BookBaseFragmentModel}, this model holds the flattened book list
+ * In addition to the {@link BookBaseFragmentModel}, this model holds the flattened booklist
  * for sweeping left/right.
  */
 public class FlattenedBooklistModel

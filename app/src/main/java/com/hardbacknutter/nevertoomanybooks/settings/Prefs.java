@@ -57,16 +57,20 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public final class Prefs {
 
-    /** PreferenceScreen/PreferenceCategory Key. */
+    /** Global settings - PreferenceScreen/PreferenceCategory Key. */
+    public static final String psk_search_site_order = "psk_search_site_order";
+
+    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_style_groupings = "psk_style_groupings";
-    /** PreferenceScreen/PreferenceCategory Key. */
+    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_style_filters = "psk_style_filters";
-    /** PreferenceScreen/PreferenceCategory Key. */
+    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_style_show_details = "psk_style_show_details";
-    /** PreferenceScreen/PreferenceCategory Key. */
+    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_style_author = "psk_style_author";
-    /** PreferenceScreen/PreferenceCategory Key. */
+    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_style_series = "psk_style_series";
+
 
     /** PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_barcode_scanner = "psk_barcode_scanner";

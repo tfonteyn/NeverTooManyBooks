@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -83,15 +84,17 @@ public class EditBookActivity
                 .get(BookBaseFragmentModel.class);
 
         if (model.isDirty()) {
-            // runs when user clicks 'exit'
+            // If the user clicks 'exit', we finish() the activity.
             StandardDialogs.showConfirmUnsavedEditsDialog(this, this::finish);
             return;
         }
 
         ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
         resultDataModel.putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
-        //ENHANCE: global changes not detected, so assume they happened.
-        setResult(Activity.RESULT_OK, resultDataModel.getData());
+
+        //ENHANCE: global changes not detected, so it should be assume they happened.
+        Intent resultData = resultDataModel.getActivityResultData();
+        setResult(Activity.RESULT_OK, resultData);
         super.onBackPressed();
     }
 }

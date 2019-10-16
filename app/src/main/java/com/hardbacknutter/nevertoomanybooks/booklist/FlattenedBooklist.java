@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Class to provide a simple interface into a temporary table containing a list of book ID's in
- * the same order as an underlying book list.
+ * the same order as an underlying booklist.
  * <p>
  * Construction is done in two steps:
  * <ol>
@@ -73,7 +73,10 @@ public class FlattenedBooklist
     /** Collection of statements compiled for this object. */
     @NonNull
     private final SqlStatementManager mStatements;
-    /** Underlying temporary table definition. */
+    /**
+     * Underlying table definition.
+     * Reminder: this is a {@link TableDefinition.TableTypes#Temporary}.
+     */
     @NonNull
     private TableDefinition mTable;
     /** Default position (before first element). */
@@ -91,7 +94,7 @@ public class FlattenedBooklist
      */
     public FlattenedBooklist(@NonNull final DAO db,
                              @NonNull final String tableName) {
-        TableDefinition table = DBDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
+        TableDefinition table = DBDefinitions.TMP_TBL_ROW_NAVIGATOR_FLATTENED.clone();
         table.setName(tableName);
 
         mSyncedDb = db.getUnderlyingDatabase();
@@ -115,7 +118,7 @@ public class FlattenedBooklist
 
         SynchronizedDb syncedDb = db.getUnderlyingDatabase();
 
-        TableDefinition table = DBDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
+        TableDefinition table = DBDefinitions.TMP_TBL_ROW_NAVIGATOR_FLATTENED.clone();
         table.setName(table.getName() + '_' + id);
         // no indexes, no constraints!
         table.create(syncedDb, false);

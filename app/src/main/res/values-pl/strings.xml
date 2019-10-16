@@ -35,9 +35,10 @@
     <string name="pe_ui_theme_dark">Ciemny</string>
     <string name="pe_ui_theme_light">Światło</string>
 
-    <string name="pe_bob_list_state_preserve">Zachowaj stan listy książek</string>
-    <string name="pe_bob_list_state_expanded">Rozszerzone są zawsze listy książek</string>
-    <string name="pe_bob_list_state_collapsed">Zawinięte zostały zawsze listy książek</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Użyj preferowanego stanu</string>
+    <string name="pe_bob_list_rebuild_state_preserve">Zachowaj obecny stan</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Rozwiń wszystkie</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Złóż wszystko</string>
 
     <string name="pe_bob_list_generation_full">Wymuś pełne wyróżnienie</string>
     <string name="pe_bob_list_generation_enhanced">Wymuś rozszerzony tryb zgodności</string>
@@ -460,7 +461,7 @@
     <string name="pt_bob_authors_display">Wyświetl autorów jako</string>
     <string name="pt_bob_header">Szczegóły podsumowujące w nagłówku</string>
     <string name="pt_booklist_generation">Opcja tworzenia listy książek</string>
-    <string name="pt_booklist_state">Stan listy książek</string>
+    <string name="pt_bob_list_rebuild_state">Stan uruchamiania listy książek</string>
     <string name="pt_bob_authors_sort">Sortuj autorów według</string>
     <string name="pt_bob_text_size">Rozmiar tekstu listy książek</string>
     <string name="pt_thumbnails_cache_resized">Zmienione obrazy są buforowane</string>
@@ -632,7 +633,7 @@
     <string name="lbl_print_run">Wersja do wydruku</string>
     <string name="pv_bob_header_style_name">Nazwa stylu</string>
     <string name="warning_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
-    <string name="pt_booklist_state_default">Domyślne rozszerzenie listy książek</string>
+    <string name="pt_bob_list_state_expansion_level">Domyślne rozszerzenie listy książek</string>
     <string name="menu_level_reset">Preferowany poziom ekspansji</string>
     <string name="hint_empty_rating">(Nie oceniony)</string>
     <string name="hint_empty_language">(Bez wypełnionego języka)</string>

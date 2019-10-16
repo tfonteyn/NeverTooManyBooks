@@ -43,12 +43,11 @@
             android:title="@string/name"
             />
 
+        <!-- We set an OnPreferenceClickListener to call startActivityForResult. -->
         <PreferenceScreen
             android:icon="@drawable/ic_format_list_bulleted"
             android:key="psk_style_groupings"
             android:title="@string/pg_groupings">
-            <intent android:action="BooklistStyleGroups.EDIT"
-                />
         </PreferenceScreen>
 
         <PreferenceScreen
@@ -152,15 +151,6 @@
                 />
         </PreferenceScreen>
 
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_directions_run"
-            android:key="style.booklist.task.extras"
-            android:summaryOff="@string/pt_bob_show_details_uses_task_off"
-            android:summaryOn="@string/pt_bob_show_details_uses_task_on"
-            android:title="@string/pt_bob_show_details_uses_task"
-            />
-
         <MultiSelectListPreference
             android:defaultValue="@array/empty_array"
             android:entries="@array/pe_bob_header"
@@ -178,6 +168,24 @@
             android:icon="@drawable/ic_format_size"
             android:key="style.booklist.scale.text"
             android:title="@string/pt_bob_text_size"
+            />
+
+        <!-- default expanded level for the booklist. -->
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/pe_bob_level_default"
+            android:entryValues="@array/pv_bob_level_default"
+            android:icon="@drawable/ic_format_indent_increase"
+            android:key="style.booklist.levels.default"
+            android:title="@string/pt_bob_list_state_expansion_level" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_directions_run"
+            android:key="style.booklist.task.extras"
+            android:summaryOff="@string/pt_bob_show_details_uses_task_off"
+            android:summaryOn="@string/pt_bob_show_details_uses_task_on"
+            android:title="@string/pt_bob_show_details_uses_task"
             />
 
     </PreferenceCategory>

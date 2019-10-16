@@ -36,9 +36,10 @@
     <string name="pe_ui_theme_dark">Noir</string>
     <string name="pe_ui_theme_light">Clair</string>
 
-    <string name="pe_bob_list_state_preserve">Conserver l\'état de la liste de livres</string>
-    <string name="pe_bob_list_state_expanded">Toujours démarrer avec une liste de livre étendue</string>
-    <string name="pe_bob_list_state_collapsed">Toujours démarrer avec une liste de livre réduite</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Utiliser l\'état préféré</string>
+    <string name="pe_bob_list_rebuild_state_preserve">Préserver l\'état actuel</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Développer tout</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Tout plier</string>
 
     <string name="pe_bob_list_generation_full">Mode « toutes options »</string>
     <string name="pe_bob_list_generation_enhanced">Mode compatibilité avancé</string>
@@ -466,7 +467,7 @@
     <string name="pt_bob_authors_display">Afficher les auteurs en tant que</string>
     <string name="pt_bob_header">Détails du résumé dans l\'en-tête</string>
     <string name="pt_booklist_generation">Option de génération de la liste de livres</string>
-    <string name="pt_booklist_state">État de la liste de livres</string>
+    <string name="pt_bob_list_rebuild_state">Etat de démarrage de la liste de lecture</string>
     <string name="pt_bob_authors_sort">Trier les auteurs par</string>
     <string name="pt_bob_text_size">Taille des éléments de liste de livres</string>
     <string name="pt_thumbnails_cache_resized">Mettre les miniatures en cache</string>
@@ -641,7 +642,7 @@
     <string name="lbl_print_run">Tirage</string>
     <string name="pv_bob_header_style_name">Nom du style</string>
     <string name="warning_rebuild_orderby_columns">Cela reconstruira les données de tri au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
-    <string name="pt_booklist_state_default">Liste de livres d\'expansion par défaut</string>
+    <string name="pt_bob_list_state_expansion_level">Liste de livres d\'expansion par défaut</string>
     <string name="menu_level_reset">Niveau d\'expansion préféré</string>
     <string name="hint_empty_rating">(Non classé)</string>
     <string name="hint_empty_language">(Aucune langue renseignée)</string>

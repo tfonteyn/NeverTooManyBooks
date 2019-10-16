@@ -47,6 +47,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -97,7 +99,7 @@ public final class LocaleUtils {
     private static final Map<String, Locale> LOCALE_MAP = new HashMap<>();
 
     /** Cache for the pv_reformat_titles_prefixes strings. */
-    private static final Map<Locale, String> LOCALE_PREFIX_MAP = new HashMap<>();
+    private static final Map<Locale, Pattern> LOCALE_PREFIX_MAP = new HashMap<>();
 
     /** Remember the current language to detect when language is switched. */
     @NonNull
@@ -418,16 +420,19 @@ public final class LocaleUtils {
             if (locale == null) {
                 continue;
             }
-            // Getting the string is slow, so we cache it for every Locale.
-            String orderPattern = LOCALE_PREFIX_MAP.get(locale);
+            // Creating the pattern is slow, so we cache it for every Locale.
+            Pattern orderPattern = LOCALE_PREFIX_MAP.get(locale);
             if (orderPattern == null) {
                 // the resources bundle in the language that the book (item) is written in.
                 Resources localeResources = App.getLocalizedResources(userContext, locale);
-                orderPattern = localeResources.getString(R.string.pv_reformat_titles_prefixes);
+                String regex = localeResources.getString(R.string.pv_reformat_titles_prefixes);
+                orderPattern = Pattern
+                        .compile(regex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
                 LOCALE_PREFIX_MAP.put(locale, orderPattern);
             }
 
-            if (titleWords[0].matches(orderPattern)) {
+            Matcher matcher = orderPattern.matcher(titleWords[0]);
+            if (matcher.find()) {
                 StringBuilder newTitle = new StringBuilder();
                 for (int i = 1; i < titleWords.length; i++) {
                     if (i != 1) {

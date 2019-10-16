@@ -125,7 +125,7 @@ public final class GoogleBooksManager
         try {
             SAXParser parser = factory.newSAXParser();
 
-            // get the book list
+            // get the booklist
             try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
                 parser.parse(con.inputStream, handler);
             }

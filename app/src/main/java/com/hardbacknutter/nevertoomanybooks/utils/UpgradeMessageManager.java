@@ -28,8 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -107,25 +105,8 @@ public final class UpgradeMessageManager {
     public static void setUpgradeAcknowledged() {
         PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                          .edit()
-                         .putLong(StartupViewModel.PREF_STARTUP_LAST_VERSION, getVersion())
+                         .putLong(StartupViewModel.PREF_STARTUP_LAST_VERSION, App.getVersion())
                          .apply();
     }
 
-    /**
-     * Reads the application version from the manifest.
-     *
-     * @return the version
-     */
-    private static long getVersion() {
-        PackageInfo packageInfo = App.getPackageInfo(0);
-        if (packageInfo != null) {
-            if (Build.VERSION.SDK_INT >= 28) {
-                return packageInfo.getLongVersionCode();
-            } else {
-                //noinspection deprecation
-                return (long) packageInfo.versionCode;
-            }
-        }
-        return 0;
-    }
 }

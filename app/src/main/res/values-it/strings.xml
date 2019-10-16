@@ -35,9 +35,10 @@
     <string name="pe_ui_theme_dark">Nero</string>
     <string name="pe_ui_theme_light">Chiaro</string>
 
-    <string name="pe_bob_list_state_expanded">Avvia con elelnco libri espansa</string>
-    <string name="pe_bob_list_state_collapsed">Avvia con elenco libri compressa</string>
-    <string name="pe_bob_list_state_preserve">Ricorda lo stato elenco libri</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Usa lo stato preferito</string>
+    <string name="pe_bob_list_rebuild_state_preserve">Preserva lo stato corrente</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Espandi tutto</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Piega tutto</string>
 
     <string name="pe_bob_list_generation_full">Forza Utilizzo di Tutte le Funzionalità</string>
     <string name="pe_bob_list_generation_enhanced">Forza Modalità Compatibile Avanzata</string>
@@ -460,7 +461,7 @@
     <string name="pt_bob_authors_display">Visualizza autori come</string>
     <string name="pt_bob_header">Riassunto dettagli nel titolo</string>
     <string name="pt_booklist_generation">Opzioni di Generazione Elenco Libri</string>
-    <string name="pt_booklist_state">Stato elenco libri</string>
+    <string name="pt_bob_list_rebuild_state">Stato di avvio dell\'elenco libri</string>
     <string name="pt_bob_authors_sort">Ordina autori per</string>
     <string name="pt_bob_text_size">Dimensione degli elementi dell\'elenco libri</string>
     <string name="pt_thumbnails_cache_resized">Memorizza le miniature ridimensionate</string>
@@ -635,7 +636,7 @@
     <string name="lbl_print_run">Tiratura</string>
     <string name="pv_bob_header_style_name">Nome dello stile</string>
     <string name="warning_rebuild_orderby_columns">Ciò ricostruirà i dati di ordinamento al riavvio dell\'app. Sei sicuro di voler continuare ?</string>
-    <string name="pt_booklist_state_default">Espansione elenco libri predefinito</string>
+    <string name="pt_bob_list_state_expansion_level">Espansione elenco libri predefinito</string>
     <string name="menu_level_reset">Livello di espansione preferito</string>
     <string name="hint_empty_rating">(Non valutato)</string>
     <string name="hint_empty_language">(Nessuna lingua compilata)</string>

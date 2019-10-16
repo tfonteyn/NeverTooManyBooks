@@ -35,9 +35,10 @@
     <string name="pe_ui_theme_dark">темный</string>
     <string name="pe_ui_theme_light">свет</string>
 
-    <string name="pe_bob_list_state_expanded">Всегда открывать списки раскрытыми</string>
-    <string name="pe_bob_list_state_collapsed">Всегда открывать списоки свернутыми</string>
-    <string name="pe_bob_list_state_preserve">Запоминать состояние списков</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Используйте предпочтительное состояние</string>
+    <string name="pe_bob_list_rebuild_state_preserve">Сохранить текущее состояние</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Расширить все</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Сложить все</string>
 
     <string name="pe_bob_list_generation_full">Полная функциональность</string>
     <string name="pe_bob_list_generation_enhanced">Повышенный режим совместимости</string>
@@ -458,7 +459,7 @@
     <string name="pt_bob_authors_display">Показать авторов как</string>
     <string name="pt_bob_header">Суммарная информация в заголовке</string>
     <string name="pt_booklist_generation">Составление списка книг</string>
-    <string name="pt_booklist_state">Состояние списка книг</string>
+    <string name="pt_bob_list_rebuild_state">Состояние запуска списка книг</string>
     <string name="pt_bob_authors_sort">Сортировать авторов по</string>
     <string name="pt_bob_text_size">Размер элемента списка книг</string>
     <string name="pt_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
@@ -630,7 +631,7 @@
     <string name="lbl_print_run">Тираж</string>
     <string name="pv_bob_header_style_name">Название стиля</string>
     <string name="warning_rebuild_orderby_columns">Это восстановит данные сортировки при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
-    <string name="pt_booklist_state_default">Расширение списка книг по умолчанию</string>
+    <string name="pt_bob_list_state_expansion_level">Расширение списка книг по умолчанию</string>
     <string name="menu_level_reset">Предпочтительный уровень расширения</string>
     <string name="hint_empty_rating">(без рейтинга)</string>
     <string name="hint_empty_language">(Язык не указан)</string>

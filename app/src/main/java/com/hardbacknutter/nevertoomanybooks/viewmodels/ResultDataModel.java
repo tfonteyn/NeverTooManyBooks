@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcelable;
 
@@ -36,47 +37,55 @@ import androidx.lifecycle.ViewModel;
 /**
  * A model that allows multiple fragments and the activity all
  * to share a single data Intent to calling {@link android.app.Activity#setResult(int, Intent)}.
+ *
+ * <strong>Note:</strong> should always be created in the Activity scope.
  */
 public class ResultDataModel
         extends ViewModel {
 
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private Intent mData = new Intent();
+    private Intent mResultData = new Intent();
 
+    /**
+     * Get the data intent to pass to {@link Activity#setResult}.
+     *
+     * @return intent
+     */
     @NonNull
-    public Intent getData() {
-        return mData;
+    public Intent getActivityResultData() {
+        return mResultData;
     }
 
     @NonNull
     public ResultDataModel putExtra(@NonNull final String name,
                                     final boolean value) {
-        mData.putExtra(name, value);
+        mResultData.putExtra(name, value);
         return this;
     }
 
     @NonNull
     public ResultDataModel putExtra(@NonNull final String name,
                                     final int value) {
-        mData.putExtra(name, value);
+        mResultData.putExtra(name, value);
         return this;
     }
 
     @NonNull
     public ResultDataModel putExtra(@NonNull final String name,
                                     final long value) {
-        mData.putExtra(name, value);
+        mResultData.putExtra(name, value);
         return this;
     }
 
     @NonNull
     public ResultDataModel putExtra(@NonNull final String name,
                                     @NonNull final Parcelable value) {
-        mData.putExtra(name, value);
+        mResultData.putExtra(name, value);
         return this;
     }
 
     public void putAll(@NonNull final Intent data) {
-        mData.putExtras(data);
+        mResultData.putExtras(data);
     }
 }

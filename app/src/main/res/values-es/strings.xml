@@ -35,9 +35,10 @@
     <string name="pe_ui_theme_dark">Negro</string>
     <string name="pe_ui_theme_light">Luz</string>
 
-    <string name="pe_bob_list_state_preserve">Preservar el estado del listado de libros</string>
-    <string name="pe_bob_list_state_expanded">Iniciar siempre el listado de libros expandido</string>
-    <string name="pe_bob_list_state_collapsed">Iniciar siempre el listado de libros comprimido</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Usar estado preferido</string>
+    <string name="pe_bob_list_rebuild_state_preserve">Preservar el estado actual</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Expandir todo</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Doblar todo</string>
 
     <string name="pe_bob_list_generation_full">Forzar Versión Completa</string>
     <string name="pe_bob_list_generation_enhanced">Forzar Modo de Compatibilidad Mejorado</string>
@@ -462,7 +463,7 @@
     <string name="pt_bob_authors_display">Mostrar autores como</string>
     <string name="pt_bob_header">Resumen en la cabecera</string>
     <string name="pt_booklist_generation">Generación de listados de libros</string>
-    <string name="pt_booklist_state">Estado del listado de libros</string>
+    <string name="pt_bob_list_rebuild_state">Estado de inicio de la lista de libros</string>
     <string name="pt_bob_authors_sort">Ordenar autores por</string>
     <string name="pt_bob_text_size">Tamaño de los elementos en el listado</string>
     <string name="pt_thumbnails_cache_resized">Miniaturas redimensionadas en caché</string>
@@ -637,7 +638,7 @@
     <string name="lbl_print_run">Ejecución de impresión</string>
     <string name="pv_bob_header_style_name">Nombre de estilo</string>
     <string name="warning_rebuild_orderby_columns">Esto reconstruirá los datos de clasificación cuando se reinicie la aplicación. Estás seguro de que quieres continuar ?</string>
-    <string name="pt_booklist_state_default">Expansión predeterminada de la lista de libros</string>
+    <string name="pt_bob_list_state_expansion_level">Expansión predeterminada de la lista de libros</string>
     <string name="menu_level_reset">Expansión de nivel preferido</string>
     <string name="hint_empty_rating">(no calificado)</string>
     <string name="hint_empty_language">(Sin idioma)</string>

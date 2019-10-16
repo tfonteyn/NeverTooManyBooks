@@ -147,7 +147,8 @@ public class EditBookAuthorsActivity
             // Type is not part of the Author table, but of the book_author table.
             if (author.getType() != newAuthorData.getType()) {
                 author.setType(newAuthorData.getType());
-                ItemWithFixableId.pruneList(mList, this, mModel.getDb(), Locale.getDefault());
+                ItemWithFixableId
+                        .pruneList(mList, this, mModel.getDb(), Locale.getDefault(), false);
                 mListAdapter.notifyDataSetChanged();
             }
             // nothing or only the type was different, so we're done here.
@@ -247,7 +248,7 @@ public class EditBookAuthorsActivity
                               @NonNull final Locale fallbackLocale) {
         // make the book related field changes
         author.copyFrom(newAuthorData, true);
-        ItemWithFixableId.pruneList(mList, this, mModel.getDb(), fallbackLocale);
+        ItemWithFixableId.pruneList(mList, this, mModel.getDb(), fallbackLocale, false);
         mListAdapter.notifyDataSetChanged();
     }
 

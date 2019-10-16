@@ -44,12 +44,9 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
@@ -156,18 +153,10 @@ public class SettingsActivity
         return true;
     }
 
-    /**
-     * Apply preference changes.
-     */
     @Override
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
                                           @NonNull final String key) {
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(this, "BaseActivity.onSharedPreferenceChanged",
-                              "key=" + key);
-        }
 
         switch (key) {
             // Trigger a recreate of this activity, if this setting has changed.
@@ -213,9 +202,9 @@ public class SettingsActivity
     public void onBackPressed() {
 
         ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
-        Intent data = resultDataModel.getData();
-        if (data.getExtras() != null) {
-            setResult(Activity.RESULT_OK, data);
+        Intent resultData = resultDataModel.getActivityResultData();
+        if (resultData.getExtras() != null) {
+            setResult(Activity.RESULT_OK, resultData);
         }
 
         super.onBackPressed();

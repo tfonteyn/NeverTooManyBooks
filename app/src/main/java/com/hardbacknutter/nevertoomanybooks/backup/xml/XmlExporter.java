@@ -77,7 +77,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * <strong>WARNING: EXPERIMENTAL</strong> There are two types of XML here.
@@ -1188,8 +1187,7 @@ public class XmlExporter
 
         @Override
         public long getElementVersionAttribute() {
-            //noinspection ConstantConditions
-            return (Long) mMap.get(StartupViewModel.PREF_STARTUP_LAST_VERSION);
+            return App.getVersion();
         }
 
         @NonNull

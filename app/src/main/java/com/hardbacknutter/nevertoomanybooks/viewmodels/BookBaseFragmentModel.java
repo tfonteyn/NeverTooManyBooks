@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
@@ -65,13 +67,24 @@ public class BookBaseFragmentModel
 
     private final MutableLiveData<Object> mUserMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
+
     /** Database Access. */
     private DAO mDb;
+
     /** Flag to indicate we're dirty. */
     private boolean mIsDirty;
 
-    /** The Book this model represents. */
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    @NonNull
+    private Intent mResultData = new Intent();
+
+    /**
+     * The Book this model represents. The only time this can be {@code null}
+     * is when this model is just initialized, or when the Book was deleted.
+     * W'll get a {@code NullPointerException} because the developer made a boo-boo
+     */
     private Book mBook;
+
     /**
      * Field drop down lists.
      * Lists in database so far, we cache them for performance but only load
@@ -92,9 +105,6 @@ public class BookBaseFragmentModel
     private List<String> mListPriceCurrencies;
     /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
     private TaskListener<Integer> mOnGoodreadsTaskListener;
-
-    /** Should be set after something/anything modified a book. */
-    private boolean mSomethingModified;
 
     @Override
     protected void onCleared() {
@@ -136,20 +146,31 @@ public class BookBaseFragmentModel
     }
 
     /**
-     * @return {@code true} if our data was changed.
+     * Get the data intent to pass to {@link Activity#setResult}.
+     *
+     * @return intent
+     */
+    @NonNull
+    public Intent getActivityResultData() {
+        return mResultData;
+    }
+
+    /**
+     * Check if <strong>anything at all</strong> was changed.
+     *
+     * @return {@code true} if changes made
      */
     public boolean isDirty() {
         return mIsDirty;
     }
 
     /**
+     * Set the status of our data.
+     *
      * @param isDirty set to {@code true} if our data was changed.
      */
     public void setDirty(final boolean isDirty) {
         mIsDirty = isDirty;
-        if (mIsDirty) {
-            mSomethingModified = true;
-        }
     }
 
     @NonNull
@@ -188,8 +209,7 @@ public class BookBaseFragmentModel
         return mBook.getId() > 0;
     }
 
-    @NonNull
-    public Book saveBook(@NonNull final Context context) {
+    public void saveBook(@NonNull final Context context) {
         if (mBook.getId() == 0) {
             long id = mDb.insertBook(context, mBook);
             if (id > 0) {
@@ -204,12 +224,19 @@ public class BookBaseFragmentModel
             mDb.updateBook(context, mBook.getId(), mBook, 0);
         }
 
-        mSomethingModified = true;
+        mResultData.putExtra(DBDefinitions.KEY_PK_ID, mBook.getId());
+        mResultData.putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
+    }
 
-        return mBook;
+    public void deleteBook() {
+        mDb.deleteBook(mBook.getId());
+        mResultData.putExtra(UniqueId.BKEY_BOOK_DELETED, true);
+        mBook = null;
     }
 
     /**
+     * Check if this book available in our library; or if it was lend out.
+     *
      * @return {@code true} if the book is available for lending.
      */
     public boolean isAvailable() {
@@ -233,7 +260,7 @@ public class BookBaseFragmentModel
         mDb.deleteLoan(mBook.getId());
 
         // don't do this for now, BoB does not display the loan field.
-        //mSomethingModified = true;
+        //mResultData.putExtra(UniqueId.BKEY_BOOK_MODIFIED,true);
     }
 
     /**
@@ -242,15 +269,29 @@ public class BookBaseFragmentModel
      * @return the current/new 'read' status.
      */
     public boolean toggleRead() {
+        mResultData.putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
         return mBook.setRead(mDb, !mBook.getBoolean(Book.IS_READ));
     }
 
+
+    /**
+     * To be called if global changes to the Authors <strong>may</strong> have happened.
+     *
+     * @param context Current context
+     */
     public void refreshAuthorList(@NonNull final Context context) {
         mBook.refreshAuthorList(context, mDb);
+        mResultData.putExtra(EditObjectListActivity.BKEY_GLOBAL_CHANGES_MADE, true);
     }
 
+    /**
+     * To be called if global changes to the Series <strong>may</strong> have happened.
+     *
+     * @param context Current context
+     */
     public void refreshSeriesList(@NonNull final Context context) {
         mBook.refreshSeriesList(context, mDb);
+        mResultData.putExtra(EditObjectListActivity.BKEY_GLOBAL_CHANGES_MADE, true);
     }
 
     @NonNull
@@ -394,14 +435,5 @@ public class BookBaseFragmentModel
             };
         }
         return mOnGoodreadsTaskListener;
-    }
-
-    /**
-     * Check if *any* book which was displayed during the lifetime of this model, was modified.
-     *
-     * @return {@code true} if *any* book was modified.
-     */
-    public boolean isModified() {
-        return mSomethingModified;
     }
 }

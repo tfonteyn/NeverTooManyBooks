@@ -204,7 +204,6 @@ public class BookSearchByIsbnFragment
 
         View view = inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
         mIsbnView = view.findViewById(R.id.isbn);
-        //URGENT: move asin to options menu + add to preferences
         mAllowAsinCb = view.findViewById(R.id.cbx_allow_asin);
         return view;
     }
@@ -241,6 +240,51 @@ public class BookSearchByIsbnFragment
                                                     mBookSearchBaseModel.getSearchSites());
         }
     }
+
+    //URGENT:  move asin to options menu + add to preferences
+    // problem: asin not visible -> options menu itself not visible,
+    // user enables amazon -> options menu itself still invisible.
+//    @Override
+//    @CallSuper
+//    public void onCreateOptionsMenu(@NonNull final Menu menu,
+//                                    @NonNull final MenuInflater inflater) {
+//
+//        menu.add(Menu.NONE, R.id.MENU_PREFS_ASIN,
+//                 MenuHandler.ORDER_ASIN, R.string.lbl_allow_asin)
+//            .setCheckable(true)
+//            .setIcon(R.drawable.ic_check)
+//            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+//
+//        super.onCreateOptionsMenu(menu, inflater);
+//    }
+//
+//    @Override
+//    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+//        // if Amazon is enabled, we show the ASIN option; else make sure it's disabled.
+//        boolean amazon = (mBookSearchBaseModel.getSearchSites() & SearchSites.AMAZON) != 0;
+//        MenuItem asin = menu.findItem(R.id.MENU_PREFS_ASIN);
+//        asin.setVisible(amazon);
+//        if (!amazon) {
+//            asin.setChecked(false);
+//        }
+//
+//        super.onPrepareOptionsMenu(menu);
+//    }
+//
+//    @Override
+//    @CallSuper
+//    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+//        //noinspection SwitchStatementWithTooFewBranches
+//        switch (item.getItemId()) {
+//            case R.id.MENU_PREFS_ASIN:
+//                item.setChecked(!item.isChecked());
+//                handleAsinClick(item.isChecked());
+//                return true;
+//
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
     /**
      * Setup the UI.

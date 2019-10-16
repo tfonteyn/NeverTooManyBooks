@@ -144,7 +144,7 @@ public class EditBookSeriesActivity
             if (!series.getNumber().equals(newSeriesData.getNumber())) {
                 // so if the number is different, just update it
                 series.setNumber(newSeriesData.getNumber());
-                Series.pruneList(mList, this, mModel.getDb(), bookLocale);
+                Series.pruneList(mList, this, mModel.getDb(), bookLocale, false);
                 mListAdapter.notifyDataSetChanged();
             }
             // nothing or only the number was different, so we're done here.
@@ -195,7 +195,7 @@ public class EditBookSeriesActivity
                               @NonNull final Series newSeriesData,
                               @NonNull final Locale fallbackLocale) {
         series.copyFrom(newSeriesData, true);
-        Series.pruneList(mList, this, mModel.getDb(), fallbackLocale);
+        Series.pruneList(mList, this, mModel.getDb(), fallbackLocale, false);
         mListAdapter.notifyDataSetChanged();
     }
 

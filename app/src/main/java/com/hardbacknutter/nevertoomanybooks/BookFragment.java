@@ -133,7 +133,7 @@ public class BookFragment
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
     private GestureDetector mGestureDetector;
 
-    /** Contains the flattened book list for next/previous paging. */
+    /** Contains the flattened booklist for next/previous paging. */
     private FlattenedBooklistModel mFlattenedBooklistModel;
 
     /** Hosting activity to handle FAB/result/touches. */
@@ -262,7 +262,7 @@ public class BookFragment
                     // onResume will display the new book, but
                     // FIXME: swiping through the flattened booklist will not see the new book
                     // we basically would need to rebuild the booklist and subsequently
-                    // rebuild the flattened book list.... huge overkill.
+                    // rebuild the flattened booklist.... huge overkill.
                 }
                 break;
 
@@ -508,10 +508,10 @@ public class BookFragment
                 List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBookAlert(getContext(), title, authors, () -> {
-                    mBookModel.getDb().deleteBook(book.getId());
+                    mBookModel.deleteBook();
 
-                    mResultDataModel.putExtra(UniqueId.BKEY_SOMETHING_WAS_DELETED, true);
-                    mHostActivity.setResult(Activity.RESULT_OK, mResultDataModel.getData());
+                    Intent resultData = mBookModel.getActivityResultData();
+                    mHostActivity.setResult(Activity.RESULT_OK, resultData);
                     mHostActivity.finish();
                 });
                 return true;

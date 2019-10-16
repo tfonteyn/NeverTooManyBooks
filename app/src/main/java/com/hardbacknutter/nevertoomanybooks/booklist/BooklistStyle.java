@@ -79,7 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
- * Represents a specific style of book list (e.g. Authors/Series).
+ * Represents a specific style of booklist (e.g. Authors/Series).
  * Individual {@link BooklistGroup} objects are added to a {@link BooklistStyle} in order
  * to describe the resulting list style.
  * <p>
@@ -223,6 +223,10 @@ public class BooklistStyle
      * in the app-preferences.
      */
     private PBoolean mIsPreferred;
+
+    /** The default number of levels to expand the list tree to. */
+    private PInteger mDefaultExpansionLevel;
+
     /**
      * Relative size of list text/images.
      * ==1 being 'normal' size
@@ -351,6 +355,7 @@ public class BooklistStyle
         }
 
         mIsPreferred.set(in);
+        mDefaultExpansionLevel.set(in);
         mScaleFontSize.set(in);
         mThumbnailScale.set(in);
         mShowHeaderInfo.set(in);
@@ -473,6 +478,9 @@ public class BooklistStyle
 
         mIsPreferred = new PBoolean(Prefs.pk_bob_preferred_style, mUuid, isUserDefined());
 
+        mDefaultExpansionLevel = new PInteger(Prefs.pk_bob_levels_default, mUuid, isUserDefined(),
+                                              1);
+
         mSortAuthorGivenNameFirst = new PBoolean(Prefs.pk_bob_sort_author_name, mUuid,
                                                  isUserDefined());
 
@@ -570,6 +578,7 @@ public class BooklistStyle
         mName.writeToParcel(dest);
 
         mIsPreferred.writeToParcel(dest);
+        mDefaultExpansionLevel.writeToParcel(dest);
         mScaleFontSize.writeToParcel(dest);
         mThumbnailScale.writeToParcel(dest);
         mShowHeaderInfo.writeToParcel(dest);
@@ -692,6 +701,8 @@ public class BooklistStyle
 
         // is a preferred style
         map.put(mIsPreferred.getKey(), mIsPreferred);
+        // expand level
+        map.put(mDefaultExpansionLevel.getKey(), mDefaultExpansionLevel);
         // relative scaling of fonts
         map.put(mScaleFontSize.getKey(), mScaleFontSize);
         // size of thumbnails to use.
@@ -705,7 +716,7 @@ public class BooklistStyle
         // whether the extras will be fetched by a background task (or not)
         map.put(mFetchExtrasByTask.getKey(), mFetchExtrasByTask);
 
-        // properties that can be shown as extra information for each line in the book list
+        // properties that can be shown as extra information for each line in the booklist
         // As we're collecting the actual preferences, we use the preference key
         // just like all the other preferences.
         for (PBoolean extra : mAllExtras.values()) {
@@ -1239,6 +1250,7 @@ public class BooklistStyle
                + "\nmNameResId=" + mNameResId
                + "\nmName=" + mName
                + "\nmIsPreferred=" + mIsPreferred
+               + "\nmDefaultExpansionLevel=" + mDefaultExpansionLevel
                + "\nmScaleFontSize=" + mScaleFontSize
                + "\nmShowHeaderInfo=" + mShowHeaderInfo
                + "\nmSortAuthorGivenNameFirst=" + mSortAuthorGivenNameFirst
@@ -1300,15 +1312,15 @@ public class BooklistStyle
     /**
      * Get the default visible level for the list.
      * i.e. the level which will be visible but not expanded.
-     *
-     * <strong>Note:</strong> despite being defined in the style, we only ever return the global.
-     * Not sure (yet) if this should be on a per-style basis.
+     * i.o.w. the top-level where items above will be expanded/visible,
+     * and items below will be hidden.
      *
      * @return level
      */
     @IntRange(from = 1)
-    public int getDefaultLevel() {
-        int level = App.getListPreference(Prefs.pk_bob_levels_default, 1);
+    public int getTopLevel() {
+        // limit to the amount of groups!
+        int level = mDefaultExpansionLevel.get();
         if (level > mStyleGroups.size()) {
             level = mStyleGroups.size();
         }
@@ -1648,7 +1660,7 @@ public class BooklistStyle
     }
 
     /**
-     * Collection of system-defined Book List styles.
+     * Collection of system-defined booklist styles.
      * <p>
      * The UUID's should never be changed.
      */

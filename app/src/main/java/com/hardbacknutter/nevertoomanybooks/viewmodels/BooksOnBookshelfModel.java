@@ -520,7 +520,7 @@ public class BooksOnBookshelfModel
         }
 
         // Always limit to the current bookshelf.
-        blb.setFilterOnBookshelfId(mCurrentBookshelf.getId());
+        blb.setBookshelf(mCurrentBookshelf);
 
         // if we have a list of ID's, ignore other criteria.
         if (mSearchCriteria.hasIdList()) {

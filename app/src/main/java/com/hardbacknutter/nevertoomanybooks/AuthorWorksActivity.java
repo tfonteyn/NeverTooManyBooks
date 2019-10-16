@@ -69,10 +69,11 @@ public class AuthorWorksActivity
     @Override
     public void onBackPressed() {
         AuthorWorksModel model = new ViewModelProvider(this).get(AuthorWorksModel.class);
-        if (model.isAtLeastOneBookDeleted()) {
-            Intent data = new Intent().putExtra(UniqueId.BKEY_SOMETHING_WAS_DELETED, true);
-            setResult(Activity.RESULT_OK, data);
+        Intent resultData = model.getActivityResultData();
+        if (resultData.getExtras() != null) {
+            setResult(Activity.RESULT_OK, resultData);
         }
+
         super.onBackPressed();
     }
 }

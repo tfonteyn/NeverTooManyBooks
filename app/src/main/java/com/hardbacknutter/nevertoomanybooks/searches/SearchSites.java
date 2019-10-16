@@ -77,7 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 public final class SearchSites {
 
     /** Site. */
-    static final int AMAZON = 1 << 1;
+    public static final int AMAZON = 1 << 1;
     /** tag. */
     private static final String TAG = "SearchSites";
     public static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";

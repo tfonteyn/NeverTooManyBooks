@@ -34,9 +34,10 @@
     <string name="pe_ui_theme_dark">Donker</string>
     <string name="pe_ui_theme_light">Helder</string>
 
-    <string name="pe_bob_list_state_preserve">Behoud boekenlijst status</string>
-    <string name="pe_bob_list_state_expanded">Boekenlijst uitgeklapt starten</string>
-    <string name="pe_bob_list_state_collapsed">Boekenlijst ingeklapt starten</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Gebruik voorkeur instelling</string>
+    <string name="pe_bob_list_rebuild_state_preserve">Huidige status behouden</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Alles uitvouwen</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Alles inklappen</string>
 
     <string name="pe_bob_list_generation_full">Forceer volledige functionaliteit</string>
     <string name="pe_bob_list_generation_enhanced">Forceer uitgebreide compatibiliteitsmodus</string>
@@ -466,7 +467,7 @@
     <string name="pt_bob_authors_display">Toon auteurs als</string>
     <string name="pt_bob_header">Details in de koptekst</string>
     <string name="pt_booklist_generation">Optie voor genereren boekenlijst</string>
-    <string name="pt_booklist_state">Boekenlijst status</string>
+    <string name="pt_bob_list_rebuild_state">Boekenlijst opstart status</string>
     <string name="pt_bob_authors_sort">Auteurs sorteren op</string>
     <string name="pt_bob_text_size">Grootte van boekenlijst tekst</string>
     <string name="pt_thumbnails_cache_resized">Cache herschaalde miniaturen</string>
@@ -641,7 +642,7 @@
     <string name="lbl_print_run">Oplage</string>
     <string name="pv_bob_header_style_name">Stijl naam</string>
     <string name="warning_rebuild_orderby_columns">Hiermee worden de sorteergegevens opnieuw opgebouwd wanneer de app opnieuw wordt gestart. Weet je zeker dat je door wilt gaan ?</string>
-    <string name="pt_booklist_state_default">"Standaard boekenlijst niveau "</string>
+    <string name="pt_bob_list_state_expansion_level">"Standaard boekenlijst niveau "</string>
     <string name="menu_level_reset">Voorkeur expansieniveau</string>
     <string name="hint_empty_rating">(niet beoordeeld)</string>
     <string name="hint_empty_language">(Geen taal ingevuld)</string>

@@ -35,9 +35,10 @@
     <string name="pe_ui_theme_dark">Σκούρο</string>
     <string name="pe_ui_theme_light">Φως</string>
 
-    <string name="pe_bob_list_state_preserve">Διατήρηση κατάστασης λίστας βιβλίων</string>
-    <string name="pe_bob_list_state_expanded">Εκκίνηση πάντα με ανοιχτές λίστες βιβλίων</string>
-    <string name="pe_bob_list_state_collapsed">Εκκίνηση πάντα με κλειστές λίστες βιβλίων</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Χρησιμοποιήστε την προτιμώμενη κατάσταση</string>
+    <string name="pe_bob_list_rebuild_state_preserve">Διατηρήστε την τρέχουσα κατάσταση</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Επεκτείνετε όλα</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Διπλώστε όλα</string>
 
     <string name="pe_bob_list_generation_full">Επιβολή Ολοκληρωμένων Χαρακτηριστικών</string>
     <string name="pe_bob_list_generation_enhanced">Επιβολή ενισχυμένης λειτουργίας συμβατότηταςe</string>
@@ -461,7 +462,7 @@
     <string name="pt_bob_authors_display">Προβολή συγγραφέων ως</string>
     <string name="pt_bob_header">Λεπτομέρειες περίληψης στην επικεφαλίδα</string>
     <string name="pt_booklist_generation">Επιλογή παραγωγής λίστας βιβλίων</string>
-    <string name="pt_booklist_state">Κατάσταση λίστας βιβλίων</string>
+    <string name="pt_bob_list_rebuild_state">Κατάσταση εκκίνησης βιβλιοθήκης</string>
     <string name="pt_bob_authors_sort">Ταξινόμηση συγγραφέων από</string>
     <string name="pt_bob_text_size">Μέγεθος αντικειμένων λίστας βιβλίων</string>
     <string name="pt_thumbnails_cache_resized">Η μνήμη cache επέστρεψε τις μικρογραφίες</string>
@@ -636,7 +637,7 @@
     <string name="lbl_print_run">Εκτέλεση εκτύπωσης</string>
     <string name="pv_bob_header_style_name">Όνομα στυλ</string>
     <string name="warning_rebuild_orderby_columns">Αυτό θα επαναδημιουργήσει τα δεδομένα ταξινόμησης κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
-    <string name="pt_booklist_state_default">Προεπιλογή επέκτασης λίστας</string>
+    <string name="pt_bob_list_state_expansion_level">Προεπιλογή επέκτασης λίστας</string>
     <string name="menu_level_reset">Προτιμώμενο επίπεδο επέκτασης</string>
     <string name="hint_empty_rating">(δεν έχει αξιολογηθεί)</string>
     <string name="hint_empty_language">(Δεν υπάρχει πλήρης γλώσσα)</string>

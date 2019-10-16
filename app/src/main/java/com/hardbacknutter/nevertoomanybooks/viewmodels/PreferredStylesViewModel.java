@@ -27,7 +27,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Intent;
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -38,8 +43,18 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 public class PreferredStylesViewModel
         extends ViewModel {
 
+    private static final String TAG = "PreferredStylesActivity";
+    public static final String BKEY_STYLE_UUID = TAG + ":styleUuid";
+
     /** Database Access. */
     private DAO mDb;
+
+    /** the selected style at onCreate time. */
+    @Nullable
+    private String mOriginalSelectedStyleUuid;
+
+    /** Flag set when anything is changed. Includes moving styles up/down, on/off, ... */
+    private boolean mIsDirty;
 
     /** The *in-memory* list of styles. */
     private ArrayList<BooklistStyle> mList;
@@ -54,12 +69,33 @@ public class PreferredStylesViewModel
 
     /**
      * Pseudo constructor.
+     *
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init() {
+    public void init(@Nullable final Bundle args,
+                     @Nullable final Bundle savedInstanceState) {
         if (mDb == null) {
             mDb = new DAO();
             mList = new ArrayList<>(BooklistStyle.Helper.getStyles(mDb, true).values());
+
+            if (args != null) {
+                mOriginalSelectedStyleUuid = args.getString(BKEY_STYLE_UUID);
+            }
         }
+    }
+
+    /**
+     * Check if <strong>anything at all</strong> was changed.
+     *
+     * @return {@code true} if changes made
+     */
+    public boolean isDirty() {
+        return mIsDirty;
+    }
+
+    @Nullable
+    public String getOriginalSelectedStyleUuid() {
+        return mOriginalSelectedStyleUuid;
     }
 
     @NonNull
@@ -75,6 +111,8 @@ public class PreferredStylesViewModel
      * @return position of the style in the list
      */
     public int handleStyleChange(@NonNull final BooklistStyle style) {
+        mIsDirty = true;
+
         // based on the uuid, find the style in the list.
         // Don't use 'indexOf' though, as the incoming style object was parcelled along the way.
         int editedRow = -1;
@@ -86,7 +124,7 @@ public class PreferredStylesViewModel
         }
 
         if (editedRow < 0) {
-            // New Style added. Put at top and set as preferred
+            // New Style added. Put at top and set as user-preferred
             mList.add(0, style);
             style.setPreferred(true);
             editedRow = 0;
@@ -127,11 +165,13 @@ public class PreferredStylesViewModel
     }
 
     public void deleteStyle(@NonNull final BooklistStyle style) {
+        mIsDirty = true;
         style.delete(mDb);
         mList.remove(style);
     }
 
     public void saveMenuOrder() {
+        mIsDirty = true;
         BooklistStyle.Helper.saveMenuOrder(mList);
     }
 }

@@ -27,7 +27,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
+import android.database.Cursor;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -216,6 +218,18 @@ public class TableDefinition
     }
 
     /**
+     * Delete all rows from this table.
+     *
+     * @return TableDefinition (for chaining)
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    public TableDefinition deleteAllRows(@NonNull final SynchronizedDb db) {
+        db.execSQL("DELETE FROM " + mName);
+        return this;
+    }
+
+    /**
      * Drop this table from the passed DB.
      *
      * @return TableDefinition (for chaining)
@@ -234,11 +248,11 @@ public class TableDefinition
     @NonNull
     public TableDefinition clone() {
         TableDefinition newTbl = new TableDefinition()
-                                         .setName(mName)
-                                         .setAlias(mAlias)
-                                         .addDomains(mDomains)
-                                         .setPrimaryKey(mPrimaryKey)
-                                         .setType(mType);
+                .setName(mName)
+                .setAlias(mAlias)
+                .addDomains(mDomains)
+                .setPrimaryKey(mPrimaryKey)
+                .setType(mType);
 
         for (FkReference fk : mParents.values()) {
             newTbl.addReference(fk.mParent, fk.mDomains);
@@ -733,8 +747,8 @@ public class TableDefinition
                                          @SuppressWarnings("SameParameterValue")
                                          final boolean ifNotExists) {
         StringBuilder sql = new StringBuilder("CREATE")
-                                    .append(mType.getCreateModifier())
-                                    .append(" TABLE");
+                .append(mType.getCreateModifier())
+                .append(" TABLE");
         if (ifNotExists) {
             if (mType.isVirtual()) {
                 throw new IllegalStateException(
@@ -846,6 +860,40 @@ public class TableDefinition
         }
     }
 
+    /**
+     * DEBUG. Dumps the content of this table to the debug output.
+     *
+     * @param syncedDb the database
+     * @param tag      log tag to use
+     * @param header   a header which will be logged first
+     */
+    public void dumpTable(@NonNull final SynchronizedDb syncedDb,
+                          @NonNull final String tag,
+                          @NonNull final String header) {
+        Log.d(tag, header);
+
+        String sql = "SELECT * FROM " + mName + " ORDER BY " + mPrimaryKey.get(0).getName();
+
+        try (Cursor cursor = syncedDb.rawQuery(sql, null)) {
+            StringBuilder columnHeading = new StringBuilder();
+            for (String column : cursor.getColumnNames()) {
+                columnHeading.append(column).append('\t');
+            }
+            Log.d(tag, columnHeading.toString());
+            Log.d(tag, "count=" + cursor.getCount());
+
+            int currentLine = 0;
+            while (cursor.moveToNext() && currentLine < 20) {
+                StringBuilder line = new StringBuilder();
+                for (int c = 0; c < cursor.getColumnCount(); c++) {
+                    line.append(cursor.getString(c)).append('\t');
+                }
+                Log.d(tag, line.toString());
+                currentLine++;
+            }
+        }
+    }
+
     @NonNull
     public TableInfo getTableInfo(@NonNull final SynchronizedDb syncedDb) {
         synchronized (this) {
@@ -872,11 +920,11 @@ public class TableDefinition
             switch (this) {
                 case FTS3:
                 case FTS4:
-                    return " Virtual";
+                    return " VIRTUAL";
                 case Standard:
                     return "";
                 case Temporary:
-                    return " Temporary";
+                    return " TEMPORARY";
             }
             return "";
         }

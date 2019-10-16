@@ -81,7 +81,7 @@
         <item>1</item>
     </string-array>
 
-    <!-- ListPreference - Book list default expanded level.
+    <!-- ListPreference - booklist default expanded level.
          Higher than 4 makes little sense; the user can simply use the "Expand/Collapse all" menu.
          -->
     <string-array name="pe_bob_level_default">
@@ -96,12 +96,12 @@
         <item>3</item>
         <item>4</item>
     </string-array>
-    <!-- ListPreference - Book list state-related preferences -->
+    <!-- ListPreference - booklist state-related preferences -->
     <string-array name="pe_bob_list_state">
-        <item>@string/pe_bob_list_state_preferred</item>
-        <item>@string/pe_bob_list_state_preserve</item>
-        <item>@string/pe_bob_list_state_expanded</item>
-        <item>@string/pe_bob_list_state_collapsed</item>
+        <item>@string/pe_bob_list_rebuild_state_preferred</item>
+        <item>@string/pe_bob_list_rebuild_state_preserve</item>
+        <item>@string/pe_bob_list_rebuild_state_expanded</item>
+        <item>@string/pe_bob_list_rebuild_state_collapsed</item>
     </string-array>
     <string-array name="pv_bob_list_state">
         <item>3</item>
@@ -110,7 +110,7 @@
         <item>2</item>
     </string-array>
 
-    <!--  ListPreference - override the default method used to generate book lists
+    <!--  ListPreference - override the default method used to generate the booklist
           as defined by Android version -->
     <string-array name="pe_bob_list_generation">
         <item>@string/pe_use_recommended_option</item>
@@ -166,7 +166,7 @@
     </string-array>
 
     <!-- *************************************************************************************** -->
-    <!-- ========== Book list style preferences ========== -->
+    <!-- ========== booklist style preferences ========== -->
     <!-- *************************************************************************************** -->
 
     <!-- ListPreference - Booklist Filter -->
@@ -230,7 +230,7 @@
         <item>128</item>
     </string-array>
 
-    <!-- MultiSelectListPreference - Determines what is show in book list header -->
+    <!-- MultiSelectListPreference - Determines what is show in booklist header -->
     <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all -->
     <string-array name="pe_bob_header">
         <item>@string/pv_bob_header_style_name</item>

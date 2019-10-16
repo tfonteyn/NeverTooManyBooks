@@ -225,7 +225,7 @@
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
     <!-- ####################################################################################### -->
-    <!-- Shown in the heading of book lists. -->
+    <!-- Shown in the heading of booklist. -->
     <string name="info_displaying_n_books_in_m_entries">
         Displaying %1$d books, in %2$d entries
     </string>
@@ -441,13 +441,13 @@
         will need to delete it yourself.
     </string>
     <string name="tip_booklist_style_groups">
-        You can use this screen to modify the hierarchy of headings for a specific book list style.
+        You can use this screen to modify the hierarchy of headings for a specific booklist style.
         A “tick” indicates the heading will be shown in the list, “un-tick” to hide it
         and vice versa.  You can re-order the hierarchy by dragging the icon at the extreme
         right of each row up or down.
     </string>
     <string name="tip_booklist_style_properties">
-        You can use this screen to set the characteristics of a specific book list style.
+        You can use this screen to set the characteristics of a specific booklist style.
         You can change the name, edit the groupings to change the hierarchy, and adjust a
         variety of other preferences to build a style that you find useful.
         It is also possible to use “Filters” to modify the selection of books that will be
@@ -483,7 +483,7 @@
     <string name="tip_view_only_help">
         You can swipe left or right to navigate to other books.
     </string>
-    <!-- Tip text displayed when user enters the book list -->
+    <!-- Tip text displayed when user enters the booklist -->
     <string name="tip_book_list">
         Tapping on a book will show you the details of the book.
         A long-press on an item in the list will give you more options.
@@ -723,20 +723,18 @@
 
 
     <!-- Preference Category -->
-    <string name="pg_booklist">Book Lists</string>
-    <!-- ListPreference - Book list state-related preferences -->
-    <string name="pt_booklist_state">Book list state</string>
-    <string name="pe_bob_list_state_preferred">Preferred book list state</string>
-    <string name="pe_bob_list_state_preserve">Preserve book list state</string>
-    <string name="pe_bob_list_state_expanded">Always start book lists expanded</string>
-    <string name="pe_bob_list_state_collapsed">Always start book lists collapsed</string>
-    <!-- SwitchPreference -->
-    <string name="pt_booklist_state_default">Default Book list expansion</string>
+    <string name="pg_booklist">Booklists</string>
 
+    <!-- ListPreference - Booklist startup-state preferences -->
+    <string name="pt_bob_list_rebuild_state">Booklist startup state</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Use preferred expansion</string>
+    <string name="pe_bob_list_rebuild_state_preserve">Preserve current state</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Always start expanded</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Always start collapsed</string>
 
-    <!--  ListPreference - allows overriding the default method used to generate book lists
+    <!--  ListPreference - allows overriding the default method used to generate the booklist
           as defined by Android version -->
-    <string name="pt_booklist_generation">Book List Generation Option</string>
+    <string name="pt_booklist_generation">Booklist Generation Option</string>
     <string name="pe_bob_list_generation_full">Force Fully Featured</string>
     <string name="pe_bob_list_generation_enhanced">Force Enhanced Compatibility Mode</string>
     <string name="pe_bob_list_generation_legacy">Force Compatibility Mode</string>
@@ -820,7 +818,7 @@
     <string name="pt_bob_show_details_uses_task_on">delayed</string>
     <string name="pt_bob_show_details_uses_task_off">immediately</string>
 
-    <!-- MultiSelectListPreference - Determines what is show in book list header -->
+    <!-- MultiSelectListPreference - Determines what is show in booklist header -->
     <string name="pt_bob_header">Summary details in header</string>
     <string name="pv_bob_header_nr_of_books">Number of books</string>
     <string name="pv_bob_header_level_1">1st level heading</string>
@@ -828,7 +826,10 @@
     <string name="pv_bob_header_style_name">Style name</string>
 
     <!-- ListPreference - Scale text. -->
-    <string name="pt_bob_text_size">Size of book list text</string>
+    <string name="pt_bob_text_size">Size of booklist text</string>
+
+    <!-- SwitchPreference -->
+    <string name="pt_bob_list_state_expansion_level">Default booklist expansion</string>
 
     <!-- Preference Category: thumbnails -->
     <!-- SwitchPreference - Show thumbnail image for each book -->
@@ -948,7 +949,7 @@
 
     <!-- ####################################################################################### -->
 
-    <!-- book list options menu -->
+    <!-- booklist options menu -->
     <!-- submenu title -->
     <string name="menu_add_book">Add Book…</string>
     <!-- menu option -->
@@ -1023,7 +1024,7 @@
     <string name="menu_view_book_at">View on…</string>
 
 
-    <!-- book list screen - context menu for Author/Series/... -->
+    <!-- booklist screen - context menu for Author/Series/... -->
     <string name="menu_set_complete">Set “complete”</string>
     <string name="menu_set_incomplete">Set “incomplete”</string>
     <string name="menu_author_details">All works by this author</string>
@@ -1093,7 +1094,7 @@
     <!-- generic hint text for DataEntryButton (see styles.xml) fields. -->
     <string name="hint_field_not_set">Not Set</string>
 
-    <!-- generic place holder text for Book list rows. -->
+    <!-- generic place holder text for booklist rows. -->
     <string name="hint_empty_field">(Not Set)</string>
 
     <!-- specific place holder text for Rating rows. -->
@@ -1330,7 +1331,7 @@
 
     <string name="lbl_search_filtered_on_x">Filtered: %1$s</string>
 
-    <!-- grouping headings in book lists -->
+    <!-- grouping headings in the booklist -->
     <string name="lbl_read">Read</string>
     <string name="lbl_unread">Unread</string>
 
@@ -1454,7 +1455,7 @@
     </string>
 
     <string name="X_tip_booklist_global_properties">
-        You can use this screen to set the default characteristics of all book list styles.
+        You can use this screen to set the default characteristics of all booklist styles.
         Most properties can be overridden by individual styles, but the default values are
         defined here. You can change how lists are displayed at startup, and adjust a
         variety of other preferences that will be applied to all your styles when possible.

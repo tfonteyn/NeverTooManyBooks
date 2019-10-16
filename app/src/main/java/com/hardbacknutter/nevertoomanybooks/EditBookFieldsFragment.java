@@ -42,6 +42,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
@@ -170,21 +171,24 @@ public class EditBookFieldsFragment
         switch (requestCode) {
             case REQ_EDIT_AUTHORS: {
                 if (data != null) {
-                    if (resultCode == Activity.RESULT_OK
-                        && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
-                        ArrayList<Author> list =
-                                data.getParcelableArrayListExtra(UniqueId.BKEY_AUTHOR_ARRAY);
-                        if (list == null) {
-                            list = new ArrayList<>(0);
-                        }
-                        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
-                        mBookModel.setDirty(true);
+                    if (resultCode == Activity.RESULT_OK) {
+                        if (data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
+                            ArrayList<Author> list =
+                                    data.getParcelableArrayListExtra(UniqueId.BKEY_AUTHOR_ARRAY);
+                            if (list == null) {
+                                list = new ArrayList<>(0);
+                            }
+                            book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
+                            mBookModel.setDirty(true);
 
-                    } else {
-                        // Even though the dialog was terminated,
-                        // some authors MAY have been modified.
-                        //noinspection ConstantConditions
-                        mBookModel.refreshAuthorList(getContext());
+                        }
+
+                        // Some Authors MAY have been modified.
+                        if (data.getBooleanExtra(EditObjectListActivity.BKEY_GLOBAL_CHANGES_MADE,
+                                                 false)) {
+                            //noinspection ConstantConditions
+                            mBookModel.refreshAuthorList(getContext());
+                        }
                     }
 
                     boolean wasDirty = mBookModel.isDirty();
@@ -196,22 +200,26 @@ public class EditBookFieldsFragment
             }
             case REQ_EDIT_SERIES: {
                 if (data != null) {
-                    if (resultCode == Activity.RESULT_OK
-                        && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
-                        ArrayList<Series> list =
-                                data.getParcelableArrayListExtra(UniqueId.BKEY_SERIES_ARRAY);
-                        if (list == null) {
-                            list = new ArrayList<>(0);
-                        }
-                        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
-                        mBookModel.setDirty(true);
+                    if (resultCode == Activity.RESULT_OK) {
+                        if (data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
+                            ArrayList<Series> list =
+                                    data.getParcelableArrayListExtra(UniqueId.BKEY_SERIES_ARRAY);
+                            if (list == null) {
+                                list = new ArrayList<>(0);
+                            }
+                            book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
+                            mBookModel.setDirty(true);
 
-                    } else {
-                        // Even though the dialog was terminated,
-                        // some Series MAY have been modified.
-                        //noinspection ConstantConditions
-                        mBookModel.refreshSeriesList(getContext());
+                        }
+
+                        // Some Series MAY have been modified.
+                        if (data.getBooleanExtra(EditObjectListActivity.BKEY_GLOBAL_CHANGES_MADE,
+                                                 false)) {
+                            //noinspection ConstantConditions
+                            mBookModel.refreshSeriesList(getContext());
+                        }
                     }
+
 
                     boolean wasDirty = mBookModel.isDirty();
                     populateSeriesListField();
@@ -297,16 +305,19 @@ public class EditBookFieldsFragment
     private void populateAuthorListField() {
         Book book = mBookModel.getBook();
 
+        //noinspection ConstantConditions
+        @NonNull
+        Context context = getContext();
+
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (!list.isEmpty()
-            && ItemWithFixableId.pruneList(list, getContext(),
-                                           mBookModel.getDb(), Locale.getDefault())) {
+            && ItemWithFixableId.pruneList(list, context,
+                                           mBookModel.getDb(), Locale.getDefault(), false)) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
 
-        //noinspection ConstantConditions
-        String name = book.getAuthorTextShort(getContext());
+        String name = book.getAuthorTextShort(context);
         if (name.isEmpty() && book.containsKey(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
             // allow this fallback. It's used after a search that did not return results,
             // in which case it contains whatever the user typed.
@@ -318,11 +329,14 @@ public class EditBookFieldsFragment
     private void populateSeriesListField() {
         Book book = mBookModel.getBook();
 
+        //noinspection ConstantConditions
+        @NonNull
         Context context = getContext();
 
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (!list.isEmpty()
-            && ItemWithFixableId.pruneList(list, context, mBookModel.getDb(), book.getLocale())) {
+            && ItemWithFixableId.pruneList(list, context, mBookModel.getDb(), book.getLocale(),
+                                           false)) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         }
@@ -331,8 +345,7 @@ public class EditBookFieldsFragment
         if (list.isEmpty()) {
             result = "";
         } else {
-            //noinspection ConstantConditions
-            result = list.get(0).getLabel(getContext());
+            result = list.get(0).getLabel(context);
             if (list.size() > 1) {
                 result += ' ' + getString(R.string.and_others);
             }

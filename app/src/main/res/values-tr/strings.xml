@@ -35,9 +35,10 @@
     <string name="pe_ui_theme_dark">Karanlık</string>
     <string name="pe_ui_theme_light">ışık</string>
 
-    <string name="pe_bob_list_state_expanded">Kitap dizelgelerini genişletilmiş olarak başlat</string>
-    <string name="pe_bob_list_state_collapsed">Kitap dizelgelerini içe kapalı olarak başlat</string>
-    <string name="pe_bob_list_state_preserve">Kitap dizelgesi durumunu koru</string>
+    <string name="pe_bob_list_rebuild_state_preferred">Tercih edilen durumu kullan</string>
+    <string name="pe_bob_list_rebuild_state_preserve">Mevcut durumu koru</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Hepsini genişlet</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Tümünü katla</string>
 
     <string name="pe_bob_list_generation_full">Tam takım oluşturma seçeneğini zorla</string>
     <string name="pe_bob_list_generation_enhanced">Geliştirilmiş uyumluluk kipini zorla</string>
@@ -459,7 +460,7 @@
     <string name="pt_bob_authors_display">Yazarları olarak görüntüle</string>
     <string name="pt_bob_header">Başlık özet ayrıntıları</string>
     <string name="pt_booklist_generation">Kitap dizelgesi oluşturma seçeneği</string>
-    <string name="pt_booklist_state">Kitap dizelgesi durumu</string>
+    <string name="pt_bob_list_rebuild_state">Kitap listesi başlangıç durumu</string>
     <string name="pt_bob_authors_sort">Yazarları sırala</string>
     <string name="pt_bob_text_size">Kitap dizelgesi öğeleri boyutu</string>
     <string name="pt_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
@@ -632,7 +633,7 @@
     <string name="lbl_print_run">Baskı çalıştırmak</string>
     <string name="pv_bob_header_style_name">Stil adı</string>
     <string name="warning_rebuild_orderby_columns">Bu, uygulama yeniden başlatıldığında sıralama verilerini yeniden oluşturacaktır. Devam etmek istediğine emin misin ?</string>
-    <string name="pt_booklist_state_default">Varsayılan Kitap listesi genişletme</string>
+    <string name="pt_bob_list_state_expansion_level">Varsayılan Kitap listesi genişletme</string>
     <string name="menu_level_reset">Tercih edilen seviye genişlemesi</string>
     <string name="hint_empty_rating">(Oylanmamış)</string>
     <string name="hint_empty_language">(Doldurulmuş dil yok)</string>

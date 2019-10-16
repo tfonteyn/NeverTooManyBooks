@@ -78,10 +78,6 @@ public class SearchAdminActivity
 
     private boolean mUseScenario;
 
-    public void setDirty(final boolean dirty) {
-        mIsDirty = dirty;
-    }
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main_tabs;
@@ -136,8 +132,6 @@ public class SearchAdminActivity
 
     @Override
     public void onBackPressed() {
-        Intent data = null;
-
         ArrayList<Site> list;
 
         if (mUseScenario) {
@@ -147,11 +141,11 @@ public class SearchAdminActivity
         }
 
         if (list != null) {
-            data = new Intent().putExtra(UniqueId.BKEY_SEARCH_SITES,
-                                         SearchSites.getEnabledSitesAsBitmask(list));
+            Intent data = new Intent().putExtra(UniqueId.BKEY_SEARCH_SITES,
+                                                SearchSites.getEnabledSitesAsBitmask(list));
+            setResult(Activity.RESULT_OK, data);
         }
 
-        setResult(Activity.RESULT_OK, data);
         super.onBackPressed();
     }
 
@@ -194,6 +188,15 @@ public class SearchAdminActivity
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * Set the status of our data.
+     *
+     * @param isDirty set to {@code true} if our data was changed.
+     */
+    public void setDirty(final boolean isDirty) {
+        mIsDirty = isDirty;
     }
 
     /**

@@ -143,10 +143,10 @@ public class SearchCoordinator {
     private final TaskManagerListener mListener = new TaskManagerListener() {
 
         /**
-         * {@link TaskManager.TaskFinishedMessage}
-         * <p>
-         * When a task has ended, see check if there are more tasks running.
+         * When a task has ended, check if there are more tasks running.
          * If not, finish and send results back with {@link SearchCoordinator#sendResults}
+         *
+         * {@inheritDoc}
          */
         @Override
         public void onTaskFinished(@NonNull final ManagedTask task) {

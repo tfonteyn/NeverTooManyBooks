@@ -241,6 +241,8 @@ public class CsvImporter
         int row = 1;
         int txRowCount = 0;
         long lastUpdate = 0;
+        // we only update progress every PROGRESS_UPDATE_INTERVAL ms.
+        // Count the nr of books in between.
         int delta = 0;
 
         // Iterate through each imported row
@@ -450,7 +452,7 @@ public class CsvImporter
         ArrayList<Bookshelf> list = CsvCoder.getBookshelfCoder().decode(encodedList);
         if (!list.isEmpty()) {
             // fix the ID's
-            ItemWithFixableId.pruneList(list, context, db, Locale.getDefault());
+            ItemWithFixableId.pruneList(list, context, db, Locale.getDefault(), false);
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
         }
 
@@ -504,7 +506,7 @@ public class CsvImporter
 
         // Now build the array for authors
         ArrayList<Author> list = CsvCoder.getAuthorCoder().decode(encodedList);
-        ItemWithFixableId.pruneList(list, context, db, Locale.getDefault());
+        ItemWithFixableId.pruneList(list, context, db, Locale.getDefault(), false);
         book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
     }
@@ -539,7 +541,11 @@ public class CsvImporter
         // Handle the series
         Locale bookLocale = book.getLocale();
         ArrayList<Series> list = CsvCoder.getSeriesCoder().decode(encodedList);
-        Series.pruneList(list, context, db, bookLocale);
+
+        // run in batch mode, i.e. force using the bookLocale;
+        // otherwise the import is far to slow and of little benefit.
+        Series.pruneList(list, context, db, bookLocale, true);
+
         book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_SERIES);
     }
@@ -563,7 +569,7 @@ public class CsvImporter
             ArrayList<TocEntry> list = CsvCoder.getTocCoder().decode(encodedList);
             if (!list.isEmpty()) {
                 // fix the ID's
-                ItemWithFixableId.pruneList(list, context, db, book.getLocale());
+                ItemWithFixableId.pruneList(list, context, db, book.getLocale(), false);
                 book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
             }
         }

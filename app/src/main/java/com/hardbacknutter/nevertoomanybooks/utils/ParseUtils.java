@@ -189,7 +189,7 @@ public final class ParseUtils {
             return 0;
 
         } else if (source instanceof Long) {
-            return (Long) source;
+            return (long) source;
 
         } else if (source instanceof Integer) {
             return ((Integer) source).longValue();
@@ -224,11 +224,11 @@ public final class ParseUtils {
         if (source == null) {
             return false;
         } else if (source instanceof Boolean) {
-            return (Boolean) source;
+            return (boolean) source;
         } else if (source instanceof Integer) {
-            return (Integer) source != 0;
+            return (int) source != 0;
         } else if (source instanceof Long) {
-            return (Long) source != 0;
+            return (long) source != 0;
         }
         // lets see if its a String
         return parseBoolean(source.toString(), true);

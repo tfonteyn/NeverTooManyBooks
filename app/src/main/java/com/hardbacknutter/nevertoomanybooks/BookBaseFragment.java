@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * Base class for {@link BookFragment} and {@link EditBookBaseFragment}.
@@ -81,7 +80,6 @@ public abstract class BookBaseFragment
     /** The book. Must be in the Activity scope for {@link EditBookActivity#onBackPressed()}. */
     BookBaseFragmentModel mBookModel;
 
-    ResultDataModel mResultDataModel;
     /**
      * The fields collection.
      * Does not store any context or Views, but does use WeakReferences.
@@ -269,10 +267,7 @@ public abstract class BookBaseFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Activity scope!
         //noinspection ConstantConditions
-        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-
         mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
         mBookModel.init(getArguments());
         mBookModel.getUserMessage().observe(this, this::showUserMessage);

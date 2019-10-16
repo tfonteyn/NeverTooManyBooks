@@ -70,9 +70,9 @@ public class AdminActivity
     @Override
     public void onBackPressed() {
         ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
-        Intent data = resultDataModel.getData();
-        if (data.getExtras() != null) {
-            setResult(Activity.RESULT_OK, data);
+        Intent resultData = resultDataModel.getActivityResultData();
+        if (resultData.getExtras() != null) {
+            setResult(Activity.RESULT_OK, resultData);
         }
 
         super.onBackPressed();

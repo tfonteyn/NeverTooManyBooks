@@ -49,7 +49,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
@@ -64,6 +63,16 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  */
 public abstract class EditObjectListActivity<T extends Parcelable>
         extends BaseActivity {
+
+    private static final String TAG = "EditObjectListActivity";
+
+    /**
+     * Indicate the called activity made global changes.
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_GLOBAL_CHANGES_MADE = TAG + ":globalChanges";
 
     /** The key to use in the Bundle to get the array. */
     @NonNull
@@ -133,15 +142,16 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     @Override
     public void onBackPressed() {
 
-        Intent data = new Intent().putExtra(mBKey, mList)
-                                  .putExtra(UniqueId.BKEY_GLOBAL_CHANGES_MADE,
-                                            mModel.globalReplacementsMade());
+        Intent data = new Intent()
+                .putExtra(mBKey, mList)
+                .putExtra(BKEY_GLOBAL_CHANGES_MADE, mModel.globalReplacementsMade());
 
         String name = mAutoCompleteTextView.getText().toString().trim();
         if (!name.isEmpty()) {
             // if the user had enter a (partial) new name, check if it's ok to leave
             StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
-                // runs when user clicks 'exit anyway'. The list itself IS saved.
+                // If the user clicks 'exit', we finish() the activity.
+                // The list IS saved.
                 setResult(Activity.RESULT_OK, data);
                 finish();
             });

@@ -135,6 +135,12 @@ public class StripInfoBookHandler
     Bundle parseDoc(@NonNull final Bundle bookData,
                     @SuppressWarnings("SameParameterValue") final boolean fetchThumbnail) {
 
+        if (mDoc.title().startsWith("Zoeken naar")) {
+            // ENHANCE: handle multi-results page.
+            // a certain talented publisher often re-used isbn codes...
+            return bookData;
+        }
+
         Context context = App.getLocalizedAppContext();
 
         Elements rows = mDoc.select("div.row");

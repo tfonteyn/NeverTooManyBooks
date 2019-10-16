@@ -707,8 +707,9 @@ public class AdminFragment
                 .setMessage(msg)
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     mResultDataModel.putExtra(UniqueId.BKEY_IMPORT_RESULT, importHelper.options);
+                    Intent resultData = mResultDataModel.getActivityResultData();
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mResultDataModel.getData());
+                    getActivity().setResult(Activity.RESULT_OK, resultData);
                     getActivity().finish();
                 })
                 .create()
@@ -866,9 +867,10 @@ public class AdminFragment
                                     .setPositiveButton(android.R.string.ok, (d, which) -> {
                                         mResultDataModel.putExtra(UniqueId.BKEY_EXPORT_RESULT,
                                                                   exportHelper.options);
+                                        Intent resultData = mResultDataModel
+                                                .getActivityResultData();
                                         //noinspection ConstantConditions
-                                        getActivity().setResult(Activity.RESULT_OK,
-                                                                mResultDataModel.getData());
+                                        getActivity().setResult(Activity.RESULT_OK, resultData);
                                         getActivity().finish();
                                     })
                                     .create()
@@ -912,9 +914,10 @@ public class AdminFragment
                                     .setNegativeButton(android.R.string.cancel, (d, which) -> {
                                         mResultDataModel.putExtra(UniqueId.BKEY_EXPORT_RESULT,
                                                                   exportHelper.options);
+                                        Intent resultData = mResultDataModel
+                                                .getActivityResultData();
                                         //noinspection ConstantConditions
-                                        getActivity().setResult(Activity.RESULT_OK,
-                                                                mResultDataModel.getData());
+                                        getActivity().setResult(Activity.RESULT_OK, resultData);
                                         getActivity().finish();
                                     })
                                     .setPositiveButton(android.R.string.ok, (d, which) ->

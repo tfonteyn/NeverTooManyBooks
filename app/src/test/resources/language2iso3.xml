@@ -26,7 +26,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--suppress ALL, InconsistentLineSeparators -->
+<!--suppress ALL -->
 <map>
     <boolean name="eng"
         value="true" />

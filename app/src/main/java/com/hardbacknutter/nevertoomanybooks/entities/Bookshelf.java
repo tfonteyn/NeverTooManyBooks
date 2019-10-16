@@ -71,8 +71,14 @@ public class Bookshelf
     public static final String PREF_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
     /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
     public static final int DEFAULT_ID = 1;
-    /** the virtual 'All Books'. */
+
+    /**
+     * the virtual 'All Books' representing our complete library.
+     * Note we use -1, as {@code 0} is generally used for a 'new' item.
+     * i.e. when the user creates a new shelf, it has id==0 before it's saved.
+     */
     private static final int ALL_BOOKS = -1;
+
     /** Bookshelf id. */
     private long mId;
     /** Bookshelf name. */
@@ -219,6 +225,15 @@ public class Bookshelf
 
     public void setId(final long id) {
         mId = id;
+    }
+
+    /**
+     * Check if this is a regular shelf, or the if this one represents our complete library.
+     *
+     * @return {@code true} for a regular shelf, or{@code false} for ALL books.
+     */
+    public boolean isRegularShelf() {
+        return mId != ALL_BOOKS;
     }
 
     @Override
