@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -79,7 +80,8 @@ public class OrValidator
             Logger.warnWithStackTrace(this, "validate",
                                       "no exceptions were thrown in the validator?",
                                       "key=" + key);
-            throw new ValidatorException(R.string.vldt_failed_for_x, errorLabelId);
+            throw new ValidatorException(R.string.vldt_failed_for_x,
+                                         App.getLocalizedAppContext().getString(errorLabelId));
         }
     }
 }

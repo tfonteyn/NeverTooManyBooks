@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -83,7 +84,8 @@ public class IntegerValidator
                     value = Integer.parseInt(stringValue);
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(R.string.vldt_integer_expected_for_x,
-                                                 errorLabelId);
+                                                 App.getLocalizedAppContext()
+                                                    .getString(errorLabelId));
                 }
             }
         }

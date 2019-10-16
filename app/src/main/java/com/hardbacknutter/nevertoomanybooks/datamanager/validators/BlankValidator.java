@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -50,6 +51,7 @@ public class BlankValidator
             dataManager.putString(key, s);
             return;
         }
-        throw new ValidatorException(R.string.vldt_blank_required_for_x, errorLabelId);
+        throw new ValidatorException(R.string.vldt_blank_required_for_x,
+                                     App.getLocalizedAppContext().getString(errorLabelId));
     }
 }

@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Date;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -70,7 +71,8 @@ public class DateValidator
             if (date != null) {
                 value = DateUtils.utcSqlDateTime(date);
             } else {
-                throw new ValidatorException(R.string.vldt_date_expected_for_x, errorLabelId);
+                throw new ValidatorException(R.string.vldt_date_expected_for_x,
+                                             App.getLocalizedAppContext().getString(errorLabelId));
             }
         }
         dataManager.putString(key, value);

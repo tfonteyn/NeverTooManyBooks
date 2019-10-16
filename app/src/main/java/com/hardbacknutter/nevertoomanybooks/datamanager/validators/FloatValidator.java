@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -95,7 +96,9 @@ public class FloatValidator
                     value = ParseUtils.parseFloat(stringValue, Locale.getDefault());
 
                 } catch (@NonNull final NumberFormatException e) {
-                    throw new ValidatorException(R.string.vldt_real_expected_for_x, errorLabelId);
+                    throw new ValidatorException(R.string.vldt_real_expected_for_x,
+                                                 App.getLocalizedAppContext()
+                                                    .getString(errorLabelId));
                 }
             }
         }
