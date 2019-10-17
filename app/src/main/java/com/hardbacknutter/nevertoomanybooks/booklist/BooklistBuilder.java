@@ -200,7 +200,7 @@ public class BooklistBuilder
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Map<String, TableDefinition> mExtraJoins = new HashMap<>();
-    /** Style to use in building the list. */
+    /** Style to use while building the list. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final BooklistStyle mStyle;
@@ -1390,13 +1390,13 @@ public class BooklistBuilder
     }
 
     /**
-     * Get all positions at which the specified book appears.
+     * Get all positions, and the row info for that position, at which the specified book appears.
      *
      * @return Array of row details, including absolute positions, visibility and level.
      * Can be empty, but never {@code null}.
      */
     @NonNull
-    private ArrayList<RowInfo> getBookAbsolutePositions(final long bookId) {
+    private ArrayList<RowInfo> getBookPositions(final long bookId) {
         String sql = "SELECT "
                      + mNavTable.dot(DOM_PK_ID)
                      + ',' + mNavTable.dot(DOM_BL_NODE_VISIBLE)
@@ -1422,36 +1422,33 @@ public class BooklistBuilder
      *
      * @param row we want to become visible
      */
-    private void ensureAbsolutePositionVisible(@NonNull final RowInfo row) {
+    private void ensureAbsolutePositionIsVisible(@NonNull final RowInfo row) {
 
         // If <0 then no previous node.
         if (row.absolutePosition < 0) {
             return;
         }
 
-        // reminder: DOM_PK_ID in the mNavTable is the absolute row position,
-        // which is why we do DOM_PK_ID <= (absPos + 1)
+        // Get the root node (level==1) 'before' the given row.
         String sql = "SELECT " + DOM_PK_ID + ',' + DOM_BL_NODE_EXPANDED
                      + " FROM " + mNavTable
-                     + " WHERE " + DOM_BL_NODE_LEVEL + "<=?"
-                     + " AND " + DOM_PK_ID + "<=?"
-                     + " ORDER BY " + DOM_PK_ID + " DESC";
+                     + " WHERE " + DOM_BL_NODE_LEVEL + "=1" + " AND " + DOM_PK_ID + "<=?"
+                     + " ORDER BY " + DOM_PK_ID + " DESC LIMIT 1";
 
+        // rows start at 1, but positions at 0
         long rowId = row.absolutePosition + 1;
 
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{
-                String.valueOf(row.level),
-                String.valueOf(rowId)})) {
-
-            while (cursor.moveToNext()) {
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(rowId)})) {
+            if (cursor.moveToFirst()) {
                 // Get the root node and expanded flag
                 long rootId = cursor.getLong(0);
-                long isExpanded = cursor.getLong(1);
+                boolean rootIsExpanded = cursor.getLong(1) != 0;
 
                 // If root node is not the node we are checking,
                 // and root node is not expanded, expand it.
-                if (rootId != rowId && isExpanded == 0) {
-                    toggleNode(rootId - 1, NodeState.Expand);
+                if (rootId != rowId && !rootIsExpanded) {
+                    // rows start at 1, but positions at 0
+                    expandNode(rootId - 1, NodeState.Expand);
                 }
             }
         }
@@ -1470,7 +1467,7 @@ public class BooklistBuilder
         }
 
         // get all positions of the book
-        ArrayList<RowInfo> rows = getBookAbsolutePositions(bookId);
+        ArrayList<RowInfo> rows = getBookPositions(bookId);
 
         if (rows.isEmpty()) {
             return null;
@@ -1487,11 +1484,12 @@ public class BooklistBuilder
         // If we have any visible rows, only consider those for the new position
         if (!visibleRows.isEmpty()) {
             rows = visibleRows;
+
         } else {
             // Make them all visible
             for (RowInfo row : rows) {
                 if (!row.visible) {
-                    ensureAbsolutePositionVisible(row);
+                    ensureAbsolutePositionIsVisible(row);
                 }
             }
             // Recalculate all positions
@@ -1512,7 +1510,7 @@ public class BooklistBuilder
 //                }
 //            }
 //            // Make sure the target row is visible/expanded.
-//            ensureAbsolutePositionVisible(targetRow);
+//            ensureAbsolutePositionIsVisible(targetRow);
 //            // Now find the position it will occupy in the view
 //            mTargetPos = getPosition(targetRow);
 
@@ -1520,9 +1518,9 @@ public class BooklistBuilder
     }
 
     /**
-     * Set the expansion state and visibility for <strong>all</strong> nodes.
+     * Expand or collapse <strong>all</strong> nodes.
      * <p>
-     * For topLevel == 1, we fully expand/collapse <strong>all</strong> all rows/levels.
+     * For topLevel == 1, we fully expand/collapse <strong>all</strong> rows/levels.
      * For a topLevel > 1, we set levels above the top-level always expanded/visible,
      * and levels below as demanded.
      *
@@ -1540,17 +1538,27 @@ public class BooklistBuilder
 
             final long t0 = System.nanoTime();
 
-            if (topLevel > 1) {
-                // always expand and show levels higher then the defined top-level.
-                updateNavigationNodes(true, true, '<', topLevel);
+            if (topLevel == 1) {
+                if (expand) {
+                    // expand and show all levels
+                    updateNavigationNodes(true, true, ">=", 1);
+                } else {
+                    // collapse level 1, but keep it visible.
+                    updateNavigationNodes(false, true, "=", 1);
+                    // collapse and hide all levels above 1
+                    updateNavigationNodes(false, false, ">", 1);
+                }
+            } else /* topLevel > 1 */ {
+                // always expand and show levels less then the defined top-level.
+                updateNavigationNodes(true, true, "<", topLevel);
+
+                // collapse the specified level, but keep it visible.
+                updateNavigationNodes(false, true, "=", topLevel);
+
+                // collapse and hide all levels starting from the topLevel
+                updateNavigationNodes(false, false, ">", topLevel);
+
             }
-
-            // expand or collapse the specified level, but keep it always visible.
-            updateNavigationNodes(expand, true, '=', topLevel);
-
-            // expand or collapse all lower levels; use matching visibility
-            updateNavigationNodes(expand, expand, '>', topLevel);
-
             // Store the state of all nodes.
             preserveAllNodes();
 
@@ -1570,9 +1578,7 @@ public class BooklistBuilder
     }
 
     /**
-     * Toggle the expand/collapse status of the node at the specified absolute position.
-     * <p>
-     * URGENT: next step re-introduce the style topLevel.
+     * Expand, collapse or toggle the status of the node at the specified absolute position.
      *
      * @param position   of the node in the list
      * @param nodeStatus one of {@link NodeState}
@@ -1580,7 +1586,7 @@ public class BooklistBuilder
      * @return {@code true} if the new state is expanded,
      * {@code false} if collapsed, or if an error occurred.
      */
-    public boolean toggleNode(final long position,
+    public boolean expandNode(final long position,
                               @NonNull final NodeState nodeStatus) {
 
         // row position starts at 0, ID's start at 1...
@@ -1590,7 +1596,11 @@ public class BooklistBuilder
         // level of the row
         int rowLevel;
 
-        boolean targetExpansion;
+        // future state of the affected rows.
+        boolean expand;
+
+        //URGENT: re-introduce the desired top-level which must be kept visible
+        int topLevel = mStyle.getTopLevel();
 
         SyncLock txLock = null;
         try {
@@ -1598,7 +1608,7 @@ public class BooklistBuilder
                 txLock = mSyncedDb.beginTransaction(true);
             }
 
-            // Get the current state of the node on the passed row position.
+            // Get the current state of the node for the given row id.
             String sql = "SELECT " + DOM_BL_NODE_LEVEL + ',' + DOM_BL_NODE_EXPANDED
                          + " FROM " + mNavTable.ref()
                          + " WHERE " + mNavTable.dot(DOM_PK_ID) + "=?";
@@ -1612,50 +1622,33 @@ public class BooklistBuilder
                 }
             }
 
-            // Find the next row at the same level
-            SynchronizedStatement getNextAtSameLevelStmt =
-                    mStatements.get(STMT_GET_NEXT_NODE_AT_SAME_LEVEL);
-            if (getNextAtSameLevelStmt == null) {
-                getNextAtSameLevelStmt = mStatements.add(
-                        STMT_GET_NEXT_NODE_AT_SAME_LEVEL,
-                        "SELECT COALESCE(Max(" + DOM_PK_ID + "),-1) FROM "
-                        + "(SELECT " + DOM_PK_ID + " FROM " + mNavTable.ref()
-                        + " WHERE " + mNavTable.dot(DOM_PK_ID) + ">?"
-                        + " AND " + mNavTable.dot(DOM_BL_NODE_LEVEL) + "=?"
-                        + " ORDER BY " + DOM_PK_ID + " LIMIT 1"
-                        + ") zzz");
-            }
-            getNextAtSameLevelStmt.bindLong(1, rowId);
-            getNextAtSameLevelStmt.bindLong(2, rowLevel);
-            // the COALESCE(max(" + DOM_PK_ID + "),-1) prevents SQLiteDoneException
-            long nextRowId = getNextAtSameLevelStmt.simpleQueryForLong();
-            // if there was no next node, handle this to the end of the list.
-            if (nextRowId < 0) {
-                nextRowId = Long.MAX_VALUE;
-            }
-
             // Decide what the new state for the nodes should be.
             switch (nodeStatus) {
                 case Collapse:
-                    targetExpansion = false;
+                    expand = false;
                     break;
                 case Expand:
-                    targetExpansion = true;
+                    expand = true;
                     break;
 
                 case Toggle:
                 default:
-                    targetExpansion = !rowIsExpanded;
+                    expand = !rowIsExpanded;
                     break;
             }
 
+            // Find the next row at the same level
+            long nextRowId = findNextRowId(rowId, rowLevel);
+
+            //TODO: optimize when expand==true -> combine the two updates
+
             // Set the actual node; this node should always be visible,
             // and expanded/collapsed as demanded.
-            updateNavigationNode(rowId, targetExpansion, true);
+            updateNavigationNode(rowId, expand, true);
 
-            // Update the intervening nodes; visibility matches expansion state
-            updateNavigationNodes(targetExpansion, targetExpansion,
-                                  rowId, nextRowId);
+            // Update the intervening nodes; this excludes the start and end row
+            // visibility matches expansion state
+            updateNavigationNodes(expand, expand, rowId, nextRowId);
 
             // Store the state of these nodes.
             preserveNodes(rowId, nextRowId);
@@ -1669,7 +1662,42 @@ public class BooklistBuilder
             }
         }
 
-        return targetExpansion;
+        return expand;
+    }
+
+    /**
+     * Find the next row ('after' the given row) at the given level.
+     *
+     * @param startRowId from where to start looking
+     * @param rowLevel   level to look for
+     *
+     * @return endRowId
+     */
+    private long findNextRowId(final long startRowId,
+                               final int rowLevel) {
+        long nextRowId;
+        SynchronizedStatement getNextAtSameLevelStmt =
+                mStatements.get(STMT_GET_NEXT_NODE_AT_SAME_LEVEL);
+        if (getNextAtSameLevelStmt == null) {
+            getNextAtSameLevelStmt = mStatements.add(
+                    STMT_GET_NEXT_NODE_AT_SAME_LEVEL,
+                    // the COALESCE(max(" + DOM_PK_ID + "),-1) prevents a SQLiteDoneException
+                    "SELECT COALESCE(Max(" + DOM_PK_ID + "),-1) FROM "
+                    + "(SELECT " + DOM_PK_ID + " FROM " + mNavTable.ref()
+                    + " WHERE " + mNavTable.dot(DOM_PK_ID) + ">?"
+                    + " AND " + mNavTable.dot(DOM_BL_NODE_LEVEL) + "=?"
+                    + " ORDER BY " + DOM_PK_ID + " LIMIT 1"
+                    + ") zzz");
+        }
+        getNextAtSameLevelStmt.bindLong(1, startRowId);
+        getNextAtSameLevelStmt.bindLong(2, rowLevel);
+
+        nextRowId = getNextAtSameLevelStmt.simpleQueryForLong();
+        // if there was no next node, use the end of the list.
+        if (nextRowId < 0) {
+            nextRowId = Long.MAX_VALUE;
+        }
+        return nextRowId;
     }
 
     /**
@@ -1748,16 +1776,16 @@ public class BooklistBuilder
      *
      * @param expand       state to set
      * @param visible      visibility to set
-     * @param levelOperand one of '<', '=' or '>'
+     * @param levelOperand one of "<", "=", ">", "<=" or ">="
      * @param level        the level
      */
     private void updateNavigationNodes(final boolean expand,
                                        final boolean visible,
-                                       final char levelOperand,
+                                       @NonNull final String levelOperand,
                                        @IntRange(from = 1) final int level) {
         if (BuildConfig.DEBUG /* always */) {
-            // developer sanity check (should use an enum obv.)
-            if ("<=>".indexOf(levelOperand) == -1) {
+            // developer sanity check
+            if (!"< = > <= >=".contains(levelOperand)) {
                 throw new IllegalArgumentException();
             }
         }
@@ -1775,7 +1803,7 @@ public class BooklistBuilder
                 Logger.debug(this, "updateNavigationNodes",
                              "expand=" + expand,
                              "visible=" + visible,
-                             "level=" + level,
+                             "level" + levelOperand + level,
                              "rowsUpdated=" + rowsUpdated);
             }
         }
@@ -1791,20 +1819,25 @@ public class BooklistBuilder
             if (!mSyncedDb.inTransaction()) {
                 txLock = mSyncedDb.beginTransaction(true);
             }
+            SynchronizedStatement stmt;
 
             // clear all rows for the current bookshelf before we save the new values.
-            SynchronizedStatement stmt1 = mStatements.get(STMT_DELETE_LIST_NODE_SETTINGS);
-            if (stmt1 == null) {
-                stmt1 = mStatements.add(STMT_DELETE_LIST_NODE_SETTINGS,
-                                        DELETE_BOOK_LIST_NODE_SETTINGS_BY_BOOKSHELF);
+            stmt = mStatements.get(STMT_DELETE_LIST_NODE_SETTINGS);
+            if (stmt == null) {
+                stmt = mStatements.add(STMT_DELETE_LIST_NODE_SETTINGS,
+                                       DELETE_BOOK_LIST_NODE_SETTINGS_BY_BOOKSHELF);
             }
-            stmt1.bindLong(1, mBookshelf.getId());
-            stmt1.executeUpdateDelete();
+            stmt.bindLong(1, mBookshelf.getId());
+            int rowsDeleted = stmt.executeUpdateDelete();
+            if (BuildConfig.DEBUG) {
+                Logger.debug(this, "preserveAllNodes",
+                             "rowsDeleted=" + rowsDeleted);
+            }
 
             // Read all expanded nodes, and send them to the permanent table.
             //URGENT: review/test
             // We only store the bookshelfId, top-level group/kind and the composite key.
-            SynchronizedStatement stmt = mStatements.get(STMT_SAVE_ALL_LIST_NODE_SETTINGS);
+            stmt = mStatements.get(STMT_SAVE_ALL_LIST_NODE_SETTINGS);
             if (stmt == null) {
                 String sql = "INSERT INTO " + TBL_BOOK_LIST_NODE_SETTINGS
                              + " (" + DOM_FK_BOOKSHELF
@@ -2289,14 +2322,14 @@ public class BooklistBuilder
     }
 
     /**
-     * A data class containing details of the positions of all instances of a single book.
+     * A data class containing details of a single row.
      */
     public static class RowInfo {
 
         public final int absolutePosition;
-        public final boolean visible;
         @IntRange(from = 1)
         public final int level;
+        public final boolean visible;
         public int listPosition;
 
         RowInfo(final int absolutePosition,

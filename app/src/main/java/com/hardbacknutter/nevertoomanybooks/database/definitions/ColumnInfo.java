@@ -41,15 +41,19 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  */
 public class ColumnInfo {
 
-    /**
+    /*
      * Actual types in the database.
      *
      * @see StorageClass
      */
+
+    /** Stores both int and long values. */
     public static final String TYPE_INTEGER = "integer";
     public static final String TYPE_TEXT = "text";
+    /** Stores both float and double values. */
     public static final String TYPE_REAL = "real";
     public static final String TYPE_BLOB = "blob";
+
     /**
      * boolean is the same as Integer(storing 0,1) , but kept for clarity.
      * <p>

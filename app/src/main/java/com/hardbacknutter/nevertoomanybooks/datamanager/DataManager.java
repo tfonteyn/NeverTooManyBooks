@@ -358,17 +358,6 @@ public class DataManager {
     }
 
     /**
-     * Get an int value, returned as long.
-     *
-     * @param key Key of data object
-     *
-     * @return an long value.
-     */
-    public long getInt(@NonNull final String key) {
-        return ParseUtils.toLong(get(key));
-    }
-
-    /**
      * Store an int value.
      *
      * @param key   Key of data object

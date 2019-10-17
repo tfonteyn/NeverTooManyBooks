@@ -128,7 +128,7 @@ public class BooksOnBookshelfModel
      * Flag (potentially) set in {@link BooksOnBookshelf} #onActivityResult.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
      */
-    private boolean mForceRebuildOnResume;
+    private boolean mForceRebuildInOnResume;
     /** Flag to indicate that a list has been successfully loaded. */
     private boolean mListHasBeenLoaded;
     /** Currently selected bookshelf. */
@@ -577,21 +577,21 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Check if a rebuild is needed.
+     * Check if a rebuild is needed in {@code Activity#onResume()}
      *
      * @return {@code true} if a rebuild is needed
      */
-    public boolean isForceRebuildOnResume() {
-        return mForceRebuildOnResume;
+    public boolean isForceRebuildInOnResume() {
+        return mForceRebuildInOnResume;
     }
 
     /**
-     * Request a rebuild at the next onResume.
+     * Request a rebuild at the next {@code Activity#onResume()}
      *
      * @param forceRebuild Flag
      */
-    public void setOnResumeForceRebuild(final boolean forceRebuild) {
-        mForceRebuildOnResume = forceRebuild;
+    public void setForceRebuildInOnResume(final boolean forceRebuild) {
+        mForceRebuildInOnResume = forceRebuild;
     }
 
     /**
@@ -990,8 +990,7 @@ public class BooksOnBookshelfModel
                     t1_build_done = System.nanoTime();
                 }
 
-                mHolder.resultTargetRows = mBuilder
-                        .syncPreviouslySelectedBookId(mHolder.bookId);
+                mHolder.resultTargetRows = mBuilder.syncPreviouslySelectedBookId(mHolder.bookId);
 
                 if (isCancelled()) {
                     return mHolder;

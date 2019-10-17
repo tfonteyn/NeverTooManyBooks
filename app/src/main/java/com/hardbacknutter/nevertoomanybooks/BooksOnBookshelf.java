@@ -650,10 +650,10 @@ public class BooksOnBookshelf
                     Objects.requireNonNull(data);
 
                     if (data.getBooleanExtra(UniqueId.BKEY_BOOK_MODIFIED, false)) {
-                        mModel.setOnResumeForceRebuild(true);
+                        mModel.setForceRebuildInOnResume(true);
                     }
                     if (data.getBooleanExtra(UniqueId.BKEY_BOOK_DELETED, false)) {
-                        mModel.setOnResumeForceRebuild(true);
+                        mModel.setForceRebuildInOnResume(true);
                     }
 
                     // if we got an id back, re-position to it.
@@ -675,7 +675,7 @@ public class BooksOnBookshelf
                         }
                     }
                     // regardless, do a rebuild just in case
-                    mModel.setOnResumeForceRebuild(true);
+                    mModel.setForceRebuildInOnResume(true);
                 }
                 break;
             }
@@ -685,7 +685,7 @@ public class BooksOnBookshelf
                         Bundle extras = data.getExtras();
                         if (extras != null) {
                             mModel.getSearchCriteria().from(extras, true);
-                            mModel.setOnResumeForceRebuild(true);
+                            mModel.setForceRebuildInOnResume(true);
                         }
                     }
                 }
@@ -699,7 +699,7 @@ public class BooksOnBookshelf
                         long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
                                                              Bookshelf.DEFAULT_ID);
                         mModel.setCurrentBookshelf(bookshelfId);
-                        mModel.setOnResumeForceRebuild(true);
+                        mModel.setForceRebuildInOnResume(true);
                     }
                 }
                 break;
@@ -722,7 +722,7 @@ public class BooksOnBookshelf
                             }
 
                             // styles, prefs, books, covers,... it all requires a rebuild.
-                            mModel.setOnResumeForceRebuild(true);
+                            mModel.setForceRebuildInOnResume(true);
                         }
                     }
                     //else if ((data != null) && data.hasExtra(UniqueId.BKEY_EXPORT_RESULT)) {
@@ -751,7 +751,7 @@ public class BooksOnBookshelf
                     }
 
                     if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
-                        mModel.setOnResumeForceRebuild(true);
+                        mModel.setForceRebuildInOnResume(true);
                     }
                 }
                 break;
@@ -831,7 +831,7 @@ public class BooksOnBookshelf
             }
             initBookList();
 
-        } else if (mModel.isForceRebuildOnResume()) {
+        } else if (mModel.isForceRebuildInOnResume()) {
             // onActivityResult told us to rebuild
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
                 Logger.debug(this, "onResume",
@@ -859,7 +859,7 @@ public class BooksOnBookshelf
         }
 
         // always reset for next iteration.
-        mModel.setOnResumeForceRebuild(false);
+        mModel.setForceRebuildInOnResume(false);
 
         Tracker.exitOnResume(this);
     }
@@ -1210,7 +1210,7 @@ public class BooksOnBookshelf
             default:
                 long absPos = mapper.getInt(DBDefinitions.KEY_BL_ABSOLUTE_POSITION);
                 boolean isExpanded = cursor.getBuilder()
-                                           .toggleNode(absPos, BooklistBuilder.NodeState.Toggle);
+                                           .expandNode(absPos, BooklistBuilder.NodeState.Toggle);
                 // make sure the cursor has valid rows for the new position.
                 cursor.requery();
                 mAdapter.notifyDataSetChanged();
