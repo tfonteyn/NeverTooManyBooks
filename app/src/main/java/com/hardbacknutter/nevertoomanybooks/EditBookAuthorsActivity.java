@@ -326,7 +326,7 @@ public class EditBookAuthorsActivity
 
             Bundle args = requireArguments();
             mAuthor = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR),
-                                             "no author passed");
+                                             "Author must be passed in args");
             if (savedInstanceState == null) {
                 mFamilyName = mAuthor.getFamilyName();
                 mGivenNames = mAuthor.getGivenNames();

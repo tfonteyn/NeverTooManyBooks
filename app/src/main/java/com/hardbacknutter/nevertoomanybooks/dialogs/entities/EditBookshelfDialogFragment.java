@@ -99,7 +99,7 @@ public class EditBookshelfDialogFragment
         mDb = new DAO();
 
         mBookshelf = requireArguments().getParcelable(BKEY_BOOKSHELF);
-        Objects.requireNonNull(mBookshelf, "no Bookshelf passed");
+        Objects.requireNonNull(mBookshelf, "Bookshelf must be passed in args");
         if (savedInstanceState == null) {
             mName = mBookshelf.getName();
         } else {
