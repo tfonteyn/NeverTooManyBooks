@@ -94,11 +94,13 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
+import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.PreferredStylesViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
 import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
 
@@ -291,6 +293,9 @@ public class BooksOnBookshelf
         handleStandardSearchIntent();
 
         mProgressBar = findViewById(R.id.progressBar);
+
+        // enable the styles menu
+        setNavigationItemVisibility(R.id.nav_edit_list_styles, true);
 
         // Setup the list view.
         initListView();
@@ -582,6 +587,24 @@ public class BooksOnBookshelf
                 return super.onOptionsItemSelected(item);
             }
         }
+    }
+
+    @Override
+    protected boolean onNavigationItemSelected(@NonNull final MenuItem item) {
+        closeNavigationDrawer();
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.nav_edit_list_styles:
+                Intent intent = new Intent(this, PreferredStylesActivity.class)
+                        .putExtra(PreferredStylesViewModel.BKEY_STYLE_ID,
+                                  mModel.getCurrentStyle().getId());
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+                return true;
+
+            default:
+                return super.onNavigationItemSelected(item);
+        }
+
     }
 
     /**

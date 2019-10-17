@@ -78,7 +78,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 public class PreferredStylesActivity
         extends BaseActivity {
 
-
     /** The adapter for the list. */
     private BooklistStylesAdapter mListAdapter;
     /** The View for the list. */
@@ -108,7 +107,7 @@ public class PreferredStylesActivity
         super.onCreate(savedInstanceState);
 
         mModel = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
-        mModel.init(getIntent().getExtras(), savedInstanceState);
+        mModel.init(Objects.requireNonNull(getIntent().getExtras()));
 
         mListView = findViewById(android.R.id.list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -119,6 +118,7 @@ public class PreferredStylesActivity
 
         // setup the adapter
         mListAdapter = new BooklistStylesAdapter(this, mModel.getList(),
+                                                 mModel.getInitialStyleId(),
                                                  vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mListView.setAdapter(mListAdapter);
@@ -169,8 +169,20 @@ public class PreferredStylesActivity
                             int position = mModel.handleStyleChange(style);
                             mListAdapter.setSelectedPosition(position);
                         }
-                        // always update all rows, whether we got a style back or not,
-                        // as the order could have changed as well.
+
+                        // check if the style was cloned from a builtin style.
+                        long templateId =
+                                data.getLongExtra(StyleSettingsFragment.BKEY_TEMPLATE_ID, 0);
+                        if (templateId < 0) {
+                            // We're assuming the user wanted to 'replace' the builtin style,
+                            // so remove the builtin style from the preferred styles.
+                            BooklistStyle templateStyle = mModel.getBooklistStyle(templateId);
+                            if (templateStyle != null) {
+                                templateStyle.setPreferred(false);
+                            }
+                        }
+
+                        // always update all rows
                         mListAdapter.notifyDataSetChanged();
                     }
                 }
@@ -217,16 +229,18 @@ public class PreferredStylesActivity
 
         switch (menuItem.getItemId()) {
             case R.id.MENU_CLONE:
-                editStyle(style.clone(this));
+                // pass the style id of the template style
+                editStyle(style.clone(this), style.getId());
                 return true;
 
             case R.id.MENU_EDIT:
-                if (style.isUserDefined()) {
-                    editStyle(style);
-                } else {
-                    // editing a system style -> clone it first.
-                    editStyle(style.clone(this));
+                // dev sanity check
+                if (BuildConfig.DEBUG /* always */) {
+                    if (!style.isUserDefined()) {
+                        throw new IllegalStateException("can't edit a builtin style");
+                    }
                 }
+                editStyle(style, style.getId());
                 return true;
 
             case R.id.MENU_DELETE:
@@ -242,16 +256,20 @@ public class PreferredStylesActivity
     /**
      * Start the edit process.
      *
-     * @param style to edit
+     * @param style           to edit
+     * @param templateStyleId the id of the style we're cloning from, or the style itself
      */
-    private void editStyle(@NonNull final BooklistStyle style) {
+    private void editStyle(@NonNull final BooklistStyle style,
+                           final long templateStyleId) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
             Logger.debugEnter(this, "editStyle", style);
         }
 
         Intent intent = new Intent(this, SettingsActivity.class)
                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StyleSettingsFragment.TAG)
-                .putExtra(UniqueId.BKEY_STYLE, style);
+                .putExtra(UniqueId.BKEY_STYLE, style)
+                .putExtra(StyleSettingsFragment.BKEY_TEMPLATE_ID, templateStyleId);
+
         startActivityForResult(intent, UniqueId.REQ_EDIT_STYLE);
     }
 
@@ -280,6 +298,9 @@ public class PreferredStylesActivity
     private class BooklistStylesAdapter
             extends RecyclerViewAdapterBase<BooklistStyle, Holder> {
 
+        /** The id of the style which should be / is selected at creation time. */
+        private final long mInitialStyleId;
+
         /** Currently selected row. */
         private int mSelectedPosition = RecyclerView.NO_POSITION;
 
@@ -292,8 +313,10 @@ public class PreferredStylesActivity
          */
         BooklistStylesAdapter(@NonNull final Context context,
                               @NonNull final ArrayList<BooklistStyle> items,
+                              final long initialStyleId,
                               @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
+            mInitialStyleId = initialStyleId;
         }
 
         @NonNull
@@ -322,23 +345,26 @@ public class PreferredStylesActivity
                 holder.kindView.setText(R.string.style_is_builtin);
             }
 
+            // handle the 'preferred style' checkable
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(style.isPreferred());
-            holder.mCheckableButton.setOnClickListener(v -> rowChecked(holder));
+            holder.mCheckableButton.setOnClickListener(v -> setPreferred(holder));
 
             // select the original style if there was nothing selected (yet).
             if (mSelectedPosition == RecyclerView.NO_POSITION
-                && style.getUuid().equals(mModel.getOriginalSelectedStyleUuid())) {
+                && style.getId() == mInitialStyleId) {
                 mSelectedPosition = position;
             }
+
+            // update the current row
             holder.itemView.setSelected(mSelectedPosition == position);
 
             // click -> set the row/style as 'selected'.
             // Do not modify the 'preferred' state of the row.
             holder.rowDetailsView.setOnClickListener(v -> {
-                // update the previously 'selected' row.
+                // update the previous, now unselected, row.
                 notifyItemChanged(mSelectedPosition);
-                // get/update the newly 'selected' row.
+                // get/update the newly selected row.
                 mSelectedPosition = holder.getAdapterPosition();
                 notifyItemChanged(mSelectedPosition);
             });
@@ -355,14 +381,14 @@ public class PreferredStylesActivity
          * <p>
          * User checked the row:
          * - set the row/style 'preferred'
-         * - set the row 'selected' (and remove 'selected' from others)
+         * - set the row 'selected'
          * User unchecked the row:
          * - set the row to 'not preferred'
          * - look up and down in the list to find a 'preferred' row, and set it 'selected'
          *
          * @param holder for the checked row.
          */
-        private void rowChecked(@NonNull final Holder holder) {
+        private void setPreferred(@NonNull final Holder holder) {
             // current row/style
             int position = holder.getAdapterPosition();
             BooklistStyle style = getItem(position);
@@ -380,9 +406,10 @@ public class PreferredStylesActivity
                     // if no such row found, force the current row regardless
                     mSelectedPosition = position;
                 }
-                // update the newly 'selected' row. This might be another, or the current row.
+                // update the newly selected row. This might be another, or the current row.
                 notifyItemChanged(mSelectedPosition);
             }
+
             // update the current row unless we've already done that above.
             if (mSelectedPosition != position) {
                 // update the current row.
@@ -391,7 +418,8 @@ public class PreferredStylesActivity
         }
 
         /**
-         * Look up and down in the list to find a 'preferred' row, and set it 'selected'.
+         * Look up and down in the list to find a 'preferred' row.
+         * If found, set it as the selected position.
          *
          * @param direction must be either '-1' or '+1'
          *
@@ -425,10 +453,34 @@ public class PreferredStylesActivity
             mSelectedPosition = position;
         }
 
+        /**
+         * Get the currently selected style.
+         *
+         * @return style, or {@code null} if none selected (which should never happen... flw)
+         */
         @Nullable
         BooklistStyle getSelectedStyle() {
             return mSelectedPosition != RecyclerView.NO_POSITION ? getItem(mSelectedPosition)
                                                                  : null;
+        }
+
+        @Override
+        public boolean onItemMove(final int fromPosition,
+                                  final int toPosition) {
+
+            if (fromPosition == mSelectedPosition) {
+                // moving the selected row.
+                mSelectedPosition = toPosition;
+            } else if (toPosition == mSelectedPosition) {
+                if (fromPosition > mSelectedPosition) {
+                    // push down
+                    mSelectedPosition++;
+                } else {
+                    // push up
+                    mSelectedPosition--;
+                }
+            }
+            return super.onItemMove(fromPosition, toPosition);
         }
     }
 }

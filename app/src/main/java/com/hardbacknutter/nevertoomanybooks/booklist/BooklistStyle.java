@@ -618,9 +618,11 @@ public class BooklistStyle
 
     /**
      * Accessor.
-     * Positive ID's: user-defined styles
-     * Negative ID's: builtin styles
-     * 0: a user-defined style which has not been saved yet
+     * <ul>
+     *     <li>Positive ID's: user-defined styles</li>
+     *     <li>Negative ID's: builtin styles</li>
+     *     <li>0: a user-defined style which has not been saved yet</li>
+     * </ul>
      */
     @Override
     public long getId() {

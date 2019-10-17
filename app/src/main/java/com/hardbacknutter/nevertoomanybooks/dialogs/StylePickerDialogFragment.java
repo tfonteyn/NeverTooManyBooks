@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -135,12 +136,12 @@ public class StylePickerDialogFragment
                 .setTitle(R.string.title_select_style)
                 .setView(root)
                 .setNeutralButton(R.string.btn_customize, (d, w) -> {
-                    Intent intent = new Intent(getContext(), PreferredStylesActivity.class)
-                            .putExtra(PreferredStylesViewModel.BKEY_STYLE_UUID,
-                                      mCurrentStyle.getUuid());
                     // use the activity so we get the results there.
-                    getActivity().startActivityForResult(intent,
-                                                         UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+                    Activity activity = getActivity();
+                    Intent intent = new Intent(activity, PreferredStylesActivity.class)
+                            .putExtra(PreferredStylesViewModel.BKEY_STYLE_ID,
+                                      mCurrentStyle.getId());
+                    activity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
                     dismiss();
 
                 })

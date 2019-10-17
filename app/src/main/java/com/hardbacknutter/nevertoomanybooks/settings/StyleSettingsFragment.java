@@ -64,6 +64,8 @@ public class StyleSettingsFragment
     /** Fragment manager tag. */
     public static final String TAG = "StyleSettingsFragment";
 
+    static final String BKEY_TEMPLATE_ID = TAG + ":templateId";
+
     /** Style we are editing. */
     private BooklistStyle mStyle;
 
@@ -75,6 +77,7 @@ public class StyleSettingsFragment
         if (args != null) {
             mStyle = args.getParcelable(UniqueId.BKEY_STYLE);
         }
+
         if (mStyle == null) {
             // we're doing the global preferences
             mStyle = new BooklistStyle();
@@ -136,6 +139,12 @@ public class StyleSettingsFragment
         // pass the non-global style back; whether existing or new.
         if (!mStyle.getUuid().isEmpty()) {
             mResultDataModel.putExtra(UniqueId.BKEY_STYLE, mStyle);
+        }
+
+        // pass the template id back; not currently used here.
+        Bundle args = getArguments();
+        if (args != null) {
+            mResultDataModel.putExtra(BKEY_TEMPLATE_ID, args.getLong(BKEY_TEMPLATE_ID));
         }
     }
 

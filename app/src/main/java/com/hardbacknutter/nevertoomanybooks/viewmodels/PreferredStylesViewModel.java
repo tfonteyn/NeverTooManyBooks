@@ -39,19 +39,19 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 public class PreferredStylesViewModel
         extends ViewModel {
 
     private static final String TAG = "PreferredStylesActivity";
-    public static final String BKEY_STYLE_UUID = TAG + ":styleUuid";
+    public static final String BKEY_STYLE_ID = TAG + ":styleId";
 
     /** Database Access. */
     private DAO mDb;
 
     /** the selected style at onCreate time. */
-    @Nullable
-    private String mOriginalSelectedStyleUuid;
+    private long mInitialStyleId;
 
     /** Flag set when anything is changed. Includes moving styles up/down, on/off, ... */
     private boolean mIsDirty;
@@ -70,16 +70,16 @@ public class PreferredStylesViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@Nullable final Bundle args,
-                     @Nullable final Bundle savedInstanceState) {
+    public void init(@NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO();
             mList = new ArrayList<>(BooklistStyle.Helper.getStyles(mDb, true).values());
 
-            if (args != null) {
-                mOriginalSelectedStyleUuid = args.getString(BKEY_STYLE_UUID);
+            mInitialStyleId = args.getLong(BKEY_STYLE_ID);
+            if (mInitialStyleId == 0) {
+                throw new UnexpectedValueException(mInitialStyleId);
             }
         }
     }
@@ -93,14 +93,29 @@ public class PreferredStylesViewModel
         return mIsDirty;
     }
 
-    @Nullable
-    public String getOriginalSelectedStyleUuid() {
-        return mOriginalSelectedStyleUuid;
+    /**
+     * Get the style id that was the selected style when this object was created.
+     *
+     * @return id
+     */
+    public long getInitialStyleId() {
+        return mInitialStyleId;
     }
 
     @NonNull
     public ArrayList<BooklistStyle> getList() {
         return mList;
+    }
+
+    @Nullable
+    public BooklistStyle getBooklistStyle(final long styleId) {
+
+        for (BooklistStyle style : mList) {
+            if (style.getId() == styleId) {
+                return style;
+            }
+        }
+        return null;
     }
 
     /**

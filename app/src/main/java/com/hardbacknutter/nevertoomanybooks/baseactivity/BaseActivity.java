@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -57,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
-import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -93,9 +93,12 @@ public abstract class BaseActivity
     @App.ThemeId
     protected int mInitialThemeId;
 
-    /** The side/navigation panel. */
+    /** Optional - The side/navigation panel. */
     @Nullable
-    private DrawerLayout mDrawerLayout;
+    protected DrawerLayout mDrawerLayout;
+    /** Optional - The side/navigation menu. */
+    @Nullable
+    protected NavigationView mNavigationView;
 
     /**
      * Override this and return the id you need.
@@ -146,10 +149,9 @@ public abstract class BaseActivity
         }
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+        if (mDrawerLayout != null) {
+            mNavigationView = findViewById(R.id.nav_view);
+            mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
         }
     }
 
@@ -210,11 +212,23 @@ public abstract class BaseActivity
         }
     }
 
-    @CallSuper
-    private boolean onNavigationItemSelected(@NonNull final MenuItem item) {
-        if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
+    /**
+     * Set the visibility of a NavigationView menu item.
+     *
+     * @param itemId  menu item resource id
+     * @param visible flag
+     */
+    @SuppressWarnings("SameParameterValue")
+    protected void setNavigationItemVisibility(@IdRes final int itemId,
+                                               final boolean visible) {
+        if (mNavigationView != null) {
+            mNavigationView.getMenu().findItem(itemId).setVisible(visible);
         }
+    }
+
+    @CallSuper
+    protected boolean onNavigationItemSelected(@NonNull final MenuItem item) {
+        closeNavigationDrawer();
 
         switch (item.getItemId()) {
             case R.id.nav_search:
@@ -230,10 +244,11 @@ public abstract class BaseActivity
                                        UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
                 return true;
 
-            case R.id.nav_edit_list_styles:
-                startActivityForResult(new Intent(this, PreferredStylesActivity.class),
-                                       UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
-                return true;
+            // handled in BoB code. Left commented here as a reminder.
+//            case R.id.nav_edit_list_styles:
+//                startActivityForResult(new Intent(this, PreferredStylesActivity.class),
+//                                       UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+//                return true;
 
             case R.id.nav_settings:
                 startActivityForResult(new Intent(this, SettingsActivity.class),
@@ -251,6 +266,12 @@ public abstract class BaseActivity
 
             default:
                 return false;
+        }
+    }
+
+    protected void closeNavigationDrawer() {
+        if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
         }
     }
 
