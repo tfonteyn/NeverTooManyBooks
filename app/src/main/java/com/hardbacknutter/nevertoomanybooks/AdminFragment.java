@@ -867,8 +867,8 @@ public class AdminFragment
                                     .setPositiveButton(android.R.string.ok, (d, which) -> {
                                         mResultDataModel.putExtra(UniqueId.BKEY_EXPORT_RESULT,
                                                                   exportHelper.options);
-                                        Intent resultData = mResultDataModel
-                                                .getActivityResultData();
+                                        Intent resultData =
+                                                mResultDataModel.getActivityResultData();
                                         //noinspection ConstantConditions
                                         getActivity().setResult(Activity.RESULT_OK, resultData);
                                         getActivity().finish();
@@ -914,8 +914,8 @@ public class AdminFragment
                                     .setNegativeButton(android.R.string.cancel, (d, which) -> {
                                         mResultDataModel.putExtra(UniqueId.BKEY_EXPORT_RESULT,
                                                                   exportHelper.options);
-                                        Intent resultData = mResultDataModel
-                                                .getActivityResultData();
+                                        Intent resultData =
+                                                mResultDataModel.getActivityResultData();
                                         //noinspection ConstantConditions
                                         getActivity().setResult(Activity.RESULT_OK, resultData);
                                         getActivity().finish();

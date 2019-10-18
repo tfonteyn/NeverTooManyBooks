@@ -44,9 +44,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.HasActivityResultData;
 
 /**
  * Hosting activity for showing a book.
@@ -82,13 +81,8 @@ public class BookDetailsActivity
      */
     @Override
     public void onBackPressed() {
-        BookBaseFragmentModel model = new ViewModelProvider(this).get(BookBaseFragmentModel.class);
-
-        ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
-        // always set the *current* book, so the BoB list can reposition correctly.
-        resultDataModel.putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
-
-        Intent resultData = resultDataModel.getActivityResultData();
+        HasActivityResultData model = new ViewModelProvider(this).get(BookBaseFragmentModel.class);
+        Intent resultData = model.getActivityResultData();
         setResult(Activity.RESULT_OK, resultData);
         super.onBackPressed();
     }

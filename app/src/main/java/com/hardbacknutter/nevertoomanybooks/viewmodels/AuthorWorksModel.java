@@ -49,14 +49,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 public class AuthorWorksModel
-        extends ViewModel {
+        extends ViewModel
+        implements HasActivityResultData {
 
     /** Database Access. */
     private DAO mDb;
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private Intent mResultData = new Intent();
+    private final Intent mResultData = new Intent();
 
     @Nullable
     private Author mAuthor;
@@ -104,12 +105,8 @@ public class AuthorWorksModel
         }
     }
 
-    /**
-     * Get the data intent to pass to {@link Activity#setResult}.
-     *
-     * @return intent
-     */
     @NonNull
+    @Override
     public Intent getActivityResultData() {
         return mResultData;
     }

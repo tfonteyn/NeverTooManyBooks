@@ -37,52 +37,43 @@ import androidx.lifecycle.ViewModel;
 /**
  * A model that allows multiple fragments and the activity all
  * to share a single data Intent to calling {@link android.app.Activity#setResult(int, Intent)}.
+ * Can be used if it's inconvenient to add mResultData/getActivityResultData()
+ * to an existing ViewModel.
  *
  * <strong>Note:</strong> should always be created in the Activity scope.
  */
 public class ResultDataModel
-        extends ViewModel {
+        extends ViewModel
+        implements HasActivityResultData {
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private Intent mResultData = new Intent();
+    private final Intent mResultData = new Intent();
 
-    /**
-     * Get the data intent to pass to {@link Activity#setResult}.
-     *
-     * @return intent
-     */
+    @Override
     @NonNull
     public Intent getActivityResultData() {
         return mResultData;
     }
 
-    @NonNull
-    public ResultDataModel putExtra(@NonNull final String name,
-                                    final boolean value) {
+    public void putExtra(@NonNull final String name,
+                         final boolean value) {
         mResultData.putExtra(name, value);
-        return this;
     }
 
-    @NonNull
-    public ResultDataModel putExtra(@NonNull final String name,
-                                    final int value) {
+    public void putExtra(@NonNull final String name,
+                         final int value) {
         mResultData.putExtra(name, value);
-        return this;
     }
 
-    @NonNull
-    public ResultDataModel putExtra(@NonNull final String name,
-                                    final long value) {
+    public void putExtra(@NonNull final String name,
+                         final long value) {
         mResultData.putExtra(name, value);
-        return this;
     }
 
-    @NonNull
-    public ResultDataModel putExtra(@NonNull final String name,
-                                    @NonNull final Parcelable value) {
+    public void putExtra(@NonNull final String name,
+                         @NonNull final Parcelable value) {
         mResultData.putExtra(name, value);
-        return this;
     }
 
     public void putAll(@NonNull final Intent data) {

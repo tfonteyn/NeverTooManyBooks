@@ -63,7 +63,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * Holds the fields collection.
  */
 public class BookBaseFragmentModel
-        extends ViewModel {
+        extends ViewModel
+        implements HasActivityResultData {
 
     private final MutableLiveData<Object> mUserMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
@@ -76,7 +77,7 @@ public class BookBaseFragmentModel
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private Intent mResultData = new Intent();
+    private final Intent mResultData = new Intent();
 
     /**
      * The Book this model represents. The only time this can be {@code null}
@@ -145,13 +146,14 @@ public class BookBaseFragmentModel
         }
     }
 
-    /**
-     * Get the data intent to pass to {@link Activity#setResult}.
-     *
-     * @return intent
-     */
     @NonNull
+    @Override
     public Intent getActivityResultData() {
+        // always set the *current* book, so the BoB list can reposition correctly.
+        if (mBook != null) {
+            mResultData.putExtra(DBDefinitions.KEY_PK_ID, mBook.getId());
+        }
+
         return mResultData;
     }
 

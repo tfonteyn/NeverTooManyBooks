@@ -38,11 +38,9 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * The hosting activity for editing a book.
@@ -89,11 +87,8 @@ public class EditBookActivity
             return;
         }
 
-        ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
-        resultDataModel.putExtra(DBDefinitions.KEY_PK_ID, model.getBook().getId());
-
         //ENHANCE: global changes not detected, so it should be assume they happened.
-        Intent resultData = resultDataModel.getActivityResultData();
+        Intent resultData = model.getActivityResultData();
         setResult(Activity.RESULT_OK, resultData);
         super.onBackPressed();
     }
