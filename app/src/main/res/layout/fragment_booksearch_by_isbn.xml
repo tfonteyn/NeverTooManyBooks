@@ -210,17 +210,6 @@
             app:constraint_referenced_ids="isbn_X,isbn_del,isbn_0"
             />
 
-        <CheckBox
-            android:id="@+id/cbx_allow_asin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/border2"
-            android:text="@string/lbl_allow_asin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/isbn_0"
-            />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>

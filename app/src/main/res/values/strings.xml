@@ -1053,8 +1053,10 @@
 
     <!-- merging two bookshelves -->
     <string name="btn_confirm_merge">Merge</string>
+
     <!-- when warned you have unsaved edits -->
     <string name="btn_continue_editing">Continue Editing</string>
+
     <!-- exit the edit activity despite unsaved edits -->
     <string name="btn_confirm_exit">Exit</string>
     <!-- button text for import/export dialogs -->

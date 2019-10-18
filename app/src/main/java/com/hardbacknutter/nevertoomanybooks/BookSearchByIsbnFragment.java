@@ -36,9 +36,11 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
@@ -134,10 +136,6 @@ public class BookSearchByIsbnFragment
 
     @Nullable
     private EditText mIsbnView;
-    @Nullable
-    private CompoundButton mAllowAsinCb;
-
-    private ScannerViewModel mScannerModel;
 
     private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
             new SearchCoordinator.SearchFinishedListener() {
@@ -160,7 +158,7 @@ public class BookSearchByIsbnFragment
                         if (!wasCancelled) {
                             mTaskManager.sendHeaderUpdate(R.string.progress_msg_adding_book);
                             Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
 
                             // Clear the data entry fields ready for the next one
@@ -183,6 +181,9 @@ public class BookSearchByIsbnFragment
                 }
             };
 
+    private ScannerViewModel mScannerModel;
+    private boolean mAllowAsin;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -204,7 +205,6 @@ public class BookSearchByIsbnFragment
 
         View view = inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
         mIsbnView = view.findViewById(R.id.isbn);
-        mAllowAsinCb = view.findViewById(R.id.cbx_allow_asin);
         return view;
     }
 
@@ -241,50 +241,51 @@ public class BookSearchByIsbnFragment
         }
     }
 
-    //URGENT:  move asin to options menu + add to preferences
-    // problem: asin not visible -> options menu itself not visible,
-    // user enables amazon -> options menu itself still invisible.
-//    @Override
-//    @CallSuper
-//    public void onCreateOptionsMenu(@NonNull final Menu menu,
-//                                    @NonNull final MenuInflater inflater) {
-//
-//        menu.add(Menu.NONE, R.id.MENU_PREFS_ASIN,
-//                 MenuHandler.ORDER_ASIN, R.string.lbl_allow_asin)
-//            .setCheckable(true)
-//            .setIcon(R.drawable.ic_check)
-//            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-//
-//        super.onCreateOptionsMenu(menu, inflater);
-//    }
-//
-//    @Override
-//    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-//        // if Amazon is enabled, we show the ASIN option; else make sure it's disabled.
-//        boolean amazon = (mBookSearchBaseModel.getSearchSites() & SearchSites.AMAZON) != 0;
-//        MenuItem asin = menu.findItem(R.id.MENU_PREFS_ASIN);
-//        asin.setVisible(amazon);
-//        if (!amazon) {
-//            asin.setChecked(false);
-//        }
-//
-//        super.onPrepareOptionsMenu(menu);
-//    }
-//
-//    @Override
-//    @CallSuper
-//    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-//        //noinspection SwitchStatementWithTooFewBranches
-//        switch (item.getItemId()) {
-//            case R.id.MENU_PREFS_ASIN:
-//                item.setChecked(!item.isChecked());
-//                handleAsinClick(item.isChecked());
-//                return true;
-//
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
+    @Override
+    @CallSuper
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+
+        //dev note: we could eliminate onPrepareOptionsMenu as invalidateOptionsMenu()
+        // MUST be called to make this menu be show for as long there is only this one
+        // option in the menu. But... leaving the code as-is, so if/when a second menu
+        // item is added, no code changes are needed.
+        menu.add(Menu.NONE, R.id.MENU_PREFS_ASIN,
+                 MenuHandler.ORDER_ASIN, R.string.lbl_allow_asin)
+            .setCheckable(true)
+            .setIcon(R.drawable.ic_check)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        // if Amazon is enabled, we show the ASIN option; else make sure it's disabled.
+        boolean amazon = (mBookSearchBaseModel.getSearchSites() & SearchSites.AMAZON) != 0;
+        MenuItem asin = menu.findItem(R.id.MENU_PREFS_ASIN);
+        asin.setVisible(amazon);
+        if (!amazon) {
+            asin.setChecked(false);
+        }
+
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    @CallSuper
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_PREFS_ASIN:
+                item.setChecked(!item.isChecked());
+                handleAsinClick(item.isChecked());
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     /**
      * Setup the UI.
@@ -315,10 +316,6 @@ public class BookSearchByIsbnFragment
             mBookSearchBaseModel.setIsbnSearchText(mIsbnView.getText().toString().trim());
             prepareSearch();
         });
-
-        if (mAllowAsinCb != null) {
-            mAllowAsinCb.setOnCheckedChangeListener((v, isChecked) -> handleAsinClick(isChecked));
-        }
     }
 
     /**
@@ -355,12 +352,21 @@ public class BookSearchByIsbnFragment
         }
     }
 
+    /**
+     * Called when the user enables/disables the ASIN option in the options menu.
+     *
+     * @param isChecked flag
+     */
     private void handleAsinClick(final boolean isChecked) {
+
+        mAllowAsin = isChecked;
+
         if (isChecked) {
             // over-optimisation... asin is used less than ISBN
             DigitsKeyListener asinListener = DigitsKeyListener.getInstance(ASIN_DIGITS);
             //noinspection ConstantConditions
             mIsbnView.setKeyListener(asinListener);
+
         } else {
             //noinspection ConstantConditions
             mIsbnView.setKeyListener(ISBN_LISTENER);
@@ -490,12 +496,9 @@ public class BookSearchByIsbnFragment
             return;
         }
 
-        // If the layout has an 'Allow ASIN' checkbox, see if it is checked.
-        final boolean allowAsin = mAllowAsinCb != null && mAllowAsinCb.isChecked();
-
         // not a valid ISBN/ASIN ?
-        if (!ISBN.isValid(isbn) && (!allowAsin || !ISBN.isValidAsin(isbn))) {
-            isbnInvalid(isbn, allowAsin);
+        if (!ISBN.isValid(isbn) && (!mAllowAsin || !ISBN.isValidAsin(isbn))) {
+            isbnInvalid(isbn, mAllowAsin);
             return;
         }
         // at this point, we have a valid isbn/asin.
@@ -534,35 +537,30 @@ public class BookSearchByIsbnFragment
      * @param existingId of the book we already have in the database
      */
     private void isbnAlreadyPresent(final long existingId) {
-        @SuppressWarnings("ConstantConditions")
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
-                                     .setTitle(R.string.title_duplicate_book)
-                                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                                     .setMessage(R.string.confirm_duplicate_book_message)
-                                     .create();
-
-        // User wants to add regardless
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.btn_confirm_add),
-                         (d, which) -> startSearch());
-
-        // User wants to review the existing book
-        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit),
-                         (d, which) -> {
-                             Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                                     .putExtra(DBDefinitions.KEY_PK_ID, existingId);
-                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-                         });
-
-        // User aborts this isbn
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                         (d, which) -> {
-                             // reset the now-discarded details
-                             mBookSearchBaseModel.clearSearchText();
-                             if (mScannerModel.isScanMode()) {
-                                 startScannerActivity();
-                             }
-                         });
-        dialog.show();
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.title_duplicate_book)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setMessage(R.string.confirm_duplicate_book_message)
+                .setCancelable(false)
+                // User aborts this isbn
+                .setNegativeButton(android.R.string.cancel, (d, which) -> {
+                    // reset the now-discarded details
+                    mBookSearchBaseModel.clearSearchText();
+                    if (mScannerModel.isScanMode()) {
+                        startScannerActivity();
+                    }
+                })
+                // User wants to review the existing book
+                .setNeutralButton(R.string.edit, (d, which) -> {
+                    Intent intent = new Intent(getContext(), EditBookActivity.class)
+                            .putExtra(DBDefinitions.KEY_PK_ID, existingId);
+                    startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+                })
+                // User wants to add regardless
+                .setPositiveButton(R.string.btn_confirm_add, (d, which) -> startSearch())
+                .create()
+                .show();
     }
 
     /**
@@ -658,13 +656,13 @@ public class BookSearchByIsbnFragment
                 .setMessage(msg)
                 .setNeutralButton(R.string.lbl_settings, (d, w) -> {
                     Intent intent = new Intent(mHostActivity, SettingsActivity.class)
-                                            .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
-                                                      Prefs.psk_barcode_scanner);
+                            .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
+                                      Prefs.psk_barcode_scanner);
 
                     mHostActivity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
                 })
                 .setPositiveButton(R.string.retry, (d, w) -> {
-
+                    // yes, nothing to do. Closing this dialog should bring up the scanner again
                 })
                 .create()
                 .show();
@@ -685,8 +683,8 @@ public class BookSearchByIsbnFragment
                 .setMessage(msg)
                 .setOnDismissListener(d -> {
                     Intent intent = new Intent(mHostActivity, SettingsActivity.class)
-                                            .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
-                                                      Prefs.psk_barcode_scanner);
+                            .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
+                                      Prefs.psk_barcode_scanner);
 
                     mHostActivity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
                 })

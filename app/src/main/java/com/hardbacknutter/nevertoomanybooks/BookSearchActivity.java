@@ -118,8 +118,7 @@ public class BookSearchActivity
     public void onBackPressed() {
 
 //        if (!UpdateFieldsFromInternetFragment.TAG.equals(mTag)) {
-        BookSearchBaseModel model =
-                new ViewModelProvider(this).get(BookSearchBaseModel.class);
+        BookSearchBaseModel model = new ViewModelProvider(this).get(BookSearchBaseModel.class);
         Intent lastBookData = model.getLastBookData();
         if (lastBookData != null) {
             setResult(Activity.RESULT_OK, lastBookData);

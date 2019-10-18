@@ -241,6 +241,9 @@ public abstract class BookSearchBaseFragment
                     int sites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES,
                                                  mBookSearchBaseModel.getSearchSites());
                     mBookSearchBaseModel.setSearchSites(sites);
+                    // Make sure that the ASIN option (Amazon) is (not) offered.
+                    //noinspection ConstantConditions
+                    getActivity().invalidateOptionsMenu();
                 }
                 break;
             }
