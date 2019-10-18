@@ -33,15 +33,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.InputType;
-import android.text.method.DigitsKeyListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -51,7 +48,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -69,40 +65,28 @@ import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
+import com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn;
 
-// UI mode: try stopping the soft input keyboard to pop up at all cost when entering isbn....
-//
-//  field gets focus, up it pops
-//        mIsbnView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(@NonNull final View v, final boolean hasFocus) {
-//                if (v.equals(mIsbnView)) {
-//                    InputMethodManager imm = (InputMethodManager)
-//                            getSystemService(Context.INPUT_METHOD_SERVICE);
-//                    imm.showSoftInput(mIsbnView, InputMethodManager.HIDE_IMPLICIT_ONLY);
-//                }
-//            }
-//        });
-
-
-// works but prevents the user from select/copy/past
-// mIsbnView.setInputType(InputType.TYPE_NULL);
-// mIsbnView.setTextIsSelectable(true);
-// mIsbnView.setCursorVisible(true); // no effect
-
-// field gets focus, up it pops
-// InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-// imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0, null);
-
-// field gets focus, up it pops
-// mIsbnView.setShowSoftInputOnFocus(false);
-// field gets focus, up it pops
-// getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-// hide on entry, field gets focus, up it pops
-//  getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-// field gets focus, up it pops
-// getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
-
+/**
+ * <strong>Notes on the virtual keyboard:</strong>
+ * <p>
+ * Stop if from showing when a field gets the focus.<br>
+ * This must be done for <strong>ALL</strong> fields individually
+ * <pre>
+ * {@code
+ *      editText.setShowSoftInputOnFocus(false);
+ * }
+ * </pre>
+ * Hide it when already showing:
+ * <pre>
+ * {@code
+ *      InputMethodManager imm = getContext().getSystemService(InputMethodManager.class);
+ *      if (imm != null && imm.isActive(this)) {
+ *          imm.hideSoftInputFromWindow(getWindowToken(), 0);
+ *      }
+ * }
+ * </pre>
+ */
 public class BookSearchByIsbnFragment
         extends BookSearchBaseFragment {
 
@@ -111,19 +95,6 @@ public class BookSearchByIsbnFragment
 
     /** option to start in scan mode (versus manual entry). */
     public static final String BKEY_IS_SCAN_MODE = TAG + ":isScanMode";
-
-    /** all digits allowed in ASIN strings. */
-    private static final String ASIN_DIGITS =
-            "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    /** all digits in ISBN strings. */
-    private static final String ISBN_DIGITS = "0123456789xX";
-    /** listener/acceptor for all ISBN digits. */
-    private static final DigitsKeyListener ISBN_LISTENER =
-            DigitsKeyListener.getInstance(ISBN_DIGITS);
-    /** filter to remove all ASIN digits from ISBN strings (leave xX!). */
-    private static final Pattern ISBN_PATTERN =
-            Pattern.compile("[abcdefghijklmnopqrstuvwyz]",
-                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /** wait for the scanner; milliseconds. */
     private static final long SCANNER_WAIT = 1_000;
@@ -134,9 +105,12 @@ public class BookSearchByIsbnFragment
      */
     private boolean mKeepAlive;
 
-    @Nullable
-    private EditText mIsbnView;
+    /** Flag to allow ASIN key input (true) or pure ISBN input (false). */
+    private boolean mAllowAsin = false;
 
+    @Nullable
+    private EditIsbn mIsbnView;
+    private ScannerViewModel mScannerModel;
     private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
             new SearchCoordinator.SearchFinishedListener() {
                 /**
@@ -181,8 +155,6 @@ public class BookSearchByIsbnFragment
                 }
             };
 
-    private ScannerViewModel mScannerModel;
-    private boolean mAllowAsin;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -278,8 +250,11 @@ public class BookSearchByIsbnFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_ASIN:
-                item.setChecked(!item.isChecked());
-                handleAsinClick(item.isChecked());
+                mAllowAsin = !item.isChecked();
+
+                item.setChecked(mAllowAsin);
+                //noinspection ConstantConditions
+                mIsbnView.setAllowAsin(mAllowAsin);
                 return true;
 
             default:
@@ -316,6 +291,12 @@ public class BookSearchByIsbnFragment
             mBookSearchBaseModel.setIsbnSearchText(mIsbnView.getText().toString().trim());
             prepareSearch();
         });
+
+        // init the isbn edit field if needed (avoid initializing twice)
+        if (mAllowAsin) {
+            //noinspection ConstantConditions
+            mIsbnView.setAllowAsin(mAllowAsin);
+        }
     }
 
     /**
@@ -327,6 +308,7 @@ public class BookSearchByIsbnFragment
         @SuppressWarnings("ConstantConditions")
         int start = mIsbnView.getSelectionStart();
         int end = mIsbnView.getSelectionEnd();
+        //noinspection ConstantConditions
         mIsbnView.getText().replace(start, end, keyChar);
         mIsbnView.setSelection(start + 1, start + 1);
     }
@@ -338,11 +320,13 @@ public class BookSearchByIsbnFragment
             int end = mIsbnView.getSelectionEnd();
             if (start < end) {
                 // We have a selection. Delete it.
+                //noinspection ConstantConditions
                 mIsbnView.getText().replace(start, end, "");
                 mIsbnView.setSelection(start, start);
             } else {
                 // Delete char before cursor
                 if (start > 0) {
+                    //noinspection ConstantConditions
                     mIsbnView.getText().replace(start - 1, start, "");
                     mIsbnView.setSelection(start - 1, start - 1);
                 }
@@ -350,32 +334,6 @@ public class BookSearchByIsbnFragment
         } catch (@NonNull final StringIndexOutOfBoundsException ignore) {
             //do nothing - empty string
         }
-    }
-
-    /**
-     * Called when the user enables/disables the ASIN option in the options menu.
-     *
-     * @param isChecked flag
-     */
-    private void handleAsinClick(final boolean isChecked) {
-
-        mAllowAsin = isChecked;
-
-        if (isChecked) {
-            // over-optimisation... asin is used less than ISBN
-            DigitsKeyListener asinListener = DigitsKeyListener.getInstance(ASIN_DIGITS);
-            //noinspection ConstantConditions
-            mIsbnView.setKeyListener(asinListener);
-
-        } else {
-            //noinspection ConstantConditions
-            mIsbnView.setKeyListener(ISBN_LISTENER);
-            // remove invalid digits
-            String txt = mIsbnView.getText().toString().trim();
-            mIsbnView.setText(ISBN_PATTERN.matcher(txt).replaceAll(""));
-        }
-
-        mIsbnView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
     }
 
     @Override
@@ -474,6 +432,7 @@ public class BookSearchByIsbnFragment
     public void onPause() {
         super.onPause();
         if (mIsbnView != null) {
+            //noinspection ConstantConditions
             mBookSearchBaseModel.setIsbnSearchText(mIsbnView.getText().toString().trim());
         }
     }

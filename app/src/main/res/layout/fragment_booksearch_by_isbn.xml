@@ -44,7 +44,7 @@
         android:layout_margin="@dimen/border1"
         >
 
-        <EditText
+        <com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn
             android:id="@+id/isbn"
             style="@style/EditText.Isbn.Large"
             app:layout_constraintEnd_toStartOf="@id/btn_search"
