@@ -60,7 +60,9 @@ public final class DBDefinitions {
 
     /**
      * A collection of all tables used to be able to rebuild indexes etc...,
-     * added in order so interdependency's work out
+     * added in order so interdependency's work out.
+     * <p>
+     * Only add standard tables. Do not add the TMP_* tables.
      */
     static final Map<String, TableDefinition> ALL_TABLES = new LinkedHashMap<>();
 
@@ -83,7 +85,6 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_SERIES;
     /** Basic table definition. */
     public static final TableDefinition TBL_TOC_ENTRIES;
-
     /** link table. */
     public static final TableDefinition TBL_BOOK_BOOKSHELF;
     /** link table. */
@@ -97,6 +98,35 @@ public final class DBDefinitions {
 
     /** User defined styles. */
     static final TableDefinition TBL_BOOKLIST_STYLES;
+
+
+    /** Keeps track of nodes in the list across application restarts. */
+    public static final TableDefinition TBL_BOOK_LIST_NODE_SETTINGS;
+
+    /**
+     * Reminder: this is a {@link TableDefinition.TableTypes#Temporary}.
+     * Should NOT be added to {@link #ALL_TABLES}.
+     */
+    public static final TableDefinition TMP_TBL_BOOK_LIST;
+
+    /**
+     * Reminder: this is a {@link TableDefinition.TableTypes#Temporary}.
+     * Should NOT be added to {@link #ALL_TABLES}.
+     */
+    public static final TableDefinition TMP_TBL_ROW_NAVIGATOR;
+
+    /**
+     * Reminder: this is a {@link TableDefinition.TableTypes#Temporary}.
+     * Should NOT be added to {@link #ALL_TABLES}.
+     * <p>
+     * This table should always be created without column constraints applied,
+     * with the exception of the "_id" primary key autoincrement
+     *
+     */
+    public static final TableDefinition TMP_TBL_ROW_NAVIGATOR_FLATTENED;
+
+    /** Full text search; should NOT be added to {@link #ALL_TABLES}. */
+    static final TableDefinition TBL_BOOKS_FTS;
 
     static {
         // never change the "authors" "a" alias. It's hardcoded elsewhere.
@@ -131,6 +161,8 @@ public final class DBDefinitions {
 
     /** primary key. */
     public static final DomainDefinition DOM_PK_ID;
+    /** FTS primary key. */
+    static final DomainDefinition DOM_PK_DOCID;
 
     /** foreign key. */
     public static final DomainDefinition DOM_FK_AUTHOR;
@@ -368,8 +400,8 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. See {@link Book#TOC_SINGLE_AUTHOR_SINGLE_WORK}. */
     public static final DomainDefinition DOM_BOOK_TOC_BITMASK;
     /**
-     *  {@link #TBL_BOOKS}.
-     *  String typed. We cannot rely on prices fetched from the internet to be 100% parsable.
+     * {@link #TBL_BOOKS}.
+     * String typed. We cannot rely on prices fetched from the internet to be 100% parsable.
      */
     public static final DomainDefinition DOM_BOOK_PRICE_PAID;
     /** {@link #TBL_BOOKS}. */
@@ -715,13 +747,18 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_BL_BOOK_COUNT;
     /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
     public static final DomainDefinition DOM_BL_PRIMARY_SERIES_COUNT;
+
     /** {@link #TMP_TBL_ROW_NAVIGATOR} {@link BooklistBuilder} navigation. */
     public static final DomainDefinition DOM_BL_REAL_ROW_ID;
+
+    /**
+     * {@link #TMP_TBL_ROW_NAVIGATOR} {@link BooklistBuilder} is node expanded.
+     * An expanded node, should always be visible!
+     */
+    public static final DomainDefinition DOM_BL_NODE_EXPANDED;
     /** {@link #TMP_TBL_ROW_NAVIGATOR} {@link BooklistBuilder} is node visible. */
     public static final DomainDefinition DOM_BL_NODE_VISIBLE;
-    /** {@link #TMP_TBL_ROW_NAVIGATOR} {@link BooklistBuilder} is node expanded.
-     * An expanded node, should always be visible! */
-    public static final DomainDefinition DOM_BL_NODE_EXPANDED;
+
     /** {@link BooklistBuilder} the 'selected' book, i.e. the one to scroll back into view. */
     public static final DomainDefinition DOM_BL_NODE_SELECTED;
 
@@ -765,62 +802,15 @@ public final class DBDefinitions {
                         .setDefault(0);
     }
 
-    /** Base Name of BOOK_LIST-related tables. */
-    private static final String DB_TN_BOOK_LIST_NAME;
-    /** Keeps track of nodes in the list. Added to {@link #ALL_TABLES}. */
-    public static final TableDefinition TBL_BOOK_LIST_NODE_SETTINGS;
-    /**
-     *  Should NOT be added to {@link #ALL_TABLES}.
-     * Reminder: this is a {@link TableDefinition.TableTypes#Temporary}.
-     */
-    public static final TableDefinition TMP_TBL_BOOK_LIST;
-    /**
-     *  Should NOT be added to {@link #ALL_TABLES}.
-     * Reminder: this is a {@link TableDefinition.TableTypes#Temporary}.
-     */
-    public static final TableDefinition TMP_TBL_ROW_NAVIGATOR;
+
+
+
 
     /**
-     * Should NOT be added to {@link #ALL_TABLES}.
-     * <p>
-     * This table should always be created without column constraints applied,
-     * with the exception of the "_id" primary key autoincrement
-     *
-     * Reminder: this is a {@link TableDefinition.TableTypes#Temporary}.
+     * {@link #TBL_BOOKS_FTS}
+     * specific formatted list; example: "stephen baxter;arthur c. clarke;"
      */
-    public static final TableDefinition TMP_TBL_ROW_NAVIGATOR_FLATTENED;
-
-    static {
-
-        DB_TN_BOOK_LIST_NAME = "book_list";
-
-        // this one is a standard table!
-        TBL_BOOK_LIST_NODE_SETTINGS =
-                new TableDefinition(DB_TN_BOOK_LIST_NAME + "_node_settings")
-                        .setAlias("blns");
-
-        TMP_TBL_BOOK_LIST =
-                new TableDefinition(DB_TN_BOOK_LIST_NAME + "_tmp")
-                        .setAlias("bl")
-                        .setType(TableTypes.Temporary);
-
-        TMP_TBL_ROW_NAVIGATOR =
-                new TableDefinition(DB_TN_BOOK_LIST_NAME + "_tmp_row_pos")
-                        .setAlias("blrp")
-                        .setType(TableTypes.Temporary);
-
-        TMP_TBL_ROW_NAVIGATOR_FLATTENED =
-                new TableDefinition(DB_TN_BOOK_LIST_NAME + "_tmp_row_pos_flattened")
-                        .setAlias("blrpf")
-                        .setType(TableTypes.Temporary);
-
-        // Allow debug mode to use standard tables so we can export and inspect the content.
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLES) {
-            TMP_TBL_BOOK_LIST.setType(TableTypes.Standard);
-            TMP_TBL_ROW_NAVIGATOR.setType(TableTypes.Standard);
-            TMP_TBL_ROW_NAVIGATOR_FLATTENED.setType(TableTypes.Standard);
-        }
-    }
+    static final DomainDefinition DOM_FTS_AUTHOR_NAME;
 
     static {
         TBL_BOOKLIST_STYLES.addDomains(DOM_PK_ID,
@@ -1001,24 +991,51 @@ public final class DBDefinitions {
                             .addIndex(DOM_FK_TOC_ENTRY, false, DOM_FK_TOC_ENTRY)
                             .addIndex(DOM_FK_BOOK, false, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_TOC_ENTRIES.getName(), TBL_BOOK_TOC_ENTRIES);
-    }
 
-    static {
+        /* ====================================================================================== */
+        /*  Booklist tables keeping track of the actual list + visibility and expansion,          */
+        /*  and the flat list for the book details screen,                                        */
+        /* ====================================================================================== */
+
+        // Base Name of BOOK_LIST-related tables.
+        final String DB_TN_BOOK_LIST_NAME = "book_list";
+
+        // this one is a standard table!
+        TBL_BOOK_LIST_NODE_SETTINGS =
+                new TableDefinition(DB_TN_BOOK_LIST_NAME + "_node_settings")
+                        .setAlias("blns");
+
+        TMP_TBL_BOOK_LIST =
+                new TableDefinition(DB_TN_BOOK_LIST_NAME + "_tmp")
+                        .setAlias("bl")
+                        .setType(TableTypes.Temporary);
+
+        TMP_TBL_ROW_NAVIGATOR =
+                new TableDefinition(DB_TN_BOOK_LIST_NAME + "_tmp_row_pos")
+                        .setAlias("blrp")
+                        .setType(TableTypes.Temporary);
+
+        TMP_TBL_ROW_NAVIGATOR_FLATTENED =
+                new TableDefinition(DB_TN_BOOK_LIST_NAME + "_tmp_row_pos_flattened")
+                        .setAlias("blrpf")
+                        .setType(TableTypes.Temporary);
+
+        // Allow debug mode to use standard tables so we can export and inspect the content.
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLES) {
+            TMP_TBL_BOOK_LIST.setType(TableTypes.Standard);
+            TMP_TBL_ROW_NAVIGATOR.setType(TableTypes.Standard);
+            TMP_TBL_ROW_NAVIGATOR_FLATTENED.setType(TableTypes.Standard);
+        }
+
         /*
          * {@link BooklistBuilder}
-         *
-         * Example: a small set of books, sorted by 'Format' booklist style.
-         *
-         * _id  bookshelf  kind    root_key
-         * 1    10          1      a/273
-         * 2    11          1      a/302
-         * 5    12         13      fmt/Hardcover - Traycase
          */
         TBL_BOOK_LIST_NODE_SETTINGS
                 .addDomains(DOM_PK_ID,
                             DOM_FK_BOOKSHELF,
                             DOM_BL_ROOT_KEY,
                             DOM_BL_NODE_ROW_KIND)
+
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DOM_FK_BOOKSHELF, false, DOM_FK_BOOKSHELF)
                 .addIndex("ROOT_KIND", true,
@@ -1036,23 +1053,23 @@ public final class DBDefinitions {
          *
          * This is an EXAMPLE only. The structure will depend on {@link BooklistBuilder}.
          *
-         * _id  level   kind book_count root_key                   book     book_uuid                           title
-         * 1    1       13              fmt/Hardcover                       1d872e0edbda2c86758d8fc889351716
-         * 2    2       0    1          fmt/Hardcover               1617    fc78e8ee6918e54547c2561986ccbec2	Accelerando
-         * 3    2       0    1          fmt/Hardcover               1564    47f6f13fd98594afcdca1ce71df9f23c	Bad Ronald
+         * _id  level   kind book_count root_key        book  book_uuid
+         * 1    1       13              fmt/Hardcover         1d872e0edbda2c86758d8fc889351716
+         * 2    2       0    1          fmt/Hardcover   1617  fc78e8ee6918e54547c2561986ccbec2
+         * 3    2       0    1          fmt/Hardcover   1564  47f6f13fd98594afcdca1ce71df9f23c
          * ... snip...
-         * 21   2       0    1          fmt/Hardcover               1531    3ac5caf178d9c61cbf8810d6233d0a2c	Shadow Captain
-         * 22   2       0    1          fmt/Hardcover               1334    9a37fe8a709e2d9ba8c8d0301c4c0903	Tales from the Perilous Realm
-         * 23   2       0    1          fmt/Hardcover               1616    61891a4d06bf821a7f270769671c13d9	Toast
-         * 24   2       0    1          fmt/Hardcover               1332    ab291216c5d0d6612b8e5e6d4484ffd5	Unfinished Tales of Numenor and Middle-Earth
-         * 25   1       13              fmt/Hardcover - Traycase            ae199f646b992c321f3b8ff04d0387ce
-         * 26   2       0    1      	fmt/Hardcover - Traycase    1505    228bff45e6d9cb025c2f73911ef6e4c4	Night Lamp
-         * 27   2       0    1      	fmt/Hardcover - Traycase    1561    e6db432cb841ea0cb82901e6b3e7c0b3	Ports Of Call
-         * 28   1       13              fmt/Paperback   	                a5df7be3d84070e0152494bbbfe99eb6
+         * 21   2       0    1          fmt/Hardcover   1531  3ac5caf178d9c61cbf8810d6233d0a2c
+         * 22   2       0    1          fmt/Hardcover   1334  9a37fe8a709e2d9ba8c8d0301c4c0903
+         * 23   2       0    1          fmt/Hardcover   1616  61891a4d06bf821a7f270769671c13d9
+         * 24   2       0    1          fmt/Hardcover   1332  ab291216c5d0d6612b8e5e6d4484ffd5
+         * 25   1       13              fmt/Hardcover         ae199f646b992c321f3b8ff04d0387ce
+         * 26   2       0    1      	fmt/Hardcover   1505  228bff45e6d9cb025c2f73911ef6e4c4
+         * 27   2       0    1      	fmt/Hardcover   1561  e6db432cb841ea0cb82901e6b3e7c0b3
+         * 28   1       13              fmt/Paperback         a5df7be3d84070e0152494bbbfe99eb6
          * ...snip...
-         * 32   2       0    1      	fmt/Paperback               1589    649dfb4b92a05e15e66821e2933f1930	Wild Thyme and Violets and Other Unpublished Stories
-         * 33   1       13              fmt/Paperback - Trade   	        07b91229ccb1de81de8f0fe7cdbefb83
-         * 34   2       0    1      	fmt/Paperback - Trade       1251    74034e297d73785aee87c26d3050a8cb	Annals of Klepsis
+         * 32   2       0    1      	fmt/Paperback   1589  649dfb4b92a05e15e66821e2933f1930
+         * 33   1       13              fmt/Paperback         07b91229ccb1de81de8f0fe7cdbefb83
+         * 34   2       0    1      	fmt/Paperback   1251  74034e297d73785aee87c26d3050a8cb
          *
          * This table should always be created without column constraints applied,
          * with the exception of the "_id" primary key autoincrement
@@ -1105,36 +1122,28 @@ public final class DBDefinitions {
         //.addReference(TMP_TBL_BOOK_LIST, DOM_BL_REAL_ROW_ID);
 
         /*
+         * Get's populated after a new TMP_TBL_BOOK_LIST is created and populated.
+         * It provides the linear (flat) list of book ids to move back and forth when
+         * the user swipes left and right on the book details screen.
+         *
          * This table should always be created without column constraints applied,
          * with the exception of the "_id" primary key autoincrement
-         *
-         * should NOT be added to {@link #ALL_TABLES}
          */
         TMP_TBL_ROW_NAVIGATOR_FLATTENED.addDomains(DOM_PK_ID,
                                                    DOM_FK_BOOK)
                                        .setPrimaryKey(DOM_PK_ID);
-    }
 
-    /** FTS primary key. */
-    static final DomainDefinition DOM_PK_DOCID;
 
-    /** Full text search; should NOT be added to {@link #ALL_TABLES}. */
-    static final TableDefinition TBL_BOOKS_FTS;
-
-    /**
-     * {@link #TBL_BOOKS_FTS}
-     * specific formatted list; example: "stephen baxter;arthur c. clarke;"
-     */
-    static final DomainDefinition DOM_FTS_AUTHOR_NAME;
-
-    /* FTS table definition. */
-    static {
-        DOM_PK_DOCID = new DomainDefinition("docid");
-
+        /* ====================================================================================== */
+        /*  FTS definitions                                                                       */
+        /* ====================================================================================== */
         TBL_BOOKS_FTS = new TableDefinition("books_fts").setType(TableTypes.FTS3);
+
+        DOM_PK_DOCID = new DomainDefinition("docid");
 
         DOM_FTS_AUTHOR_NAME =
                 new DomainDefinition("author_name", ColumnInfo.TYPE_TEXT, true);
+
         /*
          * reminder: FTS columns don't need a type nor constraints.
          * https://sqlite.org/fts3.html
@@ -1153,12 +1162,10 @@ public final class DBDefinitions {
                                  DOM_BOOK_GENRE,
                                  DOM_BOOK_LOCATION
                                 );
-    }
 
-    /*
-     * Developer sanity checks.
-     */
-    static {
+        /* ====================================================================================== */
+        /* Developer sanity checks.                                                               */
+        /* ====================================================================================== */
         if (BuildConfig.DEBUG /* always */) {
             Set<String> tNames = new HashSet<>();
             Set<String> tAliases = new HashSet<>();
