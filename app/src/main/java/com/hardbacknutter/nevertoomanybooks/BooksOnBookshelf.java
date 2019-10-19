@@ -490,6 +490,10 @@ public class BooksOnBookshelf
 
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_UNMANGLE, 0, "un-mangle");
 
+            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_CLEAN_TBL_BOOK_LIST_NODE_SETTINGS, 0,
+                             "clean BLNS");
+
+
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -576,8 +580,13 @@ public class BooksOnBookshelf
                             return true;
 
                         case R.id.MENU_DEBUG_UNMANGLE:
-                            mModel.getDb().tempUnMangle();
+                            mModel.getDb().tempUnMangle(Prefs.reorderTitleForSorting(this));
                             return true;
+
+                        case R.id.MENU_DEBUG_CLEAN_TBL_BOOK_LIST_NODE_SETTINGS:
+                            DBDefinitions.TBL_BOOK_LIST_NODE_SETTINGS
+                                    .deleteAllRows(mModel.getDb().getUnderlyingDatabase());
+                            break;
 
                         default:
                             break;

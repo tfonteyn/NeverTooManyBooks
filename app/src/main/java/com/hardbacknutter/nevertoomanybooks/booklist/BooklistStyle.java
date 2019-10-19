@@ -619,9 +619,9 @@ public class BooklistStyle
     /**
      * Accessor.
      * <ul>
-     *     <li>Positive ID's: user-defined styles</li>
-     *     <li>Negative ID's: builtin styles</li>
-     *     <li>0: a user-defined style which has not been saved yet</li>
+     * <li>Positive ID's: user-defined styles</li>
+     * <li>Negative ID's: builtin styles</li>
+     * <li>0: a user-defined style which has not been saved yet</li>
      * </ul>
      */
     @Override
@@ -786,15 +786,6 @@ public class BooklistStyle
      */
     boolean sortAuthorByGiven() {
         return mSortAuthorGivenNameFirst.isTrue();
-    }
-
-    /**
-     * ENHANCE: make reorderTitleForDisplaying specific to style (with global fallback).
-     *
-     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
-     */
-    public boolean reorderTitleForDisplaying() {
-        return Prefs.reorderTitleForDisplaying(App.getAppContext());
     }
 
     /**

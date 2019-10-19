@@ -81,9 +81,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Application implementation.
+ * URGENT: attach log file
  */
 @AcraMailSender(
-        mailTo = "test@local.net",
+        mailTo = "",
+//        mailTo = "test@local.net",
         reportFileName = "NeverTooManyBooks-acra-report.txt")
 @AcraToast(
         //optional, displayed as soon as the crash occurs,

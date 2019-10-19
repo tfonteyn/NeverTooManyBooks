@@ -98,7 +98,7 @@ public class StyleSettingsFragment
 
         PreferenceScreen screen = getPreferenceScreen();
 
-        // doing this in our base class. TODO: use this for all prefs instead of our own code
+        // TODO: use this for all prefs instead of doing this in our base class.
 //        EditTextPreference np = screen.findPreference(Prefs.X));
 //        np.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
 

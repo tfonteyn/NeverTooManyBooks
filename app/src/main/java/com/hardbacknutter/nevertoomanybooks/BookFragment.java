@@ -260,7 +260,8 @@ public class BookFragment
                     }
                     mBookModel.reload();
                     // onResume will display the new book, but
-                    // FIXME: swiping through the flattened booklist will not see the new book
+                    //FIXME: swiping through the flattened booklist will not see the new book
+                    // and when going back to BoB, won't show there either unless we rebuild.
                     // we basically would need to rebuild the booklist and subsequently
                     // rebuild the flattened booklist.... huge overkill.
                 }

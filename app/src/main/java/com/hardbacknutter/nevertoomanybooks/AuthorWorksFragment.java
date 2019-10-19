@@ -412,7 +412,7 @@ public class AuthorWorksFragment
 
         @Override
         public int getItemViewType(final int position) {
-            return mModel.getTocEntries().get(position).getType().getInt();
+            return mModel.getTocEntries().get(position).getType().getChar();
         }
 
         @Override

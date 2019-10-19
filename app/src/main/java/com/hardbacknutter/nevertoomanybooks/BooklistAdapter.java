@@ -773,9 +773,10 @@ public class BooklistAdapter
             super.onBindViewHolder(rowData, style);
 
             String title = rowData.getString(DBDefinitions.KEY_TITLE);
-            if (style.reorderTitleForDisplaying()) {
+            if (Prefs.reorderTitleForDisplaying(App.getAppContext())) {
                 String language = rowData.getString(DBDefinitions.KEY_LANGUAGE);
-                title = LocaleUtils.reorderTitle(App.getLocalizedAppContext(), title, language);
+                title = LocaleUtils.reorderTitle(App.getLocalizedAppContext(), title,
+                                                 LocaleUtils.getLocale(language));
             }
             mTitleView.setText(title);
 
@@ -985,7 +986,8 @@ public class BooklistAdapter
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
-            setText(rowData.getString(mSourceCol), rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
+            setText(rowData.getString(mSourceCol),
+                    rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
         }
 
         /**
@@ -1106,7 +1108,8 @@ public class BooklistAdapter
         public void setText(@Nullable final String text,
                             @IntRange(from = 1) final int level) {
             if (text != null && !text.isEmpty()) {
-                super.setText(LanguageUtils.getDisplayName(Locale.getDefault(), text), level);
+                super.setText(LanguageUtils.getDisplayName(Locale.getDefault(), text),
+                              level);
             } else {
                 super.setText(text, level);
             }
@@ -1208,7 +1211,7 @@ public class BooklistAdapter
                 // URGENT: translated series are not reordered unless the app runs in that language
                 // solution/problem: we would need the Series id (and not just the titel)
                 // to call {@link DAO#getSeriesLanguage(long)}
-                super.setText(LocaleUtils.reorderTitle(App.getAppContext(), text,
+                super.setText(LocaleUtils.reorderTitle(App.getLocalizedAppContext(), text,
                                                        Locale.getDefault()), level);
             } else {
                 super.setText(text, level);

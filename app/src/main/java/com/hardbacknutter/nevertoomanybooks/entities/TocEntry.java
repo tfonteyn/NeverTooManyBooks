@@ -200,7 +200,7 @@ public class TocEntry
         dest.writeParcelable(mAuthor, flags);
         dest.writeString(mTitle);
         dest.writeString(mFirstPublicationDate);
-        dest.writeInt(mType.getInt());
+        dest.writeInt(mType.getChar());
         dest.writeInt(mBookCount);
     }
 
@@ -340,7 +340,7 @@ public class TocEntry
     }
 
     /**
-     * Translator for the database character type value to the enum values.
+     * Translator for the database character char value to the enum values and back.
      * <p>
      * A TocEntry can be a real entry, or it can be a book posing as a pseudo entry.
      */
@@ -364,7 +364,7 @@ public class TocEntry
             }
         }
 
-        public int getInt() {
+        public char getChar() {
             switch (this) {
                 case Toc:
                     return TYPE_TOC;

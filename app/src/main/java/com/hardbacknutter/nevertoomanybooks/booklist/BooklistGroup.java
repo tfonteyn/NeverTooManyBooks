@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
@@ -882,7 +883,7 @@ public class BooklistGroup
          *
          * <strong>Developer note::</strong> this is not (yet) complete,
          * CHECK if the desired kind is covered.
-         * Also see {@link com.hardbacknutter.nevertoomanybooks.BooklistAdapter.GenericStringHolder#setText(String, int)}
+         * Also see {@link BooklistAdapter.GenericStringHolder#setText(String, int, BooklistStyle)}
          * TODO: come up with a clean solution to merge these.
          *
          * @param context Current context
@@ -1002,12 +1003,17 @@ public class BooklistGroup
             return this;
         }
 
-        public String getSourceExpression() {
+        /**
+         * Get the SQL source expression for the DisplayDomain.
+         *
+         * @return sql column expression.
+         */
+        String getSourceExpression() {
             return mDisplayDomainSourceExpression;
         }
 
         /**
-         * Set the SQL source expression for the DisplayDomain
+         * Set the SQL source expression for the DisplayDomain.
          *
          * @param sourceExpression sql column expression.
          */

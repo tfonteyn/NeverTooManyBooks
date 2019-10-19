@@ -58,14 +58,14 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public final class Prefs {
 
     /** Global settings - PreferenceScreen/PreferenceCategory Key. */
-    public static final String psk_search_site_order = "psk_search_site_order";
+    static final String psk_search_site_order = "psk_search_site_order";
 
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    public static final String psk_style_groupings = "psk_style_groupings";
+    static final String psk_style_groupings = "psk_style_groupings";
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    public static final String psk_style_filters = "psk_style_filters";
+    static final String psk_style_filters = "psk_style_filters";
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    public static final String psk_style_show_details = "psk_style_show_details";
+    static final String psk_style_show_details = "psk_style_show_details";
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_style_author = "psk_style_author";
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
@@ -90,8 +90,8 @@ public final class Prefs {
     public static final String pk_sounds_scan_isbn_valid = "sounds.scan.isbn.valid";
     public static final String pk_sounds_scan_isbn_invalid = "sounds.scan.isbn.invalid";
 
-    public static final String pk_reformat_titles_sort = "reformat.titles.sort";
-    public static final String pk_reformat_titles_display = "reformat.titles.display";
+    static final String pk_reformat_titles_sort = "reformat.titles.sort";
+    private static final String pk_reformat_titles_display = "reformat.titles.display";
     public static final String pk_reformat_format_update = "reformat.format.update";
 
     public static final String pk_camera_image_autorotate = "camera.image.autorotate";
@@ -310,6 +310,18 @@ public final class Prefs {
      */
     public static boolean reorderTitleForDisplaying(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_reformat_titles_display, true);
+                                .getBoolean(Prefs.pk_reformat_titles_display, false);
+    }
+
+    /**
+     * Get the global default for this preference.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
+     */
+    public static boolean reorderTitleForSorting(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_reformat_titles_sort, true);
     }
 }

@@ -718,6 +718,10 @@
      Not a preference as such.
      These are the Locale specific title prefixes that will be moved to the end of a title,
      if reformatting of titles options are enabled by the user.
+
+     This is case-sensitive, so each locale can decide if it's appropriate to for example
+     move a word only if it starts with an uppercase, but not for the same word starting
+     with a lowercase character.
 -->
     <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
 

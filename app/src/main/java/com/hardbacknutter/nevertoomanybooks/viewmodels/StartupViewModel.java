@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -52,13 +51,12 @@ import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_SETTINGS;
 
 /**
  * <strong>Note:</strong> yes, this is overkill for the startup. Call it an experiment.
@@ -213,10 +211,10 @@ public class StartupViewModel
             mDb = new DAO();
             // debugging , to-be-removed
             // make sure we never do this on a real device
-            if (Build.PRODUCT.startsWith("sdk")) {
-                //URGENT: we're flushing TBL_BOOK_LIST_NODE_SETTINGS at startup
-                TBL_BOOK_LIST_NODE_SETTINGS.deleteAllRows(mDb.getUnderlyingDatabase());
-            }
+//            if (Build.PRODUCT.startsWith("sdk")) {
+//                //URGENT: preserveNodes
+//                TBL_BOOK_LIST_NODE_SETTINGS.deleteAllRows(mDb.getUnderlyingDatabase());
+//            }
 
         } catch (@NonNull final DBHelper.UpgradeException e) {
             Logger.error(this, e, "startTasks");
@@ -530,7 +528,8 @@ public class StartupViewModel
             publishProgress(new TaskProgressMessage(mTaskId,
                                                     R.string.progress_msg_rebuilding_search_index));
             try {
-                mDb.rebuildOrderByTitleColumns();
+                boolean reorder = Prefs.reorderTitleForSorting(App.getAppContext());
+                mDb.rebuildOrderByTitleColumns(reorder);
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;

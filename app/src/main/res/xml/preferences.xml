@@ -281,7 +281,7 @@
             android:title="@string/pt_bob_titles_sort" />
 
         <SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:icon="@drawable/ic_reorder"
             android:key="reformat.titles.display"
             android:summaryOff="@string/pt_reformat_titles_summary_original"

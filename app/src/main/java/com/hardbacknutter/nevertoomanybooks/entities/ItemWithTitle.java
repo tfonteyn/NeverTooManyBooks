@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
 import java.util.Locale;
 
@@ -59,9 +58,7 @@ public interface ItemWithTitle {
     default String reorderTitleForSorting(@NonNull final Context userContext,
                                           @NonNull final Locale titleLocale) {
 
-        if (PreferenceManager.getDefaultSharedPreferences(userContext)
-                             .getBoolean(Prefs.pk_reformat_titles_sort, true)) {
-
+        if (Prefs.reorderTitleForSorting(userContext)) {
             return LocaleUtils.reorderTitle(userContext, getTitle(), titleLocale);
         } else {
             return getTitle();
