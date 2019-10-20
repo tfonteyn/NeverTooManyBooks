@@ -586,7 +586,7 @@ public class IsfdbBookHandler
             if (tmpString != null && !tmpString.isEmpty()) {
                 try {
                     long record = Long.parseLong(tmpString);
-                    bookData.putLong(DBDefinitions.KEY_ISFDB_ID, record);
+                    bookData.putLong(DBDefinitions.KEY_EID_ISFDB, record);
                 } catch (@NonNull final NumberFormatException ignore) {
                 }
             }
@@ -720,10 +720,10 @@ public class IsfdbBookHandler
         for (String url : urlList) {
             if (url.contains("www.worldcat.org")) {
                 // http://www.worldcat.org/oclc/60560136
-                bookData.putLong(DBDefinitions.KEY_WORLDCAT_ID, stripNumber(url, '/'));
+                bookData.putLong(DBDefinitions.KEY_EID_WORLDCAT, stripNumber(url, '/'));
             } else if (url.contains("amazon")) {
                 // this is an Amazon ASIN link.
-                bookData.putString(DBDefinitions.KEY_ASIN, stripString(url, '/'));
+                bookData.putString(DBDefinitions.KEY_EID_ASIN, stripString(url, '/'));
 
 
 //            } else if (url.contains("lccn.loc.gov")) {
@@ -789,7 +789,7 @@ public class IsfdbBookHandler
                             @NonNull final Bundle /* in/out */ bookData) {
         String isbn = bookData.getString(DBDefinitions.KEY_ISBN, "");
         if (isbn.isEmpty()) {
-            isbn = bookData.getString(DBDefinitions.KEY_ISFDB_ID, "");
+            isbn = bookData.getString(DBDefinitions.KEY_EID_ISFDB, "");
         }
 
         String fileSpec = ImageUtils.saveImage(coverUrl, isbn, FILENAME_SUFFIX, null);

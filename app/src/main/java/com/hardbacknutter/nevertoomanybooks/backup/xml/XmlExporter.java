@@ -774,19 +774,19 @@ public class XmlExporter
 
                       // external ID's
                       //NEWTHINGS: add new site specific ID: add attribute
-                      .append(attr(DBDefinitions.KEY_LIBRARY_THING_ID,
-                                   bookCursor.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)))
-                      .append(attr(DBDefinitions.KEY_STRIP_INFO_BE_ID,
-                                   bookCursor.getLong(DBDefinitions.KEY_STRIP_INFO_BE_ID)))
-                      .append(attr(DBDefinitions.KEY_OPEN_LIBRARY_ID,
-                                   bookCursor.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
-                      .append(attr(DBDefinitions.KEY_ISFDB_ID,
-                                   bookCursor.getLong(DBDefinitions.KEY_ISFDB_ID)))
-                      .append(attr(DBDefinitions.KEY_GOODREADS_BOOK_ID,
-                                   bookCursor.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)))
-                      .append(attr(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE,
+                      .append(attr(DBDefinitions.KEY_EID_LIBRARY_THING,
+                                   bookCursor.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)))
+                      .append(attr(DBDefinitions.KEY_EID_STRIP_INFO_BE,
+                                   bookCursor.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)))
+                      .append(attr(DBDefinitions.KEY_EID_OPEN_LIBRARY,
+                                   bookCursor.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)))
+                      .append(attr(DBDefinitions.KEY_EID_ISFDB,
+                                   bookCursor.getLong(DBDefinitions.KEY_EID_ISFDB)))
+                      .append(attr(DBDefinitions.KEY_EID_GOODREADS_BOOK,
+                                   bookCursor.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)))
+                      .append(attr(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE,
                                    bookCursor
-                                           .getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE)))
+                                           .getString(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE)))
 
                       // cross-linked with the loanee table
                       .append(attr(DBDefinitions.KEY_LOANEE,

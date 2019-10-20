@@ -517,27 +517,27 @@ public class OpenLibraryManager
             }
             a = o.optJSONArray("amazon");
             if (a != null && a.length() > 0) {
-                bookData.putString(DBDefinitions.KEY_ASIN, a.getString(0));
+                bookData.putString(DBDefinitions.KEY_EID_ASIN, a.getString(0));
             }
             a = o.optJSONArray("openlibrary");
             if (a != null && a.length() > 0) {
-                bookData.putString(DBDefinitions.KEY_OPEN_LIBRARY_ID, a.getString(0));
+                bookData.putString(DBDefinitions.KEY_EID_OPEN_LIBRARY, a.getString(0));
             }
             a = o.optJSONArray("librarything");
             if (a != null && a.length() > 0) {
-                bookData.putLong(DBDefinitions.KEY_LIBRARY_THING_ID, a.getLong(0));
+                bookData.putLong(DBDefinitions.KEY_EID_LIBRARY_THING, a.getLong(0));
             }
             a = o.optJSONArray("goodreads");
             if (a != null && a.length() > 0) {
-                bookData.putLong(DBDefinitions.KEY_GOODREADS_BOOK_ID, a.getLong(0));
+                bookData.putLong(DBDefinitions.KEY_EID_GOODREADS_BOOK, a.getLong(0));
             }
             a = o.optJSONArray("lccn");
             if (a != null && a.length() > 0) {
-                bookData.putLong(DBDefinitions.KEY_LCCN_ID, a.getLong(0));
+                bookData.putLong(DBDefinitions.KEY_EID_LCCN, a.getLong(0));
             }
             a = o.optJSONArray("oclc");
             if (a != null && a.length() > 0) {
-                bookData.putLong(DBDefinitions.KEY_WORLDCAT_ID, a.getLong(0));
+                bookData.putLong(DBDefinitions.KEY_EID_WORLDCAT, a.getLong(0));
             }
         }
 

@@ -295,7 +295,7 @@ public abstract class ShowBookApiHandler
         // Pros: easier sync
         // Cons: Overwrite Goodreads id when it should not
 //        if (mBookData.containsKey(ShowBookFieldName.BOOK_ID)) {
-//            mBookData.putLong(DBDefinitions.KEY_GOODREADS_BOOK_ID,
+//            mBookData.putLong(DBDefinitions.KEY_EID_GOODREADS_BOOK,
 //                              mBookData.getLong(ShowBookFieldName.BOOK_ID));
 //        }
 
@@ -412,7 +412,7 @@ public abstract class ShowBookApiHandler
 
         // and if we do have an image, save it using the Goodreads book id as base name.
         if (coverUrl != null) {
-            long grBookId = mBookData.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
+            long grBookId = mBookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
             String fileSpec = ImageUtils.saveImage(coverUrl, String.valueOf(grBookId),
                                                    GoodreadsManager.FILENAME_SUFFIX, null);
             if (fileSpec != null) {
@@ -627,7 +627,7 @@ public abstract class ShowBookApiHandler
     private void buildFilters() {
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ID)
-                 .setEndAction(mHandleLong, DBDefinitions.KEY_GOODREADS_BOOK_ID);
+                 .setEndAction(mHandleLong, DBDefinitions.KEY_EID_GOODREADS_BOOK);
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_TITLE)
@@ -653,7 +653,7 @@ public abstract class ShowBookApiHandler
                  .setEndAction(mHandleText, ShowBookFieldName.ISBN13);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ASIN)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_ASIN);
+                 .setEndAction(mHandleText, DBDefinitions.KEY_EID_ASIN);
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_IMAGE_URL)

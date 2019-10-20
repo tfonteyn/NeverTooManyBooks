@@ -378,7 +378,7 @@ class AmazonHandler
     @CallSuper
     public void endDocument() {
         if (mFetchThumbnail && !mCoverUrl.isEmpty()) {
-            String name = mBookData.getString(DBDefinitions.KEY_ASIN, "");
+            String name = mBookData.getString(DBDefinitions.KEY_EID_ASIN, "");
             String fileSpec = ImageUtils.saveImage(mCoverUrl, name, FILENAME_SUFFIX, null);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
@@ -523,7 +523,7 @@ class AmazonHandler
                 }
 
             } else if (localName.equalsIgnoreCase(XML_ASIN)) {
-                addIfNotPresent(mBookData, DBDefinitions.KEY_ASIN, mBuilder.toString());
+                addIfNotPresent(mBookData, DBDefinitions.KEY_EID_ASIN, mBuilder.toString());
 
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {

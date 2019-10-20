@@ -304,7 +304,7 @@ class ImportLegacyTask
                                @NonNull final DAO db,
                                @NonNull final Bundle review) {
 
-        long grBookId = review.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
+        long grBookId = review.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
 
         // Find the books in our database - there may be more than one!
         // First look by Goodreads book ID
@@ -399,7 +399,7 @@ class ImportLegacyTask
                             @NonNull final BookCursor bookCursor,
                             @NonNull final Bundle review) {
         // Get last date book was sent to Goodreads (may be null)
-        String lastGrSync = bookCursor.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE);
+        String lastGrSync = bookCursor.getString(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE);
         // If the review has an 'updated' date, then see if we can compare to book
         if (review.containsKey(ReviewsListApiHandler.ReviewField.UPDATED)) {
             String lastUpdate = review.getString(ReviewField.UPDATED);
@@ -475,7 +475,7 @@ class ImportLegacyTask
 
         addStringIfNonBlank(review, bookData, DBDefinitions.KEY_PUBLISHER);
 
-        addLongIfPresent(review, bookData, DBDefinitions.KEY_GOODREADS_BOOK_ID);
+        addLongIfPresent(review, bookData, DBDefinitions.KEY_EID_GOODREADS_BOOK);
 
         addDateIfValid(review, DBDefinitions.KEY_READ_START,
                        bookData, DBDefinitions.KEY_READ_START);
@@ -657,7 +657,7 @@ class ImportLegacyTask
             }
 
             if (coverUrl != null) {
-                long grBookId = bookData.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
+                long grBookId = bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
                 String fileSpec = ImageUtils.saveImage(coverUrl, String.valueOf(grBookId),
                                                        GoodreadsManager.FILENAME_SUFFIX,
                                                        sizeSuffix);
@@ -673,7 +673,7 @@ class ImportLegacyTask
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that would be ahead of the Goodreads update date.
         String now = DateUtils.utcSqlDateTimeForToday();
-        bookData.putString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE, now);
+        bookData.putString(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE, now);
         bookData.putString(DBDefinitions.KEY_DATE_LAST_UPDATED, now);
 
         return bookData;

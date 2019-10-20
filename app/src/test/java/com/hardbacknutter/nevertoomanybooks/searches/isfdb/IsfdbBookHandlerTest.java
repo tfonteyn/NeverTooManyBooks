@@ -137,7 +137,7 @@ class IsfdbBookHandlerTest {
         assertFalse(bookData.isEmpty());
 
         assertEquals("Like Nothing on Earth", bookData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals(112781, bookData.getLong(DBDefinitions.KEY_ISFDB_ID));
+        assertEquals(112781, bookData.getLong(DBDefinitions.KEY_EID_ISFDB));
         // On the site: "Date: 1986-10-00". Our code substitutes "00" with "01"
         assertEquals("1986-10-01", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("0413600106", bookData.getString(DBDefinitions.KEY_ISBN));
@@ -151,7 +151,7 @@ class IsfdbBookHandlerTest {
         assertEquals(Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS,
                      bookData.getLong(DBDefinitions.KEY_TOC_BITMASK));
 
-        assertEquals(13665857, bookData.getLong(DBDefinitions.KEY_WORLDCAT_ID));
+        assertEquals(13665857, bookData.getLong(DBDefinitions.KEY_EID_WORLDCAT));
 
         assertEquals("Month from Locus1", bookData.getString(DBDefinitions.KEY_DESCRIPTION));
 

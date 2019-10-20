@@ -1276,7 +1276,7 @@ public class DAO
                 DBDefinitions.KEY_SIGNED,
                 DBDefinitions.KEY_READ,
                 // dates with defaults
-                DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE,
+                DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE,
                 DBDefinitions.KEY_DATE_ADDED,
                 DBDefinitions.KEY_DATE_LAST_UPDATED,
                 }) {

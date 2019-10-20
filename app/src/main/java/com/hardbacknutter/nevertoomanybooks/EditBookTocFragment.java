@@ -323,8 +323,8 @@ public class EditBookTocFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
-                if (mBookModel.getBook().containsKey(DBDefinitions.KEY_ISFDB_ID)) {
-                    long isfdbId = mBookModel.getBook().getLong(DBDefinitions.KEY_ISFDB_ID);
+                if (mBookModel.getBook().containsKey(DBDefinitions.KEY_EID_ISFDB)) {
+                    long isfdbId = mBookModel.getBook().getLong(DBDefinitions.KEY_EID_ISFDB);
                     //noinspection ConstantConditions
                     UserMessage.show(getView(), R.string.progress_msg_connecting);
                     new IsfdbGetBookTask(isfdbId, isAddSeriesFromToc(),

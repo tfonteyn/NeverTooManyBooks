@@ -199,7 +199,7 @@ public class StripInfoBookHandler
                                               .split("_")[0];
                     long bookId = Long.parseLong(idString);
                     if (bookId > 0) {
-                        bookData.putLong(DBDefinitions.KEY_STRIP_INFO_BE_ID, bookId);
+                        bookData.putLong(DBDefinitions.KEY_EID_STRIP_INFO_BE, bookId);
                     }
                 } catch (@NonNull final NumberFormatException ignore) {
 

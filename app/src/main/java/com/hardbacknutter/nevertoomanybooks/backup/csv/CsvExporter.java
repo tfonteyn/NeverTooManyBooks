@@ -114,12 +114,12 @@ public class CsvExporter
             + '"' + DBDefinitions.KEY_LANGUAGE + "\","
             + '"' + DBDefinitions.KEY_DATE_ADDED + "\","
             //NEWTHINGS: add new site specific ID: add column label
-            + '"' + DBDefinitions.KEY_LIBRARY_THING_ID + "\","
-            + '"' + DBDefinitions.KEY_STRIP_INFO_BE_ID + "\","
-            + '"' + DBDefinitions.KEY_OPEN_LIBRARY_ID + "\","
-            + '"' + DBDefinitions.KEY_ISFDB_ID + "\","
-            + '"' + DBDefinitions.KEY_GOODREADS_BOOK_ID + "\","
-            + '"' + DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE + "\""
+            + '"' + DBDefinitions.KEY_EID_LIBRARY_THING + "\","
+            + '"' + DBDefinitions.KEY_EID_STRIP_INFO_BE + "\","
+            + '"' + DBDefinitions.KEY_EID_OPEN_LIBRARY + "\","
+            + '"' + DBDefinitions.KEY_EID_ISFDB + "\","
+            + '"' + DBDefinitions.KEY_EID_GOODREADS_BOOK + "\","
+            + '"' + DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE + "\""
             + '\n';
 
 
@@ -247,13 +247,13 @@ public class CsvExporter
                    .append(format(bookCursor.getString(DBDefinitions.KEY_DATE_ADDED)))
 
                    //NEWTHINGS: add new site specific ID: add column value
-                   .append(format(bookCursor.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)))
-                   .append(format(bookCursor.getLong(DBDefinitions.KEY_STRIP_INFO_BE_ID)))
-                   .append(format(bookCursor.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
-                   .append(format(bookCursor.getLong(DBDefinitions.KEY_ISFDB_ID)))
-                   .append(format(bookCursor.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)))
+                   .append(format(bookCursor.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)))
+                   .append(format(bookCursor.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)))
+                   .append(format(bookCursor.getLong(DBDefinitions.KEY_EID_ISFDB)))
+                   .append(format(bookCursor.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)))
                    .append(format(
-                           bookCursor.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE)));
+                           bookCursor.getString(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE)));
 
                 // replace the comma at the end of the line with a '\n'
                 row.replace(row.length() - 1, row.length(), "\n");

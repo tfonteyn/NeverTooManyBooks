@@ -1325,11 +1325,11 @@ public class BooksOnBookshelf
                     .setIcon(R.drawable.ic_cloud_download);
 
                 //NEWTHINGS: add new site specific ID: add boolean / if / submenu if
-                boolean hasIsfdbId = 0 != row.getLong(DBDefinitions.KEY_ISFDB_ID);
-                boolean hasGoodreadsId = 0 != row.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
-                boolean hasLibraryThingId = 0 != row.getLong(DBDefinitions.KEY_LIBRARY_THING_ID);
-                boolean hasStripInfoBeId = 0 != row.getLong(DBDefinitions.KEY_STRIP_INFO_BE_ID);
-                boolean hasOpenLibraryId = !row.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)
+                boolean hasIsfdbId = 0 != row.getLong(DBDefinitions.KEY_EID_ISFDB);
+                boolean hasGoodreadsId = 0 != row.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
+                boolean hasLibraryThingId = 0 != row.getLong(DBDefinitions.KEY_EID_LIBRARY_THING);
+                boolean hasStripInfoBeId = 0 != row.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE);
+                boolean hasOpenLibraryId = !row.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)
                                                .isEmpty();
 
                 if (hasIsfdbId || hasGoodreadsId || hasLibraryThingId || hasOpenLibraryId
@@ -1687,19 +1687,19 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_VIEW_BOOK_AT_ISFDB: {
-                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_ISFDB_ID));
+                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_EID_ISFDB));
                 return true;
             }
             case R.id.MENU_VIEW_BOOK_AT_GOODREADS: {
-                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
+                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
                 return true;
             }
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING: {
-                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
+                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
                 return true;
             }
             case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY: {
-                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_OPEN_LIBRARY_ID));
+                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_EID_OPEN_LIBRARY));
                 return true;
             }
             /* ********************************************************************************** */

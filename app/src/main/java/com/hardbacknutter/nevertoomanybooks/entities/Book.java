@@ -737,11 +737,11 @@ public class Book
      */
     public boolean hasExternalId() {
         //NEWTHINGS: add new site specific ID: add
-        return 0 != getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)
-               || 0 != getLong(DBDefinitions.KEY_LIBRARY_THING_ID)
-               || 0 != getLong(DBDefinitions.KEY_STRIP_INFO_BE_ID)
-               || 0 != getLong(DBDefinitions.KEY_ISFDB_ID)
-               || !getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty();
+        return 0 != getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)
+               || 0 != getLong(DBDefinitions.KEY_EID_LIBRARY_THING)
+               || 0 != getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)
+               || 0 != getLong(DBDefinitions.KEY_EID_ISFDB)
+               || !getString(DBDefinitions.KEY_EID_OPEN_LIBRARY).isEmpty();
     }
 
     /**

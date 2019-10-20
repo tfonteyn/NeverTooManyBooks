@@ -631,6 +631,7 @@ public class BooklistGroup
                     .setSourceExpression(TBL_SERIES.dot(DOM_SERIES_TITLE));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
+
             //all others will use the underlying domain as the displayDomain
             rowKind = new RowKind(GENRE, R.string.lbl_genre, "g",
                                   DOM_BOOK_GENRE)
@@ -883,7 +884,7 @@ public class BooklistGroup
          *
          * <strong>Developer note::</strong> this is not (yet) complete,
          * CHECK if the desired kind is covered.
-         * Also see {@link BooklistAdapter.GenericStringHolder#setText(String, int, BooklistStyle)}
+         * Also see {@link BooklistAdapter.GenericStringHolder#setText(String, int)}
          * TODO: come up with a clean solution to merge these.
          *
          * @param context Current context

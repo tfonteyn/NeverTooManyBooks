@@ -102,40 +102,40 @@ final class MenuHandler {
                 SubMenu menu = menuItem.getSubMenu();
                 //NEWTHINGS: add new site specific ID: add
                 menu.findItem(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
-                    .setVisible(0 != book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
+                    .setVisible(0 != book.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
                 menu.findItem(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
-                    .setVisible(0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
+                    .setVisible(0 != book.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
                 menu.findItem(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE)
-                    .setVisible(0 != book.getLong(DBDefinitions.KEY_STRIP_INFO_BE_ID));
+                    .setVisible(0 != book.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
                 menu.findItem(R.id.MENU_VIEW_BOOK_AT_ISFDB)
-                    .setVisible(0 != book.getLong(DBDefinitions.KEY_ISFDB_ID));
+                    .setVisible(0 != book.getLong(DBDefinitions.KEY_EID_ISFDB));
                 menu.findItem(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY)
-                    .setVisible(!book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
+                    .setVisible(!book.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY).isEmpty());
                 // let the normal call flow go on, it will display the submenu
                 return false;
             }
             case R.id.MENU_VIEW_BOOK_AT_ISFDB:
-                IsfdbManager.openWebsite(context, book.getLong(DBDefinitions.KEY_ISFDB_ID));
+                IsfdbManager.openWebsite(context, book.getLong(DBDefinitions.KEY_EID_ISFDB));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
                 GoodreadsManager.openWebsite(context,
-                                             book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
+                                             book.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
                 LibraryThingManager.openWebsite(context,
-                                                book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
+                                                book.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
                 OpenLibraryManager.openWebsite(context,
-                                               book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID));
+                                               book.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE:
                 StripInfoManager.openWebsite(context,
-                                             book.getLong(DBDefinitions.KEY_STRIP_INFO_BE_ID));
+                                             book.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
                 return true;
 
             //NEWTHINGS: add new site specific ID: add case
