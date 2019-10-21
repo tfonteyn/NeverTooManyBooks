@@ -131,7 +131,7 @@ public final class StorageUtils {
             getRootDir(context);
 
             // and create the log dir if needed.
-            File dir = getLogDir(context);
+            File dir = Logger.getLogDir(context);
             if (!(dir.isDirectory() || dir.mkdirs())) {
                 return R.string.error_storage_not_writable;
             }
@@ -230,18 +230,6 @@ public final class StorageUtils {
     }
 
     /**
-     * Log storage location.
-     *
-     * @return the Shared Storage <strong>log</strong> Directory object
-     *
-     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
-     */
-    public static File getLogDir(@NonNull final Context context)
-            throws ExternalStorageException {
-        return new File(getRootDir(context), "log");
-    }
-
-    /**
      * return the cover for the given uuid. We'll attempt to find a jpg or a png.
      * If no file found, a jpg place holder is returned.
      *
@@ -314,7 +302,7 @@ public final class StorageUtils {
                                   final boolean reallyDelete) {
         long totalSize = 0;
         try {
-            totalSize += purgeDir(getLogDir(context), reallyDelete);
+            totalSize += purgeDir(Logger.getLogDir(context), reallyDelete);
             totalSize += purgeDir(getCoverDir(context), reallyDelete);
             totalSize += purgeDir(getRootDir(context), reallyDelete);
             totalSize += purgeDir(getCacheDir(context), reallyDelete);

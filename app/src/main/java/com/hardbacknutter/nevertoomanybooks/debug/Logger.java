@@ -50,6 +50,7 @@ import java.util.Date;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.utils.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -64,14 +65,21 @@ public final class Logger {
 
     /** Widely used DEBUG error message. */
     public static final String WEAK_REFERENCE_TO_LISTENER_WAS_DEAD = "Listener was dead";
+
+    /** Full log path name. Used by ACRA configuration which only accepts a constant. */
+    public static final String LOG_PATH = "log/error.log";
     /** serious errors are written to this file. */
     public static final String ERROR_LOG_FILE = "error.log";
+    /** The sub directory for the log files. */
+    private static final String LOG_SUB_DIR = "log";
+
     /** Prefix for logfile entries. Not used on the console. */
     private static final String ERROR = "ERROR";
     private static final String WARN = "WARN";
     private static final String INFO = "INFO";
     private static final DateFormat DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", App.getSystemLocale());
+
 
     private Logger() {
     }
@@ -262,7 +270,7 @@ public final class Logger {
             return;
         }
 
-        File logFile = new File(StorageUtils.getLogDir(context), ERROR_LOG_FILE);
+        File logFile = new File(getLogDir(context), ERROR_LOG_FILE);
         //noinspection ImplicitDefaultCharsetUsage
         try (FileWriter fw = new FileWriter(logFile, true);
              BufferedWriter out = new BufferedWriter(fw)) {
@@ -356,7 +364,7 @@ public final class Logger {
      */
     public static void clearLog(final Context context) {
         try {
-            File logFile = new File(StorageUtils.getLogDir(context), ERROR_LOG_FILE);
+            File logFile = new File(getLogDir(context), ERROR_LOG_FILE);
             if (logFile.exists() && logFile.length() > 0) {
                 File backup = new File(logFile.getPath() + ".bak");
                 StorageUtils.renameFile(logFile, backup);
@@ -364,5 +372,17 @@ public final class Logger {
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
             // Ignore all backup failure...
         }
+    }
+
+    /**
+     * Log storage location.
+     *
+     * @return the Shared Storage <strong>log</strong> Directory object
+     *
+     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
+     */
+    public static File getLogDir(@NonNull final Context context)
+            throws ExternalStorageException {
+        return new File(StorageUtils.getRootDir(context), LOG_SUB_DIR);
     }
 }

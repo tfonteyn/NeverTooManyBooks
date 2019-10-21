@@ -69,6 +69,7 @@ import org.acra.annotation.AcraCore;
 import org.acra.annotation.AcraDialog;
 import org.acra.annotation.AcraMailSender;
 import org.acra.annotation.AcraToast;
+import org.acra.file.Directory;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
@@ -81,7 +82,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Application implementation.
- * URGENT: attach log file
  */
 @AcraMailSender(
         mailTo = "",
@@ -100,26 +100,47 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 @AcraCore(
         resReportSendSuccessToast = R.string.acra_resReportSendSuccessToast,
         resReportSendFailureToast = R.string.error_email_failed,
-        reportContent = {ReportField.APP_VERSION_CODE,
-                         ReportField.APP_VERSION_NAME,
-                         ReportField.PACKAGE_NAME,
-                         ReportField.PHONE_MODEL,
-                         ReportField.ANDROID_VERSION,
-                         ReportField.BUILD,
-                         ReportField.BRAND,
-                         ReportField.PRODUCT,
-                         ReportField.TOTAL_MEM_SIZE,
-                         ReportField.AVAILABLE_MEM_SIZE,
+        reportContent = {
+                // Device
+                ReportField.PHONE_MODEL,
+                ReportField.BRAND,
+                ReportField.PRODUCT,
+                ReportField.DEVICE_FEATURES,
+                ReportField.DISPLAY,
+                ReportField.ANDROID_VERSION,
+                ReportField.BUILD,
+                ReportField.ENVIRONMENT,
+                ReportField.TOTAL_MEM_SIZE,
+                ReportField.AVAILABLE_MEM_SIZE,
 
-                         ReportField.CUSTOM_DATA,
-                         ReportField.STACK_TRACE,
-                         ReportField.STACK_TRACE_HASH,
-                         ReportField.DISPLAY,
+                // Privacy: do not use ReportField.DEVICE_ID,
+                ReportField.INSTALLATION_ID,
+                ReportField.REPORT_ID,
 
-                         ReportField.USER_COMMENT,
-                         ReportField.USER_APP_START_DATE,
-                         ReportField.USER_CRASH_DATE,
-                         ReportField.THREAD_DETAILS}
+                // Application
+                ReportField.APP_VERSION_CODE,
+                ReportField.APP_VERSION_NAME,
+                ReportField.BUILD_CONFIG,
+                ReportField.FILE_PATH,
+
+                ReportField.APPLICATION_LOG,
+                ReportField.SHARED_PREFERENCES,
+                ReportField.INITIAL_CONFIGURATION,
+                ReportField.CRASH_CONFIGURATION,
+                ReportField.STACK_TRACE,
+                ReportField.STACK_TRACE_HASH,
+                ReportField.THREAD_DETAILS,
+
+                ReportField.CUSTOM_DATA,
+
+                ReportField.USER_APP_START_DATE,
+                ReportField.USER_CRASH_DATE,
+
+                ReportField.USER_COMMENT,
+        },
+        applicationLogFileDir = Directory.EXTERNAL_FILES,
+        applicationLogFile = Logger.LOG_PATH,
+        applicationLogFileLines = 1000
 )
 public class App
         extends Application {

@@ -239,7 +239,7 @@ public final class DebugReport {
 
             // Find all files of interest to send in the cache and log dirs
             List<String> files = collectFiles(StorageUtils.getCacheDir(context),
-                                              StorageUtils.getLogDir(context));
+                                              Logger.getLogDir(context));
 
             // Build the attachment list
             ArrayList<Uri> uriList = new ArrayList<>();

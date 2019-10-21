@@ -30,7 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 /**
  * Thrown when external storage media is not available.
  */
-class ExternalStorageException
+public class ExternalStorageException
         extends RuntimeException {
 
     private static final long serialVersionUID = -8444141375654155396L;
