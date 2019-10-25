@@ -688,8 +688,8 @@ public class App
         if (lang.length() == 2) {
             configuration.setLocale(desiredLocale);
         } else {
-            // any 3-char code needs to be converted to 2-char be able to find the resource.
-            configuration.setLocale(new Locale(LanguageUtils.getIso2fromIso3(lang)));
+            // any 3-char code might need to be converted to 2-char be able to find the resource.
+            configuration.setLocale(new Locale(LanguageUtils.getLocaleIsoFromIso3(lang)));
         }
 
         Context localizedContext = context.createConfigurationContext(configuration);

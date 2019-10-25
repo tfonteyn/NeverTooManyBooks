@@ -34,7 +34,6 @@ public class InvalidArchiveException
 
     private static final long serialVersionUID = 3492827673584239777L;
 
-    @SuppressWarnings("WeakerAccess")
     public InvalidArchiveException(@NonNull final String message) {
         super(message);
     }

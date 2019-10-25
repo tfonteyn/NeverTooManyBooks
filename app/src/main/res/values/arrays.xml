@@ -110,21 +110,6 @@
         <item>2</item>
     </string-array>
 
-    <!--  ListPreference - override the default method used to generate the booklist
-          as defined by Android version -->
-    <string-array name="pe_bob_list_generation">
-        <item>@string/pe_use_recommended_option</item>
-        <item>@string/pe_bob_list_generation_full</item>
-        <item>@string/pe_bob_list_generation_enhanced</item>
-        <item>@string/pe_bob_list_generation_legacy</item>
-    </string-array>
-    <string-array name="pv_bob_list_generation">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
     <!-- ListPreference - the barcode scanner to use-->
     <string-array name="pe_scanning_preferred_scanner">
         <item>@string/google_play_services</item>

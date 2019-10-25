@@ -124,7 +124,7 @@ public class BooklistMappedCursorRow {
 
         int index = level - 1;
         if (mLevelCol[index] < 0) {
-            final String name = mStyle.getGroupAt(index).getDisplayDomain().getName();
+            final String name = mStyle.getGroupAt(index).getFormattedDomain().getName();
             mLevelCol[index] = mCursor.getColumnIndex(name);
             if (mLevelCol[index] < 0) {
                 throw new ColumnNotPresentException(name);

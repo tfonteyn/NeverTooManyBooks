@@ -30,13 +30,14 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import com.hardbacknutter.nevertoomanybooks.BookFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.FlattenedBooklist;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 
 /**
  * In addition to the {@link BookBaseFragmentModel}, this model holds the flattened booklist
@@ -44,9 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
  */
 public class FlattenedBooklistModel
         extends ViewModel {
-
-    /** Database Access. */
-    private DAO mDb;
 
     @Nullable
     private FlattenedBooklist mFlattenedBooklist;
@@ -57,10 +55,6 @@ public class FlattenedBooklistModel
             mFlattenedBooklist.close();
             mFlattenedBooklist.deleteData();
         }
-
-        if (mDb != null) {
-            mDb.close();
-        }
     }
 
     /**
@@ -69,10 +63,10 @@ public class FlattenedBooklistModel
      * @param args   {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      * @param bookId The book this model will represent.
      */
-    public void init(@Nullable final Bundle args,
+    public void init(@NonNull final SynchronizedDb syncedDb,
+                     @Nullable final Bundle args,
                      final long bookId) {
-        if (mDb == null) {
-            mDb = new DAO();
+        if (mFlattenedBooklist == null) {
 
             // no arguments ? -> no list!
             if (args == null) {
@@ -85,13 +79,16 @@ public class FlattenedBooklistModel
             }
 
             // looks like we have a list, but...
-            mFlattenedBooklist = new FlattenedBooklist(mDb, listTableName);
+            mFlattenedBooklist = new FlattenedBooklist(syncedDb, listTableName);
             // Check to see it really exists. The underlying table disappeared once in testing
             // which is hard to explain; it theoretically should only happen if the app closes
-            // the database or if the activity pauses with 'isFinishing()' returning true.
+            // the database (DAO#sSyncedDb)
+            // or if the activity pauses with 'isFinishing()' returning true.
+            //
+            // Last seen: 2019-10-25. Solution: don't cache the table in the Builder,
+            // but recreate on each call.
             if (!mFlattenedBooklist.exists()) {
                 mFlattenedBooklist.close();
-                //mFlattenedBooklist.deleteData();
                 mFlattenedBooklist = null;
                 return;
             }

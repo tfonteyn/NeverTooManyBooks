@@ -126,27 +126,6 @@ public final class LegacyPreferences {
                         ed.putString(Prefs.pk_bob_levels_rebuild_state, String.valueOf(bobState));
                         break;
 
-                    case "App.BooklistGenerationMode":
-                        int oldMode = (Integer) oldValue;
-                        @BooklistBuilder.CompatibilityMode
-                        int compatMode;
-                        switch (oldMode) {
-                            case 1:
-                                compatMode = BooklistBuilder.PREF_MODE_OLD_STYLE;
-                                break;
-                            case 2:
-                                compatMode = BooklistBuilder.PREF_MODE_FLAT_TRIGGERS;
-                                break;
-                            case 3:
-                                compatMode = BooklistBuilder.PREF_MODE_NESTED_TRIGGERS;
-                                break;
-                            default:
-                                compatMode = BooklistBuilder.PREF_MODE_DEFAULT;
-                                break;
-                        }
-                        ed.putString(Prefs.pk_compat_booklist_mode, String.valueOf(compatMode));
-                        break;
-
                     case "SoundManager.BeepIfScannedIsbnInvalid":
                         ed.putBoolean(Prefs.pk_sounds_scan_isbn_invalid, (Boolean) oldValue);
                         break;
@@ -305,6 +284,7 @@ public final class LegacyPreferences {
                     case "state_bookshelf":
                     case "App.BooklistStyle":
                     case "HintManager.Hint.hint_amazon_links_blurb":
+                    case "App.BooklistGenerationMode":
 
                         // skip keys that make no sense to copy
                     case "UpgradeMessages.LastMessage":

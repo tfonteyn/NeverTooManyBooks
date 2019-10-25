@@ -66,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItemBase;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
@@ -585,7 +584,7 @@ public class Book
 
     /**
      * Convenience method.
-     *
+     * <p>
      * Get the Book's Locale (based on its language).
      *
      * @return the Locale, or the users preferred Locale if no language was set.
@@ -610,26 +609,9 @@ public class Book
         Locale bookLocale = null;
         if (containsKey(DBDefinitions.KEY_LANGUAGE)) {
             String lang = getString(DBDefinitions.KEY_LANGUAGE);
-            int len = lang.length();
-            // try to convert to iso3 if needed.
-            if (len != 2 && len != 3) {
-                lang = LanguageUtils.getIso3fromDisplayName(lang, fallbackLocale);
-            }
 
-            // some languages have two iso3 codes; convert if needed.
-            lang = LanguageUtils.iso3ToBibliographic(lang);
-
-            // we now have an ISO code, or an invalid language.
-            bookLocale = new Locale(lang);
-            // so test it
-            if (!LocaleUtils.isValid(bookLocale)) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Logger.warnWithStackTrace(this, "getLocale", "invalid locale",
-                                              "lang=" + lang,
-                                              "bookId=" + getId(),
-                                              "title=" + getTitle());
-                }
-                // invalid, use fallback.
+            bookLocale = LocaleUtils.getLocale(lang);
+            if (bookLocale == null) {
                 return fallbackLocale;
 
             } else if (updateLanguage) {
@@ -692,9 +674,9 @@ public class Book
         addValidator(DBDefinitions.KEY_TOC_BITMASK, INTEGER_VALIDATOR,
                      R.string.lbl_table_of_content);
 
-        addValidator(DBDefinitions.KEY_PRICE_LISTED, BLANK_OR_FLOAT_VALIDATOR,
+        addValidator(DBDefinitions.KEY_PRICE_LISTED, BLANK_OR_DOUBLE_VALIDATOR,
                      R.string.lbl_price_listed);
-        addValidator(DBDefinitions.KEY_PRICE_PAID, BLANK_OR_FLOAT_VALIDATOR,
+        addValidator(DBDefinitions.KEY_PRICE_PAID, BLANK_OR_DOUBLE_VALIDATOR,
                      R.string.lbl_price_paid);
 
         addCrossValidator(book -> {

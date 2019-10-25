@@ -32,8 +32,11 @@ import android.content.SharedPreferences;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -55,6 +58,8 @@ public final class LanguageUtils {
      * and {@link Locale#getISO3Language} for the value.
      */
     private static final String LANGUAGE_MAP = "language2iso3";
+    @Nullable
+    private static Map<String, String> LANG3_TO_LANG2_MAP;
 
     private LanguageUtils() {
     }
@@ -62,77 +67,53 @@ public final class LanguageUtils {
     /**
      * Try to convert a Language ISO code to the display name.
      *
-     * @param locale to use for the output language
-     * @param iso    the ISO code
+     * @param iso the ISO code
      *
      * @return the display name for the language,
      * or the input string itself if it was an invalid ISO code
      */
     @NonNull
-    public static String getDisplayName(@NonNull final Locale locale,
-                                        @NonNull final String iso) {
-        String localeLang = getIso2fromIso3(iso);
-        Locale isoLocale = new Locale(localeLang);
-        if (LocaleUtils.isValid(isoLocale)) {
-            return isoLocale.getDisplayLanguage(locale);
+    public static String getDisplayName(@NonNull final String iso) {
+        Locale langLocale = LocaleUtils.getLocale(iso);
+        if (langLocale == null) {
+            return iso;
+        }
+        return langLocale.getDisplayLanguage(Locale.getDefault());
+    }
+
+    /**
+     * Try to convert a Language DisplayName to an ISO3 code.
+     * At installation time we generated the users System Locale + Locale.ENGLISH
+     * Each time the user switches language, we generate an additional set.
+     * That probably covers a lot if not all.
+     *
+     * @param displayName the string as normally produced by {@link Locale#getDisplayLanguage}
+     *
+     * @return the ISO code, or if conversion failed, the input string
+     */
+    @NonNull
+    public static String getISO3FromDisplayName(@NonNull final String displayName) {
+
+        String source = displayName.trim().toLowerCase(Locale.getDefault());
+        String iso = getLanguageCache().getString(source, null);
+        if (iso == null) {
+            return source;
         }
         return iso;
     }
 
     /**
-     * Try to convert a Language DisplayName to an ISO3 code.
-     * At installation time we generated the users System Locale + Locale.ENGLISH
-     * Each time the user switches language, we generate an additional set.
-     * That probably covers a lot if not all.
-     *
-     * @param displayName the string as normally produced by {@link Locale#getDisplayLanguage}
-     *
-     * @return the ISO code, or if conversion failed, the input string
-     */
-    @NonNull
-    public static String getIso3fromDisplayName(@NonNull final String displayName) {
-        return getIso3fromDisplayName(displayName, Locale.getDefault());
-    }
-
-    /**
-     * Try to convert a Language DisplayName to an ISO3 code.
-     * At installation time we generated the users System Locale + Locale.ENGLISH
-     * Each time the user switches language, we generate an additional set.
-     * That probably covers a lot if not all.
-     *
-     * <strong>Note:</strong> {@code Locale.getISO3Language()} returns "deu" for German; while
-     * {@code new Locale("ger")} needs "ger". So once again {@link #iso3ToBibliographic} is needed.
-     *
-     * @param displayName the string as normally produced by {@link Locale#getDisplayLanguage}
-     * @param userLocale  the Locale the user is running the app in.
-     *
-     * @return the ISO code, or if conversion failed, the input string
-     */
-    @NonNull
-    public static String getIso3fromDisplayName(@NonNull final String displayName,
-                                                @NonNull final Locale userLocale) {
-
-        String source = displayName.trim();
-        String iso = getLanguageCache().getString(source.toLowerCase(userLocale), null);
-        if (iso == null) {
-            return source;
-        }
-        // make sure we can use the resulting iso3 code for creating Locales.
-        return iso3ToBibliographic(iso);
-    }
-
-    /**
-     * Try to convert a "language-country" code to an ISO code.
+     * Try to convert a "language-country" code to an ISO3 code.
      *
      * @param iso2 a standard ISO string like "en" or "en-GB" or "en-GB*"
      *
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public static String getIso3fromIso2(@NonNull final String iso2) {
-        String source = iso2.trim();
+    public static String getISO3Language(@NonNull final String iso2) {
+        String source = iso2.trim().toLowerCase(Locale.getDefault());
         // shortcut for English "en", "en-GB", etc
-        if ("en".equals(source) || source.startsWith("en-")) {
+        if ("en".equals(source) || source.startsWith("en_") || source.startsWith("en-")) {
             return "eng";
         } else {
             try {
@@ -145,96 +126,81 @@ public final class LanguageUtils {
     }
 
     /**
-     * Map an ISO 639-2 (3-char) language code to an ISO 639-1 (2-char) language code.
-     * <p>
-     * There is one entry here for each language supported.
-     * NEWTHINGS: if a new resource language is added, add a mapping here.
+     * Map an ISO 639-2 (3-char) language code to a language code suited
+     * to be use with {@code new Locale(x)}.
+     * <pre>
+     * Rant:
+     * Java 8 as bundled with Android Studio 3.5 on Windows:
+     * new Locale("fr") ==> valid French Locale
+     * new Locale("fre") ==> valid French Locale
+     * new Locale("fra") ==> INVALID French Locale
+     *
+     * Android 8.0 in emulator bundled with Android Studio 3.5 on Windows:
+     * new Locale("fr") ==> valid French Locale
+     * new Locale("fre") ==> INVALID French Locale
+     * new Locale("fra") ==>  valid French Locale
+     * </pre>
+     * A possible explanation is that Android use ICU classes internally.<br>
+     * Also see {@link #toBibliographic(String)} and {@link #toTerminology(String)}.
+     * <br><br>
+     * <strong>Note:</strong> check the javadoc on {@link Locale#getISOLanguages()} for caveats.
      *
      * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      *
-     * @return ISO 639-1 (2-char) language code, or the incoming string if conversion
-     * was not needed or failed.
+     * @return a language code that can be used with {@code new Locale(x)},
+     * or the incoming string if conversion failed.
      */
-    public static String getIso2fromIso3(@NonNull final String iso3) {
-        String source = iso3.trim();
-        if (source.length() < 3) {
-            return source;
+    public static String getLocaleIsoFromIso3(@NonNull final String iso3) {
+        // create the map on first usage
+        if (LANG3_TO_LANG2_MAP == null) {
+            String[] languages = Locale.getISOLanguages();
+            LANG3_TO_LANG2_MAP = new HashMap<>(languages.length);
+            for (String language : languages) {
+                Locale locale = new Locale(language);
+                LANG3_TO_LANG2_MAP.put(locale.getISO3Language(), language);
+            }
         }
 
-        switch (source) {
-            // English
-            case "eng":
-                return "en";
-            // Czech
-            case "cze":
-            case "ces":
-                return "cs";
-            // German
-            case "ger":
-            case "deu":
-                return "de";
-            // Greek
-            case "gre":
-            case "ell":
-                return "el";
-            // Spanish
-            case "spa":
-                return "es";
-            // French
-            case "fre":
-            case "fra":
-                return "fr";
-            // Italian
-            case "ita":
-                return "it";
-            // Dutch
-            case "dut":
-            case "nld":
-                return "nl";
-            // Polish
-            case "pol":
-                return "pl";
-            // Russian
-            case "rus":
-                return "ru";
-            // Turkish
-            case "tur":
-                return "tr";
-
-            default:
-                return source;
+        String iso2 = LANG3_TO_LANG2_MAP.get(iso3);
+        if (iso2 != null) {
+            return iso2;
         }
+
+        // try again ('terminology' seems to be preferred/standard on Android (ICU?)
+        String lang = LanguageUtils.toTerminology(iso3);
+        iso2 = LANG3_TO_LANG2_MAP.get(lang);
+        if (iso2 != null) {
+            return iso2;
+        }
+
+        // desperate and last attempt using 'bibliographic'.
+        lang = LanguageUtils.toBibliographic(iso3);
+        iso2 = LANG3_TO_LANG2_MAP.get(lang);
+        if (iso2 != null) {
+            return iso2;
+        }
+
+        // give up
+        return iso3;
     }
-
-    //    Overkill... use the switch structure instead.
-//    @Nullable
-//    private static Map<String, String> LANG3_TO_LANG2_MAP;
-//
-//    private static String getIso2fromIso3viaMap(@NonNull final String iso3) {
-//        if (LANG3_TO_LANG2_MAP == null) {
-//            String[] languages = Locale.getISOLanguages();
-//            LANG3_TO_LANG2_MAP = new HashMap<>(languages.length);
-//            for (String language : languages) {
-//                Locale locale = new Locale(language);
-//                LANG3_TO_LANG2_MAP.put(locale.getISO3Language(), language);
-//            }
-//        }
-//        String iso2 = LANG3_TO_LANG2_MAP.get(iso3);
-//        return iso2 != null ? iso2 : iso3;
-//    }
 
     /**
      * Convert the 3-char terminology code to bibliographic code.
-     * The bibliographic code <strong>CAN</strong> be used with {@code new Locale()}.
      *
      * <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php">
      * https://www.loc.gov/standards/iso639-2/php/code_list.php</a>
      * <p>
      * This is the entire set correct as on 2019-08-22.
+     *
+     * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      */
     @NonNull
-    public static String iso3ToBibliographic(@NonNull final String lang) {
-        String source = lang.trim();
+    public static String toBibliographic(@NonNull final String iso3) {
+        String source = iso3.trim().toLowerCase(Locale.getDefault());
+        if (source.length() != 3) {
+            return source;
+        }
+
         switch (source) {
             // Albanian
             case "sqi":
@@ -302,99 +268,104 @@ public final class LanguageUtils {
         }
     }
 
-//    /**
-//     * Convert the 3-char bibliographic code to terminology code.
-//     * The terminology code <strong>CANNOT</strong> be used with {@code new Locale()}.
-//     *
-//     * <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php">
-//     * https://www.loc.gov/standards/iso639-2/php/code_list.php</a>
-//     * <p>
-//     * This is the entire set correct as on 2019-08-22.
-//     */
-//    @SuppressWarnings("unused")
-//    @NonNull
-//    public static String iso3ToTerminology(@NonNull final String lang) {
-//        String source = lang.trim();
-//        switch (source) {
-//            // Albanian
-//            case "alb":
-//                return "sqi";
-//            // Armenian
-//            case "arm":
-//                return "hye";
-//            // Basque
-//            case "baq":
-//                return "eus";
-//            // Burmese
-//            case "bur":
-//                return "mya";
-//            // Chinese
-//            case "chi":
-//                return "zho";
-//            // Czech
-//            case "cze":
-//                return "ces";
-//            // Dutch
-//            case "dut":
-//                return "nld";
-//            // French
-//            case "fre":
-//                return "fra";
-//            // Georgian
-//            case "geo":
-//                return "kat";
-//            // German
-//            case "ger":
-//                return "deu";
-//            // Greek
-//            case "gre":
-//                return "ell";
-//            // Icelandic
-//            case "ice":
-//                return "isl";
-//            // Macedonian
-//            case "mac":
-//                return "mkd";
-//            // Maori
-//            case "mao":
-//                return "mri";
-//            // Malay
-//            case "may":
-//                return "msa";
-//            // Persian
-//            case "per":
-//                return "fas";
-//            // Romanian
-//            case "rum":
-//                return "ron";
-//            // Slovak
-//            case "slo":
-//                return "slk";
-//            // Tibetan
-//            case "tib":
-//                return "bod";
-//            // Welsh
-//            case "wel":
-//                return "cym";
-//
-//            default:
-//                return source;
-//        }
-//    }
+    /**
+     * Convert the 3-char bibliographic code to terminology code.
+     *
+     * <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php">
+     * https://www.loc.gov/standards/iso639-2/php/code_list.php</a>
+     * <p>
+     * This is the entire set correct as on 2019-08-22.
+     *
+     * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
+     */
+    @SuppressWarnings("unused")
+    @NonNull
+    public static String toTerminology(@NonNull final String iso3) {
+        String source = iso3.trim().toLowerCase(Locale.getDefault());
+        if (source.length() != 3) {
+            return source;
+        }
+        switch (source) {
+            // Albanian
+            case "alb":
+                return "sqi";
+            // Armenian
+            case "arm":
+                return "hye";
+            // Basque
+            case "baq":
+                return "eus";
+            // Burmese
+            case "bur":
+                return "mya";
+            // Chinese
+            case "chi":
+                return "zho";
+            // Czech
+            case "cze":
+                return "ces";
+            // Dutch
+            case "dut":
+                return "nld";
+            // French
+            case "fre":
+                return "fra";
+            // Georgian
+            case "geo":
+                return "kat";
+            // German
+            case "ger":
+                return "deu";
+            // Greek
+            case "gre":
+                return "ell";
+            // Icelandic
+            case "ice":
+                return "isl";
+            // Macedonian
+            case "mac":
+                return "mkd";
+            // Maori
+            case "mao":
+                return "mri";
+            // Malay
+            case "may":
+                return "msa";
+            // Persian
+            case "per":
+                return "fas";
+            // Romanian
+            case "rum":
+                return "ron";
+            // Slovak
+            case "slo":
+                return "slk";
+            // Tibetan
+            case "tib":
+                return "bod";
+            // Welsh
+            case "wel":
+                return "cym";
+
+            default:
+                return source;
+        }
+    }
 
     /**
      * generate initial language2iso mappings.
      */
-    public static void createLanguageMappingCache(@NonNull final Locale userLocale) {
+    public static void createLanguageMappingCache() {
+
         SharedPreferences prefs = getLanguageCache();
 
-        // the one the user has configured our app into using
-        createLanguageMappingCache(prefs, userLocale);
+        // the one the user is using our app in (can be different from the system one)
+        createLanguageMappingCache(prefs, Locale.getDefault());
 
         // the system default
         createLanguageMappingCache(prefs, App.getSystemLocale());
 
-        //NEWTHINGS: add new site specific ID: if site uses a specific language, add it here
+        //NEWTHINGS: add new site specific ID: if a site uses a specific language, add it here
 
         // Dutch
         createLanguageMappingCache(prefs, StripInfoManager.SITE_LOCALE);
@@ -408,22 +379,22 @@ public final class LanguageUtils {
     /**
      * Generate language mappings for a given Locale.
      *
-     * @param prefs      the preferences 'file' used as our language names cache.
-     * @param userLocale the Locale the user is running the app in.
+     * @param prefs  the SharedPreferences used as our language names cache.
+     * @param locale the Locale for which to create a mapping
      */
     private static void createLanguageMappingCache(@NonNull final SharedPreferences prefs,
-                                                   @NonNull final Locale userLocale) {
+                                                   @NonNull final Locale locale) {
         // just return if already done for this Locale.
-        if (prefs.getBoolean(userLocale.getISO3Language(), false)) {
+        if (prefs.getBoolean(locale.getISO3Language(), false)) {
             return;
         }
         SharedPreferences.Editor ed = prefs.edit();
         for (Locale loc : Locale.getAvailableLocales()) {
-            ed.putString(loc.getDisplayLanguage(userLocale).toLowerCase(userLocale),
+            ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale),
                          loc.getISO3Language());
         }
         // signal this Locale was done
-        ed.putBoolean(userLocale.getISO3Language(), true);
+        ed.putBoolean(locale.getISO3Language(), true);
         ed.apply();
     }
 

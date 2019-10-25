@@ -39,6 +39,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public class EditObjectListModel
         extends ViewModel {
@@ -78,7 +79,11 @@ public class EditObjectListModel
             mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
             String bookLang = args.getString(DBDefinitions.KEY_LANGUAGE);
             if (bookLang != null && !bookLang.isEmpty()) {
-                mBookLocale = new Locale(bookLang);
+                mBookLocale = LocaleUtils.getLocale(bookLang);
+                if (mBookLocale == null) {
+                    // fallback
+                    mBookLocale = Locale.getDefault();
+                }
             } else {
                 // fallback
                 mBookLocale = Locale.getDefault();

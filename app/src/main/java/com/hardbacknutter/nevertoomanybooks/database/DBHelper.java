@@ -65,7 +65,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_STYLE_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_STYLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_DOCID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_IS_BUILTIN;
@@ -78,7 +78,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS_FTS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_SETTINGS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
@@ -207,7 +207,7 @@ public final class DBHelper
                                      TBL_BOOK_SERIES,
                                      TBL_BOOK_LOANEE,
                                      // permanent booklist management tables
-                                     TBL_BOOK_LIST_NODE_SETTINGS);
+                                     TBL_BOOK_LIST_NODE_STATE);
 
         // create the indexes not covered in the calls above.
         createIndices(syncedDb, false);
@@ -218,13 +218,14 @@ public final class DBHelper
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
         syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF
                          + '(' + DOM_BOOKSHELF
-                         + ',' + DOM_FK_STYLE_ID
+                         + ',' + DOM_FK_STYLE
                          + ") VALUES ("
                          + "'" + App.getLocalizedAppContext().getString(R.string.bookshelf_my_books)
                          + "'," + BooklistStyle.DEFAULT_STYLE_ID
                          + ')');
 
         //reminder: FTS columns don't need a type nor constraints
+        //IMPORTANT: withConstraints MUST BE false
         TBL_BOOKS_FTS.create(syncedDb, false);
 
         createTriggers(syncedDb);

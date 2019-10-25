@@ -61,7 +61,7 @@ public interface BackupReader
     void restore(@NonNull Context context,
                  @NonNull ImportHelper settings,
                  @NonNull ProgressListener progressListener)
-            throws IOException, ImportException;
+            throws IOException, ImportException, InvalidArchiveException;
 
     /**
      * Read the next {@link ReaderEntity} from the backup.
@@ -110,9 +110,10 @@ public interface BackupReader
      *
      * @return info
      *
-     * @throws IOException on failure
+     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws IOException             on other failures
      */
     @NonNull
     BackupInfo getInfo()
-            throws IOException;
+            throws IOException, InvalidArchiveException;
 }

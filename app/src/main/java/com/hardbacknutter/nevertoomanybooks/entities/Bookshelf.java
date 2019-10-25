@@ -228,7 +228,7 @@ public class Bookshelf
     }
 
     /**
-     * Check if this is a regular shelf, or the if this one represents our complete library.
+     * Check if this is a regular shelf, or if this one represents our complete library.
      *
      * @return {@code true} for a regular shelf, or{@code false} for ALL books.
      */

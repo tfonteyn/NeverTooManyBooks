@@ -1195,7 +1195,7 @@ public class BooklistStyle
         }
 
         Helper.S_USER_STYLES.remove(mUuid);
-        db.deleteStyle(mUuid);
+        db.deleteStyle(mId);
 
         if (Build.VERSION.SDK_INT >= 24) {
             App.getAppContext().deleteSharedPreferences(mUuid);
@@ -1268,7 +1268,7 @@ public class BooklistStyle
         //ENHANCE: because we currently don't hide/remove groups based on user preference
         // visibility. But do we really care?
         for (BooklistGroup group : getGroups()) {
-            if (group.getDisplayDomain().getName().equals(key)) {
+            if (group.getFormattedDomain().getName().equals(key)) {
                 return true;
             }
         }

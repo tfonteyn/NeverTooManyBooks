@@ -100,7 +100,7 @@ public class StyleGroupsModel
     /**
      * Collect the data from the list, and update the style.
      */
-    void saveStyle() {
+    void updateStyle() {
         Map<String, PPref> allPreferences = mStyle.getPreferences(true);
 
         // Loop through all groups

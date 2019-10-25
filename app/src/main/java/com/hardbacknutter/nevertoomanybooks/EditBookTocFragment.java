@@ -337,7 +337,7 @@ public class EditBookTocFragment
 
                 } else {
                     //noinspection ConstantConditions
-                    UserMessage.show(getView(), R.string.warning_action_requires_isbn);
+                    UserMessage.show(getView(), R.string.warning_requires_isbn);
                 }
                 return true;
 

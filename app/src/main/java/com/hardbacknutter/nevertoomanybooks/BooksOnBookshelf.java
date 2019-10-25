@@ -64,7 +64,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.RowInfo;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.RowDetails;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistMappedCursorRow;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor;
@@ -484,15 +484,14 @@ public class BooksOnBookshelf
             SubMenu debugSubMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
                                                    0, R.string.debug);
 
-            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
-            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, R.string.lbl_style);
-            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, R.string.debug_history);
+            //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
+            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, "Dump style");
+            //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, R.string.debug_history);
 
-            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_UNMANGLE, 0, "un-mangle");
+            //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_UNMANGLE, 0, "un-mangle");
 
-            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_CLEAN_TBL_BOOK_LIST_NODE_SETTINGS, 0,
-                             "clean BLNS");
-
+            debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE, 0,
+                             "Purge BLNS");
 
         }
         return super.onCreateOptionsMenu(menu);
@@ -583,9 +582,8 @@ public class BooksOnBookshelf
                             mModel.getDb().tempUnMangle(Prefs.reorderTitleForSorting(this));
                             return true;
 
-                        case R.id.MENU_DEBUG_CLEAN_TBL_BOOK_LIST_NODE_SETTINGS:
-                            DBDefinitions.TBL_BOOK_LIST_NODE_SETTINGS
-                                    .deleteAllRows(mModel.getDb().getUnderlyingDatabase());
+                        case R.id.MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE:
+                            mModel.getDb().purgeNodeStates();
                             break;
 
                         default:
@@ -929,16 +927,15 @@ public class BooksOnBookshelf
                     (BooklistAdapter.RowViewHolder)
                             mListView.findViewHolderForLayoutPosition(layoutPosition);
 
-            @SuppressWarnings("ConstantConditions")
-            int oldAbsPos = holder.absolutePosition;
-
+            // save position before
             savePosition();
 
             // get the builder from the current cursor; expand/collapse and save the new position
             BooklistBuilder booklistBuilder = mModel.getBuilder();
             //noinspection ConstantConditions
             booklistBuilder.expandNodes(topLevel, expand);
-            savePosition(booklistBuilder.getPosition(oldAbsPos));
+            //noinspection ConstantConditions
+            savePosition(booklistBuilder.getListPosition(holder.absolutePosition));
 
             // pass in the new cursor and display the list.
             displayList(booklistBuilder.getNewListCursor(), null);
@@ -1041,7 +1038,7 @@ public class BooksOnBookshelf
      * @param targetRows    if set, change the position to targetRows.
      */
     private void displayList(@NonNull final BooklistPseudoCursor newListCursor,
-                             @Nullable final ArrayList<BooklistBuilder.RowInfo> targetRows) {
+                             @Nullable final ArrayList<RowDetails> targetRows) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Logger.debugEnter(this, "displayList",
@@ -1109,7 +1106,7 @@ public class BooksOnBookshelf
     private void initAdapter(@Nullable final Cursor cursor) {
         // sanity check
         if (cursor == null) {
-            Logger.warn(this, this, "initAdapter", "Cursor as NULL");
+            Logger.warn(this, this, "initAdapter", "Cursor was NULL");
             return;
         }
         mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(), mModel.getDb(), cursor);
@@ -1125,7 +1122,7 @@ public class BooksOnBookshelf
      * called from {@link #displayList}
      */
     private void fixPositionWhenDrawn(
-            @NonNull final ArrayList<BooklistBuilder.RowInfo> targetRows) {
+            @NonNull final ArrayList<RowDetails> targetRows) {
         // Find the actual extend of the current view and get centre.
         final int first = mLayoutManager.findFirstVisibleItemPosition();
         final int last = mLayoutManager.findLastVisibleItemPosition();
@@ -1135,11 +1132,11 @@ public class BooksOnBookshelf
                          " New List: (" + first + ", " + last + ")<-" + centre);
         }
         // Get the first 'target' and make it 'best candidate'
-        RowInfo best = targetRows.get(0);
+        RowDetails best = targetRows.get(0);
         int dist = Math.abs(best.listPosition - centre);
         // Loop all other rows, looking for a nearer one
         for (int i = 1; i < targetRows.size(); i++) {
-            BooklistBuilder.RowInfo ri = targetRows.get(i);
+            RowDetails ri = targetRows.get(i);
             int newDist = Math.abs(ri.listPosition - centre);
             if (newDist < dist) {
                 dist = newDist;
@@ -1201,38 +1198,34 @@ public class BooksOnBookshelf
 
         CursorMapper mapper = cursor.getCursorMapper();
 
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (mapper.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)) {
-            case BooklistGroup.RowKind.BOOK:
-                long bookId = mapper.getLong(DBDefinitions.KEY_FK_BOOK);
-                String listTableName = cursor.getBuilder().createFlattenedBooklist();
-                Intent intent = new Intent(this, BookDetailsActivity.class)
-                        .putExtra(DBDefinitions.KEY_PK_ID, bookId)
-                        .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_TABLE, listTableName)
-                        .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_POSITION, position);
-                startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
-                break;
+        // If it's a book, open the details screen.
+        if (mapper.getInt(DBDefinitions.KEY_BL_NODE_KIND) == BooklistGroup.RowKind.BOOK) {
+            long bookId = mapper.getLong(DBDefinitions.KEY_FK_BOOK);
 
-            // If it's a level, expand/collapse. Technically, we could expand/collapse any level
-            // but storing and recovering the view becomes unmanageable.
-            // ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542
-            default:
-                long absPos = mapper.getInt(DBDefinitions.KEY_BL_ABSOLUTE_POSITION);
-                boolean isExpanded = cursor.getBuilder()
-                                           .expandNode(absPos, BooklistBuilder.NodeState.Toggle);
-                // make sure the cursor has valid rows for the new position.
-                cursor.requery();
-                mAdapter.notifyDataSetChanged();
+            String listTableName = cursor.getBuilder().createFlattenedBooklist();
+            Intent intent = new Intent(this, BookDetailsActivity.class)
+                    .putExtra(DBDefinitions.KEY_PK_ID, bookId)
+                    .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_TABLE, listTableName)
+                    .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_POSITION, position);
+            startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
 
-                if (isExpanded) {
-                    // if the user expands the line at the bottom of the screen,
-                    int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
-                    if ((position + 1 == lastPos) || (position == lastPos)) {
-                        // then we move the list a minimum of 2 positions upwards. 3 for comfort.
-                        mListView.scrollToPosition(position + 3);
-                    }
+        } else {
+            // Else it's a level, expand/collapse.
+            long absPos = mapper.getInt(DBDefinitions.KEY_BL_ABSOLUTE_POSITION);
+            boolean isExpanded = cursor.getBuilder()
+                                       .expandNode(absPos, BooklistBuilder.NodeState.Toggle);
+            // make sure the cursor has valid rows for the new position.
+            cursor.requery();
+            mAdapter.notifyDataSetChanged();
+
+            if (isExpanded) {
+                // if the user expands the line at the bottom of the screen,
+                int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                if ((position + 1 == lastPos) || (position == lastPos)) {
+                    // then we move the list a minimum of 2 positions upwards. 3 for comfort.
+                    mListView.scrollToPosition(position + 3);
                 }
-                break;
+            }
         }
     }
 
@@ -1256,7 +1249,7 @@ public class BooksOnBookshelf
             // we have a menu to show
             String title;
 
-            if (mapper.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND) == BooklistGroup.RowKind.BOOK) {
+            if (mapper.getInt(DBDefinitions.KEY_BL_NODE_KIND) == BooklistGroup.RowKind.BOOK) {
                 title = mapper.getString(DBDefinitions.KEY_TITLE);
             } else {
                 title = row.getLevelText(this, mapper.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
@@ -1283,7 +1276,7 @@ public class BooksOnBookshelf
                                         @NonNull final CursorMapper row) {
         menu.clear();
 
-        final int rowKind = row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND);
+        final int rowKind = row.getInt(DBDefinitions.KEY_BL_NODE_KIND);
         switch (rowKind) {
             case BooklistGroup.RowKind.BOOK: {
                 if (row.getInt(DBDefinitions.KEY_READ) != 0) {
@@ -1518,7 +1511,7 @@ public class BooksOnBookshelf
                 // We pass the book ID's which are suited for that row.
                 Intent intent = new Intent(this, UpdateFieldsFromInternetActivity.class);
                 ArrayList<Long> bookIds;
-                switch (row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)) {
+                switch (row.getInt(DBDefinitions.KEY_BL_NODE_KIND)) {
                     case BooklistGroup.RowKind.BOOK: {
                         bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
                         bookIds = new ArrayList<>();
@@ -1551,7 +1544,7 @@ public class BooksOnBookshelf
                         Logger.warnWithStackTrace(this, this, "onContextItemSelected",
                                                   "MENU_BOOK_UPDATE_FROM_INTERNET not supported",
                                                   "RowKind="
-                                                  + row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND));
+                                                  + row.getInt(DBDefinitions.KEY_BL_NODE_KIND));
                         return true;
                     }
                 }
@@ -1734,21 +1727,15 @@ public class BooksOnBookshelf
                                           mModel.getSeriesFromRow(row));
                 return true;
             }
+
+
             default:
                 return false;
         }
     }
 
     /**
-     * Save current position information in the preferences, including view nodes that are expanded.
-     * We do this to preserve this data across application shutdown/startup.
-     *
-     * <p>
-     * ENHANCE: Handle positions a little better when books are deleted.
-     * <p>
-     * Deleting a book by 'n' authors from the last author in list results in the list decreasing
-     * in length by, potentially, n*2 items. The current code will return to the old position
-     * in the list after such an operation...which will be too far down.
+     * Save current position information.
      */
     private void savePosition(final int topRow) {
         if (!isDestroyed()) {
@@ -1876,12 +1863,7 @@ public class BooksOnBookshelf
         for (int level = 1; level <= 2; level++) {
             int index = level - 1;
 
-            // a header is visible if
-            // 1. the cursor provides the data for this level, and
-            // 2. the style defined the level.
-            //noinspection ConstantConditions
-            if (mModel.getBuilder().levels() > level
-                && style.headerHasLevelText(level)) {
+            if (level < (style.groupCount() + 1) && style.headerHasLevelText(level)) {
                 mHeaderTextView[index].setVisibility(View.VISIBLE);
                 mHeaderTextView[index].setText("");
             } else {

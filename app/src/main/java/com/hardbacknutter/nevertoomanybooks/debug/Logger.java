@@ -73,12 +73,16 @@ public final class Logger {
     /** The sub directory for the log files. */
     private static final String LOG_SUB_DIR = "log";
 
+    /** Keep the last 5 log files. */
+    private static final int LOGFILE_COPIES = 5;
+
     /** Prefix for logfile entries. Not used on the console. */
     private static final String ERROR = "ERROR";
     private static final String WARN = "WARN";
     private static final String INFO = "INFO";
     private static final DateFormat DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", App.getSystemLocale());
+
 
 
     private Logger() {
@@ -358,16 +362,16 @@ public final class Logger {
     }
 
     /**
-     * Clear the log each time the app is started; preserve previous if non-empty.
+     * Cycle the log each time the app is started; preserve previous if non-empty.
      *
      * @param context Current context
      */
-    public static void clearLog(final Context context) {
+    public static void cycleLogs(final Context context) {
         try {
             File logFile = new File(getLogDir(context), ERROR_LOG_FILE);
             if (logFile.exists() && logFile.length() > 0) {
                 File backup = new File(logFile.getPath() + ".bak");
-                StorageUtils.renameFile(logFile, backup);
+                StorageUtils.copyFileWithBackup(logFile, backup, LOGFILE_COPIES);
             }
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
             // Ignore all backup failure...

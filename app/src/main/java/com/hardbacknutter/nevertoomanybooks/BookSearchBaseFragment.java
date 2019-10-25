@@ -187,7 +187,7 @@ public abstract class BookSearchBaseFragment
         //sanity check
         if (!mBookSearchBaseModel.hasSearchData()) {
             //noinspection ConstantConditions
-            UserMessage.show(getActivity(), R.string.warning_required_at_least_one);
+            UserMessage.show(getActivity(), R.string.warning_requires_at_least_one_field);
             return false;
         }
         // Don't start search if we have no approved network... FAIL.

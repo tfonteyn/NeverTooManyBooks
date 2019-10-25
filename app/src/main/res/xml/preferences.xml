@@ -321,15 +321,6 @@
             android:key="style.booklist.levels.rebuild.state"
             android:title="@string/pt_bob_list_rebuild_state" />
 
-        <!-- compatibility setting on how to generate the booklist -->
-        <ListPreference
-            android:defaultValue="0"
-            android:entries="@array/pe_bob_list_generation"
-            android:entryValues="@array/pv_bob_list_generation"
-            android:icon="@drawable/ic_manage"
-            android:key="compat.booklist.mode"
-            android:title="@string/pt_booklist_generation" />
-
     </PreferenceCategory>
 
     <PreferenceCategory

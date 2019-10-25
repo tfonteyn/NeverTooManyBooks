@@ -90,12 +90,22 @@ public final class DEBUG_SWITCHES {
     public static final boolean TRACE_WEAK_REFERENCES = false;
     /* ****************************************************************************************** */
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder} and related. */
+    /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}. */
     public static final boolean BOB_THE_BUILDER = false;
     /**
      * {@link com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel#initBookList}.
      */
     public static final boolean BOB_INIT_BOOK_LIST = false;
+
+    /**
+     * {@link com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel}.
+     * Expand/Collapsing nodes.
+     */
+    public static final boolean BOOK_LIST_NODE_STATE = false;
+
+    /**
+     * {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor}.
+     */
     public static final boolean BOB_PSEUDO_CURSOR = false;
 
     /* ****************************************************************************************** */

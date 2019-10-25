@@ -40,10 +40,6 @@
     <string name="pe_bob_list_rebuild_state_expanded">Rozšířit vše</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Složte vše</string>
 
-    <string name="pe_bob_list_generation_full">Síla plně vybavený</string>
-    <string name="pe_bob_list_generation_enhanced">Vynutit rozšířený režim kompatibility</string>
-    <string name="pe_bob_list_generation_legacy">Vynutit režim kompatibility</string>
-
     <string name="pe_thumbnails_cropper_layer_type_hardware">Hardware</string>
     <string name="pe_thumbnails_cropper_layer_type_software">Software</string>
 
@@ -74,7 +70,7 @@
     <string name="X_btn_do_not_show_again">Příště již nezobrazovat</string>
     <string name="X_error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %1$s</string>
     <string name="X_info_reset_tips">Čas od času zobrazí aplikace zprávu týkající se %1$s.\n Stiskněte tlačítko níže pro resetování všech těchto zpráv, které byly v minulosti zakázány.</string>
-    <string name="X_lbl_loan_book_available">Dostupný</string>
+    <string name="X_lbl_available">Dostupný</string>
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
     <string name="X_menu_delete_series">Smazat série…</string>
     <string name="title_edit_author">Upravit autory</string>
@@ -91,7 +87,7 @@
     <string name="X_warning_missing_title">Chybí název.</string>
     <string name="X_warning_missing_title_author">Chybí název a / nebo autor.</string>
     <string name="X_warning_required_author">Pole pro autora je prázdné</string>
-    <string name="X_warning_required_author_long">Musí být uveden alespoň jeden autor</string>
+    <string name="warning_requires_at_least_1_author">Musí být uveden alespoň jeden autor.</string>
     <string name="X_warning_required_field_x">%1$s nemůže být prázdné</string>
     <string name="X_warning_required_title">Musí být uveden titul knihy</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -215,7 +211,7 @@
     <string name="gr_tq_title_task_errors">Chyby v úlohách</string>
     <string name="help">Nápověda</string>
     <string name="hint_btn_drag_handle">Přetažením tohoto seznamu změníte pořadí.</string>
-    <string name="warning_date_not_set">Zadejte prosím platné datum.</string>
+    <string name="warning_requires_date">Zadejte prosím platné datum.</string>
     <string name="hint_developer_key">Vývojářský klíč</string>
     <string name="hint_field_not_set">Nenastaveno</string>
     <string name="hint_empty_field">(prázdné)</string>
@@ -287,8 +283,8 @@
     <string name="lbl_field_usage_overwrite">Přepsat existující data</string>
     <string name="lbl_field_usage_skip">Vynechat</string>
     <string name="lbl_first_publication">První publikace</string>
-    <string name="lbl_first_publication_month">První měsíc vydání</string>
-    <string name="lbl_first_publication_year">Rok prvního vydání</string>
+    <string name="lbl_first_pub_month">První měsíc vydání</string>
+    <string name="lbl_first_pub_year">Rok prvního vydání</string>
     <string name="lbl_format">Formát</string>
     <string name="lbl_genre">Žánr</string>
     <string name="lbl_given_names">Křestní jméno</string>
@@ -460,7 +456,6 @@
     <string name="pt_bob_books_under_multiple_series">Knihy ve více sériích</string>
     <string name="pt_bob_authors_display">Zobrazit autory jako</string>
     <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
-    <string name="pt_booklist_generation">Možnost generování seznamu knih</string>
     <string name="pt_bob_list_rebuild_state">Stav spuštění seznamu knih</string>
     <string name="pt_bob_authors_sort">Seřadit autory podle</string>
     <string name="pt_bob_text_size">Velikost položek na seznamu knih</string>
@@ -565,7 +560,7 @@
     <string name="vldt_non_blank_required_for_x">Neprázdná hodnota vyžadována pro „%1$s“</string>
     <string name="vldt_read_start_after_end">Datum začátku čtení musí předcházet datu ukončení čtení.</string>
     <string name="vldt_real_expected_for_x">Očekáváno reálné číslo pro „%1$s“</string>
-    <string name="warning_action_requires_isbn">Tato akce vyžaduje platné číslo ISBN.</string>
+    <string name="warning_requires_isbn">Tato akce vyžaduje platné číslo ISBN.</string>
     <string name="warning_author_already_in_list">Autor je již v seznamu</string>
     <string name="warning_backup_request">Přejete si zálohovat Vaši databázi na SD kartu</string>
     <string name="info_bad_scanner">Vypadá to, že stávající aplikace čtečky čárových kódů není kompatibilní s &APP_NAME;.</string>
@@ -586,15 +581,15 @@
     <string name="warning_no_editions">K dispozici nejsou žádné další informace o vydání</string>
     <string name="warning_no_isbn_stored_for_book">Kniha nemá uložen ISBN</string>
     <string name="warning_no_matching_book_found">Nebyla nalezena odpovídající kniha</string>
-    <string name="warning_required_at_least_one">Alespoň jedno pole nemůže být prázdné</string>
+    <string name="warning_requires_at_least_one_field">Alespoň jedno pole nemůže být prázdné.</string>
     <string name="X_warning_select_an_existing_file">Vyberte existující soubor</string>
-    <string name="warning_select_min_1_field">Zvolte alespoň jedno pole k aktualizaci</string>
+    <string name="warning_select_at_least_1_field">Zvolte alespoň jedno pole k aktualizaci.</string>
     <string name="warning_series_already_in_list">Série je již v seznamu</string>
     <string name="warning_toc_confirm">Prosím zkontrolujte, zda jsou tyto antologie v pořádku</string>
     <string name="warning_unable_to_find_book">Nepodařilo se nalézt zadanou knihu</string>
     <string name="warning_unsaved_edits">Máte neuložené změny, pokud nyní ukončíte, budou ztraceny.</string>
     <string name="warning_unsaved_edits2">Změny nejsou uloženy. Určitě si přejete pokračovat?</string>
-    <string name="warning_x_already_exists">%1$s již existuje</string>
+    <string name="warning_x_already_exists">%1$s již existuje.</string>
     <string name="warning_x_is_not_a_valid_isbn">„%1$s“ není platné číslo ISBN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">„%1$s“ není platné číslo ISBN nebo ASIN</string>
     <string name="x_of_y">%1$d z %2$d</string>
@@ -640,5 +635,6 @@
     <string name="hint_empty_series">(Bez série)</string>
     <string name="hint_empty_month">(Není vyplněn žádný měsíc)</string>
     <string name="hint_empty_read_status">(Stav čtení neznámý)</string>
+    <string name="warning_select_at_least_1_group">Vyberte alespoň jednu skupinu.</string>
 
 </resources>

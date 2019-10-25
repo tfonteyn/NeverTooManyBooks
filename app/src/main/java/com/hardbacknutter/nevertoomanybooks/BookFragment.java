@@ -201,7 +201,8 @@ public class BookFragment
         super.onActivityCreated(savedInstanceState);
 
         mFlattenedBooklistModel = new ViewModelProvider(this).get(FlattenedBooklistModel.class);
-        mFlattenedBooklistModel.init(getArguments(), mBookModel.getBook().getId());
+        mFlattenedBooklistModel.init(mBookModel.getDb().getUnderlyingDatabase(),
+                                     getArguments(), mBookModel.getBook().getId());
 
         FloatingActionButton fabButton = mHostActivity.findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_edit);

@@ -329,9 +329,9 @@ public abstract class ShowBookApiHandler
             String source = mBookData.getString(DBDefinitions.KEY_LANGUAGE);
             if (source != null && !source.isEmpty()) {
                 // Goodreads sometimes uses the 2-char code with region code (e.g. "en_GB")
-                source = LanguageUtils.getIso3fromIso2(source);
-                // Goodreads sometimes uses the alternative 3-char code for specific languages.
-                source = LanguageUtils.iso3ToBibliographic(source);
+                source = LanguageUtils.getISO3Language(source);
+                // and sometimes the alternative 3-char code for specific languages.
+                source = LanguageUtils.toBibliographic(source);
                 // store the iso3
                 mBookData.putString(DBDefinitions.KEY_LANGUAGE, source);
             }

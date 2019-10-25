@@ -33,7 +33,6 @@ import android.database.sqlite.SQLiteStatement;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -48,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * Construction is done in two steps:
  * <ol>
  * <li>Create the table, fill it with data<br>
- * String tableName = {@link #createTable(DAO, TableDefinition, TableDefinition, int)}</li>
+ * {@link #createTable(SynchronizedDb, int, TableDefinition, TableDefinition)}</li>
  * <li>Use the normal constructor with the table name from step 1 to start using the table</li>
  * </ol>
  * Reminder: moveNext/Prev SQL concatenates/splits two columns.
@@ -75,7 +74,7 @@ public class FlattenedBooklist
     private final SqlStatementManager mStatements;
     /**
      * Underlying table definition.
-     * Reminder: this is a {@link TableDefinition.TableTypes#Temporary}.
+     * Reminder: this is a {@link TableDefinition.TableType#Temporary}.
      */
     @NonNull
     private TableDefinition mTable;
@@ -89,15 +88,15 @@ public class FlattenedBooklist
     /**
      * Constructor.
      *
-     * @param db        Database Access
+     * @param syncedDb  the database
      * @param tableName Name of underlying and <strong>existing</strong> table
      */
-    public FlattenedBooklist(@NonNull final DAO db,
+    public FlattenedBooklist(@NonNull final SynchronizedDb syncedDb,
                              @NonNull final String tableName) {
-        TableDefinition table = DBDefinitions.TMP_TBL_ROW_NAVIGATOR_FLATTENED.clone();
+        TableDefinition table = DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR.clone();
         table.setName(tableName);
 
-        mSyncedDb = db.getUnderlyingDatabase();
+        mSyncedDb = syncedDb;
         mTable = table;
         mStatements = new SqlStatementManager(mSyncedDb);
     }
@@ -105,36 +104,44 @@ public class FlattenedBooklist
     /**
      * Create a flattened table of ordered book ID's based on the underlying list.
      *
-     * @param db Database Access
-     * @param id counter which will be used to create the table name
+     * @param syncedDb the database
+     * @param id       counter which will be used to create the table name
      *
-     * @return the name of the created table.
+     * @return the created table.
      */
     @NonNull
-    static String createTable(@NonNull final DAO db,
-                              @NonNull final TableDefinition navTable,
-                              @NonNull final TableDefinition listTable,
-                              final int id) {
+    static TableDefinition createTable(@NonNull final SynchronizedDb syncedDb,
+                                       final int id,
+                                       @NonNull final TableDefinition listTable,
+                                       @NonNull final TableDefinition rowStateTable) {
 
-        SynchronizedDb syncedDb = db.getUnderlyingDatabase();
+        TableDefinition table = DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR.clone();
+        table.setName(table.getName() + id);
 
-        TableDefinition table = DBDefinitions.TMP_TBL_ROW_NAVIGATOR_FLATTENED.clone();
-        table.setName(table.getName() + '_' + id);
-        // no indexes, no constraints!
+        // Drop the table in case there is an orphaned instance.
+        table.drop(syncedDb);
+        //IMPORTANT: withConstraints MUST BE false
         table.create(syncedDb, false);
 
-        String sql = table.getInsertInto(DBDefinitions.DOM_PK_ID, DBDefinitions.DOM_FK_BOOK)
-                     + " SELECT " + navTable.dot(DBDefinitions.DOM_PK_ID)
+        String sql = "INSERT INTO " + table
+                     + " (" + DBDefinitions.DOM_PK_ID
+                     + ',' + DBDefinitions.DOM_FK_BOOK
+                     + ") SELECT "
+                     + rowStateTable.dot(DBDefinitions.DOM_PK_ID)
                      + ',' + listTable.dot(DBDefinitions.DOM_FK_BOOK)
-                     + " FROM " + listTable.ref() + listTable.join(navTable)
+                     + " FROM " + listTable.ref() + listTable.join(rowStateTable)
+                     // all rows which are NOT a book will contain null
                      + " WHERE " + listTable.dot(DBDefinitions.DOM_FK_BOOK) + " NOT NULL"
-                     + " ORDER BY " + navTable.dot(DBDefinitions.DOM_PK_ID);
+                     // alternative (which is faster?)
+                     // + " WHERE " + listTable.dot(DBDefinitions.DOM_BL_NODE_KIND)
+                     // + '=' + BooklistGroup.RowKind.BOOK
+                     + " ORDER BY " + rowStateTable.dot(DBDefinitions.DOM_PK_ID);
 
         try (SynchronizedStatement stmt = syncedDb.compileStatement(sql)) {
             stmt.executeInsert();
         }
 
-        return table.getName();
+        return table;
     }
 
     public long getBookId() {
@@ -194,7 +201,7 @@ public class FlattenedBooklist
         } else {
             stmt.bindNull(2);
         }
-        // Get a pair of ID's separated by a '/'
+
         return fetchBookIdAndPosition(stmt);
     }
 
@@ -221,7 +228,7 @@ public class FlattenedBooklist
         } else {
             stmt.bindNull(2);
         }
-        // Get a pair of ID's separated by a '/'
+
         return fetchBookIdAndPosition(stmt);
     }
 
@@ -245,7 +252,7 @@ public class FlattenedBooklist
             stmt = mStatements.add(STMT_MOVE, sql);
         }
         stmt.bindLong(1, position);
-        // Get a pair of ID's separated by a '/'
+
         if (fetchBookIdAndPosition(stmt)) {
             return true;
         } else {
@@ -326,7 +333,6 @@ public class FlattenedBooklist
      */
     public void deleteData() {
         mTable.drop(mSyncedDb);
-        mTable.clear();
         // force to null, so if we access the table again, we'll crash on purpose!
         //noinspection ConstantConditions
         mTable = null;

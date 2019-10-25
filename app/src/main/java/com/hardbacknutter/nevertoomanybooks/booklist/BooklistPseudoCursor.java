@@ -89,7 +89,8 @@ public class BooklistPseudoCursor
     private static final int CURSOR_SIZE = 20;
     /** Size of MRU list. Not based on tuning; just set to more than 2*3+1. */
     private static final int MRU_LIST_SIZE = 8;
-
+    /** Divider nano seconds to milli seconds. */
+    private static final int TO_MILLIS = 1_000_000;
     /** Underlying BooklistBuilder object. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
@@ -216,7 +217,7 @@ public class BooklistPseudoCursor
     @Override
     public int getCount() {
         if (mPseudoCount == null) {
-            mPseudoCount = mBuilder.getPseudoCount();
+            mPseudoCount = mBuilder.countVisibleRows();
         }
         return mPseudoCount;
     }
@@ -292,7 +293,6 @@ public class BooklistPseudoCursor
         super.close();
         clearCursors();
     }
-
 
     /**
      * Handle a position change. Manage cursor based on new position.
@@ -391,10 +391,10 @@ public class BooklistPseudoCursor
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             Logger.debug(this, "onMove",
                          "ImageUtils.cacheChecks=" + ImageUtils.cacheChecks,
-                         "ImageUtils.cacheTicks=" + (ImageUtils.cacheTicks.get() / 1_000_000),
+                         "ImageUtils.cacheTicks=" + (ImageUtils.cacheTicks.get() / TO_MILLIS),
 
                          "ImageUtils.fileChecks=" + ImageUtils.fileChecks,
-                         "ImageUtils.fileTicks=" + (ImageUtils.fileTicks.get() / 1_000_000)
+                         "ImageUtils.fileTicks=" + (ImageUtils.fileTicks.get() / TO_MILLIS)
                         );
         }
         return true;

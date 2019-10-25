@@ -86,10 +86,11 @@ public final class UpgradeMessageManager {
         boolean first = true;
         for (int[] msg : UPGRADE_MESSAGES) {
             if (msg[0] > lastVersion) {
-                if (!first) {
+                if (first) {
+                    first = false;
+                } else {
                     message.append('\n');
                 }
-                first = false;
                 message.append(context.getString(msg[1]));
             }
         }

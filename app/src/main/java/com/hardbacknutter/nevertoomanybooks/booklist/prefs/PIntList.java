@@ -34,6 +34,9 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+
 /**
  * An {@code List<Integer>} is stored as a CSV String.
  * <p>
@@ -96,7 +99,16 @@ public class PIntList
     private List<Integer> getAsList(@NonNull final String values) {
         List<Integer> list = new ArrayList<>();
         for (String s : values.split(DELIM)) {
-            list.add(Integer.parseInt(s));
+            try {
+                list.add(Integer.parseInt(s));
+            } catch (@NonNull final NumberFormatException e) {
+                // should not happen unless we had a bug while previously writing the pref.
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.debugWithStackTrace(this, e,
+                                               "key=" + getKey(),
+                                               "values=`" + values + '`');
+                }
+            }
         }
         return list;
     }

@@ -39,10 +39,6 @@
     <string name="pe_bob_list_rebuild_state_expanded">Alles uitvouwen</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Alles inklappen</string>
 
-    <string name="pe_bob_list_generation_full">Forceer volledige functionaliteit</string>
-    <string name="pe_bob_list_generation_enhanced">Forceer uitgebreide compatibiliteitsmodus</string>
-    <string name="pe_bob_list_generation_legacy">Forceer compatibele modus</string>
-
     <string name="pe_thumbnails_cropper_layer_type_hardware">Hardware</string>
     <string name="pe_thumbnails_cropper_layer_type_software">Software</string>
     <string name="pe_bob_filter_read_yes">Gelezen boeken</string>
@@ -72,7 +68,7 @@
     <string name="X_btn_do_not_show_again">Niet meer laten zien</string>
     <string name="X_error_file_must_contain_column">Import bestand moet een kolom met de naam „%1$s” bevatten.</string>
     <string name="X_info_reset_tips">Van tijd tot tijd kan deze toepassing optionele berichten weergeven over %1$s.\nDruk op de knop hieronder om alle berichten die zijn uitgeschakeld te herstellen.</string>
-    <string name="X_lbl_loan_book_available">Beschikbaar</string>
+    <string name="X_lbl_available">Beschikbaar</string>
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
     <string name="X_menu_delete_series">Verwijderen serie…</string>
     <string name="title_edit_author">Auteur bewerken</string>
@@ -89,7 +85,7 @@
     <string name="X_warning_missing_title">De titel ontbreekt.</string>
     <string name="X_warning_missing_title_author">De titel en/of de auteur ontbreekt.</string>
     <string name="X_warning_required_author">Auteurveld is leeg</string>
-    <string name="X_warning_required_author_long">Er moet tenminste één auteur worden vermeld</string>
+    <string name="warning_requires_at_least_1_author">Er moet tenminste één auteur worden vermeld.</string>
     <string name="X_warning_required_field_x">%1$s mag niet leeg zijn</string>
     <string name="X_warning_required_title">Het titelveld mag niet leeg zijn</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -221,7 +217,7 @@
     <string name="gr_tq_title_task_errors">Taakfouten</string>
     <string name="help">Help</string>
     <string name="hint_btn_drag_handle">Sleep om deze lijst opnieuw te ordenen.</string>
-    <string name="warning_date_not_set">Geef een geldige datum in.</string>
+    <string name="warning_requires_date">Geef een geldige datum in.</string>
     <string name="hint_developer_key">Ontwikkelaarssleutel</string>
     <string name="hint_field_not_set">Niet Ingevuld</string>
     <string name="hint_empty_field">(leeg)</string>
@@ -293,8 +289,8 @@
     <string name="lbl_field_usage_overwrite">Overschrijft bestaande gegevens</string>
     <string name="lbl_field_usage_skip">Overslaan</string>
     <string name="lbl_first_publication">Eerste uitgave</string>
-    <string name="lbl_first_publication_month">Eerste uitg. Maand</string>
-    <string name="lbl_first_publication_year">Eerste uitg. Dag</string>
+    <string name="lbl_first_pub_month">Eerste uitg. Maand</string>
+    <string name="lbl_first_pub_year">Eerste uitg. Dag</string>
     <string name="lbl_format">Formaat</string>
     <string name="lbl_genre">Genre</string>
     <string name="lbl_given_names">Voornamen</string>
@@ -466,7 +462,6 @@
     <string name="pt_bob_books_under_multiple_series">Boeken in meerdere series</string>
     <string name="pt_bob_authors_display">Toon auteurs als</string>
     <string name="pt_bob_header">Details in de koptekst</string>
-    <string name="pt_booklist_generation">Optie voor genereren boekenlijst</string>
     <string name="pt_bob_list_rebuild_state">Boekenlijst opstart status</string>
     <string name="pt_bob_authors_sort">Auteurs sorteren op</string>
     <string name="pt_bob_text_size">Grootte van boekenlijst tekst</string>
@@ -574,7 +569,7 @@
     <string name="vldt_non_blank_required_for_x">Waardeveld mag niet leeg zijn voor „%1$s”</string>
     <string name="vldt_read_start_after_end">De begindatum moet vóór de einddatum liggen.</string>
     <string name="vldt_real_expected_for_x">Verwachtte een echt nummer voor „%1$s”</string>
-    <string name="warning_action_requires_isbn">Voor deze actie is een geldig ISBN-nummer vereist.</string>
+    <string name="warning_requires_isbn">Voor deze actie is een geldig ISBN-nummer vereist.</string>
     <string name="warning_author_already_in_list">Auteur staat al in de lijst</string>
     <string name="warning_backup_request">Wilt u  een back-up van uw database op uw SD kaart maken?</string>
     <string name="info_bad_scanner">Het lijkt er op dat de door u gebruikt streepjescode scanner app niet compatibel is met &APP_NAME;.</string>
@@ -595,15 +590,15 @@
     <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar</string>
     <string name="warning_no_isbn_stored_for_book">Geen ISBN opgeslagen voor boek</string>
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
-    <string name="warning_required_at_least_one">Er moet op z\'n minst een veld ingevuld zijn</string>
+    <string name="warning_requires_at_least_one_field">Er moet op z\'n minst een veld ingevuld zijn.</string>
     <string name="X_warning_select_an_existing_file">Selecteer aub een bestaand bestand</string>
-    <string name="warning_select_min_1_field">Selecteer tenminste één veld om te updaten</string>
+    <string name="warning_select_at_least_1_field">Selecteer tenminste één veld om te updaten.</string>
     <string name="warning_series_already_in_list">Serie staat al in de lijst</string>
     <string name="warning_toc_confirm">Bevestig dat deze titels (merendeels) correct zijn</string>
     <string name="warning_unable_to_find_book">Kan gespecificeerd boek niet vinden</string>
     <string name="warning_unsaved_edits">Je hebt niet opgeslagen veranderingen. Als u nu afsluit gaan die verloren.</string>
     <string name="warning_unsaved_edits2">De door u gemaakte veranderingen zijn niet opgeslagen. Wilt u toch doorgaan?</string>
-    <string name="warning_x_already_exists">%1$s bestaat al</string>
+    <string name="warning_x_already_exists">%1$s bestaat al.</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s is geen geldige ISBN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s is geen geldig ISBN of ASIN</string>
     <string name="x_of_y">%1$d van %2$d</string>
@@ -649,5 +644,6 @@
     <string name="hint_empty_series">(Geen serie)</string>
     <string name="hint_empty_month">(Geen maand ingevuld)</string>
     <string name="hint_empty_read_status">(Leesstatus onbekend)</string>
+    <string name="warning_select_at_least_1_group">Selecteer ten minste één groep.</string>
 
 </resources>

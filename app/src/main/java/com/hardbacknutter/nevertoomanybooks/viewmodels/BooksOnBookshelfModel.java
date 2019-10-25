@@ -48,6 +48,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -174,12 +175,12 @@ public class BooksOnBookshelfModel
 
                     if (mListHasBeenLoaded) {
                         // always copy modified fields.
-                        mCurrentPositionedBookId = message.result.bookId;
+                        mCurrentPositionedBookId = message.result.currentPosBookId;
                         mRebuildState = message.result.listState;
 
                         // always copy these results
-                        mTotalBooks = message.result.resultTotalBooks;
-                        mUniqueBooks = message.result.resultUniqueBooks;
+                        mTotalBooks = message.result.resultTotalBookCount;
+                        mUniqueBooks = message.result.resultDistinctBookCount;
 
                         // do not copy the result.resultListCursor, as it might be null
                         // in which case we will use the old value
@@ -618,10 +619,10 @@ public class BooksOnBookshelfModel
      * <p>
      * Get the target rows based on the current book position.
      *
-     * @return RowInfo
+     * @return RowDetails
      */
     @Nullable
-    public ArrayList<BooklistBuilder.RowInfo> getCurrentTargetRows() {
+    public ArrayList<BooklistBuilder.RowDetails> getCurrentTargetRows() {
         //noinspection ConstantConditions
         return getBuilder().syncPreviouslySelectedBookId(mCurrentPositionedBookId);
     }
@@ -661,7 +662,7 @@ public class BooksOnBookshelfModel
                 return author.getLabel(context);
             }
 
-        } else if (mapper.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)
+        } else if (mapper.getInt(DBDefinitions.KEY_BL_NODE_KIND)
                    == BooklistGroup.RowKind.BOOK) {
             List<Author> authors = mDb.getAuthorsByBookId(
                     mapper.getLong(DBDefinitions.KEY_FK_BOOK));
@@ -687,7 +688,7 @@ public class BooksOnBookshelfModel
             if (series != null) {
                 return series.getTitle();
             }
-        } else if (mapper.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)
+        } else if (mapper.getInt(DBDefinitions.KEY_BL_NODE_KIND)
                    == BooklistGroup.RowKind.BOOK) {
             ArrayList<Series> series =
                     mDb.getSeriesByBookId(mapper.getLong(DBDefinitions.KEY_FK_BOOK));
@@ -776,7 +777,8 @@ public class BooksOnBookshelfModel
     public static class SearchCriteria {
 
         /**
-         * List of bookId's to display. The RESULT of a search with {@link FTSSearchActivity}
+         * List of currentPosBookId's to display.
+         * The RESULT of a search with {@link FTSSearchActivity}
          * which can be re-used for the builder.
          */
         @Nullable
@@ -970,14 +972,12 @@ public class BooksOnBookshelfModel
         @NonNull
         @WorkerThread
         protected BuilderHolder doInBackground(final Void... params) {
+            final long t0 = System.nanoTime();
+
             Thread.currentThread().setName("GetBookListTask");
             try {
-                long t0 = 0;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t0 = System.nanoTime();
-                }
                 // Build the underlying data
-                mBuilder.build(mHolder.listState, mHolder.bookId);
+                mBuilder.build(mHolder.listState, mHolder.currentPosBookId);
                 // preserve this state
                 mHolder.listState = BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE;
 
@@ -985,76 +985,68 @@ public class BooksOnBookshelfModel
                     return mHolder;
                 }
 
-                long t1_build_done = 0;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t1_build_done = System.nanoTime();
-                }
+                final long t1_build_done = System.nanoTime();
 
-                mHolder.resultTargetRows = mBuilder.syncPreviouslySelectedBookId(mHolder.bookId);
+                mHolder.resultTargetRows = mBuilder
+                        .syncPreviouslySelectedBookId(mHolder.currentPosBookId);
 
                 if (isCancelled()) {
                     return mHolder;
                 }
 
-                long t2_sync_done = 0;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t2_sync_done = System.nanoTime();
-                }
+                final long t2_sync_done = System.nanoTime();
 
                 // Now we have the expanded groups as needed, get the list cursor
                 tempListCursor = mBuilder.getNewListCursor();
 
                 // Clear it so it won't be reused.
-                mHolder.bookId = 0;
+                mHolder.currentPosBookId = 0;
 
-                long t3_got_new_cursor = 0;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t3_got_new_cursor = System.nanoTime();
-                }
+                final long t3_got_new_cursor = System.nanoTime();
+
                 // get a count() from the cursor in background task because the setAdapter()
                 // call will do a count() and potentially block the UI thread while it
                 // pages through the entire cursor.
                 // If we do it here, subsequent calls will be fast.
-                int count = tempListCursor.getCount();
+                int countAllRows = tempListCursor.getCount();
 
-                long t4_count_done = 0;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t4_count_done = System.nanoTime();
-                }
+                final long t4_count_all_rows_done = System.nanoTime();
+
                 // pre-fetch this count
-                mHolder.resultUniqueBooks = tempListCursor.getBuilder().getUniqueBookCount();
+                mHolder.resultDistinctBookCount = mBuilder.getDistinctBookCount();
 
                 if (isCancelled()) {
                     return mHolder;
                 }
 
-                long t5_unique_count_done = 0;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t5_unique_count_done = System.nanoTime();
-                }
-                // pre-fetch this count
-                mHolder.resultTotalBooks = tempListCursor.getBuilder().getBookCount();
+                final long t5_distinct_count_done = System.nanoTime();
 
-                long t6_total_count_done = 0;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t6_total_count_done = System.nanoTime();
-                }
+                // pre-fetch this count
+                mHolder.resultTotalBookCount = mBuilder.getBookCount();
+
+                final long t6_total_count_done = System.nanoTime();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     Logger.debug(this, "doInBackground",
-                                 "\n Build: " + (t1_build_done - t0) / 1_000_000,
-                                 "\n Position: " + (t2_sync_done - t1_build_done) / 1_000_000,
-                                 "\n Select: " + (t3_got_new_cursor - t2_sync_done) / 1_000_000,
-
-                                 "\n count=" + count + " : "
-                                 + (t4_count_done - t3_got_new_cursor) / 1_000_000,
-                                 "\n resultUniqueBooks=" + mHolder.resultUniqueBooks + " : "
-                                 + (t5_unique_count_done - t4_count_done) / 1_000_000,
-                                 "\n resultTotalBooks=" + mHolder.resultTotalBooks + " : "
-                                 + (t6_total_count_done - t5_unique_count_done) / 1_000_000,
-
-                                 "\n ================== ",
-                                 "\n Total time: " + (t6_total_count_done - t0) / 1_000_000);
+                                 String.format(Locale.UK, ""
+                                                          + "\nBuild                    : %.10d"
+                                                          + "\nsync done                : %.10d"
+                                                          + "\ngot new cursor           : %.10d"
+                                                          + "\ncount all rows (%.5d)   : %.10d"
+                                                          + "\ndistinctBookCount(%.5d) : %.10d"
+                                                          + "\ntotalBookCount(%.5d)    : %.10d"
+                                                          + "\n ==================================="
+                                                          + "\n Total time in ms: %f",
+                                               (t1_build_done - t0),
+                                               (t2_sync_done - t1_build_done),
+                                               (t3_got_new_cursor - t2_sync_done),
+                                               countAllRows,
+                                               (t4_count_all_rows_done - t3_got_new_cursor),
+                                               mHolder.resultDistinctBookCount,
+                                               (t5_distinct_count_done - t4_count_all_rows_done),
+                                               mHolder.resultTotalBookCount,
+                                               (t6_total_count_done - t5_distinct_count_done),
+                                               (float) (t6_total_count_done - t0)));
                 }
 
                 if (isCancelled()) {
@@ -1064,7 +1056,8 @@ public class BooksOnBookshelfModel
                 // Set the results.
                 mHolder.resultListCursor = tempListCursor;
 
-            } catch (@NonNull final RuntimeException e) {
+            } catch (@NonNull final Exception e) {
+                // catch ALL exceptions, so we get them logged for certain.
                 Logger.error(this, e);
                 mException = e;
                 cleanup();
@@ -1099,8 +1092,8 @@ public class BooksOnBookshelfModel
     /** value class for the Builder. */
     public static class BuilderHolder {
 
-        /** input/output field. */
-        long bookId;
+        /** input/output field. The book id around which the list is positioned. */
+        long currentPosBookId;
         /** input/output field. */
         @BooklistBuilder.ListRebuildMode
         int listState;
@@ -1113,30 +1106,28 @@ public class BooksOnBookshelfModel
 
         /**
          * output field. Pre-fetched from the resultListCursor's builder.
-         * {@link BooklistBuilder#getBookCount()}
          * Should be ignored if resultListCursor is {@code null}
          */
-        int resultTotalBooks;
+        int resultTotalBookCount;
         /**
          * output field. Pre-fetched from the resultListCursor's builder.
-         * {@link BooklistBuilder#getUniqueBookCount()}
          * Should be ignored if resultListCursor is {@code null}
          */
-        int resultUniqueBooks;
+        int resultDistinctBookCount;
 
         /**
          * output field. Used to determine new cursor position; can be {@code null}.
          * Should be ignored if resultListCursor is {@code null}
          */
         @Nullable
-        ArrayList<BooklistBuilder.RowInfo> resultTargetRows;
+        ArrayList<BooklistBuilder.RowDetails> resultTargetRows;
 
         /**
          * Constructor: these are the fields we need as input.
          */
-        BuilderHolder(final long bookId,
+        BuilderHolder(final long currentPosBookId,
                       @BooklistBuilder.ListRebuildMode final int listState) {
-            this.bookId = bookId;
+            this.currentPosBookId = currentPosBookId;
             this.listState = listState;
         }
 
@@ -1146,7 +1137,7 @@ public class BooksOnBookshelfModel
         }
 
         @Nullable
-        public ArrayList<BooklistBuilder.RowInfo> getResultTargetRows() {
+        public ArrayList<BooklistBuilder.RowDetails> getResultTargetRows() {
             return resultTargetRows;
         }
 
@@ -1154,10 +1145,10 @@ public class BooksOnBookshelfModel
         @NonNull
         public String toString() {
             return "BuilderHolder{"
-                   + "bookId=" + bookId
+                   + "currentPosBookId=" + currentPosBookId
                    + ", listState=" + listState
-                   + ", resultTotalBooks=" + resultTotalBooks
-                   + ", resultUniqueBooks=" + resultUniqueBooks
+                   + ", resultTotalBookCount=" + resultTotalBookCount
+                   + ", resultDistinctBookCount=" + resultDistinctBookCount
                    + ", resultListCursor=" + resultListCursor
                    + ", resultTargetRows=" + resultTargetRows
                    + '}';

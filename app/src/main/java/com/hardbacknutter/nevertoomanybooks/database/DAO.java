@@ -94,9 +94,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
@@ -145,13 +143,13 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_STYLE_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_STYLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_TOC_ENTRY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FTS_AUTHOR_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
@@ -448,6 +446,43 @@ public class DAO
     }
 
     /**
+     * Purge <strong>all</strong> Booklist node state data.
+     */
+    public void purgeNodeStates() {
+        sSyncedDb.execSQL("DELETE FROM " + DBDefinitions.TBL_BOOK_LIST_NODE_STATE);
+    }
+
+    /**
+     * Purge Booklist node state data for the given Bookshelf.
+     *
+     * @param bookshelfId to purge
+     */
+    private void purgeNodeStatesByBookshelf(final long bookshelfId) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
+                "DELETE FROM " + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
+                + " WHERE " + DOM_BOOKSHELF + "=?")) {
+            stmt.bindLong(1, bookshelfId);
+            stmt.executeUpdateDelete();
+        }
+    }
+
+    /**
+     * Purge Booklist node state data for the given Style.
+     * <p>
+     * URGENT: allow calling purgeNodeStatesByStyle for builtin styles.
+     *
+     * @param styleId to purge
+     */
+    private void purgeNodeStatesByStyle(final long styleId) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
+                "DELETE FROM " + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
+                + " WHERE " + DOM_FK_STYLE + "=?")) {
+            stmt.bindLong(1, styleId);
+            stmt.executeUpdateDelete();
+        }
+    }
+
+    /**
      * Cleanup a search string to remove all quotes etc.
      * <p>
      * Remove punctuation from the search string to TRY to match the tokenizer.
@@ -589,7 +624,6 @@ public class DAO
             stmt = mStatements.add(STMT_UPDATE_GOODREADS_SYNC_DATE,
                                    SqlUpdate.GOODREADS_LAST_SYNC_DATE);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -676,7 +710,6 @@ public class DAO
         if (stmt == null) {
             stmt = mStatements.add(STMT_DELETE_TOC_ENTRY, SqlDelete.TOC_ENTRY);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, id);
@@ -699,7 +732,6 @@ public class DAO
             stmt = mStatements.add(STMT_DELETE_BOOK_TOC_ENTRIES,
                                    SqlDelete.BOOK_TOC_ENTRIES_BY_BOOK_ID);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -731,7 +763,6 @@ public class DAO
 
         String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
 
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, tocEntry.getAuthor().getId());
@@ -792,7 +823,7 @@ public class DAO
                         new TocEntry(mapper.getLong(DOM_PK_ID.getName()),
                                      author,
                                      mapper.getString(DOM_TITLE.getName()),
-                                     mapper.getString(DOM_DATE_FIRST_PUBLICATION.getName()),
+                                     mapper.getString(DOM_DATE_FIRST_PUB.getName()),
                                      mapper.getString(DOM_TOC_TYPE.getName()).charAt(0),
                                      mapper.getInt(DOM_BL_BOOK_COUNT.getName()));
                 list.add(tocEntry);
@@ -817,14 +848,13 @@ public class DAO
         if (stmt == null) {
             stmt = mStatements.add(STMT_INSERT_AUTHOR, SqlInsert.AUTHOR);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindString(1, author.getFamilyName());
             stmt.bindString(2, encodeOrderByColumn(author.getFamilyName(), authorLocale));
             stmt.bindString(3, author.getGivenNames());
             stmt.bindString(4, encodeOrderByColumn(author.getGivenNames(), authorLocale));
-            stmt.bindLong(5, author.isComplete() ? 1 : 0);
+            stmt.bindBoolean(5, author.isComplete());
             long iId = stmt.executeInsert();
             if (iId > 0) {
                 author.setId(iId);
@@ -927,7 +957,6 @@ public class DAO
             stmt = mStatements.add(STMT_GET_AUTHOR_ID, SqlGet.AUTHOR_ID_BY_NAME);
         }
 
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindString(1, encodeOrderByColumn(author.getFamilyName(), authorLocale));
@@ -1039,7 +1068,6 @@ public class DAO
             stmt = mStatements.add(STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES,
                                    SqlUpdate.AUTHOR_ON_TOC_ENTRIES);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, to);
@@ -1407,7 +1435,6 @@ public class DAO
             stmt = mStatements.add(STMT_GET_BOOK_ID_FROM_UUID, SqlGet.BOOK_ID_BY_UUID);
         }
 
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindString(1, uuid);
@@ -1428,7 +1455,6 @@ public class DAO
                                    SqlSelect.LAST_UPDATE_DATE_BY_BOOK_ID);
         }
 
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -1457,7 +1483,6 @@ public class DAO
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_BOOK_UUID, SqlGet.BOOK_UUID_BY_ID);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -1477,7 +1502,6 @@ public class DAO
             stmt = mStatements.add(STMT_GET_BOOK_TITLE,
                                    SqlGet.BOOK_TITLE_BY_BOOK_ID);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -1497,7 +1521,6 @@ public class DAO
             stmt = mStatements.add(STMT_GET_BOOK_ISBN,
                                    SqlGet.BOOK_ISBN_BY_BOOK_ID);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -1527,7 +1550,6 @@ public class DAO
             if (stmt == null) {
                 stmt = mStatements.add(STMT_DELETE_BOOK, SqlDelete.BOOK_BY_ID);
             }
-            // Be cautious; other threads may use the cached stmt, and set parameters.
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
                 stmt.bindLong(1, bookId);
@@ -1881,7 +1903,6 @@ public class DAO
         if (stmt == null) {
             stmt = mStatements.add(STMT_CHECK_BOOK_EXISTS, SqlSelect.BOOK_EXISTS);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -1947,7 +1968,6 @@ public class DAO
             if (!idHash.containsKey(uniqueId)) {
                 idHash.put(uniqueId, true);
                 position++;
-                // Be cautious; other threads may use the cached stmt, and set parameters.
                 //noinspection SynchronizationOnLocalVariableOrMethodParameter
                 synchronized (stmt) {
                     stmt.bindLong(1, bookId);
@@ -1975,7 +1995,6 @@ public class DAO
         if (stmt == null) {
             stmt = mStatements.add(STMT_DELETE_BOOK_SERIES, SqlDelete.BOOK_SERIES_BY_BOOK_ID);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -2037,7 +2056,7 @@ public class DAO
                 ContentValues cv = new ContentValues();
                 cv.put(DOM_TITLE.getName(), tocEntry.getTitle());
                 cv.put(DOM_TITLE_OB.getName(), encodeOrderByColumn(obTitle, bookLocale));
-                cv.put(DOM_DATE_FIRST_PUBLICATION.getName(), tocEntry.getFirstPublication());
+                cv.put(DOM_DATE_FIRST_PUB.getName(), tocEntry.getFirstPublication());
 
                 sSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
                                  DOM_PK_ID + "=?",
@@ -2058,7 +2077,6 @@ public class DAO
 
             try {
                 position++;
-                // Be cautious; other threads may use the cached stmt, and set parameters.
                 //noinspection SynchronizationOnLocalVariableOrMethodParameter
                 synchronized (stmt) {
                     stmt.bindLong(1, tocEntry.getId());
@@ -2105,7 +2123,6 @@ public class DAO
         }
 
         String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, tocEntry.getAuthor().getId());
@@ -2174,7 +2191,6 @@ public class DAO
                 idHash.put(authorIdStr, true);
 
                 position++;
-                // Be cautious; other threads may use the cached stmt, and set parameters.
                 //noinspection SynchronizationOnLocalVariableOrMethodParameter
                 synchronized (stmt) {
                     stmt.bindLong(1, bookId);
@@ -2202,7 +2218,6 @@ public class DAO
         if (stmt == null) {
             stmt = mStatements.add(STMT_DELETE_BOOK_AUTHORS, SqlDelete.BOOK_AUTHOR_BY_BOOK_ID);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -2259,7 +2274,6 @@ public class DAO
                 insertBookshelf(bookshelf, styleId);
             }
 
-            // Be cautious; other threads may use the cached stmt, and set parameters.
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
                 stmt.bindLong(1, bookId);
@@ -2284,7 +2298,6 @@ public class DAO
             stmt = mStatements.add(STMT_DELETE_BOOK_BOOKSHELF,
                                    SqlDelete.BOOK_BOOKSHELF_BY_BOOK_ID);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -2307,20 +2320,19 @@ public class DAO
                                  final long fromId,
                                  final long toId) {
 
-        SynchronizedStatement stmt = sSyncedDb.compileStatement(
-                "UPDATE " + table + " SET " + fk + "=? WHERE " + fk + "=?"
-                + " AND NOT EXISTS"
-                + " (SELECT NULL FROM " + table.ref() + " WHERE "
-                // left: the aliased table, right the actual table
-                + table.dot(DOM_FK_BOOK) + '=' + table + '.' + DOM_FK_BOOK
-                // left: the aliased table
-                + " AND " + table.dot(fk) + "=?)");
-
-        stmt.bindLong(1, toId);
-        stmt.bindLong(2, fromId);
-        stmt.bindLong(3, toId);
-        stmt.executeUpdateDelete();
-        stmt.close();
+        String sql = "UPDATE " + table + " SET " + fk + "=? WHERE " + fk + "=?"
+                     + " AND NOT EXISTS"
+                     + " (SELECT NULL FROM " + table.ref() + " WHERE "
+                     // left: the aliased table, right the actual table
+                     + table.dot(DOM_FK_BOOK) + '=' + table + '.' + DOM_FK_BOOK
+                     // left: the aliased table
+                     + " AND " + table.dot(fk) + "=?)";
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(sql)) {
+            stmt.bindLong(1, toId);
+            stmt.bindLong(2, fromId);
+            stmt.bindLong(3, toId);
+            stmt.executeUpdateDelete();
+        }
     }
 
     /**
@@ -2476,7 +2488,7 @@ public class DAO
                 list.add(new TocEntry(mapper.getLong(DOM_PK_ID.getName()),
                                       author,
                                       mapper.getString(DOM_TITLE.getName()),
-                                      mapper.getString(DOM_DATE_FIRST_PUBLICATION.getName()),
+                                      mapper.getString(DOM_DATE_FIRST_PUB.getName()),
                                       TocEntry.Type.TYPE_BOOK, 1));
             }
         }
@@ -2652,7 +2664,8 @@ public class DAO
         //
         // so DO NOT replace them with table.dot() etc... !
         return SqlAllBooks.PREFIX
-               + ",CASE WHEN " + COLUMN_ALIAS_NR_OF_SERIES + "<2"
+               + ",CASE"
+               + " WHEN " + COLUMN_ALIAS_NR_OF_SERIES + "<2"
                + " THEN COALESCE(s." + DOM_SERIES_FORMATTED + ",'')"
                + " ELSE " + DOM_SERIES_FORMATTED + " || ' " + andOthersText + '\''
                + " END AS " + DOM_SERIES_FORMATTED
@@ -2858,10 +2871,24 @@ public class DAO
      */
     @SuppressWarnings("UnusedReturnValue")
     public int deleteBookshelf(final long id) {
-        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlDelete.BOOKSHELF_BY_ID)) {
-            stmt.bindLong(1, id);
-            return stmt.executeUpdateDelete();
+
+        int rowsAffected;
+
+        SyncLock txLock = sSyncedDb.beginTransaction(true);
+        try {
+            purgeNodeStatesByBookshelf(id);
+
+            try (SynchronizedStatement stmt = sSyncedDb
+                    .compileStatement(SqlDelete.BOOKSHELF_BY_ID)) {
+                stmt.bindLong(1, id);
+                rowsAffected = stmt.executeUpdateDelete();
+            }
+            sSyncedDb.setTransactionSuccessful();
+        } finally {
+            sSyncedDb.endTransaction(txLock);
         }
+
+        return rowsAffected;
     }
 
     /**
@@ -2876,7 +2903,6 @@ public class DAO
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_BOOKSHELF_ID_BY_NAME, SqlGet.BOOKSHELF_ID_BY_NAME);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindString(1, bookshelf.getName());
@@ -2933,7 +2959,7 @@ public class DAO
 
         ContentValues cv = new ContentValues();
         cv.put(DOM_BOOKSHELF.getName(), bookshelf.getName());
-        cv.put(DOM_FK_STYLE_ID.getName(), styleId);
+        cv.put(DOM_FK_STYLE.getName(), styleId);
 
         return sSyncedDb.update(TBL_BOOKSHELF.getName(), cv,
                                 DOM_PK_ID + "=?",
@@ -3041,7 +3067,6 @@ public class DAO
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_BOOKLIST_STYLE, SqlGet.BOOKLIST_STYLE_ID_BY_UUID);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindString(1, uuid);
@@ -3059,7 +3084,7 @@ public class DAO
     public long insertStyle(@NonNull final BooklistStyle /* in/out */ style) {
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlInsert.BOOKLIST_STYLE)) {
             stmt.bindString(1, style.getUuid());
-            stmt.bindLong(2, style.isUserDefined() ? 0 : 1);
+            stmt.bindBoolean(2, !style.isUserDefined());
             long iId = stmt.executeInsert();
             if (iId > 0) {
                 style.setId(iId);
@@ -3071,16 +3096,29 @@ public class DAO
     /**
      * Delete a {@link BooklistStyle}.
      *
-     * @param uuid of style to delete
+     * @param id of style to delete
      *
      * @return the number of rows affected
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int deleteStyle(@NonNull final String uuid) {
-        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlDelete.STYLE_BY_UUID)) {
-            stmt.bindString(1, uuid);
-            return stmt.executeUpdateDelete();
+    public int deleteStyle(final long id) {
+
+        int rowsAffected;
+
+        SyncLock txLock = sSyncedDb.beginTransaction(true);
+        try {
+            purgeNodeStatesByStyle(id);
+
+            try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlDelete.STYLE_BY_ID)) {
+                stmt.bindLong(1, id);
+                rowsAffected = stmt.executeUpdateDelete();
+            }
+            sSyncedDb.setTransactionSuccessful();
+        } finally {
+            sSyncedDb.endTransaction(txLock);
         }
+
+        return rowsAffected;
     }
 
     /**
@@ -3214,7 +3252,6 @@ public class DAO
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_LOANEE_BY_BOOK_ID, SqlGet.LOANEE_BY_BOOK_ID);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -3366,12 +3403,11 @@ public class DAO
 
         String obTitle = series.reorderTitleForSorting(context, seriesLocale);
 
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindString(1, series.getTitle());
             stmt.bindString(2, encodeOrderByColumn(obTitle, seriesLocale));
-            stmt.bindLong(3, series.isComplete() ? 1 : 0);
+            stmt.bindBoolean(3, series.isComplete());
             long iId = stmt.executeInsert();
             if (iId > 0) {
                 series.setId(iId);
@@ -3444,7 +3480,6 @@ public class DAO
         if (stmt == null) {
             stmt = mStatements.add(STMT_DELETE_SERIES, SqlDelete.SERIES_BY_ID);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, id);
@@ -3523,7 +3558,6 @@ public class DAO
 
         String obTitle = series.reorderTitleForSorting(context, seriesLocale);
 
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindString(1, encodeOrderByColumn(series.getTitle(), seriesLocale));
@@ -3663,7 +3697,6 @@ public class DAO
         if (stmt == null) {
             stmt = mStatements.add(STMT_UPDATE_GOODREADS_BOOK_ID, SqlUpdate.GOODREADS_BOOK_ID);
         }
-        // Be cautious; other threads may use the cached stmt, and set parameters.
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, goodreadsBookId);
@@ -3822,12 +3855,14 @@ public class DAO
                                 } else if (entry instanceof Double) {
                                     cv.put(columnInfo.name, (Double) entry);
                                 } else if (entry != null) {
+                                    // Theoretically we should only get here during an import,
+                                    // where everything is handled as a String.
                                     String stringValue = entry.toString().trim();
                                     if (!stringValue.isEmpty()) {
                                         // sqlite does not care about float/double,
                                         // Using double covers float as well.
-                                        cv.put(columnInfo.name,
-                                               ParseUtils.parseDouble(stringValue, bookLocale));
+                                        //Reminder: do NOT use the bookLocale to parse.
+                                        cv.put(columnInfo.name, Double.parseDouble(stringValue));
                                     } else {
                                         cv.put(columnInfo.name, "");
                                     }
@@ -3846,6 +3881,8 @@ public class DAO
                                 } else if (entry instanceof Long) {
                                     cv.put(columnInfo.name, (Long) entry);
                                 } else if (entry != null) {
+                                    // Theoretically we should only get here during an import,
+                                    // where everything is handled as a String.
                                     String s = entry.toString().toLowerCase(bookLocale);
                                     if (!s.isEmpty()) {
                                         // It's not strictly needed to do these conversions.
@@ -3868,6 +3905,7 @@ public class DAO
                                                 break;
 
                                             default:
+                                                //Reminder: do NOT use the bookLocale to parse.
                                                 cv.put(columnInfo.name, Integer.parseInt(s));
                                         }
 
@@ -4006,7 +4044,6 @@ public class DAO
                 }
             }
 
-            // Be cautious; other threads may use the cached stmt, and set parameters.
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
                 bindStringOrNull(stmt, 1, authorText.toString());
@@ -4157,8 +4194,9 @@ public class DAO
         SyncLock txLock = sSyncedDb.beginTransaction(true);
 
         try {
-            // Drop and recreate our temp copy
+            // Drop the table in case there is an orphaned instance.
             ftsTemp.drop(sSyncedDb);
+            //IMPORTANT: withConstraints MUST BE false
             ftsTemp.create(sSyncedDb, false);
 
             try (SynchronizedStatement insert = sSyncedDb.compileStatement(
@@ -4209,9 +4247,6 @@ public class DAO
 
         Context context = App.getLocalizedAppContext();
 
-        // key: the book language (ISO3)
-        Map<String, Locale> locales = new HashMap<>();
-
         String language;
         Locale locale;
 
@@ -4220,12 +4255,10 @@ public class DAO
             int langIdx = cursor.getColumnIndex(DOM_BOOK_LANGUAGE.getName());
             while (cursor.moveToNext()) {
                 language = cursor.getString(langIdx);
-                locale = locales.get(language);
+                locale = LocaleUtils.getLocale(language);
                 if (locale == null) {
-                    locale = new Locale(LanguageUtils.iso3ToBibliographic(language));
-                    locales.put(language, locale);
+                    locale = Locale.getDefault();
                 }
-
                 rebuildOrderByTitleColumns(context, locale, reorder, cursor,
                                            TBL_BOOKS, DOM_TITLE_OB);
             }
@@ -4286,9 +4319,6 @@ public class DAO
 
         Context context = App.getLocalizedAppContext();
 
-        // key: the book language (ISO3)
-        Map<String, Locale> locales = new HashMap<>();
-
         String language;
         Locale locale;
 
@@ -4298,12 +4328,10 @@ public class DAO
             int langIdx = cursor.getColumnIndex(DOM_BOOK_LANGUAGE.getName());
             while (cursor.moveToNext()) {
                 language = cursor.getString(langIdx);
-                locale = locales.get(language);
+                locale = LocaleUtils.getLocale(language);
                 if (locale == null) {
-                    locale = new Locale(LanguageUtils.iso3ToBibliographic(language));
-                    locales.put(language, locale);
+                    locale = Locale.getDefault();
                 }
-
                 tempUnMangle(context, locale, reorder, cursor,
                              TBL_BOOKS, DOM_TITLE, DOM_TITLE_OB);
             }
@@ -4468,7 +4496,7 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRINT_RUN)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED_CURRENCY)
-                + ',' + TBL_BOOKS.dotAs(DOM_DATE_FIRST_PUBLICATION)
+                + ',' + TBL_BOOKS.dotAs(DOM_DATE_FIRST_PUB)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_FORMAT)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GENRE)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LANGUAGE)
@@ -4650,7 +4678,8 @@ public class DAO
         public static final String EXP_PRIMARY_SERIES_COUNT_AS_BOOLEAN =
                 "CASE"
                 + " WHEN COALESCE(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1)=1"
-                + " THEN 1 ELSE 0"
+                + " THEN 1"
+                + " ELSE 0"
                 + " END";
         /**
          * SQL column: return 1 if the book is available, 0 if not.
@@ -4658,16 +4687,16 @@ public class DAO
          */
         public static final String EXP_LOANEE_AS_BOOLEAN =
                 "CASE"
-                + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
-                + " THEN 1 ELSE 0"
+                + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL THEN 1"
+                + " ELSE 0"
                 + " END";
         /**
          * SQL column: return "" if the book is available, "loanee name" if not.
          */
         public static final String EXP_BOOK_LOANEE_OR_EMPTY =
                 "CASE"
-                + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
-                + " THEN '' ELSE " + TBL_BOOK_LOANEE.dot(DOM_LOANEE)
+                + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL THEN ''"
+                + " ELSE " + TBL_BOOK_LOANEE.dot(DOM_LOANEE)
                 + " END";
         /**
          * Single column, with the Series number of a Book casted to a float
@@ -4683,8 +4712,7 @@ public class DAO
          */
         private static final String EXP_SERIES_WITH_NUMBER =
                 "CASE"
-                + " WHEN " + DOM_BOOK_NUM_IN_SERIES + "=''"
-                + " THEN " + DOM_SERIES_TITLE
+                + " WHEN " + DOM_BOOK_NUM_IN_SERIES + "='' THEN " + DOM_SERIES_TITLE
                 + " ELSE " + DOM_SERIES_TITLE + " || ' #' || " + DOM_BOOK_NUM_IN_SERIES
                 + " END";
         /**
@@ -4695,8 +4723,7 @@ public class DAO
          */
         private static final String EXP_SERIES_WITH_NUMBER_IN_BRACKETS =
                 "CASE"
-                + " WHEN " + DOM_BOOK_NUM_IN_SERIES + "=''"
-                + " THEN " + DOM_SERIES_TITLE
+                + " WHEN " + DOM_BOOK_NUM_IN_SERIES + "='' THEN " + DOM_SERIES_TITLE
                 + " ELSE " + DOM_SERIES_TITLE + " || ' (' || " + DOM_BOOK_NUM_IN_SERIES + " || ')'"
                 + " END";
 
@@ -4708,16 +4735,20 @@ public class DAO
          */
         @NonNull
         private static String localDateExpression(@NonNull final String fieldSpec) {
-            return "CASE WHEN " + fieldSpec + " glob '*-*-* *' "
+            return "CASE"
+                   + " WHEN " + fieldSpec + " GLOB '*-*-* *' "
                    + " THEN datetime(" + fieldSpec + ", 'localtime')"
                    + " ELSE " + fieldSpec
                    + " END";
         }
 
         /**
-         * Return a glob expression to get the 'year' from a text date field in a standard way.
+         * Create a GLOB expression to get the 'year' from a text date field in a standard way.
          * <p>
          * Just look for 4 leading numbers. We don't care about anything else.
+         * <p>
+         * See <a href="https://www.sqlitetutorial.net/sqlite-glob/">
+         * https://www.sqlitetutorial.net/sqlite-glob/</a>
          *
          * @param fieldSpec fully qualified field name
          * @param toLocal   convert the fieldSpec to local time from UTC
@@ -4725,20 +4756,20 @@ public class DAO
          * @return expression
          */
         @NonNull
-        public static String yearGlob(@NonNull String fieldSpec,
-                                      final boolean toLocal) {
+        public static String year(@NonNull String fieldSpec,
+                                  final boolean toLocal) {
             if (toLocal) {
                 fieldSpec = localDateExpression(fieldSpec);
             }
-            return "CASE WHEN " + fieldSpec
-                   + " glob '[0123456789][01234567890][01234567890][01234567890]*'"
-                   + " THEN substr(" + fieldSpec + ",1,4)"
+            return "CASE"
+                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]*'"
+                   + " THEN SUBSTR(" + fieldSpec + ",1,4)"
                    + " ELSE ''"
                    + " END";
         }
 
         /**
-         * Returns a glob expression to get the 'month' from a text date field in a standard way.
+         * Create a GLOB expression to get the 'month' from a text date field in a standard way.
          * <p>
          * Just look for 4 leading numbers followed by 2 or 1 digit.
          * We don't care about anything else.
@@ -4749,25 +4780,22 @@ public class DAO
          * @return expression
          */
         @NonNull
-        public static String monthGlob(@NonNull String fieldSpec,
-                                       final boolean toLocal) {
+        public static String month(@NonNull String fieldSpec,
+                                   final boolean toLocal) {
             if (toLocal) {
                 fieldSpec = localDateExpression(fieldSpec);
             }
-            return "CASE WHEN " + fieldSpec
-                   + " glob '[0123456789][01234567890][01234567890][01234567890]"
-                   + "-[0123456789][01234567890]*'"
-                   + " THEN substr(" + fieldSpec + ",6,2)"
-                   + " WHEN " + fieldSpec
-                   + " glob '[0123456789][01234567890][01234567890][01234567890]"
-                   + "-[0123456789]*'"
-                   + " THEN substr(" + fieldSpec + ",6,1)"
+            return "CASE"
+                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]*'"
+                   + " THEN SUBSTR(" + fieldSpec + ",6,2)"
+                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]*'"
+                   + " THEN SUBSTR(" + fieldSpec + ",6,1)"
                    + " ELSE ''"
                    + " END";
         }
 
         /**
-         * Returns a glob expression to get the 'day' from a text date field in a standard way.
+         * Create a GLOB expression to get the 'day' from a text date field in a standard way.
          * <p>
          * Just look for 4 leading numbers followed by 2 or 1 digit, and then 1 or two digits.
          * We don't care about anything else.
@@ -4785,22 +4813,15 @@ public class DAO
             }
             // Just look for 4 leading numbers followed by 2 or 1 digit then another 2 or 1 digit.
             // We don't care about anything else.
-            return "CASE WHEN " + fieldSpec
-                   + " glob '[0123456789][0123456789][0123456789][0123456789]"
-                   + "-[0123456789][0123456789]-[0123456789][0123456789]*'"
-                   + " THEN substr(" + fieldSpec + ",9,2)"
-                   + " WHEN " + fieldSpec
-                   + " glob '[0123456789][0123456789][0123456789][0123456789]"
-                   + "-[0123456789]-[0123456789][0123456789]*'"
-                   + " THEN substr(" + fieldSpec + ",8,2)"
-                   + " WHEN " + fieldSpec
-                   + " glob '[0123456789][0123456789][0123456789][0123456789]"
-                   + "-[0123456789][0123456789]-[0123456789]*'"
-                   + " THEN substr(" + fieldSpec + ",9,1)"
-                   + " WHEN " + fieldSpec
-                   + " glob '[0123456789][0123456789][0123456789][0123456789]"
-                   + "-[0123456789]-[0123456789]*'"
-                   + " THEN substr(" + fieldSpec + ",8,1)"
+            return "CASE"
+                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*'"
+                   + " THEN SUBSTR(" + fieldSpec + ",9,2)"
+                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9][0-9]*'"
+                   + " THEN SUBSTR(" + fieldSpec + ",8,2)"
+                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9]*'"
+                   + " THEN SUBSTR(" + fieldSpec + ",9,1)"
+                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9]*'"
+                   + " THEN SUBSTR(" + fieldSpec + ",8,1)"
                    + " ELSE " + fieldSpec
                    + " END";
         }
@@ -4842,7 +4863,7 @@ public class DAO
         private static final String BOOKSHELVES =
                 "SELECT " + TBL_BOOKSHELF.dot(DOM_PK_ID)
                 + ',' + TBL_BOOKSHELF.dot(DOM_BOOKSHELF)
-                + ',' + TBL_BOOKSHELF.dot(DOM_FK_STYLE_ID)
+                + ',' + TBL_BOOKSHELF.dot(DOM_FK_STYLE)
                 + ',' + TBL_BOOKLIST_STYLES.dot(DOM_UUID)
                 + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
 
@@ -4942,7 +4963,8 @@ public class DAO
          * All Series for a rebuild of the {@link DBDefinitions#DOM_SERIES_TITLE_OB} column.
          */
         private static final String SERIES_TITLES =
-                // The index of DOM_PK_ID, DOM_SERIES_TITLE, DOM_SERIES_TITLE_OB is hardcoded - don't change!
+                // The index of DOM_PK_ID, DOM_SERIES_TITLE, DOM_SERIES_TITLE_OB is hardcoded
+                // Don't change!
                 "SELECT " + DOM_PK_ID + ',' + DOM_SERIES_TITLE + ',' + DOM_SERIES_TITLE_OB
                 + " FROM " + TBL_SERIES;
 
@@ -4967,7 +4989,7 @@ public class DAO
                 "SELECT DISTINCT "
                 + TBL_BOOKSHELF.dot(DOM_PK_ID)
                 + ',' + TBL_BOOKSHELF.dot(DOM_BOOKSHELF)
-                + ',' + TBL_BOOKSHELF.dot(DOM_FK_STYLE_ID)
+                + ',' + TBL_BOOKSHELF.dot(DOM_FK_STYLE)
                 + ',' + TBL_BOOKLIST_STYLES.dot(DOM_UUID)
 
                 + " FROM " + TBL_BOOK_BOOKSHELF.ref()
@@ -5023,7 +5045,7 @@ public class DAO
                 "SELECT " + TBL_TOC_ENTRIES.dot(DOM_PK_ID)
                 + ',' + TBL_TOC_ENTRIES.dot(DOM_FK_AUTHOR)
                 + ',' + TBL_TOC_ENTRIES.dot(DOM_TITLE)
-                + ',' + TBL_TOC_ENTRIES.dot(DOM_DATE_FIRST_PUBLICATION)
+                + ',' + TBL_TOC_ENTRIES.dot(DOM_DATE_FIRST_PUB)
                 // for convenience, we fetch the Author here
                 + ',' + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
                 + ',' + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
@@ -5070,7 +5092,7 @@ public class DAO
                 + ',' + TBL_TOC_ENTRIES.dot(DOM_PK_ID)
                 + ',' + TBL_TOC_ENTRIES.dot(DOM_TITLE)
                 + ',' + TBL_TOC_ENTRIES.dot(DOM_TITLE_OB)
-                + ',' + TBL_TOC_ENTRIES.dot(DOM_DATE_FIRST_PUBLICATION)
+                + ',' + TBL_TOC_ENTRIES.dot(DOM_DATE_FIRST_PUB)
                 + ", COUNT(" + TBL_TOC_ENTRIES.dot(DOM_PK_ID) + ") AS " + DOM_BL_BOOK_COUNT
 
                 + " FROM " + TBL_TOC_ENTRIES.ref()
@@ -5090,7 +5112,7 @@ public class DAO
                 + ',' + TBL_BOOKS.dot(DOM_PK_ID)
                 + ',' + TBL_BOOKS.dot(DOM_TITLE)
                 + ',' + TBL_BOOKS.dot(DOM_TITLE_OB)
-                + ',' + TBL_BOOKS.dot(DOM_DATE_FIRST_PUBLICATION)
+                + ',' + TBL_BOOKS.dot(DOM_DATE_FIRST_PUB)
                 + ",1 AS " + DOM_BL_BOOK_COUNT
 
                 + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
@@ -5364,7 +5386,7 @@ public class DAO
         static final String BOOKSHELF =
                 "INSERT INTO " + TBL_BOOKSHELF
                 + '(' + DOM_BOOKSHELF
-                + ',' + DOM_FK_STYLE_ID
+                + ',' + DOM_FK_STYLE
                 + ") VALUES (?,?)";
 
         static final String AUTHOR =
@@ -5388,7 +5410,7 @@ public class DAO
                 + '(' + DOM_FK_AUTHOR
                 + ',' + DOM_TITLE
                 + ',' + DOM_TITLE_OB
-                + ',' + DOM_DATE_FIRST_PUBLICATION
+                + ',' + DOM_DATE_FIRST_PUB
                 + ") VALUES (?,?,?,?)";
 
 
@@ -5519,10 +5541,10 @@ public class DAO
                 "DELETE FROM " + TBL_TOC_ENTRIES + " WHERE " + DOM_PK_ID + "=?";
 
         /**
-         * Delete a {@link BooklistStyle} by matching the UUID.
+         * Delete a {@link BooklistStyle}.
          */
-        static final String STYLE_BY_UUID =
-                "DELETE FROM " + TBL_BOOKLIST_STYLES + " WHERE " + DOM_UUID + "=?";
+        static final String STYLE_BY_ID =
+                "DELETE FROM " + TBL_BOOKLIST_STYLES + " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Delete the link between a {@link Book} and an {@link Author}.

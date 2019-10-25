@@ -134,7 +134,7 @@ public class ExportHelperDialogFragment
                 String date = mDateSinceView.getText().toString().trim();
                 mExportHelper.setDateFrom(DateUtils.parseDate(date));
             } catch (@NonNull final RuntimeException e) {
-                UserMessage.show(mDateSinceView, R.string.warning_date_not_set);
+                UserMessage.show(mDateSinceView, R.string.warning_requires_date);
                 mExportHelper.options = Options.NOTHING;
             }
         } else {

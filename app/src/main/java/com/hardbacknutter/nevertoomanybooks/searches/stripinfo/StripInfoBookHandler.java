@@ -260,7 +260,8 @@ public class StripInfoBookHandler
                             i += processText(td, DBDefinitions.KEY_LANGUAGE, bookData);
                             String lang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
                             if (lang != null && !lang.isEmpty()) {
-                                lang = LanguageUtils.getIso3fromDisplayName(lang);
+                                // the language is a 'DisplayName' so convert to iso first.
+                                lang = LanguageUtils.getISO3FromDisplayName(lang);
                                 bookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
                             }
                             break;

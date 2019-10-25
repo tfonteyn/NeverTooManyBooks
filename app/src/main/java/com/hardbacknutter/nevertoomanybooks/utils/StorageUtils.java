@@ -511,7 +511,7 @@ public final class StorageUtils {
     public static void copyFileWithBackup(@NonNull final File source,
                                           @NonNull final File destinationFile) {
         try {
-            // rename the previously copied file
+            // rename the existing file
             renameFile(destinationFile, new File(destinationFile.getPath() + ".bak"));
             // and create a new copy
             copyFile(source, destinationFile);
@@ -534,18 +534,18 @@ public final class StorageUtils {
             throws ExternalStorageException {
 
         String parentDir = source.getParent();
-        // remove to oldest copy
+        // remove the oldest copy
         File previous = new File(parentDir, destination + "." + copies);
         deleteFile(previous);
 
-        // now bump each copy up one index.
+        // now bump each copy up one suffix.
         for (int i = copies - 1; i > 0; i--) {
             File current = new File(parentDir, destination + "." + i);
             renameFile(current, previous);
             previous = current;
         }
 
-        // Give the previous file an index.
+        // Give the previous file a suffix.
         renameFile(destination, previous);
         // and write the new copy.
         renameFile(source, destination);

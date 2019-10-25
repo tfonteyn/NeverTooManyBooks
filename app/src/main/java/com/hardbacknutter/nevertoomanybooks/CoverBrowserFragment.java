@@ -103,7 +103,8 @@ public class CoverBrowserFragment
     private CoverBrowserViewModel.FileInfo mSwitcherImageFileInfo;
 
     /**
-     * <strong>WARNING:</strong> LibraryThing is in fact the only site searched for alternative editions!
+     * <strong>WARNING:</strong> LibraryThing is in fact the only site searched for
+     * alternative editions!
      * See {@link CoverBrowserViewModel} GetEditionsTask.
      *
      * @param isbn ISBN of book

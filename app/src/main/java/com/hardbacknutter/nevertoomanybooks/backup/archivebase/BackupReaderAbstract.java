@@ -104,7 +104,7 @@ public abstract class BackupReaderAbstract
     public void restore(@NonNull final Context context,
                         @NonNull final ImportHelper settings,
                         @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException {
+            throws IOException, ImportException, InvalidArchiveException {
 
         mSettings = settings;
         mResults = new Importer.Results();

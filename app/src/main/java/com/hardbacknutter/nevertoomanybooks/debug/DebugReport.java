@@ -103,10 +103,10 @@ public final class DebugReport {
                     final StringBuilder hexString = new StringBuilder();
                     boolean first = true;
                     for (byte aPublicKey : publicKey) {
-                        if (!first) {
-                            hexString.append(':');
-                        } else {
+                        if (first) {
                             first = false;
+                        } else {
+                            hexString.append(':');
                         }
                         String byteString = Integer.toHexString(0xFF & aPublicKey);
                         if (byteString.length() == 1) {

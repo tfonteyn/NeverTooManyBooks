@@ -40,10 +40,6 @@
     <string name="pe_bob_list_rebuild_state_expanded">Rozwiń wszystkie</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Złóż wszystko</string>
 
-    <string name="pe_bob_list_generation_full">Wymuś pełne wyróżnienie</string>
-    <string name="pe_bob_list_generation_enhanced">Wymuś rozszerzony tryb zgodności</string>
-    <string name="pe_bob_list_generation_legacy">Tryb zgodności sił</string>
-
     <string name="pe_thumbnails_cropper_layer_type_hardware">Sprzęt komputerowy</string>
     <string name="pe_thumbnails_cropper_layer_type_software">Oprogramowanie</string>
     <string name="pe_bob_filter_read_yes">Książki czytane</string>
@@ -74,7 +70,7 @@
     <string name="X_btn_do_not_show_again">Nie pokazuj ponownie</string>
     <string name="X_error_file_must_contain_column">Plik musi zawierać pole %1$s</string>
     <string name="X_info_reset_tips">Od czasu do czasu program może wyświetlać komunikaty z %1$s.\n Naciśnij przycisk poniżej, by przywrócić komunikaty, które były wyłączone.</string>
-    <string name="X_lbl_loan_book_available">Dostępny</string>
+    <string name="X_lbl_available">Dostępny</string>
     <string name="X_lbl_select_fields_to_update">Wybierz pola do aktualizacji</string>
     <string name="X_menu_delete_series">Usuń serię…</string>
     <string name="title_edit_author">Edytuj autora</string>
@@ -91,7 +87,7 @@
     <string name="X_warning_missing_title">Brakuje tytułu.</string>
     <string name="X_warning_missing_title_author">Brak tytułu i / lub autora.</string>
     <string name="X_warning_required_author">Pole autor jest puste</string>
-    <string name="X_warning_required_author_long">Przynajmniej jeden autor jest wymagany</string>
+    <string name="warning_requires_at_least_1_author">Przynajmniej jeden autor jest wymagany.</string>
     <string name="X_warning_required_field_x">%1$s nie może być pusty</string>
     <string name="X_warning_required_title">Tytuł nie może by pusty</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -215,7 +211,7 @@
     <string name="gr_tq_title_task_errors">Błędy zadania</string>
     <string name="help">Pomoc</string>
     <string name="hint_btn_drag_handle">Przeciągnij mnie, aby zmienić kolejność tej listy.</string>
-    <string name="warning_date_not_set">Dodaj prawidłową datę.</string>
+    <string name="warning_requires_date">Dodaj prawidłową datę.</string>
     <string name="hint_developer_key">Klucz deweloperski</string>
     <string name="hint_field_not_set">Nie wybrany(a)</string>
     <string name="hint_empty_field">(Nie ustawiony)</string>
@@ -287,8 +283,8 @@
     <string name="lbl_field_usage_overwrite">Nadpisz istniejące dane</string>
     <string name="lbl_field_usage_skip">Pomijać</string>
     <string name="lbl_first_publication">Pierwsza publikacja</string>
-    <string name="lbl_first_publication_month">Pierwszy miesiąc publikacji</string>
-    <string name="lbl_first_publication_year">Pierwszy rok publikacji</string>
+    <string name="lbl_first_pub_month">Pierwszy miesiąc publikacji</string>
+    <string name="lbl_first_pub_year">Pierwszy rok publikacji</string>
     <string name="lbl_format">Format</string>
     <string name="lbl_genre">Gatunek</string>
     <string name="lbl_given_names">Imiona</string>
@@ -460,7 +456,6 @@
     <string name="pt_bob_books_under_multiple_series">Książki w wielu seriach</string>
     <string name="pt_bob_authors_display">Wyświetl autorów jako</string>
     <string name="pt_bob_header">Szczegóły podsumowujące w nagłówku</string>
-    <string name="pt_booklist_generation">Opcja tworzenia listy książek</string>
     <string name="pt_bob_list_rebuild_state">Stan uruchamiania listy książek</string>
     <string name="pt_bob_authors_sort">Sortuj autorów według</string>
     <string name="pt_bob_text_size">Rozmiar tekstu listy książek</string>
@@ -565,7 +560,7 @@
     <string name="vldt_non_blank_required_for_x">Oczekiwana wartość niepusta dla „%1$s”</string>
     <string name="vldt_read_start_after_end">Data rozpoczęcia czytania późniejsza od daty zakończenia</string>
     <string name="vldt_real_expected_for_x">Oczekiwana wartość liczbowa dla „%1$s”</string>
-    <string name="warning_action_requires_isbn">Ta akcja wymaga prawidłowego numeru ISBN.</string>
+    <string name="warning_requires_isbn">Ta akcja wymaga prawidłowego numeru ISBN.</string>
     <string name="warning_author_already_in_list">Autor jest już na liście</string>
     <string name="warning_backup_request">Czy chcesz wykonac kopię zapasową na karcie SD?</string>
     <string name="info_bad_scanner">Wygląda na to, że istniejąca aplikacja skanera kodów kreskowych nie jest kompatybilna z &APP_NAME;.</string>
@@ -586,15 +581,15 @@
     <string name="warning_no_editions">Brak wydań</string>
     <string name="warning_no_isbn_stored_for_book">Nie zapisano numeru ISBN dla książki</string>
     <string name="warning_no_matching_book_found">Nie znaleziono pasującej książki</string>
-    <string name="warning_required_at_least_one">Co najmniej jedno pole nie może być puste</string>
+    <string name="warning_requires_at_least_one_field">Co najmniej jedno pole nie może być puste.</string>
     <string name="X_warning_select_an_existing_file">Wybierz istniejący plik</string>
-    <string name="warning_select_min_1_field">Wybierz przynajmniej jedno pole do zaktualizowania</string>
+    <string name="warning_select_at_least_1_field">Wybierz przynajmniej jedno pole do zaktualizowania.</string>
     <string name="warning_series_already_in_list">Seria (tom) jest na liście</string>
     <string name="warning_toc_confirm">Potwierdź, czy te pozycje antologii są (zasadniczo) poprawne</string>
     <string name="warning_unable_to_find_book">Nie mogę znaleźć tej książki</string>
     <string name="warning_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
     <string name="warning_unsaved_edits2">Nie zapisałeś zmian. Czy na pewno chcesz kontynuować?</string>
-    <string name="warning_x_already_exists">%1$s już istnieje</string>
+    <string name="warning_x_already_exists">%1$s już istnieje.</string>
     <string name="warning_x_is_not_a_valid_isbn">„%1$s” nie jest prawidłowym numerem ISBN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">„%1$s” nie jest prawidłowym numerem ISBN lub ASIN</string>
     <string name="x_of_y">%1$d z %2$d</string>
@@ -640,4 +635,5 @@
     <string name="hint_empty_series">(Bez serii)</string>
     <string name="hint_empty_month">(Nie wypełniono miesiąca)</string>
     <string name="hint_empty_read_status">(Status odczytu nieznany)</string>
+    <string name="warning_select_at_least_1_group">Wybierz co najmniej jedną grupę.</string>
 </resources>

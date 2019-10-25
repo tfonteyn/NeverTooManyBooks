@@ -69,8 +69,12 @@ public class EditLanguageDialog
         if (lang.length() > 3) {
             editLang = lang;
         } else {
-            Locale loc = LocaleUtils.createLocale(lang);
-            editLang = loc.getDisplayLanguage();
+            Locale locale = LocaleUtils.getLocale(lang);
+            if (locale == null) {
+                editLang = lang;
+            } else {
+                editLang = locale.getDisplayLanguage();
+            }
         }
         super.edit(editLang, R.layout.dialog_edit_language, R.string.lbl_language);
     }
@@ -79,7 +83,7 @@ public class EditLanguageDialog
     protected void saveChanges(@NonNull final Context context,
                                @NonNull final String from,
                                @NonNull final String to) {
-        mDb.updateLanguage(from, LanguageUtils.getIso3fromDisplayName(to, Locale.getDefault()));
+        mDb.updateLanguage(from, LanguageUtils.getISO3FromDisplayName(to));
         sendBookChangedMessage(BookChangedListener.LANGUAGE);
     }
 }

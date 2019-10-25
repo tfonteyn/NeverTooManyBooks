@@ -43,8 +43,6 @@ public interface Scanner {
      *
      * @param fragment    calling fragment
      * @param requestCode which will be passed back to onActivityResult
-     *                    <p>
-     *                    When receiving a {@code false}, the caller <strong>should not</strong> retry.
      *
      * @return {@code true} if we could start the activity.
      */

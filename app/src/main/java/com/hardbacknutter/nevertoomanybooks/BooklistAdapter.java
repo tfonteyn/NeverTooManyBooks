@@ -149,7 +149,7 @@ public class BooklistAdapter
             return new BookHolder(itemView, mDb, mStyle);
         }
 
-        String columnName = RowKind.get(viewType).getDisplayDomain().getName();
+        String columnName = RowKind.get(viewType).getFormattedDomain().getName();
         int columnIndex = mCursor.getColumnIndex(columnName);
         if (columnIndex < 0) {
             throw new ColumnNotPresentException(columnName);
@@ -166,7 +166,7 @@ public class BooklistAdapter
 
             // Months are displayed by name
             case RowKind.DATE_PUBLISHED_MONTH:
-            case RowKind.DATE_FIRST_PUBLICATION_MONTH:
+            case RowKind.DATE_FIRST_PUB_MONTH:
             case RowKind.DATE_ACQUIRED_MONTH:
             case RowKind.DATE_ADDED_MONTH:
             case RowKind.DATE_READ_MONTH:
@@ -192,7 +192,7 @@ public class BooklistAdapter
             case RowKind.DATE_ACQUIRED_YEAR:
             case RowKind.DATE_ADDED_DAY:
             case RowKind.DATE_ADDED_YEAR:
-            case RowKind.DATE_FIRST_PUBLICATION_YEAR:
+            case RowKind.DATE_FIRST_PUB_YEAR:
             case RowKind.DATE_LAST_UPDATE_DAY:
             case RowKind.DATE_LAST_UPDATE_YEAR:
             case RowKind.DATE_PUBLISHED_YEAR:
@@ -296,7 +296,7 @@ public class BooklistAdapter
     public int getItemViewType(final int position) {
         mCursor.moveToPosition(position);
         CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
-        return row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND);
+        return row.getInt(DBDefinitions.KEY_BL_NODE_KIND);
     }
 
     @Override
@@ -1108,8 +1108,7 @@ public class BooklistAdapter
         public void setText(@Nullable final String text,
                             @IntRange(from = 1) final int level) {
             if (text != null && !text.isEmpty()) {
-                super.setText(LanguageUtils.getDisplayName(Locale.getDefault(), text),
-                              level);
+                super.setText(LanguageUtils.getDisplayName(text), level);
             } else {
                 super.setText(text, level);
             }

@@ -38,6 +38,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -120,10 +121,22 @@ public class StyleGroupsActivity
      */
     @Override
     public void onBackPressed() {
-        mModel.saveStyle();
-        Intent data = new Intent().putExtra(UniqueId.BKEY_STYLE, mModel.getStyle());
-        setResult(Activity.RESULT_OK, data);
-        super.onBackPressed();
+        mModel.updateStyle();
+
+        if (mModel.getStyle().getGroups().isEmpty()) {
+            new AlertDialog.Builder(this)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setTitle(R.string.title_edit_style)
+                    .setMessage(R.string.warning_select_at_least_1_group)
+                    .setNegativeButton(R.string.btn_continue_editing, (d, which) -> d.dismiss())
+                    .setPositiveButton(R.string.btn_confirm_exit, (d, which) -> finish())
+                    .create()
+                    .show();
+        } else {
+            Intent data = new Intent().putExtra(UniqueId.BKEY_STYLE, mModel.getStyle());
+            setResult(Activity.RESULT_OK, data);
+            super.onBackPressed();
+        }
     }
 
     /**

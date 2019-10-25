@@ -49,6 +49,22 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * (Android does that anyhow), but the handling of properly closing statements.
  * You do get extra caching across individual calls,
  * but not sure if that makes any impact.
+ * <p>
+ * Typical usage:
+ * <pre>
+ *     {@code
+ *     SynchronizedStatement stmt = mStatementManager.get(STMT_1);
+ *     if (stmt == null) {
+ *         stmt = mStatementManager.add(STMT_1, "SELECT id FROM table WHERE col=?");
+ *         long id;
+ *         // Be cautious; other threads may use the cached stmt, and set parameters.
+ *         synchronized (stmt) {
+ *             stmt.bindLong(1, value);
+ *             id = stmt.simpleQueryForLongOrZero();
+ *         }
+ *         ...
+ *     }
+ * </pre>
  */
 public class SqlStatementManager
         implements AutoCloseable {
@@ -125,14 +141,36 @@ public class SqlStatementManager
     }
 
     /**
+     * Close and remove the given statements.
+     *
+     * @param names statement names
+     */
+    public void close(@NonNull final String... names) {
+        synchronized (mStatements) {
+            for (String name : names) {
+                try {
+                    SynchronizedStatement stmt = mStatements.get(name);
+                    if (stmt != null) {
+                        stmt.close();
+                        mStatements.remove(name);
+                    }
+                } catch (@NonNull final RuntimeException ignored) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Close and remove <strong>all</strong> statements.
+     * <p>
      * RuntimeException are caught and ignored.
      */
     @Override
     public void close() {
         synchronized (mStatements) {
-            for (SynchronizedStatement s : mStatements.values()) {
+            for (SynchronizedStatement stmt : mStatements.values()) {
                 try {
-                    s.close();
+                    stmt.close();
                 } catch (@NonNull final RuntimeException ignored) {
                 }
             }

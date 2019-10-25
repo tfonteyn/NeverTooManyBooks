@@ -502,9 +502,9 @@ class AmazonHandler
                                 mBuilder.toString());
 
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
-                // the language is a 'DisplayName'
+                // the language is a 'DisplayName' so convert to iso first.
                 addIfNotPresent(mBookData, DBDefinitions.KEY_LANGUAGE,
-                                LanguageUtils.getIso3fromDisplayName(mBuilder.toString()));
+                                LanguageUtils.getISO3FromDisplayName(mBuilder.toString()));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {
                 mCurrencyAmount = mBuilder.toString();

@@ -179,10 +179,12 @@ abstract class ApiHandlerNative {
 //            StringBuilder sb = new StringBuilder();
 //            boolean first = true;
 //            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
-//                if (!first) {
+//                if (first) {
+//                    first = false;
+//                } else {
 //                    sb.append("&");
 //                }
-//                first = false;
+//
 //                // note we need to encode both key and value.
 //                sb.append(OAuth.percentEncode(entry.getKey()));
 //                sb.append("=");

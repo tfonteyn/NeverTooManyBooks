@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.DataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataCrossValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataValidator;
-import com.hardbacknutter.nevertoomanybooks.datamanager.validators.FloatValidator;
+import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DoubleValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.IntegerValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
@@ -75,9 +75,9 @@ public class DataManager {
     /** re-usable validator. */
     protected static final DataValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
     /** re-usable validator. */
-    protected static final DataValidator BLANK_OR_FLOAT_VALIDATOR = new OrValidator(
+    protected static final DataValidator BLANK_OR_DOUBLE_VALIDATOR = new OrValidator(
             new BlankValidator(),
-            new FloatValidator());
+            new DoubleValidator());
 
     /** DataValidators. */
     private final Map<String, DataValidator> mValidatorsMap = new UniqueMap<>();
@@ -347,8 +347,8 @@ public class DataManager {
      * @param key   Key of data object
      * @param value to store
      */
-    public void putFloat(@NonNull final String key,
-                         final float value) {
+    void putFloat(@NonNull final String key,
+                  final float value) {
         if (mDataAccessorsMap.containsKey(key)) {
             //noinspection ConstantConditions
             mDataAccessorsMap.get(key).put(mRawData, value);

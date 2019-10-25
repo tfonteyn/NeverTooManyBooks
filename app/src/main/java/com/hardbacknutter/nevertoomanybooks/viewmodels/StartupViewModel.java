@@ -38,7 +38,6 @@ import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -204,24 +203,17 @@ public class StartupViewModel
      * We use the standard AsyncTask execute, so tasks are run serially.
      */
     public void startTasks(@NonNull final Context context) {
-        // Remove old logs
-        Logger.clearLog(context);
+
+        Logger.cycleLogs(context);
 
         try {
             mDb = new DAO();
-            // debugging , to-be-removed
-            // make sure we never do this on a real device
-//            if (Build.PRODUCT.startsWith("sdk")) {
-//                //URGENT: preserveNodes
-//                TBL_BOOK_LIST_NODE_SETTINGS.deleteAllRows(mDb.getUnderlyingDatabase());
-//            }
 
         } catch (@NonNull final DBHelper.UpgradeException e) {
             Logger.error(this, e, "startTasks");
             mTaskException.setValue(e);
             return;
         }
-
 
         if (mStartupTasksShouldBeStarted) {
             int taskId = 0;
@@ -336,7 +328,7 @@ public class StartupViewModel
             }
             publishProgress(new TaskProgressMessage(mTaskId, R.string.progress_msg_optimizing));
             try {
-                LanguageUtils.createLanguageMappingCache(Locale.getDefault());
+                LanguageUtils.createLanguageMappingCache();
 
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);

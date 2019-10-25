@@ -105,7 +105,6 @@ public final class Prefs {
 
     public static final String pk_bob_use_task_for_extras = "style.booklist.task.extras";
 
-    public static final String pk_compat_booklist_mode = "compat.booklist.mode";
     public static final String pk_compat_image_cropper_layer_type =
             "compat.image.cropper.viewlayertype";
 

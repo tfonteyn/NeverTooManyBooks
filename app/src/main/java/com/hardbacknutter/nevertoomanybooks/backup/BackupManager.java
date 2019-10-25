@@ -123,12 +123,13 @@ public final class BackupManager {
     public static boolean archiveHasValidDates(@NonNull final Context context,
                                                @NonNull final Uri uri) {
         boolean hasValidDates;
-        // InvalidArchiveException is irrelevant, as we would not have gotten here
+
         try (BackupReader reader = getReader(context, uri)) {
             BackupInfo info = reader.getInfo();
             reader.close();
             hasValidDates = info.hasValidDates();
         } catch (@NonNull final IOException | InvalidArchiveException e) {
+            // InvalidArchiveException is irrelevant here, as we would not have gotten this far
             Logger.error(context, BackupManager.class, e);
             hasValidDates = false;
         }

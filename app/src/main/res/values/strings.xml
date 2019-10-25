@@ -167,14 +167,19 @@
     </string>
 
     <!-- some unique field already exists; e.g. accidentally creating a duplicate Bookshelf -->
-    <string name="warning_x_already_exists">%1$s already exists</string>
+    <string name="warning_x_already_exists">%1$s already exists.</string>
 
-    <string name="warning_select_min_1_field">Select at least one field to update</string>
-    <string name="warning_action_requires_isbn">This action requires a valid ISBN</string>
+    <string name="warning_select_at_least_1_group">Select at least one group.</string>
+    <string name="warning_select_at_least_1_field">Select at least one field to update.</string>
+
+    <string name="warning_requires_at_least_1_author">At least one author must be specified.</string>
+    <string name="warning_requires_at_least_one_field">At least one field must not be blank.</string>
+    <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
+    <string name="warning_requires_date">Please add a valid date.</string>
+
+
     <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
-    <string name="warning_required_at_least_one">At least one field must not be blank</string>
     <string name="warning_missing_name">Name can not be blank</string>
-    <string name="warning_date_not_set">Please add a valid date</string>
     <string name="warning_author_already_in_list">Author is already in the list</string>
     <string name="warning_series_already_in_list">Series is already in the list</string>
     <string name="warning_no_matching_book_found">No matching book found</string>
@@ -186,10 +191,10 @@
     <string name="warning_unable_to_find_book">Unable to find the specified book</string>
     <string name="warning_no_editions">No additional edition information available</string>
     <string name="warning_if_day_set_month_and_year_must_be">
-        If day is specified, then both month and year must also be specified.
+        If a day is specified, then both month and year must be specified.
     </string>
     <string name="warning_if_month_set_year_must_be">
-        If month is specified, then year must also be specified.
+        If a month is specified, then a year must also be specified.
     </string>
 
     <string name="warning_book_no_longer_exists">The specified book no longer exists.</string>
@@ -735,14 +740,6 @@
     <string name="pe_bob_list_rebuild_state_preserve">Preserve current state</string>
     <string name="pe_bob_list_rebuild_state_expanded">Always start expanded</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Always start collapsed</string>
-
-    <!--  ListPreference - allows overriding the default method used to generate the booklist
-          as defined by Android version -->
-    <string name="pt_booklist_generation">Booklist Generation Option</string>
-    <string name="pe_bob_list_generation_full">Force Fully Featured</string>
-    <string name="pe_bob_list_generation_enhanced">Force Enhanced Compatibility Mode</string>
-    <string name="pe_bob_list_generation_legacy">Force Compatibility Mode</string>
-
 
     <!-- Preference Category -->
     <string name="pg_barcode_scanner">Barcode scanner</string>
@@ -1378,8 +1375,8 @@
     <string name="lbl_date_acquired_month">Month Acquired</string>
     <string name="lbl_date_acquired_year">Year Acquired</string>
     <!-- Individual fields for "First publication date" -->
-    <string name="lbl_first_publication_month">First Pub. Month</string>
-    <string name="lbl_first_publication_year">First Pub. Year</string>
+    <string name="lbl_first_pub_month">First Pub. Month</string>
+    <string name="lbl_first_pub_year">First Pub. Year</string>
     <!-- Individual fields for "original publication date" -->
     <string name="lbl_publication_year">Publication Year</string>
     <string name="lbl_publication_month">Publication Month</string>
@@ -1444,7 +1441,6 @@
     <string name="X_warning_cover_corrupt">Cover is corrupt</string>
     <string name="X_warning_book_was_deleted_uc">THIS BOOK HAS BEEN DELETED</string>
     <string name="X_warning_required_author">Author field is blank</string>
-    <string name="X_warning_required_author_long">At least one author must be specified</string>
     <string name="X_warning_required_field_x">%1$s must not be blank</string>
     <string name="X_warning_required_title">Title must be specified</string>
     <string name="X_warning_missing_title_author">The title and/or author is missing.</string>
@@ -1490,11 +1486,9 @@
 
     <string name="X_btn_do_not_show_again">Do not show again</string>
 
-    <!-- Shown in lists. Whether a book is available to be loaned out. Should be short -->
-    <string name="X_lbl_loan_book_available">Available</string>
-
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
 
+    <string name="X_lbl_available">Available</string>
     <string name="X_lbl_order">Order</string>
     <string name="X_lbl_other">Other</string>
     <string name="X_updated">Updated</string>

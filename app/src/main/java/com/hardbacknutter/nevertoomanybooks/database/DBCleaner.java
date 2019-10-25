@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.database;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -135,7 +134,7 @@ public class DBCleaner {
         List<String> names = mDb.getLanguageCodes();
         for (String name : names) {
             if (name != null && name.length() > 3) {
-                String iso = LanguageUtils.getIso3fromDisplayName(name, Locale.getDefault());
+                String iso = LanguageUtils.getISO3FromDisplayName(name);
                 Logger.debug(this, "updateLanguages",
                              "Global language update of `" + name + "` to `" + iso + '`');
                 if (!iso.equals(name)) {

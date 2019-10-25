@@ -441,7 +441,7 @@ public class CoverHandler {
             mCoverBrowser.setTargetFragment(mFragment, UniqueId.REQ_ACTION_COVER_BROWSER);
 
         } else {
-            UserMessage.show(mCoverView, R.string.warning_action_requires_isbn);
+            UserMessage.show(mCoverView, R.string.warning_requires_isbn);
         }
     }
 

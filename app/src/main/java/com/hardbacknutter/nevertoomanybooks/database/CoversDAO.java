@@ -158,7 +158,7 @@ public final class CoversDAO
         TBL_IMAGE
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex("id", true, DOM_PK_ID)
-                .addIndex(DOM_CACHE_ID.getName(), true, DOM_CACHE_ID)
+                .addIndex(DOM_CACHE_ID, true, DOM_CACHE_ID)
                 .addIndex(DOM_CACHE_ID.getName() + '_' + DOM_DATE.getName(),
                           true, DOM_CACHE_ID, DOM_DATE);
     }
@@ -253,7 +253,7 @@ public final class CoversDAO
      * The original code also had a 2nd 'delete' method with a different where clause:
      * // We use encodeString here because it's possible a user screws up the data and imports
      * // bad UUID's...this has happened.
-     * // String whereClause = DOM_CACHE_ID + " glob '" + DAO.encodeString(uuid) + ".*'";
+     * // String whereClause = DOM_CACHE_ID + " GLOB '" + DAO.encodeString(uuid) + ".*'";
      * In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
      */
     public static void delete(@NonNull final String uuid) {

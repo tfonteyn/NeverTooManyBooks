@@ -785,8 +785,8 @@ public class XmlExporter
                       .append(attr(DBDefinitions.KEY_EID_GOODREADS_BOOK,
                                    bookCursor.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)))
                       .append(attr(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE,
-                                   bookCursor
-                                           .getString(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE)))
+                                   bookCursor.getString(
+                                           DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE)))
 
                       // cross-linked with the loanee table
                       .append(attr(DBDefinitions.KEY_LOANEE,

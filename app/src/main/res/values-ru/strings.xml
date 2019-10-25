@@ -40,10 +40,6 @@
     <string name="pe_bob_list_rebuild_state_expanded">Расширить все</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Сложить все</string>
 
-    <string name="pe_bob_list_generation_full">Полная функциональность</string>
-    <string name="pe_bob_list_generation_enhanced">Повышенный режим совместимости</string>
-    <string name="pe_bob_list_generation_legacy">Режим совместимости</string>
-
     <string name="pe_thumbnails_cropper_layer_type_hardware">аппаратные средства</string>
     <string name="pe_thumbnails_cropper_layer_type_software">Программного обеспечения</string>
     <string name="pe_bob_filter_read_yes">Книги читают</string>
@@ -74,7 +70,7 @@
     <string name="X_btn_do_not_show_again">Больше не показывать</string>
     <string name="X_error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
     <string name="X_info_reset_tips">Время от времени приложение может показывать опциональные сообщения о %1$s.\n Нажмите кнопку внизу, чтобы сбросить все отключенные сообщения.</string>
-    <string name="X_lbl_loan_book_available">Доступно</string>
+    <string name="X_lbl_available">Доступно</string>
     <string name="X_lbl_select_fields_to_update">Выберите поля для обновления</string>
     <string name="X_menu_delete_series">Удаление серии…</string>
     <string name="title_edit_author">Редактирование автора</string>
@@ -91,7 +87,7 @@
     <string name="X_warning_missing_title">Название отсутствует.</string>
     <string name="X_warning_missing_title_author">Название и / или автор отсутствует.</string>
     <string name="X_warning_required_author">Не заполнено поле Автор</string>
-    <string name="X_warning_required_author_long">Должен быть указан хотя бы один автор</string>
+    <string name="warning_requires_at_least_1_author">Должен быть указан хотя бы один автор.</string>
     <string name="X_warning_required_field_x">%1$s должен быть не пустым</string>
     <string name="X_warning_required_title">Должно быть указано название</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -213,7 +209,7 @@
     <string name="gr_tq_title_task_errors">Ошибки задач</string>
     <string name="help">Помощь</string>
     <string name="hint_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке.</string>
-    <string name="warning_date_not_set">Пожалуйста, добавьте действительную дату.</string>
+    <string name="warning_requires_date">Пожалуйста, добавьте действительную дату.</string>
     <string name="hint_developer_key">Ключ разработчика</string>
     <string name="hint_field_not_set">Не установлено</string>
     <string name="hint_empty_field">(пусто)</string>
@@ -285,8 +281,8 @@
     <string name="lbl_field_usage_overwrite">Перезаписывает существующие данные</string>
     <string name="lbl_field_usage_skip">Пропускать</string>
     <string name="lbl_first_publication">первая публикация</string>
-    <string name="lbl_first_publication_month">первый месяц публикации</string>
-    <string name="lbl_first_publication_year">первый год публикации</string>
+    <string name="lbl_first_pub_month">первый месяц публикации</string>
+    <string name="lbl_first_pub_year">первый год публикации</string>
     <string name="lbl_format">Формат</string>
     <string name="lbl_genre">Жанр</string>
     <string name="lbl_given_names">Имя</string>
@@ -458,7 +454,6 @@
     <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
     <string name="pt_bob_authors_display">Показать авторов как</string>
     <string name="pt_bob_header">Суммарная информация в заголовке</string>
-    <string name="pt_booklist_generation">Составление списка книг</string>
     <string name="pt_bob_list_rebuild_state">Состояние запуска списка книг</string>
     <string name="pt_bob_authors_sort">Сортировать авторов по</string>
     <string name="pt_bob_text_size">Размер элемента списка книг</string>
@@ -563,7 +558,7 @@
     <string name="vldt_non_blank_required_for_x">Требуется не пустое значение для: «%1$s»</string>
     <string name="vldt_read_start_after_end">Дата начала чтения позже даты завершения</string>
     <string name="vldt_real_expected_for_x">Введите действительное число: «%1$s»</string>
-    <string name="warning_action_requires_isbn">Для этого действия требуется действительный ISBN.</string>
+    <string name="warning_requires_isbn">Для этого действия требуется действительный ISBN.</string>
     <string name="warning_author_already_in_list">Автор уже есть в списке</string>
     <string name="warning_backup_request">Вы хотите создать резервную копию базы данных на SD-карте?</string>
     <string name="info_bad_scanner">Возможно, ваше приложение-сканер не совместимо с &APP_NAME;.</string>
@@ -584,15 +579,15 @@
     <string name="warning_no_editions">Нет дополнительной информации о выпуске</string>
     <string name="warning_no_isbn_stored_for_book">Нет ISBN хранящегося для книги</string>
     <string name="warning_no_matching_book_found">Нет совпавших книг</string>
-    <string name="warning_required_at_least_one">Хотя бы одно поле не должно быть пустым.</string>
+    <string name="warning_requires_at_least_one_field">Хотя бы одно поле не должно быть пустым.</string>
     <string name="X_warning_select_an_existing_file">Пожалуйста, выберите существующий файл</string>
-    <string name="warning_select_min_1_field">Выберите хотя бы одно поле для обновления</string>
+    <string name="warning_select_at_least_1_field">Выберите хотя бы одно поле для обновления.</string>
     <string name="warning_series_already_in_list">Серия уже есть в списке</string>
     <string name="warning_toc_confirm">Пожалуйста, подтвердите, что названия антологий (в основном) правильны</string>
     <string name="warning_unable_to_find_book">Поиск указанной книги не удался</string>
     <string name="warning_unsaved_edits">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
     <string name="warning_unsaved_edits2">У Вас есть несохранённые изменения. Вы уверены что хотите продолжить?</string>
-    <string name="warning_x_already_exists">%1$s уже существует</string>
+    <string name="warning_x_already_exists">%1$s уже существует.</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s не правльный ISBN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s неправильный ISBN или ASIN</string>
     <string name="x_of_y">%1$d из %2$d</string>
@@ -638,5 +633,6 @@
     <string name="hint_empty_series">(Нет серии)</string>
     <string name="hint_empty_month">(Месяц не заполнен)</string>
     <string name="hint_empty_read_status">(Статус чтения неизвестен)</string>
+    <string name="warning_select_at_least_1_group">Выберите хотя бы одну группу.</string>
 
 </resources>

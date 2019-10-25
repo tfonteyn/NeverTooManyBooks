@@ -44,12 +44,11 @@ import androidx.preference.SwitchPreference;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -81,11 +80,12 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_RATING;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ_END;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_ACQUIRED_DAY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_ACQUIRED_MONTH;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_ACQUIRED_YEAR;
@@ -94,18 +94,19 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_ADDED_YEAR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_FIRST_PUBLICATION_MONTH;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_FIRST_PUBLICATION_YEAR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_LAST_UPDATE_YEAR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_LAST_UPDATED_DAY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_LAST_UPDATED_MONTH;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_LAST_UPDATED_YEAR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_PUBLISHED_MONTH;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_PUBLISHED_YEAR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_READ_DAY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_READ_MONTH;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_READ_YEAR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_UPDATE_DAY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_UPDATE_MONTH;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_READ_STATUS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_TITLE_LETTER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE_OB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
@@ -233,10 +234,6 @@ public class BooklistGroup
         for (@RowKind.Kind int kind : RowKind.getAllGroupKinds()) {
             list.add(newInstance(kind, uuid, isUserDefinedStyle));
         }
-//        //skip BOOK kind
-//        for (int kind = 1; kind < RowKind.size(); kind++) {
-//            list.add(newInstance(kind, uuid, isUserDefinedStyle));
-//        }
         return list;
     }
 
@@ -266,13 +263,13 @@ public class BooklistGroup
     }
 
     @NonNull
-    DomainDefinition getDisplayDomain() {
-        return RowKind.get(mKind).getDisplayDomain();
+    DomainDefinition getFormattedDomain() {
+        return RowKind.get(mKind).getFormattedDomain();
     }
 
     @NonNull
-    String getSourceExpression() {
-        return RowKind.get(mKind).getSourceExpression();
+    String getFormattedDomainExpression() {
+        return RowKind.get(mKind).getFormattedDomainExpression();
     }
 
     @NonNull
@@ -280,11 +277,21 @@ public class BooklistGroup
         return RowKind.get(mKind).getCompoundKey();
     }
 
+    /**
+     * Get the domains represented by this group.
+     *
+     * @return the domains for this group and its outer groups.
+     */
     @Nullable
     ArrayList<DomainDefinition> getDomains() {
         return mDomains;
     }
 
+    /**
+     * Set the domains represented by this group.
+     *
+     * @param domains list of domains.
+     */
     void setDomains(@Nullable final ArrayList<DomainDefinition> domains) {
         mDomains = domains;
     }
@@ -600,8 +607,8 @@ public class BooklistGroup
         public static final int DATE_ACQUIRED_YEAR = 24;
         public static final int DATE_ACQUIRED_MONTH = 25;
         public static final int DATE_ACQUIRED_DAY = 26;
-        public static final int DATE_FIRST_PUBLICATION_YEAR = 27;
-        public static final int DATE_FIRST_PUBLICATION_MONTH = 28;
+        public static final int DATE_FIRST_PUB_YEAR = 27;
+        public static final int DATE_FIRST_PUB_MONTH = 28;
         // NEWTHINGS: ROW_KIND_x
         // the highest valid index of kinds - ALWAYS to be updated after adding a row kind...
         private static final int ROW_KIND_MAX = 28;
@@ -610,178 +617,151 @@ public class BooklistGroup
         static {
             RowKind rowKind;
 
-            // hardcoded BOOK construction.
-            rowKind = new RowKind();
+            rowKind = new RowKind(BOOK, R.string.lbl_book, "");
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
 
-            // override the display domain.
-            // We cannot set the source expression as it will depend
-            // on the current style.
-            rowKind = new RowKind(AUTHOR, R.string.lbl_author, "a",
-                                  DOM_FK_AUTHOR)
-                    .setDisplayDomain(DOM_AUTHOR_FORMATTED);
+            //noinspection ConstantConditions
+            rowKind = new RowKind(AUTHOR, R.string.lbl_author, "a")
+                    .setKey(DOM_FK_AUTHOR, TBL_AUTHORS.dot(DOM_PK_ID))
+                    // the source expression is not used
+                    .setFormattedDomain(DOM_AUTHOR_FORMATTED, null);
+            ALL_KINDS.put(rowKind.mKind, rowKind);
+
+            rowKind = new RowKind(SERIES, R.string.lbl_series, "s")
+                    .setKey(DOM_FK_SERIES, TBL_SERIES.dot(DOM_PK_ID))
+                    .setFormattedDomain(DOM_SERIES_TITLE, TBL_SERIES.dot(DOM_SERIES_TITLE));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
 
-            // override the display domain.
-            rowKind = new RowKind(SERIES, R.string.lbl_series, "s",
-                                  DOM_FK_SERIES)
-                    .setDisplayDomain(DOM_SERIES_TITLE)
-                    .setSourceExpression(TBL_SERIES.dot(DOM_SERIES_TITLE));
+            rowKind = new RowKind(BOOKSHELF, R.string.lbl_bookshelf, "shelf")
+                    .setDomain(DOM_BOOKSHELF, TBL_BOOKSHELF.dot(DOM_BOOKSHELF))
+            ;
+            ALL_KINDS.put(rowKind.mKind, rowKind);
+
+            rowKind = new RowKind(LOANED, R.string.lbl_loaned, "l")
+                    .setDomain(DOM_LOANEE, DAO.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
 
-            //all others will use the underlying domain as the displayDomain
-            rowKind = new RowKind(GENRE, R.string.lbl_genre, "g",
-                                  DOM_BOOK_GENRE)
-                    .setSourceExpression(TBL_BOOKS.dot(DOM_BOOK_GENRE));
+            rowKind = new RowKind(GENRE, R.string.lbl_genre, "g")
+                    .setDomain(DOM_BOOK_GENRE, TBL_BOOKS.dot(DOM_BOOK_GENRE));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(PUBLISHER, R.string.lbl_publisher, "p",
-                                  DOM_BOOK_PUBLISHER)
-                    .setSourceExpression(TBL_BOOKS.dot(DOM_BOOK_PUBLISHER));
+            rowKind = new RowKind(PUBLISHER, R.string.lbl_publisher, "p")
+                    .setDomain(DOM_BOOK_PUBLISHER, TBL_BOOKS.dot(DOM_BOOK_PUBLISHER));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(READ_STATUS, R.string.lbl_read_and_unread, "r",
-                                  DOM_RK_READ_STATUS)
-                    .setSourceExpression(TBL_BOOKS.dot(DOM_BOOK_READ));
+            rowKind = new RowKind(READ_STATUS, R.string.lbl_read_and_unread, "r")
+                    .setDomain(DOM_RK_READ_STATUS, TBL_BOOKS.dot(DOM_BOOK_READ));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(LOANED, R.string.lbl_loaned, "l",
-                                  DOM_LOANEE)
-                    .setSourceExpression(DAO.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY);
+            rowKind = new RowKind(LOCATION, R.string.lbl_location, "loc")
+                    .setDomain(DOM_BOOK_LOCATION, TBL_BOOKS.dot(DOM_BOOK_LOCATION));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(RATING, R.string.lbl_rating, "rat",
-                                  DOM_BOOK_RATING)
-                    .setSourceExpression("CAST(" + TBL_BOOKS.dot(DOM_BOOK_RATING) + " AS INTEGER");
+            rowKind = new RowKind(LANGUAGE, R.string.lbl_language, "lng")
+                    .setDomain(DOM_BOOK_LANGUAGE, TBL_BOOKS.dot(DOM_BOOK_LANGUAGE));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(BOOKSHELF, R.string.lbl_bookshelf, "shelf",
-                                  DOM_BOOKSHELF)
-                    .setSourceExpression(TBL_BOOKSHELF.dot(DOM_BOOKSHELF));
+            rowKind = new RowKind(FORMAT, R.string.lbl_format, "fmt")
+                    .setDomain(DOM_BOOK_FORMAT, TBL_BOOKS.dot(DOM_BOOK_FORMAT));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(LOCATION, R.string.lbl_location, "loc",
-                                  DOM_BOOK_LOCATION)
-                    .setSourceExpression(TBL_BOOKS.dot(DOM_BOOK_LOCATION));
+            rowKind = new RowKind(RATING, R.string.lbl_rating, "rt")
+                    .setDomain(DOM_BOOK_RATING,
+                               "CAST(" + TBL_BOOKS.dot(DOM_BOOK_RATING) + " AS INTEGER)");
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(LANGUAGE, R.string.lbl_language, "lang",
-                                  DOM_BOOK_LANGUAGE)
-                    .setSourceExpression(TBL_BOOKS.dot(DOM_BOOK_LANGUAGE));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
-
-            rowKind = new RowKind(FORMAT, R.string.lbl_format, "fmt", DOM_BOOK_FORMAT)
-                    .setSourceExpression(TBL_BOOKS.dot(DOM_BOOK_FORMAT));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
-
-            rowKind = new RowKind(TITLE_LETTER, R.string.style_builtin_title_first_letter, "t",
-                                  DOM_RK_TITLE_LETTER)
-                    // use the OrderBy column!
-                    .setSourceExpression("SUBSTR(" + TBL_BOOKS.dot(DOM_TITLE_OB) + ",1,1)");
+            // uses the OrderBy column
+            rowKind = new RowKind(TITLE_LETTER, R.string.style_builtin_title_first_letter, "t")
+                    .setDomain(DOM_RK_TITLE_LETTER,
+                               "SUBSTR(" + TBL_BOOKS.dot(DOM_TITLE_OB) + ",1,1)");
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
 
-            rowKind = new RowKind(DATE_PUBLISHED_YEAR, R.string.lbl_publication_year, "yrp",
-                                  DOM_RK_DATE_PUBLISHED_YEAR)
-                    .setSourceExpression(
-                            DAO.SqlColumns.yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false));
+            rowKind = new RowKind(DATE_PUBLISHED_YEAR, R.string.lbl_publication_year, "yrp")
+                    .setDomain(DOM_RK_DATE_PUBLISHED_YEAR,
+                               DAO.SqlColumns.year(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_PUBLISHED_MONTH, R.string.lbl_publication_month, "mnp",
-                                  DOM_RK_DATE_PUBLISHED_MONTH)
-                    .setSourceExpression(
-                            DAO.SqlColumns
-                                    .monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false));
+            rowKind = new RowKind(DATE_PUBLISHED_MONTH, R.string.lbl_publication_month, "mp")
+                    .setDomain(DOM_RK_DATE_PUBLISHED_MONTH,
+                               DAO.SqlColumns.month(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_FIRST_PUBLICATION_YEAR,
-                                  R.string.lbl_first_publication_year, "yrfp",
-                                  DOM_RK_DATE_FIRST_PUBLICATION_YEAR)
-                    .setSourceExpression(DAO.SqlColumns.yearGlob(
-                            TBL_BOOKS.dot(DOM_DATE_FIRST_PUBLICATION), false));
+            rowKind = new RowKind(DATE_FIRST_PUB_YEAR, R.string.lbl_first_pub_year, "yfp")
+                    .setDomain(DOM_RK_DATE_FIRST_PUBLICATION_YEAR,
+                               DAO.SqlColumns.year(TBL_BOOKS.dot(DOM_DATE_FIRST_PUB), false));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_FIRST_PUBLICATION_MONTH,
-                                  R.string.lbl_first_publication_month, "mnfp",
-                                  DOM_RK_DATE_FIRST_PUBLICATION_MONTH)
-                    .setSourceExpression(DAO.SqlColumns.monthGlob(
-                            TBL_BOOKS.dot(DOM_DATE_FIRST_PUBLICATION), false));
+            rowKind = new RowKind(DATE_FIRST_PUB_MONTH, R.string.lbl_first_pub_month, "mfp")
+                    .setDomain(DOM_RK_DATE_FIRST_PUBLICATION_MONTH,
+                               DAO.SqlColumns.month(TBL_BOOKS.dot(DOM_DATE_FIRST_PUB), false));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
 
-            rowKind = new RowKind(DATE_ADDED_YEAR, R.string.lbl_added_year, "yra",
-                                  DOM_RK_DATE_ADDED_YEAR)
-                    .setSourceExpression(
-                            DAO.SqlColumns.yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true));
+            rowKind = new RowKind(DATE_ADDED_YEAR, R.string.lbl_added_year, "ya")
+                    .setDomain(DOM_RK_DATE_ADDED_YEAR,
+                               DAO.SqlColumns.year(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_ADDED_MONTH, R.string.lbl_added_month, "mna",
-                                  DOM_RK_DATE_ADDED_MONTH)
-                    .setSourceExpression(
-                            DAO.SqlColumns.monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true));
+            rowKind = new RowKind(DATE_ADDED_MONTH, R.string.lbl_added_month, "ma")
+                    .setDomain(DOM_RK_DATE_ADDED_MONTH,
+                               DAO.SqlColumns.month(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_ADDED_DAY, R.string.lbl_added_day, "dya",
-                                  DOM_RK_DATE_ADDED_DAY)
-                    .setSourceExpression(
-                            DAO.SqlColumns.dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true));
+            rowKind = new RowKind(DATE_ADDED_DAY, R.string.lbl_added_day, "da")
+                    .setDomain(DOM_RK_DATE_ADDED_DAY,
+                               DAO.SqlColumns.dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_READ_YEAR, R.string.lbl_read_year, "yrr",
-                                  DOM_RK_DATE_READ_YEAR)
-                    .setSourceExpression(
-                            DAO.SqlColumns.yearGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false));
+            rowKind = new RowKind(DATE_READ_YEAR, R.string.lbl_read_year, "yr")
+                    .setDomain(DOM_RK_DATE_READ_YEAR,
+                               DAO.SqlColumns.year(TBL_BOOKS.dot(DOM_BOOK_READ_END), false));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_READ_MONTH, R.string.lbl_read_month, "mnr",
-                                  DOM_RK_DATE_READ_MONTH)
-                    .setSourceExpression(
-                            DAO.SqlColumns.monthGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false));
+            rowKind = new RowKind(DATE_READ_MONTH, R.string.lbl_read_month, "mr")
+                    .setDomain(DOM_RK_DATE_READ_MONTH,
+                               DAO.SqlColumns.month(TBL_BOOKS.dot(DOM_BOOK_READ_END), false));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_READ_DAY, R.string.lbl_read_day, "dyr",
-                                  DOM_RK_DATE_READ_DAY)
-                    .setSourceExpression(
-                            DAO.SqlColumns.dayGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false));
+            rowKind = new RowKind(DATE_READ_DAY, R.string.lbl_read_day, "dr")
+                    .setDomain(DOM_RK_DATE_READ_DAY,
+                               DAO.SqlColumns.dayGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_LAST_UPDATE_YEAR, R.string.lbl_update_year, "yru",
-                                  DOM_RK_DATE_LAST_UPDATE_YEAR)
-                    .setSourceExpression(
-                            DAO.SqlColumns.yearGlob(TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED), true));
+            rowKind = new RowKind(DATE_LAST_UPDATE_YEAR, R.string.lbl_update_year, "yu")
+                    .setDomain(DOM_RK_DATE_LAST_UPDATED_YEAR,
+                               DAO.SqlColumns.year(TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED), true));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_LAST_UPDATE_MONTH, R.string.lbl_update_month, "mnu",
-                                  DOM_RK_DATE_UPDATE_MONTH)
-                    .setSourceExpression(
-                            DAO.SqlColumns.monthGlob(TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED), true));
+            rowKind = new RowKind(DATE_LAST_UPDATE_MONTH, R.string.lbl_update_month, "mu")
+                    .setDomain(DOM_RK_DATE_LAST_UPDATED_MONTH,
+                               DAO.SqlColumns
+                                       .month(TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED), true));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_LAST_UPDATE_DAY, R.string.lbl_update_day, "dyu",
-                                  DOM_RK_DATE_UPDATE_DAY)
-                    .setSourceExpression(
-                            DAO.SqlColumns.dayGlob(TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED), true));
+            rowKind = new RowKind(DATE_LAST_UPDATE_DAY, R.string.lbl_update_day, "du")
+                    .setDomain(DOM_RK_DATE_LAST_UPDATED_DAY,
+                               DAO.SqlColumns.dayGlob(TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED), true));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_ACQUIRED_YEAR, R.string.lbl_date_acquired_year, "yrac",
-                                  DOM_RK_DATE_ACQUIRED_YEAR)
-                    .setSourceExpression(
-                            DAO.SqlColumns.yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true));
+            rowKind = new RowKind(DATE_ACQUIRED_YEAR, R.string.lbl_date_acquired_year, "yac")
+                    .setDomain(DOM_RK_DATE_ACQUIRED_YEAR,
+                               DAO.SqlColumns
+                                       .year(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_ACQUIRED_MONTH, R.string.lbl_date_acquired_month, "mnac",
-                                  DOM_RK_DATE_ACQUIRED_MONTH)
-                    .setSourceExpression(
-                            DAO.SqlColumns.monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true));
+            rowKind = new RowKind(DATE_ACQUIRED_MONTH, R.string.lbl_date_acquired_month, "mac")
+                    .setDomain(DOM_RK_DATE_ACQUIRED_MONTH,
+                               DAO.SqlColumns
+                                       .month(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(DATE_ACQUIRED_DAY, R.string.lbl_date_acquired_day, "dyac",
-                                  DOM_RK_DATE_ACQUIRED_DAY)
-                    .setSourceExpression(
-                            DAO.SqlColumns.dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true));
+            rowKind = new RowKind(DATE_ACQUIRED_DAY, R.string.lbl_date_acquired_day, "dac")
+                    .setDomain(DOM_RK_DATE_ACQUIRED_DAY,
+                               DAO.SqlColumns.dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
 
@@ -803,7 +783,7 @@ public class BooklistGroup
                     }
 
                     //noinspection ConstantConditions
-                    String prefix = ALL_KINDS.get(kind).mCompoundKey.prefix;
+                    String prefix = ALL_KINDS.get(kind).mKeyPrefix;
                     if (!prefixes.add(prefix)) {
                         throw new IllegalStateException("Duplicate prefix " + prefix);
                     }
@@ -815,44 +795,30 @@ public class BooklistGroup
         private final int mKind;
         @StringRes
         private final int mLabelId;
-        @NonNull
-        private final CompoundKey mCompoundKey;
-        @SuppressWarnings("NullableProblems")
-        @NonNull
-        private DomainDefinition mDisplayDomain;
 
-        private String mDisplayDomainSourceExpression;
+        @Nullable
+        private CompoundKey mCompoundKey;
 
-        /**
-         * Hardcoded constructor for a BOOK
-         * <p>
-         * Note we suppress the {@code null} use.
-         */
-        @SuppressWarnings("ConstantConditions")
-        private RowKind() {
-            mKind = BOOK;
-            mLabelId = R.string.lbl_book;
-            mCompoundKey = new CompoundKey("", (DomainDefinition[]) null);
-            mDisplayDomain = null;
-        }
+        @SuppressWarnings("FieldNotUsedInToString")
+        @NonNull
+        private String mKeyPrefix;
+
+        @Nullable
+        private DomainDefinition mFormattedDomain;
+        @Nullable
+        private String mFormattedDomainExpression;
 
         /**
          * Constructor.
          *
-         * @param kind    1 to max. The kind==0 should be created with the no-args constructor.
-         * @param domains all underlying domains.
-         *                The first element will be used as the displayDomain.
+         * @param kind 1 to max. The kind==0 should be created with the no-args constructor.
          */
         private RowKind(@Kind final int kind,
                         @StringRes final int labelId,
-                        @NonNull final String prefix,
-                        @NonNull final DomainDefinition... domains) {
+                        @NonNull final String keyPrefix) {
             mKind = kind;
             mLabelId = labelId;
-            mCompoundKey = new CompoundKey(prefix, domains);
-            if (domains.length > 0) {
-                mDisplayDomain = domains[0];
-            }
+            mKeyPrefix = keyPrefix;
         }
 
         /**
@@ -893,6 +859,7 @@ public class BooklistGroup
          *
          * @return reformatted text
          */
+        @NonNull
         public static String format(@NonNull final Context context,
                                     @Kind final int kind,
                                     @NonNull final String source) {
@@ -911,7 +878,7 @@ public class BooklistGroup
                     if (source.isEmpty()) {
                         return context.getString(R.string.hint_empty_language);
                     } else {
-                        return LanguageUtils.getDisplayName(Locale.getDefault(), source);
+                        return LanguageUtils.getDisplayName(source);
                     }
                 }
                 case RATING: {
@@ -958,8 +925,8 @@ public class BooklistGroup
                 case DATE_ACQUIRED_YEAR:
                 case DATE_ADDED_DAY:
                 case DATE_ADDED_YEAR:
-                case DATE_FIRST_PUBLICATION_MONTH:
-                case DATE_FIRST_PUBLICATION_YEAR:
+                case DATE_FIRST_PUB_MONTH:
+                case DATE_FIRST_PUB_YEAR:
                 case DATE_LAST_UPDATE_DAY:
                 case DATE_LAST_UPDATE_YEAR:
                 case DATE_PUBLISHED_YEAR:
@@ -984,44 +951,69 @@ public class BooklistGroup
             }
         }
 
+
         /**
-         * The display domain will never be {@code null}, except for a BOOK.
+         * Key and formatted domain is the same when the domain is NOT a foreign key.
          *
-         * @return the display domain
+         * @param domain to use
          */
         @NonNull
-        public DomainDefinition getDisplayDomain() {
-            return mDisplayDomain;
+        RowKind setDomain(@NonNull final DomainDefinition domain,
+                          @NonNull final String sourceExpression) {
+            mCompoundKey = new CompoundKey(mKeyPrefix, domain, sourceExpression);
+            mFormattedDomain = domain;
+            mFormattedDomainExpression = sourceExpression;
+            return this;
         }
 
         /**
-         * Override the DisplayDomain.
+         * Set the Key.
          *
-         * @param displayDomain to use
+         * @param domain to use
          */
-        RowKind setDisplayDomain(@NonNull final DomainDefinition displayDomain) {
-            mDisplayDomain = displayDomain;
+        @NonNull
+        RowKind setKey(@NonNull final DomainDefinition domain,
+                       @NonNull final String sourceExpression) {
+            mCompoundKey = new CompoundKey(mKeyPrefix, domain, sourceExpression);
             return this;
         }
+
+        /**
+         * Set the FormattedDomain.
+         *
+         * @param domain to use
+         */
+        @NonNull
+        RowKind setFormattedDomain(@NonNull final DomainDefinition domain,
+                                   @NonNull final String sourceExpression) {
+            mFormattedDomain = domain;
+            mFormattedDomainExpression = sourceExpression;
+            return this;
+        }
+
+        /**
+         * Get the domain that will be used to display data to the user.
+         * i.e. the domain for the row in the book list.
+         *
+         * @return the domain
+         */
+        @NonNull
+        public DomainDefinition getFormattedDomain() {
+            // Domain will never be {@code null}, except for a BOOK.
+            return Objects.requireNonNull(mFormattedDomain);
+        }
+
 
         /**
          * Get the SQL source expression for the DisplayDomain.
          *
          * @return sql column expression.
          */
-        String getSourceExpression() {
-            return mDisplayDomainSourceExpression;
+        @NonNull
+        String getFormattedDomainExpression() {
+            return Objects.requireNonNull(mFormattedDomainExpression);
         }
 
-        /**
-         * Set the SQL source expression for the DisplayDomain.
-         *
-         * @param sourceExpression sql column expression.
-         */
-        RowKind setSourceExpression(@NonNull final String sourceExpression) {
-            mDisplayDomainSourceExpression = sourceExpression;
-            return this;
-        }
 
         /**
          * Compound key of this RowKind ({@link BooklistGroup}).
@@ -1033,7 +1025,7 @@ public class BooklistGroup
          */
         @NonNull
         CompoundKey getCompoundKey() {
-            return mCompoundKey;
+            return Objects.requireNonNull(mCompoundKey);
         }
 
         @NonNull
@@ -1048,8 +1040,8 @@ public class BooklistGroup
                    + "name=" + App.getAppContext().getString(mLabelId)
                    + ", mKind=" + mKind
                    + ", mCompoundKey=" + mCompoundKey
-                   + ", mDisplayDomain=" + mDisplayDomain
-                   + ", mDisplayDomainSourceExpression=" + mDisplayDomainSourceExpression
+                   + ", mFormattedDomain=" + mFormattedDomain
+                   + ", mFormattedDomainExpression=`" + mFormattedDomainExpression + '`'
                    + '}';
         }
 
@@ -1087,8 +1079,8 @@ public class BooklistGroup
                         RowKind.DATE_ACQUIRED_MONTH,
 
                         RowKind.DATE_ACQUIRED_DAY,
-                        RowKind.DATE_FIRST_PUBLICATION_YEAR,
-                        RowKind.DATE_FIRST_PUBLICATION_MONTH,
+                        RowKind.DATE_FIRST_PUB_YEAR,
+                        RowKind.DATE_FIRST_PUB_MONTH,
                 })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Kind {
@@ -1123,18 +1115,21 @@ public class BooklistGroup
 
         /** List of domains in the key. */
         @NonNull
-        private final DomainDefinition[] domains;
+        private final DomainDefinition domain;
+        @NonNull
+        private final String expression;
 
         /**
          * Constructor.
          *
-         * @param prefix  Unique prefix used to represent a key in the hierarchy.
-         * @param domains List of domains in the key
+         * @param prefix Unique prefix used to represent a key in the hierarchy.
          */
         CompoundKey(@NonNull final String prefix,
-                    @NonNull final DomainDefinition... domains) {
+                    @NonNull final DomainDefinition keyDomain,
+                    @NonNull final String keyExpression) {
             this.prefix = prefix;
-            this.domains = domains;
+            this.domain = keyDomain;
+            this.expression = keyExpression;
         }
 
         /**
@@ -1146,7 +1141,9 @@ public class BooklistGroup
             //noinspection ConstantConditions
             prefix = in.readString();
             //noinspection ConstantConditions
-            domains = in.createTypedArray(DomainDefinition.CREATOR);
+            domain = in.readParcelable(getClass().getClassLoader());
+            //noinspection ConstantConditions
+            expression = in.readString();
         }
 
         /**
@@ -1160,8 +1157,13 @@ public class BooklistGroup
         }
 
         @NonNull
-        DomainDefinition[] getDomains() {
-            return domains;
+        DomainDefinition getDomain() {
+            return domain;
+        }
+
+        @NonNull
+        String getExpression() {
+            return expression;
         }
 
         @SuppressWarnings("SameReturnValue")
@@ -1174,7 +1176,8 @@ public class BooklistGroup
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {
             dest.writeString(prefix);
-            dest.writeTypedArray(domains, flags);
+            dest.writeParcelable(domain, flags);
+            dest.writeString(expression);
         }
 
         @NonNull
@@ -1182,7 +1185,8 @@ public class BooklistGroup
         public String toString() {
             return "CompoundKey{"
                    + "prefix='" + prefix + '\''
-                   + ", domains=" + Arrays.toString(domains)
+                   + ", domain=" + domain
+                   + ", expression=" + expression
                    + '}';
         }
     }

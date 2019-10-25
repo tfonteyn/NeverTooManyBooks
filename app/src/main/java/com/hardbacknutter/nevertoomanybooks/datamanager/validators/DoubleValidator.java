@@ -38,24 +38,24 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
- * Validator to apply a default value and validate as Float.
- * Double (loss of precision), Integer, Long are casted to Float.
+ * Validator to apply a default value and validate as Double.
+ * Float, Integer, Long are casted to Double.
  *
- * {@code null} or empty string become 0f.
+ * {@code null} or empty string become 0d.
  *
  * All locales are taken into account for parsing.
  */
-public class FloatValidator
+public class DoubleValidator
         implements DataValidator {
 
     /** Default to apply if the field is {@code null} or empty. */
-    private final float mDefaultValue;
+    private final double mDefaultValue;
 
     /**
-     * Constructor; default value is 0f.
+     * Constructor; default value is 0d.
      */
-    public FloatValidator() {
-        mDefaultValue = 0f;
+    public DoubleValidator() {
+        mDefaultValue = 0d;
     }
 
     /**
@@ -63,7 +63,7 @@ public class FloatValidator
      *
      * @param defaultValue Default to apply if the field is empty
      */
-    public FloatValidator(final float defaultValue) {
+    public DoubleValidator(final double defaultValue) {
         mDefaultValue = defaultValue;
     }
 
@@ -74,18 +74,18 @@ public class FloatValidator
                          final int errorLabelId)
             throws ValidatorException {
 
-        Float value;
+        Double value;
         Object obj = dataManager.get(key);
         if (obj == null) {
             value = mDefaultValue;
-        } else if (obj instanceof Float) {
-            value = (Float) obj;
         } else if (obj instanceof Double) {
-            value = ((Double) obj).floatValue();
+            value = ((Double) obj);
+        } else if (obj instanceof Float) {
+            value = ((Float) obj).doubleValue();
         } else if (obj instanceof Long) {
-            value = ((Long) obj).floatValue();
+            value = ((Long) obj).doubleValue();
         } else if (obj instanceof Integer) {
-            value = ((Integer) obj).floatValue();
+            value = ((Integer) obj).doubleValue();
         } else {
             String stringValue = obj.toString().trim();
             if (stringValue.isEmpty()) {
@@ -93,7 +93,7 @@ public class FloatValidator
             } else {
                 try {
                     // Locale taken into account
-                    value = ParseUtils.parseFloat(stringValue, Locale.getDefault());
+                    value = ParseUtils.parseDouble(stringValue, Locale.getDefault());
 
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(R.string.vldt_real_expected_for_x,
@@ -102,6 +102,6 @@ public class FloatValidator
                 }
             }
         }
-        dataManager.putFloat(key, value);
+        dataManager.putDouble(key, value);
     }
 }

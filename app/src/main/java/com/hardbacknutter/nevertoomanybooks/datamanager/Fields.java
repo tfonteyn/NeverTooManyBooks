@@ -1510,7 +1510,7 @@ public class Fields {
                 return "";
             }
 
-            String formatted = LanguageUtils.getDisplayName(Locale.getDefault(), source);
+            String formatted = LanguageUtils.getDisplayName(source);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_FORMATTER) {
                 Logger.debug(this, "format",
@@ -1531,7 +1531,7 @@ public class Fields {
         @Override
         public String extract(@NonNull final Field<String> field,
                               @NonNull final String source) {
-            return LanguageUtils.getIso3fromDisplayName(source, Locale.getDefault());
+            return LanguageUtils.getISO3FromDisplayName(source);
         }
     }
 

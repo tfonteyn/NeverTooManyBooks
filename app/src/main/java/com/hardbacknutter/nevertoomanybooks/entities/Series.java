@@ -534,9 +534,9 @@ public class Series
 
         //FIXME: need a reliable way to cache the Locale here. See also {@link #pruneList}
         // were we use batch mode.
-        String iso3Language = db.getSeriesLanguage(mId);
-        if (!iso3Language.isEmpty()) {
-            Locale seriesLocale = LocaleUtils.getLocale(iso3Language);
+        String lang = db.getSeriesLanguage(mId);
+        if (!lang.isEmpty()) {
+            Locale seriesLocale = LocaleUtils.getLocale(lang);
             if (seriesLocale != null) {
                 return seriesLocale;
             }

@@ -41,9 +41,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 
 /**
  * Class to store domain name and definition.
- *
+ * <p>
  * Parcelable: needed by {@link BooklistGroup}
  */
+@SuppressWarnings("FieldNotUsedInToString")
 public class DomainDefinition
         implements Parcelable {
 
@@ -179,6 +180,7 @@ public class DomainDefinition
         mConstraints.add("DEFAULT " + value);
         return this;
     }
+
     /**
      * add a string default constraint.
      *

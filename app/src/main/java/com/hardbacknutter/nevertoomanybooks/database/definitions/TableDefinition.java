@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 /**
  * Class to store table name and a list of domain definitions.
  */
+@SuppressWarnings("FieldNotUsedInToString")
 public class TableDefinition
         implements Cloneable {
 
@@ -96,7 +97,7 @@ public class TableDefinition
     private String mAlias;
     /** Table type. */
     @NonNull
-    private TableTypes mType = TableTypes.Standard;
+    private TableType mType = TableType.Standard;
     @Nullable
     private TableInfo mTableInfo;
 
@@ -124,6 +125,8 @@ public class TableDefinition
 
     /**
      * Given a list of table, create the database (tables + indexes).
+     * <p>
+     * All tables will be created with constraints active.
      *
      * @param db     Blank database
      * @param tables Table list
@@ -132,9 +135,7 @@ public class TableDefinition
                                     @NonNull final TableDefinition... tables) {
         for (TableDefinition table : tables) {
             table.create(db, true);
-            for (IndexDefinition index : table.getIndexes()) {
-                index.create(db);
-            }
+            table.createIndices(db);
         }
     }
 
@@ -153,7 +154,7 @@ public class TableDefinition
     }
 
     /**
-     * Create this table.
+     * Create this table. Don't forget to call {@link #createIndices} if needed.
      *
      * @param db              Database in which to create table
      * @param withConstraints Indicates if fields should have constraints applied
@@ -169,7 +170,7 @@ public class TableDefinition
     }
 
     /**
-     * Create this table.
+     * Create this table. Don't forget to call {@link #createIndices} if needed.
      *
      * @param db                  Database in which to create table
      * @param withConstraints     Indicates if fields should have constraints applied
@@ -183,21 +184,6 @@ public class TableDefinition
                                   final boolean withConstraints,
                                   final boolean withTableReferences) {
         db.execSQL(getSqlCreateStatement(mName, withConstraints, withTableReferences, false));
-        return this;
-    }
-
-    /**
-     * Create this table and related objects (indices).
-     *
-     * @param db Database in which to create table
-     *
-     * @return TableDefinition (for chaining)
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public TableDefinition createAll(@NonNull final SynchronizedDb db) {
-        db.execSQL(getSqlCreateStatement(mName, true, true, false));
-        createIndices(db);
         return this;
     }
 
@@ -218,27 +204,10 @@ public class TableDefinition
     }
 
     /**
-     * Delete all rows from this table.
-     *
-     * @return TableDefinition (for chaining)
+     * Drop this table from the passed database.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public TableDefinition deleteAllRows(@NonNull final SynchronizedDb db) {
-        db.execSQL("DELETE FROM " + mName);
-        return this;
-    }
-
-    /**
-     * Drop this table from the passed DB.
-     *
-     * @return TableDefinition (for chaining)
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public TableDefinition drop(@NonNull final SynchronizedDb db) {
+    public void drop(@NonNull final SynchronizedDb db) {
         drop(db, mName);
-        return this;
     }
 
     /**
@@ -317,7 +286,7 @@ public class TableDefinition
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    public TableDefinition setType(@NonNull final TableTypes type) {
+    public TableDefinition setType(@NonNull final TableType type) {
         mType = type;
         return this;
     }
@@ -391,8 +360,9 @@ public class TableDefinition
      *
      * @return TableDefinition (for chaining)
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
-    private TableDefinition addDomains(@NonNull final List<DomainDefinition> domains) {
+    public TableDefinition addDomains(@NonNull final List<DomainDefinition> domains) {
         for (DomainDefinition d : domains) {
             addDomain(d);
         }
@@ -746,6 +716,7 @@ public class TableDefinition
                                          final boolean withTableReferences,
                                          @SuppressWarnings("SameParameterValue")
                                          final boolean ifNotExists) {
+
         StringBuilder sql = new StringBuilder("CREATE")
                 .append(mType.getCreateModifier())
                 .append(" TABLE");
@@ -865,31 +836,39 @@ public class TableDefinition
      *
      * @param syncedDb the database
      * @param tag      log tag to use
+     * @param startRow from
+     * @param endRow   to
      * @param header   a header which will be logged first
      */
     public void dumpTable(@NonNull final SynchronizedDb syncedDb,
                           @NonNull final String tag,
+                          final int startRow,
+                          final int endRow,
                           @NonNull final String header) {
-        Log.d(tag, header);
+        Log.d(tag, "Table: `" + mName + ": " + header);
 
-        String sql = "SELECT * FROM " + mName + " ORDER BY " + mPrimaryKey.get(0).getName();
+        String pk = mPrimaryKey.get(0).getName();
+
+        String sql = "SELECT * FROM " + mName
+                     + " WHERE " + pk + ">=" + startRow + " AND " + pk + "<=" + endRow
+                     + " ORDER BY " + pk;
 
         try (Cursor cursor = syncedDb.rawQuery(sql, null)) {
             StringBuilder columnHeading = new StringBuilder();
-            for (String column : cursor.getColumnNames()) {
-                columnHeading.append(column).append('\t');
+            String[] columnNames = cursor.getColumnNames();
+            int cols = columnNames.length;
+            for (String column : columnNames) {
+                columnHeading.append(String.format("%-12s", column));
             }
+            columnHeading.append(", total rows=").append(cursor.getCount());
             Log.d(tag, columnHeading.toString());
-            Log.d(tag, "count=" + cursor.getCount());
 
-            int currentLine = 0;
-            while (cursor.moveToNext() && currentLine < 20) {
+            while (cursor.moveToNext()) {
                 StringBuilder line = new StringBuilder();
                 for (int c = 0; c < cursor.getColumnCount(); c++) {
-                    line.append(cursor.getString(c)).append('\t');
+                    line.append(String.format("%-12s", cursor.getString(c)));
                 }
                 Log.d(tag, line.toString());
-                currentLine++;
             }
         }
     }
@@ -909,7 +888,7 @@ public class TableDefinition
      * <p>
      * <a href=https://sqlite.org/fts3.html">https://sqlite.org/fts3.html</a>
      */
-    public enum TableTypes {
+    public enum TableType {
         Standard, Temporary, FTS3, FTS4;
 
         boolean isVirtual() {

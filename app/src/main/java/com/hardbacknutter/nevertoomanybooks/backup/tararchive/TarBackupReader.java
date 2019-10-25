@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupReaderAbstract;
+import com.hardbacknutter.nevertoomanybooks.backup.archivebase.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntity.Type;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntityAbstract;
@@ -132,13 +133,25 @@ public class TarBackupReader
     @NonNull
     @Override
     public BackupInfo getInfo()
-            throws IOException {
+            throws IOException, InvalidArchiveException {
         if (mInfo == null) {
-            // Find and process the INFO entry.
-            ReaderEntity entity = findEntity(Type.Info);
-            if (entity == null) {
-                throw new IOException("Not a valid backup; no INFO entity found");
+            ReaderEntity entity;
+            try {
+                entity = findEntity(Type.Info);
+            } catch (@NonNull final IOException e) {
+                //VERY annoying... the apache tar library does not throw a unique exception.
+                // So we, reluctantly, look at the message...
+                if ("Error detected parsing the header".equals(e.getMessage())) {
+                    throw new InvalidArchiveException("Not a valid archive");
+                } else {
+                    throw e;
+                }
             }
+
+            if (entity == null) {
+                throw new IOException("No INFO entity found");
+            }
+
             // read the INFO
             mInfo = new BackupInfo();
             try (XmlImporter importer = new XmlImporter(null)) {

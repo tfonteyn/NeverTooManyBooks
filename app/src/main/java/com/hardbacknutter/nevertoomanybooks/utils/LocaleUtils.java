@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -135,8 +136,30 @@ public final class LocaleUtils {
             return false;
         }
         try {
-            String dl = locale.getDisplayLanguage();
-            return !dl.isEmpty() && !dl.equalsIgnoreCase(locale.getISO3Language());
+            // Running with system/default Locale set to Locale.ENGLISH:
+            //
+            // French: new Locale("fr")
+            // fr.getLanguage()            fr
+            // fr.getISO3Language()        fra      => CANNOT be used to recreate the Locale
+            // fr.getDisplayLanguage()     French
+            // fr.getDisplayName()         French
+            //
+            // French: new Locale("fre")
+            // fre.getLanguage()            fre
+            // fre.getISO3Language()        fre
+            // fre.getDisplayLanguage()     French
+            // fre.getDisplayName()         French
+            //
+            // French: new Locale("fra")
+            // fra.getLanguage()            fra
+            // fra.getISO3Language()        fra
+            // fra.getDisplayLanguage()     fra
+            // fra.getDisplayName()         fra
+
+            String displayLanguage = locale.getDisplayLanguage();
+            String iso3 = locale.getISO3Language();
+
+            return !displayLanguage.isEmpty() && !displayLanguage.equalsIgnoreCase(iso3);
 
         } catch (@NonNull final MissingResourceException e) {
             // log but ignore.
@@ -347,19 +370,42 @@ public final class LocaleUtils {
 
     /**
      * Get a Locale for the given language.
+     * This method accepts ISO codes (2 or 3 char), or a display-string (4+ characters).
      *
-     * @param iso3Language to use for Locale
+     * <strong>Note:</strong> language with a display string of 1,2 or 3 character long
+     * will be presumed to be an ISO code.
+     * Example: display:"asu", has an actual iso3 code of "asa" but we will wrongly take "asu"
+     * to be an ISO3 code. There are a couple more like this.
      *
-     * @return the Locale, or {@code null} if the iso3 was invalid.
+     * @param inputLang to use for Locale
+     *
+     * @return the Locale, or {@code null} if the inputLang was invalid.
      */
     @Nullable
-    public static Locale getLocale(@NonNull final String iso3Language) {
-        Locale locale = LOCALE_MAP.get(iso3Language);
+    public static Locale getLocale(@NonNull final String inputLang) {
+        String lang = inputLang.trim().toLowerCase(Locale.getDefault());
+        int len = lang.length();
+        if (len > 3) {
+            lang = LanguageUtils.getISO3FromDisplayName(lang);
+        }
+
+        // THIS IS A MUST
+        lang = LanguageUtils.getLocaleIsoFromIso3(lang);
+
+        // lang should now be an ISO (2 or 3 characters) code (or an invalid string)
+        Locale locale = LOCALE_MAP.get(lang);
         if (locale == null) {
-            locale = createLocale(LanguageUtils.iso3ToBibliographic(iso3Language));
+            locale = createLocale(lang);
             if (isValid(locale)) {
-                LOCALE_MAP.put(iso3Language, locale);
+                LOCALE_MAP.put(lang, locale);
             } else {
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.warn(LocaleUtils.class, "getLocale", "invalid locale",
+                                "inputLang=" + inputLang,
+                                "lang=" + lang,
+                                "locale=" + locale);
+                }
+
                 locale = null;
             }
         }

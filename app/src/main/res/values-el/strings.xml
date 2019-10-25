@@ -40,10 +40,6 @@
     <string name="pe_bob_list_rebuild_state_expanded">Επεκτείνετε όλα</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Διπλώστε όλα</string>
 
-    <string name="pe_bob_list_generation_full">Επιβολή Ολοκληρωμένων Χαρακτηριστικών</string>
-    <string name="pe_bob_list_generation_enhanced">Επιβολή ενισχυμένης λειτουργίας συμβατότηταςe</string>
-    <string name="pe_bob_list_generation_legacy">Επιβολή λειτουργίας συμβατότητας</string>
-
     <string name="pe_thumbnails_cropper_layer_type_hardware">υλισμικό</string>
     <string name="pe_thumbnails_cropper_layer_type_software">λογισμικού</string>
     <string name="pe_bob_filter_read_yes">Τα βιβλία διαβάζουν</string>
@@ -74,7 +70,7 @@
     <string name="X_btn_do_not_show_again">Μην εμφανιστείς ξανά</string>
     <string name="X_error_file_must_contain_column">Το αρχείο πρέπει να περιέχει στήλη με όνομα %1$s</string>
     <string name="X_info_reset_tips">Ανά τακτά χρονικά διαστήματα αυτή η εφαρμογή θα εμφανίζει μηνύματα σχετικά με το %1$s.\n Πατήστε το παρακάτω κουμπί για να επαναφέρετε όποια από αυτά τα μυνήματα έχουν απενεργοποιηθεί.</string>
-    <string name="X_lbl_loan_book_available">Διαθέσιμο</string>
+    <string name="X_lbl_available">Διαθέσιμο</string>
     <string name="X_lbl_select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
     <string name="X_menu_delete_series">Διαγραφή σειράς…</string>
     <string name="title_edit_author">Επεξεργασία Συγγραφέα</string>
@@ -91,7 +87,7 @@
     <string name="X_warning_missing_title">Ο τίτλος λείπει.</string>
     <string name="X_warning_missing_title_author">Ο τίτλος ή / και ο συντάκτης λείπει.</string>
     <string name="X_warning_required_author">Το πεδίο συγγραφέας είναι κενό</string>
-    <string name="X_warning_required_author_long">Τουλάχιστον ένας συγγραφέας πρέπει να έχει καθοριστεί</string>
+    <string name="warning_requires_at_least_1_author">Τουλάχιστον ένας συγγραφέας πρέπει να έχει καθοριστεί.</string>
     <string name="X_warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
     <string name="X_warning_required_title">Ένας μη κενός τίτλος πρέπει να έχει καθοριστεί</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -216,7 +212,7 @@
     <string name="gr_tq_title_task_errors">Σφάλματα εργασιών</string>
     <string name="help">Βοήθεια</string>
     <string name="hint_btn_drag_handle">Σύρετε με για να αναδιατάξετε αυτήν τη λίστα.</string>
-    <string name="warning_date_not_set">Προσθέστε μια έγκυρη ημερομηνία.</string>
+    <string name="warning_requires_date">Προσθέστε μια έγκυρη ημερομηνία.</string>
     <string name="hint_developer_key">Κλειδί Developer</string>
     <string name="hint_field_not_set">Μη ορισμένο</string>
     <string name="hint_empty_field">(άδειο)</string>
@@ -288,8 +284,8 @@
     <string name="lbl_field_usage_overwrite">Αντικαθιστά υπάρχοντα δεδομένα</string>
     <string name="lbl_field_usage_skip">Παραλείπω</string>
     <string name="lbl_first_publication">Πρώτη δημοσίευση</string>
-    <string name="lbl_first_publication_month">Πρώτος Μήνας Δημοσίευσης</string>
-    <string name="lbl_first_publication_year">Πρώτο έτος δημοσίευσης</string>
+    <string name="lbl_first_pub_month">Πρώτος Μήνας Δημοσίευσης</string>
+    <string name="lbl_first_pub_year">Πρώτο έτος δημοσίευσης</string>
     <string name="lbl_format">Μορφή</string>
     <string name="lbl_genre">Είδος</string>
     <string name="lbl_given_names">Ονόματα</string>
@@ -461,7 +457,6 @@
     <string name="pt_bob_books_under_multiple_series">Βιβλία σε πολλές σειρές</string>
     <string name="pt_bob_authors_display">Προβολή συγγραφέων ως</string>
     <string name="pt_bob_header">Λεπτομέρειες περίληψης στην επικεφαλίδα</string>
-    <string name="pt_booklist_generation">Επιλογή παραγωγής λίστας βιβλίων</string>
     <string name="pt_bob_list_rebuild_state">Κατάσταση εκκίνησης βιβλιοθήκης</string>
     <string name="pt_bob_authors_sort">Ταξινόμηση συγγραφέων από</string>
     <string name="pt_bob_text_size">Μέγεθος αντικειμένων λίστας βιβλίων</string>
@@ -569,7 +564,7 @@
     <string name="vldt_non_blank_required_for_x">Απαιτείται μη κενή τιμή για «%1$s»</string>
     <string name="vldt_read_start_after_end">Η ημερομηνία έναρξης ανάγνωσης είναι μετά την ημερομηνία λήξης</string>
     <string name="vldt_real_expected_for_x">Αναμένεται ένας πραγματικός αριθμός για «%1$s»</string>
-    <string name="warning_action_requires_isbn">Αυτή η ενέργεια απαιτεί έγκυρο ISBN.</string>
+    <string name="warning_requires_isbn">Αυτή η ενέργεια απαιτεί έγκυρο ISBN.</string>
     <string name="warning_author_already_in_list">Ο συγγραφέας βρίσκεται ήδη στη λίστα</string>
     <string name="warning_backup_request">Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;</string>
     <string name="info_bad_scanner">Η εφαρμογή για σκανάρισμα barcode που έχετε δεν είναι συμβατή με το &APP_NAME;.</string>
@@ -590,15 +585,15 @@
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
     <string name="warning_no_isbn_stored_for_book">Δεν υπάρχει αποθηκευμένο ISBN για το βιβλίο</string>
     <string name="warning_no_matching_book_found">Δεν βρέθηκε βιβλίο που να ταιριάζει</string>
-    <string name="warning_required_at_least_one">Τουλάχιστον ένα πεδίο δεν μπορεί να είναι κενό</string>
+    <string name="warning_requires_at_least_one_field">Τουλάχιστον ένα πεδίο δεν μπορεί να είναι κενό.</string>
     <string name="X_warning_select_an_existing_file">Παρακαλούμε επιλέξτε ένα υπάρχον αρχείο</string>
-    <string name="warning_select_min_1_field">Επιλέξτε τουυλάχιστον ένα πεδία για ενημέρωση</string>
+    <string name="warning_select_at_least_1_field">Επιλέξτε τουυλάχιστον ένα πεδία για ενημέρωση.</string>
     <string name="warning_series_already_in_list">Η σειρά βρίσκεται ήδη στη λίστα</string>
     <string name="warning_toc_confirm">Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί</string>
     <string name="warning_unable_to_find_book">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο</string>
     <string name="warning_unsaved_edits">Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί, αν γίνει έξοδος τώρα θα χαθούν.</string>
     <string name="warning_unsaved_edits2">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
-    <string name="warning_x_already_exists">Το %1$s υπάρχει ήδη</string>
+    <string name="warning_x_already_exists">Το %1$s υπάρχει ήδη.</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s δεν είναι έγκυρος κωδικός ISBN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s δεν είναι έγκυρος κωδικός ISBN ή ASIN</string>
     <string name="x_of_y">%1$d από %2$d</string>
@@ -644,5 +639,6 @@
     <string name="hint_empty_series">(Χωρίς σειρά)</string>
     <string name="hint_empty_month">(Δεν συμπληρώθηκε μήνα)</string>
     <string name="hint_empty_read_status">(Ανάγνωση άγνωστης κατάστασης)</string>
+    <string name="warning_select_at_least_1_group">Επιλέξτε τουλάχιστον μία ομάδα.</string>
 
 </resources>
