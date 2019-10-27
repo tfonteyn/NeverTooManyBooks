@@ -244,6 +244,8 @@ public class BookFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         switch (requestCode) {
+
+            case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
             case UniqueId.REQ_BOOK_EDIT:
                 if (resultCode == Activity.RESULT_OK) {
                     mBookModel.reload();
@@ -262,9 +264,7 @@ public class BookFragment
                     mBookModel.reload();
                     // onResume will display the new book, but
                     //FIXME: swiping through the flattened booklist will not see the new book
-                    // and when going back to BoB, won't show there either unless we rebuild.
-                    // we basically would need to rebuild the booklist and subsequently
-                    // rebuild the flattened booklist.... huge overkill.
+                    // until we go back to BoB.
                 }
                 break;
 
@@ -441,34 +441,7 @@ public class BookFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-            .setIcon(R.drawable.ic_delete);
-        menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
-            .setIcon(R.drawable.ic_content_copy);
-
-        // Only one of these two is made visible.
-        menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
-        menu.add(Menu.NONE, R.id.MENU_BOOK_UNREAD, 0, R.string.menu_set_unread);
-
-        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_fields)
-            .setIcon(R.drawable.ic_cloud_download);
-
-        if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
-            // Only one of these two is made visible.
-            menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_ADD,
-                     MenuHandler.ORDER_LENDING, R.string.menu_loan_lend_book);
-            menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_DELETE,
-                     MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book);
-        }
-
-        menu.add(Menu.NONE, R.id.MENU_SHARE, MenuHandler.ORDER_SHARE, R.string.menu_share_this)
-            .setIcon(R.drawable.ic_share);
-
-        menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS,
-                 MenuHandler.ORDER_SEND_TO_GOODREADS, R.string.gr_menu_send_to_goodreads)
-            .setIcon(R.drawable.ic_goodreads);
-
+        MenuHandler.addBookItems(menu);
         MenuHandler.addViewBookSubMenu(menu);
         MenuHandler.addAmazonSearchSubMenu(menu);
 
@@ -479,18 +452,10 @@ public class BookFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         Book book = mBookModel.getBook();
 
-        boolean isExistingBook = mBookModel.isExistingBook();
-        boolean isRead = book.getBoolean(Book.IS_READ);
-
-        menu.findItem(R.id.MENU_BOOK_READ).setVisible(isExistingBook && !isRead);
-        menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isExistingBook && isRead);
-
-        if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
-            boolean isAvailable = mBookModel.isAvailable();
-            menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(isExistingBook && isAvailable);
-            menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(isExistingBook && !isAvailable);
-        }
-
+        MenuHandler.prepareBookItems(menu,
+                                     book.getId() > 0,
+                                     book.getBoolean(Book.IS_READ),
+                                     mBookModel.isAvailable());
         MenuHandler.prepareViewBookSubMenu(menu, book);
         MenuHandler.prepareAmazonSearchSubMenu(menu, book);
 
@@ -505,7 +470,11 @@ public class BookFragment
 
         switch (item.getItemId()) {
 
-            case R.id.MENU_DELETE:
+            case R.id.MENU_BOOK_EDIT: {
+                startEditBook();
+                return true;
+            }
+            case R.id.MENU_DELETE: {
                 String title = book.getString(DBDefinitions.KEY_TITLE);
                 List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                 //noinspection ConstantConditions
@@ -517,21 +486,24 @@ public class BookFragment
                     mHostActivity.finish();
                 });
                 return true;
-
-            case R.id.MENU_BOOK_DUPLICATE:
+            }
+            case R.id.MENU_BOOK_DUPLICATE: {
                 Intent dupIntent = new Intent(getContext(), EditBookActivity.class)
                         .putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
                 startActivityForResult(dupIntent, UniqueId.REQ_BOOK_DUPLICATE);
                 return true;
-
+            }
             case R.id.MENU_BOOK_READ:
-            case R.id.MENU_BOOK_UNREAD:
+            case R.id.MENU_BOOK_UNREAD: {
                 // toggle 'read' status of the book
                 boolean isRead = mBookModel.toggleRead();
                 getField(R.id.cbx_read).setValue(isRead);
                 return true;
+            }
 
-            case R.id.MENU_BOOK_LOAN_ADD:
+            /* ********************************************************************************** */
+
+            case R.id.MENU_BOOK_LOAN_ADD: {
                 FragmentManager fm = getChildFragmentManager();
                 LendBookDialogFragment lendBookDialogFragment =
                         (LendBookDialogFragment) fm.findFragmentByTag(LendBookDialogFragment.TAG);
@@ -541,27 +513,35 @@ public class BookFragment
                     lendBookDialogFragment.show(fm, LendBookDialogFragment.TAG);
                 }
                 return true;
-
-            case R.id.MENU_BOOK_LOAN_DELETE:
+            }
+            case R.id.MENU_BOOK_LOAN_DELETE: {
                 mBookModel.deleteLoan();
                 populateLoanedToField(null);
                 return true;
+            }
+            /* ********************************************************************************** */
 
-            case R.id.MENU_SHARE:
+            case R.id.MENU_SHARE: {
                 //noinspection ConstantConditions
                 startActivity(Intent.createChooser(book.getShareBookIntent(getContext()),
                                                    getString(R.string.menu_share_this)));
                 return true;
-
-            case R.id.MENU_BOOK_SEND_TO_GOODREADS:
+            }
+            case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
                 //noinspection ConstantConditions
                 UserMessage.show(getView(), R.string.progress_msg_connecting);
                 new SendOneBookTask(book.getId(), mBookModel.getGoodreadsTaskListener())
                         .execute();
                 return true;
+            }
+            /* ********************************************************************************** */
 
             default:
                 //noinspection ConstantConditions
+                if (MenuHandler.handleBookItems(getContext(), item, book)) {
+                    return true;
+                }
+
                 if (MenuHandler.handleViewBookSubMenu(getContext(), item, book)) {
                     return true;
                 }

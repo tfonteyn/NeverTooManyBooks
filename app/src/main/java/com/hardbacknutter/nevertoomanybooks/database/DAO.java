@@ -457,7 +457,7 @@ public class DAO
      *
      * @param bookshelfId to purge
      */
-    private void purgeNodeStatesByBookshelf(final long bookshelfId) {
+    public void purgeNodeStatesByBookshelf(final long bookshelfId) {
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
                 "DELETE FROM " + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
                 + " WHERE " + DOM_BOOKSHELF + "=?")) {
@@ -468,12 +468,10 @@ public class DAO
 
     /**
      * Purge Booklist node state data for the given Style.
-     * <p>
-     * URGENT: allow calling purgeNodeStatesByStyle for builtin styles.
      *
      * @param styleId to purge
      */
-    private void purgeNodeStatesByStyle(final long styleId) {
+    public void purgeNodeStatesByStyle(final long styleId) {
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
                 "DELETE FROM " + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
                 + " WHERE " + DOM_FK_STYLE + "=?")) {
@@ -2710,21 +2708,21 @@ public class DAO
                                  final long fromBookIdOnwards) {
         String whereClause;
         if (bookIds == null || bookIds.isEmpty()) {
-            whereClause = TBL_BOOKS.dot(DOM_PK_ID)
-                          + ">=" + fromBookIdOnwards;
+            // all books starting from the given id
+            whereClause = TBL_BOOKS.dot(DOM_PK_ID) + ">=" + fromBookIdOnwards;
 
         } else if (bookIds.size() == 1) {
-            whereClause = TBL_BOOKS.dot(DOM_PK_ID)
-                          + '=' + bookIds.get(0);
+            // just this one book
+            whereClause = TBL_BOOKS.dot(DOM_PK_ID) + '=' + bookIds.get(0);
 
         } else {
+            // the given books, starting from the given id
             whereClause = TBL_BOOKS.dot(DOM_PK_ID)
                           + " IN (" + TextUtils.join(",", bookIds) + ')'
-                          + " AND (" + TBL_BOOKS.dot(DOM_PK_ID)
-                          + ">=" + fromBookIdOnwards + ')';
+                          + " AND (" + TBL_BOOKS.dot(DOM_PK_ID) + ">=" + fromBookIdOnwards + ')';
         }
 
-        // the order by is used to be able to restart the update.
+        // the order by is used to be able to restart the update (using fromBookIdOnwards)
         String sql = getBookSql(whereClause) + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
 
         return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,

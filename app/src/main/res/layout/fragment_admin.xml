@@ -128,13 +128,6 @@
             android:text="@string/lbl_advanced_options"
             />
 
-        <!--        <TextView-->
-        <!--            android:id="@+id/lbl_clear_search_history"-->
-        <!--            style="@style/OptionRow.Menu"-->
-        <!--            android:drawableStart="@drawable/ic_close"-->
-        <!--            android:text="@string/lbl_clear_search_history"-->
-        <!--            />-->
-
         <TextView
             android:id="@+id/lbl_erase_cover_cache"
             style="@style/OptionRow.Menu"
@@ -147,6 +140,13 @@
             style="@style/OptionRow.Menu"
             android:drawableStart="@drawable/ic_close"
             android:text="@string/lbl_cleanup_files"
+            />
+
+        <TextView
+            android:id="@+id/menu_purge_blns"
+            style="@style/OptionRow.Menu"
+            android:drawableStart="@drawable/ic_close"
+            android:text="@string/menu_purge_blns"
             />
 
         <TextView

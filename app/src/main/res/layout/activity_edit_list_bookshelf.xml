@@ -33,7 +33,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EditBookshelfListActivity"
+    tools:context=".EditBookshelvesActivity"
     >
 
     <include layout="@layout/inc_appbar" />
@@ -44,7 +44,7 @@
         android:layout_height="match_parent"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/row_bookshelf"
+        tools:listitem="@layout/row_edit_bookshelf"
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

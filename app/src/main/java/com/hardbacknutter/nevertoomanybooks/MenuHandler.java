@@ -69,6 +69,74 @@ final class MenuHandler {
     }
 
     /**
+     * Add all menu items related to a book.
+     * Can be used for the options and context menus.
+     *
+     * @param menu Root menu
+     */
+    static void addBookItems(@NonNull final Menu menu) {
+        // Only one of these two is made visible.
+        menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read)
+            .setIcon(R.drawable.ic_check_box);
+        menu.add(Menu.NONE, R.id.MENU_BOOK_UNREAD, 0, R.string.menu_set_unread)
+            .setIcon(R.drawable.ic_check_box_outline_blank);
+
+        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit)
+            .setIcon(R.drawable.ic_edit);
+        menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
+            .setIcon(R.drawable.ic_content_copy);
+        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
+            .setIcon(R.drawable.ic_delete);
+
+        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_fields)
+            .setIcon(R.drawable.ic_cloud_download);
+
+        if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
+            // Only one of these two is made visible.
+            menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_ADD,
+                     MenuHandler.ORDER_LENDING, R.string.menu_loan_lend_book)
+                .setIcon(R.drawable.ic_people);
+            menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_DELETE,
+                     MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book)
+                .setIcon(R.drawable.ic_people);
+        }
+
+        menu.add(Menu.NONE, R.id.MENU_SHARE, MenuHandler.ORDER_SHARE, R.string.menu_share_this)
+            .setIcon(R.drawable.ic_share);
+
+        menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS,
+                 MenuHandler.ORDER_SEND_TO_GOODREADS, R.string.gr_menu_send_to_goodreads)
+            .setIcon(R.drawable.ic_goodreads);
+    }
+
+    static void prepareBookItems(@NonNull final Menu menu,
+                                 final boolean isSaved,
+                                 final boolean isRead,
+                                 final boolean isAvailable) {
+
+        menu.findItem(R.id.MENU_BOOK_READ).setVisible(isSaved && !isRead);
+        menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isSaved && isRead);
+
+        // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
+        if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
+            menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(isSaved && isAvailable);
+            menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(isSaved && !isAvailable);
+        }
+    }
+
+    static boolean handleBookItems(@NonNull final Context context,
+                                   @NonNull final MenuItem menuItem,
+                                   @NonNull final Book book) {
+
+        switch (menuItem.getItemId()) {
+            default:
+                return false;
+        }
+    }
+
+
+    /**
      * Add SubMenu for viewing a book on external sites.
      * <p>
      * Normally called from your {@link Fragment#onCreateOptionsMenu}.
@@ -81,11 +149,16 @@ final class MenuHandler {
                                           R.string.menu_view_book_at)
                               .setIcon(R.drawable.ic_link);
         //NEWTHINGS: add new site specific ID: add
-        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_GOODREADS, 0, R.string.goodreads);
-        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING, 0, R.string.library_thing);
-        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE, 0, R.string.stripinfo);
-        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_ISFDB, 0, R.string.isfdb);
-        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0, R.string.open_library);
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_GOODREADS, 0, R.string.goodreads)
+               .setIcon(R.drawable.ic_link);
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING, 0, R.string.library_thing)
+               .setIcon(R.drawable.ic_link);
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE, 0, R.string.stripinfo)
+               .setIcon(R.drawable.ic_link);
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_ISFDB, 0, R.string.isfdb)
+               .setIcon(R.drawable.ic_link);
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0, R.string.open_library)
+               .setIcon(R.drawable.ic_link);
     }
 
     static void prepareViewBookSubMenu(@NonNull final Menu menu,
@@ -144,6 +217,7 @@ final class MenuHandler {
                 return false;
         }
     }
+
 
     /**
      * Add SubMenu for Amazon searches.
@@ -235,4 +309,5 @@ final class MenuHandler {
                 return false;
         }
     }
+
 }

@@ -309,6 +309,11 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <!-- a row that can be 'selected' -->
+    <style name="OptionRow.Selectable">
+        <item name="android:background">@drawable/color_selector_row_highlight</item>
+    </style>
+
     <!-- Menu label for options in a list. Flashes when clicked. -->
     <style name="OptionRow.Menu">
         <item name="android:padding">@dimen/border2</item>

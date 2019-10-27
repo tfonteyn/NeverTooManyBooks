@@ -63,7 +63,7 @@
 
         <meta-data
             android:name="beta.build"
-            android:value="2019-10-16" />
+            android:value="2019-10-27" />
 
         <!-- Application developer keys - stripped out in a git pre-commit script. -->
         <meta-data
@@ -165,7 +165,7 @@
         <activity android:name="com.hardbacknutter.nevertoomanybooks.About" />
         <activity android:name="com.hardbacknutter.nevertoomanybooks.AdminActivity" />
         <!-- Manage Bookshelves -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.EditBookshelfListActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.EditBookshelvesActivity" />
         <!-- main/global preferences -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity" />
         <!-- Edit the user preferred booklist styles -->

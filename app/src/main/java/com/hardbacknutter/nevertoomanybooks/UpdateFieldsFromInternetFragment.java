@@ -43,15 +43,13 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
@@ -68,14 +66,16 @@ import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsFromInternetModel;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
 
 /**
  * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsFromInternetTask}.
- *
- * TODO: implement UpdateFieldsModel
+ * <p>
+ * TODO: re-introduce remembering the last id done, and restarting from that id onwards.
+ * See {@link UpdateFieldsFromInternetModel} mFromBookIdOnwards
  */
 public class UpdateFieldsFromInternetFragment
         extends Fragment {
@@ -83,45 +83,60 @@ public class UpdateFieldsFromInternetFragment
     /** Fragment manager tag. */
     public static final String TAG = "UpdateFieldsFromInternetFragment";
 
-    /** which fields to update and how. */
-    private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
-    /** Bitmask with sites to search on. */
-    private int mSearchSites;
-    /** Book ID's to fetch. {@code null} for all books. */
-    private ArrayList<Long> mBookIds;
-
     /** the ViewGroup where we'll add the list of fields. */
     private ViewGroup mFieldListView;
-    /** senderId of the update task. */
-    private long mUpdateSenderId;
+
+    private TaskManager mTaskManager;
+
+    private UpdateFieldsFromInternetModel mModel;
+
     private final ManagedTaskListener mManagedTaskListener = new ManagedTaskListener() {
         @Override
         public void onTaskFinished(@NonNull final ManagedTask task) {
-            mUpdateSenderId = 0;
-            Intent data = new Intent()
-                    .putExtra(UniqueId.BKEY_CANCELED, task.isCancelled())
-                    // null if we did 'all books'
-                    // or the ID's of the (hopefully) updated books.
-                    .putExtra(UniqueId.BKEY_ID_LIST, mBookIds);
+            mModel.setUpdateSenderId(0);
 
             Activity activity = getActivity();
-            if (!isSingleBook()) {
-                // task cancelled does not mean that nothing was done.
-                // Books *will* be updated until the cancelling happened
+
+            if (mModel.isSingleBook() && task.isCancelled()) {
+                // Nothing was changed, just quit
                 //noinspection ConstantConditions
-                activity.setResult(Activity.RESULT_OK, data);
-            } else {
-                // but if a single book was cancelled, flag that up
-                //noinspection ConstantConditions
-                activity.setResult(Activity.RESULT_CANCELED, data);
+                activity.setResult(Activity.RESULT_CANCELED);
+                activity.finish();
+                return;
             }
+
+            ArrayList<Long> bookIds = mModel.getBookIds();
+
+//            // the last book id which was handled; can be used to restart the update.
+//            long lastBookId = ((UpdateFieldsFromInternetTask)task).getLastBookIdDone();
+//            boolean fullListDone =
+//                    (bookIds != null && !bookIds.isEmpty())
+//                    && bookIds.get(bookIds.size()-1) == lastBookId;
+
+            Intent data = new Intent()
+                    // null if we did 'all books'
+                    // or the ID's (1 or more) of the (hopefully) updated books
+                    .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
+                    // task cancelled does not mean that nothing was done.
+                    // Books *will* be updated until the cancelling happened
+                    .putExtra(UniqueId.BKEY_CANCELED, task.isCancelled())
+                    // One or more books were changed.
+                    // Technically speaking when doing a list of books,
+                    // the task might have been cancelled before the first
+                    // book was done. We disregard this fringe case.
+                    .putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
+
+            if (bookIds != null && !bookIds.isEmpty()) {
+                // Pass the first book for reposition the list (if applicable)
+                data.putExtra(DBDefinitions.KEY_PK_ID, bookIds.get(0));
+            }
+
+            //noinspection ConstantConditions
+            activity.setResult(Activity.RESULT_OK, data);
+
             activity.finish();
         }
     };
-    /** display reminder only. */
-    private String mTitle;
-
-    private TaskManager mTaskManager;
 
     @Override
     public void onAttach(@NonNull final Context context) {
@@ -136,15 +151,10 @@ public class UpdateFieldsFromInternetFragment
         setHasOptionsMenu(true);
 
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState : getArguments();
-        if (currentArgs != null) {
-            //noinspection unchecked
-            mBookIds = (ArrayList<Long>) currentArgs.getSerializable(UniqueId.BKEY_ID_LIST);
 
-            mSearchSites = currentArgs.getInt(UniqueId.BKEY_SEARCH_SITES,
-                                              SearchSites.getEnabledSitesAsBitmask());
-            // optional activity title
-            mTitle = currentArgs.getString(UniqueId.BKEY_DIALOG_TITLE);
-        }
+        //noinspection ConstantConditions
+        mModel = new ViewModelProvider(getActivity()).get(UpdateFieldsFromInternetModel.class);
+        mModel.init(currentArgs);
     }
 
     @Nullable
@@ -162,9 +172,9 @@ public class UpdateFieldsFromInternetFragment
         super.onActivityCreated(savedInstanceState);
 
         Activity activity = getActivity();
-        if (mTitle != null) {
+        if (mModel.getTitle() != null) {
             //noinspection ConstantConditions
-            activity.setTitle(mTitle);
+            activity.setTitle(mModel.getTitle());
         } else {
             //noinspection ConstantConditions
             activity.setTitle(R.string.lbl_select_fields);
@@ -176,13 +186,13 @@ public class UpdateFieldsFromInternetFragment
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> handleConfirm());
 
-        initFields();
+        mModel.initFields();
         populateFields();
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             SearchSites.alertRegistrationBeneficial(getContext(), "update_from_internet",
-                                                    mSearchSites);
+                                                    mModel.getSearchSites());
 
             TipManager.display(getContext(), R.string.tip_update_fields_from_internet, null);
         }
@@ -206,113 +216,11 @@ public class UpdateFieldsFromInternetFragment
             }
         }
 
-        if (mUpdateSenderId != 0) {
+        if (mModel.getUpdateSenderId() != 0) {
             UpdateFieldsFromInternetTask.MESSAGE_SWITCH
-                    .addListener(mUpdateSenderId, true, mManagedTaskListener);
+                    .addListener(mModel.getUpdateSenderId(), true, mManagedTaskListener);
         }
         Tracker.exitOnResume(this);
-    }
-
-    /** syntax sugar. */
-    private boolean isSingleBook() {
-        return mBookIds != null && mBookIds.size() == 1;
-    }
-
-    /**
-     * Entries are displayed in the order they are added here.
-     */
-    private void initFields() {
-
-        addListField(R.string.lbl_author, DBDefinitions.KEY_FK_AUTHOR,
-                     UniqueId.BKEY_AUTHOR_ARRAY);
-
-        addField(R.string.lbl_title, CopyIfBlank, DBDefinitions.KEY_TITLE);
-        addField(R.string.lbl_isbn, CopyIfBlank, DBDefinitions.KEY_ISBN);
-        addField(R.string.lbl_cover, CopyIfBlank, UniqueId.BKEY_IMAGE);
-
-        addListField(R.string.lbl_series, DBDefinitions.KEY_SERIES_TITLE,
-                     UniqueId.BKEY_SERIES_ARRAY);
-
-        addListField(R.string.lbl_table_of_content, DBDefinitions.KEY_TOC_BITMASK,
-                     UniqueId.BKEY_TOC_ENTRY_ARRAY);
-
-        addField(R.string.lbl_publisher, CopyIfBlank,
-                 DBDefinitions.KEY_PUBLISHER);
-        addField(R.string.lbl_print_run, CopyIfBlank,
-                 DBDefinitions.KEY_PRINT_RUN);
-        addField(R.string.lbl_date_published, CopyIfBlank,
-                 DBDefinitions.KEY_DATE_PUBLISHED);
-        addField(R.string.lbl_first_publication, CopyIfBlank,
-                 DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
-
-        addField(R.string.lbl_description, CopyIfBlank, DBDefinitions.KEY_DESCRIPTION);
-
-        addField(R.string.lbl_pages, CopyIfBlank, DBDefinitions.KEY_PAGES);
-        addField(R.string.lbl_format, CopyIfBlank, DBDefinitions.KEY_FORMAT);
-        addField(R.string.lbl_language, CopyIfBlank, DBDefinitions.KEY_LANGUAGE);
-
-        // list price has related DBDefinitions.KEY_PRICE_LISTED
-        addField(R.string.lbl_price_listed, CopyIfBlank, DBDefinitions.KEY_PRICE_LISTED);
-
-        addField(R.string.lbl_genre, CopyIfBlank, DBDefinitions.KEY_GENRE);
-
-        //NEWTHINGS: add new site specific ID: add a field
-        addField(R.string.isfdb, Overwrite, DBDefinitions.KEY_ISFDB_ID);
-        addField(R.string.goodreads, Overwrite, DBDefinitions.KEY_GOODREADS_BOOK_ID);
-        addField(R.string.library_thing, Overwrite, DBDefinitions.KEY_LIBRARY_THING_ID);
-        addField(R.string.open_library, Overwrite, DBDefinitions.KEY_OPEN_LIBRARY_ID);
-        addField(R.string.stripinfo, Overwrite, DBDefinitions.KEY_STRIP_INFO_BE_ID);
-    }
-
-    /**
-     * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
-     *
-     * @param nameStringId Field label string resource ID
-     * @param defaultUsage default Usage for this field
-     * @param fieldId      Field name to use in FieldUsages + check for visibility
-     */
-    private void addField(@StringRes final int nameStringId,
-                          @NonNull final FieldUsage.Usage defaultUsage,
-                          @NonNull final String fieldId) {
-
-        if (App.isUsed(fieldId)) {
-            mFieldUsages.put(fieldId, new FieldUsage(nameStringId, defaultUsage,
-                                                     false, fieldId));
-        }
-    }
-
-    /**
-     * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
-     *
-     * @param nameStringId Field label string resource ID
-     * @param visField     Field name to check for visibility.
-     * @param fieldId      List-field name to use in FieldUsages
-     */
-    private void addListField(@StringRes final int nameStringId,
-                              @NonNull final String visField,
-                              @NonNull final String fieldId) {
-
-        if (App.isUsed(visField)) {
-            mFieldUsages.put(fieldId, new FieldUsage(nameStringId, FieldUsage.Usage.Append,
-                                                     true, fieldId));
-        }
-    }
-
-    /**
-     * Called from {@link #startUpdate} to add any related fields with the same setting.
-     *
-     * @param fieldId        to check presence of
-     * @param relatedFieldId to add if fieldId was present
-     */
-    private void addRelatedField(@SuppressWarnings("SameParameterValue")
-                                 @NonNull final String fieldId,
-                                 @SuppressWarnings("SameParameterValue")
-                                 @NonNull final String relatedFieldId) {
-        FieldUsage field = mFieldUsages.get(fieldId);
-        if (field != null && field.isWanted()) {
-            mFieldUsages.put(relatedFieldId, new FieldUsage(0, field.getUsage(),
-                                                            field.canAppend(), relatedFieldId));
-        }
     }
 
     /**
@@ -320,7 +228,7 @@ public class UpdateFieldsFromInternetFragment
      */
     private void populateFields() {
 
-        for (FieldUsage usage : mFieldUsages.values()) {
+        for (FieldUsage usage : mModel.getFieldUsages().values()) {
             View row = getLayoutInflater().inflate(R.layout.row_update_from_internet,
                                                    mFieldListView, false);
 
@@ -354,7 +262,8 @@ public class UpdateFieldsFromInternetFragment
             // no changes committed, we got data to use temporarily
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mSearchSites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES, mSearchSites);
+                    mModel.setSearchSites(data.getIntExtra(UniqueId.BKEY_SEARCH_SITES,
+                                                           mModel.getSearchSites()));
                 }
                 break;
 
@@ -370,17 +279,17 @@ public class UpdateFieldsFromInternetFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(UniqueId.BKEY_ID_LIST, mBookIds);
-        outState.putInt(UniqueId.BKEY_SEARCH_SITES, mSearchSites);
-        outState.putString(UniqueId.BKEY_DIALOG_TITLE, mTitle);
+        outState.putSerializable(UniqueId.BKEY_ID_LIST, mModel.getBookIds());
+        outState.putInt(UniqueId.BKEY_SEARCH_SITES, mModel.getSearchSites());
+        outState.putString(UniqueId.BKEY_DIALOG_TITLE, mModel.getTitle());
     }
 
     @Override
     @CallSuper
     public void onPause() {
-        if (mUpdateSenderId != 0) {
+        if (mModel.getUpdateSenderId() != 0) {
             UpdateFieldsFromInternetTask.MESSAGE_SWITCH
-                    .removeListener(mUpdateSenderId, mManagedTaskListener);
+                    .removeListener(mModel.getUpdateSenderId(), mManagedTaskListener);
         }
         super.onPause();
     }
@@ -442,15 +351,13 @@ public class UpdateFieldsFromInternetFragment
         // sanity check
         if (!hasSelections()) {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.warning_select_min_1_field);
+            UserMessage.show(getView(), R.string.warning_select_at_least_1_field);
             return;
         }
 
         // If the user has selected thumbnails...
-        final FieldUsage covers = mFieldUsages.get(UniqueId.BKEY_IMAGE);
-
-        //noinspection ConstantConditions
-        if (covers.getUsage().equals(Overwrite)) {
+        final FieldUsage covers = mModel.getFieldUsage(UniqueId.BKEY_IMAGE);
+        if (covers != null && covers.getUsage().equals(Overwrite)) {
             // check if the user really wants to overwrite all covers
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
@@ -460,12 +367,12 @@ public class UpdateFieldsFromInternetFragment
                     .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                     .setNeutralButton(R.string.no, (d, which) -> {
                         covers.setUsage(CopyIfBlank);
-                        mFieldUsages.put(UniqueId.BKEY_IMAGE, covers);
+                        mModel.putFieldUsage(UniqueId.BKEY_IMAGE, covers);
                         startUpdate();
                     })
                     .setPositiveButton(R.string.yes, (d, which) -> {
                         covers.setUsage(Overwrite);
-                        mFieldUsages.put(UniqueId.BKEY_IMAGE, covers);
+                        mModel.putFieldUsage(UniqueId.BKEY_IMAGE, covers);
                         startUpdate();
                     })
                     .create()
@@ -487,15 +394,25 @@ public class UpdateFieldsFromInternetFragment
 
         // add related fields.
         // i.e. if we do the 'list-price' field, we'll also want its currency.
-        addRelatedField(DBDefinitions.KEY_PRICE_LISTED, DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
+        mModel.addRelatedField(DBDefinitions.KEY_PRICE_LISTED,
+                               DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
 
         UpdateFieldsFromInternetTask updateTask =
-                new UpdateFieldsFromInternetTask(mTaskManager, mSearchSites, mFieldUsages,
+                new UpdateFieldsFromInternetTask(mTaskManager,
+                                                 mModel.getSearchSites(),
+                                                 mModel.getFieldUsages(),
                                                  mManagedTaskListener);
-        updateTask.setBookId(mBookIds);
-        mUpdateSenderId = updateTask.getSenderId();
+        ArrayList<Long> list = mModel.getBookIds();
+        if (list != null) {
+            updateTask.setBookId(list);
+        } else {
+            // the complete library starting from the given id
+            updateTask.setCurrentBookId(mModel.getFromBookIdOnwards());
+        }
+
+        mModel.setUpdateSenderId(updateTask.getSenderId());
         UpdateFieldsFromInternetTask.MESSAGE_SWITCH
-                .addListener(mUpdateSenderId, false, mManagedTaskListener);
+                .addListener(mModel.getUpdateSenderId(), false, mManagedTaskListener);
         updateTask.start();
     }
 }

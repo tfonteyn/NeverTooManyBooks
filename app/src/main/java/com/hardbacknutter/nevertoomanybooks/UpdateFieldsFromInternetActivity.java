@@ -27,15 +27,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsFromInternetModel;
 
 /**
  * Searches the internet for book details based on ISBN or Author/Title.
@@ -49,33 +50,25 @@ public class UpdateFieldsFromInternetActivity
         super.onCreate(savedInstanceState);
         LocaleUtils.insanityCheck(this);
 
-        FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(UpdateFieldsFromInternetFragment.TAG) == null) {
-            Fragment frag = new UpdateFieldsFromInternetFragment();
-            frag.setArguments(getIntent().getExtras());
-            fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, frag, UpdateFieldsFromInternetFragment.TAG)
-              .commit();
-        }
+        replaceFragment(R.id.main_fragment, UpdateFieldsFromInternetFragment.class,
+                        UpdateFieldsFromInternetFragment.TAG);
     }
 
-    // TODO: implement UpdateFieldsModel
-//    @Override
-//    public void onActivityResult(final int requestCode,
-//                                 final int resultCode,
-//                                 @Nullable final Intent data) {
-//        if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
-//            if (resultCode == Activity.RESULT_OK && data != null) {
-//                int searchSites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES, 0);
-//                if (searchSites != 0) {
-//                    UpdateFieldsModel mUpdateFieldsModel =
-//                            new ViewModelProvider(this).get(UpdateFieldsModel.class);
-//                    mUpdateFieldsModel.setSearchSites(searchSites);
-//                }
-//            }
-//        }
-//
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
+    @Override
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+        if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                int searchSites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES, 0);
+                if (searchSites != 0) {
+                    UpdateFieldsFromInternetModel model =
+                            new ViewModelProvider(this).get(UpdateFieldsFromInternetModel.class);
+                    model.setSearchSites(searchSites);
+                }
+            }
+        }
+        // passthrough
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

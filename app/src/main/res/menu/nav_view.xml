@@ -33,14 +33,16 @@
         android:icon="@drawable/ic_search"
         android:title="@string/menu_search_local" />
 
+    <!-- only made visible from the BoB screen. -->
     <item
         android:id="@+id/nav_manage_bookshelves"
         android:icon="@drawable/ic_library_books"
+        android:visible="false"
         android:title="@string/menu_bookshelves" />
 
     <!-- only made visible from the BoB screen. -->
     <item
-        android:id="@+id/nav_edit_list_styles"
+        android:id="@+id/nav_manage_list_styles"
         android:icon="@drawable/ic_details"
         android:visible="false"
         android:title="@string/menu_booklist_styles" />

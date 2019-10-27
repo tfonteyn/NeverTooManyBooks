@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
@@ -140,7 +141,7 @@ public class PreferredStylesActivity
         Intent data = new Intent();
 
         // return the currently selected style, so the caller can apply it.
-        BooklistStyle selectedStyle = mListAdapter.getSelectedStyle();
+        BooklistStyle selectedStyle = mListAdapter.getSelected();
         if (selectedStyle != null) {
             data.putExtra(UniqueId.BKEY_STYLE, selectedStyle);
         }
@@ -194,6 +195,39 @@ public class PreferredStylesActivity
         }
 
         Tracker.exitOnActivityResult(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+
+        menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.menu_purge_blns)
+            .setIcon(R.drawable.ic_delete);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
+        // only enable if a style is selected
+        menu.findItem(R.id.MENU_PURGE_BLNS)
+            .setEnabled(mListAdapter.getSelected() != null);
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+
+        if (item.getItemId() == R.id.MENU_PURGE_BLNS) {
+            BooklistStyle selected = mListAdapter.getSelected();
+            if (selected != null) {
+                StandardDialogs.purgeBLNSDialog(this, R.string.lbl_style, selected, () ->
+                        mModel.purgeBLNS(selected.getId()));
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void onCreateContextMenu(final int position) {
@@ -298,8 +332,8 @@ public class PreferredStylesActivity
     private class BooklistStylesAdapter
             extends RecyclerViewAdapterBase<BooklistStyle, Holder> {
 
-        /** The id of the style which should be / is selected at creation time. */
-        private final long mInitialStyleId;
+        /** The id of the item which should be / is selected at creation time. */
+        private final long mInitialSelectedItemId;
 
         /** Currently selected row. */
         private int mSelectedPosition = RecyclerView.NO_POSITION;
@@ -313,10 +347,10 @@ public class PreferredStylesActivity
          */
         BooklistStylesAdapter(@NonNull final Context context,
                               @NonNull final ArrayList<BooklistStyle> items,
-                              final long initialStyleId,
+                              final long initialSelectedItemId,
                               @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
-            mInitialStyleId = initialStyleId;
+            mInitialSelectedItemId = initialSelectedItemId;
         }
 
         @NonNull
@@ -350,16 +384,16 @@ public class PreferredStylesActivity
             holder.mCheckableButton.setChecked(style.isPreferred());
             holder.mCheckableButton.setOnClickListener(v -> setPreferred(holder));
 
-            // select the original style if there was nothing selected (yet).
+            // select the original row if there was nothing selected (yet).
             if (mSelectedPosition == RecyclerView.NO_POSITION
-                && style.getId() == mInitialStyleId) {
+                && style.getId() == mInitialSelectedItemId) {
                 mSelectedPosition = position;
             }
 
             // update the current row
             holder.itemView.setSelected(mSelectedPosition == position);
 
-            // click -> set the row/style as 'selected'.
+            // click -> set the row as 'selected'.
             // Do not modify the 'preferred' state of the row.
             holder.rowDetailsView.setOnClickListener(v -> {
                 // update the previous, now unselected, row.
@@ -454,12 +488,12 @@ public class PreferredStylesActivity
         }
 
         /**
-         * Get the currently selected style.
+         * Get the currently selected item.
          *
          * @return style, or {@code null} if none selected (which should never happen... flw)
          */
         @Nullable
-        BooklistStyle getSelectedStyle() {
+        BooklistStyle getSelected() {
             return mSelectedPosition != RecyclerView.NO_POSITION ? getItem(mSelectedPosition)
                                                                  : null;
         }

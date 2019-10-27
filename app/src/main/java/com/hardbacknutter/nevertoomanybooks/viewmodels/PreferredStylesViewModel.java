@@ -189,4 +189,8 @@ public class PreferredStylesViewModel
         mIsDirty = true;
         BooklistStyle.Helper.saveMenuOrder(mList);
     }
+
+    public void purgeBLNS(final long id) {
+        mDb.purgeNodeStatesByStyle(id);
+    }
 }

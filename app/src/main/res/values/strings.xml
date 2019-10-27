@@ -1512,4 +1512,11 @@
     <string name="pt_reformat_format_on_update">Standardize “book format” names</string>
 
 
+    <string name="menu_purge_blns">Purge BLNS</string>
+    <string name="info_purge_blns_all">Purge all BLNS</string>
+    <!-- param 1: type of item; param 2: item name.
+        Example: Bookshelf ToRead
+    -->
+    <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
+
 </resources>

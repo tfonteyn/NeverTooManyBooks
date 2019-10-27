@@ -146,6 +146,9 @@
 
     <item name="MENU_SEARCH_GOODREADS" type="id" />
 
+    <item name="MENU_PURGE_BLNS" type="id" />
+
+
     <!-- View a book at an external site.
      NEWTHINGS: add new site specific ID: add a menu id -->
     <item name="SUBMENU_VIEW_BOOK_AT_SITE" type="id" />

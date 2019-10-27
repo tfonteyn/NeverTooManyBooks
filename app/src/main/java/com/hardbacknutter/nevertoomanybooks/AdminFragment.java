@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ui.ImportHelperDialogFragment
 import com.hardbacknutter.nevertoomanybooks.backup.ui.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
@@ -207,8 +208,8 @@ public class AdminFragment
                 // Verify - this can be a dangerous operation
                 //noinspection ConstantConditions
                 new AlertDialog.Builder(getContext())
-                        .setTitle(R.string.title_import_book_data)
                         .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setTitle(R.string.title_import_book_data)
                         .setMessage(R.string.warning_import_be_cautious)
                         .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, which) -> {
@@ -291,6 +292,10 @@ public class AdminFragment
         root.findViewById(R.id.lbl_cleanup_files)
             .setOnClickListener(v -> cleanupFiles());
 
+        /* Purge BLNS database table. */
+        root.findViewById(R.id.menu_purge_blns)
+            .setOnClickListener(v -> purgeBLNS());
+
         /* Send debug info */
         root.findViewById(R.id.lbl_send_debug_info)
             .setOnClickListener(v -> sendDebugInfo());
@@ -305,6 +310,23 @@ public class AdminFragment
         if (autoStartBackup) {
             startBackup();
         }
+    }
+
+    private void purgeBLNS() {
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.menu_purge_blns)
+                .setMessage(R.string.info_purge_blns_all)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    try (DAO db = new DAO()) {
+                        db.purgeNodeStates();
+                    }
+                })
+                .create()
+                .show();
+
     }
 
     @Override

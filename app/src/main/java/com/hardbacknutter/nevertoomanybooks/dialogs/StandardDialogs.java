@@ -40,7 +40,9 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -210,5 +212,31 @@ public final class StandardDialogs {
         }
 
         dialog.show();
+    }
+
+    /**
+     * Purge {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE} for the given entity.
+     *
+     * @param context   Current context
+     * @param label     resource string id for the type of entity
+     * @param entity    the entity (from which we'll display the label)
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     */
+    public static void purgeBLNSDialog(@NonNull final Context context,
+                                       @StringRes final int label,
+                                       @NonNull final Entity entity,
+                                       @NonNull final Runnable onConfirm) {
+
+        String msg = context.getString(R.string.info_purge_blns_item_name,
+                                       context.getString(label),
+                                       entity.getLabel(context));
+        new AlertDialog.Builder(context)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.menu_purge_blns)
+                .setMessage(msg)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
+                .create()
+                .show();
     }
 }

@@ -55,19 +55,23 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
  */
-public class EditBookshelfListActivity
+public class EditBookshelvesActivity
         extends BaseActivity {
 
-    private static final long NO_BOOKSHELF = -1;
+    private static final String TAG = "EditBookshelvesActivity";
+
+    public static final String BKEY_CURRENT_BOOKSHELF = TAG + ":current";
 
     /** Database Access. */
     private DAO mDb;
@@ -76,9 +80,6 @@ public class EditBookshelfListActivity
     private ArrayList<Bookshelf> mList;
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
-
-    private long mLastEditedBookshelf = NO_BOOKSHELF;
-
     private final EditBookshelfDialogFragment.BookshelfChangedListener mListener =
             new EditBookshelfDialogFragment.BookshelfChangedListener() {
                 @Override
@@ -86,11 +87,19 @@ public class EditBookshelfListActivity
                                                final int booksMoved) {
                     mList.clear();
                     mList.addAll(mDb.getBookshelves());
-                    mAdapter.notifyDataSetChanged();
 
-                    mLastEditedBookshelf = bookshelfId;
+                    for (int i = 0; i < mList.size(); i++) {
+                        Bookshelf bookshelf = mList.get(i);
+                        if (bookshelf.getId() == bookshelfId) {
+                            mAdapter.setSelectedPosition(i);
+                            break;
+                        }
+                    }
+
+                    mAdapter.notifyDataSetChanged();
                 }
             };
+    private long mInitialBookshelfId;
 
     @Override
     protected int getLayoutId() {
@@ -107,10 +116,19 @@ public class EditBookshelfListActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
+        if (args != null) {
+            mInitialBookshelfId = args.getLong(BKEY_CURRENT_BOOKSHELF);
+            if (mInitialBookshelfId == 0) {
+                throw new UnexpectedValueException(mInitialBookshelfId);
+            }
+        }
+
         setTitle(R.string.title_edit_bookshelves);
         mDb = new DAO();
         mList = mDb.getBookshelves();
-        mAdapter = new BookshelfAdapter(this);
+        mAdapter = new BookshelfAdapter(this, mInitialBookshelfId);
 
         FloatingActionButton fabButton = findViewById(R.id.fab);
         fabButton.setOnClickListener(v -> editItem(
@@ -124,6 +142,40 @@ public class EditBookshelfListActivity
         listView.setHasFixedSize(true);
         listView.setAdapter(mAdapter);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+
+        menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.menu_purge_blns)
+            .setIcon(R.drawable.ic_delete);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
+        // only enable if a shelf is selected
+        menu.findItem(R.id.MENU_PURGE_BLNS)
+            .setEnabled(mAdapter.getSelected() != null);
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+
+        if (item.getItemId() == R.id.MENU_PURGE_BLNS) {
+            Bookshelf selected = mAdapter.getSelected();
+            if (selected != null) {
+                StandardDialogs.purgeBLNSDialog(this, R.string.lbl_bookshelf, selected, () ->
+                        mDb.purgeNodeStatesByBookshelf(selected.getId()));
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     private void onCreateContextMenu(final int position) {
 
@@ -163,9 +215,6 @@ public class EditBookshelfListActivity
                     mList.remove(bookshelf);
                     mAdapter.notifyDataSetChanged();
 
-                    if (bookshelfId == mLastEditedBookshelf) {
-                        mLastEditedBookshelf = NO_BOOKSHELF;
-                    }
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left..
                     // e.g. count > 2, then you can delete '1'
@@ -193,11 +242,22 @@ public class EditBookshelfListActivity
 
     @Override
     public void onBackPressed() {
-        if (mLastEditedBookshelf != NO_BOOKSHELF) {
-            Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, mLastEditedBookshelf);
-            setResult(Activity.RESULT_OK, data);
+        Intent data = new Intent();
+
+        Bookshelf selectedBookshelf = mAdapter.getSelected();
+        if (selectedBookshelf != null) {
+            data.putExtra(DBDefinitions.KEY_PK_ID, selectedBookshelf.getId());
         }
+
+        setResult(Activity.RESULT_OK, data);
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putLong(BKEY_CURRENT_BOOKSHELF, mInitialBookshelfId);
     }
 
     @Override
@@ -235,20 +295,28 @@ public class EditBookshelfListActivity
         @NonNull
         private final LayoutInflater mInflater;
 
+        /** The id of the item which should be / is selected at creation time. */
+        private final long mInitialSelectedItemId;
+
+        /** Currently selected row. */
+        private int mSelectedPosition = RecyclerView.NO_POSITION;
+
         /**
          * Constructor.
          *
          * @param context Current context
          */
-        BookshelfAdapter(@NonNull final Context context) {
+        BookshelfAdapter(@NonNull final Context context,
+                         final long initialSelectedItemId) {
             mInflater = LayoutInflater.from(context);
+            mInitialSelectedItemId = initialSelectedItemId;
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            View view = mInflater.inflate(R.layout.row_bookshelf, parent, false);
+            View view = mInflater.inflate(R.layout.row_edit_bookshelf, parent, false);
             return new Holder(view);
         }
 
@@ -260,8 +328,23 @@ public class EditBookshelfListActivity
 
             holder.nameView.setText(bookshelf.getName());
 
-            // click -> edit
-            holder.nameView.setOnClickListener(v -> editItem(bookshelf));
+            // select the original row if there was nothing selected (yet).
+            if (mSelectedPosition == RecyclerView.NO_POSITION
+                && bookshelf.getId() == mInitialSelectedItemId) {
+                mSelectedPosition = position;
+            }
+
+            // update the current row
+            holder.itemView.setSelected(mSelectedPosition == position);
+
+            // click -> set the row as 'selected'.
+            holder.nameView.setOnClickListener(v -> {
+                // update the previous, now unselected, row.
+                notifyItemChanged(mSelectedPosition);
+                // get/update the newly selected row.
+                mSelectedPosition = holder.getAdapterPosition();
+                notifyItemChanged(mSelectedPosition);
+            });
 
             // long-click -> menu
             holder.nameView.setOnLongClickListener(v -> {
@@ -269,6 +352,26 @@ public class EditBookshelfListActivity
                 return true;
             });
 
+        }
+
+        /**
+         * Update the selection.
+         *
+         * @param position the newly selected row
+         */
+        void setSelectedPosition(final int position) {
+            mSelectedPosition = position;
+        }
+
+        /**
+         * Get the currently selected item.
+         *
+         * @return bookshelf, or {@code null} if none selected (which should never happen... flw)
+         */
+        @Nullable
+        Bookshelf getSelected() {
+            return mSelectedPosition != RecyclerView.NO_POSITION ? mList.get(mSelectedPosition)
+                                                                 : null;
         }
 
         @Override

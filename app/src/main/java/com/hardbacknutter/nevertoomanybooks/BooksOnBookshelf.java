@@ -170,36 +170,38 @@ public class BooksOnBookshelf
             };
 
     /**
-     * Sure, this could al be condensed to savePosition/initBookList,
-     * but the intention is to make the rebuild fine grained.
+     * ENHANCE: update the modified row without a rebuild
      */
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
+        savePosition();
+        initBookList();
 
         // changes were made to a single book
-        if (bookId > 0) {
-            //ENHANCE: update the modified row without a rebuild
-            if ((fieldsChanged & BookChangedListener.BOOK_READ) != 0) {
-                savePosition();
-                initBookList();
-
-//          } else if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-//                we don't display the lend-status in the list for now.
+//        if (bookId > 0) {
+//            if ((fieldsChanged & BookChangedListener.BOOK_READ) != 0) {
 //                savePosition();
 //                initBookList();
-
-            } else if ((fieldsChanged & BookChangedListener.BOOK_WAS_DELETED) != 0) {
-                //ENHANCE: remove the defunct book without a rebuild
-                savePosition();
-                initBookList();
-            }
-        } else {
-            // changes were made to (potentially) the whole list
-            if (fieldsChanged != 0) {
-                savePosition();
-                initBookList();
-            }
-        }
+//
+//          } else if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
+//                if (data != null) {
+//                    String loanee = data.getString(DBDefinitions.KEY_LOANEE);
+//                }
+//                savePosition();
+//                initBookList();
+//
+//            } else if ((fieldsChanged & BookChangedListener.BOOK_DELETED) != 0) {
+//                savePosition();
+//                initBookList();
+//            }
+//        } else {
+//            // changes (Author, Series, ...) were made to (potentially) the whole list
+//            if (fieldsChanged != 0) {
+//                savePosition();
+//                initBookList();
+//            }
+//        }
     };
+
     /** Apply the style that a user has selected. */
     private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
             new StylePickerDialogFragment.StyleChangedListener() {
@@ -294,8 +296,9 @@ public class BooksOnBookshelf
 
         mProgressBar = findViewById(R.id.progressBar);
 
-        // enable the styles menu
-        setNavigationItemVisibility(R.id.nav_edit_list_styles, true);
+        // enable the styles and bookshelves menu
+        setNavigationItemVisibility(R.id.nav_manage_list_styles, true);
+        setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
 
         // Setup the list view.
         initListView();
@@ -474,6 +477,7 @@ public class BooksOnBookshelf
         // Disabled for now. It's a bit to easy for the user to select this from here,
         // with potentially huge impact.
         // This will use the currently displayed booklist (the book ID's)
+        // which could potentially be a very long list
 //        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, 0, R.string.lbl_update_fields)
 //            .setIcon(R.drawable.ic_cloud_download);
 
@@ -491,7 +495,7 @@ public class BooksOnBookshelf
             //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_UNMANGLE, 0, "un-mangle");
 
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE, 0,
-                             "Purge BLNS");
+                             R.string.menu_purge_blns);
 
         }
         return super.onCreateOptionsMenu(menu);
@@ -599,15 +603,22 @@ public class BooksOnBookshelf
     @Override
     protected boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         closeNavigationDrawer();
-        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
-            case R.id.nav_edit_list_styles:
+
+            case R.id.nav_manage_bookshelves: {
+                Intent intent = new Intent(this, EditBookshelvesActivity.class)
+                        .putExtra(EditBookshelvesActivity.BKEY_CURRENT_BOOKSHELF,
+                                  mModel.getCurrentBookshelf().getId());
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
+                return true;
+            }
+            case R.id.nav_manage_list_styles: {
                 Intent intent = new Intent(this, PreferredStylesActivity.class)
                         .putExtra(PreferredStylesViewModel.BKEY_STYLE_ID,
                                   mModel.getCurrentStyle().getId());
                 startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
                 return true;
-
+            }
             default:
                 return super.onNavigationItemSelected(item);
         }
@@ -628,34 +639,35 @@ public class BooksOnBookshelf
                                  @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
-        if (BuildConfig.DEBUG) {
-            if (data != null) {
-                Bundle extras = data.getExtras();
-                if (extras != null) {
-                    if (extras.containsKey(DBDefinitions.KEY_PK_ID)) {
-                        long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, -1);
-                        Logger.debug(this, "onActivityResult",
-                                     "id=" + newId);
-                    } else {
-                        Logger.debug(this, "onActivityResult",
-                                     "data+extras was present, but there was no id");
-                    }
-                } else {
-                    Logger.debug(this, "onActivityResult",
-                                 "data was present, extras was NULL");
-                }
-            }
-        }
-        // ??
-        //mModel.setCurrentPositionedBookId(0);
+//        if (BuildConfig.DEBUG) {
+//            if (data != null) {
+//                Bundle extras = data.getExtras();
+//                if (extras != null) {
+//                    if (extras.containsKey(DBDefinitions.KEY_PK_ID)) {
+//                        long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, -1);
+//                        Logger.debug(this, "onActivityResult",
+//                                     "id=" + newId);
+//                    } else {
+//                        Logger.debug(this, "onActivityResult",
+//                                     "data+extras was present, but there was no id");
+//                    }
+//                } else {
+//                    Logger.debug(this, "onActivityResult",
+//                                 "data was present, extras was NULL");
+//                }
+//            }
+//        }
 
         switch (requestCode) {
+            case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
             case UniqueId.REQ_BOOK_VIEW:
             case UniqueId.REQ_BOOK_EDIT:
+            case UniqueId.REQ_BOOK_DUPLICATE:
             case UniqueId.REQ_AUTHOR_WORKS: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
 
+                    // modified status includes creation and duplication of books
                     if (data.getBooleanExtra(UniqueId.BKEY_BOOK_MODIFIED, false)) {
                         mModel.setForceRebuildInOnResume(true);
                     }
@@ -711,6 +723,25 @@ public class BooksOnBookshelf
                 }
                 break;
             }
+            // from BaseActivity Nav Panel or from sort menu dialog
+            case UniqueId.REQ_NAV_PANEL_EDIT_STYLES: {
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
+
+                    BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
+                    if (style != null) {
+                        // save the new bookshelf/style combination
+                        mModel.getCurrentBookshelf().setAsPreferred(this);
+                        mModel.setCurrentStyle(this, style);
+                    }
+
+                    if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
+                        mModel.setForceRebuildInOnResume(true);
+                    }
+                }
+                break;
+            }
+
             // from BaseActivity Nav Panel
             case UniqueId.REQ_NAV_PANEL_ADMIN: {
                 if (resultCode == Activity.RESULT_OK) {
@@ -745,24 +776,7 @@ public class BooksOnBookshelf
                 }
                 break;
             }
-            // from BaseActivity Nav Panel or from sort menu dialog
-            case UniqueId.REQ_NAV_PANEL_EDIT_STYLES: {
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
 
-                    BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
-                    if (style != null) {
-                        // save the new bookshelf/style combination
-                        mModel.getCurrentBookshelf().setAsPreferred(this);
-                        mModel.setCurrentStyle(this, style);
-                    }
-
-                    if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
-                        mModel.setForceRebuildInOnResume(true);
-                    }
-                }
-                break;
-            }
 
             default: {
                 super.onActivityResult(requestCode, resultCode, data);
@@ -1279,43 +1293,12 @@ public class BooksOnBookshelf
         final int rowKind = row.getInt(DBDefinitions.KEY_BL_NODE_KIND);
         switch (rowKind) {
             case BooklistGroup.RowKind.BOOK: {
-                if (row.getInt(DBDefinitions.KEY_READ) != 0) {
-                    menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread)
-                        .setIcon(R.drawable.ic_check_box_outline_blank);
-                } else {
-                    menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read)
-                        .setIcon(R.drawable.ic_check_box);
-                }
 
-                menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
-                    .setIcon(R.drawable.ic_delete);
-                menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit)
-                    .setIcon(R.drawable.ic_edit);
+                MenuHandler.addBookItems(menu);
+                MenuHandler.prepareBookItems(menu, true,
+                                             row.getInt(DBDefinitions.KEY_READ) != 0,
+                                             mModel.isAvailable(row));
 
-                // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-                if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
-                    if (mModel.isAvailable(row)) {
-                        menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_ADD,
-                                 MenuHandler.ORDER_LENDING, R.string.menu_loan_lend_book)
-                            .setIcon(R.drawable.ic_people);
-                    } else {
-                        menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_DELETE,
-                                 MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book)
-                            .setIcon(R.drawable.ic_people);
-                    }
-                }
-
-                menu.add(Menu.NONE, R.id.MENU_SHARE,
-                         MenuHandler.ORDER_SHARE, R.string.menu_share_this)
-                    .setIcon(R.drawable.ic_share);
-
-                menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS,
-                         MenuHandler.ORDER_SEND_TO_GOODREADS, R.string.gr_menu_send_to_goodreads)
-                    .setIcon(R.drawable.ic_goodreads);
-
-                menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                         MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_fields)
-                    .setIcon(R.drawable.ic_cloud_download);
 
                 //NEWTHINGS: add new site specific ID: add boolean / if / submenu if
                 boolean hasIsfdbId = 0 != row.getLong(DBDefinitions.KEY_EID_ISFDB);
@@ -1475,36 +1458,74 @@ public class BooksOnBookshelf
 
         FragmentManager fm = getSupportFragmentManager();
 
-        long bookId;
+        final long bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
 
         switch (menuItem.getItemId()) {
-            case R.id.MENU_BOOK_DELETE: {
-                String title = row.getString(DBDefinitions.KEY_TITLE);
-                bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
-                List<Author> authors = mModel.getDb().getAuthorsByBookId(bookId);
-                StandardDialogs.deleteBookAlert(this, title, authors, () -> {
-                    mModel.getDb().deleteBook(bookId);
-                    mBookChangedListener
-                            .onBookChanged(bookId, BookChangedListener.BOOK_WAS_DELETED, null);
-                });
-                return true;
-            }
-            case R.id.MENU_BOOK_READ: {
-                // toggle the read status
-                bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
-                if (mModel.getDb().setBookRead(bookId, !row.getBoolean(DBDefinitions.KEY_READ))) {
-                    mBookChangedListener
-                            .onBookChanged(bookId, BookChangedListener.BOOK_READ, null);
-                }
-                return true;
-            }
+
             case R.id.MENU_BOOK_EDIT: {
-                bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
                 Intent intent = new Intent(this, EditBookActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID, bookId);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 return true;
             }
+            case R.id.MENU_BOOK_DELETE: {
+                String title = row.getString(DBDefinitions.KEY_TITLE);
+                List<Author> authors = mModel.getDb().getAuthorsByBookId(bookId);
+                StandardDialogs.deleteBookAlert(this, title, authors, () -> {
+                    mModel.getDb().deleteBook(bookId);
+                    mBookChangedListener
+                            .onBookChanged(bookId, BookChangedListener.BOOK_DELETED, null);
+                });
+                return true;
+            }
+            case R.id.MENU_BOOK_DUPLICATE: {
+                Book book = new Book(bookId, mModel.getDb());
+                Intent dupIntent = new Intent(this, EditBookActivity.class)
+                        .putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
+                startActivityForResult(dupIntent, UniqueId.REQ_BOOK_DUPLICATE);
+                return true;
+            }
+
+            case R.id.MENU_BOOK_READ:
+            case R.id.MENU_BOOK_UNREAD: {
+                // toggle the read status
+                if (mModel.getDb().setBookRead(bookId, !row.getBoolean(DBDefinitions.KEY_READ))) {
+                    mBookChangedListener.onBookChanged(bookId, BookChangedListener.BOOK_READ, null);
+                }
+                return true;
+            }
+
+            /* ********************************************************************************** */
+
+            case R.id.MENU_BOOK_LOAN_ADD: {
+                if (fm.findFragmentByTag(LendBookDialogFragment.TAG) == null) {
+                    LendBookDialogFragment.newInstance(bookId,
+                                                       row.getLong(DBDefinitions.KEY_FK_AUTHOR),
+                                                       row.getString(DBDefinitions.KEY_TITLE))
+                                          .show(fm, LendBookDialogFragment.TAG);
+                }
+                return true;
+            }
+            case R.id.MENU_BOOK_LOAN_DELETE: {
+                mModel.getDb().deleteLoan(bookId);
+                mBookChangedListener.onBookChanged(bookId, BookChangedListener.BOOK_LOANEE, null);
+                return true;
+            }
+            /* ********************************************************************************** */
+
+            case R.id.MENU_SHARE: {
+                Book book = new Book(bookId, mModel.getDb());
+                startActivity(Intent.createChooser(book.getShareBookIntent(this),
+                                                   getString(R.string.menu_share_this)));
+                return true;
+            }
+            case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
+                UserMessage.show(this, R.string.progress_msg_connecting);
+                new SendOneBookTask(bookId, mModel.getGoodreadsTaskListener())
+                        .execute();
+                return true;
+            }
+            /* ********************************************************************************** */
 
             case R.id.MENU_UPDATE_FROM_INTERNET: {
                 // IMPORTANT: this is from a context click on a row.
@@ -1512,8 +1533,8 @@ public class BooksOnBookshelf
                 Intent intent = new Intent(this, UpdateFieldsFromInternetActivity.class);
                 ArrayList<Long> bookIds;
                 switch (row.getInt(DBDefinitions.KEY_BL_NODE_KIND)) {
+
                     case BooklistGroup.RowKind.BOOK: {
-                        bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
                         bookIds = new ArrayList<>();
                         bookIds.add(bookId);
                         intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
@@ -1556,38 +1577,6 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
 
-            case R.id.MENU_BOOK_LOAN_ADD: {
-                if (fm.findFragmentByTag(LendBookDialogFragment.TAG) == null) {
-                    LendBookDialogFragment.newInstance(row.getLong(DBDefinitions.KEY_FK_BOOK),
-                                                       row.getLong(DBDefinitions.KEY_FK_AUTHOR),
-                                                       row.getString(DBDefinitions.KEY_TITLE))
-                                          .show(fm, LendBookDialogFragment.TAG);
-                }
-                return true;
-            }
-            case R.id.MENU_BOOK_LOAN_DELETE: {
-                mModel.getDb().deleteLoan(row.getLong(DBDefinitions.KEY_FK_BOOK));
-                mBookChangedListener.onBookChanged(row.getLong(DBDefinitions.KEY_FK_BOOK),
-                                                   BookChangedListener.BOOK_LOANEE, null);
-                return true;
-            }
-            /* ********************************************************************************** */
-
-            case R.id.MENU_SHARE: {
-                Book book = new Book(row.getLong(DBDefinitions.KEY_FK_BOOK), mModel.getDb());
-                startActivity(Intent.createChooser(book.getShareBookIntent(this),
-                                                   getString(R.string.menu_share_this)));
-                return true;
-            }
-            case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
-                UserMessage.show(this, R.string.progress_msg_connecting);
-                new SendOneBookTask(row.getLong(DBDefinitions.KEY_FK_BOOK),
-                                    mModel.getGoodreadsTaskListener())
-                        .execute();
-                return true;
-            }
-            /* ********************************************************************************** */
-
             case R.id.MENU_SERIES_EDIT: {
                 if (fm.findFragmentByTag(EditSeriesDialogFragment.TAG) == null) {
                     long seriesId = row.getLong(DBDefinitions.KEY_FK_SERIES);
@@ -1616,7 +1605,6 @@ public class BooksOnBookshelf
                 }
                 return true;
             }
-
             /* ********************************************************************************** */
 
             case R.id.MENU_AUTHOR_WORKS: {
