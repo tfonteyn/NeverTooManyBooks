@@ -222,8 +222,7 @@ public class BookSearchByIsbnFragment
         // MUST be called to make this menu be show for as long there is only this one
         // option in the menu. But... leaving the code as-is, so if/when a second menu
         // item is added, no code changes are needed.
-        menu.add(Menu.NONE, R.id.MENU_PREFS_ASIN,
-                 MenuHandler.ORDER_ASIN, R.string.lbl_allow_asin)
+        menu.add(Menu.NONE, R.id.MENU_PREFS_ASIN, 0, R.string.lbl_allow_asin)
             .setCheckable(true)
             .setIcon(R.drawable.ic_check)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);

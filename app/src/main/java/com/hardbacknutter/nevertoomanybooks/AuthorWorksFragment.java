@@ -201,7 +201,7 @@ public class AuthorWorksFragment
 
         //noinspection ConstantConditions
         Menu menu = MenuPicker.createMenu(getContext());
-        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
+        menu.add(Menu.NONE, R.id.MENU_DELETE, MenuHandler.ORDER_DELETE, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
         String title = item.getTitle();

@@ -51,6 +51,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
@@ -236,13 +237,13 @@ public class PreferredStylesActivity
         Menu menu = MenuPicker.createMenu(this);
 
         if (style.isUserDefined()) {
-            menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
+            menu.add(Menu.NONE, R.id.MENU_EDIT, MenuHandler.ORDER_EDIT, R.string.menu_edit)
                 .setIcon(R.drawable.ic_edit);
-            menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
+            menu.add(Menu.NONE, R.id.MENU_DELETE, MenuHandler.ORDER_DELETE, R.string.menu_delete)
                 .setIcon(R.drawable.ic_delete);
         }
 
-        menu.add(Menu.NONE, R.id.MENU_CLONE, 0, R.string.menu_duplicate)
+        menu.add(Menu.NONE, R.id.MENU_CLONE, MenuHandler.ORDER_DUPLICATE, R.string.menu_duplicate)
             .setIcon(R.drawable.ic_content_copy);
 
         String title = style.getLabel(this);

@@ -49,21 +49,38 @@ import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
  * <p>
  * Defines some menu 'order' variables, to ensure certain menu's have a fixed spot.
  */
-final class MenuHandler {
+public final class MenuHandler {
 
-    static final int ORDER_ASIN = 21;
 
-    static final int ORDER_SEARCH_SITES = 20;
+    public static final int ORDER_SEARCH_SITES = 20;
 
-    static final int ORDER_UPDATE_FIELDS = 50;
-    static final int ORDER_LENDING = 60;
 
-    static final int ORDER_SHARE = 70;
+    public static final int ORDER_READ = 400;
+    public static final int ORDER_UNREAD = 401;
 
-    static final int ORDER_SEND_TO_GOODREADS = 80;
+    public static final int ORDER_COMPLETE = 410;
+    public static final int ORDER_INCOMPLETE = 411;
 
-    static final int ORDER_VIEW_BOOK_AT_SITE = 90;
-    private static final int ORDER_AMAZON = 99;
+    public static final int ORDER_EDIT = 500;
+    public static final int ORDER_DUPLICATE = 510;
+    public static final int ORDER_DELETE = 520;
+
+    public static final int ORDER_UPDATE_FIELDS = 700;
+    public static final int ORDER_LENDING = 710;
+    public static final int ORDER_SHARE = 720;
+    public static final int ORDER_SEND_TO_GOODREADS = 730;
+
+    public static final int ORDER_VIEW_BOOK_AT_SITE = 800;
+    public static final int ORDER_VIEW_BOOK_AT_GOODREADS = 805;
+    public static final int ORDER_VIEW_BOOK_AT_LIBRARY_THING = 810;
+    public static final int ORDER_VIEW_BOOK_AT_OPEN_LIBRARY = 815;
+    public static final int ORDER_VIEW_BOOK_AT_ISFDB = 820;
+    public static final int ORDER_VIEW_BOOK_AT_STRIPINFO_BE = 850;
+
+    private static final int ORDER_AMAZON = 900;
+    private static final int ORDER_AMAZON_AUTHOR = 905;
+    private static final int ORDER_AMAZON_SERIES = 910;
+    private static final int ORDER_AMAZON_AUTHOR_IN_SERIES = 915;
 
     private MenuHandler() {
     }
@@ -76,16 +93,16 @@ final class MenuHandler {
      */
     static void addBookItems(@NonNull final Menu menu) {
         // Only one of these two is made visible.
-        menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read)
+        menu.add(Menu.NONE, R.id.MENU_BOOK_READ, ORDER_READ, R.string.menu_set_read)
             .setIcon(R.drawable.ic_check_box);
-        menu.add(Menu.NONE, R.id.MENU_BOOK_UNREAD, 0, R.string.menu_set_unread)
+        menu.add(Menu.NONE, R.id.MENU_BOOK_UNREAD, ORDER_UNREAD, R.string.menu_set_unread)
             .setIcon(R.drawable.ic_check_box_outline_blank);
 
-        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit)
+        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, ORDER_EDIT, R.string.menu_edit)
             .setIcon(R.drawable.ic_edit);
-        menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
+        menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, ORDER_DUPLICATE, R.string.menu_duplicate)
             .setIcon(R.drawable.ic_content_copy);
-        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
+        menu.add(Menu.NONE, R.id.MENU_DELETE, ORDER_DELETE, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
         menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
@@ -149,15 +166,20 @@ final class MenuHandler {
                                           R.string.menu_view_book_at)
                               .setIcon(R.drawable.ic_link);
         //NEWTHINGS: add new site specific ID: add
-        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_GOODREADS, 0, R.string.goodreads)
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_GOODREADS,
+                    ORDER_VIEW_BOOK_AT_GOODREADS, R.string.goodreads)
                .setIcon(R.drawable.ic_link);
-        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING, 0, R.string.library_thing)
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
+                    ORDER_VIEW_BOOK_AT_LIBRARY_THING, R.string.library_thing)
                .setIcon(R.drawable.ic_link);
-        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE, 0, R.string.stripinfo)
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
+                    ORDER_VIEW_BOOK_AT_STRIPINFO_BE, R.string.stripinfo)
                .setIcon(R.drawable.ic_link);
-        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_ISFDB, 0, R.string.isfdb)
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_ISFDB,
+                    ORDER_VIEW_BOOK_AT_ISFDB, R.string.isfdb)
                .setIcon(R.drawable.ic_link);
-        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0, R.string.open_library)
+        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
+                    ORDER_VIEW_BOOK_AT_OPEN_LIBRARY, R.string.open_library)
                .setIcon(R.drawable.ic_link);
     }
 
@@ -234,12 +256,12 @@ final class MenuHandler {
                               .setIcon(R.drawable.ic_search);
 
         // we use the group to make the entry visible/invisible, hence it's == the actual ID.
-        subMenu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0,
-                    R.string.menu_amazon_books_by_author);
-        subMenu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0,
-                    R.string.menu_amazon_books_by_author_in_series);
-        subMenu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0,
-                    R.string.menu_amazon_books_in_series);
+        subMenu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR,
+                    ORDER_AMAZON_AUTHOR, R.string.menu_amazon_books_by_author);
+        subMenu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
+                    ORDER_AMAZON_AUTHOR_IN_SERIES, R.string.menu_amazon_books_by_author_in_series);
+        subMenu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_IN_SERIES,
+                    ORDER_AMAZON_SERIES, R.string.menu_amazon_books_in_series);
 
         return subMenu;
     }

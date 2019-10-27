@@ -182,9 +182,9 @@ public class EditBookshelvesActivity
         Bookshelf bookshelf = mList.get(position);
 
         Menu menu = MenuPicker.createMenu(this);
-        menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
+        menu.add(Menu.NONE, R.id.MENU_EDIT, MenuHandler.ORDER_EDIT, R.string.menu_edit)
             .setIcon(R.drawable.ic_edit);
-        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
+        menu.add(Menu.NONE, R.id.MENU_DELETE, MenuHandler.ORDER_DELETE, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
         String title = bookshelf.getName();

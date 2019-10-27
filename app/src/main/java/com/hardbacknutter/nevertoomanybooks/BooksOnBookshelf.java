@@ -478,7 +478,8 @@ public class BooksOnBookshelf
         // with potentially huge impact.
         // This will use the currently displayed booklist (the book ID's)
         // which could potentially be a very long list
-//        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, 0, R.string.lbl_update_fields)
+//        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+//                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields)
 //            .setIcon(R.drawable.ic_cloud_download);
 
         menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, 0, R.string.menu_clear_search_filters)
@@ -490,7 +491,7 @@ public class BooksOnBookshelf
 
             //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, "Dump style");
-            //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, R.string.debug_history);
+            //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, "Dump history");
 
             //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_UNMANGLE, 0, "un-mangle");
 
@@ -1315,27 +1316,32 @@ public class BooksOnBookshelf
                                                       R.string.menu_view_book_at)
                                           .setIcon(R.drawable.ic_link);
                     if (hasIsfdbId) {
-                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_ISFDB, 0,
+                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_ISFDB,
+                                    MenuHandler.ORDER_VIEW_BOOK_AT_ISFDB,
                                     R.string.isfdb)
                                .setIcon(R.drawable.ic_link);
                     }
                     if (hasGoodreadsId) {
-                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_GOODREADS, 0,
+                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_GOODREADS,
+                                    MenuHandler.ORDER_VIEW_BOOK_AT_GOODREADS,
                                     R.string.goodreads)
                                .setIcon(R.drawable.ic_link);
                     }
                     if (hasLibraryThingId) {
-                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING, 0,
+                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
+                                    MenuHandler.ORDER_VIEW_BOOK_AT_LIBRARY_THING,
                                     R.string.library_thing)
                                .setIcon(R.drawable.ic_link);
                     }
                     if (hasOpenLibraryId) {
-                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0,
+                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
+                                    MenuHandler.ORDER_VIEW_BOOK_AT_OPEN_LIBRARY,
                                     R.string.open_library)
                                .setIcon(R.drawable.ic_link);
                     }
                     if (hasStripInfoBeId) {
-                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE, 0,
+                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
+                                    MenuHandler.ORDER_VIEW_BOOK_AT_STRIPINFO_BE,
                                     R.string.stripinfo)
                                .setIcon(R.drawable.ic_link);
                     }
@@ -1345,13 +1351,16 @@ public class BooksOnBookshelf
             case BooklistGroup.RowKind.AUTHOR: {
                 menu.add(Menu.NONE, R.id.MENU_AUTHOR_WORKS, 0, R.string.menu_author_details)
                     .setIcon(R.drawable.ic_details);
-                menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT, 0, R.string.menu_edit)
+                menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT,
+                         MenuHandler.ORDER_EDIT, R.string.menu_edit)
                     .setIcon(R.drawable.ic_edit);
                 if (row.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)) {
-                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, 0, R.string.menu_set_incomplete)
+                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE,
+                             MenuHandler.ORDER_INCOMPLETE, R.string.menu_set_incomplete)
                         .setIcon(R.drawable.ic_check_box);
                 } else {
-                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, 0, R.string.menu_set_complete)
+                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE,
+                             MenuHandler.ORDER_COMPLETE, R.string.menu_set_complete)
                         .setIcon(R.drawable.ic_check_box_outline_blank);
                 }
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
@@ -1361,16 +1370,20 @@ public class BooksOnBookshelf
             }
             case BooklistGroup.RowKind.SERIES: {
                 if (row.getLong(DBDefinitions.KEY_FK_SERIES) != 0) {
-                    menu.add(Menu.NONE, R.id.MENU_SERIES_DELETE, 0, R.string.menu_delete)
+                    menu.add(Menu.NONE, R.id.MENU_SERIES_DELETE,
+                             MenuHandler.ORDER_DELETE, R.string.menu_delete)
                         .setIcon(R.drawable.ic_delete);
-                    menu.add(Menu.NONE, R.id.MENU_SERIES_EDIT, 0, R.string.menu_edit)
+                    menu.add(Menu.NONE, R.id.MENU_SERIES_EDIT,
+                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                     if (row.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE)) {
-                        menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE, 0,
+                        menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE,
+                                 MenuHandler.ORDER_INCOMPLETE,
                                  R.string.menu_set_incomplete)
                             .setIcon(R.drawable.ic_check_box);
                     } else {
-                        menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE, 0,
+                        menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE,
+                                 MenuHandler.ORDER_COMPLETE,
                                  R.string.menu_set_complete)
                             .setIcon(R.drawable.ic_check_box_outline_blank);
                     }
@@ -1382,35 +1395,40 @@ public class BooksOnBookshelf
             }
             case BooklistGroup.RowKind.PUBLISHER: {
                 if (!row.getString(DBDefinitions.KEY_PUBLISHER).isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_PUBLISHER_EDIT, 0, R.string.menu_edit)
+                    menu.add(Menu.NONE, R.id.MENU_PUBLISHER_EDIT,
+                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
             }
             case BooklistGroup.RowKind.LANGUAGE: {
                 if (!row.getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT, 0, R.string.menu_edit)
+                    menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
+                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
             }
             case BooklistGroup.RowKind.LOCATION: {
                 if (!row.getString(DBDefinitions.KEY_LOCATION).isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT, 0, R.string.menu_edit)
+                    menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT,
+                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
             }
             case BooklistGroup.RowKind.GENRE: {
                 if (!row.getString(DBDefinitions.KEY_GENRE).isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT, 0, R.string.menu_edit)
+                    menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT,
+                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
             }
             case BooklistGroup.RowKind.FORMAT: {
                 if (!row.getString(DBDefinitions.KEY_FORMAT).isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT, 0, R.string.menu_edit)
+                    menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT,
+                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
