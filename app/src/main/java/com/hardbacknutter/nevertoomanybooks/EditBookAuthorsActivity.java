@@ -179,8 +179,8 @@ public class EditBookAuthorsActivity
                                    newAuthorData.getSorting(this),
                                    allBooks);
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.title_scope_of_change)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.title_scope_of_change)
                 .setMessage(message)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .create();

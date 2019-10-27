@@ -44,6 +44,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.EditBookshelvesActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -56,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
  * <p>
  * Calling point is a List.
  * <p>
- * Don't move this to the {@link com.hardbacknutter.nevertoomanybooks.EditBookshelfListActivity}.
+ * Don't move this to the {@link EditBookshelvesActivity}.
  * The intention is to allow editing 'on the fly' wherever a bookshelf is used.
  */
 public class EditBookshelfDialogFragment

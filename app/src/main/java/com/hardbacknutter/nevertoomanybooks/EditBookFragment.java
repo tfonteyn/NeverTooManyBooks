@@ -201,8 +201,8 @@ public class EditBookFragment
         if (!book.validate()) {
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
-                    .setTitle(R.string.vldt_failure)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setTitle(R.string.vldt_failure)
                     .setMessage(book.getValidationExceptionMessage(getContext()))
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
@@ -216,8 +216,8 @@ public class EditBookFragment
             if (!isbn.isEmpty() && ((mBookModel.getDb().getBookIdFromIsbn(isbn, true) > 0))) {
                 //noinspection ConstantConditions
                 new AlertDialog.Builder(getContext())
-                        .setTitle(R.string.title_duplicate_book)
                         .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setTitle(R.string.title_duplicate_book)
                         .setMessage(R.string.confirm_duplicate_book_message)
                         .setCancelable(false)
                         // User aborts this edit

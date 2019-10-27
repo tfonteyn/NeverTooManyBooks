@@ -498,8 +498,8 @@ public class BookSearchByIsbnFragment
     private void isbnAlreadyPresent(final long existingId) {
         //noinspection ConstantConditions
         new AlertDialog.Builder(getContext())
-                .setTitle(R.string.title_duplicate_book)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.title_duplicate_book)
                 .setMessage(R.string.confirm_duplicate_book_message)
                 .setCancelable(false)
                 // User aborts this isbn

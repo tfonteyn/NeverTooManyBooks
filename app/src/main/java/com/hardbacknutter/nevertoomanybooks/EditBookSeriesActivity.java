@@ -174,8 +174,8 @@ public class EditBookSeriesActivity
                                    newSeriesData.getSorting(),
                                    allBooks);
         new AlertDialog.Builder(this)
-                .setTitle(R.string.title_scope_of_change)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.title_scope_of_change)
                 .setMessage(message)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setNeutralButton(allBooks, (d, which) -> {
