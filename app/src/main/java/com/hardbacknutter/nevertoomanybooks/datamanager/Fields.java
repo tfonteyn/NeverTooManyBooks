@@ -393,8 +393,8 @@ public class Fields {
             }
         } else {
             for (Field field : mAllFields.values()) {
-                if (!field.mKey.isEmpty() && rawData.containsKey(field.mKey)) {
-                    Object value = rawData.get(field.mKey);
+                if (!field.getKey().isEmpty() && rawData.containsKey(field.getKey())) {
+                    Object value = rawData.get(field.getKey());
                     if (value != null) {
                         //noinspection unchecked
                         field.setValue(value);
@@ -422,7 +422,7 @@ public class Fields {
      */
     public void putAllInto(@NonNull final DataManager dataManager) {
         for (Field field : mAllFields.values()) {
-            if (!field.mKey.isEmpty()) {
+            if (!field.getKey().isEmpty()) {
                 field.putValueInto(dataManager);
             }
         }
@@ -499,7 +499,7 @@ public class Fields {
          * Use the passed value to set the Field.
          * <p>
          * If {@code null} is passed in, the implementation should set the widget to
-         * its native default value.
+         * its native default value. (e.g. string -> "", number -> 0, etc)
          *
          * @param value to set.
          */
@@ -530,10 +530,31 @@ public class Fields {
         /**
          * Check if this field is considered to be 'empty'.
          * The encapsulated type decides what 'empty' means.
+         * <p>
+         * If the test can be optimized, then you should override this default method.
          *
          * @return {@code true} if empty.
          */
-        boolean isEmpty();
+        default boolean isEmpty() {
+            return isEmpty(getValue());
+        }
+
+        /**
+         * Generic helper method to see if the given value is considered empty.
+         * <p>
+         * This default implementation considers numbers == 0, boolean == false
+         * and empty strings to be empty.
+         *
+         * @param value to test
+         *
+         * @return {@code true} if empty.
+         */
+        default boolean isEmpty(@Nullable final T value) {
+            return value == null
+                   || value instanceof Number && ((Number) value).doubleValue() == 0.0d
+                   || value instanceof Boolean && !(Boolean) value
+                   || value.toString().isEmpty();
+        }
     }
 
     /**
@@ -657,30 +678,30 @@ public class Fields {
         /**
          * Wrapper around {@link FieldFormatter#format}.
          *
-         * @param source Input value
+         * @param value to format
          *
          * @return The formatted value
          */
         @NonNull
-        public String format(@Nullable final T source) {
+        public String format(@Nullable final T value) {
             if (mFormatter != null) {
                 try {
-                    return mFormatter.format(mField, source);
+                    return mFormatter.format(mField, value);
 
                 } catch (@NonNull final ClassCastException e) {
                     // Due to the way a Book loads data from the database,
                     // it's possible that it gets the column type wrong.
                     // See {@link BookCursor} class docs.
-                    Logger.error(this, e, source);
+                    Logger.error(this, e, value);
                 }
             }
 
-            // if we don't have a formatter, or if we had a ClassCastException:
-            if (source != null) {
-                return source.toString();
-            } else {
+            // if we don't have a formatter, or if we had a ClassCastException
+            if (isEmpty(value)) {
                 return "";
             }
+            //noinspection ConstantConditions
+            return value.toString();
         }
 
         /**
@@ -720,7 +741,7 @@ public class Fields {
 
         @Override
         public void getValueAndPut(@NonNull final DataManager target) {
-            target.putString(mField.mKey, getValue());
+            target.putString(mField.getKey(), getValue());
         }
 
         @Override
@@ -731,22 +752,22 @@ public class Fields {
         @NonNull
         @Override
         public String getValue() {
-            return mLocalValue.trim();
+            return mLocalValue;
         }
 
         @Override
         public void setValue(@Nullable final String value) {
-            mLocalValue = value != null ? value : "";
+            mLocalValue = value != null ? value.trim() : "";
         }
 
         @Override
         public void setValue(@NonNull final Bundle source) {
-            setValue(source.getString(mField.mKey, ""));
+            setValue(source.getString(mField.getKey(), ""));
         }
 
         @Override
         public void setValue(@NonNull final DataManager source) {
-            setValue(source.getString(mField.mKey));
+            setValue(source.getString(mField.getKey()));
         }
     }
 
@@ -767,6 +788,7 @@ public class Fields {
             super(field);
         }
 
+
         @Override
         public boolean isEmpty() {
             String value = getValue().toString();
@@ -781,19 +803,18 @@ public class Fields {
 
         @Override
         public void getValueAndPut(@NonNull final DataManager target) {
-            target.put(mField.mKey, getValue());
+            target.put(mField.getKey(), getValue());
         }
 
         @Override
         public void setValue(@NonNull final Bundle source) {
-            setValue((T) source.get(mField.mKey));
+            setValue((T) source.get(mField.getKey()));
         }
 
         @Override
         public void setValue(@NonNull final DataManager source) {
-            setValue((T) source.get(mField.mKey));
+            setValue((T) source.get(mField.getKey()));
         }
-
     }
 
     /**
@@ -1010,7 +1031,7 @@ public class Fields {
 
         @Override
         public void getValueAndPut(@NonNull final DataManager target) {
-            target.putString(mField.mKey, getValue());
+            target.putString(mField.getKey(), getValue());
         }
 
         @Override
@@ -1044,12 +1065,12 @@ public class Fields {
 
         @Override
         public void setValue(@NonNull final Bundle source) {
-            setValue(source.getString(mField.mKey, ""));
+            setValue(source.getString(mField.getKey(), ""));
         }
 
         @Override
         public void setValue(@NonNull final DataManager source) {
-            setValue(source.getString(mField.mKey));
+            setValue(source.getString(mField.getKey()));
         }
     }
 
@@ -1075,12 +1096,12 @@ public class Fields {
 
         @Override
         public void getValueAndPut(@NonNull final DataManager target) {
-            target.putBoolean(mField.mKey, getValue());
+            target.putBoolean(mField.getKey(), getValue());
         }
 
         @Override
         public boolean isEmpty() {
-            return getValue();
+            return !getValue();
         }
 
         @NonNull
@@ -1103,12 +1124,12 @@ public class Fields {
 
         @Override
         public void setValue(@NonNull final Bundle source) {
-            setValue(source.getBoolean(mField.mKey));
+            setValue(source.getBoolean(mField.getKey()));
         }
 
         @Override
         public void setValue(@NonNull final DataManager source) {
-            setValue(source.getBoolean(mField.mKey));
+            setValue(source.getBoolean(mField.getKey()));
         }
     }
 
@@ -1126,7 +1147,7 @@ public class Fields {
 
         @Override
         public void getValueAndPut(@NonNull final DataManager target) {
-            target.putFloat(mField.mKey, getValue());
+            target.putFloat(mField.getKey(), getValue());
         }
 
         @Override
@@ -1153,12 +1174,12 @@ public class Fields {
 
         @Override
         public void setValue(@NonNull final Bundle source) {
-            setValue(source.getFloat(mField.mKey));
+            setValue(source.getFloat(mField.getKey()));
         }
 
         @Override
         public void setValue(@NonNull final DataManager source) {
-            setValue(source.getFloat(mField.mKey));
+            setValue(source.getFloat(mField.getKey()));
         }
     }
 
@@ -1203,7 +1224,7 @@ public class Fields {
         }
 
         /**
-         * Not really used, but returning the uuid makes sense.
+         * Not really used, but returning the uuid makes sense (as opposed to returning the bitmap).
          *
          * @return the UUID
          */
@@ -1238,12 +1259,12 @@ public class Fields {
 
         @Override
         public void setValue(@NonNull final Bundle source) {
-            setValue(source.getString(mField.mKey, ""));
+            setValue(source.getString(mField.getKey(), ""));
         }
 
         @Override
         public void setValue(@NonNull final DataManager source) {
-            setValue(source.getString(mField.mKey));
+            setValue(source.getString(mField.getKey()));
         }
     }
 
@@ -1356,8 +1377,8 @@ public class Fields {
         @Override
         public String format(@NonNull final Field<Double> field,
                              @Nullable final Double source) {
-            if (source == null || source == 0) {
-                mRawValue = 0.0D;
+            if (source == null || source.equals(0.0d)) {
+                mRawValue = 0.0d;
                 return "";
             }
             mRawValue = source;
@@ -1685,7 +1706,7 @@ public class Fields {
          * the screen must be done manually.
          * ==> extracted from the screen and put in {@link DataManager} (or Bundle)
          * <p>
-         * - key is not set: field is defined, but data handling is fully manual.
+         * - key is not set (""): field is defined, but data handling is fully manual.
          */
         @NonNull
         private final String mKey;
@@ -2028,6 +2049,11 @@ public class Fields {
         @IdRes
         public int getId() {
             return mId;
+        }
+
+        @NonNull
+        public String getKey() {
+            return mKey;
         }
 
         /**
