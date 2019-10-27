@@ -248,21 +248,28 @@ public class BookFragment
             case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
             case UniqueId.REQ_BOOK_EDIT:
                 if (resultCode == Activity.RESULT_OK) {
-                    mBookModel.reload();
+                    if (data != null) {
+                        // pass the data up
+                        mBookModel.putResultData(data);
+                    }
                     // onResume will display the changed book.
+                    mBookModel.reload();
                 }
                 break;
 
             case UniqueId.REQ_BOOK_DUPLICATE:
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
+                        // pass the data up
+                        mBookModel.putResultData(data);
+
                         long id = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
                         if (id != 0) {
                             mBookModel.setBook(id);
                         }
                     }
+                    // onResume will display the new book
                     mBookModel.reload();
-                    // onResume will display the new book, but
                     //FIXME: swiping through the flattened booklist will not see the new book
                     // until we go back to BoB.
                 }

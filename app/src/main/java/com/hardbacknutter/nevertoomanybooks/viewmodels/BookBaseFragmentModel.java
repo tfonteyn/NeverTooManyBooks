@@ -157,6 +157,10 @@ public class BookBaseFragmentModel
         return mResultData;
     }
 
+    public void putResultData(@NonNull final Intent data) {
+        mResultData.putExtras(data);
+    }
+
     /**
      * Check if <strong>anything at all</strong> was changed.
      *

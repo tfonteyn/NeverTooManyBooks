@@ -95,7 +95,7 @@ public class GlobalSettingsFragment
         switch (requestCode) {
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mResultDataModel.putAll(data);
+                    mResultDataModel.putExtra(data);
                 }
                 break;
 

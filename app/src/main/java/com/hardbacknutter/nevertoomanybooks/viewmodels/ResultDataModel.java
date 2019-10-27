@@ -76,7 +76,7 @@ public class ResultDataModel
         mResultData.putExtra(name, value);
     }
 
-    public void putAll(@NonNull final Intent data) {
+    public void putExtra(@NonNull final Intent data) {
         mResultData.putExtras(data);
     }
 }

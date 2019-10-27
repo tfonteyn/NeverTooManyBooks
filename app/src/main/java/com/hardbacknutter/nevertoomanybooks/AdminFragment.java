@@ -337,7 +337,7 @@ public class AdminFragment
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         // collect all data for passing to the calling Activity
         if (data != null) {
-            mResultDataModel.putAll(data);
+            mResultDataModel.putExtra(data);
         }
 
         switch (requestCode) {
