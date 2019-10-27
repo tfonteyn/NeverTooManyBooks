@@ -35,9 +35,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
@@ -65,15 +62,7 @@ public class BookDetailsActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(BookFragment.TAG) == null) {
-            Fragment frag = new BookFragment();
-            frag.setArguments(getIntent().getExtras());
-            fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, frag, BookFragment.TAG)
-              .commit();
-        }
+        replaceFragment(R.id.main_fragment, BookFragment.class, BookFragment.TAG);
     }
 
     /**

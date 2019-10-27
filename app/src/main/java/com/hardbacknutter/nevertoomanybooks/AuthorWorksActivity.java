@@ -32,9 +32,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
@@ -56,15 +53,7 @@ public class AuthorWorksActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(AuthorWorksFragment.TAG) == null) {
-            Fragment frag = new AuthorWorksFragment();
-            frag.setArguments(getIntent().getExtras());
-            fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, frag, AuthorWorksFragment.TAG)
-              .commit();
-        }
+        replaceFragment(R.id.main_fragment, AuthorWorksFragment.class, AuthorWorksFragment.TAG);
     }
 
     @Override

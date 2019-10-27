@@ -42,6 +42,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -52,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.AdminActivity;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.EditBookshelfListActivity;
 import com.hardbacknutter.nevertoomanybooks.FTSSearchActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -166,6 +168,79 @@ public abstract class BaseActivity
         isGoingToRecreate();
     }
 
+    /**
+     * Manually load a fragment into the given container using {@link FragmentTransaction#add}.
+     * <p>
+     * Not added to the BackStack.
+     * The activity extras bundle will be set as arguments.
+     *
+     * @param containerViewId to receive the fragment
+     * @param fragmentClass   the fragment; must be loadable with the current class loader.
+     */
+    public void addFragment(@IdRes final int containerViewId,
+                            @NonNull final Class fragmentClass,
+                            @Nullable final String fragmentTag) {
+        loadFragment(containerViewId, fragmentClass, fragmentTag, true);
+    }
+
+    /**
+     * Manually load a fragment into the given container using {@link FragmentTransaction#replace}.
+     * <p>
+     * Not added to the BackStack.
+     * The activity extras bundle will be set as arguments.
+     *
+     * @param containerViewId to receive the fragment
+     * @param fragmentClass   the fragment; must be loadable with the current class loader.
+     */
+    public void replaceFragment(@IdRes final int containerViewId,
+                                @NonNull final Class fragmentClass,
+                                @Nullable final String fragmentTag) {
+        loadFragment(containerViewId, fragmentClass, fragmentTag, false);
+    }
+
+    /**
+     * Manually load a fragment into the given container.
+     * <p>
+     * Not added to the BackStack.
+     * The activity extras bundle will be set as arguments.
+     * <p>
+     * TODO: look into {@link androidx.fragment.app.FragmentFactory}
+     *
+     * @param containerViewId to receive the fragment
+     * @param fragmentClass   the fragment; must be loadable with the current class loader.
+     * @param isAdd           whether to use add or replace
+     */
+    private void loadFragment(@IdRes final int containerViewId,
+                              @NonNull final Class fragmentClass,
+                              @Nullable final String fragmentTag,
+                              final boolean isAdd) {
+        String tag;
+        if (fragmentTag == null) {
+            tag = fragmentClass.getName();
+        } else {
+            tag = fragmentTag;
+        }
+
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.findFragmentByTag(tag) == null) {
+            Fragment frag;
+            try {
+                frag = (Fragment) fragmentClass.newInstance();
+            } catch (IllegalAccessException | InstantiationException e) {
+                throw new IllegalStateException("not a fragment class: " + fragmentClass.getName());
+            }
+            frag.setArguments(getIntent().getExtras());
+            FragmentTransaction ft = fm.beginTransaction()
+                                       .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            if (isAdd) {
+                ft.add(containerViewId, frag, tag);
+            } else {
+                ft.replace(containerViewId, frag, tag);
+            }
+            ft.commit();
+        }
+    }
+
 
     /**
      * Check if the Locale/Theme was changed, which will trigger the Activity to be recreated.
@@ -239,12 +314,11 @@ public abstract class BaseActivity
                     return onSearchRequested();
                 }
 
-            case R.id.nav_manage_bookshelves:
-                startActivityForResult(new Intent(this, EditBookshelfListActivity.class),
-                                       UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
-                return true;
-
             // handled in BoB code. Left commented here as a reminder.
+//            case R.id.nav_manage_bookshelves:
+//                startActivityForResult(new Intent(this, EditBookshelvesActivity.class),
+//                                       UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
+//                return true;
 //            case R.id.nav_edit_list_styles:
 //                startActivityForResult(new Intent(this, PreferredStylesActivity.class),
 //                                       UniqueId.REQ_NAV_PANEL_EDIT_STYLES);

@@ -31,11 +31,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
@@ -61,34 +59,31 @@ public class BookSearchActivity
             mTag = BookSearchByIsbnFragment.TAG;
         }
 
-        FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(mTag) == null) {
-            Fragment frag = createFragment(mTag);
-            frag.setArguments(getIntent().getExtras());
-            fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, frag, mTag)
-              .commit();
-        }
+        replaceFragment(R.id.main_fragment, mTag);
     }
 
     /**
      * Create a fragment based on the given tag.
      *
      * @param tag for the required fragment
-     *
-     * @return a new fragment instance.
      */
-    private Fragment createFragment(@NonNull final String tag) {
+    public void replaceFragment(@IdRes final int containerViewId,
+                                @NonNull final String tag) {
         switch (tag) {
             case BookSearchByIsbnFragment.TAG:
-                return new BookSearchByIsbnFragment();
+                replaceFragment(containerViewId, BookSearchByIsbnFragment.class,
+                                BookSearchByIsbnFragment.TAG);
+                return;
 
             case BookSearchByTextFragment.TAG:
-                return new BookSearchByTextFragment();
+                replaceFragment(containerViewId, BookSearchByTextFragment.class,
+                                BookSearchByTextFragment.TAG);
+                return;
 
-//            case UpdateFieldsFromInternetFragment.TAG:
-//                return new UpdateFieldsFromInternetFragment();
+            case UpdateFieldsFromInternetFragment.TAG:
+                replaceFragment(containerViewId, UpdateFieldsFromInternetFragment.class,
+                                UpdateFieldsFromInternetFragment.TAG);
+                return;
 
             default:
                 throw new UnexpectedValueException(tag);

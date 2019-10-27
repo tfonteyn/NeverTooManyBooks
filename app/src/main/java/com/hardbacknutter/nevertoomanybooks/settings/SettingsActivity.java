@@ -33,10 +33,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceFragmentCompat;
@@ -75,15 +75,30 @@ public class SettingsActivity
             tag = GlobalSettingsFragment.TAG;
         }
 
-        FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(tag) == null) {
-            Fragment frag = createFragment(tag);
-            frag.setArguments(getIntent().getExtras());
-            fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              // add! not replace!
-              .add(R.id.main_fragment, frag, tag)
-              .commit();
+        // add! not replace!
+        addFragment(R.id.main_fragment, tag);
+    }
+
+    /**
+     * Create a fragment based on the given tag.
+     *
+     * @param tag for the required fragment
+     */
+    public void addFragment(@IdRes final int containerViewId,
+                            @NonNull final String tag) {
+        switch (tag) {
+            case GlobalSettingsFragment.TAG:
+                addFragment(containerViewId, GlobalSettingsFragment.class,
+                            GlobalSettingsFragment.TAG);
+                return;
+
+            case StyleSettingsFragment.TAG:
+                addFragment(containerViewId, StyleSettingsFragment.class,
+                            StyleSettingsFragment.TAG);
+                return;
+
+            default:
+                throw new UnexpectedValueException(tag);
         }
     }
 
@@ -101,24 +116,6 @@ public class SettingsActivity
         super.onPause();
     }
 
-    /**
-     * create a new fragment instance from the tag.
-     *
-     * @param tag name of fragment to instantiate
-     *
-     * @return new instance
-     */
-    private Fragment createFragment(@NonNull final String tag) {
-        if (GlobalSettingsFragment.TAG.equals(tag)) {
-            return new GlobalSettingsFragment();
-
-        } else if (StyleSettingsFragment.TAG.equals(tag)) {
-            return new StyleSettingsFragment();
-
-        } else {
-            throw new UnexpectedValueException(tag);
-        }
-    }
 
     /**
      * If any of the child preference fragments have an xml configuration with nested
@@ -132,8 +129,12 @@ public class SettingsActivity
                                            @NonNull final PreferenceScreen pref) {
 
         // start a NEW copy of the same fragment
-        //noinspection ConstantConditions
-        Fragment frag = createFragment(caller.getTag());
+        Fragment frag;
+        try {
+            frag = caller.getClass().newInstance();
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new IllegalStateException();
+        }
 
         // and set it to start with the new root key (screen)
         Bundle callerArgs = caller.getArguments();

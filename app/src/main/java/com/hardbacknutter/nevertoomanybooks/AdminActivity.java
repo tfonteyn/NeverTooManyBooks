@@ -32,9 +32,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
@@ -57,15 +54,7 @@ public class AdminActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_administration);
 
-        FragmentManager fm = getSupportFragmentManager();
-        if (null == fm.findFragmentByTag(AdminFragment.TAG)) {
-            Fragment frag = new AdminFragment();
-            frag.setArguments(getIntent().getExtras());
-            fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, frag, AdminFragment.TAG)
-              .commit();
-        }
+        replaceFragment(R.id.main_fragment, AdminFragment.class, AdminFragment.TAG);
     }
 
     @Override
