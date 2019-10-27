@@ -199,10 +199,20 @@ public class MenuPicker<T>
             mSubMenuPointer = context.getDrawable(R.drawable.ic_submenu);
         }
 
+        /**
+         * Add all menu items to the adapter list.
+         * Invisible items are <strong>not added</strong>,
+         * disabled items are added and will be shown disabled.
+         *
+         * @param menu to add.
+         */
         void setMenu(@NonNull final Menu menu) {
             mList.clear();
             for (int i = 0; i < menu.size(); i++) {
-                mList.add(menu.getItem(i));
+                MenuItem item = menu.getItem(i);
+                if (item.isVisible()) {
+                    mList.add(item);
+                }
             }
             notifyDataSetChanged();
         }
@@ -225,15 +235,17 @@ public class MenuPicker<T>
 
             // add a little arrow to indicate sub-menus.
             if (item.hasSubMenu()) {
-                holder.textView.setCompoundDrawablesWithIntrinsicBounds(
+                holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         item.getIcon(), null, mSubMenuPointer, null);
             } else {
-                holder.textView.setCompoundDrawablesWithIntrinsicBounds(
+                holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         item.getIcon(), null, null, null);
             }
 
-            // onClick on the whole view.
-            holder.itemView.setOnClickListener(v -> mListener.onPicked(item));
+            holder.textView.setEnabled(item.isEnabled());
+            if (item.isEnabled()) {
+                holder.textView.setOnClickListener(v -> mListener.onPicked(item));
+            }
         }
 
         @Override
