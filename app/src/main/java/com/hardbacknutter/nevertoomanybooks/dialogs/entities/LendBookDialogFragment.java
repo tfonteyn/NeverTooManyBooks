@@ -188,10 +188,9 @@ public class LendBookDialogFragment
                     dismiss();
                     mDb.deleteLoan(mBookId);
                     if (mBookChangedListener.get() != null) {
-                        mBookChangedListener.get()
-                                            .onBookChanged(0,
-                                                           BookChangedListener.BOOK_LOANEE,
-                                                           null);
+                        mBookChangedListener
+                                .get()
+                                .onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, null);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onBookChanged",
@@ -219,10 +218,9 @@ public class LendBookDialogFragment
                     Bundle data = new Bundle();
                     data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
                     if (mBookChangedListener.get() != null) {
-                        mBookChangedListener.get()
-                                            .onBookChanged(0,
-                                                           BookChangedListener.BOOK_LOANEE,
-                                                           data);
+                        mBookChangedListener
+                                .get()
+                                .onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, data);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onBookChanged",

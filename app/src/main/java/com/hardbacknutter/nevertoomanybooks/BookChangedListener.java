@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,42 +29,58 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Allows to be notified of changes made to book(s).
  */
 public interface BookChangedListener {
 
+    /** Author was modified. */
     int AUTHOR = 1;
+    /** Series was modified. */
     int SERIES = 1 << 1;
-
+    /** ... */
     int FORMAT = 1 << 2;
     int GENRE = 1 << 3;
     int LANGUAGE = 1 << 4;
     int LOCATION = 1 << 5;
     int PUBLISHER = 1 << 6;
 
-    /** The book was set to read/unread. */
+    /** A book was set to read/unread. */
     int BOOK_READ = 1 << 7;
 
-    /** the book was either lend out, or returned. */
+    /**
+     * A book was either lend out, or returned.
+     * <p>
+     * When lend out:  data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
+     * When returned: data == null
+     */
     int BOOK_LOANEE = 1 << 8;
 
-    /**
-     * not really a field, but we want to be able to return the deleted bookId AND indicate
-     * it was deleted.
-     */
-    int BOOK_WAS_DELETED = 1 << 9;
+    /** A book was deleted. */
+    int BOOK_DELETED = 1 << 9;
 
     /**
      * Called if changes were made.
      *
-     * @param bookId        the book that was changed, or 0 if the change was global
-     * @param fieldsChanged a bitmask build from the flags
-     * @param data          bundle with custom data, can be {@code null}
+     * @param bookId      the book that was changed, or 0 if the change was global
+     * @param whatChanged a bitmask build from the flags
+     * @param data        bundle with custom data, can be {@code null}
      */
     void onBookChanged(long bookId,
-                       int fieldsChanged,
+                       @WhatChanged int whatChanged,
                        @Nullable Bundle data);
+
+    @IntDef(flag = true, value = {AUTHOR, SERIES,
+                                  FORMAT, GENRE, LANGUAGE, LOCATION, PUBLISHER,
+                                  BOOK_READ, BOOK_LOANEE, BOOK_DELETED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface WhatChanged {
+
+    }
 }

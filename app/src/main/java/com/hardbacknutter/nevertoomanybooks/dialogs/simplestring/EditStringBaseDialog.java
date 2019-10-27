@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.simplestring;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -145,9 +146,11 @@ abstract class EditStringBaseDialog {
         saveChanges(mContext, mCurrentText, newText);
     }
 
-    void sendBookChangedMessage(final int changeFlags) {
+    void sendBookChangedMessage(@BookChangedListener.WhatChanged final int changeFlags,
+                                @SuppressWarnings("SameParameterValue")
+                                @Nullable final Bundle data) {
         if (mBookChangedListener != null && mBookChangedListener.get() != null) {
-            mBookChangedListener.get().onBookChanged(0, changeFlags, null);
+            mBookChangedListener.get().onBookChanged(0, changeFlags, data);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onBookChanged",

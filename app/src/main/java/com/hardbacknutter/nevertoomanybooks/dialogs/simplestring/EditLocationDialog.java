@@ -62,6 +62,6 @@ public class EditLocationDialog
                                @NonNull final String from,
                                @NonNull final String to) {
         mDb.updateLocation(from, to);
-        sendBookChangedMessage(BookChangedListener.LOCATION);
+        sendBookChangedMessage(BookChangedListener.LOCATION, null);
     }
 }

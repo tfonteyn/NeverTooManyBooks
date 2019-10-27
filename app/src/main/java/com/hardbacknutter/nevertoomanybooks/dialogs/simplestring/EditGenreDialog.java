@@ -62,6 +62,6 @@ public class EditGenreDialog
                                @NonNull final String from,
                                @NonNull final String to) {
         mDb.updateGenre(from, to);
-        sendBookChangedMessage(BookChangedListener.GENRE);
+        sendBookChangedMessage(BookChangedListener.GENRE, null);
     }
 }

@@ -184,11 +184,11 @@ public class EditAuthorDialogFragment
                     mDb.updateOrInsertAuthor(context, mAuthor);
 
                     // and spread the news of the changes.
-                    Bundle data = new Bundle();
-                    data.putLong(DBDefinitions.KEY_FK_AUTHOR, mAuthor.getId());
+//                    Bundle data = new Bundle();
+//                    data.putLong(DBDefinitions.KEY_FK_AUTHOR, mAuthor.getId());
                     if (mBookChangedListener.get() != null) {
                         mBookChangedListener.get()
-                                            .onBookChanged(0, BookChangedListener.AUTHOR, data);
+                                            .onBookChanged(0, BookChangedListener.AUTHOR, null);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onBookChanged",

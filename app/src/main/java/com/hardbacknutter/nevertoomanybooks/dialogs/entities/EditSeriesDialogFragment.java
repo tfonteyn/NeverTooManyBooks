@@ -164,11 +164,11 @@ public class EditSeriesDialogFragment
                     mDb.updateOrInsertSeries(context, Locale.getDefault(), mSeries);
 
                     // and spread the news of the changes.
-                    Bundle data = new Bundle();
-                    data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());
+//                    Bundle data = new Bundle();
+//                    data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());
                     if (mBookChangedListener.get() != null) {
                         mBookChangedListener.get()
-                                            .onBookChanged(0, BookChangedListener.SERIES, data);
+                                            .onBookChanged(0, BookChangedListener.SERIES, null);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onBookChanged",

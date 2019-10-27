@@ -141,11 +141,11 @@ public class EditPublisherDialogFragment
                     }
                     mDb.updatePublisher(mPublisher.getName(), mName);
 
-                    Bundle data = new Bundle();
-                    data.putString(DBDefinitions.KEY_PUBLISHER, mPublisher.getName());
+//                    Bundle data = new Bundle();
+//                    data.putString(DBDefinitions.KEY_PUBLISHER, mPublisher.getName());
                     if (mBookChangedListener.get() != null) {
-                        mBookChangedListener.get().onBookChanged(0, BookChangedListener.PUBLISHER,
-                                                                 data);
+                        mBookChangedListener
+                                .get().onBookChanged(0, BookChangedListener.PUBLISHER, null);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onBookChanged",
