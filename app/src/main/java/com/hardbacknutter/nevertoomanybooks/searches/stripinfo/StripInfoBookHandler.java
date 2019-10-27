@@ -310,12 +310,12 @@ public class StripInfoBookHandler
                 StringBuilder content = new StringBuilder();
                 for (int i = 0; i < sections.size(); i++) {
                     Element sectionElement = sections.get(i);
-                    // a section usually has 'h4' tags, replace with 'b'
+                    // a section usually has 'h4' tags, replace with 'b' and add a line feed 'br'
                     String tmp = H4_OPEN_PATTERN.matcher(sectionElement.html())
                                                 .replaceAll(Matcher.quoteReplacement("<b>"));
                     content.append(H4_CLOSE_PATTERN.matcher(tmp)
                                                    .replaceAll(
-                                                           Matcher.quoteReplacement("</b>")));
+                                                           Matcher.quoteReplacement("</b><br>")));
                     if (i < sections.size() - 1) {
                         // separate multiple sections
                         content.append("<br><br>");
@@ -540,6 +540,8 @@ public class StripInfoBookHandler
 
     /**
      * StripInfo specific field names we add to the bundle based on parsed XML data.
+     *
+     * //URGENT: add color field to 'books' table
      */
     public static final class StripInfoField {
 
