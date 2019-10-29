@@ -87,19 +87,17 @@ public final class LanguageUtils {
      * Each time the user switches language, we generate an additional set.
      * That probably covers a lot if not all.
      *
+     * @param context     Current context
      * @param displayName the string as normally produced by {@link Locale#getDisplayLanguage}
      *
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public static String getISO3FromDisplayName(@NonNull final String displayName) {
+    public static String getISO3FromDisplayName(@NonNull final Context context,
+                                                @NonNull final String displayName) {
 
         String source = displayName.trim().toLowerCase(Locale.getDefault());
-        String iso = getLanguageCache().getString(source, null);
-        if (iso == null) {
-            return source;
-        }
-        return iso;
+        return getLanguageCache(context).getString(source, source);
     }
 
     /**
@@ -357,7 +355,7 @@ public final class LanguageUtils {
      */
     public static void createLanguageMappingCache() {
 
-        SharedPreferences prefs = getLanguageCache();
+        SharedPreferences prefs = getLanguageCache(App.getAppContext());
 
         // the one the user is using our app in (can be different from the system one)
         createLanguageMappingCache(prefs, Locale.getDefault());
@@ -399,8 +397,8 @@ public final class LanguageUtils {
     }
 
     /** Convenience method to get the language SharedPreferences file. */
-    private static SharedPreferences getLanguageCache() {
-        return App.getAppContext().getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
+    private static SharedPreferences getLanguageCache(@NonNull final Context context) {
+        return context.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }
 
     public static String toDebugString(@NonNull final Context context) {

@@ -27,10 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.stripinfo;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 
 import java.io.IOException;
@@ -39,66 +35,21 @@ import java.util.ArrayList;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import com.hardbacknutter.nevertoomanybooks.BundleMock;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class stripinfo {
-
-    /** After mapping, the expected format (presuming the test runs in english Locale). */
-    private static final String bookType_paperback = "Paperback";
-    /** After mapping, the expected format (presuming the test runs in english Locale). */
-    private static final String bookType_hardcover = "Hardcover";
-
-    @Mock
-    Context mContext;
-    @Mock
-    SharedPreferences mSharedPreferences;
-    @Mock
-    Resources mResources;
-    @Mock
-    Configuration mConfiguration;
-
-    @Mock
-    Bundle mBundle;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        mBundle = BundleMock.mock();
-        mContext = mock(Context.class);
-        mResources = mock(Resources.class);
-        mSharedPreferences = mock(SharedPreferences.class);
-        mConfiguration = mock(Configuration.class);
-
-        when(mContext.getApplicationContext()).thenReturn(mContext);
-        when(mContext.getResources()).thenReturn(mResources);
-        when(mContext.createConfigurationContext(any())).thenReturn(mContext);
-        when(mContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mSharedPreferences);
-        when(mResources.getConfiguration()).thenReturn(mConfiguration);
-
-        when(mContext.getString(R.string.book_format_paperback)).thenReturn(bookType_paperback);
-        when(mContext.getString(R.string.book_format_hardcover)).thenReturn(bookType_hardcover);
-    }
+class stripinfo
+        extends CommonSetup {
 
     @Test
     void parse01()
@@ -118,7 +69,7 @@ class stripinfo {
 
         StripInfoBookHandler stripInfoBookHandler = new StripInfoBookHandler(doc);
         // we've set the doc, so no internet download will be done.
-        Bundle bookData = stripInfoBookHandler.parseDoc(mBundle, false);
+        Bundle bookData = stripInfoBookHandler.parseDoc(mContext, mBookData, false);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -129,6 +80,7 @@ class stripinfo {
         assertEquals("48", bookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Hardcover", bookData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("Nederlands", bookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
         assertEquals("Silvester", bookData.getString(DBDefinitions.KEY_PUBLISHER));
 
@@ -178,7 +130,7 @@ class stripinfo {
 
         StripInfoBookHandler stripInfoBookHandler = new StripInfoBookHandler(doc);
         // we've set the doc, so no internet download will be done.
-        Bundle bookData = stripInfoBookHandler.parseDoc(mBundle, false);
+        Bundle bookData = stripInfoBookHandler.parseDoc(mContext, mBookData, false);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -189,6 +141,7 @@ class stripinfo {
         assertEquals("64", bookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Softcover", bookData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("Nederlands", bookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
         assertEquals("Le Lombard", bookData.getString(DBDefinitions.KEY_PUBLISHER));
 
@@ -218,5 +171,29 @@ class stripinfo {
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
         // there are more...
+    }
+
+    @Test
+    void parseMultiResult()
+
+            throws IOException {
+        String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=905165197x";
+        String filename = "/stripinfo-pluvi-multi-result.html";
+
+        Document doc;
+        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
+            assertNotNull(in);
+            doc = Jsoup.parse(in, null, locationHeader);
+        }
+        assertNotNull(doc);
+        assertTrue(doc.hasText());
+
+        StripInfoBookHandler stripInfoBookHandler = new StripInfoBookHandler(doc);
+        // we've set the doc, so no internet download will be done.
+        Bundle bookData = stripInfoBookHandler.parseMultiResult(mContext, mBookData, false);
+
+        assertFalse(bookData.isEmpty());
+        System.out.println(bookData);
+
     }
 }

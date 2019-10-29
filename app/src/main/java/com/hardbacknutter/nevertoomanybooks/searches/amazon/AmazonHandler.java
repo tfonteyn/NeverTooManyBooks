@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -504,7 +505,8 @@ class AmazonHandler
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
                 // the language is a 'DisplayName' so convert to iso first.
                 addIfNotPresent(mBookData, DBDefinitions.KEY_LANGUAGE,
-                                LanguageUtils.getISO3FromDisplayName(mBuilder.toString()));
+                                LanguageUtils.getISO3FromDisplayName(App.getLocalizedAppContext(),
+                                                                     mBuilder.toString()));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {
                 mCurrencyAmount = mBuilder.toString();

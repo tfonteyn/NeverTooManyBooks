@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -67,7 +68,7 @@ public class StripInfoManager
 
     @NonNull
     public static String getBaseURL() {
-        return SearchEngine.getPref().getString(PREFS_HOST_URL, "https://stripinfo.be/");
+        return SearchEngine.getPref().getString(PREFS_HOST_URL, "https://stripinfo.be");
     }
 
     /**
@@ -90,8 +91,10 @@ public class StripInfoManager
                          @Nullable final String publisher,
                          final boolean fetchThumbnail)
             throws IOException {
+        Context context = App.getLocalizedAppContext();
+
         if (ISBN.isValid(isbn)) {
-            return new StripInfoBookHandler().fetch(isbn, fetchThumbnail);
+            return new StripInfoBookHandler().fetch(context, isbn, fetchThumbnail);
         } else {
             throw new UnsupportedOperationException();
         }

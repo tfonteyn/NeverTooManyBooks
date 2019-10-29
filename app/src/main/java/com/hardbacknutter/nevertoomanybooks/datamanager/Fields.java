@@ -1517,7 +1517,7 @@ public class Fields {
         @Override
         public String extract(@NonNull final Field<String> field,
                               @NonNull final String source) {
-            return LanguageUtils.getISO3FromDisplayName(source);
+            return LanguageUtils.getISO3FromDisplayName(field.getView().getContext(), source);
         }
     }
 

@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.kbnl;
 
-import android.os.Bundle;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -39,40 +37,38 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.xml.sax.SAXException;
 
-import com.hardbacknutter.nevertoomanybooks.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class KbNlBookHandlerTest {
+class KbNlBookHandlerTest
+        extends CommonSetup {
 
     private static final String bookFilename = "/kbnl-book-1.xml";
     private static final String comicFilename = "/kbnl-comic-1.xml";
-
-    @Mock
-    Bundle mBookData;
 
     private KbNlBookHandler mHandler;
     private SAXParser mParser;
 
     @BeforeEach
-    void setUp()
-            throws ParserConfigurationException, SAXException {
-        MockitoAnnotations.initMocks(this);
-        mBookData = BundleMock.mock();
+    protected void setUp() {
+        super.setUp();
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
         mHandler = new KbNlBookHandler(mBookData);
-        mParser = factory.newSAXParser();
+        try {
+            mParser = factory.newSAXParser();
+        } catch (ParserConfigurationException | SAXException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

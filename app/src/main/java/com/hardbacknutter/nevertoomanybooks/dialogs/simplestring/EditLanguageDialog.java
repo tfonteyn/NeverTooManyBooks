@@ -83,7 +83,7 @@ public class EditLanguageDialog
     protected void saveChanges(@NonNull final Context context,
                                @NonNull final String from,
                                @NonNull final String to) {
-        mDb.updateLanguage(from, LanguageUtils.getISO3FromDisplayName(to));
+        mDb.updateLanguage(from, LanguageUtils.getISO3FromDisplayName(context, to));
         sendBookChangedMessage(BookChangedListener.LANGUAGE, null);
     }
 }

@@ -386,7 +386,7 @@ public final class LocaleUtils {
         String lang = inputLang.trim().toLowerCase(Locale.getDefault());
         int len = lang.length();
         if (len > 3) {
-            lang = LanguageUtils.getISO3FromDisplayName(lang);
+            lang = LanguageUtils.getISO3FromDisplayName(App.getLocalizedAppContext(), lang);
         }
 
         // THIS IS A MUST

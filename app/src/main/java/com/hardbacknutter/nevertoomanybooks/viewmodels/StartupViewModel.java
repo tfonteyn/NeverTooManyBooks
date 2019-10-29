@@ -411,7 +411,7 @@ public class StartupViewModel
                 DBCleaner cleaner = new DBCleaner(mDb);
 
                 // do a mass update of any languages not yet converted to ISO 639-2 codes
-                cleaner.updateLanguages();
+                cleaner.updateLanguages(App.getAppContext());
                 // clean/correct style UUID's on Bookshelves for deleted styles.
                 cleaner.bookshelves();
 

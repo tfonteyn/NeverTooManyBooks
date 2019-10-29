@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.stripinfo;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -57,7 +58,7 @@ public class StripInfoBookHandler
 
     public static final String FILENAME_SUFFIX = "_SI";
 
-    /** Color string values as used on the site. */
+    /** Color string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
 
     /** Param 1: search criteria. */
@@ -96,6 +97,7 @@ public class StripInfoBookHandler
     /**
      * Fetch a book.
      *
+     * @param context        Current context
      * @param isbn           to search
      * @param fetchThumbnail whether to get thumbnails as well
      *
@@ -104,39 +106,73 @@ public class StripInfoBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    public Bundle fetch(@NonNull final String isbn,
+    public Bundle fetch(@NonNull final Context context,
+                        @NonNull final String isbn,
                         final boolean fetchThumbnail)
             throws SocketTimeoutException {
         // keep for reference
         mIsbn = isbn;
 
+        Bundle bookData = new Bundle();
+
         String path = StripInfoManager.getBaseURL() + String.format(BOOK_SEARCH_URL, isbn);
+        if (loadPage(path) == null) {
+            return bookData;
+        }
+
+        if (mDoc.title().startsWith("Zoeken naar")) {
+            // handle multi-results page.
+            return parseMultiResult(context, bookData, fetchThumbnail);
+        }
+
+        return parseDoc(context, bookData, fetchThumbnail);
+    }
+
+    /**
+     * Fetch a book.
+     *
+     * @param context        Current context
+     * @param path           to load
+     * @param fetchThumbnail whether to get thumbnails as well
+     *
+     * @return Bundle with book data
+     *
+     * @throws SocketTimeoutException if the connection times out
+     */
+    @SuppressWarnings("WeakerAccess")
+    @NonNull
+    Bundle fetchByPath(@NonNull final Context context,
+                       @NonNull final String path,
+                       final boolean fetchThumbnail)
+            throws SocketTimeoutException {
+
         if (loadPage(path) == null) {
             return new Bundle();
         }
 
         Bundle bookData = new Bundle();
-        return parseDoc(bookData, fetchThumbnail);
+
+        if (mDoc.title().startsWith("Zoeken naar")) {
+            // prevent looping.
+            return bookData;
+        }
+
+        return parseDoc(context, bookData, fetchThumbnail);
     }
 
     /**
      * Parses the downloaded {@link #mDoc}.
-     * <p>
-     * We only parse the first book found.
+     * We only parse the <strong>first book</strong> found.
      *
+     * @param context        Current context
      * @param bookData       a new Bundle()  (must be passed in so we can mock it in test)
      * @param fetchThumbnail whether to get thumbnails as well
      *
      * @return Bundle with book data, can be empty, but never {@code null}
      */
-    Bundle parseDoc(@NonNull final Bundle bookData,
+    Bundle parseDoc(@NonNull final Context context,
+                    @NonNull final Bundle bookData,
                     @SuppressWarnings("SameParameterValue") final boolean fetchThumbnail) {
-
-        if (mDoc.title().startsWith("Zoeken naar")) {
-            // ENHANCE: handle multi-results page.
-            // a certain talented publisher often re-used isbn codes...
-            return bookData;
-        }
 
         Elements rows = mDoc.select("div.row");
 
@@ -255,7 +291,7 @@ public class StripInfoBookHandler
                             String lang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
                             if (lang != null && !lang.isEmpty()) {
                                 // the language is a 'DisplayName' so convert to iso first.
-                                lang = LanguageUtils.getISO3FromDisplayName(lang);
+                                lang = LanguageUtils.getISO3FromDisplayName(context, lang);
                                 bookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
                             }
                             break;
@@ -345,6 +381,44 @@ public class StripInfoBookHandler
                 // if the site has no image: https://www.stripinfo.be/image.php?i=0
                 if (coverUrl != null && !coverUrl.isEmpty() && !coverUrl.endsWith("i=0")) {
                     fetchCover(coverUrl, bookData);
+                }
+            }
+        }
+
+        return bookData;
+    }
+
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retries.
+     *
+     * @param context        Current context
+     * @param bookData       a new Bundle()  (must be passed in so we can mock it in test)
+     * @param fetchThumbnail whether to get thumbnails as well
+     *
+     * @return Bundle with book data, can be empty, but never {@code null}
+     *
+     * @throws SocketTimeoutException if the connection times out
+     */
+    Bundle parseMultiResult(@NonNull final Context context,
+                            @NonNull final Bundle bookData,
+                            @SuppressWarnings("SameParameterValue") final boolean fetchThumbnail)
+            throws SocketTimeoutException {
+
+        Elements sections = mDoc.select("section.c6");
+        if (sections != null) {
+            for (Element section : sections) {
+                Elements urls = section.select("a");
+                if (urls != null) {
+                    for (Element url : urls) {
+                        // <a href="https://stripinfo.be/reeks/index/481_Het_narrenschip">Het narrenschip</a>
+                        // <a href="https://stripinfo.be/reeks/strip/1652_Het_narrenschip_2_Pluvior_627">Pluvior 627</a>
+                        String href = url.attr("href");
+                        if (href.contains("/strip/")) {
+                            mDoc = null;
+                            return fetchByPath(context, href, fetchThumbnail);
+                        }
+                    }
                 }
             }
         }

@@ -587,20 +587,17 @@ public class SearchCoordinator {
             Logger.debug(this, "sendResults",
                          "All searches done for MessageSenderId:" + mMessageSenderId);
         }
+
         // All done, Pass the data back
-        MESSAGE_SWITCH
-                .send(mMessageSenderId,
-                      listener -> {
-                          if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                              Logger.debug(this, "sendResults",
-                                           "Delivering to SearchListener=" + listener,
-                                           "title=`" + mBookData.getString(
-                                                   DBDefinitions.KEY_TITLE) + '`');
-                          }
-                          listener.onSearchFinished(mCancelledFlg, mBookData);
-                          return true;
-                      }
-                     );
+        MESSAGE_SWITCH.send(mMessageSenderId, listener -> {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+                Logger.debug(this, "sendResults",
+                             "Delivering to=" + listener,
+                             "title=`" + mBookData.getString(DBDefinitions.KEY_TITLE) + '`');
+            }
+            listener.onSearchFinished(mCancelledFlg, mBookData);
+            return true;
+        });
     }
 
     /**

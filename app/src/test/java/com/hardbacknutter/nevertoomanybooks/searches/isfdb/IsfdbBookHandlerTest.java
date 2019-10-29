@@ -27,10 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 
 import java.io.IOException;
@@ -41,27 +37,20 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import com.hardbacknutter.nevertoomanybooks.BundleMock;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -71,44 +60,18 @@ import static org.mockito.Mockito.when;
  * <a href="http://www.isfdb.org/cgi-bin/pl.cgi?112781">
  * http://www.isfdb.org/cgi-bin/pl.cgi?112781</a>
  */
-class IsfdbBookHandlerTest {
+class IsfdbBookHandlerTest
+        extends CommonSetup {
 
     /** This test does not 'live' fetch the doc, but this is the correct baseUri. */
     private static final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
     /** instead we read this file locally. */
     private static final String filename = "/isfdb-book-1.html";
-    /** After mapping, the expected format (presuming the test runs in english Locale). */
-    private static final String bookType_paperback = "Paperback";
-
-    @Mock
-    Context mContext;
-    @Mock
-    SharedPreferences mSharedPreferences;
-    @Mock
-    Resources mResources;
-    @Mock
-    Configuration mConfiguration;
-
-    @Mock
-    Bundle mBundle;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        mBundle = BundleMock.mock();
-        mContext = mock(Context.class);
-        mResources = mock(Resources.class);
-        mSharedPreferences = mock(SharedPreferences.class);
-        mConfiguration = mock(Configuration.class);
-
-        when(mContext.getApplicationContext()).thenReturn(mContext);
-        when(mContext.getResources()).thenReturn(mResources);
-        when(mContext.createConfigurationContext(any())).thenReturn(mContext);
-        when(mContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mSharedPreferences);
-        when(mResources.getConfiguration()).thenReturn(mConfiguration);
-
-        when(mContext.getString(R.string.book_format_paperback)).thenReturn(bookType_paperback);
+    @Override
+    protected void setUp() {
+        super.setUp();
 
         // Supposedly we should run two tests; i.e. true/false return.
         when(mSharedPreferences.getBoolean(eq(IsfdbManager.PREFS_SERIES_FROM_TOC), anyBoolean()))
@@ -132,7 +95,7 @@ class IsfdbBookHandlerTest {
 
         IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(doc);
         // we've set the doc, so no internet download will be done.
-        Bundle bookData = isfdbBookHandler.parseDoc(mBundle, false, false);
+        Bundle bookData = isfdbBookHandler.parseDoc(mBookData, false, false);
 
         assertFalse(bookData.isEmpty());
 

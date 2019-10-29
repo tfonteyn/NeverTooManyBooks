@@ -69,6 +69,7 @@ public final class FormatMapper
 
         // stripinfo.be
         MAPPER.put("softcover", R.string.book_format_softcover);
+        MAPPER.put("digitaal", R.string.book_format_ebook);
 
         // Others as seen in the wild
         MAPPER.put("hardback", R.string.book_format_hardcover);

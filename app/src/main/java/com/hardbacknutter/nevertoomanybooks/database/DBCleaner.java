@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -129,11 +131,11 @@ public class DBCleaner {
     /**
      * Do a mass update of any languages not yet converted to ISO codes.
      */
-    public void updateLanguages() {
+    public void updateLanguages(@NonNull final Context context) {
         List<String> names = mDb.getLanguageCodes();
         for (String name : names) {
             if (name != null && name.length() > 3) {
-                String iso = LanguageUtils.getISO3FromDisplayName(name);
+                String iso = LanguageUtils.getISO3FromDisplayName(context, name);
                 Logger.debug(this, "updateLanguages",
                              "Global language update of `" + name + "` to `" + iso + '`');
                 if (!iso.equals(name)) {
