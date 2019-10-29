@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.entities;
+package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -52,62 +52,22 @@ public abstract class TerminologyMapperBase {
         mContext = context;
     }
 
-    /**
-     * <strong>Unconditionally</strong> try to map website terminology to our own localised.
-     * This should be / is used at 'edit' time (a formatter) and again at 'save' time
-     * <p>
-     * Caller should use {@link #isMappingAllowed} if required.
-     *
-     * @param source string to map
-     *
-     * @return localized equivalent, or the source if no mapping exists.
-     */
-    public String map(@NonNull final String source) {
-        Integer resId = MAPPER.get(source.toLowerCase(Locale.getDefault()));
-        return resId != null ? mContext.getString(resId) : source;
-    }
-
-
     public abstract String getKey();
 
-    public abstract boolean isMappingAllowed();
-
     /**
-     * Conditionally try to map website terminology to our own localised.
-     * This should be / is used at 'edit' time (a formatter) and again at 'save' time
-     * <p>
-     * The current value is read from the bundle, and replaced by the mapped value.
+     * The current value is read from the bundle, and replaced by the mapped value if found.
      *
      * @param bookData with {@link #getKey} entry to map
      */
     public void map(@NonNull final Bundle bookData) {
 
-        if (isMappingAllowed()) {
-            String value = bookData.getString(getKey());
-            if (value != null && !value.isEmpty()) {
-                value = map(value);
-                bookData.putString(getKey(), value);
-            }
+        String value = bookData.getString(getKey());
+        if (value != null && !value.isEmpty()) {
+
+            Integer resId = MAPPER.get(value.toLowerCase(Locale.getDefault()));
+            value = resId != null ? mContext.getString(resId) : value;
+
+            bookData.putString(getKey(), value);
         }
     }
-
-    /**
-     * Conditionally try to map website terminology to our own localised.
-     * This should be / is used at 'edit' time (a formatter) and again at 'save' time
-     * <p>
-     * The current value is read from the bundle, and replaced by the mapped value.
-     *
-     * @param book with {@link #getKey} entry to map
-     */
-    public void map(@NonNull final Book book) {
-
-        if (isMappingAllowed()) {
-            String value = book.getString(getKey());
-            if (!value.isEmpty()) {
-                value = map(value);
-                book.putString(getKey(), value);
-            }
-        }
-    }
-
 }

@@ -73,8 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.ColorMapper;
-import com.hardbacknutter.nevertoomanybooks.entities.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
@@ -1476,85 +1474,6 @@ public class Fields {
             return mRawValue;
         }
     }
-
-    /**
-     * FieldFormatter for 'format' fields. Attempts to standardize the descriptor
-     * before displaying. This is not an internal code, but purely text based.
-     * <ul>
-     * <li>Multiple fields: <strong>yes</strong></li>
-     * <li>Extract: <strong>returns screen text as-is!</strong></li>
-     * </ul>
-     */
-    public static class FormatFormatter
-            implements FieldFormatter<String> {
-
-        private final FormatMapper mMapper;
-
-        public FormatFormatter(@NonNull final Context context) {
-            mMapper = new FormatMapper(context);
-        }
-
-        @NonNull
-        @Override
-        public String format(@NonNull final Field<String> field,
-                             @Nullable final String source) {
-            if (source != null && !source.isEmpty()) {
-                if (mMapper.isMappingAllowed()) {
-                    return mMapper.map(source);
-                } else {
-                    return source;
-                }
-            }
-            return "";
-        }
-
-        @NonNull
-        @Override
-        public String extract(@NonNull final Field<String> field,
-                              @NonNull final String source) {
-            return source;
-        }
-    }
-
-    /**
-     * FieldFormatter for 'color' fields. Attempts to standardize the descriptor
-     * before displaying. This is not an internal code, but purely text based.
-     * <ul>
-     * <li>Multiple fields: <strong>yes</strong></li>
-     * <li>Extract: <strong>returns screen text as-is!</strong></li>
-     * </ul>
-     */
-    public static class ColorFormatter
-            implements FieldFormatter<String> {
-
-        private final ColorMapper mMapper;
-
-        public ColorFormatter(@NonNull final Context context) {
-            mMapper = new ColorMapper(context);
-        }
-
-        @NonNull
-        @Override
-        public String format(@NonNull final Field<String> field,
-                             @Nullable final String source) {
-            if (source != null && !source.isEmpty()) {
-                if (mMapper.isMappingAllowed()) {
-                    return mMapper.map(source);
-                } else {
-                    return source;
-                }
-            }
-            return "";
-        }
-
-        @NonNull
-        @Override
-        public String extract(@NonNull final Field<String> field,
-                              @NonNull final String source) {
-            return source;
-        }
-    }
-
 
     /**
      * FieldFormatter for language fields.

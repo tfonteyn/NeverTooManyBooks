@@ -646,5 +646,8 @@
     <string name="hint_empty_read_status">(Leesstatus onbekend)</string>
     <string name="warning_select_at_least_1_group">Selecteer ten minste één groep.</string>
     <string name="lbl_color">Kleur</string>
+    <string name="book_color_full_color">Gekleurd</string>
+    <string name="book_color_uncolored">Ongekleurd</string>
+    <string name="book_format_softcover">Softcover</string>
 
 </resources>

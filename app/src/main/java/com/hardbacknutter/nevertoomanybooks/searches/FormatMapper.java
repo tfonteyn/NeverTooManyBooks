@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.entities;
+package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
 
@@ -67,6 +67,9 @@ public final class FormatMapper
         MAPPER.put("geb.", R.string.book_format_hardcover);
         MAPPER.put("gebonden", R.string.book_format_hardcover);
 
+        // stripinfo.be
+        MAPPER.put("softcover", R.string.book_format_softcover);
+
         // Others as seen in the wild
         MAPPER.put("hardback", R.string.book_format_hardcover);
     }
@@ -76,21 +79,17 @@ public final class FormatMapper
      *
      * @param context Current context
      */
-    public FormatMapper(@NonNull final Context context) {
+    FormatMapper(@NonNull final Context context) {
         super(context);
     }
 
-    public static boolean isMappingAllowed(@NonNull final Context context) {
+    static boolean isMappingAllowed(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_reformat_format_update, false);
-    }
-
-    public String getKey() {
-        return DBDefinitions.KEY_FORMAT;
+                                .getBoolean(Prefs.pk_search_reformat_format, false);
     }
 
     @Override
-    public boolean isMappingAllowed() {
-        return isMappingAllowed(mContext);
+    public String getKey() {
+        return DBDefinitions.KEY_FORMAT;
     }
 }

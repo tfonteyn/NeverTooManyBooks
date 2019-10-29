@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.entities;
+package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
 
@@ -55,13 +55,8 @@ public final class ColorMapper
      *
      * @param context Current context
      */
-    public ColorMapper(@NonNull final Context context) {
+    ColorMapper(@NonNull final Context context) {
         super(context);
-    }
-
-    public static boolean isMappingAllowed(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_reformat_color_update, false);
     }
 
     @Override
@@ -69,8 +64,9 @@ public final class ColorMapper
         return DBDefinitions.KEY_COLOR;
     }
 
-    @Override
-    public boolean isMappingAllowed() {
-        return isMappingAllowed(mContext);
+    static boolean isMappingAllowed(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_search_reformat_color, false);
     }
+
 }

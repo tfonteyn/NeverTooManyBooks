@@ -110,22 +110,6 @@
             android:summaryOff="@string/pt_reformat_titles_summary_original"
             android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
             android:title="@string/pt_bob_titles_display" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_edit"
-            android:key="reformat.format.update"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_reformat_format_on_update" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_edit"
-            android:key="reformat.color.update"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_reformat_color_on_update" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -230,6 +214,22 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_collect_series_info_from_toc" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_edit"
+            android:key="search.reformat.format"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_reformat_format" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_edit"
+            android:key="search.reformat.color"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_reformat_color" />
 
         <!-- The user can/should set their local amazon website.
              Other sites can be made editable likewise if needed.

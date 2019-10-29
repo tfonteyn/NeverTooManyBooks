@@ -86,8 +86,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.ColorMapper;
-import com.hardbacknutter.nevertoomanybooks.entities.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
@@ -313,8 +311,6 @@ public class DAO
     private final SqlStatementManager mStatements;
     /** used by finalize so close does not get called twice. */
     private boolean mCloseWasCalled;
-    private FormatMapper mFormatMapper;
-    private ColorMapper mColorMapper;
 
     /**
      * Constructor.
@@ -1222,22 +1218,6 @@ public class DAO
 
         // Handle all price related fields.
         preprocessPrices(book);
-
-        // Map website formats to standard ones if enabled by the user.
-        if (FormatMapper.isMappingAllowed(context)) {
-            if (mFormatMapper == null) {
-                mFormatMapper = new FormatMapper(context);
-            }
-            mFormatMapper.map(book);
-        }
-
-        // Map website colors to standard ones if enabled by the user.
-        if (ColorMapper.isMappingAllowed(context)) {
-            if (mColorMapper == null) {
-                mColorMapper = new ColorMapper(context);
-            }
-            mColorMapper.map(book);
-        }
 
         // Remove blank external ID's
         for (DomainDefinition domain : new DomainDefinition[]{

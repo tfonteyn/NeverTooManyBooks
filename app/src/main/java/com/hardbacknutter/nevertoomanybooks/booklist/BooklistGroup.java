@@ -1052,43 +1052,42 @@ public class BooklistGroup
                    + '}';
         }
 
-        @IntDef({
-                        RowKind.BOOK,
+        @IntDef({RowKind.BOOK,
 
-                        RowKind.AUTHOR,
-                        RowKind.SERIES,
-                        RowKind.GENRE,
-                        RowKind.PUBLISHER,
-                        RowKind.READ_STATUS,
+                 RowKind.AUTHOR,
+                 RowKind.SERIES,
+                 RowKind.GENRE,
+                 RowKind.PUBLISHER,
+                 RowKind.READ_STATUS,
 
-                        RowKind.LOANED,
-                        RowKind.DATE_PUBLISHED_YEAR,
-                        RowKind.DATE_PUBLISHED_MONTH,
-                        RowKind.TITLE_LETTER,
-                        RowKind.DATE_ADDED_YEAR,
+                 RowKind.LOANED,
+                 RowKind.DATE_PUBLISHED_YEAR,
+                 RowKind.DATE_PUBLISHED_MONTH,
+                 RowKind.TITLE_LETTER,
+                 RowKind.DATE_ADDED_YEAR,
 
-                        RowKind.DATE_ADDED_MONTH,
-                        RowKind.DATE_ADDED_DAY,
-                        RowKind.DATE_READ_YEAR,
-                        RowKind.FORMAT,
-                        RowKind.COLOR,
-                        RowKind.DATE_READ_MONTH,
+                 RowKind.DATE_ADDED_MONTH,
+                 RowKind.DATE_ADDED_DAY,
+                 RowKind.DATE_READ_YEAR,
+                 RowKind.FORMAT,
+                 RowKind.COLOR,
+                 RowKind.DATE_READ_MONTH,
 
-                        RowKind.DATE_READ_DAY,
-                        RowKind.LOCATION,
-                        RowKind.LANGUAGE,
-                        RowKind.DATE_LAST_UPDATE_YEAR,
-                        RowKind.DATE_LAST_UPDATE_MONTH,
+                 RowKind.DATE_READ_DAY,
+                 RowKind.LOCATION,
+                 RowKind.LANGUAGE,
+                 RowKind.DATE_LAST_UPDATE_YEAR,
+                 RowKind.DATE_LAST_UPDATE_MONTH,
 
-                        RowKind.DATE_LAST_UPDATE_DAY,
-                        RowKind.RATING,
-                        RowKind.BOOKSHELF,
-                        RowKind.DATE_ACQUIRED_YEAR,
-                        RowKind.DATE_ACQUIRED_MONTH,
+                 RowKind.DATE_LAST_UPDATE_DAY,
+                 RowKind.RATING,
+                 RowKind.BOOKSHELF,
+                 RowKind.DATE_ACQUIRED_YEAR,
+                 RowKind.DATE_ACQUIRED_MONTH,
 
-                        RowKind.DATE_ACQUIRED_DAY,
-                        RowKind.DATE_FIRST_PUB_YEAR,
-                        RowKind.DATE_FIRST_PUB_MONTH,
+                 RowKind.DATE_ACQUIRED_DAY,
+                 RowKind.DATE_FIRST_PUB_YEAR,
+                 RowKind.DATE_FIRST_PUB_MONTH,
                 })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Kind {

@@ -77,15 +77,12 @@ public class EditBookPublicationFragment
         fields.addString(R.id.pages, DBDefinitions.KEY_PAGES)
               .setRelatedFields(R.id.lbl_pages);
 
-        //noinspection ConstantConditions
         field = fields.addString(R.id.format, DBDefinitions.KEY_FORMAT)
-                      .setFormatter(new Fields.FormatFormatter(getContext()))
                       .setRelatedFields(R.id.lbl_format);
         initValuePicker(field, R.string.lbl_format, R.id.btn_format,
                         mBookModel.getFormats());
 
         field = fields.addString(R.id.color, DBDefinitions.KEY_COLOR)
-                      .setFormatter(new Fields.ColorFormatter(getContext()))
                       .setRelatedFields(R.id.lbl_color);
         initValuePicker(field, R.string.lbl_color, R.id.btn_color,
                         mBookModel.getColors());

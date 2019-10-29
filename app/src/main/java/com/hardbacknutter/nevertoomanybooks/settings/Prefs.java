@@ -59,7 +59,6 @@ public final class Prefs {
 
     /** Global settings - PreferenceScreen/PreferenceCategory Key. */
     static final String psk_search_site_order = "psk_search_site_order";
-    public static final String pk_reformat_color_update = "reformat.color.update";
     /**
      * Unique name. This is a stored in our preference file (with the same name)
      * and is used for backup/restore purposes as the 'ID'.
@@ -103,7 +102,10 @@ public final class Prefs {
     static final String pk_reformat_titles_sort = "reformat.titles.sort";
     private static final String pk_reformat_titles_display = "reformat.titles.display";
 
-    public static final String pk_reformat_format_update = "reformat.format.update";
+
+    public static final String pk_search_reformat_format = "search.reformat.format";
+    public static final String pk_search_reformat_color = "search.reformat.color";
+
     /** Global settings - Credentials. */
     static final String psk_credentials_library_thing = "psk_credentials_library_thing";
 

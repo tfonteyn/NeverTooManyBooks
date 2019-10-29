@@ -1135,15 +1135,20 @@
     <!-- ####################################################################################### -->
     <!-- == Book format names. Used to unify terminology from internet search sites.  == -->
     <!-- ####################################################################################### -->
-    <!--  book format traditional 'hardcover' also known as 'hardback' -->
+    <!--  book format - traditional 'hardcover' also known as 'hardback' -->
     <string name="book_format_hardcover">Hardcover</string>
-    <!--  book format - a large format paperback -->
-    <string name="book_format_trade_paperback">Trade Paperback</string>
+    <!-- book format - A Softcover is not necessarily a paperback -->
+    <string name="book_format_softcover">Softcover</string>
+
     <!--  book format - traditional 'paperback' also known as 'pocketbook' -->
     <string name="book_format_paperback">Paperback</string>
+    <!--  book format - a large format paperback -->
+    <string name="book_format_trade_paperback">Trade Paperback</string>
+
     <!--  book format - mostly used for magazines like 'readers digest'
           A lot of english Science Fiction magazines use the same format.  -->
     <string name="book_format_digest">Digest</string>
+
     <!--  book format string used if a search site indicates it's an eBook -->
     <string name="book_format_ebook">eBook</string>
     <!-- book format used if a search site indicates it's some sort of Audio (tape, cd, etc..) -->
@@ -1510,9 +1515,9 @@
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
 
     <!-- SwitchPreference -->
-    <string name="pt_reformat_format_on_update">Standardize “book format” names</string>
+    <string name="pt_search_reformat_format">Standardize “book format” names</string>
     <!-- SwitchPreference -->
-    <string name="pt_reformat_color_on_update">Standardize “book color” names</string>
+    <string name="pt_search_reformat_color">Standardize “book color” names</string>
 
 
     <string name="lbl_purge_blns">Purge BLNS</string>
@@ -1530,5 +1535,6 @@
     <string name="lbl_cleanup">Cleanup</string>
     <string name="pg_camera">Camera</string>
     <string name="pg_image_cache">Image cache</string>
+
 
 </resources>

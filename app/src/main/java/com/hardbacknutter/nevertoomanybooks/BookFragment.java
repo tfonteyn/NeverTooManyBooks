@@ -327,12 +327,9 @@ public class BookFragment
         fields.addString(R.id.pages, DBDefinitions.KEY_PAGES)
               .setFormatter(new Fields.PagesFormatter());
 
-        //noinspection ConstantConditions
-        fields.addString(R.id.format, DBDefinitions.KEY_FORMAT)
-              .setFormatter(new Fields.FormatFormatter(getContext()));
+        fields.addString(R.id.format, DBDefinitions.KEY_FORMAT);
 
-        fields.addString(R.id.color, DBDefinitions.KEY_COLOR)
-              .setFormatter(new Fields.ColorFormatter(getContext()));
+        fields.addString(R.id.color, DBDefinitions.KEY_COLOR);
 
         fields.addString(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
 

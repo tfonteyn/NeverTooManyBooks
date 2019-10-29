@@ -28,10 +28,12 @@
 package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,9 +86,7 @@ public class SearchCoordinator {
     @NonNull
     private final Long mMessageSenderId;
 
-    /**
-     * List of ManagedTask being managed by *this* object.
-     */
+    /** List of ManagedTask being managed by *this* object. */
     @NonNull
     private final ArrayList<ManagedTask> mManagedTasks = new ArrayList<>();
 
@@ -140,6 +140,15 @@ public class SearchCoordinator {
     private boolean mHasValidIsbn;
     /** Whether of not to fetch thumbnails. */
     private boolean mFetchThumbnail;
+
+    /** TerminologyMapper. */
+    @Nullable
+    private ColorMapper mColorMapper;
+    /** TerminologyMapper. */
+    @Nullable
+    private FormatMapper mFormatMapper;
+
+    /** Listen for finished searches. */
     private final TaskManagerListener mListener = new TaskManagerListener() {
 
         /**
@@ -195,6 +204,15 @@ public class SearchCoordinator {
 
         mTaskManager = taskManager;
         MESSAGE_SWITCH.addListener(mMessageSenderId, false, searchFinishedListener);
+
+        Context context = mTaskManager.getContext();
+
+        if (FormatMapper.isMappingAllowed(context)) {
+            mFormatMapper = new FormatMapper(context);
+        }
+        if (ColorMapper.isMappingAllowed(context)) {
+            mColorMapper = new ColorMapper(context);
+        }
     }
 
     /**
@@ -540,6 +558,14 @@ public class SearchCoordinator {
         // Merge the data we have. We do this in a fixed order rather than as the threads finish.
         for (int siteId : results) {
             accumulateAllData(siteId);
+        }
+
+        // run the mappers
+        if (mFormatMapper != null) {
+            mFormatMapper.map(mBookData);
+        }
+        if (mColorMapper != null) {
+            mColorMapper.map(mBookData);
         }
 
         // If there are thumbnails present, pick the biggest, delete others and rename.
