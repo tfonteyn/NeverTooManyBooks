@@ -56,10 +56,11 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FTSSearchActivity;
+import com.hardbacknutter.nevertoomanybooks.ImportExportFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -73,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  *          @Override
  *          @CallSuper
  *          public void onResume() {
- *              Tracker.enterOnResume(this);
  *              super.onResume();
  *              if (getActivity() instanceof BaseActivity) {
  *                  BaseActivity activity = (BaseActivity) getActivity();
@@ -81,7 +81,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  *                      return;
  *                  }
  *              }
- *              Tracker.exitOnResume(this);
  *          }
  *     }
  * </pre>
@@ -232,6 +231,10 @@ public abstract class BaseActivity
             frag.setArguments(getIntent().getExtras());
             FragmentTransaction ft = fm.beginTransaction()
                                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+
+            //URGENT: addToBackStack ?
+//            ft.addToBackStack(null);
+
             if (isAdd) {
                 ft.add(containerViewId, frag, tag);
             } else {
@@ -240,7 +243,6 @@ public abstract class BaseActivity
             ft.commit();
         }
     }
-
 
     /**
      * Check if the Locale/Theme was changed, which will trigger the Activity to be recreated.
@@ -306,38 +308,38 @@ public abstract class BaseActivity
         closeNavigationDrawer();
 
         switch (item.getItemId()) {
-            case R.id.nav_search:
+            case R.id.nav_search: {
                 if (App.getPrefBoolean(Prefs.pk_search_form_advanced, false)) {
                     return onAdvancedSearchRequested();
                 } else {
                     // standard system call.
                     return onSearchRequested();
                 }
-
-            // handled in BoB code. Left commented here as a reminder.
-//            case R.id.nav_manage_bookshelves:
-//                startActivityForResult(new Intent(this, EditBookshelvesActivity.class),
-//                                       UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
-//                return true;
-//            case R.id.nav_edit_list_styles:
-//                startActivityForResult(new Intent(this, PreferredStylesActivity.class),
-//                                       UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
-//                return true;
-
-            case R.id.nav_settings:
+            }
+            case R.id.nav_settings: {
                 startActivityForResult(new Intent(this, SettingsActivity.class),
                                        UniqueId.REQ_NAV_PANEL_SETTINGS);
                 return true;
+            }
 
-            case R.id.nav_admin:
-                startActivityForResult(new Intent(this, AdminActivity.class),
-                                       UniqueId.REQ_NAV_PANEL_ADMIN);
+            case R.id.nav_import_export: {
+                Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ImportExportFragment.TAG);
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_IMP_EXP);
                 return true;
+            }
 
-            case R.id.nav_about:
+            case R.id.nav_goodreads: {
+                Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_GOODREADS);
+                return true;
+            }
+
+            case R.id.nav_about: {
                 startActivity(new Intent(this, About.class));
                 return true;
-
+            }
             default:
                 return false;
         }
@@ -389,7 +391,7 @@ public abstract class BaseActivity
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
 
         // generic actions & logging. Anything specific should be done in a child class.
         switch (requestCode) {
@@ -425,10 +427,18 @@ public abstract class BaseActivity
                 return;
 
             // logging only
-            case UniqueId.REQ_NAV_PANEL_ADMIN:
+            case UniqueId.REQ_NAV_PANEL_IMP_EXP:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debug(this, "BaseActivity.onActivityResult",
-                                 "REQ_NAV_PANEL_ADMIN");
+                                 "REQ_NAV_PANEL_IMP_EXP");
+                }
+                return;
+
+            // logging only
+            case UniqueId.REQ_NAV_PANEL_GOODREADS:
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                    Logger.debug(this, "BaseActivity.onActivityResult",
+                                 "REQ_NAV_PANEL_GOODREADS");
                 }
                 return;
 
@@ -447,8 +457,6 @@ public abstract class BaseActivity
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-
-        Tracker.exitOnActivityResult(this);
     }
 
 }

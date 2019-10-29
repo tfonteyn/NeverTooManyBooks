@@ -67,17 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ui.ExportHelperDialogFragment
 import com.hardbacknutter.nevertoomanybooks.backup.ui.ImportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueListActivity;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.ImportTask;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendBooksTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskFinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
@@ -87,14 +77,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AdminModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ExportHelperModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.GoodreadsTaskModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ImportHelperModel;
 
-public class AdminFragment
+public class ImportExportFragment
         extends Fragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = "AdminFragment";
+    public static final String TAG = "ImportExportFragment";
     static final String BKEY_AUTO_START_BACKUP = TAG + ":autoStartBackup";
 
     /** standard export file. */
@@ -114,9 +103,6 @@ public class AdminFragment
     /** ViewModel. */
     private ResultDataModel mResultDataModel;
 
-    /** ViewModel for task control. */
-    private GoodreadsTaskModel mGoodreadsTaskModel;
-
     private ExportHelperModel mExportHelperModel;
     private final OptionsDialogBase.OptionsListener<ExportHelper> mExportOptionsListener =
             this::onBackupOptionsSet;
@@ -130,7 +116,7 @@ public class AdminFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_admin, container, false);
+        return inflater.inflate(R.layout.fragment_import_export, container, false);
     }
 
     @Override
@@ -156,10 +142,6 @@ public class AdminFragment
         //noinspection ConstantConditions
         mModel = new ViewModelProvider(getActivity()).get(AdminModel.class);
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-
-        mGoodreadsTaskModel = new ViewModelProvider(this).get(GoodreadsTaskModel.class);
-        mGoodreadsTaskModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
-        mGoodreadsTaskModel.getTaskFinishedMessage().observe(this, this::onGoodreadsTaskFinished);
 
         mExportHelperModel = new ViewModelProvider(getActivity()).get(ExportHelperModel.class);
         mExportHelperModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
@@ -211,8 +193,9 @@ public class AdminFragment
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setTitle(R.string.title_import_book_data)
                         .setMessage(R.string.warning_import_be_cautious)
-                        .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, which) -> {
+                        .setNegativeButton(android.R.string.cancel, (dialog, which) ->
+                                dialog.dismiss())
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                             // or should we use Intent.ACTION_OPEN_DOCUMENT ?
                             Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                                     .addCategory(Intent.CATEGORY_OPENABLE)
@@ -225,82 +208,7 @@ public class AdminFragment
                         .show();
             });
 
-
-        // Goodreads Import Synchronize
-        root.findViewById(R.id.lbl_sync_with_goodreads)
-            .setOnClickListener(v -> {
-                UserMessage.show(v, R.string.progress_msg_connecting);
-                //noinspection ConstantConditions
-                new ImportTask(getContext(), true, mGoodreadsTaskModel.getTaskListener()).execute();
-            });
-
-        // Goodreads Import All
-        root.findViewById(R.id.lbl_import_all_from_goodreads)
-            .setOnClickListener(v -> {
-                UserMessage.show(v, R.string.progress_msg_connecting);
-                //noinspection ConstantConditions
-                new ImportTask(getContext(), false, mGoodreadsTaskModel.getTaskListener())
-                        .execute();
-            });
-
-        // Goodreads Export Updated
-        root.findViewById(R.id.lbl_send_updated_books_to_goodreads)
-            .setOnClickListener(v -> {
-                UserMessage.show(v, R.string.progress_msg_connecting);
-                //noinspection ConstantConditions
-                new SendBooksTask(getContext(), true, mGoodreadsTaskModel.getTaskListener())
-                        .execute();
-            });
-
-        // Goodreads Export All
-        root.findViewById(R.id.lbl_send_all_books_to_goodreads)
-            .setOnClickListener(v -> {
-                UserMessage.show(v, R.string.progress_msg_connecting);
-                //noinspection ConstantConditions
-                new SendBooksTask(getContext(), false, mGoodreadsTaskModel.getTaskListener())
-                        .execute();
-            });
-
-        /* Start the activity that shows the active GoodReads tasks. */
-        root.findViewById(R.id.lbl_background_tasks)
-            .setOnClickListener(v -> {
-                Intent intent = new Intent(getContext(), TaskQueueListActivity.class);
-                startActivity(intent);
-            });
-
-
-        /* Reset Hints */
-        root.findViewById(R.id.lbl_reset_tips)
-            .setOnClickListener(v -> {
-                //noinspection ConstantConditions
-                TipManager.reset(getContext());
-                UserMessage.show(v, R.string.tip_reset_done);
-            });
-
-//        /* Clear the system suggestions history. (not in use for now) */
-//        root.findViewById(R.id.lbl_clear_search_history)
-//            .setOnClickListener(v -> {
-//                clearSearchHistory();
-//                UserMessage.show(v, R.string.clear);
-//            });
-
-        /* Erase cover cache */
-        root.findViewById(R.id.lbl_erase_cover_cache)
-            .setOnClickListener(v -> CoversDAO.deleteAll());
-
-        /* Cleanup files */
-        root.findViewById(R.id.lbl_cleanup_files)
-            .setOnClickListener(v -> cleanupFiles());
-
-        /* Purge BLNS database table. */
-        root.findViewById(R.id.menu_purge_blns)
-            .setOnClickListener(v -> purgeBLNS());
-
-        /* Send debug info */
-        root.findViewById(R.id.lbl_send_debug_info)
-            .setOnClickListener(v -> sendDebugInfo());
-
-        /* Export database for tech support */
+        // Export database
         root.findViewById(R.id.lbl_copy_database)
             .setOnClickListener(v -> {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
@@ -312,29 +220,12 @@ public class AdminFragment
         }
     }
 
-    private void purgeBLNS() {
-        //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.menu_purge_blns)
-                .setMessage(R.string.info_purge_blns_all)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    try (DAO db = new DAO()) {
-                        db.purgeNodeStates();
-                    }
-                })
-                .create()
-                .show();
-
-    }
-
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
         // collect all data for passing to the calling Activity
         if (data != null) {
             mResultDataModel.putExtra(data);
@@ -422,13 +313,14 @@ public class AdminFragment
                 break;
             }
         }
-        Tracker.exitOnActivityResult(this);
     }
 
     @Override
     @CallSuper
     public void onResume() {
-        Tracker.enterOnResume(this);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(this, "onResume");
+        }
         super.onResume();
         if (getActivity() instanceof BaseActivity) {
             BaseActivity activity = (BaseActivity) getActivity();
@@ -436,43 +328,14 @@ public class AdminFragment
                 return;
             }
         }
-        Tracker.exitOnResume(this);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugExit(this, "onResume");
+        }
     }
 
     private void onTaskProgressMessage(@NonNull final TaskProgressMessage message) {
         if (mProgressDialog != null) {
             mProgressDialog.onProgress(message);
-        }
-    }
-
-    private void onGoodreadsTaskFinished(
-            @NonNull final TaskFinishedMessage<Integer> message) {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-        }
-        //noinspection ConstantConditions
-        @NonNull
-        View view = getView();
-
-        switch (message.taskId) {
-            case R.id.TASK_ID_GR_IMPORT:
-            case R.id.TASK_ID_GR_SEND_BOOKS:
-            case R.id.TASK_ID_GR_REQUEST_AUTH: {
-                //noinspection ConstantConditions
-                String msg = GoodreadsTasks.handleResult(getContext(), message);
-                if (msg != null) {
-                    UserMessage.show(view, msg);
-                } else {
-                    RequestAuthTask.needsRegistration(getContext(), mGoodreadsTaskModel
-                            .getTaskListener());
-                }
-                break;
-            }
-            default: {
-                //noinspection ConstantConditions
-                Logger.warnWithStackTrace(getContext(), this, "taskId=" + message.taskId);
-                break;
-            }
         }
     }
 
@@ -485,41 +348,6 @@ public class AdminFragment
             msg = e.getLocalizedMessage();
         }
         return msg;
-    }
-
-    private void cleanupFiles() {
-        //noinspection ConstantConditions
-        String msg = getString(R.string.info_cleanup_files_text,
-                               StorageUtils.formatFileSize(getContext(),
-                                                           StorageUtils.purgeFiles(getContext(),
-                                                                                   false)));
-
-        new AlertDialog.Builder(getContext())
-                .setIcon(R.drawable.ic_warning)
-                .setTitle(R.string.lbl_cleanup_files)
-                .setMessage(msg)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok,
-                                   (dialog, which) -> StorageUtils.purgeFiles(getContext(), true))
-                .create()
-                .show();
-    }
-
-    private void sendDebugInfo() {
-        //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
-                .setIcon(R.drawable.ic_warning)
-                .setTitle(R.string.debug)
-                .setMessage(R.string.debug_send_info_text)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    if (!DebugReport.sendDebugInfo(getContext())) {
-                        //noinspection ConstantConditions
-                        UserMessage.show(getView(), R.string.error_email_failed);
-                    }
-                })
-                .create()
-                .show();
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -538,8 +366,8 @@ public class AdminFragment
         new AlertDialog.Builder(getContext())
                 .setTitle(R.string.lbl_import_from_archive)
                 .setMessage(R.string.import_option_info_all_books)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setNeutralButton(R.string.btn_options, (d, which) -> {
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setNeutralButton(R.string.btn_options, (dialog, which) -> {
                     // ask user what options they want
                     FragmentManager fm = getChildFragmentManager();
                     if (fm.findFragmentByTag(ImportHelperDialogFragment.TAG) == null) {
@@ -549,8 +377,8 @@ public class AdminFragment
                                                   .show(fm, ImportHelperDialogFragment.TAG);
                     }
                 })
-                .setPositiveButton(android.R.string.ok,
-                                   (d, which) -> onImportOptionsSet(importHelper))
+                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                        onImportOptionsSet(importHelper))
                 .create()
                 .show();
     }
@@ -597,8 +425,8 @@ public class AdminFragment
         new AlertDialog.Builder(getContext())
                 .setTitle(R.string.lbl_import_from_csv)
                 .setView(content)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
                     if (radioNewAndUpdatedBooks.isChecked()) {
                         settings.options |= ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED;
                     }
@@ -669,7 +497,8 @@ public class AdminFragment
                         new AlertDialog.Builder(context)
                                 .setTitle(R.string.error_import_failed)
                                 .setMessage(msg)
-                                .setPositiveButton(android.R.string.ok, (d, which) -> d.dismiss())
+                                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                                        dialog.dismiss())
                                 .create()
                                 .show();
                         break;
@@ -727,7 +556,7 @@ public class AdminFragment
         new AlertDialog.Builder(getContext())
                 .setTitle(titleId)
                 .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     mResultDataModel.putExtra(UniqueId.BKEY_IMPORT_RESULT, importHelper.options);
                     Intent resultData = mResultDataModel.getActivityResultData();
                     //noinspection ConstantConditions
@@ -802,8 +631,8 @@ public class AdminFragment
         new AlertDialog.Builder(getContext())
                 .setTitle(R.string.lbl_backup_to_archive)
                 .setMessage(R.string.export_info_backup_all)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setNeutralButton(R.string.btn_options, (d, which) -> {
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setNeutralButton(R.string.btn_options, (dialog, which) -> {
                     // ask user what options they want
                     FragmentManager fm = getChildFragmentManager();
                     if (fm.findFragmentByTag(ExportHelperDialogFragment.TAG) == null) {
@@ -811,8 +640,8 @@ public class AdminFragment
                                                   .show(fm, ExportHelperDialogFragment.TAG);
                     }
                 })
-                .setPositiveButton(android.R.string.ok,
-                                   (d, which) -> onBackupOptionsSet(exportHelper))
+                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                        onBackupOptionsSet(exportHelper))
                 .create()
                 .show();
     }
@@ -886,7 +715,7 @@ public class AdminFragment
                             new AlertDialog.Builder(getContext())
                                     .setTitle(R.string.progress_end_backup_success)
                                     .setMessage(msg)
-                                    .setPositiveButton(android.R.string.ok, (d, which) -> {
+                                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                                         mResultDataModel.putExtra(UniqueId.BKEY_EXPORT_RESULT,
                                                                   exportHelper.options);
                                         Intent resultData =
@@ -909,7 +738,8 @@ public class AdminFragment
                         new AlertDialog.Builder(getContext())
                                 .setTitle(R.string.error_backup_failed)
                                 .setMessage(msg)
-                                .setPositiveButton(android.R.string.ok, (d, which) -> d.dismiss())
+                                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                                        dialog.dismiss())
                                 .create()
                                 .show();
                         break;
@@ -933,7 +763,7 @@ public class AdminFragment
                             new AlertDialog.Builder(getContext())
                                     .setTitle(R.string.progress_end_backup_success)
                                     .setMessage(msg)
-                                    .setNegativeButton(android.R.string.cancel, (d, which) -> {
+                                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
                                         mResultDataModel.putExtra(UniqueId.BKEY_EXPORT_RESULT,
                                                                   exportHelper.options);
                                         Intent resultData =
@@ -942,7 +772,7 @@ public class AdminFragment
                                         getActivity().setResult(Activity.RESULT_OK, resultData);
                                         getActivity().finish();
                                     })
-                                    .setPositiveButton(android.R.string.ok, (d, which) ->
+                                    .setPositiveButton(android.R.string.ok, (dialog, which) ->
                                             emailExportFile(exportHelper))
                                     .create()
                                     .show();
@@ -1032,12 +862,4 @@ public class AdminFragment
             UserMessage.show(getView(), R.string.error_email_failed);
         }
     }
-
-//    private void clearSearchHistory() {
-//        SearchRecentSuggestions suggestions =
-//                new SearchRecentSuggestions(getContext(),
-//                                            SearchSuggestionProvider.AUTHORITY,
-//                                            SearchSuggestionProvider.MODE);
-//        suggestions.clearHistory();
-//    }
 }

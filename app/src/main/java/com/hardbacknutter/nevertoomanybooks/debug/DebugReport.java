@@ -220,9 +220,6 @@ public final class DebugReport {
         }
         message.append('\n');
 
-        // Tracker history
-        message.append("\nHistory:\n").append(Tracker.getEventsInfo()).append('\n');
-
         // User input
         message.append("Details:\n\n")
                .append(context.getString(R.string.debug_body)).append("\n\n");

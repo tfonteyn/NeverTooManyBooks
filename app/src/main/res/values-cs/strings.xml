@@ -252,8 +252,8 @@
     <string name="lbl_bookshelves">Police</string>
     <string name="lbl_bookshelves_long">Zvolte knihovnu</string>
     <string name="lbl_by_author_s">(kým) %1$s</string>
-    <string name="lbl_cleanup_files">Odstranit soubory</string>
-    <string name="lbl_about_contacts">Kontakt:</string>
+    <string name="lbl_purge_files">Odstranit soubory</string>
+    <string name="lbl_about_contact">Kontakt:</string>
     <string name="lbl_copy_database">Zkopírujte databázi</string>
     <string name="lbl_cover">Přebal</string>
     <string name="lbl_cover_images">Obrázky na obálce</string>
@@ -261,7 +261,7 @@
     <string name="lbl_about_creators">Původně:</string>
     <string name="lbl_credentials">Přihlašovací údaje</string>
     <string name="lbl_currency">Měna</string>
-    <string name="lbl_data_import_export">Import/Export dat</string>
+    <string name="lbl_data_import_export">Import / Export dat</string>
     <string name="lbl_date_acquired">Datum Nabytí</string>
     <string name="lbl_date_acquired_day">Den Nabytí</string>
     <string name="lbl_date_acquired_month">Měsíc získaný</string>
@@ -275,7 +275,7 @@
     <string name="lbl_edition_first_edition">První vydání</string>
     <string name="lbl_edition_first_impression">První tisk</string>
     <string name="lbl_edition_limited">Limitovaná edice</string>
-    <string name="lbl_clear_image_cache">Vymazat mezipaměť obrázků</string>
+    <string name="lbl_purge_image_cache">Vymazat mezipaměť obrázků</string>
     <string name="lbl_export_to_csv">Export do souboru CSV</string>
     <string name="lbl_family_name">Příjmení</string>
     <string name="lbl_field_usage_append">Přidat extra data</string>
@@ -414,7 +414,7 @@
     <string name="pg_booklist">Seznamy knih</string>
     <string name="pg_filters">Filtry knih</string>
     <string name="pg_general">Obecné</string>
-    <string name="pg_groupings">Seskupení</string>
+    <string name="pg_style_groups">Seskupení</string>
     <string name="pt_bob_titles_sort">Seřadit tituly podle</string>
     <string name="pg_barcode_scanner">Čtečka kódů</string>
     <string name="pg_thumbnails">Náhledy</string>
@@ -636,5 +636,6 @@
     <string name="hint_empty_month">(Není vyplněn žádný měsíc)</string>
     <string name="hint_empty_read_status">(Stav čtení neznámý)</string>
     <string name="warning_select_at_least_1_group">Vyberte alespoň jednu skupinu.</string>
+    <string name="lbl_color">Barva</string>
 
 </resources>

@@ -873,6 +873,13 @@ public class TableDefinition
         }
     }
 
+    /**
+     * Get a description/info structure for this table describing the columns etc.
+     *
+     * @param syncedDb the database
+     *
+     * @return info object
+     */
     @NonNull
     public TableInfo getTableInfo(@NonNull final SynchronizedDb syncedDb) {
         synchronized (this) {
@@ -881,6 +888,17 @@ public class TableDefinition
             }
         }
         return mTableInfo;
+    }
+
+    /**
+     * Alter the physical table in the database: add the given domain.
+     *
+     * @param syncedDb the database
+     * @param domain   to add
+     */
+    public void alterTableAddColumn(@NonNull final SynchronizedDb syncedDb,
+                                    @NonNull final DomainDefinition domain) {
+        syncedDb.execSQL("ALTER TABLE " + getName() + " ADD " + domain.def(true));
     }
 
     /**

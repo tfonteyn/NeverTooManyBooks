@@ -61,7 +61,6 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_rating"
             tools:rating="5"
             >
-
             <requestFocus />
         </RatingBar>
 
@@ -74,25 +73,12 @@
             tools:checked="true"
             />
 
-        <!-- This invisible View is needed to allow individual show/hide while
-             maintaining the baseline -->
-        <TextView
-            android:id="@+id/lbl_read_start_end_baseline"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:visibility="invisible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cbx_read"
-            tools:ignore="SelectableText"
-            />
-
         <TextView
             android:id="@+id/lbl_read_start"
             style="@style/Label.Field"
             android:layout_width="0dp"
             android:text="@string/lbl_read_start"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_read_start_end_baseline"
+            app:layout_constraintTop_toBottomOf="@id/cbx_read"
             app:layout_constraintStart_toStartOf="@id/read_start"
             />
 
@@ -101,25 +87,22 @@
             style="@style/Label.Field"
             android:layout_width="0dp"
             android:text="@string/lbl_read_end"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_read_start_end_baseline"
+            app:layout_constraintTop_toBottomOf="@id/cbx_read"
             app:layout_constraintStart_toStartOf="@id/read_end"
             />
 
-        <!-- This invisible View is needed to allow individual show/hide while
-             maintaining the baseline -->
-        <Button
-            android:id="@+id/read_start_end_baseline"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_read_labels"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_read_start_end_baseline"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="lbl_read_start,lbl_read_end"
             />
 
         <Button
             android:id="@+id/read_start"
             style="@style/DataEntryButton"
-            app:layout_constraintBaseline_toBaselineOf="@id/read_start_end_baseline"
+            app:layout_constraintTop_toBottomOf="@id/barrier_read_labels"
             app:layout_constraintEnd_toStartOf="@id/read_end"
             app:layout_constraintStart_toStartOf="parent"
             />
@@ -127,9 +110,17 @@
         <Button
             android:id="@+id/read_end"
             style="@style/DataEntryButton"
-            app:layout_constraintBaseline_toBaselineOf="@id/read_start_end_baseline"
+            app:layout_constraintTop_toBottomOf="@id/barrier_read_labels"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/read_start"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_read_buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="read_start,read_end"
             />
 
         <TextView
@@ -138,7 +129,7 @@
             android:labelFor="@id/location"
             android:text="@string/lbl_location_long"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/read_start_end_baseline"
+            app:layout_constraintTop_toBottomOf="@id/barrier_read_buttons"
             />
 
         <AutoCompleteTextView

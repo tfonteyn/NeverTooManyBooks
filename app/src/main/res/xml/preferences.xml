@@ -30,7 +30,6 @@
 <!--
     The main/root PreferenceScreen for the app.
     Notes:
-     - All PreferenceScreen elements <strong>must</strong> have a key.
      - PreferenceCategory which have a key <strong>must</strong> be mirrored in "Prefs.java"
      - Actual preference elements <strong>may</strong> need to be mirrored in "Prefs.java"
      - defaultValue attribute must match with wherever the underlying preference is used.
@@ -70,204 +69,28 @@
             android:key="ui.messages.use"
             android:title="@string/pt_ui_messages_use" />
 
-        <PreferenceScreen
+        <Preference
             android:icon="@drawable/ic_visibility"
             android:key="psk_fields_visibility"
-            android:summary="@string/info_manage_fields"
             android:title="@string/pg_ui_field_visibility"
-            >
-            <!-- NEWTHINGS: new fields visibility.
-                 Third part of the key name **MUST** be equal to the DOM column name. -->
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.isbn"
-                android:title="@string/lbl_isbn" />
+            app:fragment="com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment"
+            />
 
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.thumbnail"
-                android:title="@string/lbl_cover" />
-
-            <!-- Authors are always visible, but the user can hide the type. -->
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.author_type"
-                android:title="@string/lbl_author_type" />
-
-            <!-- Series name includes Series 'isComplete' and Series number. -->
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.series_name"
-                android:title="@string/lbl_series" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.description"
-                android:title="@string/lbl_description" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.publisher"
-                android:title="@string/lbl_publisher" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.date_published"
-                android:title="@string/lbl_date_published" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.first_publication"
-                android:title="@string/lbl_first_publication" />
-
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.format"
-                android:title="@string/lbl_format" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.genre"
-                android:title="@string/lbl_genre" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.language"
-                android:title="@string/lbl_language" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.pages"
-                android:title="@string/lbl_pages" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.list_price"
-                android:title="@string/lbl_price_listed" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.bookshelf"
-                android:title="@string/lbl_bookshelf" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.loaned_to"
-                android:title="@string/lbl_lending" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.notes"
-                android:title="@string/lbl_personal_notes" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.location"
-                android:title="@string/lbl_location_long" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.price_paid"
-                android:title="@string/lbl_price_paid" />
-
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.read"
-                android:title="@string/lbl_is_read" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.read_start"
-                android:title="@string/lbl_read_start" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.read_end"
-                android:title="@string/lbl_read_end" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.edition_bm"
-                android:title="@string/lbl_edition" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.signed"
-                android:title="@string/lbl_is_signed" />
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="fields.visibility.rating"
-                android:title="@string/lbl_rating" />
-
-        </PreferenceScreen>
-
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_edit"
+            android:key="search.form.advanced"
+            android:summaryOff="@string/lbl_standard"
+            android:summaryOn="@string/lbl_advanced"
+            android:title="@string/pt_search_form" />
     </PreferenceCategory>
 
-    <PreferenceScreen
+    <Preference
         android:icon="@drawable/ic_image"
         android:key="psk_thumbnails"
         android:title="@string/pg_thumbnails"
-        >
-
-        <PreferenceCategory
-            android:title="@string/pg_thumbnails">
-
-            <SwitchPreference
-                android:defaultValue="false"
-                android:icon="@drawable/ic_crop_original"
-                android:key="image.cropper.frame.whole"
-                android:summaryOff="@string/no"
-                android:summaryOn="@string/yes"
-                android:title="@string/pt_thumbnails_crop_frame_is_whole_image" />
-
-            <SwitchPreference
-                android:defaultValue="false"
-                android:icon="@drawable/ic_apps"
-                android:key="image.cropper.external"
-                android:summaryOff="@string/no"
-                android:summaryOn="@string/yes"
-                android:title="@string/pt_thumbnails_external_cropper" />
-
-            <SwitchPreference
-                android:defaultValue="false"
-                android:icon="@drawable/ic_cached"
-                android:key="image.cache.resized"
-                android:summaryOff="@string/pe_thumbnails_cache_resized_each_time"
-                android:summaryOn="@string/pe_thumbnails_cache_resized_stored"
-                android:title="@string/pt_thumbnails_cache_resized" />
-
-            <!-- default rotate 0 degrees -->
-            <ListPreference
-                android:defaultValue="0"
-                android:entries="@array/pe_thumbnails_rotate_auto"
-                android:entryValues="@array/pv_thumbnails_rotate_auto"
-                android:icon="@drawable/ic_rotate_right"
-                android:key="camera.image.autorotate"
-                android:title="@string/pt_thumbnails_rotate_auto" />
-
-            <!-- default CropImageViewTouchBase.LAYER_TYPE_USE_DEFAULT == -1 -->
-            <ListPreference
-                android:defaultValue="-1"
-                android:dialogIcon="@drawable/ic_warning"
-                android:entries="@array/pe_thumbnails_cropper_layer_type"
-                android:entryValues="@array/pv_thumbnails_cropper_layer_type"
-                android:icon="@drawable/ic_manage"
-                android:key="compat.image.cropper.viewlayertype"
-                android:title="@string/pt_thumbnail_cropper_layer_type" />
-
-        </PreferenceCategory>
-    </PreferenceScreen>
-
-    <SwitchPreference
-        android:defaultValue="false"
-        android:icon="@drawable/ic_edit"
-        android:key="search.form.advanced"
-        android:summaryOff="@string/lbl_standard"
-        android:summaryOn="@string/lbl_advanced"
-        android:title="@string/pt_search_form" />
+        app:fragment="com.hardbacknutter.nevertoomanybooks.settings.ImagesPreferencesFragment"
+        />
 
     <PreferenceCategory
         android:title="@string/lbl_format">
@@ -289,27 +112,34 @@
             android:title="@string/pt_bob_titles_display" />
 
         <SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:icon="@drawable/ic_edit"
             android:key="reformat.format.update"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_reformat_format_on_update" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_edit"
+            android:key="reformat.color.update"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_reformat_color_on_update" />
     </PreferenceCategory>
 
     <PreferenceCategory
         android:title="@string/pg_booklist">
         <!-- edit the global defaults for styles.
         WORK IN PROGRESS, HAS ISSUES, CRASHES due to not passing 'extras' with the tag name
+        implement 'onPreferenceStartFragment'
         -->
-        <!--
-         <PreferenceScreen
-         android:fragment="com.hardbacknutter.nevertoomanybooks.settings.StyleSettingsFragment"
-         android:icon="@drawable/ic_details"
-         android:key="psk_styles"
-         android:title="@string/lbl_styles"
-         />
-         -->
+        <!--        <Preference-->
+        <!--            android:icon="@drawable/ic_details"-->
+        <!--            android:key="psk_styles"-->
+        <!--            android:title="@string/lbl_styles"-->
+        <!--            app:fragment="com.hardbacknutter.nevertoomanybooks.settings.StylePreferenceFragment"-->
+        <!--            />-->
 
         <!-- the state of the list when starting the app. -->
         <!-- default BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE == 0 -->
@@ -320,6 +150,12 @@
             android:icon="@drawable/ic_view_list"
             android:key="style.booklist.levels.rebuild.state"
             android:title="@string/pt_bob_list_rebuild_state" />
+
+        <Preference
+            android:icon="@drawable/ic_close"
+            android:key="psk_purge_blns"
+            android:title="@string/lbl_purge_blns"
+            />
 
     </PreferenceCategory>
 
@@ -365,12 +201,12 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_allow_mobile_data" />
 
-        <!-- We set an OnPreferenceClickListener to call startActivityForResult. -->
-        <PreferenceScreen
+        <!-- starts a dedicated Activity. -->
+        <Preference
             android:icon="@drawable/ic_sort"
             android:key="psk_search_site_order"
             android:title="@string/lbl_websites">
-        </PreferenceScreen>
+        </Preference>
 
         <!-- Key hardcoded to ISFDB as no other site has Publisher support for now
              If/when we need this for more sites, pop up a dialog with a checkbox for each site.
@@ -423,19 +259,28 @@
 
     <PreferenceCategory
         android:title="@string/lbl_credentials">
-        <PreferenceScreen
+        <Preference
             android:icon="@drawable/ic_goodreads"
-            android:key="psk_goodreads"
+            android:key="psk_credentials_goodreads"
             android:title="@string/goodreads">
-            <intent android:action="goodreads.credentials.EDIT" />
-        </PreferenceScreen>
+        </Preference>
 
-        <PreferenceScreen
+        <Preference
             android:icon="@drawable/ic_security"
-            android:key="psk_library_thing"
+            android:key="psk_credentials_library_thing"
             android:title="@string/library_thing">
-            <intent android:action="librarything.credentials.EDIT" />
-        </PreferenceScreen>
+        </Preference>
     </PreferenceCategory>
 
+    <!-- Freeing up space - a click brings up a dialog with further info/options. -->
+    <PreferenceCategory
+        android:title="@string/lbl_cleanup">
+
+        <Preference
+            android:icon="@drawable/ic_close"
+            android:key="psk_purge_files"
+            android:title="@string/lbl_purge_files"
+            />
+
+    </PreferenceCategory>
 </PreferenceScreen>

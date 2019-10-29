@@ -39,6 +39,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
@@ -57,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 public class SettingsActivity
         extends BaseActivity
         implements PreferenceFragmentCompat.OnPreferenceStartScreenCallback,
+                   PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
                    SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
@@ -72,7 +74,7 @@ public class SettingsActivity
 
         String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
         if (tag == null) {
-            tag = GlobalSettingsFragment.TAG;
+            tag = GlobalPreferenceFragment.TAG;
         }
 
         // add! not replace!
@@ -87,14 +89,14 @@ public class SettingsActivity
     public void addFragment(@IdRes final int containerViewId,
                             @NonNull final String tag) {
         switch (tag) {
-            case GlobalSettingsFragment.TAG:
-                addFragment(containerViewId, GlobalSettingsFragment.class,
-                            GlobalSettingsFragment.TAG);
+            case GlobalPreferenceFragment.TAG:
+                addFragment(containerViewId, GlobalPreferenceFragment.class,
+                            GlobalPreferenceFragment.TAG);
                 return;
 
-            case StyleSettingsFragment.TAG:
-                addFragment(containerViewId, StyleSettingsFragment.class,
-                            StyleSettingsFragment.TAG);
+            case StylePreferenceFragment.TAG:
+                addFragment(containerViewId, StylePreferenceFragment.class,
+                            StylePreferenceFragment.TAG);
                 return;
 
             default:
@@ -116,22 +118,49 @@ public class SettingsActivity
         super.onPause();
     }
 
+    @Override
+    public boolean onPreferenceStartFragment(@NonNull final PreferenceFragmentCompat caller,
+                                             @NonNull final Preference pref) {
+        // Instantiate the new Fragment
+        final Fragment fragment = getSupportFragmentManager()
+                .getFragmentFactory().instantiate(getClassLoader(), pref.getFragment());
+
+        // combine the original extras with any new ones (the latter can override the former)
+        Bundle args = getIntent().getExtras();
+        if (args == null) {
+            args = pref.getExtras();
+        } else {
+            args.putAll(pref.getExtras());
+        }
+        fragment.setArguments(args);
+
+        // Replace the existing Fragment with the new Fragment
+        getSupportFragmentManager().beginTransaction()
+                                   .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                   .addToBackStack(null)
+                                   .replace(R.id.main_fragment, fragment)
+                                   .commit();
+        return true;
+    }
+
 
     /**
      * If any of the child preference fragments have an xml configuration with nested
      * PreferenceScreen elements, then a click on those will trigger this method.
-     *
      * <p>
      * <br>{@inheritDoc}
+     *
+     * @deprecated android docs claim nested PreferenceScreen tags are no longer supported.
      */
     @Override
+    @Deprecated
     public boolean onPreferenceStartScreen(@NonNull final PreferenceFragmentCompat caller,
                                            @NonNull final PreferenceScreen pref) {
 
         // start a NEW copy of the same fragment
-        Fragment frag;
+        Fragment fragment;
         try {
-            frag = caller.getClass().newInstance();
+            fragment = caller.getClass().newInstance();
         } catch (IllegalAccessException | InstantiationException e) {
             throw new IllegalStateException();
         }
@@ -143,12 +172,12 @@ public class SettingsActivity
         if (callerArgs != null) {
             args.putAll(callerArgs);
         }
-        frag.setArguments(args);
+        fragment.setArguments(args);
         getSupportFragmentManager()
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(pref.getKey())
-                .replace(R.id.main_fragment, frag, pref.getKey())
+                .replace(R.id.main_fragment, fragment, pref.getKey())
                 .commit();
 
         return true;

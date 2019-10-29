@@ -160,21 +160,15 @@ public class BooklistStyle
     /** Text Scaling. */
     @SuppressWarnings("WeakerAccess")
     public static final int TEXT_SCALE_LARGE = 3;
-    private static final String PREFS_PREFIX = "BookList.Style.";
+    private static final String PREFS_PREFIX = "bookList.style.";
     /** Preference for the current default style UUID to use. */
-    public static final String PREF_BL_STYLE_CURRENT_DEFAULT = PREFS_PREFIX + "Current";
+    public static final String PREF_BL_STYLE_CURRENT_DEFAULT = PREFS_PREFIX + "current";
     /**
      * Preferred styles / menu order.
      * Stored in global shared preferences as a CSV String of UUIDs.
      */
-    public static final String PREF_BL_PREFERRED_STYLES = PREFS_PREFIX + "Preferred.Order";
-    /**
-     * Unique name. This is a stored in our preference file (with the same name)
-     * and is used for backup/restore purposes as the 'ID'.
-     * <p>
-     * (this is not a PPref, as we'd need the uuid to store the uuid....)
-     */
-    private static final String PREF_STYLE_UUID = PREFS_PREFIX + "uuid";
+    public static final String PREF_BL_PREFERRED_STYLES = PREFS_PREFIX + "preferred.order";
+
     /** the amount of details to show in the header. */
     private static final int SUMMARY_SHOW_BOOK_COUNT = 1;
     /** the amount of details to show in the header. */
@@ -407,7 +401,7 @@ public class BooklistStyle
      * @param db   Database Access
      * @param uuid of the style to get.
      *
-     * @return the style, or if not found, the default style.
+     * @return the style, <strong>or the default style if not found</strong>
      */
     @NonNull
     public static BooklistStyle getStyle(@NonNull final DAO db,
@@ -426,6 +420,38 @@ public class BooklistStyle
     }
 
     /**
+     * Get the specified style.
+     *
+     * @param db Database Access
+     * @param id of the style to get.
+     *
+     * @return style, <strong>or {@code null} if not found</strong>
+     */
+    @Nullable
+    public static BooklistStyle getStyle(@NonNull final DAO db,
+                                         final long id) {
+        if (id == 0) {
+            return null;
+        }
+
+        for (BooklistStyle style : Helper.getUserStyles(db).values()) {
+            if (style.getId() == id) {
+                return style;
+            }
+        }
+
+        // check builtin.
+        for (BooklistStyle style : Builtin.getStyles().values()) {
+            if (style.getId() == id) {
+                return style;
+            }
+        }
+
+        // not found...
+        return null;
+    }
+
+    /**
      * Used in migration/import. Convert the style name to a uuid.
      * <strong>Note:</strong> only the current Locale is used. Importing any styles
      * saved with a different Locale might trigger a false negative.
@@ -433,7 +459,7 @@ public class BooklistStyle
      * @param context Current context
      * @param name    of the style
      *
-     * @return style uuid
+     * @return style
      */
     @NonNull
     public static BooklistStyle getStyle(@NonNull final Context context,
@@ -604,7 +630,7 @@ public class BooklistStyle
     @NonNull
     private String createUniqueName() {
         mUuid = UUID.randomUUID().toString();
-        getPrefs().edit().putString(PREF_STYLE_UUID, mUuid).apply();
+        getPrefs().edit().putString(Prefs.pk_bob_uuid, mUuid).apply();
         return mUuid;
     }
 
@@ -1158,7 +1184,7 @@ public class BooklistStyle
      *
      * @param db Database Access
      */
-    public void insert(@NonNull final DAO db) {
+    public void save(@NonNull final DAO db) {
         if (!isUserDefined()) {
             throw new IllegalStateException("Builtin Style cannot be saved to database");
         }
@@ -1185,6 +1211,7 @@ public class BooklistStyle
      * @param db Database Access
      */
     public void delete(@NonNull final DAO db) {
+
         // cannot delete a builtin or a 'new' style(id==0)
         if (mId == 0 || !isUserDefined()) {
             throw new IllegalArgumentException("Builtin Style cannot be deleted");
@@ -1197,6 +1224,18 @@ public class BooklistStyle
         Helper.S_USER_STYLES.remove(mUuid);
         db.deleteStyle(mId);
 
+        if (Build.VERSION.SDK_INT >= 24) {
+            App.getAppContext().deleteSharedPreferences(mUuid);
+        } else {
+            getPrefs().edit().clear().apply();
+        }
+    }
+
+    public void discard() {
+        // can ONLY discard a new style
+        if (mId != 0) {
+            throw new IllegalArgumentException("can only discard a new style");
+        }
         if (Build.VERSION.SDK_INT >= 24) {
             App.getAppContext().deleteSharedPreferences(mUuid);
         } else {

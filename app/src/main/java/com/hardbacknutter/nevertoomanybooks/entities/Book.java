@@ -318,6 +318,8 @@ public class Book
                            getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION));
         bookData.putString(DBDefinitions.KEY_FORMAT,
                            getString(DBDefinitions.KEY_FORMAT));
+        bookData.putString(DBDefinitions.KEY_COLOR,
+                           getString(DBDefinitions.KEY_COLOR));
         bookData.putString(DBDefinitions.KEY_GENRE,
                            getString(DBDefinitions.KEY_GENRE));
         bookData.putString(DBDefinitions.KEY_LANGUAGE,

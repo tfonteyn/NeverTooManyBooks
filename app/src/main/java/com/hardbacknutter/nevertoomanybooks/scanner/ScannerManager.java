@@ -258,7 +258,7 @@ public final class ScannerManager {
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)
                 .setOnCancelListener(d -> resultListener.onResult(false))
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.cancel())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel())
                 .create()
                 .show();
     }

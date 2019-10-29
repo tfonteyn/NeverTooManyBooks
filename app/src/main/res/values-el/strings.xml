@@ -253,8 +253,8 @@
     <string name="lbl_bookshelves">Ράφια</string>
     <string name="lbl_bookshelves_long">Ράφια Βιβλιοθήκης</string>
     <string name="lbl_by_author_s">κατα %1$s</string>
-    <string name="lbl_cleanup_files">Εκκαθάριση αρχείων</string>
-    <string name="lbl_about_contacts">Επαφές:</string>
+    <string name="lbl_purge_files">Εκκαθάριση αρχείων</string>
+    <string name="lbl_about_contact">Επαφές:</string>
     <string name="lbl_copy_database">Εξαγωγή βάσης δεδομένων</string>
     <string name="lbl_cover">Κάλυμμα</string>
     <string name="lbl_cover_images">Εικόνες εξωφύλλων</string>
@@ -262,7 +262,7 @@
     <string name="lbl_about_creators">Αρχικά από:</string>
     <string name="lbl_credentials">Διαπιστευτήρια</string>
     <string name="lbl_currency">Νομίσματα</string>
-    <string name="lbl_data_import_export">Εισαγωγή/Εξαγωγή Δεδομένων</string>
+    <string name="lbl_data_import_export">Εισαγωγή / Εξαγωγή Δεδομένων</string>
     <string name="lbl_date_acquired">Ημερομηνία που αποκτήθηκαν</string>
     <string name="lbl_date_acquired_day">Ημέρα που αποκτήθηκε</string>
     <string name="lbl_date_acquired_month">Μήνας που αποκτήθηκε</string>
@@ -276,7 +276,7 @@
     <string name="lbl_edition_first_edition">Πρώτη έκδοση</string>
     <string name="lbl_edition_first_impression">Πρώτη εκτύπωση</string>
     <string name="lbl_edition_limited">Περιορισμένη έκδοση</string>
-    <string name="lbl_clear_image_cache">Καθαρή cache εικόνας</string>
+    <string name="lbl_purge_image_cache">Καθαρή cache εικόνας</string>
     <string name="lbl_export_to_csv">Εξαγωγή σε αρχείο CSV</string>
     <string name="lbl_family_name">Επώνυμο</string>
     <string name="lbl_field_usage_append">Προσθέτει επιπλέον δεδομένα</string>
@@ -415,7 +415,7 @@
     <string name="pg_booklist">Λίστα βιβλίων</string>
     <string name="pg_filters">Φίλτρα Βιβλίων</string>
     <string name="pg_general">Γενικά</string>
-    <string name="pg_groupings">Ομαδοποιήσεις</string>
+    <string name="pg_style_groups">Ομαδοποιήσεις</string>
     <string name="pt_bob_titles_sort">Ταξινόμηση τίτλων με βάση</string>
     <string name="pg_barcode_scanner">Σάρωση γραμμοκώδικα</string>
     <string name="pg_thumbnails">Μικρογραφίες</string>
@@ -640,5 +640,6 @@
     <string name="hint_empty_month">(Δεν συμπληρώθηκε μήνα)</string>
     <string name="hint_empty_read_status">(Ανάγνωση άγνωστης κατάστασης)</string>
     <string name="warning_select_at_least_1_group">Επιλέξτε τουλάχιστον μία ομάδα.</string>
+    <string name="lbl_color">χρώμα</string>
 
 </resources>

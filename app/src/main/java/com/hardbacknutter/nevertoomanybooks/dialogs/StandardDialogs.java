@@ -63,9 +63,11 @@ public final class StandardDialogs {
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_details_have_changed)
                 .setMessage(R.string.warning_unsaved_edits)
-                .setCancelable(false)
-                .setNegativeButton(R.string.btn_continue_editing, (d, which) -> d.dismiss())
-                .setPositiveButton(R.string.btn_confirm_exit, (d, which) -> onConfirm.run())
+                // cancel button, or cancel dialog
+                .setNegativeButton(R.string.btn_continue_editing, (dialog, which) ->
+                        dialog.dismiss())
+                .setPositiveButton(R.string.btn_confirm_exit, (dialog, which) ->
+                        onConfirm.run())
                 .create()
                 .show();
     }
@@ -84,12 +86,8 @@ public final class StandardDialogs {
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_delete_series)
                 .setMessage(context.getString(R.string.confirm_delete_series, series.getTitle()))
-                .setCancelable(false)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, which) -> {
-                    d.dismiss();
-                    onConfirm.run();
-                })
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> onConfirm.run())
                 .create()
                 .show();
     }
@@ -110,12 +108,8 @@ public final class StandardDialogs {
                 .setMessage(context.getString(R.string.confirm_delete_toc_entry,
                                               tocEntry.getTitle(),
                                               tocEntry.getAuthor().getLabel(context)))
-                .setCancelable(false)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, which) -> {
-                    d.dismiss();
-                    onConfirm.run();
-                })
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> onConfirm.run())
                 .create()
                 .show();
     }
@@ -156,12 +150,8 @@ public final class StandardDialogs {
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_delete_book)
                 .setMessage(context.getString(R.string.confirm_delete_book, title, authors))
-                .setCancelable(false)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, which) -> {
-                    d.dismiss();
-                    onConfirm.run();
-                })
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> onConfirm.run())
                 .create()
                 .show();
     }
@@ -193,22 +183,16 @@ public final class StandardDialogs {
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_registration)
                 .setMessage(message)
-                .setNegativeButton(android.R.string.cancel,
-                                   (d, which) -> d.dismiss())
-                .setPositiveButton(R.string.btn_tell_me_more, (d, which) -> {
-                    context.startActivity(intent);
-                    d.dismiss();
-                })
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(R.string.btn_tell_me_more, (d, which) ->
+                        context.startActivity(intent))
                 .create();
 
         if (!required) {
             dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
-                             context.getString(R.string.btn_disable_message),
-                             (d, which) -> {
-                                 PreferenceManager.getDefaultSharedPreferences(context)
-                                                  .edit().putBoolean(prefName, true).apply();
-                                 d.dismiss();
-                             });
+                             context.getString(R.string.btn_disable_message), (d, which) ->
+                                     PreferenceManager.getDefaultSharedPreferences(context)
+                                                      .edit().putBoolean(prefName, true).apply());
         }
 
         dialog.show();
@@ -232,10 +216,10 @@ public final class StandardDialogs {
                                        entity.getLabel(context));
         new AlertDialog.Builder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.menu_purge_blns)
+                .setTitle(R.string.lbl_purge_blns)
                 .setMessage(msg)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> onConfirm.run())
                 .create()
                 .show();
     }

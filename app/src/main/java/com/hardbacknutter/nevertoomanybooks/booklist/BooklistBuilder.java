@@ -2125,6 +2125,7 @@ public class BooklistBuilder
                 case BooklistGroup.RowKind.LANGUAGE:
                 case BooklistGroup.RowKind.LOCATION:
                 case BooklistGroup.RowKind.FORMAT:
+                case BooklistGroup.RowKind.COLOR:
                 case BooklistGroup.RowKind.TITLE_LETTER: {
                     addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
                               BuildHelper.FLAG_GROUP

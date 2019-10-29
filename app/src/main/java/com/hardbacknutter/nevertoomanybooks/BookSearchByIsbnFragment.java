@@ -51,12 +51,11 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.scanner.Scanner;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.settings.BaseSettingsFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
@@ -345,7 +344,7 @@ public class BookSearchByIsbnFragment
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
 
         switch (requestCode) {
             case UniqueId.REQ_IMAGE_FROM_SCANNER: {
@@ -416,8 +415,6 @@ public class BookSearchByIsbnFragment
                 break;
             }
         }
-
-        Tracker.exitOnActivityResult(this);
     }
 
     @Override
@@ -500,9 +497,10 @@ public class BookSearchByIsbnFragment
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_duplicate_book)
                 .setMessage(R.string.confirm_duplicate_book_message)
+                // this dialog is important. Make sure the user pays some attention
                 .setCancelable(false)
                 // User aborts this isbn
-                .setNegativeButton(android.R.string.cancel, (d, which) -> {
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
                     // reset the now-discarded details
                     mBookSearchBaseModel.clearSearchText();
                     if (mScannerModel.isScanMode()) {
@@ -510,13 +508,13 @@ public class BookSearchByIsbnFragment
                     }
                 })
                 // User wants to review the existing book
-                .setNeutralButton(R.string.edit, (d, which) -> {
+                .setNeutralButton(R.string.edit, (dialog, which) -> {
                     Intent intent = new Intent(getContext(), EditBookActivity.class)
                             .putExtra(DBDefinitions.KEY_PK_ID, existingId);
                     startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 })
                 // User wants to add regardless
-                .setPositiveButton(R.string.btn_confirm_add, (d, which) -> startSearch())
+                .setPositiveButton(R.string.btn_confirm_add, (dialog, which) -> startSearch())
                 .create()
                 .show();
     }
@@ -614,7 +612,7 @@ public class BookSearchByIsbnFragment
                 .setMessage(msg)
                 .setNeutralButton(R.string.lbl_settings, (d, w) -> {
                     Intent intent = new Intent(mHostActivity, SettingsActivity.class)
-                            .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
+                            .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                       Prefs.psk_barcode_scanner);
 
                     mHostActivity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
@@ -641,7 +639,7 @@ public class BookSearchByIsbnFragment
                 .setMessage(msg)
                 .setOnDismissListener(d -> {
                     Intent intent = new Intent(mHostActivity, SettingsActivity.class)
-                            .putExtra(BaseSettingsFragment.BKEY_AUTO_SCROLL_TO_KEY,
+                            .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                       Prefs.psk_barcode_scanner);
 
                     mHostActivity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);

@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.stripinfo;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -43,12 +42,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Format;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
@@ -60,23 +57,23 @@ public class StripInfoBookHandler
 
     public static final String FILENAME_SUFFIX = "_SI";
 
+    /** Color string values as used on the site. */
+    private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
+
     /** Param 1: search criteria. */
     private static final String BOOK_SEARCH_URL = "/zoek/zoek?zoekstring=%1$s";
-
     /** The description contains h4 tags which we need to remove. */
     private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>", Pattern.LITERAL);
     private static final Pattern H4_CLOSE_PATTERN = Pattern.compile("</h4>", Pattern.LITERAL);
-
     /** accumulate all Authors for this book. */
     private final ArrayList<Author> mAuthors = new ArrayList<>();
     /** accumulate all Series for this book. */
     private final ArrayList<Series> mSeries = new ArrayList<>();
     /** accumulate all Publishers for this book. */
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
-
     /** extracted from the page header. */
     private String mPrimarySeriesTitle;
-    /** extracted from the title section */
+    /** extracted from the title section. */
     private String mPrimarySeriesBookNr;
     private String mIsbn;
 
@@ -140,8 +137,6 @@ public class StripInfoBookHandler
             // a certain talented publisher often re-used isbn codes...
             return bookData;
         }
-
-        Context context = App.getLocalizedAppContext();
 
         Elements rows = mDoc.select("div.row");
 
@@ -253,7 +248,6 @@ public class StripInfoBookHandler
 
                         case "Kaft":
                             i += processText(td, DBDefinitions.KEY_FORMAT, bookData);
-                            Format.map(context, bookData);
                             break;
 
                         case "Taal":
@@ -416,7 +410,7 @@ public class StripInfoBookHandler
 
     /**
      * At least one element does not have an actual label.
-     * We inspect the value to try an guess the type.
+     * We inspect the value to try and guess the type.
      * <p>
      * Currently known (2019-10-11):
      * - the color scheme of the comic.
@@ -431,10 +425,10 @@ public class StripInfoBookHandler
         Element dataElement = td.nextElementSibling();
         if (dataElement.childNodeSize() == 1) {
             String text = dataElement.childNode(0).toString().trim();
+
             // is it a color ?
-            if (StripInfoField.COLOR_VALUE_COLOR.equals(text)
-                || StripInfoField.COLOR_VALUE_BLACK_AND_WHITE.equals(text)) {
-                bookData.putString(StripInfoField.COLOR, text);
+            if (COLOR_STRINGS.contains(text)) {
+                bookData.putString(DBDefinitions.KEY_COLOR, text);
             }
             return 1;
         }
@@ -540,16 +534,10 @@ public class StripInfoBookHandler
 
     /**
      * StripInfo specific field names we add to the bundle based on parsed XML data.
-     *
-     * //URGENT: add color field to 'books' table
      */
     public static final class StripInfoField {
 
-        public static final String COLOR = "__color";
-        public static final String COLOR_VALUE_COLOR = "Kleur";
-        public static final String COLOR_VALUE_BLACK_AND_WHITE = "Zwart/wit";
-
-        /** Th barcode is not always an ISBN. The site usually provides both. */
+        /** The barcode is not always an ISBN. The site usually provides both. */
         public static final String BARCODE = "__barcode";
 
         private StripInfoField() {

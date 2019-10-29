@@ -43,113 +43,25 @@
             android:title="@string/name"
             />
 
-        <!-- We set an OnPreferenceClickListener to call startActivityForResult. -->
-        <PreferenceScreen
+        <Preference
             android:icon="@drawable/ic_format_list_bulleted"
-            android:key="psk_style_groupings"
-            android:title="@string/pg_groupings">
-        </PreferenceScreen>
+            android:key="style.booklist.groups"
+            android:title="@string/pg_style_groups"
+            />
 
-        <PreferenceScreen
+        <Preference
             android:icon="@drawable/ic_filter_list"
             android:key="psk_style_filters"
-            android:title="@string/pg_filters">
+            android:title="@string/pg_filters"
+            app:fragment="com.hardbacknutter.nevertoomanybooks.settings.StyleFiltersFragment"
+            />
 
-            <ListPreference
-                android:defaultValue="-1"
-                android:entries="@array/pe_bob_filter_read"
-                android:entryValues="@array/pv_bob_filter_values"
-                android:icon="@drawable/ic_filter_list"
-                android:key="style.booklist.filter.read"
-                android:title="@string/lbl_read"
-                />
-
-            <ListPreference
-                android:defaultValue="-1"
-                android:entries="@array/pe_bob_filter_signed"
-                android:entryValues="@array/pv_bob_filter_values"
-                android:icon="@drawable/ic_filter_list"
-                android:key="style.booklist.filter.signed"
-                android:title="@string/lbl_signed"
-                />
-
-            <ListPreference
-                android:defaultValue="-1"
-                android:entries="@array/pe_bob_filter_anthology"
-                android:entryValues="@array/pv_bob_filter_values"
-                android:icon="@drawable/ic_filter_list"
-                android:key="style.booklist.filter.anthology"
-                android:title="@string/lbl_anthology"
-                />
-
-            <ListPreference
-                android:defaultValue="-1"
-                android:entries="@array/pe_bob_filter_loaned"
-                android:entryValues="@array/pv_bob_filter_values"
-                android:icon="@drawable/ic_filter_list"
-                android:key="style.booklist.filter.loaned"
-                android:title="@string/lbl_loaned"
-                />
-
-            <MultiSelectListPreference
-                android:defaultValue="@array/empty_array"
-                android:entries="@array/pe_bob_filter_edition"
-                android:entryValues="@array/pv_bob_filter_edition"
-                android:icon="@drawable/ic_filter_list"
-                android:key="style.booklist.filter.editions"
-                android:title="@string/lbl_edition"
-                />
-
-        </PreferenceScreen>
-
-        <PreferenceScreen
+        <Preference
             android:icon="@drawable/ic_details"
             android:key="psk_style_show_details"
             android:title="@string/pg_bob_show_details"
-            >
-
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="style.booklist.show.format"
-                android:title="@string/lbl_format"
-                />
-
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="style.booklist.show.publisher"
-                android:title="@string/lbl_publisher"
-                />
-
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="style.booklist.show.publication.date"
-                android:title="@string/lbl_date_published"
-                />
-
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="style.booklist.show.isbn"
-                android:title="@string/lbl_isbn"
-                />
-
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="style.booklist.show.bookshelves"
-                android:title="@string/lbl_bookshelves_long"
-                />
-
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="style.booklist.show.location"
-                android:title="@string/lbl_location"
-                />
-
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="style.booklist.show.author"
-                android:title="@string/lbl_author"
-                />
-        </PreferenceScreen>
+            app:fragment="com.hardbacknutter.nevertoomanybooks.settings.StyleExtraFragment"
+            />
 
         <MultiSelectListPreference
             android:defaultValue="@array/empty_array"

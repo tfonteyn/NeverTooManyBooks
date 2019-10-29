@@ -106,6 +106,7 @@ public class CsvExporter
             + '"' + DBDefinitions.KEY_READ_START + "\","
             + '"' + DBDefinitions.KEY_READ_END + "\","
             + '"' + DBDefinitions.KEY_FORMAT + "\","
+            + '"' + DBDefinitions.KEY_COLOR + "\","
             + '"' + DBDefinitions.KEY_SIGNED + "\","
             + '"' + DBDefinitions.KEY_LOANEE + "\","
             + '"' + CSV_COLUMN_TOC + "\","
@@ -237,6 +238,7 @@ public class CsvExporter
                    .append(format(bookCursor.getString(DBDefinitions.KEY_READ_START)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_READ_END)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_FORMAT)))
+                   .append(format(bookCursor.getString(DBDefinitions.KEY_COLOR)))
                    .append(format(bookCursor.getInt(DBDefinitions.KEY_SIGNED)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_LOANEE)))
                    .append(format(CsvCoder.getTocCoder()

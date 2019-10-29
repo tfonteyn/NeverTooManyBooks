@@ -800,7 +800,7 @@
     <string name="pg_general">General</string>
 
     <!-- Preference Screen; groups (RowKinds) in booklist style -->
-    <string name="pg_groupings">Groupings</string>
+    <string name="pg_style_groups">Groups</string>
 
     <!-- Preference Screen; filters in booklist style -->
     <string name="pg_filters">Filters</string>
@@ -1258,6 +1258,7 @@
     <string name="lbl_pages">Pages</string>
     <string name="lbl_anthology">Anthology</string>
     <string name="lbl_format">Format</string>
+    <string name="lbl_color">Color</string>
     <string name="lbl_language">Language</string>
     <string name="lbl_description">Description</string>
     <string name="lbl_genre">Genre</string>
@@ -1388,7 +1389,7 @@
     <string name="lbl_websites">Websites</string>
 
     <!-- Admin GROUP -->
-    <string name="lbl_data_import_export">Import/Export</string>
+    <string name="lbl_data_import_export">Import / Export</string>
     <!-- Admin -->
     <string name="lbl_backup_to_archive">Backup to Archive</string>
     <!-- Admin -->
@@ -1404,9 +1405,9 @@
     <!-- Admin advanced - collect debug information and prepare an email to the developers -->
     <string name="lbl_send_debug_info">Send Debug Information</string>
     <!-- Admin advanced - cleanup log, temp files -->
-    <string name="lbl_cleanup_files">Cleanup Files</string>
+    <string name="lbl_purge_files">Cleanup Files</string>
     <!-- Admin advanced - clear the cached images -->
-    <string name="lbl_clear_image_cache">Clear images cache</string>
+    <string name="lbl_purge_image_cache">Clear images cache</string>
     <!-- Admin advanced - make a copy of the internal database to a public folder -->
     <string name="lbl_copy_database">Export Database</string>
     <string name="lbl_copy_database_blurb">Select a folder to export to.</string>
@@ -1414,7 +1415,7 @@
     <!-- Headings in 'about' dialog -->
     <string name="lbl_about_website">Web page</string>
     <string name="lbl_about_sourcecode">Source Code</string>
-    <string name="lbl_about_contacts">Contacts</string>
+    <string name="lbl_about_contact">Contact:</string>
     <string name="lbl_about_special_thanks">Special Thanks</string>
     <string name="lbl_about_upgrade">Since your last upgrade</string>
     <string name="lbl_about_creators">Originally by:</string>
@@ -1510,13 +1511,24 @@
 
     <!-- SwitchPreference -->
     <string name="pt_reformat_format_on_update">Standardize “book format” names</string>
+    <!-- SwitchPreference -->
+    <string name="pt_reformat_color_on_update">Standardize “book color” names</string>
 
 
-    <string name="menu_purge_blns">Purge BLNS</string>
+    <string name="lbl_purge_blns">Purge BLNS</string>
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.
         Example: Bookshelf ToRead
     -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
+
+    <string name="book_color_full_color">color</string>
+    <string name="book_color_uncolored">uncolored</string>
+    <string name="book_uncolored_with_support_color">uncolored + support color</string>
+
+
+    <string name="lbl_cleanup">Cleanup</string>
+    <string name="pg_camera">Camera</string>
+    <string name="pg_image_cache">Image cache</string>
 
 </resources>

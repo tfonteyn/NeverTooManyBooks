@@ -251,8 +251,8 @@
     <string name="lbl_bookshelves">Raflar</string>
     <string name="lbl_bookshelves_long">Kitap rafları</string>
     <string name="lbl_by_author_s">%1$s ile</string>
-    <string name="lbl_cleanup_files">Dosyaları temizle</string>
-    <string name="lbl_about_contacts">İletişim</string>
+    <string name="lbl_purge_files">Dosyaları temizle</string>
+    <string name="lbl_about_contact">İletişim:</string>
     <string name="lbl_copy_database">Veritabanını Ver</string>
     <string name="lbl_cover">Kapak</string>
     <string name="lbl_cover_images">Kapak görselleri</string>
@@ -260,7 +260,7 @@
     <string name="lbl_about_creators">İlk olarak:</string>
     <string name="lbl_credentials">Kimlik Bilgileri</string>
     <string name="lbl_currency">Para birimi</string>
-    <string name="lbl_data_import_export">Veri içe/dışa aktarma</string>
+    <string name="lbl_data_import_export">Veri içe / dışa aktarma</string>
     <string name="lbl_date_acquired">Alınan Tarih</string>
     <string name="lbl_date_acquired_day">Alınan Gün</string>
     <string name="lbl_date_acquired_month">Alınan Ay</string>
@@ -274,7 +274,7 @@
     <string name="lbl_edition_first_edition">1. baskı</string>
     <string name="lbl_edition_first_impression">1. basım</string>
     <string name="lbl_edition_limited">Sınırlı sayıda</string>
-    <string name="lbl_clear_image_cache">Görüntü önbelleğini temizle</string>
+    <string name="lbl_purge_image_cache">Görüntü önbelleğini temizle</string>
     <string name="lbl_export_to_csv">CSV dosyasına dışa aktar</string>
     <string name="lbl_family_name">Soyadı</string>
     <string name="lbl_field_usage_append">Ek veriyi iliştirir</string>
@@ -413,7 +413,7 @@
     <string name="pg_booklist">Kitap listeleri</string>
     <string name="pg_filters">Kitap süzgeçleri</string>
     <string name="pg_general">Genel</string>
-    <string name="pg_groupings">Öbeklemeler</string>
+    <string name="pg_style_groups">Öbeklemeler</string>
     <string name="pt_bob_titles_sort">Başlıkları sırala</string>
     <string name="pg_barcode_scanner">Barkod okuyucu</string>
     <string name="pg_thumbnails">Ufak resimler</string>
@@ -636,5 +636,6 @@
     <string name="hint_empty_month">(Hiçbir ay doldurulmadı)</string>
     <string name="hint_empty_read_status">(Okuma durumu bilinmiyor)</string>
     <string name="warning_select_at_least_1_group">En az bir grup seçin.</string>
+    <string name="lbl_color">Renk</string>
 
 </resources>

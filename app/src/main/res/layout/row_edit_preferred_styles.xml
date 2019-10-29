@@ -67,10 +67,10 @@
             />
 
         <TextView
-            android:id="@+id/kind"
+            android:id="@+id/type"
             style="@style/RowTextLine.Secondary"
             tools:ignore="SelectableText"
-            tools:text="kind"
+            tools:text="type:builtin/user"
             />
 
     </LinearLayout>

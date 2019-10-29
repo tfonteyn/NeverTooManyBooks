@@ -232,6 +232,7 @@ public class UpdateFieldsFromInternetModel
 
         addField(R.string.lbl_pages, CopyIfBlank, DBDefinitions.KEY_PAGES);
         addField(R.string.lbl_format, CopyIfBlank, DBDefinitions.KEY_FORMAT);
+        addField(R.string.lbl_color, CopyIfBlank, DBDefinitions.KEY_COLOR);
         addField(R.string.lbl_language, CopyIfBlank, DBDefinitions.KEY_LANGUAGE);
 
         // list price has related DBDefinitions.KEY_PRICE_LISTED

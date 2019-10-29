@@ -37,15 +37,13 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 public class PreferredStylesViewModel
         extends ViewModel {
-
-    private static final String TAG = "PreferredStylesActivity";
-    public static final String BKEY_STYLE_ID = TAG + ":styleId";
 
     /** Database Access. */
     private DAO mDb;
@@ -77,7 +75,7 @@ public class PreferredStylesViewModel
             mDb = new DAO();
             mList = new ArrayList<>(BooklistStyle.Helper.getStyles(mDb, true).values());
 
-            mInitialStyleId = args.getLong(BKEY_STYLE_ID);
+            mInitialStyleId = args.getLong(UniqueId.BKEY_STYLE_ID);
             if (mInitialStyleId == 0) {
                 throw new UnexpectedValueException(mInitialStyleId);
             }
@@ -173,7 +171,7 @@ public class PreferredStylesViewModel
 
         // add to the db if the style is a new one.
         if (style.getId() == 0) {
-            style.insert(mDb);
+            style.save(mDb);
         }
 
         return editedRow;

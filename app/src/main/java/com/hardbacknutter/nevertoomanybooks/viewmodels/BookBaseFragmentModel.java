@@ -99,6 +99,8 @@ public class BookBaseFragmentModel
     /** Field drop down list. */
     private List<String> mFormats;
     /** Field drop down list. */
+    private List<String> mColors;
+    /** Field drop down list. */
     private List<String> mLanguagesCodes;
     /** Field drop down list. */
     private List<String> mPublishers;
@@ -344,6 +346,19 @@ public class BookBaseFragmentModel
             mFormats = mDb.getFormats();
         }
         return mFormats;
+    }
+
+    /**
+     * Load a color list.
+     *
+     * @return List of colors
+     */
+    @NonNull
+    public List<String> getColors() {
+        if (mColors == null) {
+            mColors = mDb.getColors();
+        }
+        return mColors;
     }
 
     /**

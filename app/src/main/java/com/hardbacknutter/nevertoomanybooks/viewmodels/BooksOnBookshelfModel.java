@@ -87,9 +87,9 @@ public class BooksOnBookshelfModel
     private static final String PREF_PREFIX = "booklist.";
 
     /** Preference name - Saved position of last top row. */
-    private static final String PREF_BOB_TOP_ROW = PREF_PREFIX + ".top.row";
+    private static final String PREF_BOB_TOP_ROW = PREF_PREFIX + "top.row";
     /** Preference name - Saved position of last top row offset from view top. */
-    private static final String PREF_BOB_TOP_ROW_OFFSET = PREF_PREFIX + ".top.offset";
+    private static final String PREF_BOB_TOP_ROW_OFFSET = PREF_PREFIX + "top.offset";
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
     /** Allows progress message from a task to update the user. */

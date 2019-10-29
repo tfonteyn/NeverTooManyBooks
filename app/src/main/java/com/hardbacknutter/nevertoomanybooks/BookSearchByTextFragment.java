@@ -45,7 +45,6 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
@@ -223,14 +222,12 @@ public class BookSearchByTextFragment
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
 
         super.onActivityResult(requestCode, resultCode, data);
         // refresh, we could have modified/created Authors while editing
         // (even when the edit was cancelled )
         populateAuthorList();
-
-        Tracker.exitOnActivityResult(this);
     }
 
     @Override

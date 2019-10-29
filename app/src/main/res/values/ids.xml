@@ -128,6 +128,7 @@
     <item name="MENU_SERIES_COMPLETE" type="id" />
 
     <item name="MENU_FORMAT_EDIT" type="id" />
+    <item name="MENU_COLOR_EDIT" type="id" />
     <item name="MENU_GENRE_EDIT" type="id" />
     <item name="MENU_LANGUAGE_EDIT" type="id" />
     <item name="MENU_LOCATION_EDIT" type="id" />

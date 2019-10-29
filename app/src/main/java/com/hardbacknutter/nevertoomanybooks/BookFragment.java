@@ -64,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragment;
@@ -223,12 +222,16 @@ public class BookFragment
     @CallSuper
     @Override
     public void onResume() {
-        Tracker.enterOnResume(this);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(this, "onResume");
+        }
         // The parent will kick of the process that triggers {@link #onLoadFieldsFromBook}.
         super.onResume();
         ((BookDetailsActivity) mHostActivity).registerOnTouchListener(mOnTouchListener);
 
-        Tracker.exitOnResume(this);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugExit(this, "onResume");
+        }
     }
 
     @Override
@@ -322,12 +325,14 @@ public class BookFragment
               .setRelatedFields(R.id.lbl_language);
 
         fields.addString(R.id.pages, DBDefinitions.KEY_PAGES)
-              .setFormatter(new Fields.PagesFormatter())
-              .setRelatedFields(R.id.lbl_pages);
+              .setFormatter(new Fields.PagesFormatter());
 
+        //noinspection ConstantConditions
         fields.addString(R.id.format, DBDefinitions.KEY_FORMAT)
-              .setFormatter(new Fields.FormatFormatter())
-              .setRelatedFields(R.id.lbl_format);
+              .setFormatter(new Fields.FormatFormatter(getContext()));
+
+        fields.addString(R.id.color, DBDefinitions.KEY_COLOR)
+              .setFormatter(new Fields.ColorFormatter(getContext()));
 
         fields.addString(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
 

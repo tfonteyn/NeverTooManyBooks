@@ -208,7 +208,7 @@ public class StartupActivity
                 .setTitle(R.string.lbl_about_upgrade)
                 .setIcon(R.drawable.ic_info_outline)
                 .setMessage(Html.fromHtml(upgradeMessage))
-                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     UpgradeMessageManager.setUpgradeAcknowledged();
                     startNextStage();
                 })
@@ -230,9 +230,8 @@ public class StartupActivity
                     .setIcon(R.drawable.ic_help_outline)
                     .setTitle(R.string.app_name)
                     .setMessage(R.string.warning_backup_request)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                    .setPositiveButton(android.R.string.ok, (d, which) -> {
-                        d.dismiss();
+                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                         mModel.setBackupRequired(true);
                     })
                     .setOnDismissListener(d -> startNextStage())
@@ -253,7 +252,7 @@ public class StartupActivity
 
         if (mModel.isBackupRequired()) {
             Intent backupIntent = new Intent(this, AdminActivity.class)
-                    .putExtra(AdminFragment.BKEY_AUTO_START_BACKUP, true);
+                    .putExtra(ImportExportFragment.BKEY_AUTO_START_BACKUP, true);
             startActivity(backupIntent);
         }
 

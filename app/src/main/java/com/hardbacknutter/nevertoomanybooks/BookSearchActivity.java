@@ -48,18 +48,15 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
 public class BookSearchActivity
         extends BaseActivityWithTasks {
 
-    private String mTag;
-
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mTag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
-        if (mTag == null) {
-            mTag = BookSearchByIsbnFragment.TAG;
+        String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
+        if (tag == null) {
+            tag = BookSearchByIsbnFragment.TAG;
         }
-
-        replaceFragment(R.id.main_fragment, mTag);
+        replaceFragment(R.id.main_fragment, tag);
     }
 
     /**
@@ -71,18 +68,15 @@ public class BookSearchActivity
                                 @NonNull final String tag) {
         switch (tag) {
             case BookSearchByIsbnFragment.TAG:
-                replaceFragment(containerViewId, BookSearchByIsbnFragment.class,
-                                BookSearchByIsbnFragment.TAG);
+                replaceFragment(containerViewId, BookSearchByIsbnFragment.class, tag);
                 return;
 
             case BookSearchByTextFragment.TAG:
-                replaceFragment(containerViewId, BookSearchByTextFragment.class,
-                                BookSearchByTextFragment.TAG);
+                replaceFragment(containerViewId, BookSearchByTextFragment.class, tag);
                 return;
 
             case UpdateFieldsFromInternetFragment.TAG:
-                replaceFragment(containerViewId, UpdateFieldsFromInternetFragment.class,
-                                UpdateFieldsFromInternetFragment.TAG);
+                replaceFragment(containerViewId, UpdateFieldsFromInternetFragment.class, tag);
                 return;
 
             default:
@@ -105,20 +99,16 @@ public class BookSearchActivity
                 }
             }
         }
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onBackPressed() {
-
-//        if (!UpdateFieldsFromInternetFragment.TAG.equals(mTag)) {
         BookSearchBaseModel model = new ViewModelProvider(this).get(BookSearchBaseModel.class);
         Intent lastBookData = model.getLastBookData();
         if (lastBookData != null) {
             setResult(Activity.RESULT_OK, lastBookData);
         }
-//        }
         super.onBackPressed();
     }
 }

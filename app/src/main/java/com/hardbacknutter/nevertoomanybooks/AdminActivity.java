@@ -31,10 +31,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.HasActivityResultData;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
@@ -52,11 +56,35 @@ public class AdminActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.title_administration);
 
-        replaceFragment(R.id.main_fragment, AdminFragment.class, AdminFragment.TAG);
+        String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
+        if (tag == null) {
+            tag = ImportExportFragment.TAG;
+        }
+
+        replaceFragment(R.id.main_fragment, tag);
     }
 
+    /**
+     * Create a fragment based on the given tag.
+     *
+     * @param tag for the required fragment
+     */
+    public void replaceFragment(@IdRes final int containerViewId,
+                                @NonNull final String tag) {
+        switch (tag) {
+            case ImportExportFragment.TAG:
+                replaceFragment(containerViewId, ImportExportFragment.class, tag);
+                return;
+
+            case GoodreadsAdminFragment.TAG:
+                replaceFragment(containerViewId, GoodreadsAdminFragment.class, tag);
+                return;
+
+            default:
+                throw new UnexpectedValueException(tag);
+        }
+    }
     @Override
     public void onBackPressed() {
         HasActivityResultData model = new ViewModelProvider(this).get(ResultDataModel.class);

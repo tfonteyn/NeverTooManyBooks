@@ -52,19 +52,17 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
  * <p>
  * Uses OnSharedPreferenceChangeListener to dynamically update the summary for each preference.
  */
-public abstract class BaseSettingsFragment
+public abstract class BasePreferenceFragment
         extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final String TAG = "BaseSettingsFragment";
+    private static final String TAG = "BasePreferenceFragment";
 
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
-
+    ResultDataModel mResultDataModel;
     @Nullable
     private String mAutoScrollToKey;
-
-    ResultDataModel mResultDataModel;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -87,11 +85,21 @@ public abstract class BaseSettingsFragment
     @Override
     public void onResume() {
         super.onResume();
-        getPreferenceScreen().getSharedPreferences()
-                             .registerOnSharedPreferenceChangeListener(this);
+
+        PreferenceScreen screen = getPreferenceScreen();
+        screen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+
+        // Set the summaries reflecting the current values for all Preferences.
+        //TODO: use this for all prefs instead:
+        // EditTextPreference np = screen.findPreference(Prefs.X));
+        // np.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+        for (String key : screen.getSharedPreferences().getAll().keySet()) {
+            updateSummary(key);
+        }
 
         if (mAutoScrollToKey != null) {
             scrollToPreference(mAutoScrollToKey);
+            mAutoScrollToKey = null;
         }
     }
 
@@ -102,17 +110,8 @@ public abstract class BaseSettingsFragment
         super.onPause();
     }
 
-    /**
-     * Set the summaries reflecting the current values for all Preferences.
-     * Should usually only be called when a preference fragment is created.
-     */
-    void updateSummaries(@NonNull final PreferenceScreen screen) {
-        for (String key : screen.getSharedPreferences().getAll().keySet()) {
-            updateSummary(key);
-        }
-    }
-
-    private void updateSummary(@NonNull final String key) {
+    @CallSuper
+    void updateSummary(@NonNull final String key) {
         Preference preference = findPreference(key);
         if (preference != null) {
             preference.setSummary(getValueAsString(preference));
@@ -155,9 +154,6 @@ public abstract class BaseSettingsFragment
                 }
             }
             return text;
-        } else if (preference instanceof PreferenceScreen) {
-            //ENHANCE: collect the summaries from all its prefs ?
-            return "";
         } else {
             return "";
         }

@@ -174,7 +174,6 @@
             android:id="@+id/isbn_X"
             style="@style/IsbnSearchKey"
             android:text="X"
-            app:layout_constraintBottom_toTopOf="@id/barrierBottom"
             app:layout_constraintEnd_toStartOf="@id/isbn_0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/isbn_7"
@@ -185,7 +184,6 @@
             android:id="@+id/isbn_0"
             style="@style/IsbnSearchKey"
             android:text="0"
-            app:layout_constraintBottom_toTopOf="@id/barrierBottom"
             app:layout_constraintEnd_toStartOf="@id/isbn_del"
             app:layout_constraintStart_toEndOf="@id/isbn_X"
             app:layout_constraintTop_toBottomOf="@id/isbn_8"
@@ -196,18 +194,9 @@
             android:id="@+id/isbn_del"
             style="@style/IsbnSearchKey.Del"
             android:contentDescription="@string/menu_delete"
-            app:layout_constraintBottom_toTopOf="@id/barrierBottom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/isbn_0"
             app:layout_constraintTop_toBottomOf="@id/isbn_9"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrierBottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="isbn_X,isbn_del,isbn_0"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -95,17 +95,14 @@ public class ExportHelperDialogFragment
         mDateSinceView = root.findViewById(R.id.date_since);
 
         //noinspection ConstantConditions
-        AlertDialog dialog =
-                new AlertDialog.Builder(getContext())
-                        .setView(root)
-                        .setTitle(R.string.export_options_dialog_title)
-                        .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                        .setPositiveButton(android.R.string.ok,
-                                           (d, which) -> updateAndSend(mExportHelper))
-                        .create();
 
-        dialog.setCanceledOnTouchOutside(false);
-        return dialog;
+        return new AlertDialog.Builder(getContext())
+                .setView(root)
+                .setTitle(R.string.export_options_dialog_title)
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
+                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                        updateAndSend(mExportHelper))
+                .create();
     }
 
     @Override

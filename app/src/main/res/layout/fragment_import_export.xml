@@ -79,88 +79,11 @@
             android:text="@string/lbl_import_from_csv"
             />
 
-        <!-- GoodReads -->
-
-        <TextView
-            style="@style/Label.Header.Small"
-            android:text="@string/goodreads"
-            />
-
-        <TextView
-            android:id="@+id/lbl_sync_with_goodreads"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_autorenew"
-            android:text="@string/gr_sync_with_goodreads"
-            />
-
-        <TextView
-            android:id="@+id/lbl_import_all_from_goodreads"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_file_download"
-            android:text="@string/gr_import_all_from_goodreads"
-            />
-
-        <TextView
-            android:id="@+id/lbl_send_updated_books_to_goodreads"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_send"
-            android:text="@string/gr_btn_send_updated"
-            />
-
-        <TextView
-            android:id="@+id/lbl_send_all_books_to_goodreads"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_file_upload"
-            android:text="@string/gr_btn_send_all"
-            />
-
-        <TextView
-            android:id="@+id/lbl_background_tasks"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_format_list_bulleted"
-            android:text="@string/gr_tq_menu_background_tasks"
-            />
-
         <!-- ADVANCED OPTIONS Header -->
 
         <TextView
             style="@style/Label.Header.Small"
             android:text="@string/lbl_advanced_options"
-            />
-
-        <TextView
-            android:id="@+id/lbl_erase_cover_cache"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_close"
-            android:text="@string/lbl_clear_image_cache"
-            />
-
-        <TextView
-            android:id="@+id/lbl_cleanup_files"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_close"
-            android:text="@string/lbl_cleanup_files"
-            />
-
-        <TextView
-            android:id="@+id/menu_purge_blns"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_close"
-            android:text="@string/menu_purge_blns"
-            />
-
-        <TextView
-            android:id="@+id/lbl_reset_tips"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_undo"
-            android:text="@string/tip_reset_all"
-            />
-
-        <TextView
-            android:id="@+id/lbl_send_debug_info"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_send"
-            android:text="@string/lbl_send_debug_info"
             />
 
         <TextView

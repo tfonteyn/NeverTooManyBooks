@@ -63,7 +63,7 @@
 
         <meta-data
             android:name="beta.build"
-            android:value="2019-10-27" />
+            android:value="" />
 
         <!-- Application developer keys - stripped out in a git pre-commit script. -->
         <meta-data
@@ -181,23 +181,10 @@
         <!-- Credentials LibraryThing -->
         <activity
             android:name="com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-            <intent-filter>
-                <action android:name="librarything.credentials.EDIT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <!-- Credentials Goodreads -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity">
-            <intent-filter>
-                <action android:name="goodreads.credentials.EDIT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity" />
 
         <!-- Goodreads background tasks & events -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueListActivity" />

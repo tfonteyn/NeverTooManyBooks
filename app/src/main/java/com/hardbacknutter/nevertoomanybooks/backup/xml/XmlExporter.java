@@ -748,6 +748,8 @@ public class XmlExporter
                                    bookCursor.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
                       .append(attr(DBDefinitions.KEY_FORMAT,
                                    bookCursor.getString(DBDefinitions.KEY_FORMAT)))
+                      .append(attr(DBDefinitions.KEY_COLOR,
+                                   bookCursor.getString(DBDefinitions.KEY_COLOR)))
                       .append(attr(DBDefinitions.KEY_PAGES,
                                    bookCursor.getString(DBDefinitions.KEY_PAGES)))
                       .append(attr(DBDefinitions.KEY_GENRE,

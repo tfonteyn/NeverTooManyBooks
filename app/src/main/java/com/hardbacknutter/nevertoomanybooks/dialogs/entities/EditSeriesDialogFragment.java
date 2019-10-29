@@ -141,8 +141,8 @@ public class EditSeriesDialogFragment
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(R.string.title_edit_series)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
                     mName = mNameView.getText().toString().trim();
                     if (mName.isEmpty()) {
                         UserMessage.show(mNameView, R.string.warning_missing_name);

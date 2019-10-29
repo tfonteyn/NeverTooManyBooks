@@ -72,7 +72,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -81,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialog
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditColorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditFormatDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditGenreDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditLanguageDialog;
@@ -100,7 +100,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.PreferredStylesViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
 import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
 
@@ -173,6 +172,12 @@ public class BooksOnBookshelf
      * ENHANCE: update the modified row without a rebuild
      */
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            Logger.debug(this, "",
+                         "bookId=" + bookId,
+                         "fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged),
+                         data);
+        }
         savePosition();
         initBookList();
 
@@ -275,7 +280,7 @@ public class BooksOnBookshelf
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
+        Logger.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);
@@ -311,8 +316,6 @@ public class BooksOnBookshelf
         if (savedInstanceState == null) {
             TipManager.display(this, R.string.tip_book_list, null);
         }
-
-        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -491,12 +494,11 @@ public class BooksOnBookshelf
 
             //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, "Dump style");
-            //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_TRACKER, 0, "Dump history");
 
             //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_UNMANGLE, 0, "un-mangle");
 
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE, 0,
-                             R.string.menu_purge_blns);
+                             R.string.lbl_purge_blns);
 
         }
         return super.onCreateOptionsMenu(menu);
@@ -578,11 +580,6 @@ public class BooksOnBookshelf
                                          mModel.getCurrentStyle());
                             return true;
 
-                        case R.id.MENU_DEBUG_TRACKER:
-                            Logger.debug(this, "onOptionsItemSelected",
-                                         Tracker.getEventsInfo());
-                            return true;
-
                         case R.id.MENU_DEBUG_UNMANGLE:
                             mModel.getDb().tempUnMangle(Prefs.reorderTitleForSorting(this));
                             return true;
@@ -615,8 +612,7 @@ public class BooksOnBookshelf
             }
             case R.id.nav_manage_list_styles: {
                 Intent intent = new Intent(this, PreferredStylesActivity.class)
-                        .putExtra(PreferredStylesViewModel.BKEY_STYLE_ID,
-                                  mModel.getCurrentStyle().getId());
+                        .putExtra(UniqueId.BKEY_STYLE_ID, mModel.getCurrentStyle().getId());
                 startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
                 return true;
             }
@@ -638,7 +634,7 @@ public class BooksOnBookshelf
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
 
 //        if (BuildConfig.DEBUG) {
 //            if (data != null) {
@@ -694,7 +690,7 @@ public class BooksOnBookshelf
                             mModel.setCurrentPositionedBookId(newId);
                         }
                     }
-                    // regardless, do a rebuild just in case
+                    // always do a rebuild
                     mModel.setForceRebuildInOnResume(true);
                 }
                 break;
@@ -742,9 +738,8 @@ public class BooksOnBookshelf
                 }
                 break;
             }
-
             // from BaseActivity Nav Panel
-            case UniqueId.REQ_NAV_PANEL_ADMIN: {
+            case UniqueId.REQ_NAV_PANEL_IMP_EXP: {
                 if (resultCode == Activity.RESULT_OK) {
 
                     if ((data != null) && data.hasExtra(UniqueId.BKEY_IMPORT_RESULT)) {
@@ -778,14 +773,11 @@ public class BooksOnBookshelf
                 break;
             }
 
-
             default: {
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
             }
         }
-
-        Tracker.exitOnActivityResult(this);
     }
 
     /**
@@ -813,7 +805,9 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public void onResume() {
-        Tracker.enterOnResume(this);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(this, "onResume");
+        }
         super.onResume();
 
         // get out, nothing to do.
@@ -883,7 +877,9 @@ public class BooksOnBookshelf
         // always reset for next iteration.
         mModel.setForceRebuildInOnResume(false);
 
-        Tracker.exitOnResume(this);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugExit(this, "onResume");
+        }
     }
 
     /**
@@ -1433,6 +1429,14 @@ public class BooksOnBookshelf
                 }
                 break;
             }
+            case BooklistGroup.RowKind.COLOR: {
+                if (!row.getString(DBDefinitions.KEY_COLOR).isEmpty()) {
+                    menu.add(Menu.NONE, R.id.MENU_COLOR_EDIT,
+                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
+                        .setIcon(R.drawable.ic_edit);
+                }
+                break;
+            }
             default: {
                 Logger.warnWithStackTrace(this, this, "rowKind=" + rowKind);
                 break;
@@ -1666,6 +1670,11 @@ public class BooksOnBookshelf
             case R.id.MENU_FORMAT_EDIT: {
                 new EditFormatDialog(this, mModel.getDb(), mBookChangedListener)
                         .edit(row.getString(DBDefinitions.KEY_FORMAT));
+                return true;
+            }
+            case R.id.MENU_COLOR_EDIT: {
+                new EditColorDialog(this, mModel.getDb(), mBookChangedListener)
+                        .edit(row.getString(DBDefinitions.KEY_COLOR));
                 return true;
             }
             case R.id.MENU_GENRE_EDIT: {

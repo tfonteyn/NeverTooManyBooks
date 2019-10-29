@@ -54,7 +54,7 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
@@ -207,7 +207,9 @@ public class UpdateFieldsFromInternetFragment
     @Override
     @CallSuper
     public void onResume() {
-        Tracker.enterOnResume(this);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(this, "onResume");
+        }
         super.onResume();
         if (getActivity() instanceof BaseActivity) {
             BaseActivity activity = (BaseActivity) getActivity();
@@ -220,7 +222,9 @@ public class UpdateFieldsFromInternetFragment
             UpdateFieldsFromInternetTask.MESSAGE_SWITCH
                     .addListener(mModel.getUpdateSenderId(), true, mManagedTaskListener);
         }
-        Tracker.exitOnResume(this);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugExit(this, "onResume");
+        }
     }
 
     /**
@@ -256,7 +260,7 @@ public class UpdateFieldsFromInternetFragment
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
@@ -273,7 +277,6 @@ public class UpdateFieldsFromInternetFragment
         }
         //noinspection ConstantConditions
         LocaleUtils.insanityCheck(getContext());
-        Tracker.exitOnActivityResult(this);
     }
 
     @Override
@@ -364,13 +367,13 @@ public class UpdateFieldsFromInternetFragment
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setTitle(R.string.menu_update_fields)
                     .setMessage(R.string.confirm_overwrite_thumbnail)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                    .setNeutralButton(R.string.no, (d, which) -> {
+                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                    .setNeutralButton(R.string.no, (dialog, which) -> {
                         covers.setUsage(CopyIfBlank);
                         mModel.putFieldUsage(UniqueId.BKEY_IMAGE, covers);
                         startUpdate();
                     })
-                    .setPositiveButton(R.string.yes, (d, which) -> {
+                    .setPositiveButton(R.string.yes, (dialog, which) -> {
                         covers.setUsage(Overwrite);
                         mModel.putFieldUsage(UniqueId.BKEY_IMAGE, covers);
                         startUpdate();

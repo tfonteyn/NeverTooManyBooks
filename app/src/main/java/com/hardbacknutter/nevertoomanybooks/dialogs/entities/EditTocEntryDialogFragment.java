@@ -154,11 +154,11 @@ public class EditTocEntryDialogFragment
 
         //noinspection ConstantConditions
         return new AlertDialog.Builder(getContext())
-                       .setIconAttribute(android.R.attr.alertDialogIcon)
-                       .setView(root)
-                       .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                       .setPositiveButton(android.R.string.ok, this::onConfirm)
-                       .create();
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setView(root)
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
+                .setPositiveButton(android.R.string.ok, this::onConfirm)
+                .create();
     }
 
     @Override

@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatemen
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 
@@ -162,14 +161,14 @@ public class DBCleaner {
         String select = "SELECT DISTINCT " + DBDefinitions.DOM_FK_BOOK
                         + " FROM " + DBDefinitions.TBL_BOOK_BOOKSHELF
                         + " WHERE " + DBDefinitions.DOM_FK_BOOKSHELF + "=NULL";
-        toLog(Tracker.State.Enter, select);
+        toLog(Logger.State.Enter, select);
         if (!dryRun) {
             String sql = "DELETE " + DBDefinitions.TBL_BOOK_BOOKSHELF
                          + " WHERE " + DBDefinitions.DOM_FK_BOOKSHELF + "=NULL";
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
-            toLog(Tracker.State.Exit, select);
+            toLog(Logger.State.Exit, select);
         }
     }
 
@@ -189,7 +188,7 @@ public class DBCleaner {
         String select = "SELECT DISTINCT " + column + " FROM " + table
                         + " WHERE " + column + " NOT IN ('0','1')";
 
-        toLog(Tracker.State.Enter, select);
+        toLog(Logger.State.Enter, select);
         if (!dryRun) {
             String sql = "UPDATE " + table + " SET " + column + "=1"
                          + " WHERE lower(" + column + ") IN ('true','t')";
@@ -201,7 +200,7 @@ public class DBCleaner {
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
-            toLog(Tracker.State.Exit, select);
+            toLog(Logger.State.Exit, select);
         }
     }
 
@@ -219,14 +218,14 @@ public class DBCleaner {
                                  final boolean dryRun) {
         String select = "SELECT DISTINCT " + column + " FROM " + table
                         + " WHERE " + column + "=NULL";
-        toLog(Tracker.State.Enter, select);
+        toLog(Logger.State.Enter, select);
         if (!dryRun) {
             String sql = "UPDATE " + table + " SET " + column + "=''"
                          + " WHERE " + column + "=NULL";
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
-            toLog(Tracker.State.Exit, select);
+            toLog(Logger.State.Exit, select);
         }
     }
 
@@ -237,7 +236,7 @@ public class DBCleaner {
      * @param state Enter/Exit
      * @param query to execute
      */
-    private void toLog(@NonNull final Tracker.State state,
+    private void toLog(@NonNull final Logger.State state,
                        @NonNull final String query) {
         try (SynchronizedCursor cursor = mSyncedDb.rawQuery(query, null)) {
             while (cursor.moveToNext()) {

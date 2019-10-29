@@ -38,10 +38,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * This is the About page.
@@ -82,22 +86,26 @@ public class About
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
 
-        view = findViewById(R.id.contact1);
-        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact1));
+        findViewById(R.id.btn_send_debug).setOnClickListener(v -> sendDebugInfo());
 
-        view = findViewById(R.id.contact2);
-        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact2));
+        // Reset Hints
+        findViewById(R.id.btn_reset_tips)
+                .setOnClickListener(v -> {
+                    TipManager.reset(this);
+                    UserMessage.show(v, R.string.tip_reset_done);
+                });
 
-        // Information to original creators site.
-        view = findViewById(R.id.website);
-        view.setText(LinkifyUtils.fromHtml(
-                getString(R.string.url_website, getString(R.string.lbl_about_website))));
-        view.setMovementMethod(LinkMovementMethod.getInstance());
-
-        view = findViewById(R.id.sourcecode);
-        view.setText(LinkifyUtils.fromHtml(
-                getString(R.string.url_sourcecode, getString(R.string.lbl_about_sourcecode))));
-        view.setMovementMethod(LinkMovementMethod.getInstance());
+//        view = findViewById(R.id.contact1);
+//        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact1));
+//
+//        view = findViewById(R.id.contact2);
+//        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact2));
+//
+//        // Information to original creators site.
+//        view = findViewById(R.id.website);
+//        view.setText(LinkifyUtils.fromHtml(
+//                getString(R.string.url_website, getString(R.string.lbl_about_website))));
+//        view.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /**
@@ -109,12 +117,27 @@ public class About
         try {
             String subject = '[' + getString(R.string.app_name) + "] ";
             Intent intent = new Intent(Intent.ACTION_SEND)
-                                    .setType("text/plain")
-                                    .putExtra(Intent.EXTRA_EMAIL, new String[]{getString(emailId)})
-                                    .putExtra(Intent.EXTRA_SUBJECT, subject);
+                    .setType("text/plain")
+                    .putExtra(Intent.EXTRA_EMAIL, new String[]{getString(emailId)})
+                    .putExtra(Intent.EXTRA_SUBJECT, subject);
             startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
         } catch (@NonNull final ActivityNotFoundException e) {
             Logger.error(this, this, e);
         }
+    }
+
+    private void sendDebugInfo() {
+        new AlertDialog.Builder(this)
+                .setIcon(R.drawable.ic_warning)
+                .setTitle(R.string.debug)
+                .setMessage(R.string.debug_send_info_text)
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    if (!DebugReport.sendDebugInfo(this)) {
+                        UserMessage.show(this, R.string.error_email_failed);
+                    }
+                })
+                .create()
+                .show();
     }
 }

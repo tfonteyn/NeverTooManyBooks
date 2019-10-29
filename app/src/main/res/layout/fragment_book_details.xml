@@ -134,31 +134,58 @@
             tools:text="97834579862"
             />
 
-        <TextView
-            android:id="@+id/pages"
-            style="@style/TextDetail.Small"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
-            tools:ignore="SelectableText"
-            tools:text="1073 pages"
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_format"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="isbn,rating,author"
             />
 
         <TextView
             android:id="@+id/format"
             style="@style/TextDetail.Small"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/pages"
+            app:layout_constraintTop_toBottomOf="@id/barrier_format"
             tools:ignore="SelectableText"
             tools:text="@string/book_format_hardcover"
+            />
+
+        <TextView
+            android:id="@+id/color"
+            style="@style/TextDetail.Small"
+            android:layout_marginStart="@dimen/indent3"
+            app:layout_constraintStart_toEndOf="@id/format"
+            app:layout_constraintTop_toBottomOf="@id/barrier_format"
+            app:layout_goneMarginStart="0dp"
+            tools:ignore="SelectableText"
+            tools:text="colour"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_language"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="format,color,barrier_format"
             />
 
         <TextView
             android:id="@+id/language"
             style="@style/TextDetail.Small"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/format"
+            app:layout_constraintTop_toBottomOf="@id/barrier_language"
             tools:ignore="SelectableText"
             tools:text="Quenya"
+            />
+
+        <TextView
+            android:id="@+id/pages"
+            style="@style/TextDetail.Small"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/language"
+            tools:ignore="SelectableText"
+            tools:text="1073 pages"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -166,7 +193,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="language,coverImage"
+            app:constraint_referenced_ids="coverImage,pages,format,isbn,language"
             />
 
         <!-- Series -->

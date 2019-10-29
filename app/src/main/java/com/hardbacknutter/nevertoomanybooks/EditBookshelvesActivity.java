@@ -146,7 +146,7 @@ public class EditBookshelvesActivity
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
-        menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.menu_purge_blns)
+        menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.lbl_purge_blns)
             .setIcon(R.drawable.ic_delete);
 
         return super.onCreateOptionsMenu(menu);

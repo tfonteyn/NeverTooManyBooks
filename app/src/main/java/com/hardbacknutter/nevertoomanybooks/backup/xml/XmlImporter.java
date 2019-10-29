@@ -975,7 +975,7 @@ public class XmlImporter
             }
 
             // the prefs are written on the fly, but we still need the db entry saved.
-            mStyle.insert(mDb);
+            mStyle.save(mDb);
 
             mStylesRead++;
         }

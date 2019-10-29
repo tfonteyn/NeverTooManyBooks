@@ -86,7 +86,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Format;
+import com.hardbacknutter.nevertoomanybooks.entities.ColorMapper;
+import com.hardbacknutter.nevertoomanybooks.entities.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
@@ -109,6 +110,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
@@ -311,6 +313,8 @@ public class DAO
     private final SqlStatementManager mStatements;
     /** used by finalize so close does not get called twice. */
     private boolean mCloseWasCalled;
+    private FormatMapper mFormatMapper;
+    private ColorMapper mColorMapper;
 
     /**
      * Constructor.
@@ -558,7 +562,6 @@ public class DAO
             return result.toString();
         }
     }
-
 
     /**
      * @param author      Author related keywords to find
@@ -946,9 +949,9 @@ public class DAO
      * @return the id, or 0 (i.e. 'new') when not found
      */
     public long getAuthorId(@NonNull final Author author,
-                            @NonNull final Locale userLocale) {
+                            @NonNull final Locale fallbackLocale) {
 
-        Locale authorLocale = author.getLocale(this, userLocale);
+        Locale authorLocale = author.getLocale(this, fallbackLocale);
 
         SynchronizedStatement stmt = mStatements.get(STMT_GET_AUTHOR_ID);
         if (stmt == null) {
@@ -1221,7 +1224,20 @@ public class DAO
         preprocessPrices(book);
 
         // Map website formats to standard ones if enabled by the user.
-        Format.map(context, book);
+        if (FormatMapper.isMappingAllowed(context)) {
+            if (mFormatMapper == null) {
+                mFormatMapper = new FormatMapper(context);
+            }
+            mFormatMapper.map(book);
+        }
+
+        // Map website colors to standard ones if enabled by the user.
+        if (ColorMapper.isMappingAllowed(context)) {
+            if (mColorMapper == null) {
+                mColorMapper = new ColorMapper(context);
+            }
+            mColorMapper.map(book);
+        }
 
         // Remove blank external ID's
         for (DomainDefinition domain : new DomainDefinition[]{
@@ -1272,6 +1288,7 @@ public class DAO
                 DBDefinitions.KEY_DATE_ACQUIRED,
 
                 DBDefinitions.KEY_FORMAT,
+                DBDefinitions.KEY_COLOR,
                 DBDefinitions.KEY_GENRE,
                 DBDefinitions.KEY_LANGUAGE,
                 DBDefinitions.KEY_LOCATION,
@@ -3190,6 +3207,30 @@ public class DAO
     }
 
     /**
+     * Returns a unique list of all colors in the database.
+     *
+     * @return The list
+     */
+    @NonNull
+    public ArrayList<String> getColors() {
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.COLORS, null)) {
+            return getFirstColumnAsList(cursor);
+        }
+    }
+
+    public void updateColor(@NonNull final String from,
+                            @NonNull final String to) {
+        if (Objects.equals(from, to)) {
+            return;
+        }
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlUpdate.COLOR)) {
+            stmt.bindString(1, to);
+            stmt.bindString(2, from);
+            stmt.executeUpdateDelete();
+        }
+    }
+
+    /**
      * Returns a unique list of all genres in the database.
      *
      * @return The list
@@ -4496,6 +4537,7 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED_CURRENCY)
                 + ',' + TBL_BOOKS.dotAs(DOM_DATE_FIRST_PUB)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_FORMAT)
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_COLOR)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GENRE)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LANGUAGE)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PAGES)
@@ -4923,6 +4965,12 @@ public class DAO
                 "SELECT DISTINCT " + DOM_BOOK_FORMAT
                 + " FROM " + TBL_BOOKS
                 + " ORDER BY lower(" + DOM_BOOK_FORMAT + ')' + COLLATION;
+
+        /** name only, for {@link AutoCompleteTextView}. */
+        private static final String COLORS =
+                "SELECT DISTINCT " + DOM_BOOK_COLOR
+                + " FROM " + TBL_BOOKS
+                + " ORDER BY lower(" + DOM_BOOK_COLOR + ')' + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String GENRES =
@@ -5484,6 +5532,11 @@ public class DAO
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
                 + ',' + DOM_BOOK_FORMAT + "=?"
                 + " WHERE " + DOM_BOOK_FORMAT + "=?";
+
+        static final String COLOR =
+                "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+                + ',' + DOM_BOOK_COLOR + "=?"
+                + " WHERE " + DOM_BOOK_COLOR + "=?";
 
         static final String GENRE =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"

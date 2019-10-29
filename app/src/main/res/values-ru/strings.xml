@@ -250,8 +250,8 @@
     <string name="lbl_bookshelves">Полки</string>
     <string name="lbl_bookshelves_long">Книжные полки</string>
     <string name="lbl_by_author_s">к %1$s</string>
-    <string name="lbl_cleanup_files">Очистка файлов</string>
-    <string name="lbl_about_contacts">Контакты разработчиков:</string>
+    <string name="lbl_purge_files">Очистка файлов</string>
+    <string name="lbl_about_contact">Контакты разработчиков:</string>
     <string name="lbl_copy_database">Экспорт базы данных</string>
     <string name="lbl_cover">обложка</string>
     <string name="lbl_cover_images">Обложки</string>
@@ -259,7 +259,7 @@
     <string name="lbl_about_creators">Первоначально:</string>
     <string name="lbl_credentials">Учетные данные</string>
     <string name="lbl_currency">валюта</string>
-    <string name="lbl_data_import_export">Импорт/Экспорт данных</string>
+    <string name="lbl_data_import_export">Импорт / Экспорт данных</string>
     <string name="lbl_date_acquired">Дата покупки</string>
     <string name="lbl_date_acquired_day">День куплен</string>
     <string name="lbl_date_acquired_month">Месяц купил</string>
@@ -273,7 +273,7 @@
     <string name="lbl_edition_first_edition">первое издание</string>
     <string name="lbl_edition_first_impression">первый отпечаток</string>
     <string name="lbl_edition_limited">ограниченный выпуск</string>
-    <string name="lbl_clear_image_cache">Очистить кэш изображений</string>
+    <string name="lbl_purge_image_cache">Очистить кэш изображений</string>
     <string name="lbl_export_to_csv">Экспортировать в CSV файл</string>
     <string name="lbl_family_name">Фамилия</string>
     <string name="lbl_field_usage_append">Добавляет дополнительные данные</string>
@@ -412,7 +412,7 @@
     <string name="pg_booklist">Списки книг</string>
     <string name="pg_filters">Фильтры книг</string>
     <string name="pg_general">Основные</string>
-    <string name="pg_groupings">Группирование</string>
+    <string name="pg_style_groups">Группирование</string>
     <string name="pt_bob_titles_sort">Сортировать названия по</string>
     <string name="pg_barcode_scanner">Сканер штрих-кода</string>
     <string name="pg_thumbnails">Миниатюры</string>
@@ -634,5 +634,6 @@
     <string name="hint_empty_month">(Месяц не заполнен)</string>
     <string name="hint_empty_read_status">(Статус чтения неизвестен)</string>
     <string name="warning_select_at_least_1_group">Выберите хотя бы одну группу.</string>
+    <string name="lbl_color">цвет</string>
 
 </resources>

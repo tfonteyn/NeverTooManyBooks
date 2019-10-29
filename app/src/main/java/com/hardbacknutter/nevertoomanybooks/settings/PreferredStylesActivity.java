@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
@@ -158,15 +157,16 @@ public class PreferredStylesActivity
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case UniqueId.REQ_EDIT_STYLE: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
+                    BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
+
                     if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
-                        BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                         if (style != null) {
                             int position = mModel.handleStyleChange(style);
                             mListAdapter.setSelectedPosition(position);
@@ -174,7 +174,7 @@ public class PreferredStylesActivity
 
                         // check if the style was cloned from a builtin style.
                         long templateId =
-                                data.getLongExtra(StyleSettingsFragment.BKEY_TEMPLATE_ID, 0);
+                                data.getLongExtra(StylePreferenceFragment.BKEY_TEMPLATE_ID, 0);
                         if (templateId < 0) {
                             // We're assuming the user wanted to 'replace' the builtin style,
                             // so remove the builtin style from the preferred styles.
@@ -186,6 +186,12 @@ public class PreferredStylesActivity
 
                         // always update all rows
                         mListAdapter.notifyDataSetChanged();
+
+                    } else {
+                        // the style was not modified, discard it if this was a new style
+                        if (style != null && style.getId() == 0) {
+                            style.discard();
+                        }
                     }
                 }
                 break;
@@ -194,14 +200,12 @@ public class PreferredStylesActivity
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-
-        Tracker.exitOnActivityResult(this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
-        menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.menu_purge_blns)
+        menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.lbl_purge_blns)
             .setIcon(R.drawable.ic_delete);
 
         return super.onCreateOptionsMenu(menu);
@@ -300,10 +304,15 @@ public class PreferredStylesActivity
             Logger.debugEnter(this, "editStyle", style);
         }
 
+        //FIXME: create the style fully when cloning it. Then only pass the id around.
+        // we can still 'discard' it if needed.
+        // IMPORTANT: we parcel the style to edit it.
+        // This allows us to handle a new style (id==0) without storing it in the database first.
+        // upon returning in onActivityResult, we'll handle the id.
         Intent intent = new Intent(this, SettingsActivity.class)
-                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StyleSettingsFragment.TAG)
+                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StylePreferenceFragment.TAG)
                 .putExtra(UniqueId.BKEY_STYLE, style)
-                .putExtra(StyleSettingsFragment.BKEY_TEMPLATE_ID, templateStyleId);
+                .putExtra(StylePreferenceFragment.BKEY_TEMPLATE_ID, templateStyleId);
 
         startActivityForResult(intent, UniqueId.REQ_EDIT_STYLE);
     }
@@ -319,14 +328,14 @@ public class PreferredStylesActivity
         @NonNull
         final TextView groupsView;
         @NonNull
-        final TextView kindView;
+        final TextView typeView;
 
         Holder(@NonNull final View itemView) {
             super(itemView);
 
             nameView = itemView.findViewById(R.id.name);
             groupsView = itemView.findViewById(R.id.groups);
-            kindView = itemView.findViewById(R.id.kind);
+            typeView = itemView.findViewById(R.id.type);
         }
     }
 
@@ -375,9 +384,9 @@ public class PreferredStylesActivity
 
             holder.groupsView.setText(style.getGroupLabels(getContext()));
             if (style.isUserDefined()) {
-                holder.kindView.setText(R.string.style_is_user_defined);
+                holder.typeView.setText(R.string.style_is_user_defined);
             } else {
-                holder.kindView.setText(R.string.style_is_builtin);
+                holder.typeView.setText(R.string.style_is_builtin);
             }
 
             // handle the 'preferred style' checkable

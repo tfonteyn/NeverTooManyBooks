@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/info_manage_fields">
+
+
+        <!-- NEWTHINGS: new fields visibility.
+             Third part of the key name **MUST** be equal to the DOM column name. -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.isbn"
+            android:title="@string/lbl_isbn" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.thumbnail"
+            android:title="@string/lbl_cover" />
+
+        <!-- Authors are always visible, but the user can hide the type. -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.author_type"
+            android:title="@string/lbl_author_type" />
+
+        <!-- Series name includes Series 'isComplete' and Series number. -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.series_name"
+            android:title="@string/lbl_series" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.description"
+            android:title="@string/lbl_description" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.publisher"
+            android:title="@string/lbl_publisher" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.date_published"
+            android:title="@string/lbl_date_published" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.first_publication"
+            android:title="@string/lbl_first_publication" />
+
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.format"
+            android:title="@string/lbl_format" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.color"
+            android:title="@string/lbl_color" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.genre"
+            android:title="@string/lbl_genre" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.language"
+            android:title="@string/lbl_language" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.pages"
+            android:title="@string/lbl_pages" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.list_price"
+            android:title="@string/lbl_price_listed" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.bookshelf"
+            android:title="@string/lbl_bookshelf" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.loaned_to"
+            android:title="@string/lbl_lending" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.notes"
+            android:title="@string/lbl_personal_notes" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.location"
+            android:title="@string/lbl_location_long" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.price_paid"
+            android:title="@string/lbl_price_paid" />
+
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.read"
+            android:title="@string/lbl_is_read" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.read_start"
+            android:title="@string/lbl_read_start" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.read_end"
+            android:title="@string/lbl_read_end" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.edition_bm"
+            android:title="@string/lbl_edition" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.signed"
+            android:title="@string/lbl_is_signed" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.rating"
+            android:title="@string/lbl_rating" />
+    </PreferenceCategory>
+</PreferenceScreen>

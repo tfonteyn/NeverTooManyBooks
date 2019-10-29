@@ -254,8 +254,8 @@
     <string name="lbl_bookshelves">Regale</string>
     <string name="lbl_bookshelves_long">Bücherregale</string>
     <string name="lbl_by_author_s">von %1$s</string>
-    <string name="lbl_cleanup_files">Dateien bereinigen</string>
-    <string name="lbl_about_contacts">Kontakt:</string>
+    <string name="lbl_purge_files">Dateien bereinigen</string>
+    <string name="lbl_about_contact">Kontakt:</string>
     <string name="lbl_copy_database">Datenbank exportieren</string>
     <string name="lbl_cover">Buchumschlag</string>
     <string name="lbl_cover_images">Cover-Bilder</string>
@@ -263,7 +263,7 @@
     <string name="lbl_about_creators">Ursprünglich von:</string>
     <string name="lbl_credentials">Anmeldeinformationen</string>
     <string name="lbl_currency">Devisen</string>
-    <string name="lbl_data_import_export">Import/Export</string>
+    <string name="lbl_data_import_export">Import / Export</string>
     <string name="lbl_date_acquired">Datum erworben</string>
     <string name="lbl_date_acquired_day">Tag erworben</string>
     <string name="lbl_date_acquired_month">Monat erworben</string>
@@ -277,7 +277,7 @@
     <string name="lbl_edition_first_edition">Erstausgabe</string>
     <string name="lbl_edition_first_impression">Erstauflage</string>
     <string name="lbl_edition_limited">Limitierte Auflage</string>
-    <string name="lbl_clear_image_cache">Zwischenspeicher für Bilder löschen</string>
+    <string name="lbl_purge_image_cache">Zwischenspeicher für Bilder löschen</string>
     <string name="lbl_export_to_csv">Sichern in eine CSV-Datei</string>
     <string name="lbl_family_name">Familienname</string>
     <string name="lbl_field_usage_append">hängt zusätzliche Daten an</string>
@@ -416,7 +416,7 @@
     <string name="pg_booklist">Buchlisten</string>
     <string name="pg_filters">Buchfilter</string>
     <string name="pg_general">Allgemein</string>
-    <string name="pg_groupings">Gruppierung</string>
+    <string name="pg_style_groups">Gruppierung</string>
     <string name="pt_bob_titles_sort">Titel sortieren nach</string>
     <string name="pg_barcode_scanner">Barcodelesegerät</string>
     <string name="pg_thumbnails">Umschlagbilder</string>
@@ -642,4 +642,5 @@
     <string name="hint_empty_read_status">(Lesestatus unbekannt)</string>
     <string name="warning_select_at_least_1_group">Wählen Sie mindestens eine Gruppe aus.</string>
     <string name="warning_select_at_least_1_field">Wählen Sie mindestens ein Feld zum Aktualisieren aus</string>
+    <string name="lbl_color">Farbe</string>
 </resources>

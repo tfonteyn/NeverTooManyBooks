@@ -171,4 +171,8 @@ public final class UpgradeDatabase {
             }
         }
     }
+
+    static void toDb2(@NonNull final SynchronizedDb syncedDb) {
+        DBDefinitions.TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_COLOR);
+    }
 }

@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -164,7 +164,7 @@ public class EditBookFieldsFragment
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
 
         Book book = mBookModel.getBook();
 
@@ -236,8 +236,6 @@ public class EditBookFieldsFragment
                 break;
             }
         }
-
-        Tracker.exitOnActivityResult(this);
     }
 
     /**

@@ -177,14 +177,15 @@ public class EditBookSeriesActivity
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_scope_of_change)
                 .setMessage(message)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setNeutralButton(allBooks, (d, which) -> {
-                    mModel.setGlobalReplacementsMade(
-                            mModel.getDb().globalReplace(this, bookLocale, series, newSeriesData));
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setNeutralButton(allBooks, (dialog, which) -> {
+                    boolean replaced = mModel.getDb().globalReplace(this, bookLocale,
+                                                                    series, newSeriesData);
+                    mModel.setGlobalReplacementsMade(replaced);
                     updateItem(series, newSeriesData, bookLocale);
 
                 })
-                .setPositiveButton(R.string.btn_this_book, (d, which) ->
+                .setPositiveButton(R.string.btn_this_book, (dialog, which) ->
                         updateItem(series, newSeriesData, bookLocale))
                 .create()
                 .show();
@@ -292,8 +293,8 @@ public class EditBookSeriesActivity
             return new AlertDialog.Builder(getContext())
                     .setView(root)
                     .setTitle(R.string.title_edit_series)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                    .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
+                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
+                    .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
                         mSeriesName = mTitleView.getText().toString().trim();
                         if (mSeriesName.isEmpty()) {
                             UserMessage.show(mTitleView, R.string.warning_missing_name);

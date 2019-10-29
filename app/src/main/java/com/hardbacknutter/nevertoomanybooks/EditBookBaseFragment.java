@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
@@ -120,10 +119,8 @@ public abstract class EditBookBaseFragment<T>
     @Override
     @CallSuper
     public void onPause() {
-        Tracker.enterOnPause(this);
         saveFields();
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     @Override

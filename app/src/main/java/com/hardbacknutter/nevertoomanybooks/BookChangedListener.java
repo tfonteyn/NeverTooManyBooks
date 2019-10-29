@@ -46,13 +46,14 @@ public interface BookChangedListener {
     int SERIES = 1 << 1;
     /** ... */
     int FORMAT = 1 << 2;
-    int GENRE = 1 << 3;
-    int LANGUAGE = 1 << 4;
-    int LOCATION = 1 << 5;
-    int PUBLISHER = 1 << 6;
+    int COLOR = 1 << 3;
+    int GENRE = 1 << 4;
+    int LANGUAGE = 1 << 5;
+    int LOCATION = 1 << 6;
+    int PUBLISHER = 1 << 7;
 
     /** A book was set to read/unread. */
-    int BOOK_READ = 1 << 7;
+    int BOOK_READ = 1 << 8;
 
     /**
      * A book was either lend out, or returned.
@@ -60,10 +61,10 @@ public interface BookChangedListener {
      * When lend out:  data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
      * When returned: data == null
      */
-    int BOOK_LOANEE = 1 << 8;
+    int BOOK_LOANEE = 1 << 9;
 
     /** A book was deleted. */
-    int BOOK_DELETED = 1 << 9;
+    int BOOK_DELETED = 1 << 10;
 
     /**
      * Called if changes were made.
@@ -77,10 +78,10 @@ public interface BookChangedListener {
                        @Nullable Bundle data);
 
     @IntDef(flag = true, value = {AUTHOR, SERIES,
-                                  FORMAT, GENRE, LANGUAGE, LOCATION, PUBLISHER,
+                                  FORMAT, COLOR, GENRE, LANGUAGE, LOCATION, PUBLISHER,
                                   BOOK_READ, BOOK_LOANEE, BOOK_DELETED})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface WhatChanged {
+    @interface WhatChanged {
 
     }
 }

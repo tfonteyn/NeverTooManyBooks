@@ -126,8 +126,8 @@ abstract class EditStringBaseDialog {
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(title)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(R.string.btn_confirm_save, (d, which) -> doSave())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> doSave())
                 .create()
                 .show();
     }

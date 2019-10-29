@@ -252,8 +252,8 @@
     <string name="lbl_bookshelves">Półki</string>
     <string name="lbl_bookshelves_long">Wybierz półki</string>
     <string name="lbl_by_author_s">Według %1$s</string>
-    <string name="lbl_cleanup_files">Usuwanie plików</string>
-    <string name="lbl_about_contacts">Kontakt:</string>
+    <string name="lbl_purge_files">Usuwanie plików</string>
+    <string name="lbl_about_contact">Kontakt:</string>
     <string name="lbl_copy_database">Eksportuj bazę danych</string>
     <string name="lbl_cover">Okładka</string>
     <string name="lbl_cover_images">Obrazy okładkowe</string>
@@ -261,7 +261,7 @@
     <string name="lbl_about_creators">Pierwotnie przez:</string>
     <string name="lbl_credentials">Poświadczenia</string>
     <string name="lbl_currency">Waluta</string>
-    <string name="lbl_data_import_export">Import/Eksport</string>
+    <string name="lbl_data_import_export">Import / Eksport</string>
     <string name="lbl_date_acquired">Data nabycia</string>
     <string name="lbl_date_acquired_day">Dzień nabyty</string>
     <string name="lbl_date_acquired_month">Zakupiony miesiąc</string>
@@ -275,7 +275,7 @@
     <string name="lbl_edition_first_edition">Pierwsza edycja</string>
     <string name="lbl_edition_first_impression">Pierwszy wydruk</string>
     <string name="lbl_edition_limited">Edycja limitowana</string>
-    <string name="lbl_clear_image_cache">Wyczyść pamięć podręczną obrazu</string>
+    <string name="lbl_purge_image_cache">Wyczyść pamięć podręczną obrazu</string>
     <string name="lbl_export_to_csv">Eksportuj do pliku CSV</string>
     <string name="lbl_family_name">Nazwisko</string>
     <string name="lbl_field_usage_append">Dopisz do istniejącego</string>
@@ -414,7 +414,7 @@
     <string name="pg_booklist">Listy książek</string>
     <string name="pg_filters">Filtry</string>
     <string name="pg_general">Ogólne</string>
-    <string name="pg_groupings">Grupowanie</string>
+    <string name="pg_style_groups">Grupowanie</string>
     <string name="pt_bob_titles_sort">Sortuj tytuły według</string>
     <string name="pg_barcode_scanner">Skaner kodów kreskowych</string>
     <string name="pg_thumbnails">Miniatury</string>
@@ -636,4 +636,5 @@
     <string name="hint_empty_month">(Nie wypełniono miesiąca)</string>
     <string name="hint_empty_read_status">(Status odczytu nieznany)</string>
     <string name="warning_select_at_least_1_group">Wybierz co najmniej jedną grupę.</string>
+    <string name="lbl_color">Kolor</string>
 </resources>

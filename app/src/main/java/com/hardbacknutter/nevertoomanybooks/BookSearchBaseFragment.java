@@ -44,7 +44,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
@@ -105,7 +104,9 @@ public abstract class BookSearchBaseFragment
     @Override
     @CallSuper
     public void onResume() {
-        Tracker.enterOnResume(this);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(this, "onResume");
+        }
         super.onResume();
         if (getActivity() instanceof BaseActivity) {
             BaseActivity activity = (BaseActivity) getActivity();
@@ -118,7 +119,9 @@ public abstract class BookSearchBaseFragment
                     .addListener(mBookSearchBaseModel.getSearchCoordinatorId(), true,
                                  getSearchFinishedListener());
         }
-        Tracker.exitOnResume(this);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugExit(this, "onResume");
+        }
     }
 
     /**
@@ -233,7 +236,7 @@ public abstract class BookSearchBaseFragment
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
             case UniqueId.REQ_PREFERRED_SEARCH_SITES: {
@@ -270,6 +273,5 @@ public abstract class BookSearchBaseFragment
                 break;
             }
         }
-        Tracker.exitOnActivityResult(this);
     }
 }

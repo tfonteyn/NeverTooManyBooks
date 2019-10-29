@@ -176,6 +176,8 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_BOOK_PAGES;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_FORMAT;
+    /** {@link #TBL_BOOKS}. Meant for comics or illustrated books. */
+    public static final DomainDefinition DOM_BOOK_COLOR;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_LANGUAGE;
     /** {@link #TBL_BOOKS}. */
@@ -193,8 +195,8 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_BOOK_PRICE_PAID;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_PRICE_PAID_CURRENCY;
-    /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_IS_OWNED;
+//    /** {@link #TBL_BOOKS}. */
+//    public static final DomainDefinition DOM_BOOK_IS_OWNED;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_DATE_ACQUIRED;
     /** {@link #TBL_BOOKS} added to the collection. */
@@ -420,6 +422,7 @@ public final class DBDefinitions {
     public static final String KEY_PRICE_LISTED_CURRENCY = "list_price_currency";
     public static final String KEY_PAGES = "pages";
     public static final String KEY_FORMAT = "format";
+    public static final String KEY_COLOR = "color";
     public static final String KEY_LANGUAGE = "language";
     public static final String KEY_GENRE = "genre";
     public static final String KEY_DESCRIPTION = "description";
@@ -429,7 +432,7 @@ public final class DBDefinitions {
     /** Personal data. */
     public static final String KEY_PRICE_PAID = "price_paid";
     public static final String KEY_PRICE_PAID_CURRENCY = "price_paid_currency";
-    public static final String KEY_OWNED = "owned";
+    //    public static final String KEY_OWNED = "owned";
     public static final String KEY_DATE_ACQUIRED = "date_acquired";
     public static final String KEY_LOCATION = "location";
     public static final String KEY_READ = "read";
@@ -642,6 +645,9 @@ public final class DBDefinitions {
         DOM_BOOK_FORMAT =
                 new DomainDefinition(KEY_FORMAT, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
+        DOM_BOOK_COLOR =
+                new DomainDefinition(KEY_COLOR, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
         DOM_BOOK_LANGUAGE =
                 new DomainDefinition(KEY_LANGUAGE, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
@@ -668,9 +674,9 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_EDITION_BITMASK, ColumnInfo.TYPE_INTEGER, true)
                         .setDefault(0);
 
-        DOM_BOOK_IS_OWNED =
-                new DomainDefinition(KEY_OWNED, ColumnInfo.TYPE_BOOLEAN, true)
-                        .setDefault(0);
+//        DOM_BOOK_IS_OWNED =
+//                new DomainDefinition(KEY_OWNED, ColumnInfo.TYPE_BOOLEAN, true)
+//                        .setDefault(0);
         DOM_BOOK_DATE_ACQUIRED =
                 new DomainDefinition(KEY_DATE_ACQUIRED, ColumnInfo.TYPE_DATE, true)
                         .setDefaultEmptyString();
@@ -898,6 +904,7 @@ public final class DBDefinitions {
 
                              DOM_BOOK_TOC_BITMASK,
                              DOM_BOOK_FORMAT,
+                             DOM_BOOK_COLOR,
                              DOM_BOOK_GENRE,
                              DOM_BOOK_LANGUAGE,
                              DOM_BOOK_PAGES,

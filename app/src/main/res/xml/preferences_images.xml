@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pg_camera">
+
+        <!-- default rotate 0 degrees -->
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_thumbnails_rotate_auto"
+            android:entryValues="@array/pv_thumbnails_rotate_auto"
+            android:icon="@drawable/ic_rotate_right"
+            android:key="camera.image.autorotate"
+            android:title="@string/pt_thumbnails_rotate_auto" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/menu_cover_crop">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_crop_original"
+            android:key="image.cropper.frame.whole"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_thumbnails_crop_frame_is_whole_image" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_apps"
+            android:key="image.cropper.external"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_thumbnails_external_cropper" />
+
+        <!-- default CropImageViewTouchBase.LAYER_TYPE_USE_DEFAULT == -1 -->
+        <ListPreference
+            android:defaultValue="-1"
+            android:dialogIcon="@drawable/ic_warning"
+            android:entries="@array/pe_thumbnails_cropper_layer_type"
+            android:entryValues="@array/pv_thumbnails_cropper_layer_type"
+            android:icon="@drawable/ic_manage"
+            android:key="compat.image.cropper.viewlayertype"
+            android:title="@string/pt_thumbnail_cropper_layer_type" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pg_image_cache">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_cached"
+            android:key="image.cache.resized"
+            android:summaryOff="@string/pe_thumbnails_cache_resized_each_time"
+            android:summaryOn="@string/pe_thumbnails_cache_resized_stored"
+            android:title="@string/pt_thumbnails_cache_resized" />
+
+        <Preference
+            android:icon="@drawable/ic_close"
+            android:key="psk_purge_image_cache"
+            android:title="@string/lbl_purge_image_cache"
+            />
+
+    </PreferenceCategory>
+</PreferenceScreen>

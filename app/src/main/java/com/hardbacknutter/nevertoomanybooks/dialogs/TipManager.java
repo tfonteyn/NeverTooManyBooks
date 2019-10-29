@@ -79,29 +79,29 @@ public final class TipManager {
         ALL.put(R.string.tip_booklist_style_menu,
                 new Tip("booklist_style_menu"));
         ALL.put(R.string.tip_booklist_styles_editor,
-                new Tip("BOOKLIST_STYLES_EDITOR"));
+                new Tip("booklist_styles_editor"));
         ALL.put(R.string.tip_booklist_style_groups,
-                new Tip("BOOKLIST_STYLE_GROUPS"));
+                new Tip("booklist_style_groups"));
         ALL.put(R.string.tip_booklist_style_properties,
-                new Tip("BOOKLIST_STYLE_PROPERTIES"));
+                new Tip("booklist_style_properties"));
         // keep, might need again if re-implemented
         //ALL.put(R.string.tip_booklist_global_properties,
-        //         new Tip("BOOKLIST_GLOBAL_PROPERTIES"));
+        //         new Tip("booklist_global_properties"));
 
         ALL.put(R.string.tip_authors_book_may_appear_more_than_once,
-                new Tip("BOOKLIST_MULTI_AUTHORS"));
+                new Tip("authors_book_may_appear_more_than_once"));
         ALL.put(R.string.tip_series_book_may_appear_more_than_once,
-                new Tip("BOOKLIST_MULTI_SERIES"));
+                new Tip("series_book_may_appear_more_than_once"));
 
         ALL.put(R.string.tip_background_tasks,
-                new Tip("BACKGROUND_TASKS"));
+                new Tip("background_tasks"));
         ALL.put(R.string.tip_background_task_events,
-                new Tip("BACKGROUND_TASK_EVENTS"));
+                new Tip("background_task_events"));
 
         ALL.put(R.string.gr_explain_no_isbn,
-                new Tip("explain_goodreads_no_isbn"));
+                new Tip("gr_explain_no_isbn"));
         ALL.put(R.string.gr_explain_no_match,
-                new Tip("explain_goodreads_no_match"));
+                new Tip("gr_explain_no_match"));
 
         ALL.put(R.string.tip_autorotate_camera_images,
                 new Tip("autorotate_camera_images"));
@@ -112,7 +112,7 @@ public final class TipManager {
         ALL.put(R.string.tip_book_search_by_text,
                 new Tip("book_search_by_text"));
         ALL.put(R.string.pt_thumbnail_cropper_layer_type_summary,
-                new Tip("pref_layer_type"));
+                new Tip("thumbnail_cropper_layer_type_summary"));
         ALL.put(R.string.tip_update_fields_from_internet,
                 new Tip("update_fields_from_internet"));
         ALL.put(R.string.tip_authors_works,
@@ -262,24 +262,22 @@ public final class TipManager {
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());
             }
 
-            AlertDialog dialog =
-                    new AlertDialog.Builder(context)
-                            .setView(root)
-                            .setTitle(R.string.tip_dialog_title)
-                            .setNegativeButton(R.string.btn_disable_message, (d, which) -> {
-                                setShowAgain(context, false);
-                                if (postRun != null) {
-                                    postRun.run();
-                                }
-                            })
-                            .setPositiveButton(android.R.string.ok, (d, which) -> {
-                                if (postRun != null) {
-                                    postRun.run();
-                                }
-                            })
-                            .create();
-
-            dialog.show();
+            new AlertDialog.Builder(context)
+                    .setView(root)
+                    .setTitle(R.string.tip_dialog_title)
+                    .setNegativeButton(R.string.btn_disable_message, (dialog, which) -> {
+                        setShowAgain(context, false);
+                        if (postRun != null) {
+                            postRun.run();
+                        }
+                    })
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        if (postRun != null) {
+                            postRun.run();
+                        }
+                    })
+                    .create()
+                    .show();
             mHasBeenDisplayed = true;
         }
 

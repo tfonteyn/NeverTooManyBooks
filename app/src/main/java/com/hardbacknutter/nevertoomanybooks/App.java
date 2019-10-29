@@ -74,7 +74,6 @@ import org.acra.file.Directory;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
@@ -725,7 +724,6 @@ public class App
         super.attachBaseContext(base);
 
         ACRA.init(this);
-        ACRA.getErrorReporter().putCustomData("TrackerEventsInfo", Tracker.getEventsInfo());
         ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
     }
 

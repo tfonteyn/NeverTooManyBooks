@@ -258,8 +258,8 @@
     <string name="lbl_bookshelves">Planken</string>
     <string name="lbl_bookshelves_long">Boekenplanken</string>
     <string name="lbl_by_author_s">door %1$s</string>
-    <string name="lbl_cleanup_files">Bestanden opschonen</string>
-    <string name="lbl_about_contacts">Contacten:</string>
+    <string name="lbl_purge_files">Bestanden opschonen</string>
+    <string name="lbl_about_contact">Contact:</string>
     <string name="lbl_copy_database">Exporteer Database</string>
     <string name="lbl_cover">Omslag</string>
     <string name="lbl_cover_images">Omslagafbeeldingen</string>
@@ -267,7 +267,7 @@
     <string name="lbl_about_creators">Oorspronkelijk door:</string>
     <string name="lbl_credentials">Inloggegevens</string>
     <string name="lbl_currency">Munt</string>
-    <string name="lbl_data_import_export">Import/Export</string>
+    <string name="lbl_data_import_export">Import / Export</string>
     <string name="lbl_date_acquired">Datum verworven</string>
     <string name="lbl_date_acquired_day">Dag verworven</string>
     <string name="lbl_date_acquired_month">Maand verworven</string>
@@ -281,7 +281,7 @@
     <string name="lbl_edition_first_edition">Eerste druk</string>
     <string name="lbl_edition_first_impression">Eerste oplage</string>
     <string name="lbl_edition_limited">Gelimiteerd</string>
-    <string name="lbl_clear_image_cache">Afbeeldingen cache wissen</string>
+    <string name="lbl_purge_image_cache">Afbeeldingen cache wissen</string>
     <string name="lbl_export_to_csv">Exporteer naar CSV-bestand</string>
     <string name="lbl_family_name">Achternaam</string>
     <string name="lbl_field_usage_append">Voegt extra gegevens toe</string>
@@ -420,7 +420,7 @@
     <string name="pg_booklist">Boeken Lijst</string>
     <string name="pg_filters">Boekfilters</string>
     <string name="pg_general">Algemeen</string>
-    <string name="pg_groupings">Groeperingen</string>
+    <string name="pg_style_groups">Groeperingen</string>
     <string name="pt_bob_titles_sort">Sorteer titels op</string>
     <string name="pg_barcode_scanner">Streepjescodescanner</string>
     <string name="pg_thumbnails">Miniaturen</string>
@@ -645,5 +645,6 @@
     <string name="hint_empty_month">(Geen maand ingevuld)</string>
     <string name="hint_empty_read_status">(Leesstatus onbekend)</string>
     <string name="warning_select_at_least_1_group">Selecteer ten minste één groep.</string>
+    <string name="lbl_color">Kleur</string>
 
 </resources>

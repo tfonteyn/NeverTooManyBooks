@@ -56,7 +56,7 @@
             android:id="@+id/name"
             style="@style/RowTextLine.Primary"
             tools:ignore="SelectableText"
-            tools:text="style name"
+            tools:text="group name"
             />
 
     </LinearLayout>

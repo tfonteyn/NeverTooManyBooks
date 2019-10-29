@@ -65,6 +65,12 @@
         <item name="android:inputType">textCapWords</item>
     </style>
 
+    <!-- The book format field. -->
+    <style name="bookColorTextEntry" parent="@style/EditText.AutoComplete">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+
     <!-- The price (listed, paid, ... ) fields. -->
     <style name="priceTextEntry" parent="@style/EditText">
         <item name="android:inputType">numberDecimal</item>

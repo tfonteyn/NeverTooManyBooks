@@ -43,9 +43,11 @@ public final class UniqueId {
     /** Request code: navigation panel. */
     public static final int REQ_NAV_PANEL_EDIT_STYLES = 1_002;
     /** Request code: navigation panel. */
-    public static final int REQ_NAV_PANEL_ADMIN = 1_003;
+    public static final int REQ_NAV_PANEL_IMP_EXP = 1_003;
     /** Request code: navigation panel. */
-    public static final int REQ_NAV_PANEL_SETTINGS = 1_004;
+    public static final int REQ_NAV_PANEL_GOODREADS = 1_004;
+    /** Request code: navigation panel. */
+    public static final int REQ_NAV_PANEL_SETTINGS = 1_010;
 
     /** Request code: edit a Style. */
     public static final int REQ_EDIT_STYLE = 1_100;
@@ -181,6 +183,21 @@ public final class UniqueId {
      * <br>type: {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle}
      */
     public static final String BKEY_STYLE = "style";
+    public static final String BKEY_STYLE_ID = "styleId";
+
+    /**
+     * Styles related data was modified (or not).
+     * This includes a Style being modified or deleted,
+     * or the order of the preferred styles modified,
+     * or the selected style,
+     * or ...
+     * ENHANCE: make this fine grained and reduce unneeded rebuilds
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_STYLE_MODIFIED = "styleModified";
+
 
     /**
      * tag of fragment to display if an Activity supports multiple.
@@ -220,19 +237,6 @@ public final class UniqueId {
      * setResult
      */
     public static final String BKEY_RECREATE_ACTIVITY = "recreate";
-
-    /**
-     * Styles related data was modified (or not).
-     * This includes a Style being modified or deleted,
-     * or the order of the preferred styles modified,
-     * or the selected style,
-     * or ...
-     * ENHANCE: make this fine grained and reduce unneeded rebuilds
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_STYLE_MODIFIED = "styleModified";
 
     /**
      * One <strong>or more</strong> books were deleted (or not).

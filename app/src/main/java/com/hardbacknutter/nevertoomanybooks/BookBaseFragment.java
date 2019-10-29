@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -211,7 +210,7 @@ public abstract class BookBaseFragment
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
@@ -246,8 +245,6 @@ public abstract class BookBaseFragment
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-
-        Tracker.exitOnActivityResult(this);
     }
 
     @Override
@@ -285,7 +282,9 @@ public abstract class BookBaseFragment
     @Override
     @CallSuper
     public void onResume() {
-        Tracker.enterOnResume(this);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(this, "onResume");
+        }
         super.onResume();
         if (getActivity() instanceof BaseActivity) {
             BaseActivity activity = (BaseActivity) getActivity();
@@ -299,7 +298,9 @@ public abstract class BookBaseFragment
 
         loadFields();
 
-        Tracker.exitOnResume(this);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugExit(this, "onResume");
+        }
     }
 
     @Override
@@ -339,26 +340,19 @@ public abstract class BookBaseFragment
         // do all fields with their related fields
         getFields().resetVisibility(hideIfEmpty);
 
-        // Hide the baseline for the read labels if both labels are gone.
-        setBaselineVisibility(R.id.lbl_read_start_end_baseline,
-                              R.id.lbl_read_start, R.id.lbl_read_end);
-        // Hide the baseline for the value field if the labels are gone.
-        setBaselineVisibility(R.id.read_start_end_baseline,
-                              R.id.lbl_read_start_end_baseline);
-    }
-
-    /**
-     * Syntax sugar.
-     * <p>
-     * If all 'fields' are View.GONE, set 'baselineFieldId' to View.GONE as well.
-     * Otherwise, set 'baselineFieldId' to View.INVISIBLE.
-     *
-     * @param baselineFieldId field to set
-     * @param fields          to check
-     */
-    private void setBaselineVisibility(@IdRes final int baselineFieldId,
-                                       @NonNull @IdRes final int... fields) {
-        showOrHide(baselineFieldId, View.INVISIBLE, fields);
+//        // Hide the baseline for the read labels if both labels are gone.
+//        // If both labels are visible, then make the baseline invisible.
+//        showOrHide(R.id.lbl_read_start_end_baseline, View.INVISIBLE,
+//                              R.id.lbl_read_start, R.id.lbl_read_end);
+//        // Hide the baseline for the value field if the labels are gone.
+//        showOrHide(R.id.read_start_end_baseline, View.INVISIBLE,
+//                              R.id.lbl_read_start_end_baseline);
+//
+//        showOrHide(R.id.lbl_publication_dates_baseline, View.INVISIBLE,
+//                   R.id.lbl_first_publication, R.id.lbl_date_published);
+//        // Hide the baseline for the value field if the labels are gone.
+//        showOrHide(R.id.publication_dates_baseline, View.INVISIBLE,
+//                   R.id.lbl_publication_dates_baseline);
     }
 
     /**
@@ -385,7 +379,7 @@ public abstract class BookBaseFragment
      * @param fields          to test for having the same visibility
      */
     private void showOrHide(@IdRes final int fieldToSet,
-                            final int visibilityToSet,
+                            @SuppressWarnings("SameParameterValue") final int visibilityToSet,
                             @NonNull @IdRes final int... fields) {
         //noinspection ConstantConditions
         View fieldView = getView().findViewById(fieldToSet);

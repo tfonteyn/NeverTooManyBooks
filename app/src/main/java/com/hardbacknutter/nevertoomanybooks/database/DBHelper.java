@@ -98,7 +98,7 @@ public final class DBHelper
      * <p>
      * db1 == app1 == 1.0.0
      */
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -300,14 +300,14 @@ public final class DBHelper
 
         SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
-//        int curVersion = oldVersion;
+        int curVersion = oldVersion;
 
         // db1 == app1 == 1.0.0;
-//        if (curVersion < newVersion && curVersion == 1) {
-//            //noinspection UnusedAssignment
-//            curVersion = 2;
-//            UpgradeDatabase.toDb2(db, syncedDb);
-//        }
+        if (curVersion < newVersion && curVersion == 1) {
+            //noinspection UnusedAssignment
+            curVersion = 2;
+            UpgradeDatabase.toDb2(syncedDb);
+        }
 
         // Rebuild all indices
         createIndices(syncedDb, true);

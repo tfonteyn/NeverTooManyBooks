@@ -79,14 +79,13 @@ public class RequestAuthTask
                 .setIcon(R.drawable.ic_security)
                 .setTitle(R.string.gr_title_auth_access)
                 .setMessage(R.string.gr_action_cannot_be_completed)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setNeutralButton(R.string.btn_tell_me_more, (d, which) -> {
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setNeutralButton(R.string.btn_tell_me_more, (dialog, which) -> {
                     Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
                     context.startActivity(intent);
                 })
-                .setPositiveButton(android.R.string.ok, (d, which) ->
-                                                                new RequestAuthTask(taskListener)
-                                                                        .execute())
+                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                        new RequestAuthTask(taskListener).execute())
                 .create()
                 .show();
     }

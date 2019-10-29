@@ -408,8 +408,8 @@ public class EditBookAuthorsActivity
                     .setIcon(R.drawable.ic_edit)
                     .setView(root)
                     .setTitle(R.string.title_edit_author)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                    .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
+                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
+                    .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
                         mFamilyName = mFamilyNameView.getText().toString().trim();
                         if (mFamilyName.isEmpty()) {
                             UserMessage.show(mFamilyNameView, R.string.warning_missing_name);

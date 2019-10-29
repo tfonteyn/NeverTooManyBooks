@@ -219,14 +219,15 @@ public class EditBookFragment
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setTitle(R.string.title_duplicate_book)
                         .setMessage(R.string.confirm_duplicate_book_message)
+                        // this dialog is important. Make sure the user pays some attention
                         .setCancelable(false)
                         // User aborts this edit
-                        .setNegativeButton(android.R.string.cancel, (d, which) ->
+                        .setNegativeButton(android.R.string.cancel, (dialog, which) ->
                                 mHostActivity.finish())
                         // User wants to continue editing this book
-                        .setNeutralButton(R.string.edit, (d, which) -> d.dismiss())
+                        .setNeutralButton(R.string.edit, (dialog, which) -> dialog.dismiss())
                         // User wants to add regardless
-                        .setPositiveButton(R.string.btn_confirm_add, (d, which) -> saveBook())
+                        .setPositiveButton(R.string.btn_confirm_add, (dialog, which) -> saveBook())
                         .create()
                         .show();
                 return;

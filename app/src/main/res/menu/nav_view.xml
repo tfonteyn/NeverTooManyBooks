@@ -27,7 +27,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/nav_search"
         android:icon="@drawable/ic_search"
@@ -37,20 +38,27 @@
     <item
         android:id="@+id/nav_manage_bookshelves"
         android:icon="@drawable/ic_library_books"
+        android:title="@string/menu_bookshelves"
         android:visible="false"
-        android:title="@string/menu_bookshelves" />
+        tools:visible="true" />
 
     <!-- only made visible from the BoB screen. -->
     <item
         android:id="@+id/nav_manage_list_styles"
         android:icon="@drawable/ic_details"
+        android:title="@string/menu_booklist_styles"
         android:visible="false"
-        android:title="@string/menu_booklist_styles" />
+        tools:visible="true" />
 
     <item
-        android:id="@+id/nav_admin"
-        android:icon="@drawable/ic_manage"
-        android:title="@string/menu_administration" />
+        android:id="@+id/nav_import_export"
+        android:icon="@drawable/ic_sd_storage"
+        android:title="@string/lbl_data_import_export" />
+
+    <item
+        android:id="@+id/nav_goodreads"
+        android:icon="@drawable/ic_goodreads"
+        android:title="@string/goodreads" />
 
     <item
         android:id="@+id/nav_settings"

@@ -59,9 +59,19 @@ public final class Prefs {
 
     /** Global settings - PreferenceScreen/PreferenceCategory Key. */
     static final String psk_search_site_order = "psk_search_site_order";
+    public static final String pk_reformat_color_update = "reformat.color.update";
+    /**
+     * Unique name. This is a stored in our preference file (with the same name)
+     * and is used for backup/restore purposes as the 'ID'.
+     */
+    public static final String pk_bob_uuid = "style.booklist.uuid";
+    /** Global settings - Purge action. */
+    static final String psk_purge_image_cache = "psk_purge_image_cache";
+    /** Global settings - Purge action. */
+    static final String psk_purge_files = "psk_purge_files";
+    /** Global settings - Credentials. */
+    static final String psk_credentials_goodreads = "psk_credentials_goodreads";
 
-    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    static final String psk_style_groupings = "psk_style_groupings";
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     static final String psk_style_filters = "psk_style_filters";
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
@@ -92,7 +102,10 @@ public final class Prefs {
 
     static final String pk_reformat_titles_sort = "reformat.titles.sort";
     private static final String pk_reformat_titles_display = "reformat.titles.display";
+
     public static final String pk_reformat_format_update = "reformat.format.update";
+    /** Global settings - Credentials. */
+    static final String psk_credentials_library_thing = "psk_credentials_library_thing";
 
     public static final String pk_camera_image_autorotate = "camera.image.autorotate";
 
@@ -107,7 +120,8 @@ public final class Prefs {
 
     public static final String pk_compat_image_cropper_layer_type =
             "compat.image.cropper.viewlayertype";
-
+    /** Global settings - Purge action. */
+    static final String psk_purge_blns = "psk_purge_blns";
 
     public static final String pk_bob_style_name = "style.booklist.name";
 

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="-1"
+        android:entries="@array/pe_bob_filter_read"
+        android:entryValues="@array/pv_bob_filter_values"
+        android:icon="@drawable/ic_filter_list"
+        android:key="style.booklist.filter.read"
+        android:title="@string/lbl_read"
+        />
+
+    <ListPreference
+        android:defaultValue="-1"
+        android:entries="@array/pe_bob_filter_signed"
+        android:entryValues="@array/pv_bob_filter_values"
+        android:icon="@drawable/ic_filter_list"
+        android:key="style.booklist.filter.signed"
+        android:title="@string/lbl_signed"
+        />
+
+    <ListPreference
+        android:defaultValue="-1"
+        android:entries="@array/pe_bob_filter_anthology"
+        android:entryValues="@array/pv_bob_filter_values"
+        android:icon="@drawable/ic_filter_list"
+        android:key="style.booklist.filter.anthology"
+        android:title="@string/lbl_anthology"
+        />
+
+    <ListPreference
+        android:defaultValue="-1"
+        android:entries="@array/pe_bob_filter_loaned"
+        android:entryValues="@array/pv_bob_filter_values"
+        android:icon="@drawable/ic_filter_list"
+        android:key="style.booklist.filter.loaned"
+        android:title="@string/lbl_loaned"
+        />
+
+    <MultiSelectListPreference
+        android:defaultValue="@array/empty_array"
+        android:entries="@array/pe_bob_filter_edition"
+        android:entryValues="@array/pv_bob_filter_edition"
+        android:icon="@drawable/ic_filter_list"
+        android:key="style.booklist.filter.editions"
+        android:title="@string/lbl_edition"
+        />
+
+</PreferenceScreen>

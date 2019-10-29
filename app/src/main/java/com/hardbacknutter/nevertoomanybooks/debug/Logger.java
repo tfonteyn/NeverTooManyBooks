@@ -29,11 +29,13 @@ package com.hardbacknutter.nevertoomanybooks.debug;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import java.io.BufferedInputStream;
@@ -49,6 +51,7 @@ import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.utils.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
@@ -103,7 +106,7 @@ public final class Logger {
         }
         writeToLog(context, ERROR, msg, e);
         if (BuildConfig.DEBUG /* always */) {
-            Log.e(tag(tag), Tracker.State.Running.toString() + '|' + msg, e);
+            Log.e(tag(tag), State.Running.toString() + '|' + msg, e);
         }
     }
 
@@ -128,7 +131,7 @@ public final class Logger {
         String msg = concat(params);
         writeToLog(context, WARN, msg, e);
         if (BuildConfig.DEBUG /* always */) {
-            Log.w(tag(tag), Tracker.State.Running.toString() + '|' + msg, e);
+            Log.w(tag(tag), State.Running.toString() + '|' + msg, e);
         }
     }
 
@@ -152,7 +155,7 @@ public final class Logger {
         String msg = methodName + '|' + concat(params);
         writeToLog(context, WARN, msg, null);
         if (BuildConfig.DEBUG /* always */) {
-            Log.w(tag(tag), Tracker.State.Running.toString() + '|' + msg);
+            Log.w(tag(tag), State.Running.toString() + '|' + msg);
         }
     }
 
@@ -176,7 +179,7 @@ public final class Logger {
         String msg = methodName + '|' + concat(params);
         writeToLog(context, INFO, msg, null);
         if (BuildConfig.DEBUG /* always */) {
-            Log.i(tag(tag), Tracker.State.Running.toString() + '|' + msg);
+            Log.i(tag(tag), State.Running.toString() + '|' + msg);
         }
     }
 
@@ -185,7 +188,7 @@ public final class Logger {
                                   @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
             Log.d(tag(tag),
-                  Tracker.State.Enter.toString() + '|' + methodName + '|' + concat(params));
+                  State.Enter.toString() + '|' + methodName + '|' + concat(params));
         }
     }
 
@@ -194,7 +197,7 @@ public final class Logger {
                                  @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
             Log.d(tag(tag),
-                  Tracker.State.Exit.toString() + '|' + methodName + '|' + concat(params));
+                  State.Exit.toString() + '|' + methodName + '|' + concat(params));
         }
     }
 
@@ -203,7 +206,7 @@ public final class Logger {
                              @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
             Log.d(tag(tag),
-                  Tracker.State.Running.toString() + '|' + methodName + '|' + concat(params));
+                  State.Running.toString() + '|' + methodName + '|' + concat(params));
         }
     }
 
@@ -212,7 +215,7 @@ public final class Logger {
                                            @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
             Log.d(tag(tag),
-                  Tracker.State.Running.toString() + '|' + methodName + '|' + concat(params),
+                  State.Running.toString() + '|' + methodName + '|' + concat(params),
                   new Throwable());
         }
     }
@@ -225,7 +228,7 @@ public final class Logger {
                                            @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
             Log.d(tag(tag),
-                  Tracker.State.Running.toString() + '|' + concat(params), e);
+                  State.Running.toString() + '|' + concat(params), e);
         }
     }
 
@@ -388,5 +391,94 @@ public final class Logger {
     public static File getLogDir(@NonNull final Context context)
             throws ExternalStorageException {
         return new File(StorageUtils.getRootDir(context), LOG_SUB_DIR);
+    }
+
+    /**
+     * @param a                  Activity or Fragment
+     * @param savedInstanceState Bundle
+     */
+    public static void enterOnCreate(@NonNull final Object a,
+                                     @Nullable final Bundle savedInstanceState) {
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
+            debugEnter(a, "onCreate",
+                       "savedInstanceState=" + savedInstanceState);
+            debugArguments(a, "onCreate");
+
+        } else if (BuildConfig.DEBUG /* always */) {
+            debugEnter(a, "onCreate");
+        }
+    }
+
+    /**
+     * @param dialogFragment     DialogFragment
+     * @param savedInstanceState Bundle
+     */
+    public static void enterOnCreateDialog(@NonNull final DialogFragment dialogFragment,
+                                           @Nullable final Bundle savedInstanceState) {
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
+            debugEnter(dialogFragment, "onCreateDialog",
+                       "savedInstanceState=" + savedInstanceState);
+            debugArguments(dialogFragment, "onCreateDialog");
+
+        } else if (BuildConfig.DEBUG /* always */) {
+            debugEnter(dialogFragment, "onCreateDialog");
+        }
+    }
+
+    /**
+     * @param fragment           Fragment
+     * @param savedInstanceState Bundle
+     */
+    public static void enterOnActivityCreated(@NonNull final Fragment fragment,
+                                              @Nullable final Bundle savedInstanceState) {
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
+            debugEnter(fragment, "onActivityCreated",
+                       "savedInstanceState=" + savedInstanceState);
+            debugArguments(fragment, "onActivityCreated");
+
+        } else if (BuildConfig.DEBUG /* always */) {
+            debugEnter(fragment, "onActivityCreated");
+        }
+    }
+
+    /**
+     * @param a Activity or Fragment
+     */
+    public static void enterOnActivityResult(@NonNull final Object a,
+                                             final int requestCode,
+                                             final int resultCode,
+                                             @Nullable final Intent data) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            debugEnter(a, "onActivityResult",
+                       "requestCode=" + requestCode,
+                       "resultCode=" + resultCode,
+                       "data=" + data);
+
+        } else if (BuildConfig.DEBUG /* always */) {
+            debugEnter(a, "onActivityResult");
+        }
+    }
+
+    public enum State {
+        Enter,
+        Exit,
+        Running;
+
+        @NonNull
+        @Override
+        public String toString() {
+            switch (this) {
+                case Enter:
+                    return "Enter";
+                case Exit:
+                    return "Exit";
+                case Running:
+                    return "Running";
+            }
+            return null;
+        }
     }
 }

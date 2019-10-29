@@ -57,6 +57,7 @@
             app:layout_constraintEnd_toStartOf="@id/btn_format"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_format"
+            tools:text="Hardcover"
             >
 
             <requestFocus />
@@ -73,12 +74,40 @@
             />
 
         <TextView
+            android:id="@+id/lbl_color"
+            style="@style/Label.Field"
+            android:labelFor="@id/color"
+            android:text="@string/lbl_color"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/format"
+            />
+
+        <AutoCompleteTextView
+            android:id="@+id/color"
+            style="@style/bookColorTextEntry"
+            app:layout_constraintEnd_toStartOf="@id/btn_color"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_color"
+            tools:text="Black &amp; White"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_color"
+            style="@style/DropDownMenu"
+            android:contentDescription="@string/lbl_color"
+            app:layout_constraintBottom_toBottomOf="@id/color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/color"
+            app:layout_constraintTop_toTopOf="@id/color"
+            />
+
+        <TextView
             android:id="@+id/lbl_language"
             style="@style/Label.Field"
             android:labelFor="@id/language"
             android:text="@string/lbl_language"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/format"
+            app:layout_constraintTop_toBottomOf="@id/color"
             />
 
         <AutoCompleteTextView
@@ -87,6 +116,7 @@
             app:layout_constraintEnd_toStartOf="@id/btn_language"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_language"
+            tools:text="Quenya"
             />
 
         <ImageButton
@@ -114,6 +144,7 @@
             app:layout_constraintEnd_toStartOf="@id/btn_publisher"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
+            tools:text="Printed Press"
             />
 
         <ImageButton
@@ -146,26 +177,13 @@
             tools:text="limited to 150 copies"
             />
 
-        <!-- This invisible View is needed to allow individual show/hide while
-             maintaining the baseline -->
-        <TextView
-            android:id="@+id/lbl_publication_dates_baseline"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:visibility="invisible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/print_run"
-            tools:ignore="SelectableText"
-            />
-
         <TextView
             android:id="@+id/lbl_first_publication"
             style="@style/Label.Field"
             android:layout_width="0dp"
             android:text="@string/lbl_first_publication"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_publication_dates_baseline"
             app:layout_constraintStart_toStartOf="@id/first_publication"
+            app:layout_constraintTop_toBottomOf="@id/print_run"
             />
 
         <TextView
@@ -173,35 +191,40 @@
             style="@style/Label.Field"
             android:layout_width="0dp"
             android:text="@string/lbl_date_published"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_publication_dates_baseline"
             app:layout_constraintStart_toStartOf="@id/date_published"
+            app:layout_constraintTop_toBottomOf="@id/print_run"
             />
 
-        <!-- This invisible View is needed to allow individual show/hide while
-             maintaining the baseline -->
-        <Button
-            android:id="@+id/publication_dates_baseline"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_date_pub_labels"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_publication_dates_baseline"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="lbl_first_publication,lbl_date_published"
             />
 
         <Button
             android:id="@+id/first_publication"
             style="@style/DataEntryButton"
-            app:layout_constraintBaseline_toBaselineOf="@id/publication_dates_baseline"
             app:layout_constraintEnd_toStartOf="@id/date_published"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barrier_date_pub_labels"
             />
 
         <Button
             android:id="@+id/date_published"
             style="@style/DataEntryButton"
-            app:layout_constraintBaseline_toBaselineOf="@id/publication_dates_baseline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/first_publication"
+            app:layout_constraintTop_toBottomOf="@id/barrier_date_pub_labels"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_pages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="first_publication,date_published"
             />
 
         <TextView
@@ -210,7 +233,7 @@
             android:labelFor="@id/pages"
             android:text="@string/lbl_pages"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/publication_dates_baseline"
+            app:layout_constraintTop_toBottomOf="@id/barrier_pages"
             />
 
         <!-- input type simpleTextEntry, so details like 'intro pages', 'appendix pages'

@@ -39,24 +39,26 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
-import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
+import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
+import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * Global settings page.
  */
-public class GlobalSettingsFragment
-        extends BaseSettingsFragment {
+public class GlobalPreferenceFragment
+        extends BasePreferenceFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = "GlobalSettingsFragment";
-    private boolean warnAfterChange = true;
+    public static final String TAG = "GlobalPreferenceFragment";
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -64,24 +66,64 @@ public class GlobalSettingsFragment
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
-        PreferenceScreen screen = getPreferenceScreen();
-        // Some PreferenceScreen use a click listener.
-        initClickListeners();
-        // Set the summaries reflecting the current values for all basic Preferences.
-        updateSummaries(screen);
+        initListeners();
     }
 
     /**
-     * Hook up a {@link Preference.OnPreferenceClickListener} to start a dedicated activity.
+     * Hook up specific listeners/preferences.
      */
-    private void initClickListeners() {
+    private void initListeners() {
         Preference preference;
+
+        preference = findPreference(Prefs.pk_reformat_titles_sort);
+        if (preference != null) {
+            preference.setOnPreferenceChangeListener((pref, newValue) -> {
+                handleReorderTitlesForSorting();
+                return false;
+            });
+        }
+
+        // Purge BLNS database table.
+        preference = findPreference(Prefs.psk_purge_blns);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                purgeBLNS();
+                return true;
+            });
+        }
 
         preference = findPreference(Prefs.psk_search_site_order);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class);
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
+                return true;
+            });
+        }
+
+        preference = findPreference(Prefs.psk_credentials_goodreads);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                Intent intent = new Intent(getContext(), GoodreadsRegistrationActivity.class);
+                startActivity(intent);
+                return true;
+            });
+        }
+
+        preference = findPreference(Prefs.psk_credentials_library_thing);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                Intent intent = new Intent(getContext(), LibraryThingRegistrationActivity.class);
+                startActivity(intent);
+                return true;
+            });
+        }
+
+        // Purge files.
+        preference = findPreference(Prefs.psk_purge_files);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                purgeFiles();
                 return true;
             });
         }
@@ -103,7 +145,6 @@ public class GlobalSettingsFragment
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-
     }
 
     @Override
@@ -133,17 +174,6 @@ public class GlobalSettingsFragment
                 });
                 break;
 
-            case Prefs.pk_reformat_titles_sort:
-                if (warnAfterChange) {
-                    // prevent recursive loop
-                    warnAfterChange = false;
-                    handleReorderTitlesForSorting(context);
-                } else {
-                    // re-enable check
-                    warnAfterChange = true;
-                }
-                break;
-
             default:
                 // TODO: make the response conditional, not all changes warrant a recreate!
                 mResultDataModel.putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
@@ -153,29 +183,59 @@ public class GlobalSettingsFragment
         super.onSharedPreferenceChanged(sharedPreferences, key);
     }
 
-    private void handleReorderTitlesForSorting(@NonNull final Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    private void handleReorderTitlesForSorting() {
+        //noinspection ConstantConditions
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean current = prefs.getBoolean(Prefs.pk_reformat_titles_sort, true);
 
-        new AlertDialog.Builder(context)
+        new AlertDialog.Builder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setMessage(R.string.warning_rebuild_orderby_columns)
+                // this dialog is important. Make sure the user pays some attention
                 .setCancelable(false)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> {
-                    //TEST: should handleReorderTitlesForSorting modify the pref?
-//                    prefs.edit()
-//                         .putBoolean(Prefs.pk_reformat_titles_sort, !current)
-//                         .apply();
+                .setNegativeButton(android.R.string.cancel, (d, w) -> {
+                    StartupViewModel.setScheduleOrderByRebuild(false);
+                })
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    //prefs.edit().putBoolean(Prefs.pk_reformat_titles_sort, !current).apply();
                     SwitchPreference sp = findPreference(Prefs.pk_reformat_titles_sort);
                     //noinspection ConstantConditions
                     sp.setChecked(!current);
-                    StartupViewModel.setScheduleOrderByRebuild(false);
 
-                })
-                .setPositiveButton(android.R.string.ok, (d, which) -> {
                     StartupViewModel.setScheduleOrderByRebuild(true);
-                    // re-enable check
-                    warnAfterChange = true;
+                })
+                .create()
+                .show();
+    }
+
+    private void purgeFiles() {
+        //noinspection ConstantConditions
+        long bytes = StorageUtils.purgeFiles(getContext(), false);
+        String formattedSize = StorageUtils.formatFileSize(getContext(), bytes);
+        String msg = getString(R.string.info_cleanup_files_text, formattedSize);
+
+        new AlertDialog.Builder(getContext())
+                .setIcon(R.drawable.ic_warning)
+                .setTitle(R.string.lbl_purge_files)
+                .setMessage(msg)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) ->
+                        StorageUtils.purgeFiles(getContext(), true))
+                .create()
+                .show();
+    }
+
+    private void purgeBLNS() {
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.lbl_purge_blns)
+                .setMessage(R.string.info_purge_blns_all)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    try (DAO db = new DAO()) {
+                        db.purgeNodeStates();
+                    }
                 })
                 .create()
                 .show();

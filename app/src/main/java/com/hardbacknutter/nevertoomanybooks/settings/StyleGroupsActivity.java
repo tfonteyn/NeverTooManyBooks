@@ -107,7 +107,7 @@ public class StyleGroupsActivity
         if (actionBar != null) {
             actionBar.setTitle(R.string.title_edit_style);
             actionBar.setSubtitle(getString(R.string.name_colon_value,
-                                            getString(R.string.pg_groupings),
+                                            getString(R.string.pg_style_groups),
                                             mModel.getStyle().getLabel(this)));
         }
 
@@ -126,10 +126,13 @@ public class StyleGroupsActivity
         if (mModel.getStyle().getGroups().isEmpty()) {
             new AlertDialog.Builder(this)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setTitle(R.string.title_edit_style)
+                    .setTitle(R.string.pg_style_groups)
                     .setMessage(R.string.warning_select_at_least_1_group)
-                    .setNegativeButton(R.string.btn_continue_editing, (d, which) -> d.dismiss())
-                    .setPositiveButton(R.string.btn_confirm_exit, (d, which) -> finish())
+                    // cancel button, or cancel dialog
+                    .setNegativeButton(R.string.btn_continue_editing, (dialog, which) ->
+                            dialog.dismiss())
+                    .setPositiveButton(R.string.btn_confirm_exit, (dialog, which) ->
+                            finish())
                     .create()
                     .show();
         } else {

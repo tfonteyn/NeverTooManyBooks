@@ -199,6 +199,7 @@ public class BooklistAdapter
             case RowKind.DATE_READ_DAY:
             case RowKind.DATE_READ_YEAR:
             case RowKind.FORMAT:
+            case RowKind.COLOR:
             case RowKind.GENRE:
             case RowKind.LOANED:
             case RowKind.LOCATION:

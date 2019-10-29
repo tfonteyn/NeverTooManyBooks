@@ -69,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
@@ -609,9 +610,10 @@ public class BooklistGroup
         public static final int DATE_ACQUIRED_DAY = 26;
         public static final int DATE_FIRST_PUB_YEAR = 27;
         public static final int DATE_FIRST_PUB_MONTH = 28;
+        public static final int COLOR = 29;
         // NEWTHINGS: ROW_KIND_x
         // the highest valid index of kinds - ALWAYS to be updated after adding a row kind...
-        private static final int ROW_KIND_MAX = 28;
+        private static final int ROW_KIND_MAX = 29;
         private static final Map<Integer, RowKind> ALL_KINDS = new UniqueMap<>();
 
         static {
@@ -666,6 +668,10 @@ public class BooklistGroup
 
             rowKind = new RowKind(FORMAT, R.string.lbl_format, "fmt")
                     .setDomain(DOM_BOOK_FORMAT, TBL_BOOKS.dot(DOM_BOOK_FORMAT));
+            ALL_KINDS.put(rowKind.mKind, rowKind);
+
+            rowKind = new RowKind(COLOR, R.string.lbl_color, "col")
+                    .setDomain(DOM_BOOK_COLOR, TBL_BOOKS.dot(DOM_BOOK_COLOR));
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(RATING, R.string.lbl_rating, "rt")
@@ -933,6 +939,7 @@ public class BooklistGroup
                 case DATE_READ_DAY:
                 case DATE_READ_YEAR:
                 case FORMAT:
+                case COLOR:
                 case GENRE:
                 case LOANED:
                 case LOCATION:
@@ -1064,6 +1071,7 @@ public class BooklistGroup
                         RowKind.DATE_ADDED_DAY,
                         RowKind.DATE_READ_YEAR,
                         RowKind.FORMAT,
+                        RowKind.COLOR,
                         RowKind.DATE_READ_MONTH,
 
                         RowKind.DATE_READ_DAY,

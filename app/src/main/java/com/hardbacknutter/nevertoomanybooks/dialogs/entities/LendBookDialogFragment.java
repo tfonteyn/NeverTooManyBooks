@@ -181,8 +181,8 @@ public class LendBookDialogFragment
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(R.string.lbl_lend_to)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                .setNeutralButton(R.string.btn_loan_returned, (d, which) -> {
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
+                .setNeutralButton(R.string.btn_loan_returned, (dialog, which) -> {
                     // the book was returned (inspect it for sub-nano damage),
                     // remove the loan data
                     dismiss();
@@ -198,7 +198,7 @@ public class LendBookDialogFragment
                         }
                     }
                 })
-                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     String newName = mLoaneeView.getText().toString().trim();
                     if (newName.isEmpty()) {
                         UserMessage.show(mLoaneeView, R.string.warning_missing_name);
