@@ -768,7 +768,7 @@
         Cache resized images (scrolling will be faster, uses more storage)
     </string>
     <!-- ListPreference - Degrees by which to rotate camera images automatically -->
-    <string name="pt_thumbnails_rotate_auto">Automatically rotate images captured by camera</string>
+    <string name="pt_thumbnails_rotate_auto">Rotate pictures</string>
     <!-- ListPreference - Compatibility / bug workaround for some devices -->
     <string name="pt_thumbnail_cropper_layer_type">Cropping “Layer Type”</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">
@@ -1527,14 +1527,16 @@
     -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
 
-    <string name="book_color_full_color">color</string>
-    <string name="book_color_uncolored">uncolored</string>
-    <string name="book_uncolored_with_support_color">uncolored + support color</string>
+    <string name="book_color_full_color">Colored</string>
+    <string name="book_color_uncolored">Uncolored</string>
+    <!-- uncolored, but with a support-color.
+         e.g. black and white, but additional red for emphasis -->
+    <string name="book_color_support_color">Uncolored + support color</string>
 
 
     <string name="lbl_cleanup">Cleanup</string>
     <string name="pg_camera">Camera</string>
-    <string name="pg_image_cache">Image cache</string>
+    <string name="pg_image_cache">Images cache</string>
 
 
 </resources>

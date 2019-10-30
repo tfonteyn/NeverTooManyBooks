@@ -471,7 +471,8 @@
     <string name="pt_thumbnail_cropper_layer_type_summary">Pozostaw to ustawienie na „Użyj domyślnych”, chyba że wystąpią awarie podczas kadrowania zdjęć. Wypróbuj „Oprogramowanie”, aby być bezpieczniejszym, ale wolniejszym lub wymusić „Sprzęt”, aby był mniej bezpieczny, ale szybszy</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Domyślna ramka przycinania to cały obraz</string>
     <string name="pt_thumbnails_external_cropper">Użyj zewnętrznego przycinacza obrazu</string>
-    <string name="pt_thumbnails_rotate_auto">Automatycznie obracaj zdjęcia zrobione aparatem</string>
+    <string name="pt_thumbnails_rotate_auto">Obracaj zdjęcia</string>
+    <string name="pg_camera">Aparat fotograficzny</string>
     <string name="pt_ui_language">Język</string>
     <string name="pt_ui_messages_use">Wiadomości informacyjne</string>
     <string name="pt_ui_system_locale">Ustawienia regionalne systemu</string>
@@ -637,4 +638,7 @@
     <string name="hint_empty_read_status">(Status odczytu nieznany)</string>
     <string name="warning_select_at_least_1_group">Wybierz co najmniej jedną grupę.</string>
     <string name="lbl_color">Kolor</string>
+    <string name="pg_image_cache">Pamięć podręczna zdjęć</string>
+    <string name="book_color_full_color">Kolorowy</string>
+    <string name="book_color_uncolored">Bezbarwne</string>
 </resources>

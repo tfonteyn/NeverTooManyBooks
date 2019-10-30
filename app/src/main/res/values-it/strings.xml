@@ -473,7 +473,8 @@
     <string name="pt_thumbnail_cropper_layer_type_summary">Lasciare questa impostazione al valore predefinito a meno che non si verifichino arresti anomali durante il ritaglio delle immagini. Prova il «software» per «hardware» più sicuro ma più lento o forzato per meno sicuro, ma più veloce.</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Area di ritaglio predefinita uguale all\'intera immagine</string>
     <string name="pt_thumbnails_external_cropper">Usa un programma esterno per il ritaglio delle immagini</string>
-    <string name="pt_thumbnails_rotate_auto">Ruota automaticamente le immagini acquisite dalla fotocamera</string>
+    <string name="pt_thumbnails_rotate_auto">Ruota le immagini</string>
+    <string name="pg_camera">Telecamera</string>
     <string name="pt_ui_language">Lingua</string>
     <string name="pt_ui_messages_use">Informare con</string>
     <string name="pt_ui_system_locale">Impostazioni locali di sistema</string>
@@ -640,5 +641,7 @@
     <string name="hint_empty_read_status">(Leggi lo stato sconosciuto)</string>
     <string name="warning_select_at_least_1_group">Seleziona almeno un gruppo.</string>
     <string name="lbl_color">Colore</string>
+    <string name="pg_image_cache">Cache di immagini</string>
+    <string name="book_color_full_color">Colorato</string>
 
 </resources>

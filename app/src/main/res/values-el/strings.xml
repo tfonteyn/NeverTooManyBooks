@@ -474,7 +474,8 @@
     <string name="pt_thumbnail_cropper_layer_type_summary">Αφήστε αυτή τη ρύθμιση στην προεπιλεγμένη τιμή, εκτός εάν παρουσιάσετε σφάλματα κατά την περικοπή εικόνων. Δοκιμάστε το «Λογισμικό» για ασφαλέστερο αλλά πιο αργό ή για «υλισμικό» για λιγότερο ασφαλές αλλά πιο γρήγορο</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Η προεπιλεγμένη περικοπή πλαισίου είναι ολόκληρη η εικόνα</string>
     <string name="pt_thumbnails_external_cropper">Χρήση εξωτερικού κόπτη εικόνων</string>
-    <string name="pt_thumbnails_rotate_auto">Αυτόματη περιστροφή εικόνων από κάμερα</string>
+    <string name="pt_thumbnails_rotate_auto">Περιστρέψτε τις εικόνες</string>
+    <string name="pg_camera">φωτογραφική μηχανή</string>
     <string name="pt_ui_language">Γλώσσα</string>
     <string name="pt_ui_messages_use">Ενημερώστε με</string>
     <string name="pt_ui_system_locale">Τοπικό σύστημα</string>
@@ -641,5 +642,8 @@
     <string name="hint_empty_read_status">(Ανάγνωση άγνωστης κατάστασης)</string>
     <string name="warning_select_at_least_1_group">Επιλέξτε τουλάχιστον μία ομάδα.</string>
     <string name="lbl_color">χρώμα</string>
+    <string name="book_format_softcover">μαλακό βιβλίο</string>
+    <string name="book_color_full_color">Εγχρωμος</string>
+    <string name="book_color_uncolored">Αχρωμάτιστος</string>
 
 </resources>

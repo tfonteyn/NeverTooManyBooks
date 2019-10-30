@@ -385,9 +385,9 @@
     <string name="menu_cover_replace_from_gallery">Van Galerij…</string>
     <string name="menu_cover_crop">Bijsnijden</string>
     <string name="menu_cover_replace">Vervangen…</string>
-    <string name="menu_cover_rotate">Omdraaien…</string>
-    <string name="menu_cover_rotate_ccw">Links draaien</string>
-    <string name="menu_cover_rotate_cw">Rechts draaien</string>
+    <string name="menu_cover_rotate">Roteren…</string>
+    <string name="menu_cover_rotate_ccw">Links roteren</string>
+    <string name="menu_cover_rotate_cw">Rechts roteren</string>
     <string name="menu_cover_replace_from_alt_editions">Van andere uitgaven…</string>
     <string name="btn_customize">Aanpassen…</string>
     <string name="menu_delete">Verwijder</string>
@@ -479,7 +479,8 @@
     <string name="pt_thumbnail_cropper_layer_type_summary">Gebruik de aanbevolen optie, tenzij de applicatie problemen geeft tijdens het bijsnijden van een afbeelding. Gebruik „Software” voor veiliger maar trager, of forceer „Hardware” voor sneller, maar misschien minder stabiel.</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Standaard kader voor bijsnijden is hele afbeelding</string>
     <string name="pt_thumbnails_external_cropper">Gebruik een externe app voor bijsnijden afbeelding</string>
-    <string name="pt_thumbnails_rotate_auto">Camera-opnames automatisch draaien</string>
+    <string name="pt_thumbnails_rotate_auto">Roteer afbeeldingen</string>
+    <string name="pg_camera">Camera</string>
     <string name="pt_ui_language">Taal</string>
     <string name="pt_ui_messages_use">Informeren met</string>
     <string name="pt_ui_system_locale">Systeem taal</string>
@@ -649,5 +650,6 @@
     <string name="book_color_full_color">Gekleurd</string>
     <string name="book_color_uncolored">Ongekleurd</string>
     <string name="book_format_softcover">Softcover</string>
+    <string name="pg_image_cache">Afbeeldingencache</string>
 
 </resources>

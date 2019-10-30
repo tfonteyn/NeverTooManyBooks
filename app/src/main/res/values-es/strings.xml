@@ -474,7 +474,8 @@
     <string name="pt_thumbnail_cropper_layer_type_summary">Deje esta configuración en el valor predeterminado a menos que experimente bloqueos al recortar imágenes. Pruebe «Software» para un método más seguro pero más lento o fuerce «Hardware» para que sea menos seguro, pero más rápido</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Por defecto, la imagen se guarda completa</string>
     <string name="pt_thumbnails_external_cropper">Utilizar recortador de imágenes externo</string>
-    <string name="pt_thumbnails_rotate_auto">Girar automáticamente las imágenes de la cámara</string>
+    <string name="pt_thumbnails_rotate_auto">Girar imágenes</string>
+    <string name="pg_camera">Cámara</string>
     <string name="pt_ui_language">Idioma</string>
     <string name="pt_ui_messages_use">Informar con</string>
     <string name="pt_ui_system_locale">Sistema local</string>
@@ -641,5 +642,8 @@
     <string name="hint_empty_read_status">(Estado de lectura desconocido)</string>
     <string name="warning_select_at_least_1_group">Seleccione al menos un grupo.</string>
     <string name="lbl_color">Color</string>
+    <string name="pg_image_cache">Caché de imágenes</string>
+    <string name="book_color_full_color">De colores</string>
+    <string name="book_color_uncolored">Incoloro</string>
 
 </resources>

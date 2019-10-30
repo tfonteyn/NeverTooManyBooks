@@ -475,7 +475,8 @@
     <string name="pt_thumbnail_cropper_layer_type_summary">Behalten Sie diese Einstellung bei „Standardeinstellung“ bei, es sei denn, Sie stürzen beim Beschneiden von Bildern ab. Probieren Sie „Software“ aus, um sicherer, aber langsamer zu sein, oder erzwingen Sie „Hardware“ für weniger Sicherheit, aber schneller.</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Standardbeschnitt besteht aus dem gesamten Bild</string>
     <string name="pt_thumbnails_external_cropper">Externe Bildbearbeitung verwenden</string>
-    <string name="pt_thumbnails_rotate_auto">Bilder von der Kamera automatisch rotieren</string>
+    <string name="pt_thumbnails_rotate_auto">Bilder drehen</string>
+    <string name="pg_camera">Kamera</string>
     <string name="pt_ui_language">Bediensprache</string>
     <string name="pt_ui_messages_use">informieren mit</string>
     <string name="pt_ui_system_locale">System Locale</string>
@@ -643,4 +644,7 @@
     <string name="warning_select_at_least_1_group">Wählen Sie mindestens eine Gruppe aus.</string>
     <string name="warning_select_at_least_1_field">Wählen Sie mindestens ein Feld zum Aktualisieren aus</string>
     <string name="lbl_color">Farbe</string>
+    <string name="pg_image_cache">Bilder-Cache</string>
+    <string name="book_color_full_color">Farbig</string>
+    <string name="book_color_uncolored">Ungefärbt</string>
 </resources>

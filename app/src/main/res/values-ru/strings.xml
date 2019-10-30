@@ -469,7 +469,8 @@
     <string name="pt_thumbnail_cropper_layer_type_summary">Оставьте этот параметр по умолчанию, если вы не столкнетесь с падениями при кадрировании изображений. Попробуйте «программное обеспечение» для более безопасного, но медленного или принудительного «оборудования» для менее безопасного, но быстрее</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Рамка по умолчанию: всё изображение</string>
     <string name="pt_thumbnails_external_cropper">Использовать внешний редактор рисунков</string>
-    <string name="pt_thumbnails_rotate_auto">Автоматически поворачивать фото, полученное камерой</string>
+    <string name="pt_thumbnails_rotate_auto">Повернуть фотографии</string>
+    <string name="pg_camera">камера</string>
     <string name="pt_ui_language">язык</string>
     <string name="pt_ui_messages_use">Сообщить с</string>
     <string name="pt_ui_system_locale">Локаль системы</string>
@@ -635,5 +636,8 @@
     <string name="hint_empty_read_status">(Статус чтения неизвестен)</string>
     <string name="warning_select_at_least_1_group">Выберите хотя бы одну группу.</string>
     <string name="lbl_color">цвет</string>
+    <string name="pg_image_cache">Кэш изображений</string>
+    <string name="book_color_full_color">цветной</string>
+    <string name="book_color_uncolored">неокрашенный</string>
 
 </resources>

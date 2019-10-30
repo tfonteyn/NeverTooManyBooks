@@ -479,7 +479,8 @@
     <string name="pt_thumbnail_cropper_layer_type_summary">Laissez ce paramètre sur la valeur par défaut, sauf si vous rencontrez des problèmes lors du recadrage des images. Essayez «Logiciel» pour plus sûr mais plus lentement, ou forcez «Matériel» pour moins sûr, mais plus rapide.</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Le cadre par défaut de l\'image à recadrer sera l\'image complète</string>
     <string name="pt_thumbnails_external_cropper">Recadrage d\'image avec un outil externe</string>
-    <string name="pt_thumbnails_rotate_auto">Rotation automatique des photos</string>
+    <string name="pt_thumbnails_rotate_auto">Faire pivoter les images</string>
+    <string name="pg_camera">Caméra</string>
     <string name="pt_ui_language">Langue</string>
     <string name="pt_ui_messages_use">Informer avec</string>
     <string name="pt_ui_system_locale">Paramètres de langue du système</string>
@@ -646,5 +647,7 @@
     <string name="hint_empty_read_status">(Statut lu inconnu)</string>
     <string name="warning_select_at_least_1_group">Sélectionnez au moins un groupe.</string>
     <string name="lbl_color">Couleur</string>
+    <string name="pg_image_cache">Cache d\'images</string>
+    <string name="book_color_full_color">Coloré</string>
 
 </resources>

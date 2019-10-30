@@ -470,7 +470,8 @@
     <string name="pt_thumbnail_cropper_layer_type_summary">Görüntüleri kırparken çökmeler yaşamadığınız sürece bu ayarı Varsayılan değerde bırakın. Daha güvenli ancak daha yavaş ya da daha az güvenli olmak için “Donanım” için “Yazılım” deneyin, ancak daha hızlı</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Öntanımlı kırpma alanı bütün görseldir</string>
     <string name="pt_thumbnails_external_cropper">Başka resim kırpıcı kullan</string>
-    <string name="pt_thumbnails_rotate_auto">Kamera resimlerini özdevinimli olarak döndür</string>
+    <string name="pt_thumbnails_rotate_auto">Fotoğrafları döndür</string>
+    <string name="pg_camera">Kamera</string>
     <string name="pt_ui_language">Dil</string>
     <string name="pt_ui_messages_use">İle bilgilendir</string>
     <string name="pt_ui_system_locale">Sistem Yerel Ayarı</string>
@@ -637,5 +638,8 @@
     <string name="hint_empty_read_status">(Okuma durumu bilinmiyor)</string>
     <string name="warning_select_at_least_1_group">En az bir grup seçin.</string>
     <string name="lbl_color">Renk</string>
+    <string name="pg_image_cache">Görüntüler önbelleği</string>
+    <string name="book_color_full_color">Renkli</string>
+    <string name="book_color_uncolored">Renksiz</string>
 
 </resources>
