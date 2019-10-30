@@ -108,19 +108,22 @@
         android:title="@string/pg_thumbnails"
         >
 
+        <!-- default ImageUtils.SCALE_MEDIUM == 3 -->
         <ListPreference
-            android:defaultValue="4"
+            android:defaultValue="3"
             android:entries="@array/pe_cover_scale_factor"
             android:entryValues="@array/pv_cover_scale_factor"
             android:icon="@drawable/ic_photo_size_select_large"
             android:key="style.booklist.scale.thumbnails"
             android:title="@string/pt_bob_thumbnails_scale" />
 
-        <!-- default BooklistStyle.SCALE_MEDIUM == 4 -->
+
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_image"
             android:key="style.booklist.show.thumbnails"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
             android:title="@string/pt_bob_thumbnails_show"
             />
 

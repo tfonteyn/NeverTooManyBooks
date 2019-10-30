@@ -252,7 +252,7 @@
         <item>@string/size_x_large</item>
         <item>@string/size_xx_large</item>
     </string-array>
-    <!-- these values are multipliers and must match the ones in {@link BooklistStyle#SCALE_*} -->
+    <!-- these values are multipliers and must match the ones in {@link ImageUtils#SCALE_*} -->
     <string-array name="pv_cover_scale_factor">
         <item>1</item>
         <item>2</item>

@@ -31,42 +31,56 @@
     <SwitchPreference
         android:defaultValue="false"
         android:key="style.booklist.show.format"
+        android:summaryOff="@string/no"
+        android:summaryOn="@string/yes"
         android:title="@string/lbl_format"
         />
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="style.booklist.show.publisher"
+        android:summaryOff="@string/no"
+        android:summaryOn="@string/yes"
         android:title="@string/lbl_publisher"
         />
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="style.booklist.show.publication.date"
+        android:summaryOff="@string/no"
+        android:summaryOn="@string/yes"
         android:title="@string/lbl_date_published"
         />
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="style.booklist.show.isbn"
+        android:summaryOff="@string/no"
+        android:summaryOn="@string/yes"
         android:title="@string/lbl_isbn"
         />
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="style.booklist.show.bookshelves"
+        android:summaryOff="@string/no"
+        android:summaryOn="@string/yes"
         android:title="@string/lbl_bookshelves_long"
         />
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="style.booklist.show.location"
+        android:summaryOff="@string/no"
+        android:summaryOn="@string/yes"
         android:title="@string/lbl_location"
         />
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="style.booklist.show.author"
+        android:summaryOff="@string/no"
+        android:summaryOn="@string/yes"
         android:title="@string/lbl_author"
         />
 

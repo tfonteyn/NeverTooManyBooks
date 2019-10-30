@@ -44,6 +44,7 @@ import androidx.preference.PreferenceScreen;
 
 import java.util.Arrays;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
@@ -153,7 +154,11 @@ public abstract class BasePreferenceFragment
                     text.append(msp.getEntries()[index]).append('\n');
                 }
             }
-            return text;
+            if (text.length() > 0) {
+                return text;
+            } else {
+                return getString(R.string.hint_empty_field);
+            }
         } else {
             return "";
         }
