@@ -260,7 +260,6 @@
     <string name="lbl_about_creators">İlk olarak:</string>
     <string name="lbl_credentials">Kimlik Bilgileri</string>
     <string name="lbl_currency">Para birimi</string>
-    <string name="lbl_data_import_export">Veri içe / dışa aktarma</string>
     <string name="lbl_date_acquired">Alınan Tarih</string>
     <string name="lbl_date_acquired_day">Alınan Gün</string>
     <string name="lbl_date_acquired_month">Alınan Ay</string>
@@ -622,8 +621,8 @@
     <string name="lbl_author_type_artist">çizimler</string>
     <string name="lbl_author_type_cover_artist">Kapak resmi</string>
     <string name="lbl_author_type_cover_colorist">Kapak boyama</string>
-    <string name="lbl_advanced">Ileri</string>
-    <string name="lbl_standard">Standart</string>
+    <string name="lbl_local_search_advanced">Ileri</string>
+    <string name="lbl_local_search_standard">Standart</string>
     <string name="pt_search_form">Yerel Arama Formu</string>
     <string name="pg_internet_search">Web aramaları</string>
     <string name="lbl_print_run">Baskı çalıştırmak</string>

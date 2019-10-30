@@ -461,7 +461,8 @@ public class BookFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         Book book = mBookModel.getBook();
 
-        MenuHandler.prepareBookItems(menu,
+        //noinspection ConstantConditions
+        MenuHandler.prepareBookItems(getContext(), menu,
                                      book.getId() > 0,
                                      book.getBoolean(Book.IS_READ),
                                      mBookModel.isAvailable());

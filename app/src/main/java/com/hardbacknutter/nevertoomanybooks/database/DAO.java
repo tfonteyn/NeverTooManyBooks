@@ -2987,13 +2987,19 @@ public class DAO
     /**
      * Returns a list of all bookshelves in the database.
      *
+     * <strong>Note:</strong> we do not include the 'All Books' shelf (id==-1).
+     *
      * @return The list
      */
     @NonNull
     public ArrayList<Bookshelf> getBookshelves() {
         ArrayList<Bookshelf> list = new ArrayList<>();
 
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.BOOKSHELVES_ORDERED, null)) {
+        String sql = SqlSelectFullTable.BOOKSHELVES
+                     + " WHERE " + TBL_BOOKSHELF.dot(DOM_PK_ID) + ">0"
+                     + " ORDER BY lower(" + DOM_BOOKSHELF + ')' + COLLATION;
+
+        try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
             CursorMapper mapper = new CursorMapper(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(mapper.getLong(DOM_PK_ID.getName()), mapper));
@@ -4886,10 +4892,6 @@ public class DAO
                 + ',' + TBL_BOOKSHELF.dot(DOM_FK_STYLE)
                 + ',' + TBL_BOOKLIST_STYLES.dot(DOM_UUID)
                 + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
-
-        /** {@link Bookshelf} all columns. Ordered, will be displayed to user. */
-        private static final String BOOKSHELVES_ORDERED =
-                BOOKSHELVES + " ORDER BY lower(" + DOM_BOOKSHELF + ')' + COLLATION;
 
         /** {@link BooklistStyle} all columns. */
         private static final String BOOKLIST_STYLES =

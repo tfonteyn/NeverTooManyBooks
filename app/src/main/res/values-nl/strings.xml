@@ -267,7 +267,6 @@
     <string name="lbl_about_creators">Oorspronkelijk door:</string>
     <string name="lbl_credentials">Inloggegevens</string>
     <string name="lbl_currency">Munt</string>
-    <string name="lbl_data_import_export">Import / Export</string>
     <string name="lbl_date_acquired">Datum verworven</string>
     <string name="lbl_date_acquired_day">Dag verworven</string>
     <string name="lbl_date_acquired_month">Maand verworven</string>
@@ -631,8 +630,8 @@
     <string name="lbl_author_type_cover_artist">Omslag</string>
     <string name="lbl_author_type_cover_colorist">Omslag inkleuring</string>
     <string name="pt_bob_titles_display">Toon titels als</string>
-    <string name="lbl_advanced">Gedetaileerd</string>
-    <string name="lbl_standard">Standaard</string>
+    <string name="lbl_local_search_advanced">Gedetaileerd</string>
+    <string name="lbl_local_search_standard">Standaard</string>
     <string name="pt_search_form">Lokaal zoekformulier</string>
     <string name="pg_internet_search">Internet Zoekopdrachten</string>
     <string name="lbl_print_run">Oplage</string>

@@ -127,13 +127,17 @@ public final class MenuHandler {
             .setIcon(R.drawable.ic_goodreads);
     }
 
-    static void prepareBookItems(@NonNull final Menu menu,
+    static void prepareBookItems(@NonNull final Context context,
+                                 @NonNull final Menu menu,
                                  final boolean isSaved,
                                  final boolean isRead,
                                  final boolean isAvailable) {
 
         menu.findItem(R.id.MENU_BOOK_READ).setVisible(isSaved && !isRead);
         menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isSaved && isRead);
+
+        menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
+            .setVisible(GoodreadsManager.isShowSyncMenus(context));
 
         // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {

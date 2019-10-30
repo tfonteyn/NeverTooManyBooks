@@ -60,15 +60,6 @@
             android:key="ui.theme"
             android:title="@string/pt_ui_theme" />
 
-        <!-- default snackbar == 1 -->
-        <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/pe_ui_messages_use"
-            android:entryValues="@array/pv_ui_messages_use"
-            android:icon="@drawable/ic_message"
-            android:key="ui.messages.use"
-            android:title="@string/pt_ui_messages_use" />
-
         <Preference
             android:icon="@drawable/ic_visibility"
             android:key="psk_fields_visibility"
@@ -77,11 +68,19 @@
             />
 
         <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_goodreads"
+            android:key="goodreads.showMenu"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_show_goodreads" />
+
+        <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_edit"
             android:key="search.form.advanced"
-            android:summaryOff="@string/lbl_standard"
-            android:summaryOn="@string/lbl_advanced"
+            android:summaryOff="@string/lbl_local_search_standard"
+            android:summaryOn="@string/lbl_local_search_advanced"
             android:title="@string/pt_search_form" />
     </PreferenceCategory>
 
@@ -272,14 +271,34 @@
         </Preference>
     </PreferenceCategory>
 
-    <!-- Freeing up space - a click brings up a dialog with further info/options. -->
     <PreferenceCategory
-        android:title="@string/lbl_cleanup">
+        android:title="@string/lbl_advanced_options">
+
+        <!-- default snackbar == 1 -->
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/pe_ui_messages_use"
+            android:entryValues="@array/pv_ui_messages_use"
+            android:icon="@drawable/ic_message"
+            android:key="ui.messages.use"
+            android:title="@string/pt_ui_messages_use" />
+
+        <Preference
+            android:icon="@drawable/ic_undo"
+            android:key="psk_tip_reset_all"
+            android:title="@string/tip_reset_all"
+            />
 
         <Preference
             android:icon="@drawable/ic_close"
             android:key="psk_purge_files"
             android:title="@string/lbl_purge_files"
+            />
+
+        <Preference
+            android:icon="@drawable/ic_send"
+            android:key="psk_send_debug_info"
+            android:title="@string/lbl_send_debug_info"
             />
 
     </PreferenceCategory>

@@ -44,11 +44,14 @@ import androidx.preference.SwitchPreference;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
+import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
@@ -119,11 +122,43 @@ public class GlobalPreferenceFragment
             });
         }
 
-        // Purge files.
         preference = findPreference(Prefs.psk_purge_files);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 purgeFiles();
+                return true;
+            });
+        }
+
+        preference = findPreference(Prefs.psk_tip_reset_all);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                //noinspection ConstantConditions
+                TipManager.reset(getContext());
+                //noinspection ConstantConditions
+                UserMessage.show(getView(), R.string.tip_reset_done);
+                return true;
+            });
+        }
+
+        preference = findPreference(Prefs.psk_send_debug_info);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                //noinspection ConstantConditions
+                new AlertDialog.Builder(getContext())
+                        .setIcon(R.drawable.ic_warning)
+                        .setTitle(R.string.debug)
+                        .setMessage(R.string.debug_send_info_text)
+                        .setNegativeButton(android.R.string.cancel, (dialog, which) ->
+                                dialog.dismiss())
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                            if (!DebugReport.sendDebugInfo(getContext())) {
+                                //noinspection ConstantConditions
+                                UserMessage.show(getView(), R.string.error_email_failed);
+                            }
+                        })
+                        .create()
+                        .show();
                 return true;
             });
         }
@@ -193,9 +228,8 @@ public class GlobalPreferenceFragment
                 .setMessage(R.string.warning_rebuild_orderby_columns)
                 // this dialog is important. Make sure the user pays some attention
                 .setCancelable(false)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                    StartupViewModel.setScheduleOrderByRebuild(false);
-                })
+                .setNegativeButton(android.R.string.cancel, (d, w) ->
+                        StartupViewModel.setScheduleOrderByRebuild(false))
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     //prefs.edit().putBoolean(Prefs.pk_reformat_titles_sort, !current).apply();
                     SwitchPreference sp = findPreference(Prefs.pk_reformat_titles_sort);

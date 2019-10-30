@@ -52,28 +52,16 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
 /**
- * March/April 2019, I got this error:
- * //
- * //Warning: file_get_contents(http://webservices.amazon.com/onca/xml?
- * AssociateTag=theagidir-20
- * &Keywords=9780385269179
- * &Operation=ItemSearch&ResponseGroup=Medium,Images
- * &SearchIndex=Books&Service=AWSECommerceService
- * &SubscriptionId=AKIAIHF2BM6OTOA23JEQ
- * &Timestamp=2019-04-08T11:10:15.000Z
- * &Signature=XJKVvg%2BDqzB7w50fXxvqN5hbDt2ZFzuNL5W%2BsDmcGXA%3D):
- * <p>
- * failed to open stream: HTTP request failed!
- * HTTP/1.1 503 Service Unavailable in /app/getRest_v3.php on line 70
- * <p>
- * 2019-04-20: it's the actual 'theagiledirector'.
- * Initial requests from here was failing first time. FIXME: cut the dependency on that proxy.
+ * Amazon is now disabled/hidden as it can't work without the proxy from BookCatalogue.
+ *
+ * FIXME: remove the dependency on that proxy.
  * but how.... seems AWS is dependent/linked to have a website.
  */
 public final class AmazonManager
@@ -178,6 +166,12 @@ public final class AmazonManager
                          final boolean fetchThumbnail)
             throws IOException {
 
+        Bundle bookData = new Bundle();
+
+        if (!SearchSites.ENABLE_AMAZON_AWS) {
+            return bookData;
+        }
+
         String query;
 
         if (ISBN.isValid(isbn)) {
@@ -188,10 +182,8 @@ public final class AmazonManager
                     + "&title=" + URLEncoder.encode(title, UTF_8);
 
         } else {
-            return new Bundle();
+            return bookData;
         }
-
-        Bundle bookData = new Bundle();
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
         AmazonHandler handler = new AmazonHandler(bookData, fetchThumbnail);

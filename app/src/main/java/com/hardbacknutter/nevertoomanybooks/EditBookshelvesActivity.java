@@ -209,7 +209,7 @@ public class EditBookshelvesActivity
                 return true;
 
             case R.id.MENU_DELETE:
-                if (!bookshelf.isDefault()) {
+                if (bookshelf.getId() > Bookshelf.DEFAULT_ID) {
                     long bookshelfId = bookshelf.getId();
                     mDb.deleteBookshelf(bookshelfId);
                     mList.remove(bookshelf);

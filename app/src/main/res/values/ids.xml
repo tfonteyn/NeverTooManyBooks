@@ -65,6 +65,13 @@
 
     <!-- END predefined View tags -->
 
+    <!-- BEGIN predefined View ids. -->
+
+    <item name="PICKER_DAY" type="id" />
+    <item name="PICKER_MONTH" type="id" />
+    <item name="PICKER_YEAR" type="id" />
+
+    <!-- END predefined View ids -->
 
     <!-- BEGIN predefined AsyncTask IDs needed for TaskBase child classes. -->
     <item name="TASK_ID_GET_BOOKLIST" type="id" />
@@ -145,8 +152,6 @@
     <item name="MENU_LEVEL_COLLAPSE" type="id" />
     <item name="MENU_CLEAR_FILTERS" type="id" />
 
-    <item name="MENU_SEARCH_GOODREADS" type="id" />
-
     <item name="MENU_PURGE_BLNS" type="id" />
 
 
@@ -184,6 +189,7 @@
 
     <!-- options menu -->
     <item name="MENU_RESET" type="id" />
+    <item name="MENU_PREFS_ASIN" type="id" />
 
     <!-- Scanner pick list -->
     <item name="MENU_SCANNER_ZXING" type="id" />
@@ -198,6 +204,7 @@
     <item name="MENU_DEBUG_STYLE" type="id" />
     <item name="MENU_DEBUG_TRACKER" type="id" />
     <item name="MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE" type="id" />
+    <item name="MENU_DEBUG_UNMANGLE" type="id" />
 
     <!-- END predefined menu items -->
 
@@ -210,12 +217,6 @@
     <item name="ROW_CHECKABLE_BTN" type="id" />
     <!-- the grabber handle -->
     <item name="ROW_GRABBER_ICON" type="id" />
-    <item name="PICKER_DAY" type="id" />
-    <item name="PICKER_MONTH" type="id" />
-    <item name="PICKER_YEAR" type="id" />
-    <item name="MENU_DEBUG_UNMANGLE" type="id" />
-    <item name="MENU_PREFS_ASIN" type="id" />
-
     <!-- BEGIN used for rows in a {@link RecyclerView} -->
 
 </resources>

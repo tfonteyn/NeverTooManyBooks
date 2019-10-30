@@ -63,7 +63,7 @@ public class RequestAuthTask
 
         // should only happen if the developer forgot to add the Goodreads keys.... (me)
         if (!GoodreadsManager.hasKey()) {
-            throw new IllegalStateException("Developer forgot to add they dev key");
+            throw new IllegalStateException("Developer forgot to add the dev key");
         }
     }
 

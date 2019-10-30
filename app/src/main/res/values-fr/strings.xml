@@ -267,7 +267,6 @@
     <string name="lbl_about_creators">À l\'origine par:</string>
     <string name="lbl_credentials">Certificats</string>
     <string name="lbl_currency">Devise</string>
-    <string name="lbl_data_import_export">Import / Export</string>
     <string name="lbl_date_acquired">Date d\'acquisition</string>
     <string name="lbl_date_acquired_day">Jour acquis</string>
     <string name="lbl_date_acquired_month">Mois acquis</string>
@@ -631,8 +630,8 @@
     <string name="pt_bob_titles_display">Afficher les titres en tant que</string>
     <string name="lbl_author_type_cover_artist">couverture</string>
     <string name="lbl_author_type_cover_colorist">couleur de la couverture</string>
-    <string name="lbl_advanced">Avancé</string>
-    <string name="lbl_standard">Standard</string>
+    <string name="lbl_local_search_advanced">Avancé</string>
+    <string name="lbl_local_search_standard">Standard</string>
     <string name="pt_search_form">Formulaire de recherche locale</string>
     <string name="pg_internet_search">Recherches sur le web</string>
     <string name="lbl_print_run">Tirage</string>

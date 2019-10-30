@@ -77,7 +77,7 @@ public class Bookshelf
      * Note we use -1, as {@code 0} is generally used for a 'new' item.
      * i.e. when the user creates a new shelf, it has id==0 before it's saved.
      */
-    private static final int ALL_BOOKS = -1;
+    public static final int ALL_BOOKS = -1;
 
     /** Bookshelf id. */
     private long mId;
@@ -227,14 +227,7 @@ public class Bookshelf
         mId = id;
     }
 
-    /**
-     * Check if this is a regular shelf, or if this one represents our complete library.
-     *
-     * @return {@code true} for a regular shelf, or{@code false} for ALL books.
-     */
-    public boolean isRegularShelf() {
-        return mId != ALL_BOOKS;
-    }
+
 
     @Override
     public String getLabel(@NonNull final Context context) {
@@ -346,6 +339,15 @@ public class Bookshelf
 
     public boolean isDefault() {
         return mId == DEFAULT_ID;
+    }
+
+    /**
+     * Check if this is a regular shelf, or if this one represents our complete library.
+     *
+     * @return {@code true} for ALL books.
+     */
+    public boolean isAllBooks() {
+        return mId == ALL_BOOKS;
     }
 
     @Override

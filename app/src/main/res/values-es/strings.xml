@@ -262,7 +262,6 @@
     <string name="lbl_about_creators">Originalmente por:</string>
     <string name="lbl_credentials">Credenciales</string>
     <string name="lbl_currency">Moneda</string>
-    <string name="lbl_data_import_export">Importación / Exportación de datos</string>
     <string name="lbl_date_acquired">Fecha de adquisición</string>
     <string name="lbl_date_acquired_day">Día adquirido</string>
     <string name="lbl_date_acquired_month">Mes adquirido</string>
@@ -626,8 +625,8 @@
     <string name="lbl_author_type_artist">ilustraciones</string>
     <string name="lbl_author_type_cover_artist">diseño de portada</string>
     <string name="lbl_author_type_cover_colorist">colores de la portada</string>
-    <string name="lbl_advanced">Avanzado</string>
-    <string name="lbl_standard">Estándar</string>
+    <string name="lbl_local_search_advanced">Avanzado</string>
+    <string name="lbl_local_search_standard">Estándar</string>
     <string name="pt_search_form">Formulario de búsqueda local</string>
     <string name="pg_internet_search">Búsquedas web</string>
     <string name="lbl_print_run">Ejecución de impresión</string>

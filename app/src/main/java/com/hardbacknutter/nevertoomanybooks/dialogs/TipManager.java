@@ -128,8 +128,11 @@ public final class TipManager {
      * @param context Current context
      */
     public static void reset(@NonNull final Context context) {
+        // remove all. This has the benefit of removing any obsolete keys.
+        reset(context, PREF_TIP);
+
         for (Tip h : ALL.values()) {
-            h.reset(context);
+            h.setHasBeenDisplayed(false);
         }
     }
 
@@ -236,6 +239,10 @@ public final class TipManager {
                     .getBoolean(mKey, true);
         }
 
+        public void setHasBeenDisplayed(final boolean hasBeenDisplayed) {
+            mHasBeenDisplayed = hasBeenDisplayed;
+        }
+
         /**
          * display the tip.
          *
@@ -266,7 +273,8 @@ public final class TipManager {
                     .setView(root)
                     .setTitle(R.string.tip_dialog_title)
                     .setNegativeButton(R.string.btn_disable_message, (dialog, which) -> {
-                        setShowAgain(context, false);
+                        PreferenceManager.getDefaultSharedPreferences(context)
+                                         .edit().putBoolean(mKey, false).apply();
                         if (postRun != null) {
                             postRun.run();
                         }
@@ -278,29 +286,8 @@ public final class TipManager {
                     })
                     .create()
                     .show();
+
             mHasBeenDisplayed = true;
-        }
-
-        /**
-         * Set the preference to indicate if this tip should be shown again.
-         *
-         * @param context Current context
-         * @param show    Flag indicating future visibility
-         */
-        private void setShowAgain(@NonNull final Context context,
-                                  final boolean show) {
-            PreferenceManager.getDefaultSharedPreferences(context)
-                             .edit().putBoolean(mKey, show).apply();
-        }
-
-        /**
-         * Reset visibility of this tip.
-         *
-         * @param context Current context
-         */
-        void reset(@NonNull final Context context) {
-            setShowAgain(context, true);
-            mHasBeenDisplayed = false;
         }
     }
 }

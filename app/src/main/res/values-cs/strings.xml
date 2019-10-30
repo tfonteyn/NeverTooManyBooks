@@ -261,7 +261,6 @@
     <string name="lbl_about_creators">Původně:</string>
     <string name="lbl_credentials">Přihlašovací údaje</string>
     <string name="lbl_currency">Měna</string>
-    <string name="lbl_data_import_export">Import / Export dat</string>
     <string name="lbl_date_acquired">Datum Nabytí</string>
     <string name="lbl_date_acquired_day">Den Nabytí</string>
     <string name="lbl_date_acquired_month">Měsíc získaný</string>
@@ -622,8 +621,8 @@
     <string name="lbl_author_type_artist">ilustrace</string>
     <string name="lbl_author_type_cover_artist">ilustrace knihy</string>
     <string name="lbl_author_type_cover_colorist">barva obálky knihy</string>
-    <string name="lbl_advanced">Pokročilý</string>
-    <string name="lbl_standard">Standardní</string>
+    <string name="lbl_local_search_advanced">Pokročilý</string>
+    <string name="lbl_local_search_standard">Standardní</string>
     <string name="pt_search_form">Formulář místního vyhledávání</string>
     <string name="pg_internet_search">Vyhledávání na webu</string>
     <string name="lbl_print_run">Tisk běh</string>

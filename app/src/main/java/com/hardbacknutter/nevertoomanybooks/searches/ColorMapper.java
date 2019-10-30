@@ -47,7 +47,7 @@ public final class ColorMapper
         // stripinfo.be
         MAPPER.put("kleur", R.string.book_color_full_color);
         MAPPER.put("zwart/wit", R.string.book_color_uncolored);
-        MAPPER.put("Zwart/wit met steunkleur", R.string.book_uncolored_with_support_color);
+        MAPPER.put("Zwart/wit met steunkleur", R.string.book_color_support_color);
     }
 
     /**

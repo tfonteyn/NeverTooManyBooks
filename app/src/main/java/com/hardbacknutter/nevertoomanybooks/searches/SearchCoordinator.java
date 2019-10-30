@@ -321,7 +321,8 @@ public class SearchCoordinator {
                 mWaitingForIsbn = false;
                 if (mHasValidIsbn) {
                     tasksStarted = startSearches(mSearchSites);
-                } else {
+
+                } else if (SearchSites.ENABLE_AMAZON_AWS) {
                     // Assume it's an ASIN, and just search Amazon
                     mSearchingAsin = true;
                     tasksStarted = startSearches(SearchSites.AMAZON);

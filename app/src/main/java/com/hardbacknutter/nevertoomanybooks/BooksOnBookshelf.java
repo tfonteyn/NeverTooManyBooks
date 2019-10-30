@@ -1292,7 +1292,7 @@ public class BooksOnBookshelf
             case BooklistGroup.RowKind.BOOK: {
 
                 MenuHandler.addBookItems(menu);
-                MenuHandler.prepareBookItems(menu, true,
+                MenuHandler.prepareBookItems(this, menu, true,
                                              row.getInt(DBDefinitions.KEY_READ) != 0,
                                              mModel.isAvailable(row));
 

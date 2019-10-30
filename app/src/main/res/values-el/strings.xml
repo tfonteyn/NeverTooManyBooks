@@ -262,7 +262,6 @@
     <string name="lbl_about_creators">Αρχικά από:</string>
     <string name="lbl_credentials">Διαπιστευτήρια</string>
     <string name="lbl_currency">Νομίσματα</string>
-    <string name="lbl_data_import_export">Εισαγωγή / Εξαγωγή Δεδομένων</string>
     <string name="lbl_date_acquired">Ημερομηνία που αποκτήθηκαν</string>
     <string name="lbl_date_acquired_day">Ημέρα που αποκτήθηκε</string>
     <string name="lbl_date_acquired_month">Μήνας που αποκτήθηκε</string>
@@ -626,8 +625,8 @@
     <string name="lbl_author_type_artist">εικονογραφήσεις</string>
     <string name="lbl_author_type_cover_artist">εικόνα εξωφύλλου βιβλίου</string>
     <string name="lbl_author_type_cover_colorist">βιβλίο κάλυψης βιβλίου</string>
-    <string name="lbl_advanced">Προχωρημένος</string>
-    <string name="lbl_standard">κανονικός</string>
+    <string name="lbl_local_search_advanced">Προχωρημένος</string>
+    <string name="lbl_local_search_standard">κανονικός</string>
     <string name="pt_search_form">Φόρμα τοπικής αναζήτησης</string>
     <string name="pg_internet_search">αναζητήσεις στο διαδίκτυο</string>
     <string name="lbl_print_run">Εκτέλεση εκτύπωσης</string>

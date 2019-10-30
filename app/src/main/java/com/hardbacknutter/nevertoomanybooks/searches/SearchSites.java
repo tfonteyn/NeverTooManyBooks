@@ -78,6 +78,12 @@ public final class SearchSites {
 
     /** Site. */
     public static final int AMAZON = 1 << 1;
+    /**
+     * The Amazon handler uses the BookCatalogue proxy.
+     * DO NOT USE UNTIL WE REMOVE THAT DEPENDENCY.
+     */
+    public static final boolean ENABLE_AMAZON_AWS = false;
+
     /** tag. */
     private static final String TAG = "SearchSites";
     public static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
@@ -129,10 +135,9 @@ public final class SearchSites {
         // Dutch.
         SEARCH_ORDER_DEFAULTS.add(Site.newSite(KB_NL, isDutch(), priority++, 6));
 
-        // The proxy site has been broken since around April 2019.
-        // 2019-08-11: still broken, disabled by default.
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(AMAZON, false, priority++, 1));
-
+        if (ENABLE_AMAZON_AWS) {
+            SEARCH_ORDER_DEFAULTS.add(Site.newSite(AMAZON, false, priority++, 1));
+        }
         // bottom of the list as the data from this site is not very complete.
         // Disabled by default.
         //noinspection UnusedAssignment
@@ -153,8 +158,9 @@ public final class SearchSites {
         // Dutch.
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(KB_NL, isDutch(), priority++));
 
-        // The proxy site has been broken since around April 2019.
-        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(AMAZON, false, priority++));
+        if (ENABLE_AMAZON_AWS) {
+            COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(AMAZON, false, priority++));
+        }
 
         // based on feedback, disabling by default.
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(LIBRARY_THING, false, priority++));

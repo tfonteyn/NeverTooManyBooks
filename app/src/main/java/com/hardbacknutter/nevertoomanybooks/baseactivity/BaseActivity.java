@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -153,6 +154,9 @@ public abstract class BaseActivity
         if (mDrawerLayout != null) {
             mNavigationView = findViewById(R.id.nav_view);
             mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+
+            setNavigationItemVisibility(R.id.nav_goodreads,
+                                        GoodreadsManager.isShowSyncMenus(this));
         }
     }
 
@@ -168,7 +172,7 @@ public abstract class BaseActivity
     }
 
     /**
-     * Manually load a fragment into the given container using {@link FragmentTransaction#add}.
+     * Manually load a fragment into the given container using add.
      * <p>
      * Not added to the BackStack.
      * The activity extras bundle will be set as arguments.
@@ -183,7 +187,7 @@ public abstract class BaseActivity
     }
 
     /**
-     * Manually load a fragment into the given container using {@link FragmentTransaction#replace}.
+     * Manually load a fragment into the given container using replace.
      * <p>
      * Not added to the BackStack.
      * The activity extras bundle will be set as arguments.

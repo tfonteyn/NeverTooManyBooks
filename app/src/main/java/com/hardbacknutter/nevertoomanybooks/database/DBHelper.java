@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.IndexDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
@@ -215,12 +216,27 @@ public final class DBHelper
         // insert the builtin styles so foreign key rules are possible.
         prepareStylesTable(db);
 
-        // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
+        Context context = App.getLocalizedAppContext();
+
+        // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
         syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                         + '(' + DOM_BOOKSHELF
+                         + '(' + DOM_PK_ID
+                         + ',' + DOM_BOOKSHELF
                          + ',' + DOM_FK_STYLE
                          + ") VALUES ("
-                         + "'" + App.getLocalizedAppContext().getString(R.string.bookshelf_my_books)
+                         + Bookshelf.ALL_BOOKS
+                         + ",'" + context.getString(R.string.bookshelf_all_books)
+                         + "'," + BooklistStyle.DEFAULT_STYLE_ID
+                         + ')');
+
+        // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
+        syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF
+                         + '(' + DOM_PK_ID
+                         + ',' + DOM_BOOKSHELF
+                         + ',' + DOM_FK_STYLE
+                         + ") VALUES ("
+                         + Bookshelf.DEFAULT_ID
+                         + ",'" + context.getString(R.string.bookshelf_my_books)
                          + "'," + BooklistStyle.DEFAULT_STYLE_ID
                          + ')');
 

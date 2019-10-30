@@ -261,7 +261,6 @@
     <string name="lbl_about_creators">Pierwotnie przez:</string>
     <string name="lbl_credentials">Poświadczenia</string>
     <string name="lbl_currency">Waluta</string>
-    <string name="lbl_data_import_export">Import / Eksport</string>
     <string name="lbl_date_acquired">Data nabycia</string>
     <string name="lbl_date_acquired_day">Dzień nabyty</string>
     <string name="lbl_date_acquired_month">Zakupiony miesiąc</string>
@@ -622,8 +621,8 @@
     <string name="lbl_author_type_artist">ilustracje</string>
     <string name="lbl_author_type_cover_artist">ilustracja okładki książki</string>
     <string name="lbl_author_type_cover_colorist">kolor okładki książki</string>
-    <string name="lbl_advanced">Zaawansowane</string>
-    <string name="lbl_standard">Normalny</string>
+    <string name="lbl_local_search_advanced">Zaawansowane</string>
+    <string name="lbl_local_search_standard">Normalny</string>
     <string name="pt_search_form">Lokalny formularz wyszukiwania</string>
     <string name="pg_internet_search">Wyszukiwania w Internecie</string>
     <string name="lbl_print_run">Wersja do wydruku</string>

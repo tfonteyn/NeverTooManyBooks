@@ -103,6 +103,8 @@ public class GoodreadsManager
     @NonNull
     public static final Throttler THROTTLER = new Throttler();
     public static final Locale SITE_LOCALE = Locale.US;
+    /** Preferences prefix. */
+    public static final String PREF_PREFIX = "goodreads.";
     /**
      * website & Root URL. Right now identical, but this leaves future changes easier.
      */
@@ -138,16 +140,15 @@ public class GoodreadsManager
 
     private static final String AUTHORIZATION_CALLBACK =
             "com.hardbacknutter.nevertoomanybooks://goodreadsauth";
-
     /** Browser url where to send the user to approve access. */
     private static final String AUTHORIZATION_WEBSITE_URL = BASE_URL + "/oauth/authorize?mobile=1";
     /** OAuth url to *request* access. */
     private static final String REQUEST_TOKEN_ENDPOINT_URL = BASE_URL + "/oauth/request_token";
     /** OAuth url to access. */
     private static final String ACCESS_TOKEN_ENDPOINT_URL = BASE_URL + "/oauth/access_token";
+    /** Whether to show any Goodreads sync menus at all. */
+    private static final String PREFS_SHOW_MENUS = PREF_PREFIX + "showMenu";
 
-    /** Preferences prefix. */
-    public static final String PREF_PREFIX = "goodreads.";
     /** Preference that controls display of alert about Goodreads. */
     private static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
     /** last time we synced with Goodreads. */
@@ -229,6 +230,20 @@ public class GoodreadsManager
     @NonNull
     public static String getBaseURL() {
         return BASE_URL;
+    }
+
+
+    /**
+     * Check if Goodreads SYNC menus should be shown at all.
+     * This does not affect searching on Goodreads.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if menus should be shown
+     */
+    public static boolean isShowSyncMenus(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PREFS_SHOW_MENUS, true);
     }
 
     /**

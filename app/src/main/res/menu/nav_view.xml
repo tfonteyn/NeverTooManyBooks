@@ -55,6 +55,7 @@
         android:icon="@drawable/ic_sd_storage"
         android:title="@string/lbl_data_import_export" />
 
+    <!-- optional visibility. -->
     <item
         android:id="@+id/nav_goodreads"
         android:icon="@drawable/ic_goodreads"

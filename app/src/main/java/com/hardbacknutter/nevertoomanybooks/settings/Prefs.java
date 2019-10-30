@@ -64,12 +64,24 @@ public final class Prefs {
      * and is used for backup/restore purposes as the 'ID'.
      */
     public static final String pk_bob_uuid = "style.booklist.uuid";
+
+
     /** Global settings - Purge action. */
     static final String psk_purge_image_cache = "psk_purge_image_cache";
     /** Global settings - Purge action. */
     static final String psk_purge_files = "psk_purge_files";
+
+    /** Global settings - Reset tips. */
+    static final String psk_tip_reset_all = "psk_tip_reset_all";
+    /** Global settings - Send debug info. */
+    static final String psk_send_debug_info = "psk_send_debug_info";
+
+
     /** Global settings - Credentials. */
     static final String psk_credentials_goodreads = "psk_credentials_goodreads";
+    /** Global settings - Credentials. */
+    static final String psk_credentials_library_thing = "psk_credentials_library_thing";
+
 
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     static final String psk_style_filters = "psk_style_filters";
@@ -106,8 +118,6 @@ public final class Prefs {
     public static final String pk_search_reformat_format = "search.reformat.format";
     public static final String pk_search_reformat_color = "search.reformat.color";
 
-    /** Global settings - Credentials. */
-    static final String psk_credentials_library_thing = "psk_credentials_library_thing";
 
     public static final String pk_camera_image_autorotate = "camera.image.autorotate";
 

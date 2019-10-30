@@ -504,7 +504,7 @@ public class BooklistBuilder
 
         // After adding the groups, we now know if we have a Bookshelf group.
         // If we want a specific shelf, we''ll need to filter on it.
-        if (mBookshelf.isRegularShelf()) {
+        if (!mBookshelf.isAllBooks()) {
             if (helper.hasBookshelfGroup()) {
                 // we have the group, and we want a specific shelf, just add an 'exists' filter.
                 mFilters.add(() -> "EXISTS(SELECT NULL FROM "
@@ -1176,9 +1176,6 @@ public class BooklistBuilder
         // future state of the affected rows.
         boolean expand;
 
-        //URGENT: re-introduce the desired top-level which must be kept visible
-        int topLevel = mStyle.getTopLevel();
-
         SyncLock txLock = null;
         try {
             if (!mSyncedDb.inTransaction()) {
@@ -1373,14 +1370,18 @@ public class BooklistBuilder
             stmt.bindLong(++p, startRow);
             stmt.bindLong(++p, endRow);
 
-            int rowsUpdated = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                 Logger.debug(this, "preserveNodes",
                              "bookshelfId=" + mBookshelf.getId(),
                              "styleId=" + mStyle.getId(),
 
                              "startRow=" + startRow,
-                             "endRow=" + endRow,
+                             "endRow=" + endRow);
+            }
+
+            int rowsUpdated = stmt.executeUpdateDelete();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+                Logger.debug(this, "preserveNodes",
                              "rowsUpdated=" + rowsUpdated);
             }
 

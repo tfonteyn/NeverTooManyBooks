@@ -61,7 +61,7 @@
     <string name="debug_send_info_text">
         This will create a backup copy of your database as well as any log files and
         send it to the developers. If you do not wish to send any of these files,
-        delete it from the mail attachments before sending.
+        delete them from the mail attachments before sending.
     </string>
 
     <string name="acra_resDialogText">
@@ -1237,8 +1237,10 @@
     <!-- Default 'name' for anything that has a name -->
     <string name="name">Name</string>
 
-    <string name="lbl_standard">Standard</string>
-    <string name="lbl_advanced">Advanced</string>
+    <!-- Local search uses the single entry search form (top of the screen). -->
+    <string name="lbl_local_search_standard">Standard</string>
+    <!-- Local search uses the dedicated search form activity screen. -->
+    <string name="lbl_local_search_advanced">Advanced</string>
 
     <!-- ####################################################################################### -->
     <!-- == Field labels == -->
@@ -1394,7 +1396,7 @@
     <string name="lbl_websites">Websites</string>
 
     <!-- Admin GROUP -->
-    <string name="lbl_data_import_export">Import / Export</string>
+    <string name="lbl_data_import_export">Backup / Import</string>
     <!-- Admin -->
     <string name="lbl_backup_to_archive">Backup to Archive</string>
     <!-- Admin -->
@@ -1534,9 +1536,9 @@
     <string name="book_color_support_color">Uncolored + support color</string>
 
 
-    <string name="lbl_cleanup">Cleanup</string>
     <string name="pg_camera">Camera</string>
     <string name="pg_image_cache">Images cache</string>
+    <string name="pt_show_goodreads">Show Goodreads menus</string>
 
 
 </resources>
