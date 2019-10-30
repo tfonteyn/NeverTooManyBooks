@@ -74,10 +74,6 @@ public final class Site
 
     /** user preference: enable/disable this site. */
     private boolean mEnabled;
-    /** user preference: the priority/order the list of sites will be searched. */
-    private int mPriority;
-    /** for now hard-coded, but plumbing to have this as a user preference is done. */
-    private int mReliability;
 
     /** the class which implements the search engine for a specific site. */
     private SearchEngine mSearchEngine;
@@ -89,20 +85,14 @@ public final class Site
      * @param id          Internal ID, bitmask based
      * @param name        user visible name
      * @param enabled     flag
-     * @param priority    the search priority order
-     * @param reliability the search reliability order
      */
     private Site(@SearchSites.Id final int id,
                  @NonNull final String name,
-                 final boolean enabled,
-                 final int priority,
-                 final int reliability) {
+                 final boolean enabled) {
 
         this.id = id;
         mName = name;
         mEnabled = enabled;
-        mPriority = priority;
-        mReliability = reliability;
         loadFromPrefs(PreferenceManager.getDefaultSharedPreferences(App.getAppContext()));
     }
 
@@ -117,8 +107,6 @@ public final class Site
         id = in.readInt();
         mName = SearchSites.getName(id);
         mEnabled = in.readInt() != 0;
-        mPriority = in.readInt();
-        mReliability = in.readInt();
     }
 
     /**
@@ -127,14 +115,10 @@ public final class Site
      *
      * @param id          Internal ID, bitmask based
      * @param enabled     flag
-     * @param priority    the search priority order
-     * @param reliability the search reliability order
      */
     static Site newSite(@SearchSites.Id final int id,
-                        final boolean enabled,
-                        final int priority,
-                        final int reliability) {
-        return new Site(id, SearchSites.getName(id), enabled, priority, reliability);
+                        final boolean enabled) {
+        return new Site(id, SearchSites.getName(id), enabled);
     }
 
     /**
@@ -143,16 +127,14 @@ public final class Site
      *
      * @param id       Internal ID, bitmask based
      * @param enabled  flag
-     * @param priority the search priority order
      */
     static Site newCoverSite(@SearchSites.Id final int id,
-                             final boolean enabled,
-                             final int priority) {
+                             final boolean enabled) {
 
         // Reminder: the name is used for preferences... so the suffix here must be hardcoded.
         String name = SearchSites.getName(id) + "-Covers";
         // by default, reliability == order.
-        return new Site(id, name, enabled, priority, priority);
+        return new Site(id, name, enabled);
     }
 
     /**
@@ -171,15 +153,11 @@ public final class Site
     private void loadFromPrefs(@NonNull final SharedPreferences prefs) {
         String lcName = PREF_PREFIX + mName.toLowerCase(Locale.getDefault()) + '.';
         mEnabled = prefs.getBoolean(lcName + "enabled", mEnabled);
-        mPriority = prefs.getInt(lcName + "order", mPriority);
-        mReliability = prefs.getInt(lcName + "reliability", mReliability);
     }
 
     void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
         String lcName = PREF_PREFIX + mName.toLowerCase(Locale.getDefault()) + '.';
         editor.putBoolean(lcName + "enabled", mEnabled);
-        editor.putInt(lcName + "order", mPriority);
-        editor.putInt(lcName + "reliability", mReliability);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -196,8 +174,6 @@ public final class Site
                               final int flags) {
         dest.writeInt(id);
         dest.writeInt(mEnabled ? 1 : 0);
-        dest.writeInt(mPriority);
-        dest.writeInt(mReliability);
     }
 
     @NonNull
@@ -213,22 +189,6 @@ public final class Site
         mEnabled = enabled;
     }
 
-    int getPriority() {
-        return mPriority;
-    }
-
-    public void setPriority(final int priority) {
-        mPriority = priority;
-    }
-
-    int getReliability() {
-        return mReliability;
-    }
-
-    public void setReliability(final int reliability) {
-        mReliability = reliability;
-    }
-
     @Override
     @NonNull
     public String toString() {
@@ -236,8 +196,6 @@ public final class Site
                + "id=" + id
                + ", mName=`" + mName + '`'
                + ", mEnabled=" + mEnabled
-               + ", mPriority=" + mPriority
-               + ", mReliability=" + mReliability
                + ", mSearchEngine=" + mSearchEngine
                + '}';
     }

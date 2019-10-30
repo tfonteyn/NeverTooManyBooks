@@ -533,7 +533,7 @@ public class SearchCoordinator {
             // If ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
             final List<Integer> uncertain = new ArrayList<>();
-            for (Site site : SearchSites.getSitesByReliability()) {
+            for (Site site : SearchSites.getSitesByDataReliability()) {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);
                     if (bookData != null && bookData.containsKey(DBDefinitions.KEY_ISBN)) {
@@ -551,7 +551,7 @@ public class SearchCoordinator {
             mBookData.putString(DBDefinitions.KEY_ISBN, mIsbn);
         } else {
             // If ISBN was not passed, then just use the default order
-            for (Site site : SearchSites.getSitesByReliability()) {
+            for (Site site : SearchSites.getSitesByDataReliability()) {
                 results.add(site.id);
             }
         }

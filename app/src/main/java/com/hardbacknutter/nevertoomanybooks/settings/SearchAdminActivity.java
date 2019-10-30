@@ -217,18 +217,17 @@ public class SearchAdminActivity
     private ArrayList<Site> doSave() {
         ArrayList<Site> siteList = null;
         if (mIsDirty) {
-
             //ENHANCE: compare this approach to what is used in EditBookFragment & children.
             // Decide later...
             siteList = ((SearchOrderFragment) mAdapter.getItem(TAB_ORDER)).getList();
             if (siteList != null) {
-                SearchSites.setSearchOrder(this, siteList);
+                SearchSites.setOrder(this, siteList);
             }
 
             ArrayList<Site> coverList =
                     ((SearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).getList();
             if (coverList != null) {
-                SearchSites.setCoverSearchOrder(this, coverList);
+                SearchSites.setCoverOrder(this, coverList);
             }
         }
         return siteList;

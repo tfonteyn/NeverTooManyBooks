@@ -125,13 +125,6 @@ public class SearchOrderFragment
      */
     @Nullable
     public ArrayList<Site> getList() {
-        // have we been brought to the front ?
-        if (mListView != null) {
-            // walk the list, and use the position of the item as the site.priority
-            for (int row = 0; row < mList.size(); row++) {
-                mList.get(row).setPriority(row);
-            }
-        }
         return mList;
     }
 
