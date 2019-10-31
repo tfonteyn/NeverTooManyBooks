@@ -209,7 +209,7 @@ public class AuthorWorksFragment
             .setIcon(R.drawable.ic_delete);
 
         String title = item.getTitle();
-        new MenuPicker<>(getContext(), title, null, menu, position, this::onContextItemSelected)
+        new MenuPicker<>(getContext(), title, menu, position, this::onContextItemSelected)
                 .show();
     }
 

@@ -176,7 +176,8 @@ public final class StandardDialogs {
         if (required) {
             message = context.getString(R.string.info_registration_required, site);
         } else {
-            message = context.getString(R.string.info_registration_benefits, site);
+            message = context.getString(R.string.info_registration_benefits, site,
+                                        context.getString(R.string.lbl_credentials));
         }
 
         AlertDialog dialog = new AlertDialog.Builder(context)

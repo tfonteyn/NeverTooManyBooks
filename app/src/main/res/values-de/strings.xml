@@ -94,7 +94,7 @@
     <string name="lbl_about_translators">&APP_NAME; ist das Ergebnis der Arbeit vieler Personen und würde nicht so weit verbreitet sein ohne die großzügige Arbeit unserer freiwilligen Übersetzer (falls wir jemanden vergessen haben, geben Sie uns bitte Bescheid):</string>
     <string name="acra_resDialogCommentPrompt">Ihr Kommentar (darf auch leer bleiben):</string>
     <string name="acra_resDialogText">Anscheinend ist &APP_NAME; abgestürzt. Beschreiben Sie nach Möglichkeit alle relevanten Hinweise und drücken Sie „OK“, um uns eine E-Mail zu diesem Absturz zu senden. Sie werden das E-Mail vor dem Versand sehen können.</string>
-    <string name="acra_resNotifText">Bitte klicken Sie hier für Details</string>
+    <string name="X_acra_resNotifText">Bitte klicken Sie hier für Details</string>
     <string name="acra_resReportSendSuccessToast">Danke!</string>
     <string name="acra_resToastText">&APP_NAME; ist abgestürzt. Bitte helfen Sie uns bei der Verbesserung der App, indem Sie diesen Absturz melden.</string>
     <string name="and_others">et. al.</string>
@@ -120,7 +120,7 @@
     <string name="btn_loan_returned">Zurückgegeben</string>
     <string name="btn_options">Optionen</string>
     <string name="btn_reset">Zurücksetzen</string>
-    <string name="btn_show_results">Ergebnisse anzeigen</string>
+    <string name="X_btn_show_results">Ergebnisse anzeigen</string>
     <string name="btn_tell_me_more">Erzählen Sie mehr davon</string>
     <string name="btn_this_book">Dieses Buch</string>
     <string name="bytes">%.0fB</string>
@@ -144,9 +144,9 @@
     <string name="error_column_is_blank">Die Spalte %1$s ist in Zeile %2$d leer</string>
     <string name="error_columns_are_blank">Die Spalten %1$s sind in der Zeile %2$d leer</string>
     <string name="error_email_failed">Das Senden der E-Mail ist fehlgeschlagen.</string>
-    <string name="error_failed_x">Fehlgeschlagen: %1$d</string>
+    <string name="X_error_failed_x">Fehlgeschlagen: %1$d</string>
     <string name="error_google_play_store_missing">Google Play Store ist nicht installiert</string>
-    <string name="error_if_the_problem_persists">Wenn das Problem weiterhin besteht, kontaktieren Sie den Support über das Menü „Verwaltung“</string>
+    <string name="error_if_the_problem_persists">Wenn das Problem weiterhin besteht, wenden Sie sich über die Option „%1$s“ unten auf der Einstellungsseite an den Support.</string>
     <string name="error_import_failed">Import gescheitert.</string>
     <string name="error_network_timeout">Keine Antwort, bitte versuchen Sie es erneut</string>
     <string name="error_no_external_crop_app">Eine Anwendung zum Zuschneiden von Bildern wurde nicht gefunden</string>
@@ -228,12 +228,12 @@
     <string name="import_options_dialog_title">Wählen Sie aus, was importiert werden soll.</string>
     <string name="import_warning_old_archive">Diese Option wird für ältere Archivversionen nicht unterstützt.</string>
     <string name="info_authorized">Autorisiert</string>
-    <string name="info_cleanup_files_text">Die Dateien belegen %1$s Speicherplatz auf der SD-Karte. Log-Dateien und andere Daten werden bei jeder App-Aktualisierung, Sicherungskopie oder wenn die App abstürzt auf der SD-Karte gespeichert. Klicken Sie den Knopf unten, um diese Dateien von der SD-Karte zu entfernen. Wenn Sie Abstürze oder andere Fehler erhalten, ziehen Sie bitte in Betracht, den „Sende Informationen“ Knopf zuerst zu benutzen.</string>
+    <string name="info_cleanup_files_text">Die Dateien belegen %1$s Speicherplatz auf der SD-Karte. Log-Dateien und andere Daten werden bei jeder App-Aktualisierung, Sicherungskopie oder wenn die App abstürzt auf der SD-Karte gespeichert. Klicken Sie den Knopf unten, um diese Dateien von der SD-Karte zu entfernen. Wenn Sie Abstürze oder andere Fehler erhalten, ziehen Sie bitte in Betracht, den „%2$s“ Knopf zuerst zu benutzen.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d Bücher in %2$d Einträgen werden angezeigt</string>
     <string name="X_info_install_scanner">Um ISBN-Barcodes zu scannen, tippen Sie unten auf, um eine dieser Barcodescanner-Anwendungen zu installieren.</string>
     <string name="info_manage_fields">Die ausgewählten Felder werden im Bildschirm Buch hinzufügen/bearbeiten angezeigt. Nicht ausgewählte Felder werden nicht angezeigt.</string>
     <string name="info_not_authorized">Nicht autorisiert</string>
-    <string name="info_registration_benefits">Diese Funktion profitiert von der Registrierung bei %1$s.\nMöchten Sie weitere Informationen sehen oder diese Nachricht deaktivieren?\n Sie finden diese Informationen zu einem späteren Zeitpunkt in den Einstellungen unter „Anmeldeinformationen“.</string>
+    <string name="info_registration_benefits">Diese Funktion profitiert von der Registrierung bei %1$s.\nMöchten Sie weitere Informationen sehen oder diese Nachricht deaktivieren?\n Sie finden diese Informationen zu einem späteren Zeitpunkt in den Einstellungen unter „%2$s“.</string>
     <string name="info_registration_required">Diese Funktion erfordert eine Registrierung bei %1$s.\n Möchten Sie weitere Informationen sehen?</string>
     <string name="info_select_fields_to_update">Die ausgewählten Felder werden aus dem Internet aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>
     <string name="info_share_book_im_reading">Ich lese „%1$s“ von %2$s %3$s %4$s</string>
@@ -359,12 +359,11 @@
     <string name="lt_url_text_register">Registrieren Sie sich bei LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="menu_about">Über diese App</string>
-    <string name="menu_add_book">Buch hinzufügen…</string>
+    <string name="X_menu_add_book">Buch hinzufügen…</string>
     <string name="menu_add_book_by_barcode_scan">Barcode/ISBN scannen</string>
     <string name="menu_add_book_by_isbn">ISBN eingeben</string>
     <string name="menu_add_book_manually">Manuell hinzufügen</string>
-    <string name="menu_administration">Verwaltung…</string>
-    <string name="title_administration">Verwaltung</string>
+    <string name="X_menu_administration">Verwaltung…</string>
     <string name="menu_amazon_books_by_author">Bücher von diesem Autor</string>
     <string name="menu_amazon_books_by_author_in_series">Bücher nach Autor/Serie</string>
     <string name="menu_amazon_books_in_series">Bücher in dieser Serie</string>
@@ -389,7 +388,6 @@
     <string name="menu_duplicate">Vervielfältigen</string>
     <string name="menu_edit">Bearbeiten…</string>
     <string name="menu_level_expand">Alles ausklappen</string>
-    <string name="menu_hide_keyboard">Tastatur ausblenden</string>
     <string name="menu_loan_lend_book">Buch verleihen…</string>
     <string name="menu_loan_return_book">Geliehenes Buch ist zurück</string>
     <string name="menu_populate_toc">Automatisches Ausfüllen der Anthologie-Titel (nur ISFDB)</string>
@@ -411,7 +409,7 @@
     <string name="pe_thumbnails_cache_resized_each_time">Größe bei Bedarf ändern (geringerer Speicherverbrauch, langsamerer Bildlauf)</string>
     <string name="pe_thumbnails_cache_resized_stored">Cover-Bilder zwischenspeichern (höherer Speicherverbrauch, schnellerer Bildlauf)</string>
     <string name="pe_use_recommended_option">Verwenden Sie die empfohlene Option</string>
-    <string name="pg_bob_show_details">Zusätzliche Buchdetails</string>
+    <string name="pg_bob_show_details">Buchdetails</string>
     <string name="pg_booklist">Buchlisten</string>
     <string name="pg_filters">Buchfilter</string>
     <string name="pg_general">Allgemein</string>
@@ -459,7 +457,7 @@
     <string name="pt_bob_header">Zusammenfassung in der Kopfzeile</string>
     <string name="pt_bob_list_rebuild_state">Startstatus der Buchliste</string>
     <string name="pt_bob_authors_sort">Autoren sortieren nach</string>
-    <string name="pt_bob_text_size">Größe der Einträge in der Bücherliste</string>
+    <string name="pt_bob_font_scale">Größe der Einträge in der Bücherliste</string>
     <string name="pt_thumbnails_cache_resized">Größe der Cover-Bilder ändern zwischenspeichern</string>
     <string name="pt_bob_thumbnails_show">Cover-Bilder anzeigen</string>
     <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
@@ -516,7 +514,6 @@
     <string name="tip_authors_works">Verwendete Icons:</string>
     <string name="tip_authors_works_book">Buch.</string>
     <string name="tip_authors_works_multiple_books">Eintrag ist in mehreren Büchern vorhanden.</string>
-    <string name="tip_authors_works_toc">Eintragung des Inhaltsverzeichnisses (TOC), z. Geschichte.</string>
     <string name="tip_autorotate_camera_images">Wenn Sie Bilder von der Kamera immer in dieselbe Richtung drehen müssen, versuchen Sie,die automatische Drehrichtung in den Einstellungen festzulegen.</string>
     <string name="tip_background_task_events">Sie können hier die mit einer Hintergrundaufgabe verbundenen Ereignisse sehen. Nach dem Klick auf ein Ereignis können Sie eine Vielzahl von Aktionen durchführen, die für dieses Ereignis passen.</string>
     <string name="tip_background_tasks">Sie können hier die jetzt laufenden Aufgaben und erledigte, mit Fehlern oder anderen Ereignissen beendete Aufgaben sehen. Nach dem Klick auf eine Aufgabe können Sie die mit dieser Aufgabe verbundenen Ereignisse sehen und die Aufgabe mit den verbundenen Ereignissen löschen.</string>
@@ -524,7 +521,7 @@
     <string name="tip_book_search_by_text">Das Hinzufügen der Bücher per ISBN ist genauer als das Hinzufügen per Autor und Titel und sollte im Allgemeinen bevorzugt werden. Bitte beachten Sie, dass der korrekte Barcode manchmal auf der Rückseite des Covers zu finden ist.</string>
     <string name="tip_booklist_style_groups">In diesem Bildschirm können Sie die Hierarchie der Überschriften für einen bestimmten Buchlistenstil ändern. Ein Häkchen zeigt an, dass die Überschrift in der Liste angezeigt wird. Deaktivieren Sie dieses Kontrollkästchen, um sie auszublenden, und umgekehrt. Sie können die Hierarchie neu anordnen, indem Sie das Symbol ganz rechts in jeder Zeile nach oben oder unten ziehen.</string>
     <string name="tip_booklist_style_menu">Hier können Sie den Stil der Liste wählen.\n\nSie können auch dieses Menü anpassen und Ihre eigenen Stile erzeugen. Klicken Sie dafür auf „Anpassen“ am Ende der Liste.</string>
-    <string name="tip_booklist_style_properties">In diesem Bildschirm können Sie die Merkmale eines bestimmten Buchlistenstils festlegen. Sie können den Namen ändern, die Gruppierungen bearbeiten, um die Hierarchie zu ändern, und verschiedene andere Einstellungen anpassen, um einen für Sie nützlichen Stil zu erstellen. Sie können auch "Filter" verwenden, um die Auswahl der Bücher zu ändern, die in der Liste angezeigt werden. z.B. um nur Bücher abzurufen, die Sie noch nicht gelesen haben und mehr.</string>
+    <string name="tip_booklist_style_properties">In diesem Bildschirm können Sie die Merkmale eines bestimmten Buchlistenstils festlegen. Sie können den Namen ändern, die Gruppierungen bearbeiten, um die Hierarchie zu ändern, und verschiedene andere Einstellungen anpassen, um einen für Sie nützlichen Stil zu erstellen. Sie können auch Filter verwenden, um die Auswahl der Bücher zu ändern, die in der Liste angezeigt werden. z.B. um nur Bücher abzurufen, die Sie noch nicht gelesen haben und mehr.</string>
     <string name="tip_booklist_styles_editor">In diesem Bildschirm können Sie die Liste der Stile anpassen, die in Ihrem Standardstile-Menü angezeigt werden. Ein Häkchen zeigt an, dass der Stil in der Liste angezeigt wird. Deaktivieren Sie dieses Kontrollkästchen, um ihn auszublenden, und umgekehrt. Wenn keine Stile angekreuzt sind, werden alle Stile angezeigt. Sie können die Hierarchie neu anordnen, indem Sie das Symbol ganz rechts in jeder Zeile nach oben oder unten ziehen. Wenn Sie lange auf eine andere Stelle in einer Reihe drücken, können Sie die Details eines bestimmten Stils bearbeiten oder klonen. Wenn Sie einen Stil geklont und Ihre Meinung geändert haben, müssen Sie ihn selbst löschen.</string>
     <string name="tip_dialog_title">Hinweis</string>
     <string name="tip_reset_all">Hinweise zurücksetzen</string>
@@ -612,7 +609,6 @@
     <string name="pt_bob_show_details_uses_task">Zusätzliche Buchdetails abrufen</string>
     <string name="pt_bob_show_details_uses_task_on">verspätet</string>
     <string name="menu_search_local">Lokale Suche</string>
-    <string name="pg_reformat">Umformatieren</string>
     <string name="progress_msg_n_books_processed">%1$d Bücher verarbeitet</string>
     <string name="X_progress_end_n_books_exported">%1$d Bücher exportiert</string>
     <string name="warning_select_an_existing_folder">Bitte wählen Sie einen vorhandenen Verzeichnis.</string>
@@ -645,5 +641,11 @@
     <string name="lbl_color">Farbe</string>
     <string name="pg_image_cache">Bilder-Cache</string>
     <string name="book_color_full_color">Farbig</string>
-    <string name="book_color_uncolored">Ungefärbt</string>
+    <string name="book_color_uncolored">"schwarzweiß "</string>
+    <string name="size_hidden">Versteckt</string>
+    <string name="pt_show_goodreads">Goodreads-Menüs anzeigen</string>
+    <string name="pt_search_reformat_format">Standardisieren Namen der Buchformate</string>
+    <string name="pt_search_reformat_color">Standardisieren Namen der Buchfarben</string>
+    <string name="lbl_data_import_export">Sichern &amp; Importieren</string>
+    <string name="lbl_author_type_intro">Einführung etc.</string>
 </resources>

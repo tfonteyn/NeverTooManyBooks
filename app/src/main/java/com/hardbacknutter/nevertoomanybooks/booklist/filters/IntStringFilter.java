@@ -33,7 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInteger;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
@@ -41,8 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  * Not directly used for now.
  * Split of from {@link BooleanFilter} making the latter a subclass of this one.
  */
-public class IntegerFilter
-        extends PInteger
+public class IntStringFilter
+        extends PIntString
         implements Filter<Integer> {
 
     private static final Integer P_NOT_USED = -1;
@@ -53,12 +53,12 @@ public class IntegerFilter
     private final TableDefinition mTable;
     private final DomainDefinition mDomain;
 
-    IntegerFilter(@StringRes final int labelId,
-                  @NonNull final String key,
-                  @NonNull final String uuid,
-                  final boolean isPersistent,
-                  @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
-                  @NonNull final DomainDefinition domain) {
+    IntStringFilter(@StringRes final int labelId,
+                    @NonNull final String key,
+                    @NonNull final String uuid,
+                    final boolean isPersistent,
+                    @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
+                    @NonNull final DomainDefinition domain) {
         super(key, uuid, isPersistent, P_NOT_USED);
         mLabelId = labelId;
         mTable = table;
@@ -97,7 +97,7 @@ public class IntegerFilter
     @Override
     @NonNull
     public String toString() {
-        return "IntegerFilter{"
+        return "IntStringFilter{"
                + "mTable=" + mTable.getName()
                + ", mDomain=" + mDomain
                + ", mLabelId=" + mLabelId

@@ -27,19 +27,34 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 
 /**
- * An Integer is stored as a String
+ * An Integer stored as an Integer.
  * <p>
- * Used for {@link androidx.preference.ListPreference}
- * The Preference uses 'select 1 of many' type and insists on a String.
+ * Used for {@link androidx.preference.SeekBarPreference}
  */
 public class PInteger
         extends PPrefBase<Integer>
         implements PInt {
+
+    /**
+     * Constructor. Uses the global setting as the default value, or 0 if none.
+     *
+     * @param key          key of preference
+     * @param uuid         of the style
+     * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
+     */
+    public PInteger(@NonNull final String key,
+                    @NonNull final String uuid,
+                    final boolean isPersistent) {
+        super(key, uuid, isPersistent, App.getPrefInteger(key, 0));
+    }
 
     /**
      * Constructor. Uses the global setting as the default value,
@@ -54,7 +69,36 @@ public class PInteger
                     @NonNull final String uuid,
                     final boolean isPersistent,
                     @NonNull final Integer defaultValue) {
-        super(key, uuid, isPersistent, App.getListPreference(key, defaultValue));
+        super(key, uuid, isPersistent, App.getPrefInteger(key, defaultValue));
+    }
+
+    @Override
+    public void set(@Nullable final Integer value) {
+        if (!mIsPersistent) {
+            mNonPersistedValue = value;
+        } else if (value == null) {
+            remove();
+        } else {
+            getPrefs().edit().putInt(getKey(), value).apply();
+        }
+    }
+
+    @Override
+    public void set(@NonNull final SharedPreferences.Editor ed,
+                    @Nullable final Integer value) {
+        if (value == null) {
+            ed.remove(getKey());
+        } else {
+            ed.putInt(getKey(), value);
+        }
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PBoolean{" + super.toString()
+               + ", value=`" + get() + '`'
+               + '}';
     }
 
     @NonNull
@@ -63,26 +107,13 @@ public class PInteger
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            // reminder: Integer is stored as a String
-            String value = getPrefs().getString(getKey(), null);
-            if (value == null) {
-                // not present, fallback to global/default
-                value = getGlobal().getString(getKey(), null);
-                if (value == null || value.isEmpty()) {
-                    return mDefaultValue;
-                }
-            } else if (value.isEmpty()) {
-                return 0;
+            // value is a primitive, never null
+            if (getPrefs().contains(getKey())) {
+                return getPrefs().getInt(getKey(), mDefaultValue);
+            } else {
+                // not present, fallback to global.
+                return getGlobal().getInt(getKey(), mDefaultValue);
             }
-            return Integer.parseInt(value);
         }
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "PInteger{" + super.toString()
-               + ", value=`" + get() + '`'
-               + '}';
     }
 }

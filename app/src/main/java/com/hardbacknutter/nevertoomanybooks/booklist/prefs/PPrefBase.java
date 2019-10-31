@@ -38,7 +38,7 @@ import androidx.preference.PreferenceManager;
 import com.hardbacknutter.nevertoomanybooks.App;
 
 /**
- * Base class for a generic Preference.
+ * Base class for a generic Preference stored as a {@code String}.
  * <p>
  * Note that the methods that take a SharedPreferences.Editor do not need to check
  * on uuid or persistence as obviously that is decided by the caller.

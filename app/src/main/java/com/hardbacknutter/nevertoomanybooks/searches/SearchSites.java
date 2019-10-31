@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
@@ -436,20 +437,24 @@ public final class SearchSites {
         saveOrder(context, ListType.Covers, newList);
     }
 
+    /**
+     * Save the order of the given list (ids) to preferences.
+     *
+     * @param context  Current context
+     * @param listType to save
+     * @param newList  to save
+     */
     private static void saveOrder(@NonNull final Context context,
                                   final ListType listType,
                                   @NonNull final ArrayList<Site> newList) {
 
         SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context).edit();
-        StringBuilder order = new StringBuilder();
-        // store individual site settings
-        for (Site site : newList) {
+        String order = Csv.join(SEP, newList, site -> {
+            // store individual site settings
             site.saveToPrefs(ed);
-            order.append(site.id).append(SEP);
-        }
-        // store the order
-        order.deleteCharAt(order.length() - 1);
-        ed.putString(listType.getKey(), order.toString());
+            return String.valueOf(site.id);
+        });
+        ed.putString(listType.getKey(), order);
         ed.apply();
     }
 

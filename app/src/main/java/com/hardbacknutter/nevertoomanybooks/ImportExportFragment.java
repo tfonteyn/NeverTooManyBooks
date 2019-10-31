@@ -489,7 +489,8 @@ public class ImportExportFragment
                             msg = getString(R.string.error_import_invalid_archive);
                         } else if (message.exception instanceof IOException) {
                             msg = getString(R.string.error_storage_not_readable) + "\n\n"
-                                  + getString(R.string.error_if_the_problem_persists);
+                                  + getString(R.string.error_if_the_problem_persists,
+                                              getString(R.string.lbl_send_debug_info));
                         } else {
                             msg = getString(R.string.error_unexpected_error);
                         }
@@ -732,7 +733,8 @@ public class ImportExportFragment
                     case Failed: {
                         String msg = getString(R.string.error_storage_not_writable)
                                      + "\n\n"
-                                     + getString(R.string.error_if_the_problem_persists);
+                                     + getString(R.string.error_if_the_problem_persists,
+                                                 getString(R.string.lbl_send_debug_info));
 
                         //noinspection ConstantConditions
                         new AlertDialog.Builder(getContext())

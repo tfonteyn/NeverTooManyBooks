@@ -94,7 +94,7 @@
     <string name="lbl_about_translators">&APP_NAME; je výsledkem snahy mnoha lidí a neměl by tak široký rozsah bez velkorysé pomoci našich dobrovolných překladatelů (Pokud jsme na někoho zapomněli, sdělte nám to prosím):</string>
     <string name="acra_resDialogCommentPrompt">Váš komentář (nepovinné):</string>
     <string name="acra_resDialogText">Vypadá to, že došlo k neočekávanému pádu aplikace &APP_NAME;. Napište nám prosím o tomto problému všechny informace, které považujete za relevantní, a tlačítkem „OK“ nám je odešlete. Před odesláním mailu budete mít ještě možnost jej zkontrolovat.</string>
-    <string name="acra_resNotifText">Klikněte zde pro více informací</string>
+    <string name="X_acra_resNotifText">Klikněte zde pro více informací</string>
     <string name="acra_resReportSendSuccessToast">Děkujeme!</string>
     <string name="acra_resToastText">Došlo k neočekávanému pádu aplikace &APP_NAME;. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
     <string name="and_others">a další</string>
@@ -118,7 +118,7 @@
     <string name="btn_loan_returned">Vráceno</string>
     <string name="btn_options">Možnosti</string>
     <string name="btn_reset">Reset</string>
-    <string name="btn_show_results">Zobrazit výsledky</string>
+    <string name="X_btn_show_results">Zobrazit výsledky</string>
     <string name="btn_tell_me_more">Dozvědět se více</string>
     <string name="btn_this_book">Tato kniha</string>
     <string name="bytes">%.0fB</string>
@@ -142,9 +142,9 @@
     <string name="error_column_is_blank">Sloupec %1$s je prázdný na řádku %2$d</string>
     <string name="error_columns_are_blank">Sloupce %1$s jsou prázdné na řádku %2$d</string>
     <string name="error_email_failed">Odeslání e-mailu se nezdařilo.</string>
-    <string name="error_failed_x">Nepodařilo se: %1$d</string>
+    <string name="X_error_failed_x">Nepodařilo se: %1$d</string>
     <string name="error_google_play_store_missing">Google Play Store není nainstalován</string>
-    <string name="error_if_the_problem_persists">Pokud problémy přetrvají, kontaktujte správce.</string>
+    <string name="error_if_the_problem_persists">Pokud problém přetrvává, obraťte se na podporu prostřednictvím možnosti „%1$s“ v dolní části stránky nastavení.</string>
     <string name="error_import_failed">Import se nezdařil.</string>
     <string name="error_network_timeout">Žádná odpověď, zkuste to prosím znovu</string>
     <string name="error_no_external_crop_app">Aplikace pro oříznutí obrázků nebyla nalezena</string>
@@ -226,12 +226,12 @@
     <string name="import_options_dialog_title">Vyberte, co bude importováno.</string>
     <string name="import_warning_old_archive">Tato volba není podporována u starších verzí archivu.</string>
     <string name="info_authorized">Autorizováno</string>
-    <string name="info_cleanup_files_text">Dočasné soubory momentálně zabírají %1$s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkal s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka „Poslat informace“.</string>
+    <string name="info_cleanup_files_text">Dočasné soubory momentálně zabírají %1$s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkal s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka „%2$s“.</string>
     <string name="info_displaying_n_books_in_m_entries">Zobrazení %1$d knih v položkách %2$d</string>
     <string name="X_info_install_scanner">Chcete-li skenovat čárové kódy ISBN, klepněte na níže a nainstalujte jednu z těchto aplikací pro snímání čárových kódů.</string>
     <string name="info_manage_fields">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
     <string name="info_not_authorized">Neautorizováno</string>
-    <string name="info_registration_benefits">Tato funkce těží z registrace u %1$s.\nChcete zobrazit další informace nebo tuto zprávu deaktivovat?\nTyto informace najdete později v části „Přihlašovací údaje“ v nastavení.</string>
+    <string name="info_registration_benefits">Tato funkce těží z registrace u %1$s.\nChcete zobrazit další informace nebo tuto zprávu deaktivovat?\nTyto informace najdete později v části „%2$s“ v nastavení.</string>
     <string name="info_registration_required">Tato funkce vyžaduje registraci s %1$s.\n Chtěli byste vidět více informací?</string>
     <string name="info_select_fields_to_update">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
     <string name="info_share_book_im_reading">Čtu „%1$s“ o %2$s %3$s %4$s</string>
@@ -357,12 +357,11 @@
     <string name="lt_url_text_register">Registrovat na LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="menu_about">O této aplikaci</string>
-    <string name="menu_add_book">Přidat knihu…</string>
+    <string name="X_menu_add_book">Přidat knihu…</string>
     <string name="menu_add_book_by_barcode_scan">Skenování čárového kódu / ISBN</string>
     <string name="menu_add_book_by_isbn">Zadejte ISBN</string>
     <string name="menu_add_book_manually">Přidat ručně</string>
-    <string name="menu_administration">řízení…</string>
-    <string name="title_administration">řízení</string>
+    <string name="X_menu_administration">řízení…</string>
     <string name="menu_amazon_books_by_author">Knihy tohoto autora</string>
     <string name="menu_amazon_books_by_author_in_series">Knihy podle autora / série</string>
     <string name="menu_amazon_books_in_series">Knihy v této sérii</string>
@@ -387,7 +386,6 @@
     <string name="menu_duplicate">Kopírovat</string>
     <string name="menu_edit">Upravit…</string>
     <string name="menu_level_expand">Rozbalit vše</string>
-    <string name="menu_hide_keyboard">Skrýt klávesnici</string>
     <string name="menu_loan_lend_book">Půjčit knihu…</string>
     <string name="menu_loan_return_book">Vypůjčená kniha je zpět</string>
     <string name="menu_populate_toc">Automaticky naplnit tituly (EXPERIMENTÁLNÍ FUNKCE)</string>
@@ -409,7 +407,7 @@
     <string name="pe_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně paměti, rolování bude pomalejší)</string>
     <string name="pe_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více paměti)</string>
     <string name="pe_use_recommended_option">Použijte doporučenou možnost</string>
-    <string name="pg_bob_show_details">Podrobnosti o knize</string>
+    <string name="pg_bob_show_details">Podrobnosti knihy</string>
     <string name="pg_booklist">Seznamy knih</string>
     <string name="pg_filters">Filtry knih</string>
     <string name="pg_general">Obecné</string>
@@ -457,7 +455,7 @@
     <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
     <string name="pt_bob_list_rebuild_state">Stav spuštění seznamu knih</string>
     <string name="pt_bob_authors_sort">Seřadit autory podle</string>
-    <string name="pt_bob_text_size">Velikost položek na seznamu knih</string>
+    <string name="pt_bob_font_scale">Velikost položek na seznamu knih</string>
     <string name="pt_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
     <string name="pt_bob_thumbnails_show">Zobrazit náhledy</string>
     <string name="pt_collect_series_info_from_toc">Sbírejte informace o sériích z obsahu</string>
@@ -511,7 +509,6 @@
     <string name="tip_authors_works">Použité ikony:</string>
     <string name="tip_authors_works_book">Kniha.</string>
     <string name="tip_authors_works_multiple_books">Záznam je přítomen ve více knihách.</string>
-    <string name="tip_authors_works_toc">Záznam obsahu (TOC), např. příběh.</string>
     <string name="tip_autorotate_camera_images">Pokud se vždy nacházíte ve stejném směru, zkuste změnit předvolby aplikace tak, aby určovaly rotaci, která se použije automaticky.</string>
     <string name="tip_background_task_events">Odtud můžete sledovat události spojené s úlohami na pozadí. Kliknutí na událost Vám umožní provést celou řadu akcí spojených s danou událostí.</string>
     <string name="tip_background_tasks">Odtud můžete sledovat aktuálně běžící úlohy spolu s úlohami, které již byly ukončeny, ale při jejich provádění došlo k nějaké chybě. Kliknutí na událost Vám umožní prohlédnout si události spojené s danou úlohou, nebo její odstranění (spolu se souvisejícími událostmi).</string>
@@ -519,7 +516,7 @@
     <string name="tip_book_search_by_text">Přidání knihy podle ISBN kódu je přesnější než její přidání podle názvu a autora - proto tento postup doporučujeme. Pamatujte, že správný kód můžete ve většině případů nalézt přímo na obalu knihy. \n\n</string>
     <string name="tip_booklist_style_groups">Na této obrazovce můžete upravit hierarchii nadpisů pro určitý styl seznamu knih. Zaškrtnutí označuje nadpis, který bude zobrazen v seznamu, odškrtnutím jej skryjete a naopak. Hierarchii můžete změnit tak, že přetáhnete ikonu v pravé krajní části každého řádku nahoru nebo dolů.</string>
     <string name="tip_booklist_style_menu">Toto menu umožňuje zvolit si styl seznamu.\n\nProstřednictvím tlačítka „Přizpůsobit“ (na konci seznamu) máte možnost si toto menu přizpůsobit, nebo si vytvořit vlastní styl.</string>
-    <string name="tip_booklist_style_properties">Na této obrazovce můžete nastavit vlastnosti konkrétního stylu seznamu knih. Můžete změnit název, upravit seskupení a změnit hierarchii a upravit řadu dalších preferencí tak, abyste vytvořili styl, který považujete za užitečný. Je také možné použít „Filtry„ k úpravě výběru knih, které budou zobrazeny v seznamu. např. načítat pouze knihy, které jste ještě nečetli.</string>
+    <string name="tip_booklist_style_properties">Na této obrazovce můžete nastavit vlastnosti konkrétního stylu seznamu knih. Můžete změnit název, upravit seskupení a změnit hierarchii a upravit řadu dalších preferencí tak, abyste vytvořili styl, který považujete za užitečný. Je také možné použít filtry k úpravě výběru knih, které budou zobrazeny v seznamu. např. načítat pouze knihy, které jste ještě nečetli.</string>
     <string name="tip_booklist_styles_editor">Na této obrazovce můžete přizpůsobit seznam stylů, které se zobrazí v nabídce výchozích stylů. Zaškrtnutí značí, že styl bude zobrazen v seznamu, odškrtnutím jej skryjete a naopak. Pokud nejsou zaškrtnuty žádné styly, zobrazí se všechny styly. Hierarchii můžete změnit tak, že přetáhnete ikonu v pravé krajní části každého řádku nahoru nebo dolů. Dlouhé stisknutí kdekoli v řadě vám umožní upravit nebo klonovat podrobnosti konkrétního stylu. Pokud jste klonovali styl a změnili jste názor, budete jej muset sami odstranit.</string>
     <string name="tip_dialog_title">Rada</string>
     <string name="tip_reset_all">Obnovit rady</string>
@@ -605,7 +602,6 @@
     <string name="progress_end_import_partially_complete">Částečný import byl dokončen</string>
     <string name="pt_bob_show_details_uses_task">Načítání podrobností o knize</string>
     <string name="pt_bob_show_details_uses_task_on">zpožděné</string>
-    <string name="pg_reformat">Přeformátovat</string>
     <string name="menu_search_local">Místní vyhledávání</string>
     <string name="lbl_edition_slipcase">Slipcase</string>
     <string name="progress_msg_n_books_processed">Zpracované knih %1$d</string>
@@ -639,6 +635,12 @@
     <string name="lbl_color">Barva</string>
     <string name="pg_image_cache">Obrázky mezipaměti</string>
     <string name="book_color_full_color">Barevný</string>
-    <string name="book_color_uncolored">Bezbarvá</string>
+    <string name="book_color_uncolored">"černobílý "</string>
+    <string name="size_hidden">Skrytý</string>
+    <string name="pt_show_goodreads">Zobrazit nabídky Goodreads</string>
+    <string name="pt_search_reformat_format">Standardizujte názvy „formát knihy“</string>
+    <string name="pt_search_reformat_color">Standardizujte názvy barev knih</string>
+    <string name="lbl_data_import_export">Zálohování a import</string>
+    <string name="lbl_author_type_intro">Úvod atd.</string>
 
 </resources>

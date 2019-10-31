@@ -139,8 +139,8 @@ public final class Prefs {
 
     public static final String pk_bob_groups = "style.booklist.groups";
     public static final String pk_bob_preferred_style = "style.booklist.preferred";
-    public static final String pk_bob_text_size = "style.booklist.scale.text";
-    public static final String pk_bob_cover_size = "style.booklist.scale.thumbnails";
+    public static final String pk_bob_font_scale = "style.booklist.scale.font";
+    public static final String pk_bob_thumbnail_scale = "style.booklist.scale.thumbnails";
 
     public static final String pk_bob_books_under_multiple_series =
             "style.booklist.group.series.show.all";

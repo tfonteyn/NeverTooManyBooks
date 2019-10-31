@@ -196,8 +196,8 @@ public final class LegacyPreferences {
                         @ImageUtils.Scale
                         int scale = (Boolean) oldValue ? ImageUtils.SCALE_MEDIUM
                                                        : ImageUtils.SCALE_SMALL;
-                        // this is now a PInteger (a ListPreference), stored as a string
-                        ed.putString(Prefs.pk_bob_cover_size, String.valueOf(scale));
+                        // this is now a PIntString (a ListPreference), stored as a string
+                        ed.putString(Prefs.pk_bob_thumbnail_scale, String.valueOf(scale));
                         break;
 
                     case "BookList.ShowLocation":
@@ -218,11 +218,10 @@ public final class LegacyPreferences {
                         break;
 
                     case "BookList.Condensed":
-                        @BooklistStyle.TextScale
-                        int con = (Boolean) oldValue ? BooklistStyle.TEXT_SCALE_SMALL
-                                                     : BooklistStyle.TEXT_SCALE_MEDIUM;
-                        // this is now a PInteger (a ListPreference), stored as a string
-                        ed.putString(Prefs.pk_bob_text_size, String.valueOf(con));
+                        @BooklistStyle.FontScale
+                        int textScale = (Boolean) oldValue ? BooklistStyle.FONT_SCALE_SMALL
+                                                           : BooklistStyle.FONT_SCALE_MEDIUM;
+                        ed.putInt(Prefs.pk_bob_font_scale, textScale);
                         break;
 
                     case "BookList.ShowHeaderInfo":

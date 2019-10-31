@@ -224,8 +224,9 @@ public class BooklistAdapter
 
         // A Book occurs always at the lowest level regardless of the groups in the style.
         if (viewType == RowKind.BOOK) {
-            switch (mStyle.getThumbnailScaleFactor()) {
-
+            @ImageUtils.Scale
+            int scale = mStyle.getThumbnailScale();
+            switch (scale) {
                 case ImageUtils.SCALE_2X_LARGE:
                     layoutId = R.layout.booksonbookshelf_row_book_3x_large_image;
                     break;
@@ -271,7 +272,7 @@ public class BooklistAdapter
         view.setPaddingRelative(indent * mLevelIndent, 0, 0, 0);
 
         // Scale text if required
-        float scale = mStyle.getScaleFactor();
+        float scale = mStyle.getTextScaleFactor();
         if (scale != 1.0f) {
             scaleTextViews(scale, view);
         }
@@ -732,7 +733,7 @@ public class BooklistAdapter
 
             // visibility is independent from actual data, so this is final.
             mCoverIsUsed = style.isUsed(UniqueId.BKEY_IMAGE);
-            mMaxCoverSize = ImageUtils.getMaxImageSize(style.getThumbnailScaleFactor());
+            mMaxCoverSize = ImageUtils.getMaxImageSize(style.getThumbnailScale());
             mCoverView = itemView.findViewById(R.id.coverImage);
             mCoverView.setVisibility(mCoverIsUsed ? View.VISIBLE : View.GONE);
 

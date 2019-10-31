@@ -86,7 +86,8 @@ public class AuthorizationResultCheckTask
 
             } else if (mException != null) {
                 msg = context.getString(R.string.gr_auth_error) + ' '
-                      + context.getString(R.string.error_if_the_problem_persists);
+                      + context.getString(R.string.error_if_the_problem_persists,
+                                          context.getString(R.string.lbl_send_debug_info));
 
             } else {
                 msg = context.getString(R.string.error_site_authentication_failed,

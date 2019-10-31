@@ -42,10 +42,10 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  * <li>value==-1 -> do not use the filter</li>
  * </ul>
  * <p>
- * Syntax sugar for {@link IntegerFilter}.
+ * Syntax sugar for {@link IntStringFilter}.
  */
 public class BooleanFilter
-        extends IntegerFilter {
+        extends IntStringFilter {
 
     public BooleanFilter(@StringRes final int labelId,
                          @NonNull final String key,

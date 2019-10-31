@@ -154,12 +154,13 @@ public class BooklistStyle
                                              | EXTRAS_PUBLISHER | EXTRAS_PUB_DATE
                                              | EXTRAS_AUTHOR | EXTRAS_ISBN;
     /** Text Scaling. */
-    public static final int TEXT_SCALE_SMALL = 1;
+    public static final int FONT_SCALE_SMALL = 0;
     /** Text Scaling. */
-    public static final int TEXT_SCALE_MEDIUM = 2;
+    public static final int FONT_SCALE_MEDIUM = 1;
     /** Text Scaling. */
     @SuppressWarnings("WeakerAccess")
-    public static final int TEXT_SCALE_LARGE = 3;
+    public static final int FONT_SCALE_LARGE = 2;
+
     private static final String PREFS_PREFIX = "bookList.style.";
     /** Preference for the current default style UUID to use. */
     public static final String PREF_BL_STYLE_CURRENT_DEFAULT = PREFS_PREFIX + "current";
@@ -225,7 +226,8 @@ public class BooklistStyle
      * Relative size of list text/images.
      * ==1 being 'normal' size
      */
-    private PInteger mScaleFontSize;
+    private PInteger mFontScale;
+
     /** Scale factor to apply for thumbnails. */
     private PInteger mThumbnailScale;
     /**
@@ -350,7 +352,7 @@ public class BooklistStyle
 
         mIsPreferred.set(in);
         mDefaultExpansionLevel.set(in);
-        mScaleFontSize.set(in);
+        mFontScale.set(in);
         mThumbnailScale.set(in);
         mShowHeaderInfo.set(in);
         mSortAuthorGivenNameFirst.set(in);
@@ -513,10 +515,10 @@ public class BooklistStyle
         mShowHeaderInfo = new PBitmask(Prefs.pk_bob_header, mUuid, isUserDefined(),
                                        SUMMARY_SHOW_ALL);
 
-        mScaleFontSize = new PInteger(Prefs.pk_bob_text_size, mUuid, isUserDefined(),
-                                      TEXT_SCALE_MEDIUM);
+        mFontScale = new PInteger(Prefs.pk_bob_font_scale, mUuid, isUserDefined(),
+                                  FONT_SCALE_MEDIUM);
 
-        mThumbnailScale = new PInteger(Prefs.pk_bob_cover_size, mUuid, isUserDefined(),
+        mThumbnailScale = new PInteger(Prefs.pk_bob_thumbnail_scale, mUuid, isUserDefined(),
                                        ImageUtils.SCALE_MEDIUM);
 
         mFetchExtrasByTask = new PBoolean(Prefs.pk_bob_use_task_for_extras, mUuid, isUserDefined(),
@@ -605,7 +607,7 @@ public class BooklistStyle
 
         mIsPreferred.writeToParcel(dest);
         mDefaultExpansionLevel.writeToParcel(dest);
-        mScaleFontSize.writeToParcel(dest);
+        mFontScale.writeToParcel(dest);
         mThumbnailScale.writeToParcel(dest);
         mShowHeaderInfo.writeToParcel(dest);
         mSortAuthorGivenNameFirst.writeToParcel(dest);
@@ -732,7 +734,7 @@ public class BooklistStyle
         // expand level
         map.put(mDefaultExpansionLevel.getKey(), mDefaultExpansionLevel);
         // relative scaling of fonts
-        map.put(mScaleFontSize.getKey(), mScaleFontSize);
+        map.put(mFontScale.getKey(), mFontScale);
         // size of thumbnails to use.
         map.put(mThumbnailScale.getKey(), mThumbnailScale);
         // list header information shown
@@ -853,37 +855,47 @@ public class BooklistStyle
     }
 
     /**
-     * Get the scaling factor to apply to text size if needed.
+     * Get the scaling <strong>factor</strong> to apply to text size if needed.
      *
-     * @return scale
+     * @return scale factor
      */
-    public float getScaleFactor() {
-        switch (mScaleFontSize.get()) {
-            case TEXT_SCALE_LARGE:
+    public float getTextScaleFactor() {
+        switch (mFontScale.get()) {
+            case FONT_SCALE_LARGE:
                 return 1.2f;
-            case TEXT_SCALE_SMALL:
+            case FONT_SCALE_SMALL:
                 return 0.8f;
-            case TEXT_SCALE_MEDIUM:
+            case FONT_SCALE_MEDIUM:
             default:
                 return 1.0f;
         }
     }
 
     /**
-     * Used by built-in styles only. Set by user via preferences screen.
+     * Get the scale <strong>identifier</strong> for the text size preferred.
+     *
+     * @return scale id
      */
-    @SuppressWarnings("SameParameterValue")
-    private void setScale(@TextScale final int scale) {
-        mScaleFontSize.set(scale);
+    @FontScale
+    public int getTextScale() {
+        return mFontScale.get();
     }
 
     /**
-     * Get the scaling factor to apply to images, or zero if images should not be shown.
+     * Used by built-in styles only. Set by user via preferences screen.
+     */
+    @SuppressWarnings("SameParameterValue")
+    private void setTextScale(@FontScale final int scale) {
+        mFontScale.set(scale);
+    }
+
+    /**
+     * Get the scale <strong>identifier</strong> for the thumbnail size preferred.
      *
-     * @return scale
+     * @return scale id
      */
     @ImageUtils.Scale
-    public int getThumbnailScaleFactor() {
+    public int getThumbnailScale() {
         //noinspection ConstantConditions
         if (!isUsed(UniqueId.BKEY_IMAGE) || mAllExtras.get(UniqueId.BKEY_IMAGE).isFalse()) {
             return ImageUtils.SCALE_NOT_DISPLAYED;
@@ -1283,7 +1295,7 @@ public class BooklistStyle
                + "\nmName=" + mName
                + "\nmIsPreferred=" + mIsPreferred
                + "\nmDefaultExpansionLevel=" + mDefaultExpansionLevel
-               + "\nmScaleFontSize=" + mScaleFontSize
+               + "\nmFontScale=" + mFontScale
                + "\nmShowHeaderInfo=" + mShowHeaderInfo
                + "\nmSortAuthorGivenNameFirst=" + mSortAuthorGivenNameFirst
                + "\nmThumbnailScale=" + mThumbnailScale
@@ -1383,9 +1395,9 @@ public class BooklistStyle
 
     }
 
-    @IntDef({TEXT_SCALE_SMALL, TEXT_SCALE_MEDIUM, TEXT_SCALE_LARGE})
+    @IntDef({FONT_SCALE_SMALL, FONT_SCALE_MEDIUM, FONT_SCALE_LARGE})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface TextScale {
+    public @interface FontScale {
 
     }
 
@@ -1858,7 +1870,7 @@ public class BooklistStyle
                                       R.string.style_builtin_compact,
                                       BooklistGroup.RowKind.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
-            style.setScale(TEXT_SCALE_SMALL);
+            style.setTextScale(FONT_SCALE_SMALL);
             style.setShowExtra(UniqueId.BKEY_IMAGE, false);
 
             // Title

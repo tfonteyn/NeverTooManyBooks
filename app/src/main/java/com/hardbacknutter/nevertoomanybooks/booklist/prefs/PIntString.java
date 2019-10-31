@@ -32,46 +32,56 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.App;
 
 /**
- * A String stored as a String.
+ * An Integer stored as a String
  * <p>
- * Used for {@link androidx.preference.EditTextPreference}.
+ * Used for {@link androidx.preference.ListPreference}
+ * The Preference uses 'select 1 of many' type and insists on a String.
  */
-public class PString
-        extends PPrefBase<String> {
+public class PIntString
+        extends PPrefBase<Integer>
+        implements PInt {
 
     /**
-     * Constructor. Uses the global setting as the default value, or "" if none.
+     * Constructor. Uses the global setting as the default value,
+     * or the passed default if no global default.
      *
      * @param key          key of preference
      * @param uuid         of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
+     * @param defaultValue in memory default
      */
-    public PString(@NonNull final String key,
-                   @NonNull final String uuid,
-                   final boolean isPersistent) {
-        super(key, uuid, isPersistent, App.getPrefString(key));
+    public PIntString(@NonNull final String key,
+                      @NonNull final String uuid,
+                      final boolean isPersistent,
+                      @NonNull final Integer defaultValue) {
+        super(key, uuid, isPersistent, App.getListPreference(key, defaultValue));
     }
 
     @NonNull
     @Override
-    public String get() {
+    public Integer get() {
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
+            // reminder: Integer is stored as a String
             String value = getPrefs().getString(getKey(), null);
-            // empty is invalid.
-            if (value == null || value.isEmpty()) {
+            if (value == null) {
                 // not present, fallback to global/default
-                value = getGlobal().getString(getKey(), mDefaultValue);
+                value = getGlobal().getString(getKey(), null);
+                if (value == null || value.isEmpty()) {
+                    return mDefaultValue;
+                }
+            } else if (value.isEmpty()) {
+                return 0;
             }
-            return value;
+            return Integer.parseInt(value);
         }
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "PString{" + super.toString()
+        return "PIntString{" + super.toString()
                + ", value=`" + get() + '`'
                + '}';
     }

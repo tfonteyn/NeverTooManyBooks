@@ -246,7 +246,8 @@ public class GlobalPreferenceFragment
         //noinspection ConstantConditions
         long bytes = StorageUtils.purgeFiles(getContext(), false);
         String formattedSize = StorageUtils.formatFileSize(getContext(), bytes);
-        String msg = getString(R.string.info_cleanup_files_text, formattedSize);
+        String msg = getString(R.string.info_cleanup_files_text, formattedSize,
+                               getString(R.string.lbl_send_debug_info));
 
         new AlertDialog.Builder(getContext())
                 .setIcon(R.drawable.ic_warning)

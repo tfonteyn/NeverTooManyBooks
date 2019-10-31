@@ -52,9 +52,9 @@ public class PIntList
      * @param uuid         of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
      */
-    protected PIntList(@NonNull final String key,
-                       @NonNull final String uuid,
-                       final boolean isPersistent) {
+    public PIntList(@NonNull final String key,
+                    @NonNull final String uuid,
+                    final boolean isPersistent) {
         super(key, uuid, isPersistent, new ArrayList<>());
         mNonPersistedValue = new ArrayList<>();
     }

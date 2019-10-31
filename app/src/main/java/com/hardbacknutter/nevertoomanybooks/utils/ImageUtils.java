@@ -99,7 +99,7 @@ public final class ImageUtils {
      * Scaling of thumbnails.
      * Must be kept in sync with res/values/strings-preferences.xml#pv_cover_scale_factor
      *
-     * res/xml/preferences_book_style.xml contains the default set to 2
+     * res/xml/preferences_styles.xml contains the default set to SCALE_MEDIUM
      */
     /** Thumbnail Scaling. */
     public static final int SCALE_NOT_DISPLAYED = 0;
@@ -110,16 +110,18 @@ public final class ImageUtils {
     /** Thumbnail Scaling. */
     public static final int SCALE_MEDIUM = 3;
     /** Thumbnail Scaling. */
-    public static final int SCALE_LARGE = 5;
+    public static final int SCALE_LARGE = 4;
     /** Thumbnail Scaling. */
-    public static final int SCALE_X_LARGE = 8;
+    public static final int SCALE_X_LARGE = 5;
     /** Thumbnail Scaling. */
-    public static final int SCALE_2X_LARGE = 12;
+    public static final int SCALE_2X_LARGE = 6;
+
     // temp debug
     public static final AtomicLong cacheTicks = new AtomicLong();
     public static final AtomicLong fileTicks = new AtomicLong();
     public static final AtomicInteger cacheChecks = new AtomicInteger();
     public static final AtomicInteger fileChecks = new AtomicInteger();
+
     private static final int BUFFER_SIZE = 32768;
 
     private ImageUtils() {
@@ -133,7 +135,28 @@ public final class ImageUtils {
      * @return amount in pixels
      */
     public static int getMaxImageSize(@ImageUtils.Scale final int scale) {
-        return scale * (int) App.getAppContext()
+        int scaleFactor;
+        switch (scale) {
+            case ImageUtils.SCALE_LARGE:
+                scaleFactor = 5;
+                break;
+            case ImageUtils.SCALE_X_LARGE:
+                scaleFactor = 8;
+                break;
+            case ImageUtils.SCALE_2X_LARGE:
+                scaleFactor = 12;
+                break;
+
+            case ImageUtils.SCALE_NOT_DISPLAYED:
+            case ImageUtils.SCALE_X_SMALL:
+            case ImageUtils.SCALE_SMALL:
+            case ImageUtils.SCALE_MEDIUM:
+            default:
+                scaleFactor = scale;
+                break;
+        }
+
+        return scaleFactor * (int) App.getAppContext()
                                 .getResources().getDimension(R.dimen.cover_base_size);
     }
 
@@ -646,14 +669,14 @@ public final class ImageUtils {
 
         // We load the file and first scale it up.
         // Keep in mind this means it could be up- or downscaled from the original !
-        int imageSize = getMaxImageSize(SCALE_2X_LARGE);
+        int maxImageSize = getMaxImageSize(SCALE_2X_LARGE);
 
         // we'll try it twice with a gc in between
         int attempts = 2;
         while (true) {
             try {
                 Bitmap bm = forceScaleBitmap(file.getPath(),
-                                             imageSize, imageSize, true);
+                                             maxImageSize, maxImageSize, true);
                 if (bm == null) {
                     return false;
                 }

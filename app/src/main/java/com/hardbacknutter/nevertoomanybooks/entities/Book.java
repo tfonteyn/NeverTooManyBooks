@@ -124,6 +124,9 @@ public class Book
     public static final int TOC_MULTIPLE_WORKS = 1;
     public static final int TOC_MULTIPLE_AUTHORS = 1 << 1;
 
+
+    private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
+
     /*
      * {@link DBDefinitions#DOM_BOOK_EDITION_BITMASK}.
      * <p>
@@ -131,10 +134,12 @@ public class Book
      * 0%00000001 = first edition
      * 0%00000010 = first impression
      * 0%00000100 = limited edition
+     * 0%00001000 = slipcase
+     * 0%00010000 = signed
      * <p>
      * 0%10000000 = book club
      * <p>
-     * NEWTHINGS: edition: add bit flag
+     * NEWTHINGS: edition: add bit flag and add to mask
      * Never change the bit value!
      */
     /** first edition ever of this work/content/story. */
@@ -145,11 +150,17 @@ public class Book
     private static final int EDITION_LIMITED = 1 << 2;
     /** This edition comes in a slipcase. */
     private static final int EDITION_SLIPCASE = 1 << 3;
-    /** It's a bookclub edition. boooo.... */
+    /** This edition is signed. i.e the whole print-run of this edition is signed. */
+    private static final int EDITION_SIGNED = 1 << 4;
+    /** It's a bookclub edition. */
     private static final int EDITION_BOOK_CLUB = 1 << 7;
 
-
-    private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
+    private static final int EDITIONS_MASK = EDITION_FIRST
+                                             | EDITION_FIRST_IMPRESSION
+                                             | EDITION_LIMITED
+                                             | EDITION_SLIPCASE
+                                             | EDITION_SIGNED
+                                             | EDITION_BOOK_CLUB;
 
     /*
      * NEWTHINGS: edition: add label for the type
@@ -160,6 +171,7 @@ public class Book
         EDITIONS.put(EDITION_FIRST, R.string.lbl_edition_first_edition);
         EDITIONS.put(EDITION_FIRST_IMPRESSION, R.string.lbl_edition_first_impression);
         EDITIONS.put(EDITION_LIMITED, R.string.lbl_edition_limited);
+        EDITIONS.put(EDITION_SIGNED, R.string.lbl_signed);
         EDITIONS.put(EDITION_SLIPCASE, R.string.lbl_edition_slipcase);
 
         EDITIONS.put(EDITION_BOOK_CLUB, R.string.lbl_edition_book_club);
@@ -508,6 +520,8 @@ public class Book
         for (Integer bit : editions) {
             bitmask |= bit;
         }
+
+        bitmask &= EDITIONS_MASK;
         putLong(DBDefinitions.KEY_EDITION_BITMASK, bitmask);
     }
 

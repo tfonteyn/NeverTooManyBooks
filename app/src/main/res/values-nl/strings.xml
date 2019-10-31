@@ -92,7 +92,7 @@
     <string name="lbl_about_translators">&APP_NAME; is het resultaat van de inspanning van vele personen en zou niet zo\'n grote verspreiding kennen zonder de genereuse hulp van vrijwillige vertalers (als we iemand zijn vergeten, laat het ons aub weten):</string>
     <string name="acra_resDialogCommentPrompt">Uw commentaar (of laat dit leeg):</string>
     <string name="acra_resDialogText">Het lijkt er op dat &APP_NAME; is gecrasht. Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op „OK” om ons een e-mail te sturen over deze crash. Je kan het bericht inzien voordat het wordt verzonden.</string>
-    <string name="acra_resNotifText">Tik hier voor details</string>
+    <string name="X_acra_resNotifText">Tik hier voor details</string>
     <string name="acra_resReportSendSuccessToast">Dank u!</string>
     <string name="acra_resToastText">&APP_NAME; is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
     <string name="and_others">et. al.</string>
@@ -118,7 +118,7 @@
     <string name="btn_loan_returned">Terug</string>
     <string name="btn_options">Opties</string>
     <string name="btn_reset">Herstellen</string>
-    <string name="btn_show_results">Toon resultaten</string>
+    <string name="X_btn_show_results">Toon resultaten</string>
     <string name="btn_tell_me_more">Vertel me meer</string>
     <string name="btn_this_book">Dit boek</string>
     <string name="bytes">%.0fB</string>
@@ -142,9 +142,9 @@
     <string name="error_column_is_blank">Kolom %1$s is leeg op lijn %2$d</string>
     <string name="error_columns_are_blank">Kolommen %1$s zijn allemaal leeg op lijn %2$d</string>
     <string name="error_email_failed">Het verzenden van de e-mail is mislukt.</string>
-    <string name="error_failed_x">Mislukt: %1$d</string>
+    <string name="X_error_failed_x">Mislukt: %1$d</string>
     <string name="error_google_play_store_missing">Google Play Store is niet geïnstalleerd</string>
-    <string name="error_if_the_problem_persists">Als het probleem aanhoud, maak dan contact met ondersteuning via de „Over deze App” optie.</string>
+    <string name="error_if_the_problem_persists">Als het probleem zich blijft voordoen, neem contact op met de ondersteuning via de „%1$s”-optie onderaan de instellingenpagina.</string>
     <string name="error_import_failed">Import mislukt.</string>
     <string name="error_network_timeout">Geen antwoord, probeer opnieuw</string>
     <string name="error_no_external_crop_app">Een toepassing voor het bijsnijden van afbeeldingen werd niet gevonden</string>
@@ -232,12 +232,12 @@
     <string name="import_options_dialog_title">Selecteer wat je wil importeren.</string>
     <string name="import_warning_old_archive">Deze optie wordt niet ondersteund voor oudere archief versies.</string>
     <string name="info_authorized">Geautoriseerd</string>
-    <string name="info_cleanup_files_text">Permanent te verwijderen bestanden nemen %1$s van uw SD kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD kaart. Als u veel crashes ondervindt of ander fouten, overweeg dan de  „Zend Informatie” knop eerst te gebruiken.</string>
+    <string name="info_cleanup_files_text">Permanent te verwijderen bestanden nemen %1$s van uw SD kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD kaart. Als u crashes ondervindt of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
     <string name="X_info_install_scanner">Om ISBN-streepjescodes te scannen, tikt u hieronder om een van deze streepjescodescanner-applicaties te installeren.</string>
     <string name="info_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
     <string name="info_not_authorized">Niet geautoriseerd</string>
-    <string name="info_registration_benefits">Deze functie profiteert van registratie bij %1$s.\nWilt u meer informatie bekijken of dit bericht uitschakelen?\nU vindt deze informatie op een later tijdstip in de sectie „Inloggegevens” in de instellingen.</string>
+    <string name="info_registration_benefits">Deze functie profiteert van registratie bij %1$s.\nWilt u meer informatie bekijken of dit bericht uitschakelen?\nU vindt deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
     <string name="info_registration_required">Deze functie vereist registratie bij %1$s.\n Wilt u meer informatie zien?</string>
     <string name="info_select_fields_to_update">De geselecteerde velden zullen worden bijgewerkt vanaf het internet. Niet geselecteerde velden blijven onveranderd.</string>
     <string name="info_share_book_im_reading">Ik lees %1$s door %2$s %3$s %4$s</string>
@@ -363,12 +363,11 @@
     <string name="lt_url_text_register">Registeren bij LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="menu_about">Over deze App</string>
-    <string name="menu_add_book">Boek Toevoegen…</string>
+    <string name="X_menu_add_book">Boek Toevoegen…</string>
     <string name="menu_add_book_by_barcode_scan">Scan streepjescode/ISBN</string>
     <string name="menu_add_book_by_isbn">Invullen ISBN</string>
     <string name="menu_add_book_manually">Handmatig toevoegen</string>
-    <string name="menu_administration">Beheer…</string>
-    <string name="title_administration">Beheer</string>
+    <string name="X_menu_administration">Beheer…</string>
     <string name="menu_amazon_books_by_author">Boeken van deze auteur</string>
     <string name="menu_amazon_books_by_author_in_series">Boeken per auteur/serie</string>
     <string name="menu_amazon_books_in_series">Boeken in deze serie</string>
@@ -393,7 +392,6 @@
     <string name="menu_duplicate">Dupliceer</string>
     <string name="menu_edit">Bewerken…</string>
     <string name="menu_level_expand">Alles uitklappen</string>
-    <string name="menu_hide_keyboard">Toetsenbord verbergen</string>
     <string name="menu_loan_lend_book">Boek uitlenen…</string>
     <string name="menu_loan_return_book">Uitgeleend boek is terug</string>
     <string name="menu_populate_toc">Automatisch titels invullen (alleen ISFDB)</string>
@@ -415,7 +413,7 @@
     <string name="pe_thumbnails_cache_resized_each_time">Herschaal elke keer als ze nodig zijn (gebruikt minder opslagruimte, scrollen zal langzamer gaan)</string>
     <string name="pe_thumbnails_cache_resized_stored">Cache herschaalde miniaturen (gebruikt meer opslagruimte, scrollen van de lijst gaat sneller)</string>
     <string name="pe_use_recommended_option">Gebruik de aanbevolen optie</string>
-    <string name="pg_bob_show_details">Extra boekdetails</string>
+    <string name="pg_bob_show_details">Boek details</string>
     <string name="pg_booklist">Boeken Lijst</string>
     <string name="pg_filters">Boekfilters</string>
     <string name="pg_general">Algemeen</string>
@@ -463,7 +461,7 @@
     <string name="pt_bob_header">Details in de koptekst</string>
     <string name="pt_bob_list_rebuild_state">Boekenlijst opstart status</string>
     <string name="pt_bob_authors_sort">Auteurs sorteren op</string>
-    <string name="pt_bob_text_size">Grootte van boekenlijst tekst</string>
+    <string name="pt_bob_font_scale">Grootte van boekenlijst tekst</string>
     <string name="pt_thumbnails_cache_resized">Cache herschaalde miniaturen</string>
     <string name="pt_bob_thumbnails_show">Toon Miniaturen</string>
     <string name="pt_collect_series_info_from_toc">Verzamel Serie-info van de inhouds tabel</string>
@@ -520,7 +518,6 @@
     <string name="tip_authors_works">Gebruikte pictogrammen:</string>
     <string name="tip_authors_works_book">Boek.</string>
     <string name="tip_authors_works_multiple_books">Item is aanwezig in meerdere boeken.</string>
-    <string name="tip_authors_works_toc">Inhoudsopgave (TOC) -item, b.v. verhaal.</string>
     <string name="tip_autorotate_camera_images">Als u altijd uw camera-opnames dezelfde kant opdraait kunt u proberen de applicatie-instellingen te veranderen zodat dit automatisch gebeurt.</string>
     <string name="tip_background_task_events">Vanaf hier kunt u de gebeurtenissen zien die zijn geassocieerd met op de achtergrond lopende taken. Tikken op een gebeurtenis laat u een aantal acties uitvoeren die samenhangen met die gebeurtenis.</string>
     <string name="tip_background_tasks">Vanaf deze plaats kunt u de lopende taken zien en eveneens vorige taken die met fouten of ander vermeldingswaardige gebeurtenissen zijn beëindigd. Tikken op een taak laat u de bijbehorende gebeurtenissen zien en ook de taak laten verwijderen (samen met de gerelateerde gebeurtenissen).</string>
@@ -528,7 +525,7 @@
     <string name="tip_book_search_by_text">Toevoegen van boeken via ISBN is veel preciezer dan toevoegen via auteur en titel en verdient meestal de voorkeur. De juiste streepjescode kunt u meestal vinden aan de achterkant van de boekomslag.</string>
     <string name="tip_booklist_style_groups">Je kan dit scherm gebruiken om de hiërarchie van koppen voor een specifieke stijl van een boekenlijst te wijzigen. Een vinkje geeft aan dat de kop in de lijst wordt weergegeven, verwijder het vinkje om het te verbergen en vice versa. Je kan de hiërarchie opnieuw rangschikken door het pictogram uiterst rechts van elke rij omhoog of omlaag te slepen.</string>
     <string name="tip_booklist_style_menu">Dit menu laat u de lijststijl selecteren.\n\n Je kan het menu ook aanpassen of u eigen lijststijl maken door te tikken op „Aanpassen” onderaan de lijst.</string>
-    <string name="tip_booklist_style_properties">U kunt dit scherm gebruiken om de kenmerken van een specifieke stijl van de boekenlijst in te stellen. U kunt de naam wijzigen, de groeperingen bewerken om de hiërarchie te wijzigen en een aantal andere voorkeuren aanpassen om een stijl te bouwen die u nuttig vindt. Het is ook mogelijk om "Filters" te gebruiken om de selectie van boeken te wijzigen die in de lijst worden weergegeven. bijv. om alleen boeken op te halen die je nog niet hebt gelezen en meer.</string>
+    <string name="tip_booklist_style_properties">U kunt dit scherm gebruiken om de kenmerken van een specifieke stijl van de boekenlijst in te stellen. U kunt de naam wijzigen, de groeperingen bewerken om de hiërarchie te wijzigen en een aantal andere voorkeuren aanpassen om een stijl te bouwen die u nuttig vindt. Het is ook mogelijk om filters te gebruiken om de selectie van boeken te wijzigen die in de lijst worden weergegeven. bijv. om alleen boeken op te halen die je nog niet hebt gelezen en meer.</string>
     <string name="tip_booklist_styles_editor">U kunt dit scherm gebruiken om de lijst met stijlen aan te passen die worden weergegeven in uw standaardstijlenmenu. Een vinkje geeft aan dat de stijl in de lijst wordt weergegeven, schakel het selectievakje uit om het te verbergen en vice versa. Als er geen stijlen zijn aangevinkt, worden alle stijlen getoond. U kunt de hiërarchie opnieuw rangschikken door het pictogram uiterst rechts van elke rij omhoog of omlaag te slepen. Als u ergens anders in een rij lang ingedrukt houdt, kunt u de details van een specifieke stijl bewerken of klonen. Als je een stijl hebt gekloond en van gedachten bent veranderd, moet je deze zelf verwijderen.</string>
     <string name="tip_dialog_title">Aanwijzing</string>
     <string name="tip_reset_all">Herstel aanwijzingen</string>
@@ -618,7 +615,6 @@
     <string name="pt_bob_show_details_uses_task_on">vertraagd</string>
     <string name="lbl_edition_slipcase">Cassette</string>
     <string name="menu_search_local">Lokaal zoeken</string>
-    <string name="pg_reformat">Herformatteren</string>
     <string name="progress_msg_n_books_processed">%1$d boeken verwerkt</string>
     <string name="X_progress_end_n_books_exported">%1$d boeken geëxporteerd</string>
     <string name="warning_select_an_existing_folder">Selecteer een bestaande map.</string>
@@ -637,7 +633,7 @@
     <string name="lbl_print_run">Oplage</string>
     <string name="pv_bob_header_style_name">Stijl naam</string>
     <string name="warning_rebuild_orderby_columns">Hiermee worden de sorteergegevens opnieuw opgebouwd wanneer de app opnieuw wordt gestart. Weet je zeker dat je door wilt gaan ?</string>
-    <string name="pt_bob_list_state_expansion_level">"Standaard boekenlijst niveau "</string>
+    <string name="pt_bob_list_state_expansion_level">Standaard boekenlijst niveau</string>
     <string name="menu_level_reset">Voorkeur expansieniveau</string>
     <string name="hint_empty_rating">(niet beoordeeld)</string>
     <string name="hint_empty_language">(Geen taal ingevuld)</string>
@@ -650,5 +646,11 @@
     <string name="book_color_uncolored">Ongekleurd</string>
     <string name="book_format_softcover">Softcover</string>
     <string name="pg_image_cache">Afbeeldingencache</string>
+    <string name="size_hidden">Verborgen</string>
+    <string name="pt_show_goodreads">Toon Goodreads-menu\'s</string>
+    <string name="pt_search_reformat_format">Standaardiseer namen van „boekformaten”</string>
+    <string name="pt_search_reformat_color">Standaardiseer namen van „boekkleuren”</string>
+    <string name="lbl_data_import_export">Back-up &amp; import</string>
+    <string name="lbl_author_type_intro">Introductie etc.</string>
 
 </resources>

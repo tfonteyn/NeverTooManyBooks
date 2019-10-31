@@ -96,7 +96,7 @@ public class BookFragment
     /** Position in the {@link FlattenedBooklist} of this book. Used for left/right swipes. */
     public static final String BKEY_FLAT_BOOKLIST_POSITION = TAG + ":FBL_Position";
 
-    /** Size of the cover image to use. */
+    /** Size of the cover image to use. ENHANCE: add to global prefs */
     @ImageUtils.Scale
     private static final int IMAGE_SCALE = ImageUtils.SCALE_LARGE;
 

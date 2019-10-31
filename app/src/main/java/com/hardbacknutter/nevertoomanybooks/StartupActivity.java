@@ -231,9 +231,8 @@ public class StartupActivity
                     .setTitle(R.string.app_name)
                     .setMessage(R.string.warning_backup_request)
                     .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                        mModel.setBackupRequired(true);
-                    })
+                    .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                            mModel.setBackupRequired(true))
                     .setOnDismissListener(d -> startNextStage())
                     .create()
                     .show();

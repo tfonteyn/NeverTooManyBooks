@@ -72,24 +72,26 @@
             android:title="@string/pt_bob_header"
             />
 
-        <!-- default BooklistStyle.SCALE_SMALL == 2 -->
-        <ListPreference
-            android:defaultValue="2"
-            android:entries="@array/pe_bob_text_size"
-            android:entryValues="@array/pv_bob_text_size"
-            android:icon="@drawable/ic_format_size"
-            android:key="style.booklist.scale.text"
-            android:title="@string/pt_bob_text_size"
-            />
-
-        <!-- default expanded level for the booklist. -->
-        <ListPreference
+        <!-- default BooklistStyle.FONT_SCALE_SMALL == 1 -->
+        <SeekBarPreference
             android:defaultValue="1"
-            android:entries="@array/pe_bob_level_default"
-            android:entryValues="@array/pv_bob_level_default"
+            android:key="style.booklist.scale.font"
+            android:max="2"
+            android:icon="@drawable/ic_format_size"
+            android:title="@string/pt_bob_font_scale"
+            app:min="0"
+            />
+        <!-- ListPreference - booklist default expanded level.
+             Higher than 3 makes little sense, but setting 4 as maximum because 'why not'.
+         -->
+        <SeekBarPreference
+            android:defaultValue="1"
+            android:max="4"
+            android:title="@string/pt_bob_list_state_expansion_level"
             android:icon="@drawable/ic_format_indent_increase"
             android:key="style.booklist.levels.default"
-            android:title="@string/pt_bob_list_state_expansion_level" />
+            app:min="1"
+            />
 
         <SwitchPreference
             android:defaultValue="true"
@@ -108,16 +110,6 @@
         android:title="@string/pg_thumbnails"
         >
 
-        <!-- default ImageUtils.SCALE_MEDIUM == 3 -->
-        <ListPreference
-            android:defaultValue="3"
-            android:entries="@array/pe_cover_scale_factor"
-            android:entryValues="@array/pv_cover_scale_factor"
-            android:icon="@drawable/ic_photo_size_select_large"
-            android:key="style.booklist.scale.thumbnails"
-            android:title="@string/pt_bob_thumbnails_scale" />
-
-
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_image"
@@ -125,6 +117,16 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_bob_thumbnails_show"
+            />
+
+        <!-- default ImageUtils.SCALE_MEDIUM == 3 -->
+        <SeekBarPreference
+            android:defaultValue="3"
+            android:icon="@drawable/ic_photo_size_select_large"
+            android:key="style.booklist.scale.thumbnails"
+            android:max="6"
+            android:title="@string/pt_bob_thumbnails_scale"
+            app:min="1"
             />
 
     </PreferenceCategory>

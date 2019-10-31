@@ -35,7 +35,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.App;
 
 /**
- * A Boolean is stored as a Boolean.
+ * A Boolean stored as a Boolean.
  * <p>
  * Used for {@link androidx.preference.SwitchPreference}
  */

@@ -136,7 +136,7 @@ public class CoverHandler {
      * @param book      the book whose cover we're handling
      * @param isbnView  the view to read the *current* ISBN from
      * @param coverView the view to populate
-     * @param scale     image scale factor to apply when populating the coverView.
+     * @param scale     image scale to apply when populating the coverView.
      */
     CoverHandler(@NonNull final Fragment fragment,
                  @NonNull final DAO db,
@@ -211,8 +211,7 @@ public class CoverHandler {
             .setIcon(R.drawable.ic_crop);
 
         String title = mContext.getString(R.string.title_cover);
-        new MenuPicker<>(mContext, title, null, menu, R.id.coverImage,
-                         this::onViewContextItemSelected)
+        new MenuPicker<>(mContext, title, menu, R.id.coverImage, this::onViewContextItemSelected)
                 .show();
     }
 
@@ -495,7 +494,8 @@ public class CoverHandler {
                 refreshImageView();
             } else {
                 String msg = mContext.getString(R.string.warning_cover_copy_failed) + ". "
-                             + mContext.getString(R.string.error_if_the_problem_persists);
+                             + mContext.getString(R.string.error_if_the_problem_persists,
+                                                  mContext.getString(R.string.lbl_send_debug_info));
                 UserMessage.show(mCoverView, msg);
             }
         } else {

@@ -74,7 +74,6 @@
         &APP_NAME; has crashed unexpectedly. Please help us to make the application
         better by reporting this crash.
     </string>
-    <string name="acra_resNotifText">Please tap here for details</string>
     <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
     <string name="acra_resReportSendSuccessToast">Thank you!</string>
 
@@ -82,15 +81,17 @@
     <!-- ========== General error messages ========== -->
     <!-- ####################################################################################### -->
 
+
     <string name="error_unexpected_error">
         An unexpected error has occurred, please send the details to support via the “Admin”
         page from the main menu.
     </string>
-    <string name="error_unknown">An unknown error occurred.</string>
     <string name="error_if_the_problem_persists">
-        If the problem persists, contact support via the “Admin” page from the main menu.
+        If the problem persists, contact support via the “%1$s” option
+        at the bottom of the settings page.
     </string>
 
+    <string name="error_unknown">An unknown error occurred.</string>
     <string name="error_network_no_connection">Internet connection is not available.</string>
     <string name="error_network_timeout">No response, please try again.</string>
     <string name="error_email_failed">Failed to send the email.</string>
@@ -145,9 +146,6 @@
     <!-- 'Site' authentication failed -->
     <string name="error_site_authentication_failed">%1$s authentication failed</string>
 
-
-    <string name="error_failed_x">Failed: %1$d</string>
-
     <!-- ####################################################################################### -->
     <!-- ========== Warning messages ========== -->
     <!-- ####################################################################################### -->
@@ -176,7 +174,6 @@
     <string name="warning_requires_at_least_one_field">At least one field must not be blank.</string>
     <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
     <string name="warning_requires_date">Please add a valid date.</string>
-
 
     <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
     <string name="warning_missing_name">Name can not be blank</string>
@@ -235,12 +232,13 @@
         Displaying %1$d books, in %2$d entries
     </string>
 
+    <!-- param 1: file size; param 2: button text -->
     <string name="info_cleanup_files_text">
         Purgeable files currently use %1$s on the SD card. Log files and other data are saved
         on the SD card at each upgrade, when you backup the database, or when the application
         crashes. Tap the button below to purge these files from your SD card. If you have
         been experiencing crashing or other errors, please consider using the
-        “Send Information” button first.
+        “%2$s” button first.
     </string>
 
     <string name="info_share_book_im_reading">I\'m reading “%1$s” by %2$s %3$s %4$s</string>
@@ -278,7 +276,7 @@
     <string name="info_registration_benefits">
         This feature benefits from registration with %1$s.\n
         Would you like to see more information, or disable this message?\n
-        You can find this information at a later date under the “Credentials” section in the settings.
+        You can find this information at a later date under the “%2$s” section in the settings.
     </string>
 
     <!-- ####################################################################################### -->
@@ -455,7 +453,7 @@
         You can use this screen to set the characteristics of a specific booklist style.
         You can change the name, edit the groupings to change the hierarchy, and adjust a
         variety of other preferences to build a style that you find useful.
-        It is also possible to use “Filters” to modify the selection of books that will be
+        It is also possible to use filters to modify the selection of books that will be
         displayed in the list. e.g. to only retrieve books you have not read yet and more.
     </string>
 
@@ -476,6 +474,7 @@
         From here you can see the events associated with a background task. Tapping on a event
         will allow you to perform a variety of actions appropriate for that event.
     </string>
+    <!-- TODO: “Customize” should be a parameter. But that means modifying the Tip class-->
     <string name="tip_booklist_style_menu">
         This menu allows you to select the style of the list. You can also customize this menu,
         as well as create your own list styles, by tapping “Customize” at the end of the list.
@@ -494,14 +493,14 @@
         A long-press on an item in the list will give you more options.
     </string>
     <!-- Tip text displayed when user enters the 'Update fields from internet' screen
-     The referred "View on…" is "menu_view_book_at" -->
+     The referred "View on…" is "menu_view_book_at"
+     TODO: “View on…” should be a parameter. But that means modifying the Tip class -->
     <string name="tip_update_fields_from_internet">
         External site links are only processed if the site is actually contacted.
         As a result the menu “View on…” will likewise only show what is available.
     </string>
 
     <string name="tip_authors_works">Icons used:</string>
-    <string name="tip_authors_works_toc">Table of Content (TOC) entry, e.g. a story.</string>
     <string name="tip_authors_works_book">Book.</string>
     <string name="tip_authors_works_multiple_books">Entry is present in multiple books.</string>
 
@@ -595,6 +594,7 @@
         \nThis will result in the book being recreated in &APP_NAME; and the two will remain
         linked from that point onwards.
     </string>
+    <!-- TODO: “Retry” should be a parameter. But that means modifying the Tip class -->
     <string name="gr_explain_no_match">
         The ISBN of the selected book could not be found on Goodreads. There are two possible
         causes for this: either the data for the book is wrong (you should check the ISBN),
@@ -691,7 +691,6 @@
     <!-- Used in multiple places: the 'default' for a setting the user really should not change. -->
     <string name="pe_use_recommended_option">Use the recommended option</string>
 
-
     <!-- Preference Category -->
     <string name="pg_ui">User Interface</string>
     <!-- ListPreference - Preferred interface Language -->
@@ -707,8 +706,9 @@
     <string name="pt_ui_messages_use">Information messages</string>
     <!-- Preference screen; opens a new screen listing all Fields. -->
     <string name="pg_ui_field_visibility">Field Visibility</string>
-    <!-- Preference screen; opens a new screen where some text handling can be adjusted. -->
-    <string name="pg_reformat">Reformat</string>
+
+    <!-- SwitchPreference -->
+    <string name="pt_show_goodreads">Show Goodreads menus</string>
 
     <!-- SwitchPreference - How to display titles. -->
     <string name="pt_bob_titles_display">Show titles as</string>
@@ -754,11 +754,17 @@
     <string name="pt_search_form">Local Search Form</string>
 
     <!-- Preference Category -->
+    <string name="pg_camera">Camera</string>
+
+    <!-- Preference Category -->
     <string name="pg_thumbnails">Thumbnails</string>
     <!-- SwitchPreference - start the cropper with the cropper frame set to the whole image -->
     <string name="pt_thumbnails_crop_frame_is_whole_image">Default crop frame is whole image</string>
     <!-- SwitchPreference - use an external app. (Intent) to handle cropping-->
     <string name="pt_thumbnails_external_cropper">Use an external image crop app</string>
+
+    <!-- Preference Category -->
+    <string name="pg_image_cache">Images cache</string>
     <!-- SwitchPreference - Thumbnails are cached in a database to avoid resizing all the time -->
     <string name="pt_thumbnails_cache_resized">Resized images are cached</string>
     <string name="pe_thumbnails_cache_resized_each_time">
@@ -771,6 +777,8 @@
     <string name="pt_thumbnails_rotate_auto">Rotate pictures</string>
     <!-- ListPreference - Compatibility / bug workaround for some devices -->
     <string name="pt_thumbnail_cropper_layer_type">Cropping “Layer Type”</string>
+    <!-- TODO: “Use default”+“Software”+“Hardware”  should be parameters.
+     But that means modifying the Tip class -->
     <string name="pt_thumbnail_cropper_layer_type_summary">
         Leave this setting on “Use default” unless you experience crashes while cropping images.
         Try “Software” for safer but slower or force “Hardware” for less safe, but faster.
@@ -814,8 +822,8 @@
     <string name="pe_bob_filter_loaned_no">Books available</string>
 
     <!-- Preference Screen; The extra fields displayed on 'book-level' in the booklist -->
-    <string name="pg_bob_show_details">Extra Book Details</string>
-    <string name="pt_bob_show_details_uses_task">Fetching Extra Book Details</string>
+    <string name="pg_bob_show_details">Book Details</string>
+    <string name="pt_bob_show_details_uses_task">Fetching Book Details</string>
     <string name="pt_bob_show_details_uses_task_on">delayed</string>
     <string name="pt_bob_show_details_uses_task_off">immediately</string>
 
@@ -827,7 +835,7 @@
     <string name="pv_bob_header_style_name">Style name</string>
 
     <!-- ListPreference - Scale text. -->
-    <string name="pt_bob_text_size">Size of booklist text</string>
+    <string name="pt_bob_font_scale">Size of booklist text</string>
 
     <!-- SwitchPreference -->
     <string name="pt_bob_list_state_expansion_level">Default booklist expansion</string>
@@ -860,8 +868,6 @@
     <!-- == Dialog, Activity and other "window" titles == -->
     <!-- ####################################################################################### -->
 
-    <!-- Screen title. -->
-    <string name="title_administration">Administration</string>
     <!-- Screen title. -->
     <string name="title_edit_bookshelves">Manage Bookshelves</string>
     <!-- Screen title. -->
@@ -929,9 +935,6 @@
     <!-- generic menu option - Duplication or Clone. Not the same as 'copy'. -->
     <string name="menu_duplicate">Duplicate</string>
 
-    <!-- options menu. Shown on some edit screens to easily hide the onscreen keyboard. -->
-    <string name="menu_hide_keyboard">Hide keyboard</string>
-
     <!-- ####################################################################################### -->
 
     <!-- navigation panel menu -->
@@ -941,9 +944,7 @@
     <string name="menu_bookshelves">Bookshelves</string>
     <!-- menu option -->
     <string name="menu_booklist_styles">Booklist styles</string>
-    <!-- menu option -->
-    <string name="menu_administration">Administration</string>
-    <!-- menu option -->
+    menu option
     <string name="menu_settings">Settings</string>
     <!-- menu option -->
     <string name="menu_about">About</string>
@@ -951,8 +952,6 @@
     <!-- ####################################################################################### -->
 
     <!-- booklist options menu -->
-    <!-- submenu title -->
-    <string name="menu_add_book">Add Book…</string>
     <!-- menu option -->
     <string name="menu_add_book_by_barcode_scan">Scan Barcode/ISBN</string>
     <!-- menu option -->
@@ -1032,12 +1031,10 @@
     <!-- Update Fields from internet for a set of books; shown in context menus -->
     <string name="menu_update_books">Update books</string>
 
-
     <!-- submenu options for the "amazon" menu -->
     <string name="menu_amazon_books_in_series">Books in this series</string>
     <string name="menu_amazon_books_by_author">Books by this author</string>
     <string name="menu_amazon_books_by_author_in_series">Books by author/series</string>
-
 
     <!-- ####################################################################################### -->
     <!-- == Button texts, must be short == -->
@@ -1051,7 +1048,6 @@
     <string name="btn_confirm_save">Save</string>
     <string name="btn_confirm_use">Use</string>
 
-
     <!-- merging two bookshelves -->
     <string name="btn_confirm_merge">Merge</string>
 
@@ -1064,8 +1060,6 @@
     <string name="btn_options">Options</string>
     <!-- generic search button -->
     <string name="btn_search">Search…</string>
-    <!-- local search; button to request to show the books found. -->
-    <string name="btn_show_results">Show Results</string>
     <!-- Button text, to 'return' a loaned book -->
     <string name="btn_loan_returned">Returned</string>
 
@@ -1125,6 +1119,7 @@
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0fB</string>
 
+    <string name="size_hidden">Hidden</string>
     <string name="size_x_small">X-Small</string>
     <string name="size_small">Small</string>
     <string name="size_medium">Medium</string>
@@ -1204,7 +1199,6 @@
     <string name="tab_lbl_notes">Notes</string>
     <!-- Heading of the 'Table Of Content' (formerly 'Anthology') tab when editing a book. -->
     <string name="tab_lbl_content">TOC</string>
-
 
     <!-- ####################################################################################### -->
     <!-- ========== Single words used for multiple purposes ========== -->
@@ -1339,7 +1333,6 @@
     <string name="lbl_field_usage_overwrite">Overwrites existing data</string>
     <string name="lbl_field_usage_skip">Skip</string>
 
-
     <string name="lbl_search_filtered_on_x">Filtered: %1$s</string>
 
     <!-- grouping headings in the booklist -->
@@ -1355,12 +1348,10 @@
     <string name="lbl_loaned_to_name">On Loan to %1$s</string>
     <string name="lbl_loaned">On Loan</string>
 
-
     <!-- Search on keywords entered. -->
     <string name="lbl_keywords">Keywords</string>
     <!-- alternative used in some places for lbl_keywords -->
     <string name="lbl_search_criteria">Search Criteria</string>
-
 
     <!-- Universal date strings -->
     <string name="lbl_year">Year</string>
@@ -1389,14 +1380,13 @@
     <string name="lbl_publication_year">Publication Year</string>
     <string name="lbl_publication_month">Publication Month</string>
 
-
     <!-- heading/titles for settings/preference screens -->
     <string name="lbl_settings">Settings</string>
     <string name="lbl_preferred_styles">Preferred styles</string>
     <string name="lbl_websites">Websites</string>
 
     <!-- Admin GROUP -->
-    <string name="lbl_data_import_export">Backup / Import</string>
+    <string name="lbl_data_import_export">Backup &amp; Import</string>
     <!-- Admin -->
     <string name="lbl_backup_to_archive">Backup to Archive</string>
     <!-- Admin -->
@@ -1433,11 +1423,11 @@
         (if we have forgotten someone, please tell us):
     </string>
 
-
     <!-- ####################################################################################### -->
     <!-- === Unused, but not removing as we have translations which might be useful later == -->
     <!-- ####################################################################################### -->
     <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
+    <string name="X_error_failed_x">Failed: %1$d</string>
 
     <!-- displayed when a Backup is done: 1: folder; 2: filename; 3: file size -->
     <string name="X_export_info_success_archive_details">
@@ -1491,10 +1481,15 @@
 
     <string name="X_menu_delete_series">Delete Series…</string>
     <string name="X_menu_search_books">Search Books</string>
+    <string name="X_menu_administration">Administration</string>
+    <string name="X_menu_add_book">Add Book…</string>
 
     <string name="X_btn_do_not_show_again">Do not show again</string>
+    <string name="X_btn_show_results">Show Results</string>
 
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
+
+    <string name="X_acra_resNotifText">Please tap here for details</string>
 
     <string name="X_lbl_available">Available</string>
     <string name="X_lbl_order">Order</string>
@@ -1534,11 +1529,5 @@
     <!-- uncolored, but with a support-color.
          e.g. black and white, but additional red for emphasis -->
     <string name="book_color_support_color">Uncolored + support color</string>
-
-
-    <string name="pg_camera">Camera</string>
-    <string name="pg_image_cache">Images cache</string>
-    <string name="pt_show_goodreads">Show Goodreads menus</string>
-
 
 </resources>

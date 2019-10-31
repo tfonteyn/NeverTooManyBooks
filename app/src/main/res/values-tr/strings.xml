@@ -93,7 +93,7 @@
     <string name="lbl_about_translators">Kitap Kataloğu birçok kişinin emeğinin ürünü olan bir yazılım. Burada gönüllü çevirmenlerimizin katkılarını belirtmeden olmaz; onların çabaları olmadan bu kadar fazla kişiye ulaşamazdık. Bu güzel insanlar (eğer unuttuğumuz birisi var ise lütfen belirtin):</string>
     <string name="acra_resDialogCommentPrompt">Yorumlarınız (isteğe bağlı):</string>
     <string name="acra_resDialogText">Sanırız &APP_NAME; çöktü. Eğer bu çökme ile ilgili olabileceğini düşündüğünüz bir şeyler varsa lütfen “Tamam”a basarak bu çökme hakkında bir e-posta gönderin. Göndermeden önce e-postayı göreceksiniz.</string>
-    <string name="acra_resNotifText">Ayrıntılar için buraya basın</string>
+    <string name="X_acra_resNotifText">Ayrıntılar için buraya basın</string>
     <string name="acra_resReportSendSuccessToast">Sağ olun!</string>
     <string name="acra_resToastText">&APP_NAME; bilinmeyen bir nedenle çöktü. Uygulamanın kalitesini iyileştirebilmemiz için lütfen bu çökmeyi rapor edin.</string>
     <string name="and_others">ve diğerleri</string>
@@ -117,7 +117,7 @@
     <string name="btn_loan_returned">Geri geldi</string>
     <string name="btn_options">Seçenekler</string>
     <string name="btn_reset">Sıfırla</string>
-    <string name="btn_show_results">Sonuçları göster</string>
+    <string name="X_btn_show_results">Sonuçları göster</string>
     <string name="btn_tell_me_more">Bilgi ver</string>
     <string name="btn_this_book">Bu kitap</string>
     <string name="bytes">%.0fB</string>
@@ -141,9 +141,9 @@
     <string name="error_column_is_blank">Sütun %1$s %2$d numaralı satırda boş</string>
     <string name="error_columns_are_blank">%1$s sütunlarının hepsi %2$d satırında boş</string>
     <string name="error_email_failed">E-posta gönderilemedi.</string>
-    <string name="error_failed_x">Başarısız: %1$d</string>
+    <string name="X_error_failed_x">Başarısız: %1$d</string>
     <string name="error_google_play_store_missing">Google Play Store yüklü değil</string>
-    <string name="error_if_the_problem_persists">Eğer sorun sürerse lütfen ana seçkedeki “Ayarlar” bölümünden destek ile iletişime geçin.</string>
+    <string name="error_if_the_problem_persists">Sorun devam ederse, ayarlar sayfasının altındaki “%1$s” seçeneğiyle desteğe başvurun.</string>
     <string name="error_import_failed">İçe aktarma başarısız.</string>
     <string name="error_network_timeout">Cevapsız. Tekrar deneyin.</string>
     <string name="error_no_external_crop_app">Görüntüleri kırpmak için bir uygulama bulunamadı</string>
@@ -225,12 +225,12 @@
     <string name="import_options_dialog_title">Neyin içe aktarılacağını seçin</string>
     <string name="import_warning_old_archive">Bu seçenek eski arşiv sürümleri için geçerli değildir.</string>
     <string name="info_authorized">Yetkilendirilmiş</string>
-    <string name="info_cleanup_files_text">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle “Bilgi gönder” düğmesini kullanmayı deneyin.</string>
+    <string name="info_cleanup_files_text">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle “%2$s” düğmesini kullanmayı deneyin.</string>
     <string name="info_displaying_n_books_in_m_entries">%2$d giride %1$d kitap görüntüleniyor</string>
     <string name="X_info_install_scanner">ISBN barkodlarını taramak için, lütfen bu barkod tarayıcı uygulamalarından birini kurmak için aşağıya dokunun.</string>
     <string name="info_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="info_not_authorized">Yetkilendirilmemiş</string>
-    <string name="info_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır.\n Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “Kimlik Bilgileri” bölümünün altında bulabilirsiniz.</string>
+    <string name="info_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır.\n Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “%2$s” bölümünün altında bulabilirsiniz.</string>
     <string name="info_registration_required">Bu özellik %1$s ile kayıt gerektiriyor.\nDaha fazla bilgi görmek ister misiniz?</string>
     <string name="info_select_fields_to_update">Seçilen alanlar İnternet\'ten güncellenecektir. Seçilmeyen alanlar değiştirilmeden kalacaktır.</string>
     <string name="info_share_book_im_reading">“%1$s” yazısını %2$s %3$s %4$s okuyorum</string>
@@ -356,12 +356,11 @@
     <string name="lt_url_text_register">LibraryThing\'e kayıt ol</string>
     <string name="megabytes">%.2fMB</string>
     <string name="menu_about">Uygulama hakkında</string>
-    <string name="menu_add_book">Kitap ekle…</string>
+    <string name="X_menu_add_book">Kitap ekle…</string>
     <string name="menu_add_book_by_barcode_scan">Barkod/ISBN tara</string>
     <string name="menu_add_book_by_isbn">ISBN gir</string>
     <string name="menu_add_book_manually">El ile ekle</string>
-    <string name="menu_administration">Yönetim…</string>
-    <string name="title_administration">Yönetim</string>
+    <string name="X_menu_administration">Yönetim…</string>
     <string name="menu_amazon_books_by_author">Bu yazarın kitapları</string>
     <string name="menu_amazon_books_by_author_in_series">Yazara/diziye göre kitaplar</string>
     <string name="menu_amazon_books_in_series">Bu dizideki kitaplar</string>
@@ -386,7 +385,6 @@
     <string name="menu_duplicate">Çift</string>
     <string name="menu_edit">Düzenle…</string>
     <string name="menu_level_expand">Hepsini göster</string>
-    <string name="menu_hide_keyboard">Klavyeyi gizle</string>
     <string name="menu_loan_lend_book">Kitabı ödünç ver…</string>
     <string name="menu_loan_return_book">Ödünç alınan kitap geri döndü</string>
     <string name="menu_populate_toc">Kitap adlarını kendiliğinden doldur (DENEYSEL ÖZELLİK)</string>
@@ -408,7 +406,7 @@
     <string name="pe_thumbnails_cache_resized_each_time">Gerekli olduğunda her seferinde yeniden boyutlandır (daha az yer kaplar, kaydırma daha yavaş olacaktır)</string>
     <string name="pe_thumbnails_cache_resized_stored">Yeniden boyutlandırılmış ufak resimleri bellekte tut (daha fazla yer kaplar, dizelgeler daha hızlı kayar)</string>
     <string name="pe_use_recommended_option">Önerilen seçeneği kullanın</string>
-    <string name="pg_bob_show_details">Ek kitap ayarları</string>
+    <string name="pg_bob_show_details">Kitap detayları</string>
     <string name="pg_booklist">Kitap listeleri</string>
     <string name="pg_filters">Kitap süzgeçleri</string>
     <string name="pg_general">Genel</string>
@@ -456,7 +454,7 @@
     <string name="pt_bob_header">Başlık özet ayrıntıları</string>
     <string name="pt_bob_list_rebuild_state">Kitap listesi başlangıç durumu</string>
     <string name="pt_bob_authors_sort">Yazarları sırala</string>
-    <string name="pt_bob_text_size">Kitap dizelgesi öğeleri boyutu</string>
+    <string name="pt_bob_font_scale">Kitap dizelgesi öğeleri boyutu</string>
     <string name="pt_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
     <string name="pt_bob_thumbnails_show">Ufak resimleri göster</string>
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
@@ -510,7 +508,6 @@
     <string name="tip_authors_works">Kullanılan simgeler:</string>
     <string name="tip_authors_works_book">Kitap.</string>
     <string name="tip_authors_works_multiple_books">Giriş birden fazla kitapta var.</string>
-    <string name="tip_authors_works_toc">İçerik Tablosu (TOC) girişi, ör. Öykü.</string>
     <string name="tip_autorotate_camera_images">Eğer kendinizi sürekli kamera resimlerini aynı doğrultuda döndürüyor buluyorsanız uygulama ayarlarını sürekli bir yöne görselleri kendiliğinden döndürecek biçimde ayarlayabilirsiniz.</string>
     <string name="tip_background_task_events">Buradan bir ardalan görevi ile ilişkili tüm olayları görebilirsiniz. Bir olaya tıklamak o olayla ilintili yapılabilecek eylemleri görüntülemenizi sağlar.</string>
     <string name="tip_background_tasks">Buradan şu anda çalışan olayları, önceki hata ile biten diğer olayları ve diğer dikkate değer olayları görebilirsiniz. Bir göreve tıklamak o görevle ilişkili tüm olayları görmenizi ve/veya görevi silebilmenizi (ve ilişkili diğer olayları) sağlar.</string>
@@ -518,7 +515,7 @@
     <string name="tip_book_search_by_text">Kitapları ISBN ile eklemek kitap adı veya yazar adı ile eklemekten çok daha doğru sonuç verir ve genelde yeğlenir. Unutmayın ki doğru barkodu ön kapağın iç kısmında da bulabilirsiniz\n\n</string>
     <string name="tip_booklist_style_groups">Belirli bir kitap listesi stiline ilişkin başlık sıradüzenini değiştirmek için bu ekranı kullanabilirsiniz. Bir onay işareti başlığın listede gösterileceğini belirtir, gizlemek için onay işaretini kaldırın ve bunun tersi de geçerlidir. Her satırın en sağındaki simgeyi yukarı veya aşağı sürükleyerek hiyerarşiyi yeniden sipariş edebilirsiniz.</string>
     <string name="tip_booklist_style_menu">Bu seçke size dizelge biçemini seçmenize olanak tanır.\n\nEk olarak dizelgenin sonundaki “Kişiselleştir” düğmesini kullanarak bu seçkeyi kişiselleştirebilir ve hatta kendi dizelge biçemlerinizi oluşturabilirsiniz.</string>
-    <string name="tip_booklist_style_properties">Belirli bir kitap listesi stilinin özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Adı değiştirebilir, hiyerarşiyi değiştirmek için grupları düzenleyebilir ve kullanışlı bulduğunuz bir stil oluşturmak için çeşitli diğer tercihleri ayarlayabilirsiniz. Listede gösterilecek kitapların seçimini değiştirmek için “Filtreler” kullanmak da mümkündür. Örneğin. Sadece henüz okumadığınız ve daha fazlasını okumadığınız kitapları almak için.</string>
+    <string name="tip_booklist_style_properties">Belirli bir kitap listesi stilinin özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Adı değiştirebilir, hiyerarşiyi değiştirmek için grupları düzenleyebilir ve kullanışlı bulduğunuz bir stil oluşturmak için çeşitli diğer tercihleri ayarlayabilirsiniz. Listede gösterilecek kitapların seçimini değiştirmek için filtreler kullanmak da mümkündür. Örneğin. Sadece henüz okumadığınız ve daha fazlasını okumadığınız kitapları almak için.</string>
     <string name="tip_booklist_styles_editor">Bu ekranı, varsayılan stiller menünüzde görüntülenecek stillerin listesini özelleştirmek için kullanabilirsiniz. Bir onay işareti, stilin listede gösterileceğini belirtir, gizlemek için seçimini kaldırın ve bunun tersi de geçerlidir. Hiçbir stil işaretlenmezse, tüm stiller gösterilecektir. Her satırın en sağındaki simgeyi yukarı veya aşağı sürükleyerek hiyerarşiyi yeniden sipariş edebilirsiniz. Üst üste herhangi bir yere uzun basmak, belirli bir stilin ayrıntılarını düzenlemenizi veya klonlamanızı sağlar. Bir stili klonladıysanız ve fikrinizi değiştirdiyseniz, onu kendiniz silmeniz gerekir.</string>
     <string name="tip_dialog_title">İpucu</string>
     <string name="tip_reset_all">İpuçlarını sıfırla</string>
@@ -608,7 +605,6 @@
     <string name="pt_bob_show_details_uses_task_on">gecikmiş</string>
     <string name="lbl_author_type_writer">yazar</string>
     <string name="menu_search_local">Bölgesel arama</string>
-    <string name="pg_reformat">Yeniden biçimlendirme</string>
     <string name="progress_msg_n_books_processed">%1$d kitap işlendi</string>
     <string name="X_progress_end_n_books_exported">%1$d kitap ihraç edildi</string>
     <string name="warning_select_an_existing_folder">Lütfen varolan bir dizini seçin.</string>
@@ -639,6 +635,12 @@
     <string name="lbl_color">Renk</string>
     <string name="pg_image_cache">Görüntüler önbelleği</string>
     <string name="book_color_full_color">Renkli</string>
-    <string name="book_color_uncolored">Renksiz</string>
+    <string name="book_color_uncolored">siyah ve beyaz</string>
+    <string name="size_hidden">Gizli</string>
+    <string name="pt_show_goodreads">Goodreads menülerini göster</string>
+    <string name="pt_search_reformat_format">“Kitap formatı” adlarını standartlaştırın</string>
+    <string name="pt_search_reformat_color">“Kitap rengi” adlarını standartlaştırma</string>
+    <string name="lbl_data_import_export">Yedekleme ve İçe Aktarma</string>
+    <string name="lbl_author_type_intro">Giriş vs.</string>
 
 </resources>

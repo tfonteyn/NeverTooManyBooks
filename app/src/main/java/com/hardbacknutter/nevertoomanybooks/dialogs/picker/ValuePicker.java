@@ -52,6 +52,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
  */
 public class ValuePicker {
 
+    @Nullable
+    private TextView mMessageView;
+
     @NonNull
     private final RecyclerView mListView;
     @NonNull
@@ -74,36 +77,27 @@ public class ValuePicker {
 
         View root = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
 
-        // Optional message
-        TextView messageView = root.findViewById(R.id.message);
-        if (message != null && !message.isEmpty()) {
-            messageView.setText(message);
-            messageView.setVisibility(View.VISIBLE);
-        } else {
-            messageView.setVisibility(View.GONE);
-        }
+        mMessageView = root.findViewById(R.id.message);
 
         // list of options
         mListView = root.findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         mListView.setLayoutManager(linearLayoutManager);
-//        mListView.addItemDecoration(
-//                new DividerItemDecoration(context, linearLayoutManager.getOrientation()));
 
         mDialog = new AlertDialog.Builder(context)
-                          .setView(root)
-                          .setOnCancelListener(onCancelListener)
-                          .create();
+                .setView(root)
+                .setOnCancelListener(onCancelListener)
+                .create();
+
+        // optional title
+        setTitle(title);
+        // Optional message
+        setMessage(message);
 
         if (showCancel) {
             mDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                               context.getText(android.R.string.cancel),
                               (dialog, which) -> dialog.cancel());
-        }
-
-        // optional title
-        if (title != null && !title.isEmpty()) {
-            mDialog.setTitle(title);
         }
     }
 
@@ -125,8 +119,21 @@ public class ValuePicker {
         mListView.scrollToPosition(scrollToPosition);
     }
 
-    void setTitle(@NonNull final CharSequence title) {
-        mDialog.setTitle(title);
+    void setTitle(@Nullable final CharSequence title) {
+        if (title != null && title.length() > 0) {
+            mDialog.setTitle(title);
+        }
+    }
+
+    void setMessage(@Nullable final String message) {
+        if (mMessageView != null) {
+            if (message != null && !message.isEmpty()) {
+                mMessageView.setText(message);
+                mMessageView.setVisibility(View.VISIBLE);
+            } else {
+                mMessageView.setVisibility(View.GONE);
+            }
+        }
     }
 
     /**

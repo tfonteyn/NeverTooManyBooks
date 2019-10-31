@@ -37,6 +37,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.XmlRes;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
+import androidx.preference.SeekBarPreference;
 
 import java.util.List;
 import java.util.Objects;
@@ -70,6 +71,11 @@ public class StylePreferenceFragment
         PreferenceScreen screen = getPreferenceScreen();
         for (BooklistGroup group : mStyle.getGroups()) {
             group.addPreferencesTo(screen);
+        }
+
+        Preference thumbScale = findPreference(Prefs.pk_bob_thumbnail_scale);
+        if (thumbScale != null) {
+            thumbScale.setDependency(Prefs.pk_bob_show_thumbnails);
         }
 
         initListeners();
@@ -125,6 +131,35 @@ public class StylePreferenceFragment
     void updateSummary(@NonNull final String key) {
 
         switch (key) {
+            case Prefs.pk_bob_font_scale: {
+                SeekBarPreference preference = findPreference(key);
+                if (preference != null) {
+                    String summary = getResources()
+                            .getStringArray(R.array.pe_bob_text_scale)[mStyle.getTextScale()];
+                    preference.setSummary(summary);
+                }
+                break;
+            }
+            case Prefs.pk_bob_thumbnail_scale: {
+                SeekBarPreference preference = findPreference(key);
+                if (preference != null) {
+                    String summary = getResources()
+                            .getStringArray(R.array.pe_bob_thumbnail_scale)[mStyle
+                            .getThumbnailScale()];
+                    preference.setSummary(summary);
+                }
+                break;
+            }
+
+            case Prefs.pk_bob_levels_default: {
+                SeekBarPreference preference = findPreference(key);
+                if (preference != null) {
+                    preference.setMax(mStyle.getGroups().size());
+                    preference.setSummary(String.valueOf(mStyle.getTopLevel()));
+                }
+                break;
+            }
+
             case Prefs.pk_bob_groups: {
                 // the 'groups' in use.
                 Preference preference = findPreference(key);
@@ -132,6 +167,11 @@ public class StylePreferenceFragment
                     //noinspection ConstantConditions
                     preference.setSummary(mStyle.getGroupLabels(getContext()));
                 }
+                break;
+            }
+
+            case Prefs.pk_bob_show_thumbnails: {
+                updateSummary(Prefs.psk_style_show_details);
                 break;
             }
 

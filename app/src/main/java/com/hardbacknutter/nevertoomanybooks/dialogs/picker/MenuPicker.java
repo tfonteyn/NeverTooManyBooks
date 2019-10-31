@@ -40,7 +40,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -50,8 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Show context menu on a view.
- * <p>
- * TODO: create a Builder to avoid long param list in constructors.
  *
  * @param <T> type of the actual Object that is represented by a row in the selection list.
  */
@@ -61,56 +58,23 @@ public class MenuPicker<T>
     private MenuItemListAdapter mAdapter;
 
     /**
-     * Convenience Constructor without cancel options.
+     * Convenience Constructor.
      * <p>
      * The caller can create a menu calling {@link #createMenu(Context)},
      * populate it and pass it here.
      *
      * @param context    Current context
      * @param title      (optional) for the dialog/menu
-     * @param message    (optional) message to display above the menu
      * @param menu       the menu options to show
      * @param userObject (optional) a reference free to set/use by the caller
      * @param listener   callback handler with the MenuItem the user chooses + the position
      */
     public MenuPicker(@NonNull final Context context,
                       @Nullable final String title,
-                      @Nullable final String message,
                       @NonNull final Menu menu,
                       @Nullable final T userObject,
                       @NonNull final ContextItemSelected<T> listener) {
-        this(context, title, message, false, null, menu, userObject, listener);
-    }
-
-    /**
-     * Full Constructor with string resource ids.
-     * <p>
-     * The caller can create a menu calling {@link #createMenu(Context)},
-     * populate it and pass it here.
-     *
-     * @param context          Current context
-     * @param titleId          (optional, 0 for none) Resource id for the dialog/menu
-     * @param messageId        (optional, 0 for none) Resource id for a message to display
-     *                         above the menu
-     * @param showCancel       set to {@code true} to show a 'cancel' button.
-     * @param onCancelListener (optional) listener for cancel events
-     * @param menu             the menu options to show
-     * @param userObject       (optional) a reference free to set/use by the caller
-     * @param listener         callback handler with the MenuItem the user chooses + the position
-     */
-    @SuppressWarnings("unused")
-    public MenuPicker(@NonNull final Context context,
-                      @StringRes final int titleId,
-                      @StringRes final int messageId,
-                      final boolean showCancel,
-                      @Nullable final DialogInterface.OnCancelListener onCancelListener,
-                      @NonNull final Menu menu,
-                      @Nullable final T userObject,
-                      @NonNull final ContextItemSelected<T> listener) {
-        this(context,
-             titleId != 0 ? context.getString(titleId) : null,
-             messageId != 0 ? context.getString(messageId) : null,
-             showCancel, onCancelListener, menu, userObject, listener);
+        this(context, title, null, false, null, menu, userObject, listener);
     }
 
     /**

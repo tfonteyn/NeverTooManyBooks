@@ -84,7 +84,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  */
 @AcraMailSender(
         mailTo = "",
-//        mailTo = "test@local.net",
+//        mailTo = "debug@email",
         reportFileName = "NeverTooManyBooks-acra-report.txt")
 @AcraToast(
         //optional, displayed as soon as the crash occurs,
@@ -435,6 +435,20 @@ public class App
                                          final boolean defValue) {
         return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                                 .getBoolean(key, defValue);
+    }
+
+    /**
+     * Get a global preference int.
+     *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return the preference value
+     */
+    public static int getPrefInteger(@NonNull final String key,
+                                     final int defValue) {
+        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                .getInt(key, defValue);
     }
 
     /**

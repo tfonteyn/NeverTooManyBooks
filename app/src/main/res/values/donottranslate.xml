@@ -44,7 +44,7 @@
 
     <string name="email_contact1" translatable="false">name1@email</string>
     <string name="email_contact2" translatable="false">name2@email</string>
-    <string name="email_debug" translatable="false">name3@email</string>
+    <string name="email_debug" translatable="false">debug@email</string>
 
     <!-- Credits in the 'about' dialog -->
     <string name="original_creators" translatable="false">Evan Leybourn &amp; Philip Warner</string>
