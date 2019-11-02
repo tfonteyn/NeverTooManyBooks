@@ -410,7 +410,7 @@ public class SearchCoordinator {
         SearchEngine searchEngine = site.getSearchEngine();
 
         // special case, some sites can only be searched with an ISBN
-        if (searchEngine.isIsbnOnly() && !mHasValidIsbn) {
+        if (searchEngine.requiresIsbn() && !mHasValidIsbn) {
             return false;
         }
 

@@ -397,14 +397,11 @@ public final class SearchSites {
      * @return list containing only the enables sites
      */
     public static int getEnabledSitesAsBitmask(@NonNull final ArrayList<Site> list) {
-        int sites = SEARCH_FLAG_MASK;
+        int sites = 0;
         for (Site site : list) {
             if (site.isEnabled()) {
                 // add the site
                 sites = sites | site.id;
-            } else {
-                // remove the site
-                sites = sites & ~site.id;
             }
         }
         return sites;

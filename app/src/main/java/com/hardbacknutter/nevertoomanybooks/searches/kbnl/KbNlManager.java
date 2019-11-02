@@ -218,7 +218,7 @@ public class KbNlManager
     }
 
     @Override
-    public boolean isIsbnOnly() {
+    public boolean requiresIsbn() {
         return true;
     }
 

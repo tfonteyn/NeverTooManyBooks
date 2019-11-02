@@ -401,7 +401,7 @@ public class LibraryThingManager
     }
 
     @Override
-    public boolean isIsbnOnly() {
+    public boolean requiresIsbn() {
         return true;
     }
 
