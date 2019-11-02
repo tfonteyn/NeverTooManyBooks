@@ -50,16 +50,21 @@
         android:visible="false"
         tools:visible="true" />
 
+    <!-- only made visible from the BoB screen. -->
     <item
         android:id="@+id/nav_import_export"
         android:icon="@drawable/ic_sd_storage"
-        android:title="@string/lbl_data_import_export" />
+        android:title="@string/lbl_data_import_export"
+        android:visible="false"
+        tools:visible="true" />
 
-    <!-- optional visibility. -->
+    <!-- only made visible from the BoB screen. -->
     <item
         android:id="@+id/nav_goodreads"
         android:icon="@drawable/ic_goodreads"
-        android:title="@string/goodreads" />
+        android:title="@string/goodreads"
+        android:visible="false"
+        tools:visible="true" />
 
     <item
         android:id="@+id/nav_settings"

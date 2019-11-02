@@ -28,7 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -144,12 +144,16 @@ public class ImportExportFragment
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
         mExportHelperModel = new ViewModelProvider(getActivity()).get(ExportHelperModel.class);
-        mExportHelperModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
-        mExportHelperModel.getTaskFinishedMessage().observe(this, this::onExportFinished);
+        mExportHelperModel.getTaskProgressMessage()
+                          .observe(getViewLifecycleOwner(), this::onTaskProgressMessage);
+        mExportHelperModel.getTaskFinishedMessage()
+                          .observe(getViewLifecycleOwner(), this::onExportFinished);
 
         mImportHelperModel = new ViewModelProvider(getActivity()).get(ImportHelperModel.class);
-        mImportHelperModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
-        mImportHelperModel.getTaskFinishedMessage().observe(this, this::onImportFinished);
+        mImportHelperModel.getTaskProgressMessage()
+                          .observe(getViewLifecycleOwner(), this::onTaskProgressMessage);
+        mImportHelperModel.getTaskFinishedMessage()
+                          .observe(getViewLifecycleOwner(), this::onImportFinished);
 
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
@@ -166,47 +170,15 @@ public class ImportExportFragment
 
         // Import from Archive
         root.findViewById(R.id.lbl_import_from_archive)
-            .setOnClickListener(v -> {
-                // or should we use Intent.ACTION_OPEN_DOCUMENT ?
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
-                        .addCategory(Intent.CATEGORY_OPENABLE)
-                        .setType("*/*");
-                startActivityForResult(intent, REQ_PICK_FILE_FOR_ARCHIVE_IMPORT);
-            });
+            .setOnClickListener(v -> startImportFromArchive());
 
         // Export to CSV
         root.findViewById(R.id.lbl_export)
-            .setOnClickListener(v -> {
-                Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
-                        .addCategory(Intent.CATEGORY_OPENABLE)
-                        .setType("text/csv")
-                        .putExtra(Intent.EXTRA_TITLE, CSV_EXPORT_FILE_NAME);
-                startActivityForResult(intent, REQ_PICK_FILE_FOR_CSV_EXPORT);
-            });
+            .setOnClickListener(v -> startExportToCsv());
 
         // Import From CSV
         root.findViewById(R.id.lbl_import)
-            .setOnClickListener(v -> {
-                // Verify - this can be a dangerous operation
-                //noinspection ConstantConditions
-                new AlertDialog.Builder(getContext())
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
-                        .setTitle(R.string.title_import_book_data)
-                        .setMessage(R.string.warning_import_be_cautious)
-                        .setNegativeButton(android.R.string.cancel, (dialog, which) ->
-                                dialog.dismiss())
-                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                            // or should we use Intent.ACTION_OPEN_DOCUMENT ?
-                            Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
-                                    .addCategory(Intent.CATEGORY_OPENABLE)
-                                    // Android bug? When using "text/csv"
-                                    // we cannot select a csv file?
-                                    .setType("text/*");
-                            startActivityForResult(intent, REQ_PICK_FILE_FOR_CSV_IMPORT);
-                        })
-                        .create()
-                        .show();
-            });
+            .setOnClickListener(v -> startImportFromCsv());
 
         // Export database
         root.findViewById(R.id.lbl_copy_database)
@@ -339,24 +311,23 @@ public class ImportExportFragment
         }
     }
 
-    private String getMessage(@NonNull final Exception e) {
-        String msg;
-        if (e instanceof FormattedMessageException) {
-            //noinspection ConstantConditions
-            msg = ((FormattedMessageException) e).getLocalizedMessage(getContext());
-        } else {
-            msg = e.getLocalizedMessage();
-        }
-        return msg;
-    }
-
     /* ------------------------------------------------------------------------------------------ */
-    /* Import */
+    /* Import from Archive */
     /* ------------------------------------------------------------------------------------------ */
 
     /**
+     * Step 1 in the archive import procedure: prompt the user for a uri to import.
+     */
+    private void startImportFromArchive() {
+        // or should we use Intent.ACTION_OPEN_DOCUMENT ?
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("*/*");
+        startActivityForResult(intent, ImportExportFragment.REQ_PICK_FILE_FOR_ARCHIVE_IMPORT);
+    }
+
+    /**
      * Step 2 in the archive import procedure: show the options to the user.
-     * onActivityResult took the uri resulting from step 1
      *
      * @param uri to read from
      */
@@ -385,7 +356,6 @@ public class ImportExportFragment
 
     /**
      * Step 3 in the archive import procedure: kick of the task.
-     * Either called directly from Step 2; or with a detour after showing the user the options.
      *
      * @param importHelper final options to use
      */
@@ -405,9 +375,37 @@ public class ImportExportFragment
         mProgressDialog.setTask(mModel.getTask());
     }
 
+    /* ------------------------------------------------------------------------------------------ */
+    /* Import from CSV */
+    /* ------------------------------------------------------------------------------------------ */
+
+    /**
+     * Step 1 in the CSV import procedure: prompt the user for a uri to import.
+     */
+    private void startImportFromCsv() {
+        // Verify - this can be a dangerous operation
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.title_import_book_data)
+                .setMessage(R.string.warning_import_be_cautious)
+                .setNegativeButton(android.R.string.cancel, (dialog, which) ->
+                        dialog.dismiss())
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    // or should we use Intent.ACTION_OPEN_DOCUMENT ?
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
+                            .addCategory(Intent.CATEGORY_OPENABLE)
+                            // Android bug? When using "text/csv"
+                            // we cannot select a csv file?
+                            .setType("text/*");
+                    startActivityForResult(intent, REQ_PICK_FILE_FOR_CSV_IMPORT);
+                })
+                .create()
+                .show();
+    }
+
     /**
      * Step 2 in the CSV import procedure: show the options to the user.
-     * onActivityResult took the uri resulting from step 1.
      *
      * @param uri to read
      */
@@ -461,83 +459,40 @@ public class ImportExportFragment
         mProgressDialog.setTask(mModel.getTask());
     }
 
-
+    /**
+     * Step 4 in the Archive/CSV import procedure.
+     *
+     * @param message with results from the import task
+     */
     private void onImportFinished(@NonNull final TaskFinishedMessage<ImportHelper> message) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
-        //noinspection ConstantConditions
-        @NonNull
-        Context context = getContext();
-        //noinspection ConstantConditions
-        @NonNull
-        View view = getView();
-
-        ImportHelper importHelper = message.result;
 
         switch (message.taskId) {
-            case R.id.TASK_ID_READ_FROM_ARCHIVE: {
-                switch (message.status) {
-                    case Success: {
-                        onImportFinished(R.string.progress_end_import_complete,
-                                         importHelper);
-                        break;
-                    }
-                    case Failed: {
-                        String msg;
-                        if (message.exception instanceof InvalidArchiveException) {
-                            msg = getString(R.string.error_import_invalid_archive);
-                        } else if (message.exception instanceof IOException) {
-                            msg = getString(R.string.error_storage_not_readable) + "\n\n"
-                                  + getString(R.string.error_if_the_problem_persists,
-                                              getString(R.string.lbl_send_debug_info));
-                        } else {
-                            msg = getString(R.string.error_unexpected_error);
-                        }
-
-                        new AlertDialog.Builder(context)
-                                .setTitle(R.string.error_import_failed)
-                                .setMessage(msg)
-                                .setPositiveButton(android.R.string.ok, (dialog, which) ->
-                                        dialog.dismiss())
-                                .create()
-                                .show();
-                        break;
-                    }
-                    case Cancelled: {
-                        onImportFinished(R.string.progress_end_import_partially_complete,
-                                         importHelper);
-                        break;
-                    }
-                }
-                break;
-            }
+            case R.id.TASK_ID_READ_FROM_ARCHIVE:
             case R.id.TASK_ID_CSV_IMPORT: {
                 switch (message.status) {
                     case Success: {
                         onImportFinished(R.string.progress_end_import_complete,
-                                         importHelper);
+                                         message.result);
                         break;
                     }
                     case Failed: {
-                        if (message.exception != null) {
-                            UserMessage.show(view, getMessage(message.exception));
-                        } else {
-                            UserMessage.show(view, R.string.error_import_failed);
-                        }
+                        onImportFailed(message.exception);
                         break;
                     }
                     case Cancelled: {
-                        // We still might have partially imported some data.
                         onImportFinished(R.string.progress_end_import_partially_complete,
-                                         importHelper);
+                                         message.result);
                         break;
                     }
                 }
                 break;
             }
             default: {
-                Logger.warnWithStackTrace(context, this, "taskId=" + message.taskId);
+                //noinspection ConstantConditions
+                Logger.warnWithStackTrace(getContext(), this, "taskId=" + message.taskId);
                 break;
             }
         }
@@ -546,50 +501,25 @@ public class ImportExportFragment
     private void onImportFinished(@StringRes final int titleId,
                                   @NonNull final ImportHelper importHelper) {
 
-        // See if there are any BookCatalogue preferences that need migrating.
+        // Check if there are any BookCatalogue preferences that need migrating.
         if ((importHelper.options & Options.PREFERENCES) != 0) {
             //noinspection ConstantConditions
             LegacyPreferences.migrateLegacyPreferences(getContext());
         }
 
-        String msg = createImportReport(importHelper);
-        //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
-                .setTitle(titleId)
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    mResultDataModel.putExtra(UniqueId.BKEY_IMPORT_RESULT, importHelper.options);
-                    Intent resultData = mResultDataModel.getActivityResultData();
-                    //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, resultData);
-                    getActivity().finish();
-                })
-                .create()
-                .show();
-    }
-
-    /**
-     * Transform the result data into a user friendly report.
-     *
-     * @param importHelper import data
-     *
-     * @return the report ready to display to the user.
-     */
-    private String createImportReport(@NonNull final ImportHelper importHelper) {
+        // Transform the result data into a user friendly report.
         Importer.Results results = importHelper.getResults();
         StringBuilder msg = new StringBuilder();
 
         if (results.booksCreated > 0 || results.booksUpdated > 0) {
-            msg.append("\n• ")
-               .append(getString(R.string.progress_msg_n_created_m_updated,
-                                 getString(R.string.lbl_books),
-                                 results.booksCreated, results.booksUpdated));
+            msg.append("\n• ").append(getString(R.string.progress_msg_n_created_m_updated,
+                                                getString(R.string.lbl_books),
+                                                results.booksCreated, results.booksUpdated));
         }
         if (results.coversCreated > 0 || results.coversUpdated > 0) {
-            msg.append("\n• ")
-               .append(getString(R.string.progress_msg_n_created_m_updated,
-                                 getString(R.string.lbl_covers),
-                                 results.coversCreated, results.coversUpdated));
+            msg.append("\n• ").append(getString(R.string.progress_msg_n_created_m_updated,
+                                                getString(R.string.lbl_covers),
+                                                results.coversCreated, results.coversUpdated));
         }
         if ((importHelper.options & Options.BOOK_LIST_STYLES) != 0) {
             msg.append("\n• ").append(getString(R.string.name_colon_value,
@@ -600,15 +530,55 @@ public class ImportExportFragment
             msg.append("\n• ").append(getString(R.string.lbl_settings));
         }
 
-        return msg.toString();
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
+                .setTitle(titleId)
+                .setMessage(msg)
+                .setPositiveButton(R.string.done, (dialog, which) -> {
+                    mResultDataModel.putExtra(UniqueId.BKEY_IMPORT_RESULT, importHelper.options);
+                    Intent resultData = mResultDataModel.getActivityResultData();
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, resultData);
+                    getActivity().finish();
+                })
+                .create()
+                .show();
+    }
+
+    private void onImportFailed(@Nullable final Exception e) {
+        String msg;
+
+        if (e instanceof InvalidArchiveException) {
+            msg = getString(R.string.error_import_invalid_archive);
+
+        } else if (e instanceof IOException) {
+            msg = getString(R.string.error_storage_not_readable) + "\n\n"
+                  + getString(R.string.error_if_the_problem_persists,
+                              getString(R.string.lbl_send_debug_info));
+
+        } else if (e instanceof FormattedMessageException) {
+            //noinspection ConstantConditions
+            msg = ((FormattedMessageException) e).getLocalizedMessage(getContext());
+
+        } else {
+            msg = getString(R.string.error_unexpected_error);
+        }
+
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.error_import_failed)
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
     }
 
     /* ------------------------------------------------------------------------------------------ */
-    /* Backup/Export */
+    /* Backup */
     /* ------------------------------------------------------------------------------------------ */
 
     /**
-     * Step 1 in the backup procedure: ask the user for a filename/location.
+     * Step 1 in the backup procedure: prompt the user for a uri to export to.
      */
     private void startBackup() {
         //noinspection ConstantConditions
@@ -622,7 +592,6 @@ public class ImportExportFragment
 
     /**
      * Step 2 in the backup procedure: show the options to the user.
-     * onActivityResult took the uri resulting from step 1
      *
      * @param uri to write to
      */
@@ -649,7 +618,6 @@ public class ImportExportFragment
 
     /**
      * Step 3 in the backup procedure: kick of the backup task.
-     * Either called directly from Step 2; or with a detour after showing the user the options.
      *
      * @param exportHelper final options to use
      */
@@ -669,9 +637,23 @@ public class ImportExportFragment
         mProgressDialog.setTask(mModel.getTask());
     }
 
+    /* ------------------------------------------------------------------------------------------ */
+    /* Export to CSV */
+    /* ------------------------------------------------------------------------------------------ */
+
+    /**
+     * Step 1 in the CSV export procedure: prompt the user for a uri to export to.
+     */
+    private void startExportToCsv() {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("text/csv")
+                .putExtra(Intent.EXTRA_TITLE, CSV_EXPORT_FILE_NAME);
+        startActivityForResult(intent, REQ_PICK_FILE_FOR_CSV_EXPORT);
+    }
+
     /**
      * Step 2 in the CSV export procedure: Start the CSV export task.
-     * onActivityResult took the uri resulting from step 1.
      *
      * @param uri to write to
      */
@@ -693,61 +675,32 @@ public class ImportExportFragment
         mProgressDialog.setTask(mModel.getTask());
     }
 
-
+    /**
+     * Step 4 in the Archive/CSV export procedure.
+     *
+     * @param message with results from the export task
+     */
     private void onExportFinished(@NonNull final TaskFinishedMessage<ExportHelper> message) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
-
-        //noinspection ConstantConditions
-        @NonNull
-        View view = getView();
-
-        ExportHelper exportHelper = message.result;
 
         switch (message.taskId) {
             case R.id.TASK_ID_WRITE_TO_ARCHIVE: {
                 switch (message.status) {
                     case Success: {
                         if (isResumed()) {
-                            String msg = createExportReport(exportHelper);
-
-                            //noinspection ConstantConditions
-                            new AlertDialog.Builder(getContext())
-                                    .setTitle(R.string.progress_end_backup_success)
-                                    .setMessage(msg)
-                                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                                        mResultDataModel.putExtra(UniqueId.BKEY_EXPORT_RESULT,
-                                                                  exportHelper.options);
-                                        Intent resultData =
-                                                mResultDataModel.getActivityResultData();
-                                        //noinspection ConstantConditions
-                                        getActivity().setResult(Activity.RESULT_OK, resultData);
-                                        getActivity().finish();
-                                    })
-                                    .create()
-                                    .show();
+                            onExportFinished(message.result, false);
                         }
                         break;
                     }
                     case Failed: {
-                        String msg = getString(R.string.error_storage_not_writable)
-                                     + "\n\n"
-                                     + getString(R.string.error_if_the_problem_persists,
-                                                 getString(R.string.lbl_send_debug_info));
-
-                        //noinspection ConstantConditions
-                        new AlertDialog.Builder(getContext())
-                                .setTitle(R.string.error_backup_failed)
-                                .setMessage(msg)
-                                .setPositiveButton(android.R.string.ok, (dialog, which) ->
-                                        dialog.dismiss())
-                                .create()
-                                .show();
+                        onExportFailed(message.exception);
                         break;
                     }
                     case Cancelled: {
-                        UserMessage.show(view, R.string.progress_end_cancelled);
+                        //noinspection ConstantConditions
+                        UserMessage.show(getView(), R.string.progress_end_cancelled);
                         break;
                     }
                 }
@@ -757,39 +710,16 @@ public class ImportExportFragment
                 switch (message.status) {
                     case Success: {
                         if (isResumed()) {
-                            String msg = createExportReport(exportHelper)
-                                         + "\n\n"
-                                         + getString(R.string.confirm_email_export);
-
-                            //noinspection ConstantConditions
-                            new AlertDialog.Builder(getContext())
-                                    .setTitle(R.string.progress_end_backup_success)
-                                    .setMessage(msg)
-                                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-                                        mResultDataModel.putExtra(UniqueId.BKEY_EXPORT_RESULT,
-                                                                  exportHelper.options);
-                                        Intent resultData =
-                                                mResultDataModel.getActivityResultData();
-                                        //noinspection ConstantConditions
-                                        getActivity().setResult(Activity.RESULT_OK, resultData);
-                                        getActivity().finish();
-                                    })
-                                    .setPositiveButton(android.R.string.ok, (dialog, which) ->
-                                            emailExportFile(exportHelper))
-                                    .create()
-                                    .show();
+                            onExportFinished(message.result, true);
                         }
                         break;
                     }
                     case Failed: {
-                        if (message.exception != null) {
-                            UserMessage.show(view, getMessage(message.exception));
-                        } else {
-                            UserMessage.show(view, R.string.error_backup_failed);
-                        }
+                        onExportFailed(message.exception);
                         break;
                     }
                     case Cancelled: {
+                        //noinspection ConstantConditions
                         UserMessage.show(getView(), R.string.progress_end_cancelled);
                         break;
                     }
@@ -798,28 +728,22 @@ public class ImportExportFragment
             }
             default: {
                 //noinspection ConstantConditions
-                Logger.warnWithStackTrace(getContext(), view, "taskId=" + message.taskId);
+                Logger.warnWithStackTrace(getContext(), getView(), "taskId=" + message.taskId);
                 break;
             }
         }
     }
 
-    /**
-     * Transform the result data into a user friendly report.
-     *
-     * @param exportHelper export data
-     *
-     * @return the report ready to display to the user.
-     */
-    private String createExportReport(@NonNull final ExportHelper exportHelper) {
+    private void onExportFinished(@NonNull final ExportHelper exportHelper,
+                                  final boolean offerEmail) {
+        // Transform the result data into a user friendly report.
         Exporter.Results results = exportHelper.getResults();
         StringBuilder msg = new StringBuilder();
 
         // slightly misleading. The text currently says "processed" but it's really "exported".
         if (results.booksExported > 0) {
             msg.append("\n• ")
-               .append(getString(R.string.progress_msg_n_books_processed,
-                                 results.booksExported));
+               .append(getString(R.string.progress_msg_n_books_processed, results.booksExported));
         }
         if (results.coversExported > 0 || results.coversMissing > 0) {
             msg.append("\n• ")
@@ -836,7 +760,55 @@ public class ImportExportFragment
             msg.append("\n• ").append(getString(R.string.lbl_settings));
         }
 
-        return msg.toString();
+        if (offerEmail) {
+            msg.append("\n\n")
+               .append(getString(R.string.confirm_email_export));
+        }
+
+        //noinspection ConstantConditions
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setTitle(R.string.progress_end_backup_success)
+                .setMessage(msg)
+                .setPositiveButton(R.string.done, (d, which) -> {
+                    mResultDataModel.putExtra(UniqueId.BKEY_EXPORT_RESULT, exportHelper.options);
+                    Intent resultData = mResultDataModel.getActivityResultData();
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, resultData);
+                    getActivity().finish();
+                })
+                .create();
+
+        if (offerEmail) {
+            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.email),
+                             (d, which) -> emailExportFile(exportHelper));
+        }
+
+        dialog.show();
+    }
+
+    private void onExportFailed(@Nullable final Exception e) {
+        String msg;
+
+        if (e instanceof IOException) {
+            msg = getString(R.string.error_storage_not_writable) + "\n\n"
+                  + getString(R.string.error_if_the_problem_persists,
+                              getString(R.string.lbl_send_debug_info));
+
+        } else if (e instanceof FormattedMessageException) {
+            //noinspection ConstantConditions
+            msg = ((FormattedMessageException) e).getLocalizedMessage(getContext());
+
+        } else {
+            msg = getString(R.string.error_unexpected_error);
+        }
+
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.error_backup_failed)
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
     }
 
     /**

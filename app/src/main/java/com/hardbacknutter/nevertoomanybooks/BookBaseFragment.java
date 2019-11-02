@@ -267,8 +267,8 @@ public abstract class BookBaseFragment
         //noinspection ConstantConditions
         mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
         mBookModel.init(getArguments());
-        mBookModel.getUserMessage().observe(this, this::showUserMessage);
-        mBookModel.getNeedsGoodreads().observe(this, this::needsGoodreads);
+        mBookModel.getUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
+        mBookModel.getNeedsGoodreads().observe(getViewLifecycleOwner(), this::needsGoodreads);
 
         mFields = new Fields(this);
         initFields();

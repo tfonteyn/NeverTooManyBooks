@@ -51,17 +51,13 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.About;
-import com.hardbacknutter.nevertoomanybooks.AdminActivity;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FTSSearchActivity;
-import com.hardbacknutter.nevertoomanybooks.ImportExportFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -154,9 +150,6 @@ public abstract class BaseActivity
         if (mDrawerLayout != null) {
             mNavigationView = findViewById(R.id.nav_view);
             mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
-
-            setNavigationItemVisibility(R.id.nav_goodreads,
-                                        GoodreadsManager.isShowSyncMenus(this));
         }
     }
 
@@ -179,6 +172,7 @@ public abstract class BaseActivity
      *
      * @param containerViewId to receive the fragment
      * @param fragmentClass   the fragment; must be loadable with the current class loader.
+     * @param fragmentTag     tag for the fragment
      */
     public void addFragment(@IdRes final int containerViewId,
                             @NonNull final Class fragmentClass,
@@ -194,6 +188,7 @@ public abstract class BaseActivity
      *
      * @param containerViewId to receive the fragment
      * @param fragmentClass   the fragment; must be loadable with the current class loader.
+     * @param fragmentTag     tag for the fragment
      */
     public void replaceFragment(@IdRes final int containerViewId,
                                 @NonNull final Class fragmentClass,
@@ -211,6 +206,7 @@ public abstract class BaseActivity
      *
      * @param containerViewId to receive the fragment
      * @param fragmentClass   the fragment; must be loadable with the current class loader.
+     * @param fragmentTag     tag for the fragment
      * @param isAdd           whether to use add or replace
      */
     private void loadFragment(@IdRes final int containerViewId,
@@ -325,21 +321,6 @@ public abstract class BaseActivity
                                        UniqueId.REQ_NAV_PANEL_SETTINGS);
                 return true;
             }
-
-            case R.id.nav_import_export: {
-                Intent intent = new Intent(this, AdminActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ImportExportFragment.TAG);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_IMP_EXP);
-                return true;
-            }
-
-            case R.id.nav_goodreads: {
-                Intent intent = new Intent(this, AdminActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_GOODREADS);
-                return true;
-            }
-
             case R.id.nav_about: {
                 startActivity(new Intent(this, About.class));
                 return true;

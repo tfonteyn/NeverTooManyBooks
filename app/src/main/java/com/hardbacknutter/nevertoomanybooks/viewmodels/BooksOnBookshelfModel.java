@@ -578,7 +578,7 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Check if a rebuild is needed in {@code Activity#onResume()}
+     * Check if a rebuild is needed in {@code Activity#onResume()}.
      *
      * @return {@code true} if a rebuild is needed
      */
@@ -587,7 +587,7 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Request a rebuild at the next {@code Activity#onResume()}
+     * Request a rebuild at the next {@code Activity#onResume()}.
      *
      * @param forceRebuild Flag
      */
@@ -1037,15 +1037,15 @@ public class BooksOnBookshelfModel
                                                           + "\ntotalBookCount(%.5d)    : %.10d"
                                                           + "\n ==================================="
                                                           + "\n Total time in ms: %f",
-                                               (t1_build_done - t0),
-                                               (t2_sync_done - t1_build_done),
-                                               (t3_got_new_cursor - t2_sync_done),
+                                               t1_build_done - t0,
+                                               t2_sync_done - t1_build_done,
+                                               t3_got_new_cursor - t2_sync_done,
                                                countAllRows,
-                                               (t4_count_all_rows_done - t3_got_new_cursor),
+                                               t4_count_all_rows_done - t3_got_new_cursor,
                                                mHolder.resultDistinctBookCount,
-                                               (t5_distinct_count_done - t4_count_all_rows_done),
+                                               t5_distinct_count_done - t4_count_all_rows_done,
                                                mHolder.resultTotalBookCount,
-                                               (t6_total_count_done - t5_distinct_count_done),
+                                               t6_total_count_done - t5_distinct_count_done,
                                                (float) (t6_total_count_done - t0)));
                 }
 

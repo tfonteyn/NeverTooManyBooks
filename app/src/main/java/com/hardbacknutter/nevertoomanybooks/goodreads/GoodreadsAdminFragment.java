@@ -85,8 +85,10 @@ public class GoodreadsAdminFragment
         mModel = new ViewModelProvider(getActivity()).get(AdminModel.class);
 
         mGoodreadsTaskModel = new ViewModelProvider(this).get(GoodreadsTaskModel.class);
-        mGoodreadsTaskModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
-        mGoodreadsTaskModel.getTaskFinishedMessage().observe(this, this::onTaskFinished);
+        mGoodreadsTaskModel.getTaskProgressMessage()
+                           .observe(getViewLifecycleOwner(), this::onTaskProgressMessage);
+        mGoodreadsTaskModel.getTaskFinishedMessage()
+                           .observe(getViewLifecycleOwner(), this::onTaskFinished);
 
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);

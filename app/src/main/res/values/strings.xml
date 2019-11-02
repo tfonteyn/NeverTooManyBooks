@@ -791,6 +791,12 @@
 
     <!-- SwitchPreference - allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_mobile_data">Allow mobile data usage</string>
+
+    <!-- SwitchPreference -->
+    <string name="pt_search_reformat_format">Standardize “book format” names</string>
+    <!-- SwitchPreference -->
+    <string name="pt_search_reformat_color">Standardize “book color” names</string>
+
     <!-- SwitchPreference - some search engines can add the publisher to the search terms.
         This is not always desirable, as they use "AND" to combine the terms.
         So by default this is switched off. -->
@@ -1511,10 +1517,14 @@
     <!-- ####################################################################################### -->
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
 
-    <!-- SwitchPreference -->
-    <string name="pt_search_reformat_format">Standardize “book format” names</string>
-    <!-- SwitchPreference -->
-    <string name="pt_search_reformat_color">Standardize “book color” names</string>
+    <string name="email">email</string>
+
+
+    <string name="book_color_full_color">Colored</string>
+    <string name="book_color_uncolored">Black &amp; white</string>
+    <!-- uncolored, but with a support-color.
+         e.g. black and white, but additional red for emphasis -->
+    <string name="book_color_support_color">Uncolored + support color</string>
 
 
     <string name="lbl_purge_blns">Purge BLNS</string>
@@ -1523,11 +1533,5 @@
         Example: Bookshelf ToRead
     -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
-
-    <string name="book_color_full_color">Colored</string>
-    <string name="book_color_uncolored">Uncolored</string>
-    <!-- uncolored, but with a support-color.
-         e.g. black and white, but additional red for emphasis -->
-    <string name="book_color_support_color">Uncolored + support color</string>
 
 </resources>

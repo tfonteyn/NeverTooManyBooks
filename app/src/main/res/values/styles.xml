@@ -214,21 +214,21 @@
     </style>
 
     <!-- An editable CheckBox. We basically want this to be the same height as EditText fields. -->
-    <style name="CheckboxEntry">
+    <style name="CheckboxEntry" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">@dimen/edit_text_height</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <!-- Button with 'data' displayed on it; a click leads to a screen/dialog to edit that data -->
-    <style name="DataEntryButton">
+    <style name="DataEntryButton" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/border1</item>
         <item name="android:hint">@string/hint_field_not_set</item>
     </style>
 
-    <!-- a text-picker button next to an edit field -->
+    <!-- ImageButton - a text-picker button next to an edit field -->
     <style name="DropDownMenu">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0dp</item>
@@ -565,20 +565,13 @@
     </style>
 
     <!-- Keys on the isbn search keyboard. -->
-    <style name="IsbnSearchKey" parent="Widget.MaterialComponents.Button">
+    <style name="IsbnKeyPadButton" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">75dp</item>
-        <item name="android:layout_marginTop">@dimen/border1</item>
         <item name="android:layout_marginStart">@dimen/border1</item>
+        <item name="android:layout_marginEnd">@dimen/border1</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
-
-    <!-- 'del' key on the isbn search keyboard. -->
-    <style name="IsbnSearchKey.Del">
-        <item name="android:src">@drawable/ic_backspace</item>
-        <item name="android:tint">?attr/colorOnPrimary</item>
-    </style>
-
 
     <!-- *************************************************************************************** -->
 </resources>

@@ -90,9 +90,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -301,10 +303,12 @@ public class BooksOnBookshelf
 
         mProgressBar = findViewById(R.id.progressBar);
 
-        // enable the styles and bookshelves menu
+        // enable the navigation menu
         setNavigationItemVisibility(R.id.nav_manage_list_styles, true);
         setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
-
+        setNavigationItemVisibility(R.id.nav_import_export, true);
+        setNavigationItemVisibility(R.id.nav_goodreads,
+                                    GoodreadsManager.isShowSyncMenus(this));
         // Setup the list view.
         initListView();
 
@@ -616,10 +620,21 @@ public class BooksOnBookshelf
                 startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
                 return true;
             }
+            case R.id.nav_import_export: {
+                Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ImportExportFragment.TAG);
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_IMP_EXP);
+                return true;
+            }
+            case R.id.nav_goodreads: {
+                Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_GOODREADS);
+                return true;
+            }
             default:
                 return super.onNavigationItemSelected(item);
         }
-
     }
 
     /**
