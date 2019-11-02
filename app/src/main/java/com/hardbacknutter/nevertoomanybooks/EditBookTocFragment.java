@@ -99,12 +99,14 @@ public class EditBookTocFragment
 
     /** Fragment manager tag. */
     public static final String TAG = "EditBookTocFragment";
-    private final SimpleAdapterDataObserver mAdapterDataObserver = new SimpleAdapterDataObserver() {
-        @Override
-        public void onChanged() {
-            mBookModel.setDirty(true);
-        }
-    };
+
+    private final SimpleAdapterDataObserver mAdapterDataObserver =
+            new SimpleAdapterDataObserver() {
+                @Override
+                public void onChanged() {
+                    mBookModel.setDirty(true);
+                }
+            };
     /** The book. */
     @Nullable
     private String mIsbn;
@@ -214,14 +216,11 @@ public class EditBookTocFragment
                                          mIsfdbResultsListener).execute();
                 }
             };
-
     /** checkbox to hide/show the author edit field. */
     private CompoundButton mMultiAuthorsView;
-
     /** Hold the item position in the ist while we're editing an item. */
     @Nullable
     private Integer mEditPosition;
-
     private final EditTocEntryDialogFragment.EditTocEntryResults mEditTocEntryResultsListener =
             new EditTocEntryDialogFragment.EditTocEntryResults() {
                 /**
@@ -646,7 +645,7 @@ public class EditBookTocFragment
                                          final int viewType) {
 
             View view = getLayoutInflater()
-                                .inflate(R.layout.row_edit_toc_entry, parent, false);
+                    .inflate(R.layout.row_edit_toc_entry, parent, false);
             return new Holder(view);
         }
 

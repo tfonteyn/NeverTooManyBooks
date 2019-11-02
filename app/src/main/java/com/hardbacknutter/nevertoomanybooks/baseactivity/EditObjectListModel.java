@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.baseactivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -44,6 +45,22 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class EditObjectListModel
         extends ViewModel {
 
+    private static final String TAG = "EditObjectListModel";
+    /**
+     * Indicate we made global changes. i.e. the list did not change but entries changed.
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_GLOBAL_CHANGES_MADE = TAG + ":globalChanges";
+    /**
+     * Indicate we made additions/deletions to the list.
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_LIST_MODIFIED = TAG + ":listModified";
+
     /** Database Access. */
     private DAO mDb;
 
@@ -55,8 +72,8 @@ public class EditObjectListModel
     /** Used for the Series default Locale. */
     private Locale mBookLocale;
 
-    /** flag indicating global changes were made. Used in setResult. */
-    private boolean mGlobalReplacementsMade;
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    private final Intent mResultData = new Intent();
 
     @Override
     protected void onCleared() {
@@ -109,11 +126,17 @@ public class EditObjectListModel
         return mBookLocale;
     }
 
-    boolean globalReplacementsMade() {
-        return mGlobalReplacementsMade;
-    }
 
     public void setGlobalReplacementsMade(final boolean changed) {
-        mGlobalReplacementsMade = changed;
+        mResultData.putExtra(BKEY_GLOBAL_CHANGES_MADE, changed);
+    }
+
+    @NonNull
+    Intent getResultData() {
+        return mResultData;
+    }
+
+    void setDirty(@SuppressWarnings("SameParameterValue") final boolean isDirty) {
+        mResultData.putExtra(BKEY_LIST_MODIFIED, isDirty);
     }
 }

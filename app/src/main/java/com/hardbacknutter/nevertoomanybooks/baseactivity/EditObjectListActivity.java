@@ -51,6 +51,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
+import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
@@ -63,16 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  */
 public abstract class EditObjectListActivity<T extends Parcelable>
         extends BaseActivity {
-
-    private static final String TAG = "EditObjectListActivity";
-
-    /**
-     * Indicate the called activity made global changes.
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_GLOBAL_CHANGES_MADE = TAG + ":globalChanges";
 
     /** The key to use in the Bundle to get the array. */
     @NonNull
@@ -88,6 +79,14 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /** The adapter for the list. */
     protected RecyclerViewAdapterBase mListAdapter;
     protected EditObjectListModel mModel;
+
+    private final SimpleAdapterDataObserver mAdapterDataObserver =
+            new SimpleAdapterDataObserver() {
+                @Override
+                public void onChanged() {
+                    mModel.setDirty(true);
+                }
+            };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 
@@ -122,6 +121,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         // setup the adapter
         mListAdapter = createListAdapter(mList, vh -> mItemTouchHelper.startDrag(vh));
         listView.setAdapter(mListAdapter);
+        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
 
         SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
@@ -142,9 +142,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     @Override
     public void onBackPressed() {
 
-        Intent data = new Intent()
-                .putExtra(mBKey, mList)
-                .putExtra(BKEY_GLOBAL_CHANGES_MADE, mModel.globalReplacementsMade());
+        Intent data = mModel.getResultData()
+                            .putExtra(mBKey, mList);
 
         String name = mAutoCompleteTextView.getText().toString().trim();
         if (!name.isEmpty()) {

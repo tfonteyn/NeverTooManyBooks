@@ -45,7 +45,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
+import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListModel;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
@@ -289,7 +289,7 @@ public class BookBaseFragmentModel
      */
     public void refreshAuthorList(@NonNull final Context context) {
         mBook.refreshAuthorList(context, mDb);
-        mResultData.putExtra(EditObjectListActivity.BKEY_GLOBAL_CHANGES_MADE, true);
+        mResultData.putExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, true);
     }
 
     /**
@@ -299,7 +299,7 @@ public class BookBaseFragmentModel
      */
     public void refreshSeriesList(@NonNull final Context context) {
         mBook.refreshSeriesList(context, mDb);
-        mResultData.putExtra(EditObjectListActivity.BKEY_GLOBAL_CHANGES_MADE, true);
+        mResultData.putExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, true);
     }
 
     @NonNull

@@ -42,7 +42,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
+import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListModel;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
@@ -179,12 +179,14 @@ public class EditBookFieldsFragment
                                 list = new ArrayList<>(0);
                             }
                             book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
-                            mBookModel.setDirty(true);
+                        }
 
+                        if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
+                            mBookModel.setDirty(true);
                         }
 
                         // Some Authors MAY have been modified.
-                        if (data.getBooleanExtra(EditObjectListActivity.BKEY_GLOBAL_CHANGES_MADE,
+                        if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE,
                                                  false)) {
                             //noinspection ConstantConditions
                             mBookModel.refreshAuthorList(getContext());
@@ -208,12 +210,14 @@ public class EditBookFieldsFragment
                                 list = new ArrayList<>(0);
                             }
                             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
-                            mBookModel.setDirty(true);
+                        }
 
+                        if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
+                            mBookModel.setDirty(true);
                         }
 
                         // Some Series MAY have been modified.
-                        if (data.getBooleanExtra(EditObjectListActivity.BKEY_GLOBAL_CHANGES_MADE,
+                        if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE,
                                                  false)) {
                             //noinspection ConstantConditions
                             mBookModel.refreshSeriesList(getContext());
