@@ -700,6 +700,8 @@ public class DAO
      * Delete an individual TocEntry.
      *
      * @param id to delete.
+     *
+     * @return the number of rows affected
      */
     @SuppressWarnings("UnusedReturnValue")
     public int deleteTocEntry(final long id) {

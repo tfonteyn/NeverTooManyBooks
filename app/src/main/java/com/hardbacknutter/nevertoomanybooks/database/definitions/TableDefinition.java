@@ -159,7 +159,7 @@ public class TableDefinition
      * @param db              Database in which to create table
      * @param withConstraints Indicates if fields should have constraints applied
      *
-     * @return TableDefinition (for chaining)
+     * @return this for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull

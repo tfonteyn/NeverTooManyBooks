@@ -105,7 +105,7 @@ public class BookSearchByIsbnFragment
     private boolean mKeepAlive;
 
     /** Flag to allow ASIN key input (true) or pure ISBN input (false). */
-    private boolean mAllowAsin = false;
+    private boolean mAllowAsin;
 
     @Nullable
     private EditIsbn mIsbnView;

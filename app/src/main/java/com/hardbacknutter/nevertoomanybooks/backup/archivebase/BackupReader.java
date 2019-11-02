@@ -55,8 +55,9 @@ public interface BackupReader
      * @param settings         the import settings
      * @param progressListener Listener to receive progress information.
      *
-     * @throws IOException     on failure
-     * @throws ImportException on failure
+     * @throws IOException             on failure
+     * @throws ImportException         on failure
+     * @throws InvalidArchiveException on failure to recognise a supported archive
      */
     void restore(@NonNull Context context,
                  @NonNull ImportHelper settings,

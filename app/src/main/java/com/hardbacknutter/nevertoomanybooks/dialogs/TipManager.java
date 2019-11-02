@@ -272,7 +272,7 @@ public final class TipManager {
             new AlertDialog.Builder(context)
                     .setView(root)
                     .setTitle(R.string.tip_dialog_title)
-                    .setNegativeButton(R.string.btn_disable_message, (dialog, which) -> {
+                    .setNeutralButton(R.string.btn_disable_message, (dialog, which) -> {
                         PreferenceManager.getDefaultSharedPreferences(context)
                                          .edit().putBoolean(mKey, false).apply();
                         if (postRun != null) {

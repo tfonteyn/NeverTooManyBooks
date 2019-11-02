@@ -79,7 +79,7 @@ public class DoubleValidator
         if (obj == null) {
             value = mDefaultValue;
         } else if (obj instanceof Double) {
-            value = ((Double) obj);
+            value = (Double) obj;
         } else if (obj instanceof Float) {
             value = ((Float) obj).doubleValue();
         } else if (obj instanceof Long) {

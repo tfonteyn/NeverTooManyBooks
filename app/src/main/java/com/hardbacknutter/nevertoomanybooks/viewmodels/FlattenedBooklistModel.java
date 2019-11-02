@@ -60,8 +60,9 @@ public class FlattenedBooklistModel
     /**
      * Pseudo constructor.
      *
-     * @param args   {@link Intent#getExtras()} or {@link Fragment#getArguments()}
-     * @param bookId The book this model will represent.
+     * @param syncedDb the database
+     * @param args     {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param bookId   The book this model will represent.
      */
     public void init(@NonNull final SynchronizedDb syncedDb,
                      @Nullable final Bundle args,

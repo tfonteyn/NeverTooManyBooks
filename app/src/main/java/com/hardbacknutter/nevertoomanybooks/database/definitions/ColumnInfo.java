@@ -107,9 +107,11 @@ public class ColumnInfo {
     }
 
     /**
+     * Get the sql to create the given table.
+     *
      * @param tableName to get
      *
-     * @return the sql to create the cursor that this class represents.
+     * @return create statement
      */
     static String getSql(@NonNull final String tableName) {
         return "PRAGMA table_info(" + tableName + ')';

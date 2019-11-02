@@ -404,7 +404,7 @@ public class Author
      * @param type to add
      */
     public void addType(final int type) {
-        mType |= (type & TYPE_MASK);
+        mType |= type & TYPE_MASK;
     }
 
     public void setType(@NonNull final String type) {

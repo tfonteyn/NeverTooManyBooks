@@ -48,6 +48,6 @@ public interface DataValidator {
      */
     void validate(@NonNull DataManager dataManager,
                   @NonNull String key,
-                  @StringRes final int errorLabelId)
+                  @StringRes int errorLabelId)
             throws ValidatorException;
 }

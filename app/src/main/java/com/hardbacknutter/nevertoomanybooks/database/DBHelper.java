@@ -148,6 +148,8 @@ public final class DBHelper
      *
      * @param factory      the cursor factor
      * @param synchronizer needed in onCreate/onUpgrade
+     *
+     * @return the instance
      */
     public static DBHelper getInstance(@SuppressWarnings("SameParameterValue")
                                        @NonNull final SQLiteDatabase.CursorFactory factory,
@@ -161,10 +163,45 @@ public final class DBHelper
     }
 
     /**
-     * @return the physical path of the database file.
+     * Get the physical path of the database file.
+     *
+     * @param context Current context
+     *
+     * @return path
      */
     public static File getDatabasePath(@NonNull final Context context) {
         return context.getDatabasePath(DATABASE_NAME);
+    }
+
+    /**
+     * Run at installation time to add the builtin style ID's to the database.
+     * This allows foreign keys to work.
+     *
+     * @param db Database Access
+     */
+    private static void prepareStylesTable(@NonNull final SQLiteDatabase db) {
+        String sqlInsertStyles =
+                "INSERT INTO " + TBL_BOOKLIST_STYLES
+                + '(' + DOM_PK_ID
+                + ',' + DOM_STYLE_IS_BUILTIN
+                + ',' + DOM_UUID
+                // 1==true
+                + ") VALUES(?,1,?)";
+        try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
+            for (int id = BooklistStyle.Builtin.MAX_ID; id < 0; id++) {
+                stmt.bindLong(1, id);
+                stmt.bindString(2, BooklistStyle.Builtin.ID_UUID[-id]);
+
+                // oops... after inserting '-1' our debug logging will claim that insert failed.
+                if (BuildConfig.DEBUG /* always */) {
+                    if (id == -1) {
+                        Logger.debug(BooklistStyle.Helper.class, "prepareStylesTable",
+                                     "Ignore the debug message about inserting -1 here...");
+                    }
+                }
+                stmt.executeInsert();
+            }
+        }
     }
 
     @Override
@@ -245,37 +282,6 @@ public final class DBHelper
         TBL_BOOKS_FTS.create(syncedDb, false);
 
         createTriggers(syncedDb);
-    }
-
-    /**
-     * Run at installation time to add the builtin style ID's to the database.
-     * This allows foreign keys to work.
-     *
-     * @param db Database Access
-     */
-    private static void prepareStylesTable(@NonNull final SQLiteDatabase db) {
-        String sqlInsertStyles =
-                "INSERT INTO " + TBL_BOOKLIST_STYLES
-                + '(' + DOM_PK_ID
-                + ',' + DOM_STYLE_IS_BUILTIN
-                + ',' + DOM_UUID
-                // 1==true
-                + ") VALUES(?,1,?)";
-        try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
-            for (int id = BooklistStyle.Builtin.MAX_ID; id < 0; id++) {
-                stmt.bindLong(1, id);
-                stmt.bindString(2, BooklistStyle.Builtin.ID_UUID[-id]);
-
-                // oops... after inserting '-1' our debug logging will claim that insert failed.
-                if (BuildConfig.DEBUG /* always */) {
-                    if (id == -1) {
-                        Logger.debug(BooklistStyle.Helper.class, "prepareStylesTable",
-                                     "Ignore the debug message about inserting -1 here...");
-                    }
-                }
-                stmt.executeInsert();
-            }
-        }
     }
 
     /**
@@ -581,15 +587,15 @@ public final class DBHelper
 
         // create/recreate the indexes with collation / which we have not added to
         // the TableDefinition's yet
-        for (String create_index : DATABASE_CREATE_INDICES) {
+        for (String createIndex : DATABASE_CREATE_INDICES) {
             try {
-                syncedDb.execSQL(create_index);
+                syncedDb.execSQL(createIndex);
             } catch (@NonNull final SQLException e) {
                 // bad sql is a developer issue... die!
                 Logger.error(this, e);
                 throw e;
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(this, e, "Index creation failed: " + create_index);
+                Logger.error(this, e, "Index creation failed: " + createIndex);
             }
         }
         syncedDb.analyze();

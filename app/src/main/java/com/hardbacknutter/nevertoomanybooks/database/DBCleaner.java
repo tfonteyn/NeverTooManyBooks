@@ -130,6 +130,8 @@ public class DBCleaner {
 
     /**
      * Do a mass update of any languages not yet converted to ISO codes.
+     *
+     * @param context Current context
      */
     public void updateLanguages(@NonNull final Context context) {
         List<String> names = mDb.getLanguageCodes();

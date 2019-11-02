@@ -266,7 +266,9 @@ public class BooklistBuilder
     }
 
     /**
-     * @return the current preferred rebuild state for the list.
+     * Get the current preferred rebuild state for the list.
+     *
+     * @return ListRebuildMode
      */
     @ListRebuildMode
     public static int getPreferredListRebuildState() {
@@ -295,7 +297,7 @@ public class BooklistBuilder
      * @param sourceExpression Expression to use in deriving domain value
      * @param isSorted         Indicates if it should be added to the sort key
      *
-     * @return The builder (to allow chaining)
+     * @return this for chaining
      */
     @NonNull
     @SuppressWarnings("UnusedReturnValue")
@@ -789,20 +791,20 @@ public class BooklistBuilder
         // requires statements without parameters.
         String sqlPreserved =
                 baseSql
-                // 	SELECT DISTINCT bl._id, bl.root_key, bl.level,bl.kind
-                //    ,CASE
-                //	WHEN bl.level = 1 THEN 1
-                //	WHEN bl_ns.root_key IS NULL THEN 0
-                //	ELSE 1
-                //	END AS visible
+                // SELECT DISTINCT bl._id, bl.root_key, bl.level,bl.kind
+                // ,CASE
+                // WHEN bl.level = 1 THEN 1
+                // WHEN bl_ns.root_key IS NULL THEN 0
+                // ELSE 1
+                // END AS visible
                 //
-                //    ,CASE WHEN bl_ns.root_key IS NULL THEN 0
-                //	ELSE bl_ns.expanded END AS expanded
-                //     FROM book_list_tmp_1 bl LEFT OUTER JOIN book_list_node_settings bl_ns
-                //     ON bl_ns.bookshelf=2 AND bl_ns.style=-1
-                //	 AND bl.level=bl_ns.level
-                //	 AND bl.root_key=bl_ns.root_key
-                //	 ORDER BY bl._id
+                // ,CASE WHEN bl_ns.root_key IS NULL THEN 0
+                // ELSE bl_ns.expanded END AS expanded
+                // FROM book_list_tmp_1 bl LEFT OUTER JOIN book_list_node_settings bl_ns
+                // ON bl_ns.bookshelf=2 AND bl_ns.style=-1
+                // AND bl.level=bl_ns.level
+                // AND bl.root_key=bl_ns.root_key
+                // ORDER BY bl._id
 
                 // *all* rows in TBL_BOOK_LIST_NODE_STATE are to be considered visible!
                 // ergo, all others are invisible but level 1 is always visible.
@@ -2491,6 +2493,8 @@ public class BooklistBuilder
          * <p>
          * All pseudo list cursors work with the static data in the temp table.
          * So we can use a simple query rather than scanning the entire result set.
+         *
+         * @return count
          */
         int countVisibleRows() {
             SynchronizedStatement stmt = mStatementManager.get(STMT_COUNT_VIS_ROWS);
@@ -2553,10 +2557,11 @@ public class BooklistBuilder
 
         /**
          * Expand or collapse all nodes <strong>between</strong> given rows and
-         * the next row at the same level
+         * the next row at the same level.
          *
-         * @param expand state to set
-         * @param rowId  to expand/collapse
+         * @param expand   state to set
+         * @param rowId    to expand/collapse
+         * @param rowLevel level of the row
          */
         long expandNodes(final boolean expand,
                          final long rowId,

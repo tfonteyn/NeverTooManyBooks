@@ -889,6 +889,8 @@ public class GoodreadsManager
     /**
      * Wrapper to search for a book.
      *
+     * @param context Current context
+     *
      * @return Bundle of GoodreadsWork objects
      *
      * @throws CredentialsException  with GoodReads

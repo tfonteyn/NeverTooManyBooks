@@ -637,8 +637,8 @@ public class BooklistGroup
 
 
             rowKind = new RowKind(BOOKSHELF, R.string.lbl_bookshelf, "shelf")
-                    .setDomain(DOM_BOOKSHELF, TBL_BOOKSHELF.dot(DOM_BOOKSHELF))
-            ;
+                    .setDomain(DOM_BOOKSHELF, TBL_BOOKSHELF.dot(DOM_BOOKSHELF));
+
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(LOANED, R.string.lbl_loaned, "l")
@@ -817,7 +817,9 @@ public class BooklistGroup
         /**
          * Constructor.
          *
-         * @param kind 1 to max. The kind==0 should be created with the no-args constructor.
+         * @param kind      1 to max. The kind==0 should be created with the no-args constructor.
+         * @param labelId   User displayable label
+         * @param keyPrefix the prefix (as short as possible) to use for the compound key
          */
         private RowKind(@Kind final int kind,
                         @StringRes final int labelId,
@@ -1087,7 +1089,7 @@ public class BooklistGroup
 
                  RowKind.DATE_ACQUIRED_DAY,
                  RowKind.DATE_FIRST_PUB_YEAR,
-                 RowKind.DATE_FIRST_PUB_MONTH,
+                 RowKind.DATE_FIRST_PUB_MONTH
                 })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Kind {

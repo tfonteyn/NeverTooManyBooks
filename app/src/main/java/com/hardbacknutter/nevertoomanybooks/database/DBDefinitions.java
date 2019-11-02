@@ -96,7 +96,7 @@ public final class DBDefinitions {
     public static final TableDefinition TMP_TBL_BOOK_LIST_ROW_STATE;
     /**
      * This table should always be created without column constraints applied,
-     * with the exception of the "_id" primary key autoincrement
+     * with the exception of the "_id" primary key autoincrement.
      */
     public static final TableDefinition TMP_TBL_BOOK_LIST_NAVIGATOR;
 
@@ -1096,8 +1096,7 @@ public final class DBDefinitions {
                                            )
                                 .setPrimaryKey(DOM_PK_ID)
                                 .addIndex(DOM_FK_BOOKSHELF, false, DOM_FK_BOOKSHELF)
-                                .addIndex(DOM_FK_STYLE, false, DOM_FK_STYLE)
-        ;
+                                .addIndex(DOM_FK_STYLE, false, DOM_FK_STYLE);
         ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(), TBL_BOOK_LIST_NODE_STATE);
 
         /*

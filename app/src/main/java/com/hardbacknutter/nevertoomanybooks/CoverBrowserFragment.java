@@ -311,12 +311,10 @@ public class CoverBrowserFragment
         }
 
         // Remove the defunct view from the gallery
-
         if (index >= 0) {
             mAlternativeEditions.remove(fileInfo.isbn);
             mGalleryAdapter.notifyItemRemoved(index);
         }
-
 
         // and if none left, dismiss.
         if (mGalleryAdapter.getItemCount() == 0) {
@@ -387,6 +385,8 @@ public class CoverBrowserFragment
 
         /**
          * Constructor.
+         *
+         * @param scale id
          */
         @SuppressWarnings("SameParameterValue")
         GalleryAdapter(@ImageUtils.Scale final int scale) {

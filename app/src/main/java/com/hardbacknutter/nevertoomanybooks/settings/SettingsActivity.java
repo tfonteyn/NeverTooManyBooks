@@ -84,7 +84,8 @@ public class SettingsActivity
     /**
      * Create a fragment based on the given tag.
      *
-     * @param tag for the required fragment
+     * @param containerViewId to receive the fragment
+     * @param tag             for the required fragment
      */
     public void addFragment(@IdRes final int containerViewId,
                             @NonNull final String tag) {

@@ -883,6 +883,8 @@ public class BooklistStyle
 
     /**
      * Used by built-in styles only. Set by user via preferences screen.
+     *
+     * @param scale id
      */
     @SuppressWarnings("SameParameterValue")
     private void setTextScale(@FontScale final int scale) {
@@ -980,9 +982,11 @@ public class BooklistStyle
     }
 
     /**
+     * Get a list of in-use group names in a human readable format.
+     *
      * @param context Current context
      *
-     * @return a list of in-use group names in a human readable format.
+     * @return list
      */
     @NonNull
     public String getGroupLabels(@NonNull final Context context) {
@@ -990,14 +994,18 @@ public class BooklistStyle
     }
 
     /**
-     * @return {@code true} if this style has the specified group.
+     * Check if this style has the specified group.
+     *
+     * @return {@code true} if present
      */
     public boolean hasGroupKind(@BooklistGroup.RowKind.Kind final int kind) {
         return mStyleGroups.getGroupKinds().contains(kind);
     }
 
     /**
-     * @return the group at the passed index.
+     * Get the group at the given index.
+     *
+     * @return group
      */
     @NonNull
     BooklistGroup getGroupAt(final int index) {
@@ -1034,7 +1042,9 @@ public class BooklistStyle
     }
 
     /**
-     * @return Filters (active and non-active)
+     * Get the list of Filters (active and non-active).
+     *
+     * @return list
      */
     @NonNull
     public Collection<Filter> getFilters() {

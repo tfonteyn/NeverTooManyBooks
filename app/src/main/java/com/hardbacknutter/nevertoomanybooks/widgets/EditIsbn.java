@@ -36,6 +36,7 @@ import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatEditText;
 
 import java.util.regex.Pattern;
@@ -71,18 +72,18 @@ public class EditIsbn
             Pattern.compile("[abcdefghijklmnopqrstuvwyz]",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    private boolean mAllowAsin = false;
+    private boolean mAllowAsin;
 
-    public EditIsbn(final Context context) {
+    public EditIsbn(@NonNull final Context context) {
         super(context);
     }
 
-    public EditIsbn(final Context context,
+    public EditIsbn(@NonNull final Context context,
                     final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public EditIsbn(final Context context,
+    public EditIsbn(@NonNull final Context context,
                     final AttributeSet attrs,
                     final int defStyleAttr) {
         super(context, attrs, defStyleAttr);

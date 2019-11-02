@@ -53,8 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class ValuePicker {
 
     @Nullable
-    private TextView mMessageView;
-
+    private final TextView mMessageView;
     @NonNull
     private final RecyclerView mListView;
     @NonNull

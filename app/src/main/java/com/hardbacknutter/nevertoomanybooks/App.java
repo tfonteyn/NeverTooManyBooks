@@ -135,7 +135,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
                 ReportField.USER_APP_START_DATE,
                 ReportField.USER_CRASH_DATE,
 
-                ReportField.USER_COMMENT,
+                ReportField.USER_COMMENT
         },
         applicationLogFileDir = Directory.EXTERNAL_FILES,
         applicationLogFile = Logger.LOG_PATH,

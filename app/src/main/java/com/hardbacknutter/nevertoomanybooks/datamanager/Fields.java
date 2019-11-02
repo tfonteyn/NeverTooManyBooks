@@ -894,6 +894,7 @@ public class Fields {
     private static class EditTextAccessor<T>
             extends TextFieldAccessor<T> {
 
+        private static final String DIGITS = "0123456789";
         @NonNull
         private final TextWatcher mTextWatcher;
 
@@ -956,18 +957,18 @@ public class Fields {
             view.addTextChangedListener(new TextWatcher() {
 
                 @Override
-                public void beforeTextChanged(CharSequence s,
-                                              int start,
-                                              int count,
-                                              int after) {
+                public void beforeTextChanged(@NonNull final CharSequence s,
+                                              final int start,
+                                              final int count,
+                                              final int after) {
 
                 }
 
                 @Override
-                public void onTextChanged(CharSequence s,
-                                          int start,
-                                          int before,
-                                          int count) {
+                public void onTextChanged(@NonNull final CharSequence s,
+                                          final int start,
+                                          final int before,
+                                          final int count) {
 
                 }
 
@@ -975,9 +976,9 @@ public class Fields {
                 public void afterTextChanged(@NonNull final Editable editable) {
                     // allow only one decimal separator
                     if (editable.toString().contains(decimalSeparator)) {
-                        view.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+                        view.setKeyListener(DigitsKeyListener.getInstance(DIGITS));
                     } else {
-                        view.setKeyListener(DigitsKeyListener.getInstance("0123456789"
+                        view.setKeyListener(DigitsKeyListener.getInstance(DIGITS
                                                                           + decimalSeparator));
                     }
                 }

@@ -183,6 +183,8 @@ public class CursorMapper {
      * See the comments on methods in {@link android.database.CursorWindow}
      * for info on type conversions which explains our use of getLong/getDouble.
      *
+     * @param context Current context
+     *
      * @return a bundle with all the columns present ({@code null} values are dropped).
      */
     @SuppressWarnings("unused")

@@ -123,7 +123,7 @@ public class IndexDefinition {
      *
      * @param db      Database Access
      *
-     * @return IndexDefinition (for chaining)
+     * @return this for chaining
      */
     @NonNull
     public IndexDefinition drop(@NonNull final SynchronizedDb db) {

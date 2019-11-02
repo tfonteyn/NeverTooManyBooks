@@ -361,6 +361,7 @@ public class CsvImporter
      *
      * @param context           Current context
      * @param book              to import
+     * @param bids              the holder with all information about the book id/uuid
      * @param updateOnlyIfNewer flag
      *
      * @return the imported book ID

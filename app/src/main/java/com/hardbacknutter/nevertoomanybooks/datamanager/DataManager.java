@@ -239,7 +239,8 @@ public class DataManager {
      * @throws UnexpectedValueException if the type of the Object is not supported.
      */
     public void put(@NonNull final String key,
-                    @NonNull final Object value) {
+                    @NonNull final Object value)
+            throws UnexpectedValueException {
         if (value instanceof String) {
             putString(key, (String) value);
         } else if (value instanceof Boolean) {
