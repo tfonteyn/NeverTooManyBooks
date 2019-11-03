@@ -488,14 +488,6 @@ public class BooklistStyle
     }
 
     /**
-     * @return the SharedPreference
-     */
-    @NonNull
-    private SharedPreferences getPrefs() {
-        return App.getAppContext().getSharedPreferences(mUuid, Context.MODE_PRIVATE);
-    }
-
-    /**
      * Only ever init the Preferences if you have a valid UUID.
      */
     private void initPrefs() {
@@ -632,7 +624,8 @@ public class BooklistStyle
     @NonNull
     private String createUniqueName() {
         mUuid = UUID.randomUUID().toString();
-        getPrefs().edit().putString(Prefs.pk_bob_uuid, mUuid).apply();
+        App.getAppContext().getSharedPreferences(mUuid, Context.MODE_PRIVATE)
+           .edit().putString(Prefs.pk_bob_uuid, mUuid).apply();
         return mUuid;
     }
 
@@ -707,9 +700,11 @@ public class BooklistStyle
 
     /**
      * store the current style as the global default one.
+     *
+     * @param context Current context
      */
-    public void setDefault() {
-        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+    public void setDefault(@NonNull final Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context)
                          .edit().putString(PREF_BL_STYLE_CURRENT_DEFAULT, mUuid)
                          .apply();
     }
@@ -771,8 +766,10 @@ public class BooklistStyle
      * update the preferences of this style based on the values of the passed preferences.
      * Preferences we don't have will be not be added.
      */
-    public void updatePreferences(@NonNull final Map<String, PPref> newPrefs) {
-        SharedPreferences.Editor ed = getPrefs().edit();
+    public void updatePreferences(@NonNull final Context context,
+                                  @NonNull final Map<String, PPref> newPrefs) {
+        SharedPreferences.Editor ed = context.getSharedPreferences(mUuid, Context.MODE_PRIVATE)
+                                             .edit();
         updatePreferences(ed, newPrefs);
         ed.apply();
     }
@@ -931,7 +928,8 @@ public class BooklistStyle
      * Passed a template style, copy the group structure to this style.
      */
     @SuppressWarnings("unused")
-    public void setGroups(@NonNull final BooklistStyle source) {
+    public void setGroups(@NonNull final Context context,
+                          @NonNull final BooklistStyle source) {
 
         // Save the current groups
         Map<Integer, BooklistGroup> currentGroups = new LinkedHashMap<>();
@@ -960,7 +958,7 @@ public class BooklistStyle
         }
 
         // Lastly, copy any Preference values from the new groups.
-        updatePreferences(allGroupsPreferences);
+        updatePreferences(context, allGroupsPreferences);
     }
 
     /**
@@ -1230,9 +1228,11 @@ public class BooklistStyle
     /**
      * Delete this style.
      *
-     * @param db Database Access
+     * @param context Current context
+     * @param db      Database Access
      */
-    public void delete(@NonNull final DAO db) {
+    public void delete(@NonNull final Context context,
+                       @NonNull final DAO db) {
 
         // cannot delete a builtin or a 'new' style(id==0)
         if (mId == 0 || !isUserDefined()) {
@@ -1247,21 +1247,21 @@ public class BooklistStyle
         db.deleteStyle(mId);
 
         if (Build.VERSION.SDK_INT >= 24) {
-            App.getAppContext().deleteSharedPreferences(mUuid);
+            context.deleteSharedPreferences(mUuid);
         } else {
-            getPrefs().edit().clear().apply();
+            context.getSharedPreferences(mUuid, Context.MODE_PRIVATE).edit().clear().apply();
         }
     }
 
-    public void discard() {
+    public void discard(@NonNull final Context context) {
         // can ONLY discard a new style
         if (mId != 0) {
             throw new IllegalArgumentException("can only discard a new style");
         }
         if (Build.VERSION.SDK_INT >= 24) {
-            App.getAppContext().deleteSharedPreferences(mUuid);
+            context.deleteSharedPreferences(mUuid);
         } else {
-            getPrefs().edit().clear().apply();
+            context.getSharedPreferences(mUuid, Context.MODE_PRIVATE).edit().clear().apply();
         }
     }
 

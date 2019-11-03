@@ -55,8 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 public class ShelvesListApiHandler
         extends ApiHandler {
 
-    private static final String URL = GoodreadsManager.BASE_URL
-                                      + "/shelf/list.xml?key=%1$s&page=%2$s&user_id=%3$s";
+    private static final String URL = GoodreadsManager.BASE_URL + "/shelf/list.xml?"
+                                      + "key=%1$s&page=%2$s&user_id=%3$s";
 
     private SimpleXmlFilter mFilters;
 

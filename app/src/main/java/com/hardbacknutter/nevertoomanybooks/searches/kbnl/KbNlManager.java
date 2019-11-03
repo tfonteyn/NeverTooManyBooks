@@ -27,11 +27,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.kbnl;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
  * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>
@@ -62,14 +63,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 public class KbNlManager
         implements SearchEngine {
 
+    public static final Locale SITE_LOCALE = new Locale("nl", "NL");
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "kbnl.";
-
     /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
-
-    public static final Locale SITE_LOCALE = new Locale("nl", "NL");
-
     /**
      * RELEASE: Chrome 2019-08-12. Continuously update to latest version.
      * The site does not return full data unless the user agent header is set to a valid browser.
@@ -104,33 +102,32 @@ public class KbNlManager
     /**
      * param 1: site specific author id.
      */
-    private static final String AUTHOR_URL = getBaseURL() + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
-
+//    private static final String AUTHOR_URL = getBaseURL(context) + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
     public KbNlManager() {
     }
 
     @NonNull
-    public static String getBaseURL() {
-        return SearchEngine.getPref().getString(PREFS_HOST_URL, "http://opc4.kb.nl");
+    public static String getBaseURL(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(PREFS_HOST_URL, "http://opc4.kb.nl");
     }
 
-    /**
-     * ENHANCE: implement non-isbn searches.
-     */
     @NonNull
     @Override
-    public Bundle search(@Nullable final String isbn,
+    public Bundle search(@NonNull final Context context,
+                         @Nullable final String isbn,
                          @Nullable final /* not supported */ String author,
                          @Nullable final /* not supported */ String title,
                          @Nullable final /* not supported */ String publisher,
                          final boolean fetchThumbnail)
             throws IOException {
 
+        //ENHANCE: implement non-isbn searches.
         if (isbn == null || isbn.isEmpty() || !ISBN.isValid(isbn)) {
             return new Bundle();
         }
 
-        String url = getBaseURL() + String.format(BOOK_URL, isbn);
+        String url = getBaseURL(context) + String.format(BOOK_URL, isbn);
 
         Bundle bookData = new Bundle();
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -151,13 +148,13 @@ public class KbNlManager
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(this, e, url);
+                Logger.debug(this, e, url);
             }
             throw new IOException(e);
         }
 
         if (fetchThumbnail) {
-            getCoverImage(isbn, bookData);
+            getCoverImage(context, isbn, bookData);
         }
         return bookData;
     }
@@ -167,14 +164,18 @@ public class KbNlManager
      * <p>
      * https://webservices.bibliotheek.be/index.php?func=cover&ISBN=9789463731454&coversize=large
      *
-     * @param isbn to search for
-     * @param size of image to get.
+     * Get a cover image.
      *
-     * @return {@code null}
+     * @param context Current context (i.e. with the current Locale)
+     * @param isbn    to search for
+     * @param size    of image to get.
+     *
+     * @return found/saved File, or {@code null} when none found (or any other failure)
      */
     @Nullable
     @Override
-    public File getCoverImage(@NonNull final String isbn,
+    public File getCoverImage(@NonNull final Context context,
+                              @NonNull final String isbn,
                               @Nullable final ImageSize size) {
         // sanity check
         if (!ISBN.isValid(isbn)) {
@@ -208,13 +209,14 @@ public class KbNlManager
     }
 
     @Override
-    public boolean siteSupportsMultipleSizes() {
+    public boolean hasMultipleSizes() {
         return true;
     }
 
+    @NonNull
     @Override
-    public boolean isAvailable() {
-        return NetworkUtils.isAlive(getBaseURL());
+    public String getUrl(@NonNull final Context context) {
+        return getBaseURL(context);
     }
 
     @Override

@@ -59,7 +59,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 
-import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public abstract class CropImageViewTouchBase
@@ -148,8 +148,8 @@ public abstract class CropImageViewTouchBase
             return;
         }
 
-        int type = App.getListPreference(Prefs.pk_compat_image_cropper_layer_type,
-                                         LAYER_TYPE_USE_DEFAULT);
+        int type = PIntString.getListPreference(Prefs.pk_compat_image_cropper_layer_type,
+                                                LAYER_TYPE_USE_DEFAULT);
         if (type == LAYER_TYPE_USE_DEFAULT) {
             return;
         }

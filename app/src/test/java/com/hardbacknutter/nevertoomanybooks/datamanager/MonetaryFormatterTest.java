@@ -55,7 +55,7 @@ class MonetaryFormatterTest {
 
     @Test
     void format01() {
-        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter(mContext)
+        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter()
                 .setCurrencyCode("USD")
                 .setLocale(Locale.US);
         //noinspection ConstantConditions
@@ -64,7 +64,7 @@ class MonetaryFormatterTest {
 
     @Test
     void format02() {
-        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter(mContext)
+        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter()
                 .setCurrencyCode("USD")
                 .setLocale(Locale.UK);
         //noinspection ConstantConditions
@@ -73,7 +73,7 @@ class MonetaryFormatterTest {
 
     @Test
     void format03() {
-        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter(mContext)
+        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter()
                 .setCurrencyCode("USD")
                 .setLocale(Locale.GERMANY);
         //noinspection ConstantConditions
@@ -86,7 +86,7 @@ class MonetaryFormatterTest {
      */
     @Test
     void format10() {
-        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter(mContext)
+        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter()
                 .setCurrencyCode("EUR")
                 .setLocale(Locale.GERMANY);
         //noinspection ConstantConditions
@@ -98,7 +98,7 @@ class MonetaryFormatterTest {
      */
     @Test
     void format11() {
-        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter(mContext)
+        Fields.MonetaryFormatter f = new Fields.MonetaryFormatter()
                 .setCurrencyCode("EUR")
                 .setLocale(Locale.UK);
         //noinspection ConstantConditions

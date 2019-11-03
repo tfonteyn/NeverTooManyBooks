@@ -87,7 +87,6 @@ public final class Logger {
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", App.getSystemLocale());
 
 
-
     private Logger() {
     }
 
@@ -187,8 +186,7 @@ public final class Logger {
                                   @NonNull final String methodName,
                                   @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(tag),
-                  State.Enter.toString() + '|' + methodName + '|' + concat(params));
+            Log.d(tag(tag), State.Enter.toString() + '|' + methodName + '|' + concat(params));
         }
     }
 
@@ -196,8 +194,7 @@ public final class Logger {
                                  @NonNull final String methodName,
                                  @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(tag),
-                  State.Exit.toString() + '|' + methodName + '|' + concat(params));
+            Log.d(tag(tag), State.Exit.toString() + '|' + methodName + '|' + concat(params));
         }
     }
 
@@ -205,8 +202,15 @@ public final class Logger {
                              @NonNull final String methodName,
                              @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(tag),
-                  State.Running.toString() + '|' + methodName + '|' + concat(params));
+            Log.d(tag(tag), State.Running.toString() + '|' + methodName + '|' + concat(params));
+        }
+    }
+
+    public static void debug(@NonNull final Object tag,
+                             @NonNull final Throwable e,
+                             @NonNull final Object... params) {
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(tag(tag), State.Running.toString() + '|' + concat(params), e);
         }
     }
 
@@ -217,18 +221,6 @@ public final class Logger {
             Log.d(tag(tag),
                   State.Running.toString() + '|' + methodName + '|' + concat(params),
                   new Throwable());
-        }
-    }
-
-    /**
-     * Tracking debug.
-     */
-    public static void debugWithStackTrace(@NonNull final Object tag,
-                                           @NonNull final Throwable e,
-                                           @NonNull final Object... params) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(tag),
-                  State.Running.toString() + '|' + concat(params), e);
         }
     }
 
@@ -243,12 +235,28 @@ public final class Logger {
         }
     }
 
+    /**
+     * Concatenate all parameters. If a parameter is an exception,
+     * add its stacktrace at the end of the message. (Only one exception is logged!)
+     *
+     * @param params to concat
+     *
+     * @return String
+     */
     private static String concat(@NonNull final Object[] params) {
         StringBuilder message = new StringBuilder();
+        Exception e = null;
         for (Object parameter : params) {
+            if (parameter instanceof Exception) {
+                e = (Exception) parameter;
+                continue;
+            }
             message.append(parameter.toString()).append('|');
         }
         message.append('.');
+        if (e != null) {
+            message.append('\n').append(Log.getStackTraceString(e));
+        }
         return message.toString();
     }
 

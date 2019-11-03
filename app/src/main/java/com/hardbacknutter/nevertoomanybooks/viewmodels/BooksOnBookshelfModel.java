@@ -1075,8 +1075,7 @@ public class BooksOnBookshelfModel
         @AnyThread
         private void cleanup() {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Logger.debug(this, "cleanup",
-                             "exception=" + mException);
+                Logger.debug(this, "cleanup", mException);
             }
             if (tempListCursor != null && tempListCursor != mCurrentListCursor) {
                 if (mCurrentListCursor == null

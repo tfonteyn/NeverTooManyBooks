@@ -280,7 +280,7 @@ abstract class ApiHandlerNative {
 
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(this, e);
+                Logger.debug(this, e);
             }
             throw new IOException(e);
         }

@@ -332,7 +332,8 @@ public class CoverBrowserFragment
         mSwitcherImageFileInfo = fileInfo;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debug(this, "setSwitcherImage", "fileInfo=" + fileInfo);
+            Logger.debug(this, "setSwitcherImage",
+                         "fileInfo=" + fileInfo);
         }
 
         if (fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {

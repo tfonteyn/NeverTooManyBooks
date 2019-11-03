@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -39,6 +40,7 @@ import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -97,12 +99,14 @@ public class IsfdbGetBookTask
     @WorkerThread
     protected Bundle doInBackground(final Void... params) {
         Thread.currentThread().setName("IsfdbGetBookTask");
+        Context context = App.getAppContext();
+
         try {
             if (mEditions != null) {
-                return new IsfdbBookHandler().fetch(mEditions, mAddSeriesFromToc, false);
+                return new IsfdbBookHandler().fetch(context, mEditions, mAddSeriesFromToc, false);
 
             } else if (mIsfdbId != 0) {
-                return new IsfdbBookHandler().fetch(mIsfdbId, mAddSeriesFromToc, false);
+                return new IsfdbBookHandler().fetch(context, mIsfdbId, mAddSeriesFromToc, false);
 
             } else {
                 if (BuildConfig.DEBUG /* always */) {

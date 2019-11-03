@@ -208,7 +208,7 @@ public class TarBackupReader
             return Type.XML;
 
         } else {
-            Logger.info(App.getAppContext(), this, "getBackupEntityType",
+            Logger.warn(App.getAppContext(), this, "getBackupEntityType",
                         "Unknown file in archive: " + entry.getName());
             return Type.Unknown;
         }
@@ -228,8 +228,7 @@ public class TarBackupReader
     private TarArchiveInputStream getInputStream()
             throws IOException {
         if (mInputStream == null) {
-            InputStream is = App.getAppContext().getContentResolver()
-                                .openInputStream(mContainer.getUri());
+            InputStream is = mContentResolver.openInputStream(mContainer.getUri());
             if (is == null) {
                 throw new IOException("InputStream was NULL");
             }

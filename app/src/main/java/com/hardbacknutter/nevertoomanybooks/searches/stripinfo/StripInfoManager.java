@@ -35,16 +35,14 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.preference.PreferenceManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
@@ -67,8 +65,9 @@ public class StripInfoManager
     }
 
     @NonNull
-    public static String getBaseURL() {
-        return SearchEngine.getPref().getString(PREFS_HOST_URL, "https://stripinfo.be");
+    public static String getBaseURL(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(PREFS_HOST_URL, "https://stripinfo.be");
     }
 
     /**
@@ -79,19 +78,25 @@ public class StripInfoManager
      */
     public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {
-        String url = getBaseURL() + "/reeks/strip/" + bookId;
+        String url = getBaseURL(context) + "/reeks/strip/" + bookId;
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @NonNull
     @Override
-    public Bundle search(@Nullable final String isbn,
+    public String getUrl(@NonNull final Context context) {
+        return getBaseURL(context);
+    }
+
+    @NonNull
+    @Override
+    public Bundle search(@NonNull final Context context,
+                         @Nullable final String isbn,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final String publisher,
                          final boolean fetchThumbnail)
             throws IOException {
-        Context context = App.getLocalizedAppContext();
 
         if (ISBN.isValid(isbn)) {
             return new StripInfoBookHandler().fetch(context, isbn, fetchThumbnail);
@@ -101,20 +106,8 @@ public class StripInfoManager
     }
 
     @Override
-    public boolean siteSupportsMultipleSizes() {
+    public boolean hasMultipleSizes() {
         return false;
-    }
-
-    @Nullable
-    @Override
-    public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final ImageSize size) {
-        return SearchEngine.getCoverImageFallback(this, isbn);
-    }
-
-    @Override
-    public boolean isAvailable() {
-        return NetworkUtils.isAlive(getBaseURL());
     }
 
     @Override

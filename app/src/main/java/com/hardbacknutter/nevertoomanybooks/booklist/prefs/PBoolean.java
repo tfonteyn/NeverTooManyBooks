@@ -31,6 +31,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 
@@ -52,7 +53,7 @@ public class PBoolean
     public PBoolean(@NonNull final String key,
                     @NonNull final String uuid,
                     final boolean isPersistent) {
-        super(key, uuid, isPersistent, App.getPrefBoolean(key, false));
+        super(key, uuid, isPersistent, getPrefBoolean(key, false));
     }
 
     /**
@@ -68,7 +69,21 @@ public class PBoolean
                     @NonNull final String uuid,
                     final boolean isPersistent,
                     @NonNull final Boolean defaultValue) {
-        super(key, uuid, isPersistent, App.getPrefBoolean(key, defaultValue));
+        super(key, uuid, isPersistent, getPrefBoolean(key, defaultValue));
+    }
+
+    /**
+     * Get a global preference boolean.
+     *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return the preference value
+     */
+    private static boolean getPrefBoolean(@NonNull final String key,
+                                          final boolean defValue) {
+        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                .getBoolean(key, defValue);
     }
 
     @Override

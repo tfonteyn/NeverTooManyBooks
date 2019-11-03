@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.ReviewField;
@@ -183,7 +184,7 @@ class ImportLegacyTask
             boolean ok = processReviews(context, db, queueManager);
             // If it's a sync job, then start the 'send' part and save last syn date
             if (mIsSync) {
-                GoodreadsManager.setLastSyncDate(mStartDate);
+                GoodreadsManager.setLastSyncDate(context, mStartDate);
                 QueueManager.getQueueManager().enqueueTask(
                         new SendBooksLegacyTask(context.getString(R.string.gr_title_send_book),
                                                 true),
@@ -554,7 +555,7 @@ class ImportLegacyTask
                 Author author = Author.fromString(name);
                 String role = grAuthor.getString(ReviewField.AUTHOR_ROLE);
                 if (role != null && !role.trim().isEmpty()) {
-                    author.setType(role.trim());
+                    author.setType(AuthorTypeMapper.map(role));
                 }
                 authors.add(author);
 

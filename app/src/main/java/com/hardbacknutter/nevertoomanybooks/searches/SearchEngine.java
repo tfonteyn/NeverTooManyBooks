@@ -27,7 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
-import android.content.SharedPreferences;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
@@ -35,13 +35,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
@@ -55,7 +53,7 @@ public interface SearchEngine {
 
     /**
      * If an implementation does not support a specific (and faster) way/api
-     * to fetch a cover image, then {@link #getCoverImage(String, ImageSize)}
+     * to fetch a cover image, then {@link #getCoverImage(Context, String, ImageSize)}
      * can call this fallback method.
      * Do NOT use if the site either does not support returning images during search,
      * or does not support isbn searches.
@@ -64,15 +62,15 @@ public interface SearchEngine {
      * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
      * {@code null} returned.
      *
-     * @param searchEngine engine to use
-     * @param isbn         to search for
+     * @param context Current context (i.e. with the current Locale)
+     * @param isbn    to search for
      *
      * @return found/saved File, or {@code null} when none found (or any other failure)
      */
     @Nullable
     @WorkerThread
-    static File getCoverImageFallback(@NonNull final SearchEngine searchEngine,
-                                      @NonNull final String isbn) {
+    default File getCoverImageFallback(@NonNull final Context context,
+                                       @NonNull final String isbn) {
         // sanity check
         if (!ISBN.isValid(isbn)) {
             return null;
@@ -80,7 +78,7 @@ public interface SearchEngine {
 
         try {
             //ENHANCE: it seems most implementations can return multiple book bundles quite easily.
-            Bundle bookData = searchEngine.search(isbn, "", "", "", true);
+            Bundle bookData = search(context, isbn, "", "", "", true);
 
             ArrayList<String> imageList =
                     bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
@@ -100,15 +98,6 @@ public interface SearchEngine {
     }
 
     /**
-     * Syntax sugar.
-     *
-     * @return preferences
-     */
-    static SharedPreferences getPref() {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-    }
-
-    /**
      * Start a search using the passed criteria.
      * <p>
      * Checking the arguments should really be done inside the implementation,
@@ -117,6 +106,7 @@ public interface SearchEngine {
      * The implementation will/should give preference to using the ISBN if present,
      * and only fall back to using author/title if needed.
      *
+     * @param context        Current context (i.e. with the current Locale)
      * @param isbn           to search for
      * @param author         to search for
      * @param title          to search for
@@ -133,7 +123,8 @@ public interface SearchEngine {
      */
     @WorkerThread
     @NonNull
-    Bundle search(@Nullable String isbn,
+    Bundle search(@NonNull Context context,
+                  @Nullable String isbn,
                   @Nullable String author,
                   @Nullable String title,
                   @Nullable String publisher,
@@ -146,38 +137,44 @@ public interface SearchEngine {
      * @return {@code true} if multiple sizes are supported.
      */
     @AnyThread
-    default boolean siteSupportsMultipleSizes() {
+    default boolean hasMultipleSizes() {
         return false;
     }
 
     /**
      * Get a cover image.
      *
-     * @param isbn to search for
-     * @param size of image to get.
+     * @param context Current context (i.e. with the current Locale)
+     * @param isbn    to search for
+     * @param size    of image to get.
      *
      * @return found/saved File, or {@code null} when none found (or any other failure)
      */
     @Nullable
     @WorkerThread
-    File getCoverImage(@NonNull String isbn,
-                       @Nullable ImageSize size);
+    default File getCoverImage(@NonNull Context context,
+                               @NonNull String isbn,
+                               @Nullable ImageSize size) {
+        return getCoverImageFallback(context, isbn);
+    }
 
     /**
      * Get a cover image. Try in order of large, medium, small depending on the site supporting
      * multiple sizes.
      *
+     * @param context  Current context (i.e. with the current Locale)
      * @param isbn     book to get an image for
      * @param bookData bundle to populate with the image file spec
      */
-    default void getCoverImage(@NonNull final String isbn,
+    default void getCoverImage(@NonNull final Context context,
+                               @NonNull final String isbn,
                                @NonNull final Bundle bookData) {
-        File file = getCoverImage(isbn, ImageSize.Large);
-        if (siteSupportsMultipleSizes()) {
+        File file = getCoverImage(context, isbn, ImageSize.Large);
+        if (hasMultipleSizes()) {
             if (file == null) {
-                file = getCoverImage(isbn, ImageSize.Medium);
+                file = getCoverImage(context, isbn, ImageSize.Medium);
                 if (file == null) {
-                    file = getCoverImage(isbn, ImageSize.Small);
+                    file = getCoverImage(context, isbn, ImageSize.Small);
                 }
             }
         }
@@ -194,15 +191,29 @@ public interface SearchEngine {
 
     /**
      * Generic test to be implemented by individual site search managers to check if
-     * this site is available for search.
-     * e.g. check for developer keys, site is up/down, authorization, ...
+     * this site can be consider for searching.
      * <p>
-     * Runs in a background task, so can run network code.
+     * Implementations can for example check for developer keys, ...
+     * It's not supposed to to check credentials.
+     * <strong>Should not run network code.</strong>
      *
-     * @return {@code true} if we can contact this site for searching.
+     * @return {@code true} if we can consider this site for searching.
      */
-    @WorkerThread
-    boolean isAvailable();
+    @AnyThread
+    default boolean isAvailable() {
+        return true;
+    }
+
+    /**
+     * Get the root/website url.
+     *
+     * @param context Current context
+     *
+     * @return url, including scheme.
+     */
+    @AnyThread
+    @NonNull
+    String getUrl(@NonNull Context context);
 
     /**
      * Check if the site is ISBN based only.

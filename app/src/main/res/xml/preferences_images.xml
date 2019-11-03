@@ -62,15 +62,6 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_thumbnails_external_cropper" />
 
-        <!-- default CropImageViewTouchBase.LAYER_TYPE_USE_DEFAULT == -1 -->
-        <ListPreference
-            android:defaultValue="-1"
-            android:dialogIcon="@drawable/ic_warning"
-            android:entries="@array/pe_thumbnails_cropper_layer_type"
-            android:entryValues="@array/pv_thumbnails_cropper_layer_type"
-            android:icon="@drawable/ic_manage"
-            android:key="compat.image.cropper.viewlayertype"
-            android:title="@string/pt_thumbnail_cropper_layer_type" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -89,6 +80,21 @@
             android:key="psk_purge_image_cache"
             android:title="@string/lbl_purge_image_cache"
             />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/lbl_advanced_options">
+
+        <!-- default CropImageViewTouchBase.LAYER_TYPE_USE_DEFAULT == -1 -->
+        <ListPreference
+            android:defaultValue="-1"
+            android:dialogIcon="@drawable/ic_warning"
+            android:entries="@array/pe_thumbnails_cropper_layer_type"
+            android:entryValues="@array/pv_thumbnails_cropper_layer_type"
+            android:icon="@drawable/ic_manage"
+            android:key="compat.image.cropper.viewlayertype"
+            android:title="@string/pt_thumbnail_cropper_layer_type" />
 
     </PreferenceCategory>
 </PreferenceScreen>

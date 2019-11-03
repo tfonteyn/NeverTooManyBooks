@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -214,13 +215,12 @@ public class AuthorWorksFragment
     }
 
     /**
-     * Delete the current entry.
-     * <ul>
-     * <li>TocEntry.TYPE_BOOK: confirmation from user is requested.</li>
-     * <li>TocEntry.TYPE_TOC: deletion is immediate.</li>
-     * </ul>
+     * Using {@link ValuePicker} for context menus.
      *
-     * @return {@code true} if handled
+     * @param menuItem that was selected
+     * @param position in the list
+     *
+     * @return {@code true} if handled.
      */
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           @NonNull final Integer position) {

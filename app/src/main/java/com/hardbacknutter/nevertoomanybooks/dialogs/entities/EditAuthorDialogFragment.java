@@ -67,7 +67,7 @@ public class EditAuthorDialogFragment
     public static final String TAG = "EditAuthorDialogFragment";
 
     /** Database Access. */
-    protected DAO mDb;
+    private DAO mDb;
 
     private WeakReference<BookChangedListener> mBookChangedListener;
 

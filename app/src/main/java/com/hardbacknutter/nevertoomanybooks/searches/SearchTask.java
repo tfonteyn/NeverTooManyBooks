@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
+import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
  * Searches a single {@link SearchEngine},
@@ -187,19 +188,21 @@ public class SearchTask
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
             Logger.debugEnter(this, "runTask", mProgressTitle);
         }
-        // keys? site up? etc...
-        if (!mSearchEngine.isAvailable()) {
-            setFinalError(R.string.error_not_available, null);
-            return;
-        }
 
         mTaskManager.sendProgress(this, mProgressTitle, 0);
 
         try {
+            // can we reach the site ?
+            if (!NetworkUtils.isAlive(mSearchEngine.getUrl(getContext()))) {
+                setFinalError(R.string.error_search_failed_network, null);
+                return;
+            }
+
             // SEARCH!
             // manager checks the arguments
             //ENHANCE: it seems most implementations can return multiple book bundles quite easily.
-            mBookData = mSearchEngine.search(mIsbn, mAuthor, mTitle, mPublisher, mFetchThumbnail);
+            mBookData = mSearchEngine.search(getContext(),
+                                             mIsbn, mAuthor, mTitle, mPublisher, mFetchThumbnail);
             if (!mBookData.isEmpty()) {
                 // Look for Series name in the book title and clean KEY_TITLE
                 checkForSeriesNameInTitle();
@@ -219,7 +222,7 @@ public class SearchTask
 
         } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
-            setFinalError(e);
+            setFinalError(R.string.error_unknown, e);
         }
     }
 
@@ -256,7 +259,7 @@ public class SearchTask
     }
 
     /**
-     * Show a 'known' error after task finish.
+     * Prepare an error message to show after the task finishes.
      *
      * @param error String resource id; without parameter place holders.
      * @param e     (optional) the exception
@@ -266,38 +269,23 @@ public class SearchTask
 
         Context context = getContext();
         String siteName = context.getString(mSearchEngine.getNameResId());
-        String message = context.getString(error) + "\n\n" + getExceptionMessage(e);
+        String message = context.getString(error);
 
         if (e != null) {
-            Logger.warn(context, this, "setFinalError",
-                        "siteName=" + siteName, e);
+            String eMsg;
+            if (e instanceof FormattedMessageException) {
+                eMsg = ((FormattedMessageException) e).getLocalizedMessage(getContext());
+            } else {
+                eMsg = e.getLocalizedMessage();
+            }
+
+            if (eMsg != null) {
+                message += "\n\n" + eMsg;
+            }
+
+            Logger.warn(context, this, "setFinalError", "siteName=" + siteName, e);
         }
 
         mFinalMessage = context.getString(R.string.error_search_exception, siteName, message);
-    }
-
-    /**
-     * Show an unexpected exception message after task finish.
-     */
-    private void setFinalError(@NonNull final Exception e) {
-        Context context = getContext();
-        String siteName = context.getString(mSearchEngine.getNameResId());
-        String message = getExceptionMessage(e);
-
-        // always as error, as this is unexpected.
-        Logger.error(this, e, "siteName=" + siteName);
-
-        mFinalMessage = context.getString(R.string.error_search_exception, siteName, message);
-    }
-
-    @Nullable
-    private String getExceptionMessage(@Nullable final Exception e) {
-        if (e instanceof FormattedMessageException) {
-            return ((FormattedMessageException) e).getLocalizedMessage(getContext());
-        } else if (e != null) {
-            return e.getLocalizedMessage();
-        } else {
-            return null;
-        }
     }
 }

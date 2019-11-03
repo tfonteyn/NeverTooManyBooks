@@ -289,7 +289,7 @@ public class BooklistPseudoCursor
     @Override
     @CallSuper
     public void close() {
-        //Logger.debugWithStackTrace(this,"close" , "closing cursor: " + this);
+        //Logger.debug(this,"close" , "closing cursor: " + this);
         super.close();
         clearCursors();
     }

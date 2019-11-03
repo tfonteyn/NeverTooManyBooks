@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
@@ -200,7 +201,7 @@ public abstract class ShowBookApiHandler
             }
             Author author = Author.fromString(mCurrAuthorName);
             if (mCurrAuthorRole != null && !mCurrAuthorRole.isEmpty()) {
-                author.setType(mCurrAuthorRole);
+                author.setType(AuthorTypeMapper.map(mCurrAuthorRole));
             }
             mAuthors.add(author);
             mCurrAuthorName = null;

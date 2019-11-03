@@ -484,7 +484,7 @@ public class BookFragment
                 startEditBook();
                 return true;
             }
-            case R.id.MENU_DELETE: {
+            case R.id.MENU_BOOK_DELETE: {
                 String title = book.getString(DBDefinitions.KEY_TITLE);
                 List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                 //noinspection ConstantConditions

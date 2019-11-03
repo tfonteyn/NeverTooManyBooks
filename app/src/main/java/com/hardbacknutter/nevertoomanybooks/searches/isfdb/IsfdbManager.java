@@ -38,21 +38,18 @@ import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
  * See notes in the package-info.java file.
- *
+ * <p>
  * 2019-10-01: "http://www.isfdb.org" is not available on https.
  */
 public class IsfdbManager
@@ -111,8 +108,9 @@ public class IsfdbManager
     }
 
     @NonNull
-    public static String getBaseURL() {
-        return SearchEngine.getPref().getString(PREFS_HOST_URL, "http://www.isfdb.org");
+    public static String getBaseURL(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(PREFS_HOST_URL, "http://www.isfdb.org");
     }
 
     /**
@@ -123,14 +121,15 @@ public class IsfdbManager
      */
     public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {
-        String url = getBaseURL() + CGI_BIN + URL_PL_CGI + "?" + bookId;
+        String url = getBaseURL(context) + CGI_BIN + URL_PL_CGI + "?" + bookId;
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@Nullable final String isbn,
+    public Bundle search(@NonNull final Context context,
+                         @Nullable final String isbn,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final String publisher,
@@ -140,10 +139,10 @@ public class IsfdbManager
         List<IsfdbEditionsHandler.Edition> editions;
 
         if (ISBN.isValid(isbn)) {
-            editions = new IsfdbEditionsHandler().fetch(isbn);
+            editions = new IsfdbEditionsHandler().fetch(context, isbn);
 
         } else {
-            String url = getBaseURL() + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
+            String url = getBaseURL(context) + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
                          + "ORDERBY=pub_title"
                          + "&ACTION=query"
                          + "&START=0"
@@ -170,7 +169,7 @@ public class IsfdbManager
             }
 
             // as per user settings.
-            if (PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+            if (PreferenceManager.getDefaultSharedPreferences(context)
                                  .getBoolean(PREFS_USE_PUBLISHER, false)) {
                 if (publisher != null && !publisher.isEmpty()) {
                     index++;
@@ -191,32 +190,19 @@ public class IsfdbManager
 
         if (!editions.isEmpty()) {
             boolean addSeriesFromToc =
-                    PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                    PreferenceManager.getDefaultSharedPreferences(context)
                                      .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC, false);
-            return new IsfdbBookHandler().fetch(editions, addSeriesFromToc, fetchThumbnail);
+            return new IsfdbBookHandler().fetch(context, editions,
+                                                addSeriesFromToc, fetchThumbnail);
         } else {
             return new Bundle();
         }
     }
 
-    /**
-     * @param isbn to search for
-     * @param size of image to get.
-     *
-     * @return found/saved File, or {@code null} if none found (or any other failure)
-     */
-    @Nullable
+    @NonNull
     @Override
-    @WorkerThread
-    public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final ImageSize size) {
-        return SearchEngine.getCoverImageFallback(this, isbn);
-    }
-
-    @Override
-    @WorkerThread
-    public boolean isAvailable() {
-        return NetworkUtils.isAlive(getBaseURL());
+    public String getUrl(@NonNull final Context context) {
+        return getBaseURL(context);
     }
 
     @StringRes

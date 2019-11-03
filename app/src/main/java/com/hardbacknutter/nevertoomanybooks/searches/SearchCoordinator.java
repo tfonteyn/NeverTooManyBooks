@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * Class to co-ordinate {@link SearchTask} objects using an existing {@link TaskManager}.
@@ -409,8 +408,13 @@ public class SearchCoordinator {
 
         SearchEngine searchEngine = site.getSearchEngine();
 
-        // special case, some sites can only be searched with an ISBN
+        // some sites can only be searched with an ISBN
         if (searchEngine.requiresIsbn() && !mHasValidIsbn) {
+            return false;
+        }
+
+        // some sites require keys.
+        if (!searchEngine.isAvailable()) {
             return false;
         }
 
@@ -433,7 +437,6 @@ public class SearchCoordinator {
 
         task.start();
         return true;
-
     }
 
     /**
@@ -605,7 +608,7 @@ public class SearchCoordinator {
      * Copy data from passed Bundle to current accumulated data.
      * Does some careful processing of the data.
      * <p>
-     * The Bundle will contain by default only String and {@link StringList} based data.
+     * The Bundle will contain by default only String and ArrayList based data.
      * <p>
      * NEWTHINGS: if you add a new Search task that adds non-string based data, handle that here.
      *
@@ -646,7 +649,7 @@ public class SearchCoordinator {
     }
 
     /**
-     * Accumulate String or {@link StringList} data.
+     * Accumulate String data.
      * Handles other types via a .toString()
      *
      * @param key      Key of data
@@ -667,23 +670,6 @@ public class SearchCoordinator {
                 Logger.debug(this, "accumulateStringData",
                              "copied: key=" + key + ", value=`" + dataToAdd + '`');
             }
-
-//        } else if (UniqueId.BKEY_THUMBNAIL_FILE_SPEC_STRING_LIST.equals(key)) {
-//            // special case: StringList incoming, transform and add to the ArrayList
-//            ArrayList<String> incomingList = StringList.decode("" + dataToAdd);
-//            ArrayList<String> list =
-//                   mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
-//            if (list == null) {
-//                list = new ArrayList<>();
-//            }
-//            list.addAll(incomingList);
-//            mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, list);
-//            mBookData.remove(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_STRING_LIST);
-//
-//            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-//                Logger.info(this, "accumulateStringData",
-//                      "appended: new thumbnail, fileSpec=`" + dataToAdd + "`");
-//            }
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                 Logger.debug(this, "accumulateStringData",

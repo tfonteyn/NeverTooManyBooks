@@ -36,8 +36,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -55,12 +55,11 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
 /**
  * Amazon is now disabled/hidden as it can't work without the proxy from BookCatalogue.
- *
+ * <p>
  * FIXME: remove the dependency on that proxy.
  * but how.... seems AWS is dependent/linked to have a website.
  */
@@ -85,8 +84,9 @@ public final class AmazonManager
     }
 
     @NonNull
-    public static String getBaseURL() {
-        return SearchEngine.getPref().getString(PREFS_HOST_URL, "https://www.amazon.com");
+    public static String getBaseURL(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(PREFS_HOST_URL, "https://www.amazon.com");
     }
 
     /**
@@ -120,7 +120,7 @@ public final class AmazonManager
             }
         }
 
-        String url = getBaseURL() + SUFFIX_BASE_URL + extra.trim();
+        String url = getBaseURL(context) + SUFFIX_BASE_URL + extra.trim();
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
@@ -159,7 +159,8 @@ public final class AmazonManager
     @Override
     @NonNull
     @WorkerThread
-    public Bundle search(@Nullable final String isbn,
+    public Bundle search(@NonNull final Context context,
+                         @Nullable final String isbn,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
@@ -199,7 +200,7 @@ public final class AmazonManager
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(this, e, url);
+                Logger.debug(this, e, url);
             }
             throw new IOException(e);
         }
@@ -211,18 +212,10 @@ public final class AmazonManager
         return bookData;
     }
 
-    @Nullable
+    @NonNull
     @Override
-    @WorkerThread
-    public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final ImageSize size) {
-        return SearchEngine.getCoverImageFallback(this, isbn);
-    }
-
-    @Override
-    @WorkerThread
-    public boolean isAvailable() {
-        return NetworkUtils.isAlive(getBaseURL());
+    public String getUrl(@NonNull final Context context) {
+        return getBaseURL(context);
     }
 
     @StringRes

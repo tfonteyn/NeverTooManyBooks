@@ -69,11 +69,12 @@ public class AddBookToShelfApiHandler
         extends ApiHandler {
 
     /** Add one book to one shelf (or remove it). */
-    private static final String URL_1_1 = GoodreadsManager.BASE_URL
-                                          + "/shelf/add_to_shelf.xml";
+    private static final String URL_1_1 =
+            GoodreadsManager.BASE_URL + "/shelf/add_to_shelf.xml";
+
     /** Add multiple books to multiple shelves. */
-    private static final String URL_X_X = GoodreadsManager.BASE_URL
-                                          + "/shelf/add_books_to_shelves.xml";
+    private static final String URL_X_X =
+            GoodreadsManager.BASE_URL + "/shelf/add_books_to_shelves.xml";
 
     /** Resulting review-id after the request. */
     private long mReviewId;

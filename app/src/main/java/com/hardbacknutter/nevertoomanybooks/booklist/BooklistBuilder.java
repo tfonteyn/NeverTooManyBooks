@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ListOfValuesFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.WildcardFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.Joiner;
@@ -272,8 +273,8 @@ public class BooklistBuilder
      */
     @ListRebuildMode
     public static int getPreferredListRebuildState() {
-        return App.getListPreference(Prefs.pk_bob_levels_rebuild_state,
-                                     PREF_LIST_REBUILD_SAVED_STATE);
+        return PIntString.getListPreference(Prefs.pk_bob_levels_rebuild_state,
+                                            PREF_LIST_REBUILD_SAVED_STATE);
     }
 
     /**

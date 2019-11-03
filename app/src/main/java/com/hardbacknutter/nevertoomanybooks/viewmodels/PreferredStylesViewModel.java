@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -177,9 +178,10 @@ public class PreferredStylesViewModel
         return editedRow;
     }
 
-    public void deleteStyle(@NonNull final BooklistStyle style) {
+    public void deleteStyle(@NonNull final Context context,
+                            @NonNull final BooklistStyle style) {
         mIsDirty = true;
-        style.delete(mDb);
+        style.delete(context, mDb);
         mList.remove(style);
     }
 

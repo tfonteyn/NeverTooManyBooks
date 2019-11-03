@@ -244,7 +244,7 @@ public class StartupViewModel
             // shouldn't be needed every single time.
             if (mDoPeriodicAction) {
                 // analyse db should always be started as the last task.
-                startTask(new AnalyzeDbTask(++taskId, mDb, ImageUtils.imagesAreCached(),
+                startTask(new AnalyzeDbTask(++taskId, mDb, ImageUtils.imagesAreCached(context),
                                             mTaskListener));
             }
 

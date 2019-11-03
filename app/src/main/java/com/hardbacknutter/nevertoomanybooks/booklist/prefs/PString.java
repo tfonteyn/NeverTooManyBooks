@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 
@@ -49,7 +50,20 @@ public class PString
     public PString(@NonNull final String key,
                    @NonNull final String uuid,
                    final boolean isPersistent) {
-        super(key, uuid, isPersistent, App.getPrefString(key));
+        super(key, uuid, isPersistent, getPrefString(key));
+    }
+
+    /**
+     * Get a global preference String. Null values results are returned as an empty string.
+     *
+     * @param key The name of the preference to retrieve.
+     *
+     * @return the preference value string, can be empty, but never {@code null}
+     */
+    @NonNull
+    private static String getPrefString(@NonNull final String key) {
+        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                .getString(key, "");
     }
 
     @NonNull

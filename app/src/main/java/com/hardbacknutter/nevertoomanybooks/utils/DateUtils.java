@@ -296,9 +296,6 @@ public final class DateUtils {
     public static String toPrettyDate(@NonNull final String dateString)
             throws NumberFormatException {
 
-        LocaleUtils.insanityCheck(App.getLocalizedAppContext());
-        LocaleUtils.insanityCheck(App.getAppContext());
-
         switch (dateString.length()) {
             case 10:
                 // YYYY-MM-DD

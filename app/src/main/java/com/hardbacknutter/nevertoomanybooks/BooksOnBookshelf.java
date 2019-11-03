@@ -50,6 +50,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -80,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialog
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditColorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditFormatDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditGenreDialog;
@@ -175,7 +177,7 @@ public class BooksOnBookshelf
      */
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Logger.debug(this, "",
+            Logger.debug(this, "onBookChanged",
                          "bookId=" + bookId,
                          "fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged),
                          data);
@@ -496,6 +498,10 @@ public class BooksOnBookshelf
             SubMenu debugSubMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
                                                    0, R.string.debug);
 
+            debugSubMenu.add(Menu.NONE, R.id.MENU_PREFS_SCANNER_UI, 0, R.string.menu_scanner_ui)
+                        .setCheckable(true)
+                        .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
             //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, "Dump style");
 
@@ -514,6 +520,12 @@ public class BooksOnBookshelf
         menu.findItem(R.id.MENU_CLEAR_FILTERS).setEnabled(!mModel.getSearchCriteria().isEmpty());
 
         hideFABMenu();
+
+        MenuItem scannerUiItem = menu.findItem(R.id.MENU_PREFS_SCANNER_UI);
+        boolean scannerHasUi = PreferenceManager.getDefaultSharedPreferences(this)
+                                                .getBoolean(Prefs.pk_scanner_has_ui, false);
+        scannerUiItem.setChecked(scannerHasUi);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -575,6 +587,14 @@ public class BooksOnBookshelf
             default: {
                 if (BuildConfig.DEBUG  /* always */) {
                     switch (item.getItemId()) {
+                        case R.id.MENU_PREFS_SCANNER_UI:
+                            boolean isSet = !item.isChecked();
+                            item.setChecked(isSet);
+                            PreferenceManager.getDefaultSharedPreferences(this)
+                                             .edit().putBoolean(Prefs.pk_scanner_has_ui, isSet)
+                                             .apply();
+                            return true;
+
                         case R.id.MENU_DEBUG_PREFS:
                             Prefs.dumpPreferences(this, null);
                             return true;
@@ -1484,8 +1504,10 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Using {@link ValuePicker} for context menus.
+     *
      * @param menuItem that was selected
-     * @param row      Row view for selected cursor row
+     * @param row      in the list
      *
      * @return {@code true} if handled.
      */

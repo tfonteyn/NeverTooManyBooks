@@ -43,7 +43,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -168,11 +167,11 @@ public abstract class BackupWriterAbstract
                 entitiesWritten |= Options.BOOK_LIST_STYLES;
             }
             if (!mProgressListener.isCancelled() && incPrefs) {
-                doPreferences();
+                doPreferences(context);
                 entitiesWritten |= Options.PREFERENCES;
             }
             if (!mProgressListener.isCancelled() && incXml) {
-                doXmlTables();
+                doXmlTables(context);
                 entitiesWritten |= Options.XML_TABLES;
             }
             if (!mProgressListener.isCancelled() && incBooks) {
@@ -241,9 +240,11 @@ public abstract class BackupWriterAbstract
     /**
      * Export user data as XML.
      *
+     * @param context Current context
+     *
      * @throws IOException on failure
      */
-    private void doXmlTables()
+    private void doXmlTables(@NonNull final Context context)
             throws IOException {
         mProgressListener.onProgressStep(1, null);
 
@@ -253,7 +254,7 @@ public abstract class BackupWriterAbstract
 
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             XmlExporter exporter = new XmlExporter(mExportHelper);
-            exporter.doAll(os, mProgressListener);
+            exporter.doAll(context, os, mProgressListener);
             putXmlData(tmpFile);
 
         } finally {
@@ -261,7 +262,7 @@ public abstract class BackupWriterAbstract
         }
     }
 
-    private void doPreferences()
+    private void doPreferences(@NonNull final Context context)
             throws IOException {
         mProgressListener.onProgressStep(1, R.string.lbl_settings);
 
@@ -271,7 +272,7 @@ public abstract class BackupWriterAbstract
         try (OutputStreamWriter osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE);
              XmlExporter xmlExporter = new XmlExporter()) {
-            xmlExporter.doPreferences(out);
+            xmlExporter.doPreferences(context, out);
         }
 
         putPreferences(data.toByteArray());
@@ -350,9 +351,9 @@ public abstract class BackupWriterAbstract
             results.coversProcessed += coversExported + missing + skipped;
         }
 
-        if (!dryRun) {
-            Logger.info(App.getAppContext(), this,
-                        "doCovers", " written=" + coversExported,
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debug(this, "doCovers",
+                         " written=" + coversExported,
                         "missing=" + missing, "skipped=" + skipped);
         }
     }

@@ -103,7 +103,7 @@ public class GoodreadsRegistrationActivity
         if (GoodreadsManager.hasCredentials()) {
             blurb.setVisibility(View.VISIBLE);
             removeButton.setVisibility(View.VISIBLE);
-            removeButton.setOnClickListener(v -> GoodreadsManager.resetCredentials());
+            removeButton.setOnClickListener(v -> GoodreadsManager.resetCredentials(this));
         } else {
             blurb.setVisibility(View.GONE);
             removeButton.setVisibility(View.GONE);

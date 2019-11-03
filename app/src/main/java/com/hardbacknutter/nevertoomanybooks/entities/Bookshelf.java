@@ -250,7 +250,7 @@ public class Bookshelf
                          @NonNull final DAO db,
                          @NonNull final BooklistStyle style) {
 
-        style.setDefault();
+        style.setDefault(context);
 
         mStyleUuid = style.getUuid();
         long styleId = getStyle(db).getId();

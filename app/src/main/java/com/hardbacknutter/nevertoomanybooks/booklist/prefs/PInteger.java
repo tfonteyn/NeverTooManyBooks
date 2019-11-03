@@ -31,6 +31,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 
@@ -53,7 +54,7 @@ public class PInteger
     public PInteger(@NonNull final String key,
                     @NonNull final String uuid,
                     final boolean isPersistent) {
-        super(key, uuid, isPersistent, App.getPrefInteger(key, 0));
+        super(key, uuid, isPersistent, getPrefInteger(key, 0));
     }
 
     /**
@@ -69,7 +70,21 @@ public class PInteger
                     @NonNull final String uuid,
                     final boolean isPersistent,
                     @NonNull final Integer defaultValue) {
-        super(key, uuid, isPersistent, App.getPrefInteger(key, defaultValue));
+        super(key, uuid, isPersistent, getPrefInteger(key, defaultValue));
+    }
+
+    /**
+     * Get a global preference int.
+     *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return the preference value
+     */
+    private static int getPrefInteger(@NonNull final String key,
+                                      final int defValue) {
+        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                .getInt(key, defValue);
     }
 
     @Override

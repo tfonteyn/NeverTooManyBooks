@@ -50,6 +50,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
@@ -59,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
+import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
@@ -125,8 +127,8 @@ public final class DebugReport {
                 }
             }
         } catch (@NonNull final PackageManager.NameNotFoundException
-                                        | NoSuchAlgorithmException
-                                        | RuntimeException e) {
+                | NoSuchAlgorithmException
+                | RuntimeException e) {
             return e.getLocalizedMessage();
         }
         return signedBy.toString();
@@ -171,20 +173,13 @@ public final class DebugReport {
 
                .append("Signed-By: ").append(signedBy(context)).append('\n')
 
-               //  urls
                .append("Search sites URL:\n")
-               .append(AmazonManager.getBaseURL()).append('\n')
-               .append(GoodreadsManager.getBaseURL()).append('\n')
-               .append(GoogleBooksManager.getBaseURL()).append('\n')
-               .append(IsfdbManager.getBaseURL()).append('\n')
-               .append(KbNlManager.getBaseURL()).append('\n')
-               .append(LibraryThingManager.getBaseURL()).append('\n')
-               .append(OpenLibraryManager.getBaseURL()).append('\n');
+               .append(getSiteUrls(context));
 
         // Scanners installed
         try {
             message.append("Pref. Scanner: ")
-                   .append(App.getListPreference(Prefs.pk_scanner_preferred, -1))
+                   .append(PIntString.getListPreference(Prefs.pk_scanner_preferred, -1))
                    .append('\n');
 
             for (String scannerAction : ScannerManager.ALL_ACTIONS) {
@@ -256,11 +251,11 @@ public final class DebugReport {
             ArrayList<String> bodyText = new ArrayList<>();
             bodyText.add(message.toString());
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
-                                    .setType("plain/text")
-                                    .putExtra(Intent.EXTRA_SUBJECT, subject)
-                                    .putExtra(Intent.EXTRA_EMAIL, to)
-                                    .putExtra(Intent.EXTRA_TEXT, bodyText)
-                                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
+                    .setType("plain/text")
+                    .putExtra(Intent.EXTRA_SUBJECT, subject)
+                    .putExtra(Intent.EXTRA_EMAIL, to)
+                    .putExtra(Intent.EXTRA_TEXT, bodyText)
+                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
             String chooserText = context.getString(R.string.title_send_mail);
             context.startActivity(Intent.createChooser(intent, chooserText));
             return true;
@@ -269,6 +264,18 @@ public final class DebugReport {
             Logger.error(context, DebugReport.class, e);
             return false;
         }
+    }
+
+    public static String getSiteUrls(@NonNull final Context context) {
+        return AmazonManager.getBaseURL(context) + '\n'
+               + GoodreadsManager.BASE_URL + '\n'
+               + GoogleBooksManager.getBaseURL(context) + '\n'
+               + IsfdbManager.getBaseURL(context) + '\n'
+               + KbNlManager.getBaseURL(context) + '\n'
+               + LibraryThingManager.getBaseURL(context) + '\n'
+               + OpenLibraryManager.getBaseURL(context) + '\n'
+               + StripInfoManager.getBaseURL(context) + '\n';
+        //NEWTHINGS: add new search engine
     }
 
     /**

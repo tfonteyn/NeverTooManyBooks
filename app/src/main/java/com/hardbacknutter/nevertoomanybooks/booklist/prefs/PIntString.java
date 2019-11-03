@@ -28,6 +28,8 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
 import androidx.annotation.NonNull;
+import androidx.preference.ListPreference;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 
@@ -54,7 +56,26 @@ public class PIntString
                       @NonNull final String uuid,
                       final boolean isPersistent,
                       @NonNull final Integer defaultValue) {
-        super(key, uuid, isPersistent, App.getListPreference(key, defaultValue));
+        super(key, uuid, isPersistent, getListPreference(key, defaultValue));
+    }
+
+    /**
+     * {@link ListPreference} stores the selected value as a String.
+     * But they are really Integer values. Hence this transmogrification....
+     *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return int (stored as String) global preference
+     */
+    public static int getListPreference(@NonNull final String key,
+                                        final int defValue) {
+        String value = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                        .getString(key, null);
+        if (value == null || value.isEmpty()) {
+            return defValue;
+        }
+        return Integer.parseInt(value);
     }
 
     @NonNull

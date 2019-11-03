@@ -122,6 +122,7 @@ public class XmlImporter
     /**
      * Constructor.
      * <p>
+     *
      * @param locale (optional)
      */
     public XmlImporter(@Nullable final Locale locale) {
@@ -149,18 +150,20 @@ public class XmlImporter
     /**
      * Read Styles from an XML stream.
      *
+     * @param context          Current context
      * @param entity           to read
      * @param progressListener Progress and cancellation provider
      *
      * @throws IOException on failure
      */
-    public int doStyles(@NonNull final ReaderEntity entity,
+    public int doStyles(@NonNull final Context context,
+                        @NonNull final ReaderEntity entity,
                         @Nullable final ProgressListener progressListener)
             throws IOException {
         InputStreamReader reader = new InputStreamReader(entity.getInputStream(),
                                                          StandardCharsets.UTF_8);
         BufferedReader in = new BufferedReaderNoClose(reader, BUFFER_SIZE);
-        StylesReader stylesReader = new StylesReader(mDb);
+        StylesReader stylesReader = new StylesReader(context, mDb);
         fromXml(in, stylesReader, progressListener);
 
         return stylesReader.getStylesRead();
@@ -170,7 +173,6 @@ public class XmlImporter
      * Read Preferences from an XML stream.
      * <p>
      * <strong>Note:</strong> the passed in SharedPreferences is dependent on the caller.
-     * Do <strong>not</strong> replace with mSettings.getPrefs() !
      *
      * @param entity           to read
      * @param prefs            object to populate
@@ -258,7 +260,7 @@ public class XmlImporter
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(this, e);
+                Logger.debug(this, e);
             }
             throw new IOException(e);
         }
@@ -896,6 +898,8 @@ public class XmlImporter
     static class StylesReader
             implements EntityReader<String> {
 
+        @NonNull
+        private final Context mContext;
         /** Database Access. */
         @NonNull
         private final DAO mDb;
@@ -910,9 +914,12 @@ public class XmlImporter
         /**
          * Constructor.
          *
-         * @param db Database Access
+         * @param context Current context
+         * @param db      Database Access
          */
-        StylesReader(@NonNull final DAO db) {
+        StylesReader(@NonNull final Context context,
+                     @NonNull final DAO db) {
+            mContext = context;
             mDb = db;
         }
 
@@ -967,7 +974,7 @@ public class XmlImporter
             // we now have the groups themselves (one of the 'flat' prefs) set on the style,
             // so transfer their specific Preferences.
             for (BooklistGroup group : mStyle.getGroups()) {
-                mStyle.updatePreferences(group.getPreferences());
+                mStyle.updatePreferences(mContext, group.getPreferences());
             }
             // add to the menu of preferred styles if needed.
             if (mStyle.isPreferred()) {

@@ -37,11 +37,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -81,16 +83,18 @@ public class LibraryThingRegistrationActivity
         // LT Registration Link.
         findViewById(R.id.register_url).setOnClickListener(
                 v -> startActivity(new Intent(Intent.ACTION_VIEW,
-                                              Uri.parse(LibraryThingManager.getBaseURL() + '/'))));
+                                              Uri.parse(LibraryThingManager.getBaseURL(this)
+                                                        + '/'))));
 
         // DevKey Link.
         findViewById(R.id.dev_key_url).setOnClickListener(
                 v -> startActivity(new Intent(Intent.ACTION_VIEW,
-                                              Uri.parse(LibraryThingManager.getBaseURL()
+                                              Uri.parse(LibraryThingManager.getBaseURL(this)
                                                         + "/services/keys.php"))));
 
         mDevKeyView = findViewById(R.id.dev_key);
-        String key = SearchEngine.getPref().getString(LibraryThingManager.PREFS_DEV_KEY, "");
+        String key = PreferenceManager.getDefaultSharedPreferences(this)
+                                      .getString(LibraryThingManager.PREFS_DEV_KEY, "");
         mDevKeyView.setText(key);
 
         FloatingActionButton fabButton = findViewById(R.id.fab);
@@ -98,10 +102,10 @@ public class LibraryThingRegistrationActivity
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> {
             String devKey = mDevKeyView.getText().toString().trim();
-            SearchEngine.getPref()
-                        .edit()
-                        .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
-                        .apply();
+            PreferenceManager.getDefaultSharedPreferences(this)
+                             .edit()
+                             .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
+                             .apply();
 
             if (!devKey.isEmpty()) {
                 UserMessage.show(mDevKeyView, R.string.progress_msg_connecting);
@@ -134,7 +138,8 @@ public class LibraryThingRegistrationActivity
 
             try {
                 LibraryThingManager ltm = new LibraryThingManager();
-                File tmpFile = ltm.getCoverImage("0451451783", SearchEngine.ImageSize.Small);
+                File tmpFile = ltm.getCoverImage(App.getAppContext(),
+                                                 "0451451783", SearchEngine.ImageSize.Small);
                 if (tmpFile != null) {
                     tmpFile.deleteOnExit();
                     long length = tmpFile.length();

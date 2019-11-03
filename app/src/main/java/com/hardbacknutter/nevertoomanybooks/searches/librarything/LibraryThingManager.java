@@ -49,6 +49,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -60,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
 /**
@@ -132,7 +132,7 @@ public class LibraryThingManager
     }
 
     @NonNull
-    public static String getBaseURL() {
+    public static String getBaseURL(@NonNull final Context context) {
         return BASE_URL;
     }
 
@@ -144,7 +144,7 @@ public class LibraryThingManager
      */
     public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {
-        String url = getBaseURL() + "/work/" + bookId;
+        String url = getBaseURL(context) + "/work/" + bookId;
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
@@ -244,7 +244,7 @@ public class LibraryThingManager
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(LibraryThingManager.class, e, url);
+                Logger.debug(LibraryThingManager.class, e, url);
             }
         }
 
@@ -272,7 +272,8 @@ public class LibraryThingManager
      */
     @NonNull
     private static String getDevKey() {
-        String key = SearchEngine.getPref().getString(PREFS_DEV_KEY, null);
+        String key = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                      .getString(PREFS_DEV_KEY, null);
         if (key != null && !key.isEmpty()) {
             return DEV_KEY_PATTERN.matcher(key).replaceAll("");
         }
@@ -288,6 +289,7 @@ public class LibraryThingManager
      * Dev-key needed for this call.
      * <br>Only the ISBN is supported.
      *
+     * @param context   Current context (i.e. with the current Locale)
      * @param isbn      to lookup. Must be a valid ISBN
      * @param author    unused
      * @param title     unused
@@ -298,7 +300,8 @@ public class LibraryThingManager
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@Nullable final String isbn,
+    public Bundle search(@NonNull final Context context,
+                         @Nullable final String isbn,
                          @Nullable final /* not supported */ String author,
                          @Nullable final /* not supported */ String title,
                          @Nullable final /* not supported */ String publisher,
@@ -328,30 +331,23 @@ public class LibraryThingManager
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(this, e, url);
+                Logger.debug(this, e, url);
             }
             throw new IOException(e);
         }
 
         if (fetchThumbnail) {
-            getCoverImage(isbn, bookData);
+            getCoverImage(context, isbn, bookData);
         }
 
         return bookData;
     }
 
-    /**
-     * dev-key needed for this call.
-     *
-     * @param isbn to search for
-     * @param size of image to get.
-     *
-     * @return found/saved File, or {@code null} if none found (or any other failure)
-     */
     @Nullable
     @WorkerThread
     @Override
-    public File getCoverImage(@NonNull final String isbn,
+    public File getCoverImage(@NonNull final Context context,
+                              @NonNull final String isbn,
                               @Nullable final ImageSize size) {
 
         // sanity check
@@ -395,9 +391,14 @@ public class LibraryThingManager
     }
 
     @Override
-    @WorkerThread
     public boolean isAvailable() {
-        return hasKey() && NetworkUtils.isAlive(getBaseURL());
+        return hasKey();
+    }
+
+    @NonNull
+    @Override
+    public String getUrl(@NonNull final Context context) {
+        return getBaseURL(context);
     }
 
     @Override
@@ -406,7 +407,7 @@ public class LibraryThingManager
     }
 
     @Override
-    public boolean siteSupportsMultipleSizes() {
+    public boolean hasMultipleSizes() {
         return true;
     }
 

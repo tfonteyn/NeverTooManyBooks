@@ -27,14 +27,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.googlebooks;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -52,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
  * ENHANCE: Get editions via http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
@@ -74,14 +74,16 @@ public final class GoogleBooksManager
     }
 
     @NonNull
-    public static String getBaseURL() {
-        return SearchEngine.getPref().getString(PREFS_HOST_URL, "https://books.google.com");
+    public static String getBaseURL(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(PREFS_HOST_URL, "https://books.google.com");
     }
 
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@Nullable final String isbn,
+    public Bundle search(@NonNull final Context context,
+                         @Nullable final String isbn,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
@@ -120,7 +122,7 @@ public final class GoogleBooksManager
         GoogleBooksEntryHandler entryHandler =
                 new GoogleBooksEntryHandler(bookData, fetchThumbnail, isbn);
 
-        String url = getBaseURL() + "/books/feeds/volumes?" + query;
+        String url = getBaseURL(context) + "/books/feeds/volumes?" + query;
 
         try {
             SAXParser parser = factory.newSAXParser();
@@ -141,7 +143,7 @@ public final class GoogleBooksManager
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(this, e, url);
+                Logger.debug(this, e, url);
             }
             throw new IOException(e);
         }
@@ -149,26 +151,10 @@ public final class GoogleBooksManager
         return bookData;
     }
 
-    /**
-     * Get the found/saved File.
-     *
-     * @param isbn to search for
-     * @param size of image to get.
-     *
-     * @return file, or {@code null} if none found (or any other failure)
-     */
-    @Nullable
+    @NonNull
     @Override
-    @WorkerThread
-    public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final ImageSize size) {
-        return SearchEngine.getCoverImageFallback(this, isbn);
-    }
-
-    @Override
-    @WorkerThread
-    public boolean isAvailable() {
-        return NetworkUtils.isAlive(getBaseURL());
+    public String getUrl(@NonNull final Context context) {
+        return getBaseURL(context);
     }
 
     @StringRes

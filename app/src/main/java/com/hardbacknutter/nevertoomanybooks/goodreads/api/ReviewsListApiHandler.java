@@ -76,8 +76,7 @@ public class ReviewsListApiHandler
      * 4: user id
      */
     private static final String URL =
-            GoodreadsManager.BASE_URL
-            + "/review/list/%4$s.xml?"
+            GoodreadsManager.BASE_URL + "/review/list/%4$s.xml?"
             + "key=%1$s"
             + "&v=2"
             + "&page=%2$s"
@@ -147,13 +146,13 @@ public class ReviewsListApiHandler
 
     /**
      * Get the reviews.
-     *
+     * <p>
      * {@code
      * Bundle results = get(page,perPage);
      * mTotalBooks = (int) results.getLong(ReviewsListApiHandler.ReviewField.TOTAL);
-     *
+     * <p>
      * ArrayList<Bundle> reviews = results.getParcelableArrayList(
-     *                                 ReviewsListApiHandler.ReviewField.REVIEWS);
+     * ReviewsListApiHandler.ReviewField.REVIEWS);
      * }
      *
      * @return A bundle containing an ArrayList of Bundles, one for each review.

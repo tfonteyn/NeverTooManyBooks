@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -157,14 +158,16 @@ public final class ImageUtils {
         }
 
         return scaleFactor * (int) App.getAppContext()
-                                .getResources().getDimension(R.dimen.cover_base_size);
+                                      .getResources().getDimension(R.dimen.cover_base_size);
     }
 
     /**
+     * @param context Current context
+     *
      * @return {@code true} if resized images are cached in a database.
      */
-    public static boolean imagesAreCached() {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+    public static boolean imagesAreCached(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(Prefs.pk_image_cache_resized, false);
     }
 
@@ -186,7 +189,8 @@ public final class ImageUtils {
                                        final int maxHeight) {
 
         // 1. If caching is used, and we don't have cache building happening, check it.
-        if (imagesAreCached() && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
+        if (imagesAreCached(imageView.getContext())
+            && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
 
             long tick = System.nanoTime();
             cacheChecks.incrementAndGet();
@@ -207,7 +211,7 @@ public final class ImageUtils {
         }
 
         // 3. If caching is used, go get the image from the file system and send it to the cache.
-        if (imagesAreCached()) {
+        if (imagesAreCached(imageView.getContext())) {
             long tick = System.nanoTime();
             fileChecks.incrementAndGet();
             imageView.setMaxWidth(maxWidth);
@@ -512,7 +516,7 @@ public final class ImageUtils {
             bytesRead = StorageUtils.saveInputStreamToFile(con.inputStream, file);
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(ImageUtils.class, e);
+                Logger.debug(ImageUtils.class, e);
             }
         }
 

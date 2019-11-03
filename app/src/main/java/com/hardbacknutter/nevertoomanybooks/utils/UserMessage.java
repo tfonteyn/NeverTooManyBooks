@@ -36,9 +36,9 @@ import androidx.annotation.StringRes;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -65,7 +65,7 @@ public final class UserMessage {
 
     public static void show(@NonNull final Activity activity,
                             @StringRes final int message) {
-        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
+        if (0 == PIntString.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             View view = activity.getWindow().getDecorView();
@@ -80,7 +80,7 @@ public final class UserMessage {
 
     public static void show(@NonNull final Activity activity,
                             @NonNull final String message) {
-        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
+        if (0 == PIntString.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             View view = activity.getWindow().getDecorView();
@@ -94,7 +94,7 @@ public final class UserMessage {
 
     public static void show(@NonNull final View view,
                             @StringRes final int message) {
-        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
+        if (0 == PIntString.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
@@ -108,7 +108,7 @@ public final class UserMessage {
 
     public static void show(@NonNull final View view,
                             @NonNull final String message) {
-        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
+        if (0 == PIntString.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();

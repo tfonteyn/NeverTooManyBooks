@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -63,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
  * <a href="https://openlibrary.org/developers/api">https://openlibrary.org/developers/api</a>
@@ -118,8 +118,9 @@ public class OpenLibraryManager
     }
 
     @NonNull
-    public static String getBaseURL() {
-        return SearchEngine.getPref().getString(PREFS_HOST_URL, "https://openlibrary.org");
+    public static String getBaseURL(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(PREFS_HOST_URL, "https://openlibrary.org");
     }
 
     /**
@@ -130,7 +131,7 @@ public class OpenLibraryManager
      */
     public static void openWebsite(@NonNull final Context context,
                                    @NonNull final String bookId) {
-        String url = getBaseURL() + "/books/" + bookId;
+        String url = getBaseURL(context) + "/books/" + bookId;
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
@@ -140,6 +141,7 @@ public class OpenLibraryManager
      *
      * <br>Only the ISBN is supported.
      *
+     * @param context   Current context
      * @param isbn      to lookup. Must be a valid ISBN
      * @param author    unused
      * @param title     unused
@@ -150,7 +152,8 @@ public class OpenLibraryManager
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@Nullable final String isbn,
+    public Bundle search(@NonNull final Context context,
+                         @Nullable final String isbn,
                          @Nullable final /* not supported */ String author,
                          @Nullable final /* not supported */ String title,
                          @Nullable final /* not supported */ String publisher,
@@ -158,7 +161,8 @@ public class OpenLibraryManager
             throws IOException {
 
         if (ISBN.isValid(isbn)) {
-            String url = getBaseURL() + "/api/books?jscmd=data&format=json&bibkeys=ISBN:" + isbn;
+            String url =
+                    getBaseURL(context) + "/api/books?jscmd=data&format=json&bibkeys=ISBN:" + isbn;
 
             // get and store the result into a string.
             String response;
@@ -198,16 +202,20 @@ public class OpenLibraryManager
      * http://covers.openlibrary.org/b/isbn/0385472579-S.jpg?default=false
      * <p>
      * S/M/L
+     * <p>
+     * Get a cover image.
      *
-     * @param isbn to search for
-     * @param size of image to get.
+     * @param context Current context (i.e. with the current Locale)
+     * @param isbn    to search for
+     * @param size    of image to get.
      *
      * @return found/saved File, or {@code null} when none found (or any other failure)
      */
     @Nullable
     @Override
     @WorkerThread
-    public File getCoverImage(@NonNull final String isbn,
+    public File getCoverImage(@NonNull final Context context,
+                              @NonNull final String isbn,
                               @Nullable final ImageSize size) {
 
         // sanity check
@@ -243,10 +251,10 @@ public class OpenLibraryManager
 
     }
 
+    @NonNull
     @Override
-    @WorkerThread
-    public boolean isAvailable() {
-        return NetworkUtils.isAlive(getBaseURL());
+    public String getUrl(@NonNull final Context context) {
+        return getBaseURL(context);
     }
 
     @Override
@@ -255,7 +263,7 @@ public class OpenLibraryManager
     }
 
     @Override
-    public boolean siteSupportsMultipleSizes() {
+    public boolean hasMultipleSizes() {
         return true;
     }
 

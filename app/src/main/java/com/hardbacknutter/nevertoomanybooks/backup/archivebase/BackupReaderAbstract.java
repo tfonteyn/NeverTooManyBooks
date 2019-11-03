@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -65,6 +66,8 @@ public abstract class BackupReaderAbstract
     @NonNull
     private final DAO mDb;
 
+    protected final ContentResolver mContentResolver;
+
     /** progress message. */
     private final String mProcessPreferences;
     /** progress message. */
@@ -87,6 +90,9 @@ public abstract class BackupReaderAbstract
      */
     protected BackupReaderAbstract(@NonNull final Context context) {
         mDb = new DAO();
+
+        mContentResolver = context.getContentResolver();
+
         mProcessPreferences = context.getString(R.string.progress_msg_process_preferences);
         mProcessBooklistStyles = context.getString(R.string.progress_msg_process_booklist_style);
 
@@ -143,7 +149,7 @@ public abstract class BackupReaderAbstract
                 ReaderEntity entity = findEntity(ReaderEntity.Type.BooklistStyles);
                 if (entity != null) {
                     try (XmlImporter importer = new XmlImporter(null)) {
-                        mResults.styles += importer.doStyles(entity, progressListener);
+                        mResults.styles += importer.doStyles(context, entity, progressListener);
                     }
                     entitiesRead |= Options.BOOK_LIST_STYLES;
                     incStyles = false;
@@ -216,7 +222,8 @@ public abstract class BackupReaderAbstract
                         if (incStyles) {
                             progressListener.onProgressStep(1, mProcessBooklistStyles);
                             try (XmlImporter importer = new XmlImporter(null)) {
-                                mResults.styles += importer.doStyles(entity, progressListener);
+                                mResults.styles += importer.doStyles(context, entity,
+                                                                     progressListener);
                             }
                             entitiesRead |= Options.BOOK_LIST_STYLES;
                             incStyles = false;
@@ -271,7 +278,7 @@ public abstract class BackupReaderAbstract
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
                 Logger.debug(this, "restore",
                              "results=" + mResults,
-                             "mSettings.results=" + mSettings.getResults());
+                             "mSettings=" + mSettings);
             }
             try {
                 close();

@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.googlebooks.GoogleBooksManager;
@@ -68,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  * <li>Add your new engine to {@link #getSearchEngine};</li>
  * <li>Create+add a new instance to {@link #SEARCH_ORDER}<br>
  * and {@link #COVER_SEARCH_ORDER}</li>
+ * <li>Add your new engine to {@link DebugReport#getSiteUrls}</li>
  * <li>Optional: add to res/xml/preferences.xml if the url should be editable.<br>
  * See the Amazon example in that xml file.</li>
  * </ol>

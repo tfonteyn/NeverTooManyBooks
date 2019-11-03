@@ -27,14 +27,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import android.content.Intent;
-import android.os.Bundle;
-
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.BookSearchByIsbnFragment;
 import com.hardbacknutter.nevertoomanybooks.scanner.Scanner;
 
 /**
@@ -45,8 +40,7 @@ public class ScannerViewModel
 
     /** Only start the scanner automatically upon the very first start of the fragment. */
     private boolean mFirstStart = true;
-    /** flag indicating we're running in SCAN mode. */
-    private boolean mScanMode;
+
     /** flag indicating the scanner is already started. */
     private boolean mScannerStarted;
     /** The preferred (or found) scanner. */
@@ -54,27 +48,14 @@ public class ScannerViewModel
     private Scanner mScanner;
 
     /**
-     * Pseudo constructor.
+     * Get <strong>and clear</strong> the first-start flag.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @return flag
      */
-    public void init(@Nullable final Bundle args) {
-        // Have we been started in UI or in scan mode.
-        if (args != null) {
-            mScanMode = args.getBoolean(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE);
-        }
-    }
-
     public boolean isFirstStart() {
-        return mFirstStart;
-    }
-
-    public void clearFirstStart() {
+        boolean isFirst = mFirstStart;
         mFirstStart = false;
-    }
-
-    public boolean isScanMode() {
-        return mScanMode;
+        return isFirst;
     }
 
     public boolean isScannerStarted() {

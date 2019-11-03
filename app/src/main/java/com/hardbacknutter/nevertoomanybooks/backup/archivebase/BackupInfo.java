@@ -281,7 +281,7 @@ public class BackupInfo {
     public void validate()
             throws InvalidArchiveException {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Logger.debug(this, "validate", mBundle.toString());
+            Logger.debug(this, "validate", mBundle);
         }
 
         // extremely simple check: we assume that if one field is present, the rest will be there.

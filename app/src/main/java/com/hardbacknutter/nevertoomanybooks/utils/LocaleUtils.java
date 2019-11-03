@@ -162,10 +162,11 @@ public final class LocaleUtils {
             return !displayLanguage.isEmpty() && !displayLanguage.equalsIgnoreCase(iso3);
 
         } catch (@NonNull final MissingResourceException e) {
-            // log but ignore.
-            Logger.debug(LocaleUtils.class, "isValid",
-                         "e=" + e.getLocalizedMessage(),
-                         "locale=" + locale);
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.debug(LocaleUtils.class, "isValid",
+                             "e=" + e.getLocalizedMessage(),
+                             "locale=" + locale);
+            }
             return false;
 
         } catch (@NonNull final RuntimeException ignore) {

@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -100,7 +101,7 @@ public class StyleGroupsModel
     /**
      * Collect the data from the list, and update the style.
      */
-    void updateStyle() {
+    void updateStyle(@NonNull final Context context) {
         Map<String, PPref> allPreferences = mStyle.getPreferences(true);
 
         // Loop through all groups
@@ -115,7 +116,7 @@ public class StyleGroupsModel
 
         // Apply any saved properties.
         // For now we don't have any updated preferences other then the groups.
-        mStyle.updatePreferences(allPreferences);
+        mStyle.updatePreferences(context, allPreferences);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
             Logger.debug(this, "onBackPressed", mStyle);

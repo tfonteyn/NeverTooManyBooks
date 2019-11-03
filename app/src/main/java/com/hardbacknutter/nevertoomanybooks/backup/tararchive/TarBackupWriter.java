@@ -42,7 +42,6 @@ import java.io.OutputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupWriterAbstract;
 
@@ -73,8 +72,7 @@ public class TarBackupWriter
         super(context);
         mContainer = container;
 
-        OutputStream os = App.getAppContext().getContentResolver()
-                             .openOutputStream(mContainer.getUri());
+        OutputStream os = context.getContentResolver().openOutputStream(mContainer.getUri());
         mOutputStream = new TarArchiveOutputStream(os);
     }
 

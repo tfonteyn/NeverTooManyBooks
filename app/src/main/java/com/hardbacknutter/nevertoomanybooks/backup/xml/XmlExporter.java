@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.xml;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Base64;
@@ -504,13 +505,15 @@ public class XmlExporter
      * The progressListener will not be very accurate as we advance by 1 for each step,
      * and not per item (author,book,etc) written.
      *
+     * @param context          Current context
      * @param os               Stream for writing data
      * @param progressListener Progress and cancellation interface
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    public void doAll(@NonNull final OutputStream os,
+    public void doAll(@NonNull final Context context,
+                      @NonNull final OutputStream os,
                       @NonNull final ProgressListener progressListener)
             throws IOException {
 
@@ -552,7 +555,7 @@ public class XmlExporter
 
             if (!progressListener.isCancelled() && incPrefs) {
                 progressListener.onProgressStep(1, R.string.lbl_settings);
-                doPreferences(out);
+                doPreferences(context, out);
             }
 
             out.append("</" + XmlTags.XML_ROOT + ">\n");
@@ -896,18 +899,19 @@ public class XmlExporter
     /**
      * Write out the user preferences.
      *
-     * @param writer writer
+     * @param context Current context
+     * @param writer  writer
      *
      * @return number of items written
      *
      * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int doPreferences(@NonNull final BufferedWriter writer)
+    public int doPreferences(final Context context,
+                             @NonNull final BufferedWriter writer)
             throws IOException {
 
-        Map<String, ?> all = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                              .getAll();
+        Map<String, ?> all = PreferenceManager.getDefaultSharedPreferences(context).getAll();
 
         // remove the acra settings
         Iterator<String> it = all.keySet().iterator();
@@ -1286,7 +1290,8 @@ public class XmlExporter
         @Override
         public Object get(@NonNull final String key) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Logger.debug(this, "get", "uuid=" + currentStyle.getUuid() + "|name=" + key);
+                Logger.debug(this, "get",
+                             "uuid=" + currentStyle.getUuid(), "key=" + key);
             }
             //noinspection ConstantConditions
             return currentStylePPrefs.get(key).get();

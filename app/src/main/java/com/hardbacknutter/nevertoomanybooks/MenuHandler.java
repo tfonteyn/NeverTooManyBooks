@@ -102,7 +102,7 @@ public final class MenuHandler {
             .setIcon(R.drawable.ic_edit);
         menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, ORDER_DUPLICATE, R.string.menu_duplicate)
             .setIcon(R.drawable.ic_content_copy);
-        menu.add(Menu.NONE, R.id.MENU_DELETE, ORDER_DELETE, R.string.menu_delete)
+        menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, ORDER_DELETE, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
         menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,

@@ -38,6 +38,7 @@ import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -69,7 +70,7 @@ public class IsfdbGetEditionsTask
     protected ArrayList<IsfdbEditionsHandler.Edition> doInBackground(final Void... params) {
         Thread.currentThread().setName("IsfdbGetEditionsTask " + mIsbn);
         try {
-            return new IsfdbEditionsHandler().fetch(mIsbn);
+            return new IsfdbEditionsHandler().fetch(App.getAppContext(), mIsbn);
         } catch (@NonNull final SocketTimeoutException e) {
             Logger.warn(this, "doInBackground", e.getLocalizedMessage());
             return null;

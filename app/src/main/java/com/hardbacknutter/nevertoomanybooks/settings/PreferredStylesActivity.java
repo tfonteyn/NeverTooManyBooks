@@ -190,7 +190,7 @@ public class PreferredStylesActivity
                     } else {
                         // the style was not modified, discard it if this was a new style
                         if (style != null && style.getId() == 0) {
-                            style.discard();
+                            style.discard(this);
                         }
                     }
                 }
@@ -247,7 +247,8 @@ public class PreferredStylesActivity
                 .setIcon(R.drawable.ic_delete);
         }
 
-        menu.add(Menu.NONE, R.id.MENU_CLONE, MenuHandler.ORDER_DUPLICATE, R.string.menu_duplicate)
+        menu.add(Menu.NONE, R.id.MENU_DUPLICATE, MenuHandler.ORDER_DUPLICATE,
+                 R.string.menu_duplicate)
             .setIcon(R.drawable.ic_content_copy);
 
         String title = style.getLabel(this);
@@ -259,7 +260,7 @@ public class PreferredStylesActivity
      * Using {@link ValuePicker} for context menus.
      *
      * @param menuItem that was selected
-     * @param style    to act on
+     * @param style    in the list
      *
      * @return {@code true} if handled.
      */
@@ -267,7 +268,7 @@ public class PreferredStylesActivity
                                           @NonNull final BooklistStyle style) {
 
         switch (menuItem.getItemId()) {
-            case R.id.MENU_CLONE:
+            case R.id.MENU_DUPLICATE:
                 // pass the style id of the template style
                 editStyle(style.clone(this), style.getId());
                 return true;
@@ -283,7 +284,7 @@ public class PreferredStylesActivity
                 return true;
 
             case R.id.MENU_DELETE:
-                mModel.deleteStyle(style);
+                mModel.deleteStyle(this, style);
                 mListAdapter.notifyDataSetChanged();
                 return true;
 

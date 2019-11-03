@@ -52,6 +52,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.cropper.CropImageActivity;
 import com.hardbacknutter.nevertoomanybooks.cropper.CropImageViewTouchBase;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
@@ -400,7 +401,8 @@ public class CoverHandler {
         if (mCameraHelper == null) {
             mCameraHelper = new CameraHelper();
             mCameraHelper
-                    .setRotationAngle(App.getListPreference(Prefs.pk_camera_image_autorotate, 0));
+                    .setRotationAngle(
+                            PIntString.getListPreference(Prefs.pk_camera_image_autorotate, 0));
             mCameraHelper.setUseFullSize(true);
         }
         mCameraHelper.startCamera(mFragment, UniqueId.REQ_ACTION_IMAGE_CAPTURE);

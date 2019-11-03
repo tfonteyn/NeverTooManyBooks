@@ -45,6 +45,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -93,10 +94,10 @@ public abstract class BaseActivity
 
     /** Optional - The side/navigation panel. */
     @Nullable
-    protected DrawerLayout mDrawerLayout;
+    private DrawerLayout mDrawerLayout;
     /** Optional - The side/navigation menu. */
     @Nullable
-    protected NavigationView mNavigationView;
+    private NavigationView mNavigationView;
 
     /**
      * Override this and return the id you need.
@@ -174,9 +175,9 @@ public abstract class BaseActivity
      * @param fragmentClass   the fragment; must be loadable with the current class loader.
      * @param fragmentTag     tag for the fragment
      */
-    public void addFragment(@IdRes final int containerViewId,
-                            @NonNull final Class fragmentClass,
-                            @Nullable final String fragmentTag) {
+    protected void addFragment(@IdRes final int containerViewId,
+                               @NonNull final Class fragmentClass,
+                               @Nullable final String fragmentTag) {
         loadFragment(containerViewId, fragmentClass, fragmentTag, true);
     }
 
@@ -190,9 +191,9 @@ public abstract class BaseActivity
      * @param fragmentClass   the fragment; must be loadable with the current class loader.
      * @param fragmentTag     tag for the fragment
      */
-    public void replaceFragment(@IdRes final int containerViewId,
-                                @NonNull final Class fragmentClass,
-                                @Nullable final String fragmentTag) {
+    protected void replaceFragment(@IdRes final int containerViewId,
+                                   @NonNull final Class fragmentClass,
+                                   @Nullable final String fragmentTag) {
         loadFragment(containerViewId, fragmentClass, fragmentTag, false);
     }
 
@@ -309,7 +310,10 @@ public abstract class BaseActivity
 
         switch (item.getItemId()) {
             case R.id.nav_search: {
-                if (App.getPrefBoolean(Prefs.pk_search_form_advanced, false)) {
+                boolean advanced = PreferenceManager.getDefaultSharedPreferences(this)
+                                                    .getBoolean(Prefs.pk_search_form_advanced,
+                                                                false);
+                if (advanced) {
                     return onAdvancedSearchRequested();
                 } else {
                     // standard system call.

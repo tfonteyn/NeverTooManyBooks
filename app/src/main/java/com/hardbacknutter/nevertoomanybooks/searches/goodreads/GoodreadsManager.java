@@ -88,7 +88,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
 /**
@@ -148,7 +147,6 @@ public class GoodreadsManager
     private static final String ACCESS_TOKEN_ENDPOINT_URL = BASE_URL + "/oauth/access_token";
     /** Whether to show any Goodreads sync menus at all. */
     private static final String PREFS_SHOW_MENUS = PREF_PREFIX + "showMenu";
-
     /** Preference that controls display of alert about Goodreads. */
     private static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
     /** last time we synced with Goodreads. */
@@ -168,7 +166,6 @@ public class GoodreadsManager
     /** error string. */
     private static final String INVALID_CREDENTIALS =
             "Goodreads credentials need to be validated before accessing user data";
-
     /** Set to {@code true} when the credentials have been successfully verified. */
     public static boolean sHasValidCredentials;
     /** Cached when credentials have been verified. */
@@ -176,18 +173,15 @@ public class GoodreadsManager
     private static String sAccessToken;
     @Nullable
     private static String sAccessSecret;
-
     /** Local copy of user name retrieved when the credentials were verified. */
     @Nullable
     private static String sUsername;
     /** Local copy of user id retrieved when the credentials were verified. */
     private static long sUserId;
-
     /** OAuth helpers. */
     private final OAuthConsumer mConsumer;
     /** OAuth helpers. */
     private final OAuthProvider mProvider;
-
     /** Cache this common handler. */
     @Nullable
     private IsbnToIdApiHandler mIsbnToIdApiHandler;
@@ -197,7 +191,6 @@ public class GoodreadsManager
     /** Cache this common handler. */
     @Nullable
     private ReviewEditApiHandler mReviewEditApiHandler;
-
     /** Cached list of shelves. */
     @Nullable
     private GoodreadsShelves mShelvesList;
@@ -227,12 +220,6 @@ public class GoodreadsManager
         hasCredentials();
     }
 
-    @NonNull
-    public static String getBaseURL() {
-        return BASE_URL;
-    }
-
-
     /**
      * Check if Goodreads SYNC menus should be shown at all.
      * This does not affect searching on Goodreads.
@@ -254,7 +241,7 @@ public class GoodreadsManager
      */
     public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {
-        String url = getBaseURL() + "/book/show/" + bookId;
+        String url = BASE_URL + "/book/show/" + bookId;
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
@@ -304,31 +291,37 @@ public class GoodreadsManager
      */
     @Nullable
     public static Date getLastSyncDate() {
-        return DateUtils.parseDate(SearchEngine.getPref().getString(PREFS_LAST_SYNC_DATE, null));
+        return DateUtils.parseDate(
+                PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                 .getString(PREFS_LAST_SYNC_DATE, null));
     }
 
     /**
      * Set the date at which the last Goodreads synchronization was run.
      *
-     * @param date Last date
+     * @param context Current context
+     * @param date    Last date
      */
-    public static void setLastSyncDate(@Nullable final Date date) {
+    public static void setLastSyncDate(@NonNull final Context context,
+                                       @Nullable final Date date) {
         String dateStr = date != null ? DateUtils.utcSqlDateTime(date) : null;
-        SearchEngine.getPref().edit().putString(PREFS_LAST_SYNC_DATE, dateStr).apply();
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                         .putString(PREFS_LAST_SYNC_DATE, dateStr).apply();
     }
 
     /**
      * Clear the credentials from the preferences and local cache.
+     * @param context Current context
      */
-    static void resetCredentials() {
+    static void resetCredentials(@NonNull final Context context) {
 
         sAccessToken = "";
         sAccessSecret = "";
         sHasValidCredentials = false;
-        SearchEngine.getPref().edit()
-                    .putString(ACCESS_TOKEN, "")
-                    .putString(ACCESS_SECRET, "")
-                    .apply();
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                         .putString(ACCESS_TOKEN, "")
+                         .putString(ACCESS_SECRET, "")
+                         .apply();
     }
 
     @AnyThread
@@ -356,7 +349,8 @@ public class GoodreadsManager
         }
 
         // Get the stored token values from prefs
-        SharedPreferences prefs = SearchEngine.getPref();
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(App.getAppContext());
         sAccessToken = prefs.getString(ACCESS_TOKEN, null);
         sAccessSecret = prefs.getString(ACCESS_SECRET, null);
 
@@ -814,15 +808,14 @@ public class GoodreadsManager
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@Nullable final String isbn,
+    public Bundle search(@NonNull final Context context,
+                         @Nullable final String isbn,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
                          final boolean fetchThumbnail)
             throws CredentialsException,
                    IOException {
-
-        Context context = App.getLocalizedAppContext();
 
         try {
             // getBookByIsbn will check on isbn being valid.
@@ -848,36 +841,31 @@ public class GoodreadsManager
         }
     }
 
-    /**
-     * @param isbn to search for
-     * @param size of image to get.
-     *
-     * @return found/saved File, or {@code null} if none found (or any other failure)
-     */
     @Nullable
     @Override
     @WorkerThread
-    public File getCoverImage(@NonNull final String isbn,
+    public File getCoverImage(@NonNull final Context context,
+                              @NonNull final String isbn,
                               @Nullable final ImageSize size) {
         if (!hasValidCredentials()) {
             return null;
         }
-        return SearchEngine.getCoverImageFallback(this, isbn);
+        return getCoverImageFallback(context, isbn);
     }
 
-    /**
-     * Check developer key, credentials and website being up. Does NOT check credentials.
-     *
-     * @return {@code true} if we can contact this site for searching.
-     */
     @Override
-    @WorkerThread
     public boolean isAvailable() {
         // hasKey() is only here for when the developer forgot to add the dev key.
         // Checking it avoids confusion and endless debugging elsewhere.
         return hasKey()
-               && hasCredentials()
-               && NetworkUtils.isAlive(getBaseURL());
+               // makes sure we *have* credentials, but does not check them.
+               && hasCredentials();
+    }
+
+    @NonNull
+    @Override
+    public String getUrl(@NonNull final Context context) {
+        return BASE_URL;
     }
 
     @StringRes
@@ -1006,6 +994,8 @@ public class GoodreadsManager
             throws AuthorizationException,
                    IOException {
 
+        Context context = App.getAppContext();
+
         String authUrl;
 
         // Don't do this; this is just part of OAuth and not the Goodreads API
@@ -1034,13 +1024,14 @@ public class GoodreadsManager
 
         // Temporarily save the token; this GoodreadsManager object may be destroyed
         // before the web page returns.
-        SearchEngine.getPref().edit()
-                    .putString(REQUEST_TOKEN, mConsumer.getToken())
-                    .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
-                    .apply();
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .putString(REQUEST_TOKEN, mConsumer.getToken())
+                         .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
+                         .apply();
 
-        // Open the web page, always use the app context here.
-        App.getAppContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
+        // Open the web page
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
     }
 
     /**
@@ -1054,8 +1045,10 @@ public class GoodreadsManager
     public void handleAuthenticationAfterAuthorization()
             throws AuthorizationException,
                    IOException {
+
         // Get the temporarily saved request tokens.
-        SharedPreferences prefs = SearchEngine.getPref();
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(App.getAppContext());
         String requestToken = prefs.getString(REQUEST_TOKEN, null);
         String requestSecret = prefs.getString(REQUEST_SECRET, null);
 

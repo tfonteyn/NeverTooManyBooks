@@ -49,9 +49,9 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -276,7 +276,7 @@ public final class ScannerManager {
     }
 
     private static int getPreferredScanner() {
-        return App.getListPreference(Prefs.pk_scanner_preferred, DEFAULT);
+        return PIntString.getListPreference(Prefs.pk_scanner_preferred, DEFAULT);
     }
 
     public interface OnResultListener {

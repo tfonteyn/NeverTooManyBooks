@@ -196,7 +196,7 @@ public class EditBookshelvesActivity
      * Using {@link ValuePicker} for context menus.
      *
      * @param menuItem  that was selected
-     * @param bookshelf to act on
+     * @param bookshelf in the list
      *
      * @return {@code true} if handled.
      */

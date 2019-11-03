@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -180,6 +181,7 @@ public class IsfdbBookHandler
     /**
      * Fetch a book.
      *
+     * @param context          Current context
      * @param isfdbId          ISFDB native book ID
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   whether to get thumbnails as well
@@ -189,14 +191,14 @@ public class IsfdbBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    public Bundle fetch(final long isfdbId,
+    public Bundle fetch(@NonNull final Context context,
+                        final long isfdbId,
                         final boolean addSeriesFromToc,
                         final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
-        return fetch(IsfdbManager.getBaseURL() + String.format(BOOK_URL, isfdbId),
-                     addSeriesFromToc,
-                     fetchThumbnail);
+        return fetch(IsfdbManager.getBaseURL(context)
+                     + String.format(BOOK_URL, isfdbId), addSeriesFromToc, fetchThumbnail);
     }
 
     /**
@@ -229,6 +231,7 @@ public class IsfdbBookHandler
     /**
      * Fetch a book.
      *
+     * @param context          Current context
      * @param editions         List of ISFDB Editions with native book ID
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   whether to get thumbnails as well
@@ -238,7 +241,8 @@ public class IsfdbBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    public Bundle fetch(@Size(min = 1) @NonNull final List<IsfdbEditionsHandler.Edition> editions,
+    public Bundle fetch(@NonNull final Context context,
+                        @Size(min = 1) @NonNull final List<IsfdbEditionsHandler.Edition> editions,
                         final boolean addSeriesFromToc,
                         final boolean fetchThumbnail)
             throws SocketTimeoutException {
@@ -246,7 +250,7 @@ public class IsfdbBookHandler
         mEditions = editions;
 
         IsfdbEditionsHandler.Edition edition = editions.get(0);
-        mPath = IsfdbManager.getBaseURL() + String.format(BOOK_URL, edition.isfdbId);
+        mPath = IsfdbManager.getBaseURL(context) + String.format(BOOK_URL, edition.isfdbId);
 
         // check if we already got the book
         if (edition.doc != null) {
@@ -281,16 +285,25 @@ public class IsfdbBookHandler
      *
      *        <td class="pubheader">
      *          <ul>
-     *            <li><b>Publication:</b> The Days of Perky Pat <span class="recordID"><b>Publication Record # </b>230949</span>
-     *            <li><b>Author:</b> <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+     *            <li><b>Publication:</b> The Days of Perky Pat <span class="recordID">
+     *                <b>Publication Record # </b>230949
+     *                [<a href="http://www.isfdb.org/cgi-bin/edit/editpub.cgi?230949">Edit</a>]
+     *                </span>
+     *            <li><b>Author:</b>
+     *              <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">Philip K. Dick</a>
      *            <li><b>Date:</b> 1991-05-00
      *            <li><b>ISBN:</b> 0-586-20768-6 [<small>978-0-586-20768-0</small>]
-     *            <li><b>Publisher:</b> <a href="http://www.isfdb.org/cgi-bin/publisher.cgi?62" dir="ltr">Grafton</a>
+     *            <li><b>Publisher:</b>
+     *              <a href="http://www.isfdb.org/cgi-bin/publisher.cgi?62">Grafton</a>
      *            <li><b>Price:</b> £5.99
      *            <li><b>Pages:</b> 494
-     *            <li><b>Format:</b> <div class="tooltip">tp<sup class="mouseover">?</sup><span class="tooltiptext tooltipnarrow">Trade paperback. Any softcover book which is at least 7.25" (or 19 cm) tall, or at least 4.5" (11.5 cm) wide/deep.</span></div>
+     *            <li><b>Format:</b> <div class="tooltip">tp<sup class="mouseover">?</sup>
+     *            <span class="tooltiptext tooltipnarrow">Trade paperback...</span></div>
      *            <li><b>Type:</b> COLLECTION
-     *            <li><b>Cover:</b><a href="http://www.isfdb.org/cgi-bin/title.cgi?737949" dir="ltr">The Days of Perky Pat</a>  by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?21338" dir="ltr">Chris Moore</a>
+     *            <li><b>Cover:</b>
+     *              <a href="http://www.isfdb.org/cgi-bin/title.cgi?737949">
+     *                  The Days of Perky Pat</a>
+     *                  by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?21338">Chris Moore</a>
      *            <li>
      *              <div class="notes"><b>Notes:</b>
      *                "Published by Grafton Books 1991" on copyright page
@@ -303,7 +316,8 @@ public class IsfdbBookHandler
      *            </ul>
      *          </td>
      *    </table>
-     *  Cover art supplied by <a href="http://www.isfdb.org/wiki/index.php/Image:THDSFPRKPT1991.jpg"
+     *  Cover art supplied by
+     *      <a href="http://www.isfdb.org/wiki/index.php/Image:THDSFPRKPT1991.jpg"
      *                           target="_blank">ISFDB</a>
      * </div>
      * }
@@ -319,21 +333,30 @@ public class IsfdbBookHandler
      *
      *       <td>
      *         <a href="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg">
-     *         <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg" alt="picture" class="scan"></a>
+     *         <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg" class="scan"></a>
      *       </td>
      *
      *       <td class="pubheader">
      *         <ul>
-     *           <li><b>Publication:</b> The Days of Perky Pat<span class="recordID"><b>Publication Record # </b>230949 [<a href="http://www.isfdb.org/cgi-bin/edit/editpub.cgi?230949">Edit</a>]</span>
-     *           <li><b>Author:</b><a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+     *           <li><b>Publication:</b> The Days of Perky Pat<span class="recordID">
+     *               <b>Publication Record # </b>230949
+     *               [<a href="http://www.isfdb.org/cgi-bin/edit/editpub.cgi?230949">Edit</a>]
+     *               </span>
+     *           <li><b>Author:</b>
+     *              <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">Philip K. Dick</a>
      *           <li> <b>Date:</b> 1991-05-00
      *           <li><b>ISBN:</b> 0-586-20768-6 [<small>978-0-586-20768-0</small>]
-     *           <li><b>Publisher:</b> <a href="http://www.isfdb.org/cgi-bin/publisher.cgi?62" dir="ltr">Grafton</a>
+     *           <li><b>Publisher:</b>
+     *              <a href="http://www.isfdb.org/cgi-bin/publisher.cgi?62">Grafton</a>
      *           <li><b>Price:</b> £5.99
      *           <li><b>Pages:</b> 494
-     *           <li><b>Format:</b> <div class="tooltip">tp<sup class="mouseover">?</sup><span class="tooltiptext tooltipnarrow">Trade paperback. Any softcover book which is at least 7.25" (or 19 cm) tall, or at least 4.5" (11.5 cm) wide/deep.</span></div>
+     *           <li><b>Format:</b> <div class="tooltip">tp<sup class="mouseover">?</sup>
+     *              <span class="tooltiptext tooltipnarrow">Trade paperback...</span></div>
      *           <li><b>Type:</b> COLLECTION
-     *           <li><b>Cover:</b><a href="http://www.isfdb.org/cgi-bin/title.cgi?737949" dir="ltr">The Days of Perky Pat</a>  by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?21338" dir="ltr">Chris Moore</a>
+     *           <li><b>Cover:</b>
+     *              <a href="http://www.isfdb.org/cgi-bin/title.cgi?737949">
+     *                  The Days of Perky Pat</a>
+     *                  by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?21338">Chris Moore</a>
      *           <li>
      *             <div class="notes"><b>Notes:</b>
      *               "Published by Grafton Books 1991" on copyright page
@@ -345,9 +368,13 @@ public class IsfdbBookHandler
      *           <li>
      *             <b>External IDs:</b>
      *             <ul class="noindent">
-     *               <li> <abbr class="template" title="Online Computer Library Center">OCLC/WorldCat</abbr>:  <a href="http://www.worldcat.org/oclc/60047795" target="_blank">60047795</a>
+     *               <li> <abbr class="template" title="Online Computer Library Center">
+     *                   OCLC/WorldCat</abbr>:
+     *                   <a href="http://www.worldcat.org/oclc/60047795">60047795</a>
      *             </ul>
-     *           <li><a href="http://www.isfdb.org/wiki/index.php/Special:Upload?wpDestFile=THDSFPRKPT1991.jpg&amp;wpUploadDescription=%7B%7BCID1%0A%7CTitle%3DThe%20Days%20of%20Perky%20Pat%0A%7CEdition%3DGrafton%201991%20tp%0A%7CPub%3DTHDSFPRKPT1991%0A%7CPublisher%3DGrafton%0A%7CArtist%3DChris%20Moore%0A%7CArtistId%3D21338%0A%7CSource%3DScanned%20by%20%5B%5BUser%3AHardbackNut%5D%5D%7D%7D" target="_blank">Upload new cover scan</a>
+     *           <li><a href="http://www.isfdb.org/wiki/index.php/Special:Upload?
+     *                  wpDestFile=THDSFPRKPT1991.jpg
+     *                  &amp;wpUploadDescription=%7B%7BCID1%0A%7CTitle%3DThe%20Days%20of%20Perky%20Pat%0A%7CEdition%3DGrafton%201991%20tp%0A%7CPub%3DTHDSFPRKPT1991%0A%7CPublisher%3DGrafton%0A%7CArtist%3DChris%20Moore%0A%7CArtistId%3D21338%0A%7CSource%3DScanned%20by%20%5B%5BUser%3AHardbackNut%5D%5D%7D%7D">Upload new cover scan</a>
      *         </ul>
      *       </td>
      *   </table>
@@ -733,7 +760,8 @@ public class IsfdbBookHandler
 
 
 //            } else if (url.contains("explore.bl.uk")) {
-                // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?vid=BLVU1&docId=BLL01014057142
+                // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
+                // vid=BLVU1&docId=BLL01014057142
                 // British Library
 
 //            } else if (url.contains("d-nb.info")) {
@@ -813,13 +841,13 @@ public class IsfdbBookHandler
      *
      * <div class="ContentBox">
      *  <span class="containertitle">Collection Title:</span>
-     *  <a href="http://www.isfdb.org/cgi-bin/title.cgi?37576" dir="ltr">
+     *  <a href="http://www.isfdb.org/cgi-bin/title.cgi?37576">
      *      The Days of Perky Pat
      *  </a> &#8226;
-     *  [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?22461" dir="ltr">
+     *  [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?22461">
      *      The Collected Stories of Philip K. Dick</a> &#8226; 4] &#8226; (1987) &#8226;
      *      collection by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23"
-     *      dir="ltr">Philip K. Dick</a>
+     *     >Philip K. Dick</a>
      *  <h2>Contents <a href="http://www.isfdb.org/cgi-bin/pl.cgi?230949+c">
      *      <span class="listingtext">(view Concise Listing)</span></a></h2>
      *  <ul>
@@ -854,43 +882,53 @@ public class IsfdbBookHandler
             /* LI entries, possibilities:
 
             7
-            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799" dir="ltr">Introduction (The Days of Perky Pat)</a>
-            &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226" dir="ltr">Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 4]
+            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799">
+                Introduction (The Days of Perky Pat)</a>
+            &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226">
+                Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 4]
             &#8226; (1987)
-            &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57" dir="ltr">James Tiptree, Jr.</a>
+            &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57">James Tiptree, Jr.</a>
 
 
             11
-            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646" dir="ltr">Autofac</a>
+            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646">Autofac</a>
             &#8226; (1955)
-            &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+            &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">
+                Philip K. Dick</a>
 
 
-            <a href="http://www.isfdb.org/cgi-bin/title.cgi?41613" dir="ltr">Beyond Lies the Wub</a>
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?41613">Beyond Lies the Wub</a>
             &#8226; (1952)
-            &#8226; short story by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+            &#8226; short story by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">
+                Philip K. Dick</a>
 
 
-            <a href="http://www.isfdb.org/cgi-bin/title.cgi?118803" dir="ltr">Introduction (Beyond Lies the Wub)</a>
-            &#8226; [ <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226" dir="ltr">Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 1]
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?118803">
+            Introduction (Beyond Lies the Wub)</a>
+            &#8226; [ <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226">
+            Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 1]
             &#8226; (1987)
-            &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?69" dir="ltr">Roger Zelazny</a>
+            &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?69">Roger Zelazny</a>
 
 
             61
-            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?417331" dir="ltr">That Thou Art Mindful of Him</a>
+            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?417331">
+                That Thou Art Mindful of Him</a>
             &#8226; (1974)
-            &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?5" dir="ltr">Isaac Asimov</a>
-            (variant of <i><a href="http://www.isfdb.org/cgi-bin/title.cgi?50798" dir="ltr">—That Thou Art Mindful of Him!</a></i>)
+            &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?5">Isaac Asimov</a>
+            (variant of <i><a href="http://www.isfdb.org/cgi-bin/title.cgi?50798">
+                —That Thou Art Mindful of Him!</a></i>)
 
 
-            A book belonging to a Series will have one content entry with the same title as the book.
-            And potentially have the Series/nr in it:
+            A book belonging to a Series will have one content entry with the same title
+            as the book, and potentially have the Series/nr in it:
 
-            <a href="http://www.isfdb.org/cgi-bin/title.cgi?2210372" dir="ltr">The Delirium Brief</a>
-            &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?23081" dir="ltr">Laundry Files</a> &#8226; 8]
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?2210372">
+                The Delirium Brief</a>
+            &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?23081">
+                Laundry Files</a> &#8226; 8]
             &#8226; (2017)
-            &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?2200" dir="ltr">Charles Stross</a>
+            &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?2200">Charles Stross</a>
 
             ENHANCE: type of entry: "short story", "novelette", "essay", "novel"
             ENHANCE: if type "novel" -> *that* is the one to use for the first publication year
@@ -899,19 +937,23 @@ public class IsfdbBookHandler
             2019-07: translation information seems to be added,
             and a further sub-classification (here: 'juvenile')
 
-            <a href="http://www.isfdb.org/cgi-bin/title.cgi?1347238" dir="ltr">Zwerftocht Tussen de Sterren</a>
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?1347238">
+                Zwerftocht Tussen de Sterren</a>
             &#8226; juvenile
             &#8226; (1973)
-            &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?29" dir="ltr">Robert A. Heinlein</a>
-            (trans. of <a href="http://www.isfdb.org/cgi-bin/title.cgi?2233" dir="ltr"><i>Citizen of the Galaxy</i></a> 1957)
+            &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?29">Robert A. Heinlein</a>
+            (trans. of <a href="http://www.isfdb.org/cgi-bin/title.cgi?2233">
+                <i>Citizen of the Galaxy</i></a> 1957)
 
 
             2019-09-26: this has been there for a longer time, but just noticed these:
             ISBN: 90-290-1541-1
             7 •  Één Nacht per Jaar • interior artwork by John Stewart
-            9 • Één Nacht per Jaar • [Cyrion] • novelette by Tanith Lee (trans. of One Night of the Year 1980)
+            9 • Één Nacht per Jaar • [Cyrion] • novelette by Tanith Lee
+                (trans. of One Night of the Year 1980)
             39 •  Aaches Geheim • interior artwork by Jim Pitts
-            41 • Aaches Geheim • [Dilvish] • short story by Roger Zelazny (trans. of The Places of Aache 1980)
+            41 • Aaches Geheim • [Dilvish] • short story by Roger Zelazny
+                (trans. of The Places of Aache 1980)
 
             iow: each story appears twice due to the extra interior artwork.
             For now, we will get two entries in the TOC, same title but different author.

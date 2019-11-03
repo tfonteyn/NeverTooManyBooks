@@ -37,7 +37,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -50,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -164,14 +162,6 @@ public class Author
             Pattern.compile("jr\\.|jr|junior|sr\\.|sr|senior|II|III",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    /**
-     * A very crude text to bit mapper.
-     * <p>
-     * Current (2019-08-21) strings have been seen on Goodreads.
-     * No doubt many more are missing. Maybe some day see if we can pull a full list from Goodreads?
-     */
-    private static final Map<String, Integer> TYPES_MAPPER = new HashMap<>();
-
     /*
      * NEWTHINGS: author type: add the label for the type
      *
@@ -192,39 +182,6 @@ public class Author
     }
 
     static {
-        // English
-        TYPES_MAPPER.put("Illustrator", TYPE_ARTIST);
-        TYPES_MAPPER.put("Illustrations", TYPE_ARTIST);
-        TYPES_MAPPER.put("Colorist", TYPE_COLORIST);
-        TYPES_MAPPER.put("Editor", TYPE_EDITOR);
-        TYPES_MAPPER.put("Contributor", TYPE_CONTRIBUTOR);
-        TYPES_MAPPER.put("Translator", TYPE_TRANSLATOR);
-
-        // French, unless listed above
-        TYPES_MAPPER.put("Text", TYPE_WRITER);
-        TYPES_MAPPER.put("Scénario", TYPE_WRITER);
-        TYPES_MAPPER.put("Dessins", TYPE_ARTIST);
-        TYPES_MAPPER.put("Dessin", TYPE_ARTIST);
-        TYPES_MAPPER.put("Avec la contribution de", TYPE_CONTRIBUTOR);
-        TYPES_MAPPER.put("Contribution", TYPE_CONTRIBUTOR);
-        TYPES_MAPPER.put("Couleurs", TYPE_COLORIST);
-
-        // Dutch, unless listed above
-        TYPES_MAPPER.put("Scenario", TYPE_WRITER);
-        TYPES_MAPPER.put("Tekeningen", TYPE_ARTIST);
-        TYPES_MAPPER.put("Inkleuring", TYPE_COLORIST);
-
-        // German, unless listed above
-        TYPES_MAPPER.put("Übersetzer", TYPE_TRANSLATOR);
-
-        // Italian, unless listed above
-        TYPES_MAPPER.put("Testi", TYPE_WRITER);
-        TYPES_MAPPER.put("Disegni", TYPE_ARTIST);
-
-        // There are obviously MANY missing.... both for the listed languages above and for
-        // other languages not even considered here.
-        // Will need to add them when/as they show up.
-        // Maybe better if this is done in an external file on a per language basis ?
     }
 
     /** Row ID. */
@@ -399,29 +356,6 @@ public class Author
     }
 
     /**
-     * Add a type to the current type(s).
-     *
-     * @param type to add
-     */
-    public void addType(final int type) {
-        mType |= type & TYPE_MASK;
-    }
-
-    public void setType(@NonNull final String type) {
-        if (type.isEmpty()) {
-            mType = TYPE_UNKNOWN;
-        } else {
-            Integer mapped = TYPES_MAPPER.get(type);
-            if (mapped != null) {
-                mType = mapped;
-            } else {
-                // unknown, log it for future enhancement.
-                Logger.warn(this, "setType", "type=`" + type + "`");
-            }
-        }
-    }
-
-    /**
      * Convenience method to set the Type.
      *
      * @param type list of bits
@@ -432,6 +366,15 @@ public class Author
             bitmask += bit;
         }
         mType = bitmask;
+    }
+
+    /**
+     * Add a type to the current type(s).
+     *
+     * @param type to add
+     */
+    public void addType(final int type) {
+        mType |= type & TYPE_MASK;
     }
 
     /**

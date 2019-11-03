@@ -121,7 +121,7 @@ public class StyleGroupsActivity
      */
     @Override
     public void onBackPressed() {
-        mModel.updateStyle();
+        mModel.updateStyle(this);
 
         if (mModel.getStyle().getGroups().isEmpty()) {
             new AlertDialog.Builder(this)

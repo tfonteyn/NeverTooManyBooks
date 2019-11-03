@@ -115,7 +115,7 @@ public class StripInfoBookHandler
 
         Bundle bookData = new Bundle();
 
-        String path = StripInfoManager.getBaseURL() + String.format(BOOK_SEARCH_URL, isbn);
+        String path = StripInfoManager.getBaseURL(context) + String.format(BOOK_SEARCH_URL, isbn);
         if (loadPage(path) == null) {
             return bookData;
         }

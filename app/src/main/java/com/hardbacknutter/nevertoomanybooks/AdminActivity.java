@@ -71,8 +71,9 @@ public class AdminActivity
      * @param containerViewId to receive the fragment
      * @param tag             for the required fragment
      */
-    public void replaceFragment(@IdRes final int containerViewId,
-                                @NonNull final String tag) {
+    private void replaceFragment(@SuppressWarnings("SameParameterValue")
+                                 @IdRes final int containerViewId,
+                                 @NonNull final String tag) {
         switch (tag) {
             case ImportExportFragment.TAG:
                 replaceFragment(containerViewId, ImportExportFragment.class, tag);

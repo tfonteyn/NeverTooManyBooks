@@ -33,6 +33,7 @@ import android.text.InputType;
 import android.text.Selection;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
@@ -76,28 +77,77 @@ public class EditIsbn
 
     public EditIsbn(@NonNull final Context context) {
         super(context);
+        setAllowAsin(false);
     }
 
     public EditIsbn(@NonNull final Context context,
                     final AttributeSet attrs) {
         super(context, attrs);
+        setAllowAsin(false);
     }
 
     public EditIsbn(@NonNull final Context context,
                     final AttributeSet attrs,
                     final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setAllowAsin(mAllowAsin);
+        setAllowAsin(false);
     }
 
-    public void setAllowAsin(final boolean isChecked) {
+    /**
+     * Support for a custom virtual keyboard.
+     * Handle a virtual key press.
+     * <p>
+     * Currently only handles {@link KeyEvent#KEYCODE_DEL} but can be expanded as needed.
+     *
+     * @param keyCode to handle
+     */
+    public void onKey(final int keyCode) {
+        try {
+            int start = getSelectionStart();
+            int end = getSelectionEnd();
 
-        mAllowAsin = isChecked;
+            if (keyCode == KeyEvent.KEYCODE_DEL) {
+                if (start < end) {
+                    // We have a selection. Delete it.
+                    //noinspection ConstantConditions
+                    getText().replace(start, end, "");
+                    setSelection(start, start);
+                } else {
+                    // Delete char before cursor
+                    if (start > 0) {
+                        //noinspection ConstantConditions
+                        getText().replace(start - 1, start, "");
+                        setSelection(start - 1, start - 1);
+                    }
+                }
+            }
+
+        } catch (@NonNull final StringIndexOutOfBoundsException ignore) {
+            //do nothing - empty string
+        }
+    }
+
+    /**
+     * Support for a custom virtual keyboard.
+     * Handle character insertion at cursor position.
+     *
+     * @param keyChar to handle
+     */
+    public void onKey(@NonNull final String keyChar) {
+        int start = getSelectionStart();
+        int end = getSelectionEnd();
+        //noinspection ConstantConditions
+        getText().replace(start, end, keyChar);
+        setSelection(start + 1, start + 1);
+    }
+
+    public void setAllowAsin(final boolean allow) {
+
+        mAllowAsin = allow;
         // stop the virtual keyboard from showing when using ISBN only
         setShowSoftInputOnFocus(mAllowAsin);
 
-        // Always call setInputType *before* calling setKeyListener!
-        if (isChecked) {
+        if (mAllowAsin) {
             setInputType(InputType.TYPE_CLASS_TEXT
                          | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
                          | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);

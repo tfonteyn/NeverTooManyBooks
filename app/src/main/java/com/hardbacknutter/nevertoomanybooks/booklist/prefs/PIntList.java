@@ -104,7 +104,7 @@ public class PIntList
             } catch (@NonNull final NumberFormatException e) {
                 // should not happen unless we had a bug while previously writing the pref.
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debugWithStackTrace(this, e,
+                    Logger.debug(this, e,
                                                "key=" + getKey(),
                                                "values=`" + values + '`');
                 }

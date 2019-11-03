@@ -1318,13 +1318,6 @@ public class Fields {
     public static class MonetaryFormatter
             implements FieldFormatter<Double> {
 
-        /**
-         * This is used for error logging only, and is normally always the app context
-         * except in unit tests.
-         */
-        @NonNull
-        private final Context mContext;
-
         /** Optional; if null we use the default Locale. */
         @Nullable
         private Locale mLocale;
@@ -1335,23 +1328,6 @@ public class Fields {
 
         @NonNull
         private Double mRawValue = 0.0D;
-
-        /**
-         * Constructor.
-         */
-        public MonetaryFormatter() {
-            mContext = App.getAppContext();
-        }
-
-        /**
-         * Constructor; unit tests cannot use App.getAppContext().
-         *
-         * @param context to use
-         */
-        @VisibleForTesting
-        MonetaryFormatter(@NonNull final Context context) {
-            mContext = context;
-        }
 
         /**
          * Set the Locale for the formatter/parser.
@@ -1400,7 +1376,7 @@ public class Fields {
                 return nf.format(source);
 
             } catch (@NonNull final IllegalArgumentException e) {
-                Logger.error(mContext, this, e,
+                Logger.debug(this, e,
                              "currencyCode=`" + mCurrencyCode + "`,"
                              + " source=`" + source + '`');
 

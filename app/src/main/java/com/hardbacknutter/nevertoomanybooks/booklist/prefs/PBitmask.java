@@ -31,6 +31,8 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.MultiSelectListPreference;
+import androidx.preference.PreferenceManager;
 
 import java.util.Set;
 
@@ -59,7 +61,26 @@ public class PBitmask
                     @NonNull final String uuid,
                     final boolean isPersistent,
                     final int defaultValue) {
-        super(key, uuid, isPersistent, App.getMultiSelectListPreference(key, defaultValue));
+        super(key, uuid, isPersistent, getMultiSelectListPreference(key, defaultValue));
+    }
+
+    /**
+     * {@link MultiSelectListPreference} store the selected value as a StringSet.
+     * But they are really Integer values. Hence this transmogrification....
+     *
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return int (stored as StringSet) global preference
+     */
+    private static Integer getMultiSelectListPreference(@NonNull final String key,
+                                                        final int defValue) {
+        Set<String> value = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                             .getStringSet(key, null);
+        if (value == null || value.isEmpty()) {
+            return defValue;
+        }
+        return Prefs.toInteger(value);
     }
 
     /**

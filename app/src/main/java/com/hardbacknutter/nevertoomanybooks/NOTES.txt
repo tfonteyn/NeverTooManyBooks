@@ -53,9 +53,8 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/799 - original title
 
 General:
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/812 - syn Goodreads notes
+==> there is the concept of 'private notes' in Goodreads, but they do not seem to in the REST API.
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/317 - Add statistics to 'About' tab
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542 - Feature request: collapsed series
--> now possible to collapse/expand any level but the state is NOT saved.
 
 Searches
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/67  - https://openlibrary.org/developers/api
@@ -101,6 +100,7 @@ https://github.com/eleybourn/Book-Catalogue/issues/587 - residual thumbnail afte
 https://github.com/eleybourn/Book-Catalogue/issues/567 - Read-only display does not display anthology titles
 https://github.com/eleybourn/Book-Catalogue/issues/561 - Make title/series mangling optional
 https://github.com/eleybourn/Book-Catalogue/issues/547 - UPC bar-codes
+https://github.com/eleybourn/Book-Catalogue/issues/542 - Feature request: collapsed series
 https://github.com/eleybourn/Book-Catalogue/issues/534 - Display Anthology Titles in Read-only view
 https://github.com/eleybourn/Book-Catalogue/issues/519 - == 721
 https://github.com/eleybourn/Book-Catalogue/issues/493 - auto fill 'read end date' when checkbox "I've read this book" is clicked.

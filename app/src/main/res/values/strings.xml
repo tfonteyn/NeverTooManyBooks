@@ -1533,5 +1533,6 @@
         Example: Bookshelf ToRead
     -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
+    <string name="menu_scanner_ui">Scanner UI</string>
 
 </resources>

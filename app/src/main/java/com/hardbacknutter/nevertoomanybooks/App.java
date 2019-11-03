@@ -54,14 +54,11 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.preference.ListPreference;
-import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
-import java.util.Set;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -72,6 +69,7 @@ import org.acra.annotation.AcraToast;
 import org.acra.file.Directory;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
@@ -388,6 +386,7 @@ public class App
     /**
      * Hide the keyboard.
      */
+    @SuppressWarnings("unused")
     public static void hideKeyboard(@NonNull final View view) {
         InputMethodManager imm = (InputMethodManager)
                 view.getContext().getSystemService(INPUT_METHOD_SERVICE);
@@ -421,91 +420,6 @@ public class App
         return result.trim();
     }
 
-    /* ########################################################################################## */
-
-    /**
-     * Get a global preference boolean.
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return the preference value
-     */
-    public static boolean getPrefBoolean(@NonNull final String key,
-                                         final boolean defValue) {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                .getBoolean(key, defValue);
-    }
-
-    /**
-     * Get a global preference int.
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return the preference value
-     */
-    public static int getPrefInteger(@NonNull final String key,
-                                     final int defValue) {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                .getInt(key, defValue);
-    }
-
-    /**
-     * Get a global preference String. Null values results are returned as an empty string.
-     *
-     * @param key The name of the preference to retrieve.
-     *
-     * @return the preference value string, can be empty, but never {@code null}
-     */
-    @NonNull
-    public static String getPrefString(@NonNull final String key) {
-        Context context = sInstance.getApplicationContext();
-        String value = PreferenceManager.getDefaultSharedPreferences(context)
-                                        .getString(key, null);
-        return value != null ? value : "";
-    }
-
-    /**
-     * {@link ListPreference} stores the selected value as a String.
-     * But they are really Integer values. Hence this transmogrification....
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return int (stored as String) global preference
-     */
-    public static int getListPreference(@NonNull final String key,
-                                        final int defValue) {
-        Context context = sInstance.getApplicationContext();
-        String value = PreferenceManager.getDefaultSharedPreferences(context)
-                                        .getString(key, null);
-        if (value == null || value.isEmpty()) {
-            return defValue;
-        }
-        return Integer.parseInt(value);
-    }
-
-    /**
-     * {@link MultiSelectListPreference} store the selected value as a StringSet.
-     * But they are really Integer values. Hence this transmogrification....
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return int (stored as StringSet) global preference
-     */
-    public static Integer getMultiSelectListPreference(@NonNull final String key,
-                                                       final int defValue) {
-        Context context = sInstance.getApplicationContext();
-        Set<String> value = PreferenceManager.getDefaultSharedPreferences(context)
-                                             .getStringSet(key, null);
-        if (value == null || value.isEmpty()) {
-            return defValue;
-        }
-        return Prefs.toInteger(value);
-    }
-
     /**
      * Test if the Theme has changed.
      *
@@ -515,11 +429,9 @@ public class App
      */
     public static boolean isThemeChanged(@ThemeId final int themeId) {
         // always reload from prefs.
-        sCurrentThemeId = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
+        sCurrentThemeId = PIntString.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
         return themeId != sCurrentThemeId;
     }
-
-    /* ########################################################################################## */
 
     /**
      * Apply the user's preferred Theme.
@@ -543,7 +455,7 @@ public class App
     @ThemeId
     public static int applyTheme(@NonNull final Activity activity) {
         // Always read from prefs.
-        sCurrentThemeId = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
+        sCurrentThemeId = PIntString.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
 
         // Reminder: ***ALWAYS*** set the mode.
         if (sCurrentThemeId == THEME_DAY_NIGHT) {

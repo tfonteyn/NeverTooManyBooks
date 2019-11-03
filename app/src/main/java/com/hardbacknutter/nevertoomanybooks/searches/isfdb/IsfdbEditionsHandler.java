@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -65,16 +67,18 @@ public class IsfdbEditionsHandler
     /**
      * Fails silently, returning an empty list.
      *
-     * @param isbn to get editions for. MUST be valid.
+     * @param context Current context
+     * @param isbn    to get editions for. MUST be valid.
      *
      * @return a list with native ISFDB book ID's pointing to individual editions
      *
      * @throws SocketTimeoutException if the connection times out
      */
-    public ArrayList<Edition> fetch(@NonNull final String isbn)
+    public ArrayList<Edition> fetch(@NonNull final Context context,
+                                    @NonNull final String isbn)
             throws SocketTimeoutException {
 
-        String url = IsfdbManager.getBaseURL() + String.format(EDITIONS_URL, isbn);
+        String url = IsfdbManager.getBaseURL(context) + String.format(EDITIONS_URL, isbn);
 
         if (loadPage(url) == null) {
             // failed to load, return an empty list.

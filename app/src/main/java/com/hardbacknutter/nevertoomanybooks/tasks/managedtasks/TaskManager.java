@@ -122,9 +122,9 @@ public class TaskManager {
                 }
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                    for (TaskInfo i : mTaskInfoList) {
+                    for (TaskInfo taskInfo : mTaskInfoList) {
                         Logger.debug(this, "onTaskFinished",
-                                     "Task `" + i.task.getName() + "` still running");
+                                     "Task `" + taskInfo.task.getName() + "` still running");
                     }
                 }
             }

@@ -606,6 +606,9 @@ public class BooklistAdapter
         @NonNull
         private final String mX_bracket_Y_bracket;
 
+        /** Whether titles should be reordered. */
+        private boolean mReorderTitle;
+
         /** Based on style; bitmask with the extra fields to use. */
         @BooklistStyle.ExtraOption
         private final int mExtraFieldsUsed;
@@ -713,6 +716,8 @@ public class BooklistAdapter
             mShelvesLabel = context.getString(R.string.lbl_bookshelves);
             mLocationLabel = context.getString(R.string.lbl_location);
 
+            mReorderTitle = Prefs.reorderTitleForDisplaying(context);
+
             // quick & compact value to pass to the background task.
             mExtraFieldsUsed = style.getExtraFieldsStatus();
 
@@ -775,7 +780,7 @@ public class BooklistAdapter
             super.onBindViewHolder(rowData, style);
 
             String title = rowData.getString(DBDefinitions.KEY_TITLE);
-            if (Prefs.reorderTitleForDisplaying(App.getAppContext())) {
+            if (mReorderTitle) {
                 String language = rowData.getString(DBDefinitions.KEY_LANGUAGE);
                 title = LocaleUtils.reorderTitle(App.getLocalizedAppContext(), title,
                                                  LocaleUtils.getLocale(language));
@@ -1188,6 +1193,9 @@ public class BooklistAdapter
     public static class SeriesHolder
             extends CheckableStringHolder {
 
+        /** Whether titles should be reordered. */
+        private boolean mReorderTitle;
+
         /**
          * Constructor.
          *
@@ -1198,6 +1206,8 @@ public class BooklistAdapter
                      final int columnIndex) {
             super(itemView, columnIndex, R.string.hint_empty_series,
                   DBDefinitions.KEY_SERIES_IS_COMPLETE);
+
+            mReorderTitle = Prefs.reorderTitleForDisplaying(itemView.getContext());
         }
 
         /**
@@ -1207,12 +1217,11 @@ public class BooklistAdapter
         @Override
         public void setText(@Nullable final String text,
                             @IntRange(from = 1) final int level) {
-            if (text != null && !text.isEmpty()
-                && Prefs.reorderTitleForDisplaying(App.getAppContext())) {
+            if (text != null && !text.isEmpty() && mReorderTitle) {
                 // URGENT: translated series are not reordered unless the app runs in that language
                 // solution/problem: we would need the Series id (and not just the titel)
                 // to call {@link DAO#getSeriesLanguage(long)}
-                super.setText(LocaleUtils.reorderTitle(App.getLocalizedAppContext(), text,
+                super.setText(LocaleUtils.reorderTitle(itemView.getContext(), text,
                                                        Locale.getDefault()), level);
             } else {
                 super.setText(text, level);

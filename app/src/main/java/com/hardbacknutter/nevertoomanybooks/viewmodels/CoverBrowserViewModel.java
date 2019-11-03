@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -52,6 +53,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -352,8 +354,6 @@ public class CoverBrowserViewModel
         /**
          * Download a file according to preference of ImageSize and Site..
          * <p>
-         * ENHANCE: use {@link SearchEngine#isAvailable()}.
-         * <p>
          * We loop on ImageSize first, and then for each ImageSize we loop again on Site.<br>
          * The for() loop will break/return <strong>as soon as a cover file is found.</strong>
          * The first Site which has an image is accepted.
@@ -379,7 +379,7 @@ public class CoverBrowserViewModel
             // we need to use the size as the outer loop (and not inside of getCoverImage itself).
             // the idea is to check all sites for the same size first.
             // if none respond with that size, try the next size inline.
-            // The other way around we could get a site/small-size instead of otherSite/better-size.
+            // The other way around we might get a site/small-size instead of otherSite/better-size.
             for (SearchEngine.ImageSize size : imageSizes) {
                 String key = isbn + '_' + size;
                 FileInfo fileInfo = mFiles.get(key);
@@ -401,19 +401,23 @@ public class CoverBrowserViewModel
                     mFiles.remove(key);
                 }
 
+                Context context = App.getAppContext();
+
                 // get ALL sites, as the local currentSearchSites overrides the global.
                 for (Site site : SearchSites.getSitesForCoverSearches()) {
                     // Should we search this site ?
                     if ((currentSearchSites & site.id) != 0) {
-
-                        fileInfo = downloadFromSite(site, isbn, size);
-                        if (fileInfo != null) {
-                            return fileInfo;
+                        boolean isAvailable = site.getSearchEngine().isAvailable();
+                        if (isAvailable) {
+                            fileInfo = downloadFromSite(context, site, isbn, size);
+                            if (fileInfo != null) {
+                                return fileInfo;
+                            }
                         }
 
-                        // if the site we just searched only supports one image,
-                        // disable it for THIS search
-                        if (!site.getSearchEngine().siteSupportsMultipleSizes()) {
+                        // if the site we just searched was not a available,
+                        // or it only supports one image, disable it for THIS search
+                        if (!isAvailable || !site.getSearchEngine().hasMultipleSizes()) {
                             currentSearchSites &= ~site.id;
                         }
                     }
@@ -429,19 +433,21 @@ public class CoverBrowserViewModel
         /**
          * Try to get an image from the specified site.
          *
-         * @param site to try
-         * @param isbn to get
-         * @param size to get
+         * @param context Current context
+         * @param site    to try
+         * @param isbn    to get
+         * @param size    to get
          *
          * @return a FileInfo object with a valid fileSpec, or {@code null} if not found.
          */
         @Nullable
-        private FileInfo downloadFromSite(@NonNull final Site site,
+        private FileInfo downloadFromSite(@NonNull final Context context,
+                                          @NonNull final Site site,
                                           @NonNull final String isbn,
                                           @NonNull final SearchEngine.ImageSize size) {
 
             @Nullable
-            File file = site.getSearchEngine().getCoverImage(isbn, size);
+            File file = site.getSearchEngine().getCoverImage(context, isbn, size);
             if (file != null && isGood(file)) {
                 String key = isbn + '_' + size;
                 FileInfo fileInfo = new FileInfo(isbn, size, file.getAbsolutePath(), site);
