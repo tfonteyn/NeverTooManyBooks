@@ -419,7 +419,7 @@ public class BooklistBuilder
 
         for (SynchronizedStatement stmt : mRebuildStmts) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Logger.debug(this, "rebuild", "mRebuildStmts|" + stmt + '\n');
+                Logger.debug(this, "rebuild", "mRebuildStmts", stmt);
             }
             stmt.execute();
         }
@@ -2583,7 +2583,7 @@ public class BooklistBuilder
         }
 
         /**
-         * Find the next row ('after' the given row) at the given level.
+         * Find the next row ('after' the given row) at the given level (or lower)
          *
          * @param startRowId from where to start looking
          * @param rowLevel   level to look for
@@ -2601,7 +2601,7 @@ public class BooklistBuilder
                         "SELECT COALESCE(Max(" + DOM_PK_ID + "),-1) FROM "
                         + "(SELECT " + DOM_PK_ID + " FROM " + this.ref()
                         + " WHERE " + this.dot(DOM_PK_ID) + ">?"
-                        + " AND " + this.dot(DOM_BL_NODE_LEVEL) + "=?"
+                        + " AND " + this.dot(DOM_BL_NODE_LEVEL) + "<=?"
                         + " ORDER BY " + DOM_PK_ID + " LIMIT 1"
                         + ") zzz");
             }
