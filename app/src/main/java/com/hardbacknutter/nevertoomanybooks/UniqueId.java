@@ -68,7 +68,7 @@ public final class UniqueId {
     /** Request code: open the advanced (FTS) local search screen. */
     public static final int REQ_ADVANCED_LOCAL_SEARCH = 2_102;
     /** Request code: open the scanner. */
-    public static final int REQ_IMAGE_FROM_SCANNER = 2_103;
+    public static final int REQ_SCAN_BARCODE = 2_103;
 
     /** Request code: open the admin page to order and en/disable sites. */
     public static final int REQ_PREFERRED_SEARCH_SITES = 2_201;

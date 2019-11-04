@@ -143,18 +143,6 @@ public class ImportExportFragment
         mModel = new ViewModelProvider(getActivity()).get(AdminModel.class);
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
-        mExportHelperModel = new ViewModelProvider(getActivity()).get(ExportHelperModel.class);
-        mExportHelperModel.getTaskProgressMessage()
-                          .observe(getViewLifecycleOwner(), this::onTaskProgressMessage);
-        mExportHelperModel.getTaskFinishedMessage()
-                          .observe(getViewLifecycleOwner(), this::onExportFinished);
-
-        mImportHelperModel = new ViewModelProvider(getActivity()).get(ImportHelperModel.class);
-        mImportHelperModel.getTaskProgressMessage()
-                          .observe(getViewLifecycleOwner(), this::onTaskProgressMessage);
-        mImportHelperModel.getTaskFinishedMessage()
-                          .observe(getViewLifecycleOwner(), this::onImportFinished);
-
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog != null) {
@@ -192,12 +180,36 @@ public class ImportExportFragment
         }
     }
 
+    private void initImportHelperModel() {
+        if (mImportHelperModel == null) {
+            //noinspection ConstantConditions
+            mImportHelperModel = new ViewModelProvider(getActivity()).get(ImportHelperModel.class);
+            mImportHelperModel.getTaskProgressMessage()
+                              .observe(getViewLifecycleOwner(), this::onTaskProgressMessage);
+            mImportHelperModel.getTaskFinishedMessage()
+                              .observe(getViewLifecycleOwner(), this::onImportFinished);
+        }
+    }
+
+    private void initExportHelperModel() {
+        if (mExportHelperModel == null) {
+            //noinspection ConstantConditions
+            mExportHelperModel = new ViewModelProvider(getActivity()).get(ExportHelperModel.class);
+            mExportHelperModel.getTaskProgressMessage()
+                              .observe(getViewLifecycleOwner(), this::onTaskProgressMessage);
+            mExportHelperModel.getTaskFinishedMessage()
+                              .observe(getViewLifecycleOwner(), this::onExportFinished);
+        }
+    }
+
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+        }
         // collect all data for passing to the calling Activity
         if (data != null) {
             mResultDataModel.putExtra(data);
@@ -319,6 +331,8 @@ public class ImportExportFragment
      * Step 1 in the archive import procedure: prompt the user for a uri to import.
      */
     private void startImportFromArchive() {
+        initImportHelperModel();
+
         // or should we use Intent.ACTION_OPEN_DOCUMENT ?
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
@@ -383,6 +397,8 @@ public class ImportExportFragment
      * Step 1 in the CSV import procedure: prompt the user for a uri to import.
      */
     private void startImportFromCsv() {
+        initImportHelperModel();
+
         // Verify - this can be a dangerous operation
         //noinspection ConstantConditions
         new AlertDialog.Builder(getContext())
@@ -581,6 +597,8 @@ public class ImportExportFragment
      * Step 1 in the backup procedure: prompt the user for a uri to export to.
      */
     private void startBackup() {
+        initExportHelperModel();
+
         //noinspection ConstantConditions
         String fileName = BackupManager.getDefaultBackupFileName(getContext());
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
@@ -645,6 +663,8 @@ public class ImportExportFragment
      * Step 1 in the CSV export procedure: prompt the user for a uri to export to.
      */
     private void startExportToCsv() {
+        initExportHelperModel();
+
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("text/csv")

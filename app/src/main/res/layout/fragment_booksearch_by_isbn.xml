@@ -60,6 +60,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/menu_delete"
             app:icon="@drawable/ic_backspace"
+
             app:iconGravity="textStart"
             app:layout_constraintBottom_toBottomOf="@id/isbn"
             app:layout_constraintEnd_toEndOf="parent"
@@ -166,21 +167,21 @@
             />
 
         <Button
-            android:id="@+id/isbn_0"
+            android:id="@+id/isbn_X"
             style="@style/IsbnKeyPadButton"
-            android:text="0"
-            app:layout_constraintEnd_toStartOf="@id/isbn_X"
+            android:text="X"
+            app:layout_constraintEnd_toStartOf="@id/isbn_0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/isbn_7"
             tools:ignore="HardcodedText"
             />
 
         <Button
-            android:id="@+id/isbn_X"
+            android:id="@+id/isbn_0"
             style="@style/IsbnKeyPadButton"
-            android:text="X"
+            android:text="0"
             app:layout_constraintEnd_toStartOf="@id/btn_search"
-            app:layout_constraintStart_toEndOf="@id/isbn_0"
+            app:layout_constraintStart_toEndOf="@id/isbn_X"
             app:layout_constraintTop_toBottomOf="@id/isbn_8"
             tools:ignore="HardcodedText"
             />
@@ -191,8 +192,9 @@
             android:contentDescription="@string/btn_search"
             app:icon="@drawable/ic_search"
             app:iconGravity="textStart"
+            app:iconSize="36dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/isbn_X"
+            app:layout_constraintStart_toEndOf="@id/isbn_0"
             app:layout_constraintTop_toBottomOf="@id/isbn_9"
             />
 

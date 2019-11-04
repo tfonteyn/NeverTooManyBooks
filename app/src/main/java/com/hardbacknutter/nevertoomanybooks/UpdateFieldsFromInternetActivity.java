@@ -35,6 +35,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsFromInternetModel;
 
@@ -58,6 +59,10 @@ public class UpdateFieldsFromInternetActivity
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+        }
+
         if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 int searchSites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES, 0);

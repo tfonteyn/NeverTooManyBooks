@@ -35,7 +35,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import java.io.BufferedInputStream;
@@ -312,6 +311,7 @@ public final class Logger {
     /**
      * DEBUG. Dump an InputStream to the console.
      */
+    @SuppressWarnings("unused")
     public static void dump(@NonNull final Object object,
                             @NonNull final InputStream inputStream) {
         try {
@@ -328,8 +328,9 @@ public final class Logger {
         }
     }
 
-    static void debugArguments(@NonNull final Object a,
-                               @NonNull final String methodName) {
+    private static void debugArguments(@NonNull final Object a,
+                                       @SuppressWarnings("SameParameterValue")
+                                       @NonNull final String methodName) {
         if (a instanceof Activity) {
             Bundle extras = ((Activity) a).getIntent().getExtras();
             if (extras != null) {
@@ -402,57 +403,25 @@ public final class Logger {
     }
 
     /**
+     * Dump all information from an onCreate method.
+     *
      * @param a                  Activity or Fragment
      * @param savedInstanceState Bundle
      */
+    @SuppressWarnings("unused")
     public static void enterOnCreate(@NonNull final Object a,
                                      @Nullable final Bundle savedInstanceState) {
-
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
             debugEnter(a, "onCreate",
                        "savedInstanceState=" + savedInstanceState);
             debugArguments(a, "onCreate");
 
-        } else if (BuildConfig.DEBUG /* always */) {
-            debugEnter(a, "onCreate");
         }
     }
 
     /**
-     * @param dialogFragment     DialogFragment
-     * @param savedInstanceState Bundle
-     */
-    public static void enterOnCreateDialog(@NonNull final DialogFragment dialogFragment,
-                                           @Nullable final Bundle savedInstanceState) {
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
-            debugEnter(dialogFragment, "onCreateDialog",
-                       "savedInstanceState=" + savedInstanceState);
-            debugArguments(dialogFragment, "onCreateDialog");
-
-        } else if (BuildConfig.DEBUG /* always */) {
-            debugEnter(dialogFragment, "onCreateDialog");
-        }
-    }
-
-    /**
-     * @param fragment           Fragment
-     * @param savedInstanceState Bundle
-     */
-    public static void enterOnActivityCreated(@NonNull final Fragment fragment,
-                                              @Nullable final Bundle savedInstanceState) {
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
-            debugEnter(fragment, "onActivityCreated",
-                       "savedInstanceState=" + savedInstanceState);
-            debugArguments(fragment, "onActivityCreated");
-
-        } else if (BuildConfig.DEBUG /* always */) {
-            debugEnter(fragment, "onActivityCreated");
-        }
-    }
-
-    /**
+     * Dump all information from an onActivityResult method.
+     *
      * @param a Activity or Fragment
      */
     public static void enterOnActivityResult(@NonNull final Object a,
@@ -464,9 +433,6 @@ public final class Logger {
                        "requestCode=" + requestCode,
                        "resultCode=" + resultCode,
                        "data=" + data);
-
-        } else if (BuildConfig.DEBUG /* always */) {
-            debugEnter(a, "onActivityResult");
         }
     }
 

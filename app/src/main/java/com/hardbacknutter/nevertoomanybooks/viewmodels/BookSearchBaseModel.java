@@ -31,7 +31,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
@@ -46,22 +45,18 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 
 public class BookSearchBaseModel
-        extends ViewModel {
+        extends ViewModel
+        implements ActivityResultDataModel {
 
+    /** The last Intent returned as a result of creating a book. */
+    private final Intent mResultData = new Intent();
     /** Database Access. */
     private DAO mDb;
-
     /** Bitmask with sites to search on. */
     @SearchSites.Id
     private int mSearchSites;
-
     /** Objects managing current search. */
     private long mSearchCoordinatorId;
-
-    /** The last Intent returned as a result of creating a book. */
-    @Nullable
-    private Intent mLastBookData;
-
     @NonNull
     private String mIsbnSearchText = "";
     @NonNull
@@ -84,23 +79,18 @@ public class BookSearchBaseModel
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Bundle args,
-                     @Nullable final Bundle savedInstanceState) {
+    public void init(@NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO();
+
+            mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
+            mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
+            mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
+            mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
+
+            mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES,
+                                       SearchSites.getEnabledSitesAsBitmask());
         }
-
-        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
-
-        mSearchSites = currentArgs.getInt(UniqueId.BKEY_SEARCH_SITES,
-                                          SearchSites.getEnabledSitesAsBitmask());
-
-        mIsbnSearchText = currentArgs.getString(DBDefinitions.KEY_ISBN, mIsbnSearchText);
-
-        mAuthorSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
-        mTitleSearchText = currentArgs.getString(DBDefinitions.KEY_TITLE, mTitleSearchText);
-        mPublisherSearchText = currentArgs.getString(DBDefinitions.KEY_PUBLISHER,
-                                                     mPublisherSearchText);
     }
 
     /**
@@ -172,13 +162,13 @@ public class BookSearchBaseModel
         mPublisherSearchText = publisherSearchText;
     }
 
-    @Nullable
-    public Intent getLastBookData() {
-        return mLastBookData;
+    @NonNull
+    public Intent getActivityResultData() {
+        return mResultData;
     }
 
-    public void setLastBookData(@Nullable final Intent lastBookData) {
-        mLastBookData = lastBookData;
+    public void setLastBookData(@NonNull final Intent lastBookData) {
+        mResultData.putExtras(lastBookData);
     }
 
     /**

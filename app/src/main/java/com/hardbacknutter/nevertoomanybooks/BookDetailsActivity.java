@@ -41,8 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.HasActivityResultData;
 
 /**
  * Hosting activity for showing a book.
@@ -70,7 +70,8 @@ public class BookDetailsActivity
      */
     @Override
     public void onBackPressed() {
-        HasActivityResultData model = new ViewModelProvider(this).get(BookBaseFragmentModel.class);
+        ActivityResultDataModel model = new ViewModelProvider(this)
+                .get(BookBaseFragmentModel.class);
         Intent resultData = model.getActivityResultData();
         setResult(Activity.RESULT_OK, resultData);
         super.onBackPressed();

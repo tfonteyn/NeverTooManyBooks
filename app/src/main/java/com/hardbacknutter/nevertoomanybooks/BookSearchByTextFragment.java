@@ -57,37 +57,26 @@ public class BookSearchByTextFragment
 
     /** A list of author names we have already searched for in this session. */
     @NonNull
-    private final ArrayList<String> mAuthorNames = new ArrayList<>();
+    private final ArrayList<String> mRecentAuthorNames = new ArrayList<>();
     private ArrayAdapter<String> mAuthorAdapter;
 
+    /** User input field. */
     private EditText mTitleView;
+    /** User input field. */
     private AutoCompleteTextView mAuthorView;
+    /** User input field. ENHANCE: add auto-completion for publishers? */
+    private EditText mPublisherView;
+
     /** Used to set visibility on a group of widgets all related to the Publisher. */
     private Group mPublisherGroup;
 
-    // ENHANCE: add auto-completion for publishers?
-    private EditText mPublisherView;
     private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
             new SearchCoordinator.SearchFinishedListener() {
-                /**
-                 * results of search.
-                 * <p>
-                 * The details will get sent to {@link EditBookActivity}
-                 * <p>
-                 * <br>{@inheritDoc}
-                 */
                 @Override
                 public void onSearchFinished(final boolean wasCancelled,
                                              @NonNull final Bundle bookData) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                        Logger.debugEnter(this, "onSearchFinished",
-                                          "SearchCoordinatorId="
-                                          + mBookSearchBaseModel.getSearchCoordinatorId());
-                    }
                     try {
                         if (!wasCancelled) {
-                            mTaskManager.sendHeaderUpdate(R.string.progress_msg_adding_book);
-
                             if (!bookData.containsKey(DBDefinitions.KEY_TITLE)) {
                                 bookData.putString(DBDefinitions.KEY_TITLE,
                                                    mTitleView.getText().toString().trim());
@@ -96,7 +85,7 @@ public class BookSearchByTextFragment
                             if (!bookData.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)
                                 || bookData.getParcelableArrayList(
                                     UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
-                                // does NOT use the array, that's reserved for verified names.
+                                // do NOT use the array, that's reserved for verified names.
                                 bookData.putString(DBDefinitions.KEY_AUTHOR_FORMATTED,
                                                    mAuthorView.getText().toString().trim());
                             }
@@ -115,9 +104,7 @@ public class BookSearchByTextFragment
                             mPublisherView.setText("");
                         }
                     } finally {
-                        // Clean up
                         mBookSearchBaseModel.setSearchCoordinator(0);
-                        // Make sure the base message will be empty.
                         mTaskManager.sendHeaderUpdate(null);
                     }
                 }
@@ -139,7 +126,6 @@ public class BookSearchByTextFragment
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
 
         mTitleView.setText(mBookSearchBaseModel.getTitleSearchText());
         mAuthorView.setText(mBookSearchBaseModel.getAuthorSearchText());
@@ -177,7 +163,7 @@ public class BookSearchByTextFragment
      */
     private void populateAuthorList() {
         // Get all known authors and build a Set of the names
-        final ArrayList<String> authors = mBookSearchBaseModel.getAuthorNames(mAuthorNames);
+        final ArrayList<String> authors = mBookSearchBaseModel.getAuthorNames(mRecentAuthorNames);
         // Now get an adapter based on the combined names
         //noinspection ConstantConditions
         mAuthorAdapter = new ArrayAdapter<>(getContext(),
@@ -186,15 +172,19 @@ public class BookSearchByTextFragment
         mAuthorView.setAdapter(mAuthorAdapter);
     }
 
+    @Override
+    SearchCoordinator.SearchFinishedListener getSearchFinishedListener() {
+        return mSearchFinishedListener;
+    }
+
     private void prepareSearch() {
 
         String authorSearchText = mBookSearchBaseModel.getAuthorSearchText();
         if (mAuthorAdapter.getPosition(authorSearchText) < 0) {
-            // Based on code from filipeximenes we also need to update the adapter here in
-            // case no author or book is added, but we still want to see 'recent' entries.
+            // Always add the current search text to the list of recent searches.
             if (!authorSearchText.isEmpty()) {
                 boolean found = false;
-                for (String s : mAuthorNames) {
+                for (String s : mRecentAuthorNames) {
                     if (s.equalsIgnoreCase(authorSearchText)) {
                         found = true;
                         break;
@@ -202,7 +192,7 @@ public class BookSearchByTextFragment
                 }
                 if (!found) {
                     // Keep a list of names as typed to use when we recreate list
-                    mAuthorNames.add(authorSearchText);
+                    mRecentAuthorNames.add(authorSearchText);
                     // Add to adapter, in case search produces no results
                     mAuthorAdapter.add(authorSearchText);
                 }
@@ -213,21 +203,23 @@ public class BookSearchByTextFragment
     }
 
     @Override
-    SearchCoordinator.SearchFinishedListener getSearchFinishedListener() {
-        return mSearchFinishedListener;
-    }
-
-    @Override
     @CallSuper
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
-
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+        }
+        // first do the common action when the user has saved the data for the book.
         super.onActivityResult(requestCode, resultCode, data);
         // refresh, we could have modified/created Authors while editing
         // (even when the edit was cancelled )
         populateAuthorList();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -236,17 +228,5 @@ public class BookSearchByTextFragment
         mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
         mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
         mBookSearchBaseModel.setPublisherSearchText(mPublisherView.getText().toString().trim());
-    }
-
-    @Override
-    @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR,
-                           mBookSearchBaseModel.getAuthorSearchText());
-        outState.putString(DBDefinitions.KEY_TITLE,
-                           mBookSearchBaseModel.getTitleSearchText());
-        outState.putString(DBDefinitions.KEY_PUBLISHER,
-                           mBookSearchBaseModel.getPublisherSearchText());
     }
 }

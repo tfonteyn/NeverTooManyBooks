@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  */
 public class BookBaseFragmentModel
         extends ViewModel
-        implements HasActivityResultData {
+        implements ActivityResultDataModel {
 
     private final MutableLiveData<Object> mUserMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();

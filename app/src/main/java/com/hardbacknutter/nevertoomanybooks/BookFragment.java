@@ -246,6 +246,10 @@ public class BookFragment
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+        }
+
         switch (requestCode) {
 
             case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:

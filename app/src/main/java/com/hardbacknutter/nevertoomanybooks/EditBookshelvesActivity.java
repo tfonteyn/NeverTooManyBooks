@@ -163,7 +163,6 @@ public class EditBookshelvesActivity
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-
         if (item.getItemId() == R.id.MENU_PURGE_BLNS) {
             Bookshelf selected = mAdapter.getSelected();
             if (selected != null) {
@@ -178,15 +177,13 @@ public class EditBookshelvesActivity
 
 
     private void onCreateContextMenu(final int position) {
-
-        Bookshelf bookshelf = mList.get(position);
-
         Menu menu = MenuPicker.createMenu(this);
         menu.add(Menu.NONE, R.id.MENU_EDIT, MenuHandler.ORDER_EDIT, R.string.menu_edit)
             .setIcon(R.drawable.ic_edit);
         menu.add(Menu.NONE, R.id.MENU_DELETE, MenuHandler.ORDER_DELETE, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
+        Bookshelf bookshelf = mList.get(position);
         String title = bookshelf.getName();
         new MenuPicker<>(this, title, menu, bookshelf, this::onContextItemSelected)
                 .show();

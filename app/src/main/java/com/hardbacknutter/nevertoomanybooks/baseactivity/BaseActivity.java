@@ -380,7 +380,9 @@ public abstract class BaseActivity
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+        }
 
         // generic actions & logging. Anything specific should be done in a child class.
         switch (requestCode) {

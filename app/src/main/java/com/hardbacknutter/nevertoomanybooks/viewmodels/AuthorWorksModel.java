@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 public class AuthorWorksModel
         extends ViewModel
-        implements HasActivityResultData {
+        implements ActivityResultDataModel {
 
     /** Database Access. */
     private DAO mDb;

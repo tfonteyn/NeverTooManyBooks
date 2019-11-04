@@ -32,7 +32,7 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
-public interface HasActivityResultData {
+public interface ActivityResultDataModel {
 
     /**
      * Get the data intent to pass to {@link Activity#setResult}.

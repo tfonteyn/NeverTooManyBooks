@@ -284,7 +284,6 @@ public class BooksOnBookshelf
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Logger.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);
@@ -669,32 +668,16 @@ public class BooksOnBookshelf
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
-
-//        if (BuildConfig.DEBUG) {
-//            if (data != null) {
-//                Bundle extras = data.getExtras();
-//                if (extras != null) {
-//                    if (extras.containsKey(DBDefinitions.KEY_PK_ID)) {
-//                        long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, -1);
-//                        Logger.debug(this, "onActivityResult",
-//                                     "id=" + newId);
-//                    } else {
-//                        Logger.debug(this, "onActivityResult",
-//                                     "data+extras was present, but there was no id");
-//                    }
-//                } else {
-//                    Logger.debug(this, "onActivityResult",
-//                                 "data was present, extras was NULL");
-//                }
-//            }
-//        }
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+        }
 
         switch (requestCode) {
             case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
             case UniqueId.REQ_BOOK_VIEW:
             case UniqueId.REQ_BOOK_EDIT:
             case UniqueId.REQ_BOOK_DUPLICATE:
+            case UniqueId.REQ_BOOK_SEARCH:
             case UniqueId.REQ_AUTHOR_WORKS: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
@@ -712,21 +695,6 @@ public class BooksOnBookshelf
                     if (newId != 0) {
                         mModel.setCurrentPositionedBookId(newId);
                     }
-                }
-                break;
-            }
-            case UniqueId.REQ_BOOK_SEARCH: {
-                if (resultCode == Activity.RESULT_OK) {
-                    // don't enforce having an ID. We might not have found or added anything.
-                    // but if we do, the data will be what EditBookActivity returns.
-                    if (data != null) {
-                        long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
-                        if (newId != 0) {
-                            mModel.setCurrentPositionedBookId(newId);
-                        }
-                    }
-                    // always do a rebuild
-                    mModel.setForceRebuildInOnResume(true);
                 }
                 break;
             }

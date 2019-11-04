@@ -44,7 +44,7 @@ import androidx.lifecycle.ViewModel;
  */
 public class ResultDataModel
         extends ViewModel
-        implements HasActivityResultData {
+        implements ActivityResultDataModel {
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull

@@ -59,9 +59,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
 /**
  * Amazon is now disabled/hidden as it can't work without the proxy from BookCatalogue.
- * <p>
  * FIXME: remove the dependency on that proxy.
- * but how.... seems AWS is dependent/linked to have a website.
+ * https://docs.aws.amazon.com/en_pv/AWSECommerceService/latest/DG/becomingAssociate.html
+ *
  */
 public final class AmazonManager
         implements SearchEngine {
@@ -146,16 +146,6 @@ public final class AmazonManager
         return out.toString().trim();
     }
 
-    /**
-     * This searches the amazon REST site based on a specific isbn.
-     * <p>
-     * https://docs.aws.amazon.com/AWSECommerceService/latest/DG/EX_LookupbyISBN.html
-     * https://docs.aws.amazon.com/AWSECommerceService/latest/DG/becomingAssociate.html#locale
-     * <p>
-     * Search proxies through theagiledirector.com - the service does not support mobile devices...
-     * <br>
-     * <br>{@inheritDoc}
-     */
     @Override
     @NonNull
     @WorkerThread

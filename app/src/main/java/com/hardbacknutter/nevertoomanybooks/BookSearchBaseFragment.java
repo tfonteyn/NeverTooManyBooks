@@ -55,8 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
  * Optionally limit the sites to search on by setting {@link UniqueId#BKEY_SEARCH_SITES}.
  *
  * <strong>IMPORTANT:</strong> do not assume {@link #getView()} is valid.
- * We do NOT have a view when running in scan mode.
- * Hence, calls for example to {@link UserMessage#show} <strong>must</strong> use the Activity.
+ * We might not have a view when running in scan mode.
  */
 public abstract class BookSearchBaseFragment
         extends Fragment {
@@ -88,7 +87,7 @@ public abstract class BookSearchBaseFragment
 
         //noinspection ConstantConditions
         mBookSearchBaseModel = new ViewModelProvider(getActivity()).get(BookSearchBaseModel.class);
-        mBookSearchBaseModel.init(requireArguments(), savedInstanceState);
+        mBookSearchBaseModel.init(requireArguments());
 
         // Check general network connectivity. If none, warn the user.
         if (NetworkUtils.networkUnavailable()) {
@@ -225,7 +224,11 @@ public abstract class BookSearchBaseFragment
             Logger.error(getContext(), this, e);
             //noinspection ConstantConditions
             UserMessage.show(getActivity(), R.string.error_search_failed);
+        }
 
+        Intent resultData = mBookSearchBaseModel.getActivityResultData();
+        if (resultData.getExtras() != null) {
+            mHostActivity.setResult(Activity.RESULT_OK, resultData);
         }
         mHostActivity.finish();
         return false;
@@ -236,7 +239,9 @@ public abstract class BookSearchBaseFragment
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+        }
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
             case UniqueId.REQ_PREFERRED_SEARCH_SITES: {
@@ -252,8 +257,10 @@ public abstract class BookSearchBaseFragment
             }
             case UniqueId.REQ_BOOK_EDIT: {
                 if (resultCode == Activity.RESULT_OK) {
-                    // Created a book; save the intent
-                    mBookSearchBaseModel.setLastBookData(data);
+                    // Created a book? Save the intent
+                    if (data != null) {
+                        mBookSearchBaseModel.setLastBookData(data);
+                    }
                 }
                 break;
             }

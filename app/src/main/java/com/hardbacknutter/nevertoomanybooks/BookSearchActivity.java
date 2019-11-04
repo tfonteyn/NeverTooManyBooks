@@ -37,6 +37,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
 
@@ -90,6 +91,9 @@ public class BookSearchActivity
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+        }
 
         if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
@@ -107,9 +111,9 @@ public class BookSearchActivity
     @Override
     public void onBackPressed() {
         BookSearchBaseModel model = new ViewModelProvider(this).get(BookSearchBaseModel.class);
-        Intent lastBookData = model.getLastBookData();
-        if (lastBookData != null) {
-            setResult(Activity.RESULT_OK, lastBookData);
+        Intent resultData = model.getActivityResultData();
+        if (resultData.getExtras() != null) {
+            setResult(Activity.RESULT_OK, resultData);
         }
         super.onBackPressed();
     }
