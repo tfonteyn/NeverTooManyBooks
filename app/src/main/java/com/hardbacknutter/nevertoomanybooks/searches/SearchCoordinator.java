@@ -96,11 +96,16 @@ public class SearchCoordinator {
      */
     @NonNull
     private final TaskManager mTaskManager;
-    /** Output from search threads. */
+    /**
+     * Results from the search tasks.
+     * <p>
+     * key: site id (== task id)
+     */
     @SuppressLint("UseSparseArrays")
     @NonNull
     private final Map<Integer, Bundle> mSearchResults =
             Collections.synchronizedMap(new HashMap<>());
+
     /** Controller instance (strong reference) for this object. */
     @SuppressWarnings("FieldCanBeLocal")
     private final SearchCoordinatorController mController = new SearchCoordinatorController() {
@@ -116,9 +121,8 @@ public class SearchCoordinator {
             return SearchCoordinator.this;
         }
     };
-    /** Bitmask with sites to search on. */
-    @SearchSites.Id
-    private int mSearchSites;
+    /** Sites to search on. */
+    private ArrayList<Site> mSearchSites;
     /** Accumulated book data. */
     private Bundle mBookData;
     /** Flag indicating searches will be non-concurrent title/author found via ASIN. */
@@ -234,7 +238,7 @@ public class SearchCoordinator {
     /**
      * Start a search.
      *
-     * @param searchSites    sites to search, see {@link SearchSites#SEARCH_FLAG_MASK}
+     * @param searchSites    sites to search
      *                       <p>
      *                       ONE of these three parameters must be !.isEmpty
      * @param isbn           to search for (can be empty)
@@ -243,7 +247,7 @@ public class SearchCoordinator {
      * @param publisher      to search for (can be empty)
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
-    public void search(@SearchSites.Id final int searchSites,
+    public void search(@NonNull final ArrayList<Site> searchSites,
                        @NonNull final String isbn,
                        @NonNull final String author,
                        @NonNull final String title,
@@ -270,7 +274,7 @@ public class SearchCoordinator {
         }
 
         // Developer sanity check
-        if ((searchSites & SearchSites.SEARCH_FLAG_MASK) == 0) {
+        if ((SearchSites.getEnabledSites(searchSites) & SearchSites.SEARCH_FLAG_MASK) == 0) {
             throw new IllegalArgumentException("Must specify at least one source to use");
         }
 
@@ -284,7 +288,6 @@ public class SearchCoordinator {
                                                + ", title=" + title);
         }
 
-        // Save the flags
         mSearchSites = searchSites;
 
         // Save the input and initialize
@@ -324,10 +327,12 @@ public class SearchCoordinator {
                 } else if (SearchSites.ENABLE_AMAZON_AWS) {
                     // Assume it's an ASIN, and just search Amazon
                     mSearchingAsin = true;
-                    tasksStarted = startSearches(SearchSites.AMAZON);
+                    ArrayList<Site> amazon = new ArrayList<>();
+                    amazon.add(Site.newSite(SearchSites.AMAZON));
+                    tasksStarted = startSearches(amazon);
                 }
             } else {
-                // Run one at a time, startNext() defined the order.
+                // Run one at a time until we find an ISBN.
                 mWaitingForIsbn = true;
                 tasksStarted = startNext();
             }
@@ -351,12 +356,9 @@ public class SearchCoordinator {
      * @return {@code true} if a search was started, {@code false} if not
      */
     private boolean startNext() {
-        // Get ALL sites, as the local mSearchSites overrides the global.
-        // Loop searches in priority order.
-        for (Site site : SearchSites.getSites()) {
-            // If this search includes the source, check it
-            if ((mSearchSites & site.id) != 0) {
-                // If the source has not been searched, search it
+        for (Site site : mSearchSites) {
+            if (site.isEnabled()) {
+                // If the site has not been searched yet, search it
                 if (!mSearchResults.containsKey(site.id)) {
                     return startOneSearch(site);
                 }
@@ -375,16 +377,12 @@ public class SearchCoordinator {
      *
      * @return {@code true} if at least one search was started, {@code false} if none
      */
-    private boolean startSearches(@SearchSites.Id final int currentSearchSites) {
+    private boolean startSearches(@NonNull final ArrayList<Site> currentSearchSites) {
         boolean atLeastOneStarted = false;
-        // Get ALL sites, as the local mSearchSites overrides the global.
-        // Loop searches in priority order.
-        for (Site site : SearchSites.getSites()) {
-            // If this search includes the source, check it
-            if ((currentSearchSites & site.id) != 0) {
-                // If the source has not been searched, search it
+        for (Site site : currentSearchSites) {
+            if (site.isEnabled()) {
+                // If the site has not been searched yet, search it
                 if (!mSearchResults.containsKey(site.id)) {
-                    // Run it now
                     if (startOneSearch(site)) {
                         atLeastOneStarted = true;
                     }
@@ -521,27 +519,28 @@ public class SearchCoordinator {
      * Combine all the data and create a book or display an error.
      * <p>
      * 2019-07-12: removed the sending of user messages.
-     * If a single book as searched, ok... but for multiple searches they only confuse the user.
+     * If a single book was searched, ok... but for multiple searches they only confuse the user.
      * => moving the check (if applicable) to the receiver of the results.
      */
     private void sendResults() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
             Logger.debug(this, "sendResults", "All searches done, preparing results");
         }
+
         // This list will be the actual order of the result we apply, based on the
         // actual results and the default order.
-        final List<Integer> results = new ArrayList<>();
+        final List<Integer> sites = new ArrayList<>();
 
         if (mHasValidIsbn) {
             // If ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
             final List<Integer> uncertain = new ArrayList<>();
-            for (Site site : SearchSites.getSitesByDataReliability()) {
+            for (Site site : SearchSites.getReliabilityOrder()) {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);
                     if (bookData != null && bookData.containsKey(DBDefinitions.KEY_ISBN)) {
                         if (ISBN.matches(mIsbn, bookData.getString(DBDefinitions.KEY_ISBN), true)) {
-                            results.add(site.id);
+                            sites.add(site.id);
                         }
                     } else {
                         uncertain.add(site.id);
@@ -549,18 +548,20 @@ public class SearchCoordinator {
                 }
             }
             // good results come first, less reliable ones last in the list.
-            results.addAll(uncertain);
-            // Add the passed ISBN first; avoid overwriting
+            sites.addAll(uncertain);
+            // Add the passed ISBN first;
+            // avoids overwriting with potentially different isbn from the sites
             mBookData.putString(DBDefinitions.KEY_ISBN, mIsbn);
+
         } else {
             // If ISBN was not passed, then just use the default order
-            for (Site site : SearchSites.getSitesByDataReliability()) {
-                results.add(site.id);
+            for (Site site : SearchSites.getReliabilityOrder()) {
+                sites.add(site.id);
             }
         }
 
         // Merge the data we have. We do this in a fixed order rather than as the threads finish.
-        for (int siteId : results) {
+        for (int siteId : sites) {
             accumulateAllData(siteId);
         }
 
@@ -612,14 +613,14 @@ public class SearchCoordinator {
      * <p>
      * NEWTHINGS: if you add a new Search task that adds non-string based data, handle that here.
      *
-     * @param searchId Source
+     * @param siteId site
      */
-    private void accumulateAllData(final int searchId) {
-        // See if we got data from this source
-        if (!mSearchResults.containsKey(searchId)) {
+    private void accumulateAllData(final int siteId) {
+        // See if we got data from this site
+        if (!mSearchResults.containsKey(siteId)) {
             return;
         }
-        Bundle bookData = mSearchResults.get(searchId);
+        Bundle bookData = mSearchResults.get(siteId);
 
         // See if we REALLY got data from this source
         if (bookData == null || bookData.isEmpty()) {
@@ -628,7 +629,7 @@ public class SearchCoordinator {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
             Logger.debug(this, "accumulateAllData",
-                         "Processing data from search engine: id=" + searchId);
+                         "Processing data from search engine: id=" + siteId);
         }
         for (String key : bookData.keySet()) {
             if (DBDefinitions.KEY_DATE_PUBLISHED.equals(key)

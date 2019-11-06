@@ -27,21 +27,21 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-
 /**
  * Represents a site we will search.
  * Acts as a container for the site's {@link SearchEngine}.
- *
+ * <p>
  * The class {@link SearchSites} defines and links up all actual sites and their search engines.
  */
 public final class Site
@@ -62,7 +62,8 @@ public final class Site
             };
 
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "search.site.";
+    @VisibleForTesting
+    public static final String PREF_PREFIX = "search.site.";
 
     /** Internal ID, bitmask based, not stored in prefs. */
     @SearchSites.Id
@@ -73,7 +74,7 @@ public final class Site
     private final String mName;
 
     /** user preference: enable/disable this site. */
-    private boolean mEnabled;
+    private boolean mEnabled = true;
 
     /** the class which implements the search engine for a specific site. */
     private SearchEngine mSearchEngine;
@@ -82,18 +83,14 @@ public final class Site
     /**
      * Constructor. Use static method instead.
      *
-     * @param id          Internal ID, bitmask based
-     * @param name        user visible name
-     * @param enabled     flag
+     * @param id   Internal ID, bitmask based
+     * @param name user visible name
      */
     private Site(@SearchSites.Id final int id,
-                 @NonNull final String name,
-                 final boolean enabled) {
+                 @NonNull final String name) {
 
         this.id = id;
         mName = name;
-        mEnabled = enabled;
-        loadFromPrefs(PreferenceManager.getDefaultSharedPreferences(App.getAppContext()));
     }
 
     /**
@@ -113,28 +110,49 @@ public final class Site
      * Create the Site with whatever suitable default values.
      * If previously stored to SharedPreferences, the stored values will be used instead.
      *
-     * @param id          Internal ID, bitmask based
-     * @param enabled     flag
+     * @param context          Current context
+     * @param id               Internal ID, bitmask based
+     * @param enabledByDefault flag
      */
-    static Site newSite(@SearchSites.Id final int id,
-                        final boolean enabled) {
-        return new Site(id, SearchSites.getName(id), enabled);
+    static Site newSite(@NonNull final Context context,
+                        @SearchSites.Id final int id,
+                        final boolean loadPrefs,
+                        final boolean enabledByDefault) {
+        Site site = new Site(id, SearchSites.getName(id));
+        if (loadPrefs) {
+            site.loadFromPrefs(context);
+        } else {
+            site.setEnabled(enabledByDefault);
+        }
+        return site;
+    }
+
+    static Site newSite(@SearchSites.Id final int id) {
+        return new Site(id, SearchSites.getName(id));
     }
 
     /**
      * Create the Site with whatever suitable default values.
      * If previously stored to SharedPreferences, the stored values will be used instead.
      *
-     * @param id       Internal ID, bitmask based
-     * @param enabled  flag
+     * @param context          Current context
+     * @param id               Internal ID, bitmask based
+     * @param enabledByDefault flag
      */
-    static Site newCoverSite(@SearchSites.Id final int id,
-                             final boolean enabled) {
+    static Site newCoverSite(@NonNull final Context context,
+                             @SearchSites.Id final int id,
+                             final boolean loadPrefs,
+                             final boolean enabledByDefault) {
 
         // Reminder: the name is used for preferences... so the suffix here must be hardcoded.
         String name = SearchSites.getName(id) + "-Covers";
-        // by default, reliability == order.
-        return new Site(id, name, enabled);
+        Site site = new Site(id, name);
+        if (loadPrefs) {
+            site.loadFromPrefs(context);
+        } else {
+            site.setEnabled(enabledByDefault);
+        }
+        return site;
     }
 
     /**
@@ -150,9 +168,10 @@ public final class Site
         return mSearchEngine;
     }
 
-    private void loadFromPrefs(@NonNull final SharedPreferences prefs) {
+    private void loadFromPrefs(@NonNull final Context context) {
         String lcName = PREF_PREFIX + mName.toLowerCase(Locale.getDefault()) + '.';
-        mEnabled = prefs.getBoolean(lcName + "enabled", mEnabled);
+        mEnabled = PreferenceManager.getDefaultSharedPreferences(context)
+                                    .getBoolean(lcName + "enabled", mEnabled);
     }
 
     void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
@@ -174,6 +193,16 @@ public final class Site
                               final int flags) {
         dest.writeInt(id);
         dest.writeInt(mEnabled ? 1 : 0);
+    }
+
+    @NonNull
+    Site getClone() {
+        Parcel parcel = Parcel.obtain();
+        writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        Site site = CREATOR.createFromParcel(parcel);
+        parcel.recycle();
+        return site;
     }
 
     @NonNull

@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -43,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
 public class BookSearchBaseModel
         extends ViewModel
@@ -52,9 +54,8 @@ public class BookSearchBaseModel
     private final Intent mResultData = new Intent();
     /** Database Access. */
     private DAO mDb;
-    /** Bitmask with sites to search on. */
-    @SearchSites.Id
-    private int mSearchSites;
+    /** Sites to search on. */
+    private ArrayList<Site> mSearchSites;
     /** Objects managing current search. */
     private long mSearchCoordinatorId;
     @NonNull
@@ -77,9 +78,11 @@ public class BookSearchBaseModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param context Current context
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final Context context,
+                     @NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO();
 
@@ -88,8 +91,8 @@ public class BookSearchBaseModel
             mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
             mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
 
-            mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES,
-                                       SearchSites.getEnabledSitesAsBitmask());
+            // use global preference.
+            mSearchSites = SearchSites.getSites(context, SearchSites.ListType.Data);
         }
     }
 
@@ -102,13 +105,32 @@ public class BookSearchBaseModel
         return mDb;
     }
 
-    @SearchSites.Id
-    public int getSearchSites() {
+    /**
+     * Get the <strong>current</strong> preferred search sites.
+     *
+     * @return list
+     */
+    @NonNull
+    public ArrayList<Site> getSearchSites() {
         return mSearchSites;
     }
 
-    public void setSearchSites(@SearchSites.Id final int searchSites) {
+    /**
+     * Override the initial list.
+     *
+     * @param searchSites to use temporarily
+     */
+    public void setSearchSites(@NonNull final ArrayList<Site> searchSites) {
         mSearchSites = searchSites;
+    }
+
+    /**
+     * Get the <strong>current</strong> preferred search sites.
+     *
+     * @return bitmask
+     */
+    public int getEnabledSearchSites() {
+        return SearchSites.getEnabledSites(mSearchSites);
     }
 
     public long getSearchCoordinatorId() {

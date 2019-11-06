@@ -255,6 +255,7 @@ public class EditBookSeriesActivity
             Bundle args = requireArguments();
             mSeries = args.getParcelable(DBDefinitions.KEY_FK_SERIES);
             Objects.requireNonNull(mSeries, "Series must be passed in args");
+
             if (savedInstanceState == null) {
                 mSeriesName = mSeries.getTitle();
                 mSeriesIsComplete = mSeries.isComplete();

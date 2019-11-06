@@ -134,7 +134,9 @@ public class CoverBrowserFragment
         mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_MEDIUM);
 
         mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
-        mModel.init(requireArguments());
+        // ENHANCE: pass in SearchAdminModel.BKEY_SEARCH_SITES_COVERS / set it on the fly.
+        //noinspection ConstantConditions
+        mModel.init(getContext(), requireArguments());
 
         mModel.getEditions().observe(this, this::initGallery);
         mModel.getGalleryImage().observe(this, this::setGalleryImage);

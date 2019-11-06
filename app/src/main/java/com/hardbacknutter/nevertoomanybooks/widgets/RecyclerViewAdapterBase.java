@@ -101,16 +101,9 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
         if (holder.mDeleteButton != null) {
             holder.mDeleteButton.setOnClickListener(v -> {
                 int pos = holder.getAdapterPosition();
-                // 2019-09-25: this resulted from the KBNL site returning a ";"
-                // as the author name. We need to guard against this kind of issue
-                // so we check on NO_POSITION.
-                //  java.lang.ArrayIndexOutOfBoundsException: length=3; index=-1
-                //  at java.util.ArrayList.get(ArrayList.java:439)
-                //  at ...RecyclerViewAdapterBase.getItem(RecyclerViewAdapterBase.java:128)
-                //  at ...RecyclerViewAdapterBase.lambda$onBindViewHolder$0$RecyclerViewAdapterBase(RecyclerViewAdapterBase.java:104)
-                //  at ...-$$Lambda$RecyclerViewAdapterBase$Wcbn3D1mbbC41rsUlSURIXWMu-E.onClick(Unknown Source:4)
+                // 2019-09-25: yes, we CAN (and did) get a NO_POSITION value here. So check it!
                 if (pos == RecyclerView.NO_POSITION) {
-                    // NO_POSITION was received, don't touch the item list, but update the screen.
+                    // don't touch the item list, but update the screen.
                     notifyDataSetChanged();
                 } else {
                     // situation normal.

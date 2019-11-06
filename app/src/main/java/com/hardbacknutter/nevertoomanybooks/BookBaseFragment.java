@@ -305,6 +305,14 @@ public abstract class BookBaseFragment
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugExit(this, "onPause");
+        }
+    }
+
+    @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         Book book = mBookModel.getBook();

@@ -263,7 +263,9 @@ public class EditBookAuthorsActivity
 
         /** Fragment manager tag. */
         static final String TAG = "EditBookAuthorDialogFragment";
-
+        /** Key: type. */
+        @SuppressLint("UseSparseArrays")
+        private final Map<Integer, CompoundButton> mTypeButtons = new HashMap<>();
         /** Database Access. */
         protected DAO mDb;
         WeakReference<BookChangedListener> mBookChangedListener;
@@ -271,13 +273,8 @@ public class EditBookAuthorsActivity
         private AutoCompleteTextView mFamilyNameView;
         private AutoCompleteTextView mGivenNamesView;
         private Checkable mIsCompleteView;
-
         /** Enable or disable the type buttons. */
         private CompoundButton mUseTypeBtn;
-        /** Key: type. */
-        @SuppressLint("UseSparseArrays")
-        private final Map<Integer, CompoundButton> mTypeButtons = new HashMap<>();
-
         /** The Author we're editing. */
         private Author mAuthor;
         /** Current edit. */
@@ -325,8 +322,9 @@ public class EditBookAuthorsActivity
             mAuthorTypeIsUsed = App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE);
 
             Bundle args = requireArguments();
-            mAuthor = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR),
-                                             "Author must be passed in args");
+            mAuthor = args.getParcelable(DBDefinitions.KEY_FK_AUTHOR);
+            Objects.requireNonNull(mAuthor, "Author must be passed in args");
+
             if (savedInstanceState == null) {
                 mFamilyName = mAuthor.getFamilyName();
                 mGivenNames = mAuthor.getGivenNames();

@@ -109,10 +109,12 @@ public class CheckListDialogFragment<T>
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDestinationFieldId = requireArguments().getInt(UniqueId.BKEY_FIELD_ID);
+        Bundle args = requireArguments();
+        mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
 
-        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
-        mList = Objects.requireNonNull(currentArgs.getParcelableArrayList(BKEY_CHECK_LIST));
+        args = savedInstanceState != null ? savedInstanceState : args;
+        mList = args.getParcelableArrayList(BKEY_CHECK_LIST);
+        Objects.requireNonNull(mList, "Checklist must be passed in args");
     }
 
     @NonNull

@@ -38,48 +38,37 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
+/**
+ * Handles the order of sites to search, and the individual site being enabled or not.
+ * <p>
+ * This fragment does not (need to) know which list it's handling
+ * nor if it should be persisted or not. All this is handled in {@link SearchAdminModel}.
+ */
 public class SearchOrderFragment
         extends Fragment {
 
-    /** Fragment manager tag. */
-    public static final String TAG = "SearchOrderFragment";
-
-    private ArrayList<Site> mList;
+    @SuppressWarnings("FieldCanBeLocal")
     private SearchSiteListAdapter mListAdapter;
     private RecyclerView mListView;
     private ItemTouchHelper mItemTouchHelper;
 
-    private SearchAdminActivity mHostActivity;
-
-    private final SimpleAdapterDataObserver mAdapterDataObserver = new SimpleAdapterDataObserver() {
-        @Override
-        public void onChanged() {
-            mHostActivity.setDirty(true);
-        }
-    };
-
-    @Override
-    public void onAttach(@NonNull final Context context) {
-        super.onAttach(context);
-        mHostActivity = (SearchAdminActivity) context;
-    }
+    @SuppressWarnings("FieldCanBeLocal")
+    private SearchAdminModel mModel;
 
     @Override
     @Nullable
@@ -96,47 +85,25 @@ public class SearchOrderFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mList = requireArguments().getParcelableArrayList(SearchSites.BKEY_SEARCH_SITES);
+        //noinspection ConstantConditions
+        mModel = new ViewModelProvider(getActivity()).get(SearchAdminModel.class);
+        //noinspection ConstantConditions
+        mModel.init(getContext(), requireArguments());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(linearLayoutManager);
-        //noinspection ConstantConditions
         mListView.addItemDecoration(
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
-        mListAdapter = new SearchSiteListAdapter(getContext(), mList,
+        mListAdapter = new SearchSiteListAdapter(getContext(), mModel.getList(),
                                                  vh -> mItemTouchHelper.startDrag(vh));
-        // any change done in the adapter will set the data 'dirty'
-        // if changing the list externally, make sure to always notify the adapter.
-        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mListView.setAdapter(mListAdapter);
 
         SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
-    }
-
-    /**
-     * Get the list if this fragment has been displayed.
-     *
-     * @return the list or or {@code null} if not loaded
-     */
-    @Nullable
-    public ArrayList<Site> getList() {
-        return mList;
-    }
-
-    /**
-     * Replace the current list.
-     *
-     * @param list new list to display.
-     */
-    public void setList(@NonNull final ArrayList<Site> list) {
-        mList.clear();
-        mList.addAll(list);
-        mListAdapter.notifyDataSetChanged();
     }
 
     private static class SearchSiteListAdapter
@@ -161,7 +128,7 @@ public class SearchOrderFragment
                                          final int viewType) {
 
             View view = getLayoutInflater()
-                                .inflate(R.layout.row_edit_searchsite, parent, false);
+                    .inflate(R.layout.row_edit_searchsite, parent, false);
             return new Holder(view);
         }
 

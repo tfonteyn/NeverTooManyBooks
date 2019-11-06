@@ -40,18 +40,16 @@ import android.view.ViewGroup;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
@@ -84,15 +82,15 @@ public class EditBookFragment
     @SuppressWarnings("unused")
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
-    private AppCompatActivity mHostActivity;
+    private FragmentActivity mHostActivity;
 
-    private ViewPager mViewPager;
-    private ViewPagerAdapter mPagerAdapter;
+    private ViewPager2 mViewPager;
+    private TabAdapter mTabAdapter;
 
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        mHostActivity = (AppCompatActivity) context;
+        mHostActivity = (FragmentActivity) context;
     }
 
     @Override
@@ -119,19 +117,9 @@ public class EditBookFragment
             showTab = TAB_EDIT;
         }
 
-        FragmentManager fm = getChildFragmentManager();
-        mPagerAdapter = new ViewPagerAdapter(fm);
-        // add them in order! i.e. in the order the TAB_* constants are defined.
-        mPagerAdapter.add(new FragmentHolder(fm, EditBookFieldsFragment.TAG,
-                                             getString(R.string.tab_lbl_details)));
-        mPagerAdapter.add(new FragmentHolder(fm, EditBookPublicationFragment.TAG,
-                                             getString(R.string.tab_lbl_publication)));
-        mPagerAdapter.add(new FragmentHolder(fm, EditBookNotesFragment.TAG,
-                                             getString(R.string.tab_lbl_notes)));
-        mPagerAdapter.add(new FragmentHolder(fm, EditBookTocFragment.TAG,
-                                             getString(R.string.tab_lbl_content)));
+        mTabAdapter = new TabAdapter(this);
 
-        mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.setAdapter(mTabAdapter);
 
         // The FAB lives in the activity.
         FloatingActionButton fabButton = mHostActivity.findViewById(R.id.fab);
@@ -142,9 +130,12 @@ public class EditBookFragment
         // The tab bar lives in the activity layout inside the AppBarLayout!
         TabLayout tabLayout = mHostActivity.findViewById(R.id.tab_panel);
 
-        tabLayout.setupWithViewPager(mViewPager);
+        new TabLayoutMediator(tabLayout, mViewPager, (tab, position) ->
+                tab.setText(getString(mTabAdapter.getTabTitle(position))))
+                .attach();
+
         // sanity check
-        if (showTab > mPagerAdapter.getCount()) {
+        if (showTab > mTabAdapter.getItemCount()) {
             throw new UnexpectedValueException(showTab);
         }
         mViewPager.setCurrentItem(showTab);
@@ -186,12 +177,12 @@ public class EditBookFragment
      */
     private void doSave() {
 
-        // ask any fragment that has not gone into 'onPause' to add its fields.
-        // We could just ask the 'current' fragment which would be enough.
-        // Call it an experiment...
-        for (int p = 0; p < mPagerAdapter.getCount(); p++) {
-            Fragment frag = mPagerAdapter.getItem(p);
+        // Ask any fragment that has not gone into 'onPause' to add its fields.
+        // There should only be the one fragment, i.e. the front/current fragment.
+        // Paranoia...
+        for (Fragment frag : getChildFragmentManager().getFragments()) {
             if (frag.isResumed()) {
+                //Logger.debug(this,"doSave", frag);
                 ((DataEditor) frag).saveFields();
             }
         }
@@ -262,95 +253,57 @@ public class EditBookFragment
         outState.putInt(REQUEST_BKEY_TAB, mViewPager.getCurrentItem());
     }
 
-    private static class ViewPagerAdapter
-            extends FragmentPagerAdapter {
+    private static class TabAdapter
+            extends FragmentStateAdapter {
 
-        private final List<FragmentHolder> mFragmentList = new ArrayList<>(5);
-
-        /**
-         * Constructor.
-         *
-         * @param fm FragmentManager
-         */
-        ViewPagerAdapter(@NonNull final FragmentManager fm) {
-            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        TabAdapter(@NonNull final Fragment container) {
+            super(container);
         }
 
         @Override
-        @NonNull
-        public Fragment getItem(final int position) {
-            return mFragmentList.get(position).getFragment();
+        public int getItemCount() {
+            return 4;
         }
 
+        @NonNull
         @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
+        public Fragment createFragment(final int position) {
+            switch (position) {
+                case 0:
+                    return new EditBookFieldsFragment();
 
-        @Override
-        @NonNull
-        public CharSequence getPageTitle(final int position) {
-            return mFragmentList.get(position).getPageTitle();
-        }
+                case 1:
+                    return new EditBookPublicationFragment();
 
-        void add(@NonNull final FragmentHolder fragmentHolder) {
-            mFragmentList.add(fragmentHolder);
-        }
-    }
+                case 2:
+                    return new EditBookNotesFragment();
 
-    private static class FragmentHolder {
+                case 3:
+                    return new EditBookTocFragment();
 
-        @NonNull
-        private final String mTitle;
-        @NonNull
-        private Fragment mFragment;
-
-        /**
-         * Constructor.
-         *
-         * @param fm    FragmentManager
-         * @param tag   of the fragment to create
-         * @param title the title/label to put on the tab
-         */
-        FragmentHolder(@NonNull final FragmentManager fm,
-                       @NonNull final String tag,
-                       @NonNull final String title) {
-            mTitle = title;
-
-            //noinspection ConstantConditions
-            mFragment = fm.findFragmentByTag(tag);
-            if (mFragment == null) {
-                switch (tag) {
-                    case EditBookFieldsFragment.TAG:
-                        mFragment = new EditBookFieldsFragment();
-                        break;
-
-                    case EditBookPublicationFragment.TAG:
-                        mFragment = new EditBookPublicationFragment();
-                        break;
-
-                    case EditBookNotesFragment.TAG:
-                        mFragment = new EditBookNotesFragment();
-                        break;
-
-                    case EditBookTocFragment.TAG:
-                        mFragment = new EditBookTocFragment();
-                        break;
-
-                    default:
-                        throw new UnexpectedValueException(tag);
-                }
+                default:
+                    throw new UnexpectedValueException(position);
             }
         }
 
-        @NonNull
-        String getPageTitle() {
-            return mTitle;
-        }
+        @StringRes
+        int getTabTitle(final int position) {
+            switch (position) {
+                case 0:
+                    return R.string.tab_lbl_details;
 
-        @NonNull
-        Fragment getFragment() {
-            return mFragment;
+                case 1:
+                    return R.string.tab_lbl_publication;
+
+                case 2:
+                    return R.string.tab_lbl_notes;
+
+                case 3:
+                    return R.string.tab_lbl_content;
+
+                default:
+                    throw new UnexpectedValueException(position);
+            }
         }
     }
 }

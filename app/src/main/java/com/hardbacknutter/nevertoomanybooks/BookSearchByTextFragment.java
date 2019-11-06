@@ -149,8 +149,9 @@ public class BookSearchByTextFragment
         });
 
         if (savedInstanceState == null) {
-            SearchSites.alertRegistrationBeneficial(getContext(), "search",
-                                                    mBookSearchBaseModel.getSearchSites());
+            SearchSites.alertRegistrationBeneficial(
+                    getContext(), "search",
+                    mBookSearchBaseModel.getEnabledSearchSites());
 
             TipManager.display(getContext(), R.string.tip_book_search_by_text, null);
         }

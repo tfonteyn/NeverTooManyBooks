@@ -48,9 +48,9 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -136,12 +136,12 @@ public class BookFragment
     private FlattenedBooklistModel mFlattenedBooklistModel;
 
     /** Hosting activity to handle FAB/result/touches. */
-    private AppCompatActivity mHostActivity;
+    private FragmentActivity mHostActivity;
 
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        mHostActivity = (AppCompatActivity) context;
+        mHostActivity = (FragmentActivity) context;
     }
 
     @Override
@@ -182,21 +182,13 @@ public class BookFragment
         return view;
     }
 
-    /**
-     * Has no specific Arguments or savedInstanceState.
-     * <ul>All storage interaction is done via:
-     * <li>parent / model for loading the book</li>
-     * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
-     * </ul>
-     * {@inheritDoc}
-     */
     @SuppressLint("ClickableViewAccessibility")
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         // the parent will tell the model to load the Book.
         // After that it takes care of initialising the Fields.
-        // Transferring data from Book to fields is done in onResume.
+        // Transferring data from Book to fields is done in onResume for all child fragments.
         super.onActivityCreated(savedInstanceState);
 
         mFlattenedBooklistModel = new ViewModelProvider(this).get(FlattenedBooklistModel.class);
@@ -208,7 +200,7 @@ public class BookFragment
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> startEditBook());
 
-        // ENHANCE: could probably be replaced by a ViewPager
+        // ENHANCE: should be replaced by a ViewPager2/FragmentStateAdapter
         // enable the listener for flings
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
         mOnTouchListener = (v, event) -> mGestureDetector.onTouchEvent(event);

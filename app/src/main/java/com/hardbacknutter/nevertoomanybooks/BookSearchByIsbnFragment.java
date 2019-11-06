@@ -198,8 +198,9 @@ public class BookSearchByIsbnFragment
             if (savedInstanceState == null) {
                 //FIXME: find a solution for showing reg dialog AND starting a scan
                 //noinspection ConstantConditions
-                SearchSites.alertRegistrationBeneficial(getContext(), "search",
-                                                        mBookSearchBaseModel.getSearchSites());
+                SearchSites.alertRegistrationBeneficial(
+                        getContext(), "search",
+                        mBookSearchBaseModel.getEnabledSearchSites());
             }
         }
 
@@ -256,6 +257,8 @@ public class BookSearchByIsbnFragment
             prepareSearch(isbn);
         });
 
+        //URGENT: provide a 10-13 converter button. and in StripInfo add a search 'the other isbn'
+
         // init the isbn edit field if needed (avoid initializing twice)
         if (mAllowAsin) {
             //noinspection ConstantConditions
@@ -282,7 +285,8 @@ public class BookSearchByIsbnFragment
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         // if Amazon is enabled, we show the ASIN option; else make sure it's disabled.
-        boolean amazon = (mBookSearchBaseModel.getSearchSites() & SearchSites.AMAZON) != 0;
+        boolean amazon = (mBookSearchBaseModel.getEnabledSearchSites()
+                          & SearchSites.AMAZON) != 0;
         MenuItem asin = menu.findItem(R.id.MENU_PREFS_ASIN);
         asin.setVisible(amazon);
         if (!amazon) {

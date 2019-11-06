@@ -57,6 +57,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
@@ -282,14 +283,6 @@ public class EditBookTocFragment
         mListView.setHasFixedSize(true);
     }
 
-    /**
-     * Has no specific Arguments or savedInstanceState.
-     * <ul>All storage interaction is done via:
-     * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
-     * <li>{@link #onSaveFieldsToBook} from base class onPause</li>
-     * </ul>
-     * {@inheritDoc}
-     */
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
@@ -517,8 +510,10 @@ public class EditBookTocFragment
             super.onCreate(savedInstanceState);
 
             Bundle args = requireArguments();
-            mTocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);
             mTocEntries = args.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+            Objects.requireNonNull(mTocEntries, "TocEntries must be passed in args");
+
+            mTocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);
             mHasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS);
         }
 

@@ -511,7 +511,7 @@ public class CropImageActivity
         } else {
             Intent data = new Intent(mOptionOutputUri.toString());
             try (OutputStream outputStream = getContentResolver()
-                                                     .openOutputStream(mOptionOutputUri)) {
+                    .openOutputStream(mOptionOutputUri)) {
                 if (outputStream != null) {
                     croppedImage.compress(defaultCompressFormat, 75, outputStream);
                 }
@@ -535,17 +535,19 @@ public class CropImageActivity
     @StringRes
     private int checkStorage() {
 
-        if (StorageUtils.isExternalStorageMounted()) {
-            long freeSpace = StorageUtils.getSharedStorageFreeSpace(this);
-            if (freeSpace != StorageUtils.ERROR_CANNOT_STAT) {
-                // make an educated guess how many pics we can store.
-                if (freeSpace / ESTIMATED_PICTURE_SIZE < 1) {
-                    return R.string.error_storage_no_space_left;
-                }
-            }
+        if (!StorageUtils.isExternalStorageMounted()) {
             return R.string.error_storage_not_accessible;
         }
 
+        long freeSpace = StorageUtils.getSharedStorageFreeSpace(this);
+        if (freeSpace != StorageUtils.ERROR_CANNOT_STAT) {
+            // make an educated guess how many pics we can store.
+            if (freeSpace / ESTIMATED_PICTURE_SIZE < 1) {
+                return R.string.error_storage_no_space_left;
+            }
+        }
+
+        // all ok
         return 0;
     }
 }

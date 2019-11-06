@@ -110,9 +110,9 @@ public class EditAuthorDialogFragment
 
         mDb = new DAO();
 
-        Bundle args = requireArguments();
-        mAuthor = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR),
-                                         "Author must be passed in args");
+        mAuthor = requireArguments().getParcelable(DBDefinitions.KEY_FK_AUTHOR);
+        Objects.requireNonNull(mAuthor, "Author must be passed in args");
+
         if (savedInstanceState == null) {
             mFamilyName = mAuthor.getFamilyName();
             mGivenNames = mAuthor.getGivenNames();

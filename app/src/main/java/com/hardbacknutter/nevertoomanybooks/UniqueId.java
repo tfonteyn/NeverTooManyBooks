@@ -113,14 +113,6 @@ public final class UniqueId {
     public static final String BKEY_SEARCH_SERIES_TITLE = "searchSeriesTitle";
 
     /**
-     * Search site flags as in {@link com.hardbacknutter.nevertoomanybooks.searches.SearchSites}.
-     * <p>
-     * <br>type: {@code int} (bitmask)
-     */
-    public static final String BKEY_SEARCH_SITES = "searchSites";
-    public static final String BKEY_SEARCH_SITES_FOR_COVERS = "searchSitesForCovers";
-
-    /**
      * Single fileSpecs or uri.
      * <p>
      * <br>type: {@code String}

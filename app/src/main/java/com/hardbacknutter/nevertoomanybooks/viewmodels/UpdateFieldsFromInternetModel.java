@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -46,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
@@ -56,8 +58,8 @@ public class UpdateFieldsFromInternetModel
     /** which fields to update and how. */
     @NonNull
     private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
-    /** Bitmask with sites to search on. */
-    private int mSearchSites;
+    /** Sites to search on. */
+    private ArrayList<Site> mSearchSites;
     /** Book ID's to fetch. {@code null} for all books. */
     @Nullable
     private ArrayList<Long> mBookIds;
@@ -79,15 +81,16 @@ public class UpdateFieldsFromInternetModel
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@Nullable final Bundle args) {
+    public void init(@NonNull final Context context,
+                     @Nullable final Bundle args) {
         if (args != null) {
             //noinspection unchecked
             mBookIds = (ArrayList<Long>) args.getSerializable(UniqueId.BKEY_ID_LIST);
-
-            mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES,
-                                       SearchSites.getEnabledSitesAsBitmask());
             // optional activity title
             mTitle = args.getString(UniqueId.BKEY_DIALOG_TITLE);
+
+            // use global preference.
+            mSearchSites = SearchSites.getSites(context, SearchSites.ListType.Data);
         }
     }
 
@@ -119,12 +122,32 @@ public class UpdateFieldsFromInternetModel
         mFieldUsages.put(key, fieldUsage);
     }
 
-    public int getSearchSites() {
+    /**
+     * Get the <strong>current</strong> preferred search sites.
+     *
+     * @return list
+     */
+    @NonNull
+    public ArrayList<Site> getSearchSites() {
         return mSearchSites;
     }
 
-    public void setSearchSites(final int sites) {
-        mSearchSites = sites;
+    /**
+     * Override the initial list.
+     *
+     * @param searchSites to use temporarily
+     */
+    public void setSearchSites(@NonNull final ArrayList<Site> searchSites) {
+        mSearchSites = searchSites;
+    }
+
+    /**
+     * Get the <strong>current</strong> preferred search sites.
+     *
+     * @return bitmask
+     */
+    public int getEnabledSearchSites() {
+        return SearchSites.getEnabledSites(mSearchSites);
     }
 
     /**

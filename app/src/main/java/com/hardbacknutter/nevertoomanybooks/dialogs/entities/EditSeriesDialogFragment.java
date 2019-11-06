@@ -105,6 +105,7 @@ public class EditSeriesDialogFragment
 
         mSeries = requireArguments().getParcelable(DBDefinitions.KEY_FK_SERIES);
         Objects.requireNonNull(mSeries, "Series must be passed in args");
+
         if (savedInstanceState == null) {
             mName = mSeries.getTitle();
             mIsComplete = mSeries.isComplete();

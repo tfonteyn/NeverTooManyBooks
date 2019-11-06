@@ -96,7 +96,7 @@ public class AuthorWorksModel
 
             long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
             if (authorId == 0) {
-                throw new IllegalArgumentException("authorId=0");
+                throw new IllegalArgumentException("Author id must be passed in args");
             }
             mAuthor = Objects.requireNonNull(mDb.getAuthor(authorId));
             mWithTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC, mWithTocEntries);

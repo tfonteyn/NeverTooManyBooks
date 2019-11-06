@@ -62,7 +62,8 @@ public class StyleGroupsModel
      */
     public void init(@NonNull final Bundle args) {
         if (mStyle == null) {
-            mStyle = Objects.requireNonNull(args.getParcelable(UniqueId.BKEY_STYLE));
+            mStyle = args.getParcelable(UniqueId.BKEY_STYLE);
+            Objects.requireNonNull(mStyle, "Style must be passed in args");
             mList = createList();
         }
     }

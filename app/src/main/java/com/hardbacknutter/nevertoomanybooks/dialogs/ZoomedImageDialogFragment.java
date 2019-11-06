@@ -95,7 +95,9 @@ public class ZoomedImageDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        mImageFile = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
+        String fileSpec = args.getString(UniqueId.BKEY_FILE_SPEC);
+        Objects.requireNonNull(fileSpec, "fileSpec must be passed in args");
+        mImageFile = new File(fileSpec);
     }
 
     @Override

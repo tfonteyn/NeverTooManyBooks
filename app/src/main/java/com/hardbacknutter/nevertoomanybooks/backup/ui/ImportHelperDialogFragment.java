@@ -78,9 +78,11 @@ public class ImportHelperDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
-        mImportHelper = currentArgs.getParcelable(BKEY_OPTIONS);
-        mArchiveHasValidDates = currentArgs.getBoolean(BKEY_ARCHIVE_HAS_VALID_DATES);
+        Bundle args = requireArguments();
+        mArchiveHasValidDates = args.getBoolean(BKEY_ARCHIVE_HAS_VALID_DATES);
+
+        args = savedInstanceState != null ? savedInstanceState : args;
+        mImportHelper = args.getParcelable(BKEY_OPTIONS);
     }
 
     @NonNull

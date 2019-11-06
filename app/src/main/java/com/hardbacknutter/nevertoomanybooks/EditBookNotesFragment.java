@@ -129,14 +129,6 @@ public class EditBookNotesFragment
         initPartialDatePicker(field, R.string.lbl_read_end, true);
     }
 
-    /**
-     * Has no specific Arguments or savedInstanceState.
-     * <ul>All storage interaction is done via:
-     * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
-     * <li>{@link #onSaveFieldsToBook} from base class onPause</li>
-     * </ul>
-     * {@inheritDoc}
-     */
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {

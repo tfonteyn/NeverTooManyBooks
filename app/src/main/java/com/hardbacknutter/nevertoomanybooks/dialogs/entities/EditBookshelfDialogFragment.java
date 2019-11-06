@@ -66,8 +66,6 @@ public class EditBookshelfDialogFragment
     /** Fragment manager tag. */
     public static final String TAG = "EditBookshelfDialogFragment";
 
-    private static final String BKEY_BOOKSHELF = TAG + ":bs";
-
     /** Database Access. */
     private DAO mDb;
 
@@ -88,7 +86,7 @@ public class EditBookshelfDialogFragment
     public static EditBookshelfDialogFragment newInstance(@NonNull final Bookshelf bookshelf) {
         EditBookshelfDialogFragment frag = new EditBookshelfDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(BKEY_BOOKSHELF, bookshelf);
+        args.putParcelable(DBDefinitions.KEY_FK_BOOKSHELF, bookshelf);
         frag.setArguments(args);
         return frag;
     }
@@ -99,8 +97,9 @@ public class EditBookshelfDialogFragment
 
         mDb = new DAO();
 
-        mBookshelf = requireArguments().getParcelable(BKEY_BOOKSHELF);
+        mBookshelf = requireArguments().getParcelable(DBDefinitions.KEY_FK_BOOKSHELF);
         Objects.requireNonNull(mBookshelf, "Bookshelf must be passed in args");
+
         if (savedInstanceState == null) {
             mName = mBookshelf.getName();
         } else {

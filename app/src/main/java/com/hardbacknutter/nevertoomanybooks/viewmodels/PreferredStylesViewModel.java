@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 public class PreferredStylesViewModel
         extends ViewModel {
@@ -76,9 +75,9 @@ public class PreferredStylesViewModel
             mDb = new DAO();
             mList = new ArrayList<>(BooklistStyle.Helper.getStyles(mDb, true).values());
 
-            mInitialStyleId = args.getLong(UniqueId.BKEY_STYLE_ID);
+            mInitialStyleId = args.getLong(UniqueId.BKEY_STYLE_ID, 0);
             if (mInitialStyleId == 0) {
-                throw new UnexpectedValueException(mInitialStyleId);
+                throw new IllegalStateException("Style id must be passed in args");
             }
         }
     }

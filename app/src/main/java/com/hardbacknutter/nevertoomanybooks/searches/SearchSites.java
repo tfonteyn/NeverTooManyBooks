@@ -37,7 +37,6 @@ import androidx.preference.PreferenceManager;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -59,16 +58,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  * <br>NEWTHINGS: adding a new search engine:
  * To make it available, follow these steps:
  * <ol>
- * <li>Implement {@link SearchEngine} to create the new engine.</li>
  * <li>Add an identifier (bit) in this class + add it to {@link #SEARCH_FLAG_MASK}.</li>
- * <li>Add the identifier to {@link interface Id}</li>
+ * <li>Add the identifier to {@link Id}</li>
  * <li>Add a name for it to {@link #getName}.<br>
  * This should be a hardcoded, single word, no spaces, and will be user visible.<br>
  * It will be used in SharedPreferences so should never be changed.
  * </li>
- * <li>Add your new engine to {@link #getSearchEngine};</li>
- * <li>Create+add a new instance to {@link #SEARCH_ORDER}<br>
- * and {@link #COVER_SEARCH_ORDER}</li>
+ * <li>Implement {@link SearchEngine} to create the new engine (class).</li>
+ * <li>Add your new engine to {@link #getSearchEngine}</li>
+ *
+ * <li>Create+add a new {@link Site} instance to the lists in {@link #getDefaultOrder}
+ * and to {@link #DATA_RELIABILITY_ORDER}</li>
+ *
  * <li>Add your new engine to {@link DebugReport#getSiteUrls}</li>
  * <li>Optional: add to res/xml/preferences.xml if the url should be editable.<br>
  * See the Amazon example in that xml file.</li>
@@ -89,7 +90,11 @@ public final class SearchSites {
 
     /** tag. */
     private static final String TAG = "SearchSites";
-    public static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
+    /** Used to pass a list of sites around. */
+    public static final String BKEY_SEARCH_SITES_BOOKS = TAG + ":books";
+    /** Used to pass a list of sites around. */
+    public static final String BKEY_SEARCH_SITES_COVERS = TAG + ":covers";
+
     /** Site. */
     private static final int GOOGLE_BOOKS = 1;
     /** Site. */
@@ -100,6 +105,7 @@ public final class SearchSites {
     private static final int ISFDB = 1 << 4;
     /** Site. */
     private static final int OPEN_LIBRARY = 1 << 5;
+
     /** Site: Dutch language books & comics. */
     private static final int KB_NL = 1 << 6;
     /** Site: Dutch language (and to an extend French) comics. */
@@ -110,97 +116,52 @@ public final class SearchSites {
                                         | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY
                                         | KB_NL | STRIP_INFO_BE;
 
-    /** the default search site order for standard data/covers. */
-    private static final ArrayList<Site> SEARCH_ORDER = new ArrayList<>();
-    /** the default search site order for _dedicated_ cover searches. */
-    private static final ArrayList<Site> COVER_SEARCH_ORDER = new ArrayList<>();
-    /** ENHANCE: reliability order is not user configurable for now, but plumbing installed. */
-    private static final ArrayList<Site> DATA_RELIABILITY_ORDER = new ArrayList<>();
-
-    private static final String PREFS_PREFIX = "search.siteOrder.";
-    private static final String PREFS_SEARCH_SITE_ORDER_DATA = PREFS_PREFIX + "data";
-    private static final String PREFS_SEARCH_SITE_RELIABILITY = PREFS_PREFIX + "reliability";
-    private static final String PREFS_SEARCH_SITE_ORDER_COVERS = PREFS_PREFIX + "covers";
-
-    /** the users preferred search site order. */
-    private static final ArrayList<Site> sPreferredSearchOrder = new ArrayList<>();
-    /** the users preferred search site order specific for covers. */
-    private static final ArrayList<Site> sPreferredCoverSearchOrder = new ArrayList<>();
+    private static final String PREFS_ORDER_PREFIX = "search.siteOrder.";
+    private static final String PREFS_SEARCH_SITE_ORDER_DATA = PREFS_ORDER_PREFIX + "data";
+    private static final String PREFS_SEARCH_SITE_ORDER_COVERS = PREFS_ORDER_PREFIX + "covers";
     private static final String SEP = ",";
+    /** Dutch language site. */
+    private static final String NLD = "nld";
+
+    // use a map...
+    //private static EnumMap<ListType,ArrayList<Site>> sLists = new EnumMap<>(ListType.class);
+    private static final String DATA_RELIABILITY_ORDER;
+    /** Cached copy of the users preferred search site order. */
+    private static ArrayList<Site> sDataSearchOrder;
+    /** Cached copy of the users preferred search site order specific for covers. */
+    private static ArrayList<Site> sCoverSearchOrder;
 
     static {
-        Site sAmazon = Site.newSite(AMAZON, false);
-        Site sGoodreads = Site.newSite(GOODREADS, true);
-        Site sGoogle = Site.newSite(GOOGLE_BOOKS, true);
-        Site sLibraryThing = Site.newSite(LIBRARY_THING, true);
-        Site sIsfdb = Site.newSite(ISFDB, true);
-        // Dutch.
-        Site sStripinfoBe = Site.newSite(STRIP_INFO_BE, isDutch());
-        // Dutch.
-        Site sKbNl = Site.newSite(KB_NL, isDutch());
-        // Disabled by default as data from this site is not very complete.
-        Site sOpenLibrary = Site.newSite(OPEN_LIBRARY, false);
-
-        if (ENABLE_AMAZON_AWS) {
-            SEARCH_ORDER.add(sAmazon);
-        }
-        SEARCH_ORDER.add(sGoodreads);
-        SEARCH_ORDER.add(sGoogle);
-        SEARCH_ORDER.add(sLibraryThing);
-        SEARCH_ORDER.add(sIsfdb);
-        SEARCH_ORDER.add(sStripinfoBe);
-        SEARCH_ORDER.add(sKbNl);
-        SEARCH_ORDER.add(sOpenLibrary);
-
-        DATA_RELIABILITY_ORDER.add(sIsfdb);
-        DATA_RELIABILITY_ORDER.add(sStripinfoBe);
-        DATA_RELIABILITY_ORDER.add(sGoodreads);
-        if (ENABLE_AMAZON_AWS) {
-            DATA_RELIABILITY_ORDER.add(sAmazon);
-        }
-        DATA_RELIABILITY_ORDER.add(sGoogle);
-        DATA_RELIABILITY_ORDER.add(sLibraryThing);
-        DATA_RELIABILITY_ORDER.add(sKbNl);
-        DATA_RELIABILITY_ORDER.add(sOpenLibrary);
-
-        /*
-         * Default search order for dedicated cover lookup.
-         * These are only used by the {@link CoverBrowserViewModel}.
-         */
-        Site csIsfdb = Site.newCoverSite(ISFDB, true);
-        Site csStripinfoBe = Site.newCoverSite(STRIP_INFO_BE, isDutch());
-        Site csGoogle = Site.newCoverSite(GOOGLE_BOOKS, true);
-        Site csGoodreads = Site.newCoverSite(GOODREADS, true);
-        Site csAmazon = Site.newCoverSite(AMAZON, false);
-        Site csKbNl = Site.newCoverSite(KB_NL, isDutch());
-        Site csLibraryThing = Site.newCoverSite(LIBRARY_THING, false);
-        Site csOpenLibrary = Site.newCoverSite(OPEN_LIBRARY, false);
-
-        // Create the user configurable list.
-        COVER_SEARCH_ORDER.add(csIsfdb);
-        COVER_SEARCH_ORDER.add(csStripinfoBe);
-        COVER_SEARCH_ORDER.add(csGoogle);
-        COVER_SEARCH_ORDER.add(csGoodreads);
-        if (ENABLE_AMAZON_AWS) {
-            COVER_SEARCH_ORDER.add(csAmazon);
-        }
-        COVER_SEARCH_ORDER.add(csKbNl);
-        COVER_SEARCH_ORDER.add(csLibraryThing);
-        COVER_SEARCH_ORDER.add(csOpenLibrary);
+        DATA_RELIABILITY_ORDER =
+                "" + ISFDB
+                + ',' + STRIP_INFO_BE
+                + ',' + GOODREADS
+                + (ENABLE_AMAZON_AWS ? ',' + AMAZON : "")
+                + ',' + GOOGLE_BOOKS
+                + ',' + LIBRARY_THING
+                + ',' + KB_NL
+                + ',' + OPEN_LIBRARY
+        ;
     }
 
     private SearchSites() {
     }
 
     /**
-     * Dutch sites are by *default* only enabled if either the device or this app is running
-     * in Dutch. The user can enable/disable them at will of course.
+     * Check if the device or user locale matches the given language.
+     * <p>
+     * Non-english sites are by default only enabled if either the device or
+     * this app is running in the specified language.
+     * The user can still enable/disable them at will of course.
      *
-     * @return {@code true} if Dutch sites should be enabled by default.
+     * @param iso language code to check
+     *
+     * @return {@code true} if sites should be enabled by default.
      */
-    private static boolean isDutch() {
-        return "nld".equals(App.getSystemLocale().getISO3Language())
-               || "nld".equals(Locale.getDefault().getISO3Language());
+    private static boolean isLang(@SuppressWarnings("SameParameterValue")
+                                  @NonNull final String iso) {
+        return iso.equals(App.getSystemLocale().getISO3Language())
+               || iso.equals(Locale.getDefault().getISO3Language());
     }
 
     /**
@@ -254,28 +215,20 @@ public final class SearchSites {
         switch (id) {
             case GOOGLE_BOOKS:
                 return new GoogleBooksManager();
-
             case AMAZON:
                 return new AmazonManager();
-
             case GOODREADS:
                 return new GoodreadsManager();
-
             case ISFDB:
                 return new IsfdbManager();
-
             case LIBRARY_THING:
                 return new LibraryThingManager();
-
             case OPEN_LIBRARY:
                 return new OpenLibraryManager();
-
             case KB_NL:
                 return new KbNlManager();
-
             case STRIP_INFO_BE:
                 return new StripInfoManager();
-
             default:
                 throw new UnexpectedValueException(id);
         }
@@ -284,24 +237,6 @@ public final class SearchSites {
     public static boolean usePublisher(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(IsfdbManager.PREFS_USE_PUBLISHER, false);
-    }
-
-    /**
-     * Reset search order values back to the hardcoded defaults.
-     *
-     * @param context Current context
-     */
-    public static void resetSearchOrder(@NonNull final Context context) {
-        setOrder(context, SEARCH_ORDER);
-    }
-
-    /**
-     * Reset cover search order values back to the hardcoded defaults.
-     *
-     * @param context Current context
-     */
-    public static void resetCoverSearchOrder(@NonNull final Context context) {
-        setCoverOrder(context, COVER_SEARCH_ORDER);
     }
 
     /**
@@ -334,71 +269,149 @@ public final class SearchSites {
         return showingAlert;
     }
 
+    private static ArrayList<Site> getDefaultOrder(@NonNull final Context context,
+                                                   @NonNull final ListType listType,
+                                                   final boolean loadPrefs) {
+        ArrayList<Site> list = new ArrayList<>();
+
+        switch (listType) {
+            case Data:
+                if (ENABLE_AMAZON_AWS) {
+                    list.add(Site.newSite(context, AMAZON, loadPrefs, false));
+                }
+                list.add(Site.newSite(context, GOODREADS, loadPrefs, true));
+                list.add(Site.newSite(context, GOOGLE_BOOKS, loadPrefs, true));
+                list.add(Site.newSite(context, LIBRARY_THING, loadPrefs, true));
+                list.add(Site.newSite(context, ISFDB, loadPrefs, true));
+                // Dutch.
+                list.add(Site.newSite(context, STRIP_INFO_BE, loadPrefs, isLang(NLD)));
+                // Dutch.
+                list.add(Site.newSite(context, KB_NL, loadPrefs, isLang(NLD)));
+                // Disabled by default as data from this site is not very complete.
+                list.add(Site.newSite(context, OPEN_LIBRARY, loadPrefs, false));
+                break;
+
+            case Covers:
+                /*
+                 * Default search order for dedicated cover lookup.
+                 * These are only used by the {@link CoverBrowserViewModel}.
+                 */
+                list.add(Site.newCoverSite(context, ISFDB, loadPrefs, true));
+                list.add(Site.newCoverSite(context, STRIP_INFO_BE, loadPrefs, isLang(NLD)));
+                list.add(Site.newCoverSite(context, GOOGLE_BOOKS, loadPrefs, true));
+                list.add(Site.newCoverSite(context, GOODREADS, loadPrefs, true));
+                if (ENABLE_AMAZON_AWS) {
+                    list.add(Site.newCoverSite(context, AMAZON, loadPrefs, false));
+                }
+                list.add(Site.newCoverSite(context, KB_NL, loadPrefs, isLang(NLD)));
+                list.add(Site.newCoverSite(context, LIBRARY_THING, loadPrefs, false));
+                list.add(Site.newCoverSite(context, OPEN_LIBRARY, loadPrefs, false));
+                break;
+
+            default:
+                throw new IllegalStateException();
+        }
+
+        return list;
+    }
+
+    static ArrayList<Site> getReliabilityOrder() {
+        return reorder(DATA_RELIABILITY_ORDER, getSites(App.getAppContext(), ListType.Data));
+    }
 
     /**
      * Get the global search site list in the preferred order.
      * Includes enabled <strong>AND</strong> disabled sites, in the preferred order.
      *
-     * @return the list
-     */
-    @NonNull
-    public static ArrayList<Site> getSites() {
-        if (sPreferredSearchOrder.isEmpty()) {
-            sPreferredSearchOrder.addAll(readOrder(ListType.Data));
-        }
-        //noinspection unchecked
-        return (ArrayList<Site>) sPreferredSearchOrder.clone();
-    }
-
-    /**
-     * Get the global cover-search site list in the preferred order.
-     * Includes enabled <strong>AND</strong> disabled sites, in the preferred order.
+     * @param context  Current context
+     * @param listType type
      *
      * @return the list
      */
     @NonNull
-    public static ArrayList<Site> getSitesForCoverSearches() {
-        if (sPreferredCoverSearchOrder.isEmpty()) {
-            sPreferredCoverSearchOrder.addAll(readOrder(ListType.Covers));
+    public static ArrayList<Site> getSites(@NonNull final Context context,
+                                           @NonNull final ListType listType) {
+
+        // already loaded ?
+        switch (listType) {
+            case Data:
+                if (sDataSearchOrder != null) {
+                    return (ArrayList<Site>) sDataSearchOrder.clone();
+                }
+                break;
+
+            case Covers:
+                if (sCoverSearchOrder != null) {
+                    return (ArrayList<Site>) sCoverSearchOrder.clone();
+                }
+                break;
+
+            default:
+                throw new IllegalStateException();
         }
-        //noinspection unchecked
-        return (ArrayList<Site>) sPreferredCoverSearchOrder.clone();
-    }
 
-    @NonNull
-    static List<Site> getSitesByDataReliability() {
-        //noinspection unchecked
-        return (List<Site>) DATA_RELIABILITY_ORDER.clone();
+        // get the list in the default order and the sites preferences set.
+        ArrayList<Site> sites = getDefaultOrder(context, listType, true);
+
+        // and order as required
+        ArrayList<Site> orderedList;
+        String order = PreferenceManager.getDefaultSharedPreferences(context)
+                                        .getString(listType.getKey(), null);
+        if (order != null) {
+            orderedList = reorder(order, sites);
+        } else {
+            orderedList = sites;
+        }
+
+        // cache the list for reuse
+        switch (listType) {
+            case Data:
+                sDataSearchOrder = orderedList;
+                break;
+
+            case Covers:
+                sCoverSearchOrder = orderedList;
+                break;
+
+            default:
+                throw new IllegalStateException();
+        }
+
+
+        return (ArrayList<Site>) orderedList.clone();
     }
 
     /**
-     * Get the global search site list as a bitmask.
-     * Includes <strong>ONLY</strong> the enabled sites.
+     * Reorder the given list based on user preferences.
      *
-     * @return bitmask
-     */
-    public static int getEnabledSitesAsBitmask() {
-        return getEnabledSitesAsBitmask(getSites());
-    }
-
-    /**
-     * Get the global cover search site list as a bitmask.
-     * Includes <strong>ONLY</strong> the enabled sites.
+     * @param order CSV string with site ids
+     * @param sites list to reorder
      *
-     * @return bitmask
+     * @return ordered list
      */
-    public static int getEnabledSitesForCoverSearchesAsBitmask() {
-        return getEnabledSitesAsBitmask(getSitesForCoverSearches());
+    private static ArrayList<Site> reorder(@NonNull final String order,
+                                           @NonNull final ArrayList<Site> sites) {
+        ArrayList<Site> orderedList = new ArrayList<>();
+        for (String idStr : order.split(SEP)) {
+            int id = Integer.parseInt(idStr);
+            for (Site site : sites) {
+                if (site.id == id) {
+                    orderedList.add(site);
+                    break;
+                }
+            }
+        }
+        return orderedList;
     }
 
     /**
-     * Filter the incoming list, returning a new list with the enabled sites.
+     * Get a bitmask with the enabled sites for the given list.
      *
      * @param list to filter
      *
-     * @return list containing only the enables sites
+     * @return bitmask containing only the enables sites
      */
-    public static int getEnabledSitesAsBitmask(@NonNull final ArrayList<Site> list) {
+    public static int getEnabledSites(@NonNull final ArrayList<Site> list) {
         int sites = 0;
         for (Site site : list) {
             if (site.isEnabled()) {
@@ -409,107 +422,60 @@ public final class SearchSites {
         return sites;
     }
 
-
     /**
-     * Update the standard search order/enabled list.
-     *
-     * @param context Current context
-     * @param newList to use
-     */
-    public static void setOrder(@NonNull final Context context,
-                                @NonNull final ArrayList<Site> newList) {
-        sPreferredSearchOrder.clear();
-        sPreferredSearchOrder.addAll(newList);
-        saveOrder(context, ListType.Data, newList);
-    }
-
-    /**
-     * Update the dedicated cover search order/enabled list.
-     *
-     * @param context Current context
-     * @param newList to use
-     */
-    public static void setCoverOrder(@NonNull final Context context,
-                                     @NonNull final ArrayList<Site> newList) {
-        sPreferredCoverSearchOrder.clear();
-        sPreferredCoverSearchOrder.addAll(newList);
-        saveOrder(context, ListType.Covers, newList);
-    }
-
-    /**
-     * Save the order of the given list (ids) to preferences.
+     * Reset a list back to the hardcoded defaults.
      *
      * @param context  Current context
-     * @param listType to save
-     * @param newList  to save
+     * @param listType type
      */
-    private static void saveOrder(@NonNull final Context context,
-                                  final ListType listType,
-                                  @NonNull final ArrayList<Site> newList) {
+    public static void resetList(@NonNull final Context context,
+                                 @NonNull final ListType listType) {
 
+        setList(context, listType, getDefaultOrder(context, listType, false));
+    }
+
+    /**
+     * Update the given list.
+     *
+     * @param context  Current context
+     * @param listType type
+     * @param newList  to use
+     */
+    public static void setList(@NonNull final Context context,
+                               @NonNull final ListType listType,
+                               @NonNull final ArrayList<Site> newList) {
+
+        // replace the cached copy.
+        switch (listType) {
+            case Data:
+                sDataSearchOrder = newList;
+                break;
+
+            case Covers:
+                sCoverSearchOrder = newList;
+                break;
+
+            default:
+                throw new IllegalStateException();
+        }
+
+        // Save the order of the given list (ids) and the individual site settings to preferences.
         SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context).edit();
         String order = Csv.join(SEP, newList, site -> {
             // store individual site settings
             site.saveToPrefs(ed);
+            // and collect the id for the order string
             return String.valueOf(site.id);
         });
         ed.putString(listType.getKey(), order);
         ed.apply();
     }
 
-    /**
-     * Read the required list from preferences (or return the default).
-     *
-     * @param listType to get
-     *
-     * @return list
-     */
-    @NonNull
-    private static ArrayList<Site> readOrder(@NonNull final ListType listType) {
-
-        ArrayList<Site> orderDefaults;
-        switch (listType) {
-            case DataReliability:
-                orderDefaults = DATA_RELIABILITY_ORDER;
-                break;
-            case Covers:
-                orderDefaults = COVER_SEARCH_ORDER;
-                break;
-            case Data:
-            default:
-                orderDefaults = SEARCH_ORDER;
-                break;
-        }
-
-        String order = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                        .getString(listType.getKey(), null);
-
-        if (order == null) {
-            return orderDefaults;
-        }
-        String[] ids = order.split(SEP);
-
-        ArrayList<Site> newList = new ArrayList<>();
-        for (String idStr : ids) {
-            int id = Integer.parseInt(idStr);
-            for (Site site : orderDefaults) {
-                if (site.id == id) {
-                    newList.add(site);
-                    break;
-                }
-            }
-        }
-        return newList;
-    }
-
     public enum ListType {
-        Data, DataReliability, Covers;
+        Data, Covers;
 
         String getKey() {
             switch (this) {
-                case DataReliability:
-                    return PREFS_SEARCH_SITE_RELIABILITY;
-
                 case Covers:
                     return PREFS_SEARCH_SITE_ORDER_COVERS;
 

@@ -36,8 +36,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.ArrayList;
+
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
 
@@ -97,11 +101,12 @@ public class BookSearchActivity
 
         if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
-                int searchSites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES, 0);
-                if (searchSites != 0) {
+                ArrayList<Site> sites = data.getParcelableArrayListExtra(
+                        SearchSites.BKEY_SEARCH_SITES_BOOKS);
+                if (sites != null) {
                     BookSearchBaseModel model =
                             new ViewModelProvider(this).get(BookSearchBaseModel.class);
-                    model.setSearchSites(searchSites);
+                    model.setSearchSites(sites);
                 }
             }
         }

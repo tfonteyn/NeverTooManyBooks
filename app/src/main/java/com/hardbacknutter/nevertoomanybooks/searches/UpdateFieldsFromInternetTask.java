@@ -74,9 +74,8 @@ public class UpdateFieldsFromInternetTask
     private final ReentrantLock mSearchLock = new ReentrantLock();
     /** Signal for available items. */
     private final Condition mSearchDone = mSearchLock.newCondition();
-    /** Bitmask with sites to search on. */
-    @SearchSites.Id
-    private final int mSearchSites;
+    /** Sites to search on. */
+    private final ArrayList<Site> mSearchSites;
     /** Active search manager. */
     private final SearchCoordinator mSearchCoordinator;
 
@@ -150,7 +149,7 @@ public class UpdateFieldsFromInternetTask
      * @param listener    where to send our results to
      */
     public UpdateFieldsFromInternetTask(@NonNull final TaskManager taskManager,
-                                        @SearchSites.Id final int searchSites,
+                                        @NonNull final ArrayList<Site> searchSites,
                                         @NonNull final Map<String, FieldUsage> fields,
                                         @NonNull final ManagedTaskListener listener) {
         super(taskManager, "UpdateFieldsFromInternetTask");

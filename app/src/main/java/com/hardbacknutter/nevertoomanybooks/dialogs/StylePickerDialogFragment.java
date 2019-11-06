@@ -49,6 +49,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -109,6 +110,7 @@ public class StylePickerDialogFragment
 
         Bundle args = requireArguments();
         mCurrentStyle = args.getParcelable(UniqueId.BKEY_STYLE);
+        Objects.requireNonNull(mCurrentStyle, "Style must be passed in args");
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
 
         loadStyles();

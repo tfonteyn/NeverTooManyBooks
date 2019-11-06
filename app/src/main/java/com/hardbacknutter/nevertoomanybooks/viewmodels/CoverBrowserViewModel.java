@@ -56,7 +56,6 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
@@ -86,12 +85,15 @@ public class CoverBrowserViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param context Current context
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final Context context,
+                     @NonNull final Bundle args) {
         if (mBaseIsbn == null) {
-            mBaseIsbn = Objects.requireNonNull(args.getString(DBDefinitions.KEY_ISBN));
-            mFileManager = new FileManager(args);
+            mBaseIsbn = args.getString(DBDefinitions.KEY_ISBN);
+            Objects.requireNonNull(mBaseIsbn, "ISBN must be passed in args");
+            mFileManager = new FileManager(context, args);
         }
     }
 
@@ -303,19 +305,20 @@ public class CoverBrowserViewModel
         private final Map<String, FileInfo> mFiles = Collections.synchronizedMap(new HashMap<>());
 
         /** Sites the user wants to search for cover images. */
-        private final int mSearchSitesForCovers;
+        private ArrayList<Site> mSearchSitesForCovers;
 
         /**
          * Constructor.
+         *
+         * @param context Current context
+         * @param args    arguments
          */
-        FileManager(@Nullable final Bundle args) {
-            // 2019-10-12: this is a dummy check as for now we never pass in this argument
-            if (args != null) {
-                mSearchSitesForCovers =
-                        args.getInt(UniqueId.BKEY_SEARCH_SITES_FOR_COVERS,
-                                    SearchSites.getEnabledSitesForCoverSearchesAsBitmask());
-            } else {
-                mSearchSitesForCovers = SearchSites.getEnabledSitesForCoverSearchesAsBitmask();
+        FileManager(@NonNull final Context context,
+                    @NonNull final Bundle args) {
+            mSearchSitesForCovers = args.getParcelableArrayList(
+                    SearchSites.BKEY_SEARCH_SITES_COVERS);
+            if (mSearchSitesForCovers == null) {
+                mSearchSitesForCovers = SearchSites.getSites(context, SearchSites.ListType.Covers);
             }
         }
 
@@ -358,7 +361,6 @@ public class CoverBrowserViewModel
          * The for() loop will break/return <strong>as soon as a cover file is found.</strong>
          * The first Site which has an image is accepted.
          * <p>
-         * ENHANCE: allow the user to prioritize the Site order on the fly.
          *
          * @param isbn        ISBN of file
          * @param primarySite try this site first
@@ -372,9 +374,9 @@ public class CoverBrowserViewModel
                           @Nullable final Site primarySite,
                           @NonNull final SearchEngine.ImageSize... imageSizes) {
 
-            // use a local copy so we can disable sites on the fly.
+            // we will disable sites on the fly for the *current* search without modifying the list.
             @SearchSites.Id
-            int currentSearchSites = mSearchSitesForCovers;
+            int currentSearchSites = SearchSites.getEnabledSites(mSearchSitesForCovers);
 
             // we need to use the size as the outer loop (and not inside of getCoverImage itself).
             // the idea is to check all sites for the same size first.
@@ -403,8 +405,7 @@ public class CoverBrowserViewModel
 
                 Context context = App.getAppContext();
 
-                // get ALL sites, as the local currentSearchSites overrides the global.
-                for (Site site : SearchSites.getSitesForCoverSearches()) {
+                for (Site site : mSearchSitesForCovers) {
                     // Should we search this site ?
                     if ((currentSearchSites & site.id) != 0) {
                         boolean isAvailable = site.getSearchEngine().isAvailable();

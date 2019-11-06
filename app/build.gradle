@@ -109,9 +109,7 @@ dependencies {
     implementation 'androidx.fragment:fragment:1.2.0-rc01'
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0-rc01'
-    // com.google.android.material.tabs.TabLayout does not support ViewPager2 (yet?)
-    implementation 'androidx.viewpager:viewpager:1.0.0'
-//    implementation 'androidx.viewpager2:viewpager2:1.0.0-beta03'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0-rc01'
 
 
     implementation 'com.google.android.material:material:1.2.0-alpha01'

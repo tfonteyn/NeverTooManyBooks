@@ -58,8 +58,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsFromInternetTask;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
@@ -150,11 +152,10 @@ public class UpdateFieldsFromInternetFragment
         // Mandatory
         setHasOptionsMenu(true);
 
-        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : getArguments();
-
         //noinspection ConstantConditions
         mModel = new ViewModelProvider(getActivity()).get(UpdateFieldsFromInternetModel.class);
-        mModel.init(currentArgs);
+        //noinspection ConstantConditions
+        mModel.init(getContext(), getArguments());
     }
 
     @Nullable
@@ -192,7 +193,7 @@ public class UpdateFieldsFromInternetFragment
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             SearchSites.alertRegistrationBeneficial(getContext(), "update_from_internet",
-                                                    mModel.getSearchSites());
+                                                    mModel.getEnabledSearchSites());
 
             TipManager.display(getContext(), R.string.tip_update_fields_from_internet, null);
         }
@@ -268,8 +269,11 @@ public class UpdateFieldsFromInternetFragment
             // no changes committed, we got data to use temporarily
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mModel.setSearchSites(data.getIntExtra(UniqueId.BKEY_SEARCH_SITES,
-                                                           mModel.getSearchSites()));
+                    ArrayList<Site> sites = data.getParcelableArrayListExtra(
+                            SearchSites.BKEY_SEARCH_SITES_BOOKS);
+                    if (sites != null) {
+                        mModel.setSearchSites(sites);
+                    }
                 }
                 break;
 
@@ -279,14 +283,6 @@ public class UpdateFieldsFromInternetFragment
         }
         //noinspection ConstantConditions
         LocaleUtils.insanityCheck(getContext());
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable(UniqueId.BKEY_ID_LIST, mModel.getBookIds());
-        outState.putInt(UniqueId.BKEY_SEARCH_SITES, mModel.getSearchSites());
-        outState.putString(UniqueId.BKEY_DIALOG_TITLE, mModel.getTitle());
     }
 
     @Override
@@ -319,8 +315,9 @@ public class UpdateFieldsFromInternetFragment
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
-                        .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
-                                  SearchAdminActivity.TAB_ORDER);
+                        .putExtra(SearchAdminModel.BKEY_TABS_TO_SHOW, SearchAdminModel.TAB_BOOKS)
+                        .putExtra(SearchSites.BKEY_SEARCH_SITES_BOOKS,
+                                  mModel.getSearchSites());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
 

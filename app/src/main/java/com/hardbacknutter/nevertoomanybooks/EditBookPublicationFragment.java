@@ -121,14 +121,6 @@ public class EditBookPublicationFragment
                         mBookModel.getListPriceCurrencyCodes());
     }
 
-    /**
-     * Has no specific Arguments or savedInstanceState.
-     * <ul>All storage interaction is done via:
-     * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
-     * <li>{@link #onSaveFieldsToBook} from base class onPause</li>
-     * </ul>
-     * {@inheritDoc}
-     */
     @CallSuper
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {

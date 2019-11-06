@@ -98,7 +98,8 @@ public class EditPublisherDialogFragment
         mDb = new DAO();
 
         mPublisher = requireArguments().getParcelable(DBDefinitions.KEY_PUBLISHER);
-        Objects.requireNonNull(mPublisher);
+        Objects.requireNonNull(mPublisher, "Publisher must be passed in args");
+
         if (savedInstanceState == null) {
             mName = mPublisher.getName();
         } else {

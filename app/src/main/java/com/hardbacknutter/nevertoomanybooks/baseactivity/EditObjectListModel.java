@@ -60,10 +60,10 @@ public class EditObjectListModel
      * setResult
      */
     public static final String BKEY_LIST_MODIFIED = TAG + ":listModified";
-
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    private final Intent mResultData = new Intent();
     /** Database Access. */
     private DAO mDb;
-
     /** Row ID... mainly used (if list is from a book) to know if the object is new. */
     private long mRowId;
     /** Displayed for user reference only. */
@@ -71,9 +71,6 @@ public class EditObjectListModel
     private String mBookTitle;
     /** Used for the Series default Locale. */
     private Locale mBookLocale;
-
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    private final Intent mResultData = new Intent();
 
     @Override
     protected void onCleared() {
@@ -85,7 +82,7 @@ public class EditObjectListModel
     /**
      * Pseudo constructor.
      *
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Bundle args) {
         if (mDb == null) {

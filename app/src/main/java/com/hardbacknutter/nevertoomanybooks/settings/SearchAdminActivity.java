@@ -36,47 +36,32 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
  * USE scenario is (2019-07-05) on a per-page basis only. Hence we 'use' the current displayed list.
- * SAVE: always saves all tabs displayed.
- * RESET: only resets the currently displayed tab.
  */
 public class SearchAdminActivity
         extends BaseActivity {
 
-    /**
-     * Optional: set to one of the {@link SearchOrderFragment} tabs,
-     * if we should *only* show that tab, and NOT save the new setting (i.e. the "use" scenario).
-     */
-    public static final String REQUEST_BKEY_TAB = "tab";
+    private ViewPager2 mViewPager;
+    private TabAdapter mTabAdapter;
 
-    public static final int TAB_ORDER = 0;
-    public static final int TAB_COVER_ORDER = 1;
-    private static final int SHOW_ALL_TABS = -1;
-
-    private ViewPager mViewPager;
-    private ViewPagerAdapter mAdapter;
-
-    private boolean mIsDirty;
-
-    private boolean mUseScenario;
+    private boolean mPersist;
 
     @Override
     protected int getLayoutId() {
@@ -87,62 +72,50 @@ public class SearchAdminActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        int requestedTab = getIntent().getIntExtra(REQUEST_BKEY_TAB, SHOW_ALL_TABS);
+        @SearchAdminModel.Tabs
+        int tabToShow = getIntent().getIntExtra(SearchAdminModel.BKEY_TABS_TO_SHOW,
+                                                SearchAdminModel.SHOW_ALL_TABS);
 
         mViewPager = findViewById(R.id.tab_fragment);
         TabLayout tabLayout = findViewById(R.id.tab_panel);
-        mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-        FragmentManager fm = getSupportFragmentManager();
-        switch (requestedTab) {
-            case TAB_ORDER: {
+        switch (tabToShow) {
+            case SearchAdminModel.TAB_BOOKS: {
                 setTitle(R.string.lbl_books);
-                mUseScenario = true;
+                mPersist = false;
                 tabLayout.setVisibility(View.GONE);
-                mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_ORDER,
-                                                getString(R.string.lbl_books)));
                 break;
             }
-            case TAB_COVER_ORDER: {
+            case SearchAdminModel.TAB_COVERS: {
                 setTitle(R.string.lbl_cover);
-                mUseScenario = true;
+                mPersist = false;
                 tabLayout.setVisibility(View.GONE);
-                mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_COVER_ORDER,
-                                                getString(R.string.lbl_cover)));
                 break;
             }
+            case SearchAdminModel.SHOW_ALL_TABS:
             default: {
-                // show both
                 setTitle(R.string.menu_add_book_by_internet_search);
-                mUseScenario = false;
-                // add them in order! i.e. in the order the TAB_* constants are defined.
-                mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_ORDER,
-                                                getString(R.string.lbl_books)));
-
-                mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_COVER_ORDER,
-                                                getString(R.string.lbl_covers)));
+                mPersist = true;
                 break;
             }
         }
 
-        // fire up the adapter.
-        mViewPager.setAdapter(mAdapter);
-        tabLayout.setupWithViewPager(mViewPager);
+        mTabAdapter = new TabAdapter(this, tabToShow, mPersist, getIntent().getExtras());
+        mViewPager.setAdapter(mTabAdapter);
+        new TabLayoutMediator(tabLayout, mViewPager, (tab, position) ->
+                tab.setText(getString(mTabAdapter.getTabTitle(position))))
+                .attach();
     }
 
     @Override
     public void onBackPressed() {
-        ArrayList<Site> list;
+        SearchAdminModel model = new ViewModelProvider(this).get(SearchAdminModel.class);
+        if (mPersist) {
+            model.persist(this);
 
-        if (mUseScenario) {
-            list = doUse();
         } else {
-            list = doSave();
-        }
-
-        if (list != null) {
-            Intent data = new Intent().putExtra(UniqueId.BKEY_SEARCH_SITES,
-                                                SearchSites.getEnabledSitesAsBitmask(list));
+            Intent data = new Intent()
+                    .putExtra(SearchSites.BKEY_SEARCH_SITES_BOOKS, model.getList());
             setResult(Activity.RESULT_OK, data);
         }
 
@@ -156,16 +129,12 @@ public class SearchAdminActivity
         switch (item.getItemId()) {
             case R.id.MENU_RESET:
                 switch (mViewPager.getCurrentItem()) {
-                    case TAB_ORDER:
-                        SearchSites.resetSearchOrder(this);
-                        ((SearchOrderFragment) mAdapter.getItem(TAB_ORDER))
-                                .setList(SearchSites.getSites());
+                    case SearchAdminModel.TAB_BOOKS:
+                        SearchSites.resetList(this, SearchSites.ListType.Data);
                         break;
 
-                    case TAB_COVER_ORDER:
-                        SearchSites.resetCoverSearchOrder(this);
-                        ((SearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER))
-                                .setList(SearchSites.getSitesForCoverSearches());
+                    case SearchAdminModel.TAB_COVERS:
+                        SearchSites.resetList(this, SearchSites.ListType.Covers);
                         break;
 
                     default:
@@ -173,6 +142,9 @@ public class SearchAdminActivity
                                                   "item=" + mViewPager.getCurrentItem());
                         break;
                 }
+                // not ideal, but it will do
+                recreate();
+
                 return true;
 
             default:
@@ -191,116 +163,97 @@ public class SearchAdminActivity
     }
 
     /**
-     * Set the status of our data.
-     *
-     * @param isDirty set to {@code true} if our data was changed.
-     */
-    public void setDirty(final boolean isDirty) {
-        mIsDirty = isDirty;
-    }
-
-    /**
-     * Prepares and sets the activity result.
-     */
-    @Nullable
-    private ArrayList<Site> doUse() {
-        return ((SearchOrderFragment) mAdapter.getItem(mViewPager.getCurrentItem())).getList();
-
-    }
-
-    /**
-     * Saves the settings & sets the activity result.
+     * Encapsulate all the tabs that can be shown.
      * <p>
-     * setResult with UniqueId.BKEY_SEARCH_SITES
+     * Limited to showing a single tab, or all tabs.
      */
-    @Nullable
-    private ArrayList<Site> doSave() {
-        ArrayList<Site> siteList = null;
-        if (mIsDirty) {
-            //ENHANCE: compare this approach to what is used in EditBookFragment & children.
-            // Decide later...
-            siteList = ((SearchOrderFragment) mAdapter.getItem(TAB_ORDER)).getList();
-            if (siteList != null) {
-                SearchSites.setOrder(this, siteList);
-            }
+    private static class TabAdapter
+            extends FragmentStateAdapter {
 
-            ArrayList<Site> coverList =
-                    ((SearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).getList();
-            if (coverList != null) {
-                SearchSites.setCoverOrder(this, coverList);
-            }
-        }
-        return siteList;
-    }
+        private final int count;
+        private final int mTabsToShow;
+        private final boolean mPersist;
+        @Nullable
+        private final Bundle mArgs;
 
-    private static class ViewPagerAdapter
-            extends FragmentPagerAdapter {
-
-        private final List<FragmentHolder> mFragmentList = new ArrayList<>();
-
-        /**
-         * Constructor.
-         *
-         * @param fm FragmentManager
-         */
-        ViewPagerAdapter(@NonNull final FragmentManager fm) {
-            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        TabAdapter(@NonNull final FragmentActivity container,
+                   @SearchAdminModel.Tabs final int tabsToShow,
+                   final boolean persist,
+                   @Nullable final Bundle args) {
+            super(container);
+            mTabsToShow = tabsToShow;
+            mPersist = persist;
+            mArgs = args;
+            count = Integer.bitCount(mTabsToShow);
         }
 
         @Override
-        @NonNull
-        public Fragment getItem(final int position) {
-            return mFragmentList.get(position).fragment;
+        public int getItemCount() {
+            return count;
         }
 
+        @NonNull
         @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
+        public Fragment createFragment(final int position) {
 
-        @Override
-        @NonNull
-        public CharSequence getPageTitle(final int position) {
-            return mFragmentList.get(position).title;
-        }
-
-        void add(@NonNull final FragmentHolder fragmentHolder) {
-            mFragmentList.add(fragmentHolder);
-        }
-    }
-
-    private static class FragmentHolder {
-
-        @NonNull
-        final String title;
-        @NonNull
-        Fragment fragment;
-
-        /**
-         * Constructor.
-         *
-         * @param fm FragmentManager
-         */
-        FragmentHolder(@NonNull final FragmentManager fm,
-                       @NonNull final String tag,
-                       @NonNull final String title) {
-            this.title = title;
-            //noinspection ConstantConditions
-            fragment = fm.findFragmentByTag(tag);
-            if (fragment == null) {
-
-                ArrayList<Site> list;
-                if ((SearchOrderFragment.TAG + TAB_ORDER).equals(tag)) {
-                    list = SearchSites.getSites();
-                } else /* if (t.equals(SearchOrderFragment.TAG + TAB_COVER_ORDER)) */ {
-                    list = SearchSites.getSitesForCoverSearches();
+            int tab;
+            if (count == 1) {
+                if ((mTabsToShow & SearchAdminModel.TAB_BOOKS) != 0) {
+                    tab = SearchAdminModel.TAB_BOOKS;
+                } else if ((mTabsToShow & SearchAdminModel.TAB_COVERS) != 0) {
+                    tab = SearchAdminModel.TAB_COVERS;
+                } else {
+                    throw new IllegalStateException("no active tabs set");
                 }
+            } else {
+                switch (position) {
+                    case 0:
+                        tab = SearchAdminModel.TAB_BOOKS;
+                        break;
 
-                Bundle args = new Bundle();
-                args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES, list);
-                fragment = new SearchOrderFragment();
-                fragment.setArguments(args);
+                    case 1:
+                        tab = SearchAdminModel.TAB_COVERS;
+                        break;
+
+                    default:
+                        throw new UnexpectedValueException(position);
+                }
             }
+
+            Bundle args = new Bundle();
+            if (mArgs != null) {
+                // add original args first, we'll overwrite if needed.
+                args.putAll(mArgs);
+            }
+            args.putInt(SearchAdminModel.BKEY_TABS_TO_SHOW, tab);
+            args.putBoolean(SearchAdminModel.BKEY_PERSIST, mPersist);
+            Fragment fragment = new SearchOrderFragment();
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @StringRes
+        int getTabTitle(final int position) {
+
+            if (count == 1) {
+                if ((mTabsToShow & SearchAdminModel.TAB_BOOKS) != 0) {
+                    return R.string.lbl_books;
+                } else if ((mTabsToShow & SearchAdminModel.TAB_COVERS) != 0) {
+                    return R.string.lbl_covers;
+                } else {
+                    throw new IllegalStateException("no active tabs set");
+                }
+            }
+
+            switch (position) {
+                case 0:
+                    return R.string.lbl_books;
+                case 1:
+                    return R.string.lbl_covers;
+                default:
+                    throw new UnexpectedValueException(position);
+            }
+
         }
     }
 }

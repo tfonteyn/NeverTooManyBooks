@@ -38,22 +38,25 @@ import android.view.MenuItem;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+
+import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
 
 /**
- * Optionally limit the sites to search on by setting {@link UniqueId#BKEY_SEARCH_SITES}.
- *
  * <strong>IMPORTANT:</strong> do not assume {@link #getView()} is valid.
  * We might not have a view when running in scan mode.
  */
@@ -61,7 +64,7 @@ public abstract class BookSearchBaseFragment
         extends Fragment {
 
     /** hosting activity. */
-    AppCompatActivity mHostActivity;
+    FragmentActivity mHostActivity;
     TaskManager mTaskManager;
 
     /** the ViewModel. */
@@ -70,7 +73,7 @@ public abstract class BookSearchBaseFragment
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        mHostActivity = (AppCompatActivity) context;
+        mHostActivity = (FragmentActivity) context;
         mTaskManager = ((BookSearchActivity) mHostActivity).getTaskManager();
     }
 
@@ -87,7 +90,8 @@ public abstract class BookSearchBaseFragment
 
         //noinspection ConstantConditions
         mBookSearchBaseModel = new ViewModelProvider(getActivity()).get(BookSearchBaseModel.class);
-        mBookSearchBaseModel.init(requireArguments());
+        //noinspection ConstantConditions
+        mBookSearchBaseModel.init(getContext(), requireArguments());
 
         // Check general network connectivity. If none, warn the user.
         if (NetworkUtils.networkUnavailable()) {
@@ -159,8 +163,9 @@ public abstract class BookSearchBaseFragment
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
-                        .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
-                                  SearchAdminActivity.TAB_ORDER);
+                        .putExtra(SearchAdminModel.BKEY_TABS_TO_SHOW, SearchAdminModel.TAB_BOOKS)
+                        .putExtra(SearchSites.BKEY_SEARCH_SITES_BOOKS,
+                                  mBookSearchBaseModel.getSearchSites());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
 
@@ -246,9 +251,11 @@ public abstract class BookSearchBaseFragment
             // no changes committed, we got data to use temporarily
             case UniqueId.REQ_PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    int sites = data.getIntExtra(UniqueId.BKEY_SEARCH_SITES,
-                                                 mBookSearchBaseModel.getSearchSites());
-                    mBookSearchBaseModel.setSearchSites(sites);
+                    ArrayList<Site> sites = data.getParcelableArrayListExtra(
+                            SearchSites.BKEY_SEARCH_SITES_BOOKS);
+                    if (sites != null) {
+                        mBookSearchBaseModel.setSearchSites(sites);
+                    }
                     // Make sure that the ASIN option (Amazon) is (not) offered.
                     //noinspection ConstantConditions
                     getActivity().invalidateOptionsMenu();

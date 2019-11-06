@@ -76,6 +76,7 @@ public class CommonSetup {
         when(mContext.getResources()).thenReturn(mResources);
         when(mContext.createConfigurationContext(any())).thenReturn(mContext);
         when(mContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mSharedPreferences);
+        when(mContext.getPackageName()).thenReturn("com.hardbacknutter.nevertoomanybooks");
 
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
 

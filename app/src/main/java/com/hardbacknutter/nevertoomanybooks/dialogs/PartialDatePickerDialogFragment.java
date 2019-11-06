@@ -162,15 +162,18 @@ public class PartialDatePickerDialogFragment
             mMonthNames[i] = String.format("%tb", mCalendarForCalculations);
         }
 
-        mDestinationFieldId = requireArguments().getInt(UniqueId.BKEY_FIELD_ID);
+        Bundle args = requireArguments();
+        mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
 
-        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
-        if (currentArgs.containsKey(BKEY_DATE)) {
-            setDate(currentArgs.getString(BKEY_DATE));
+        args = savedInstanceState != null ? savedInstanceState : args;
+        if (args.containsKey(BKEY_DATE)) {
+            // BKEY_DATE is only present in the original args
+            setDate(args.getString(BKEY_DATE));
         } else {
-            mYear = currentArgs.getInt(BKEY_YEAR);
-            mMonth = currentArgs.getInt(BKEY_MONTH);
-            mDay = currentArgs.getInt(BKEY_DAY);
+            // These are only present in the savedInstanceState
+            mYear = args.getInt(BKEY_YEAR);
+            mMonth = args.getInt(BKEY_MONTH);
+            mDay = args.getInt(BKEY_DAY);
         }
 
         // can't have a null year. The user can/should use the "clear" button if needed.

@@ -43,6 +43,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -119,6 +120,8 @@ public class EditTocEntryDialogFragment
 
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
         mTocEntry = currentArgs.getParcelable(BKEY_TOC_ENTRY);
+        Objects.requireNonNull(mTocEntry, "TocEntry must be passed in args");
+
         mHasMultipleAuthors = currentArgs.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
     }
 
