@@ -328,7 +328,7 @@
     <string name="lbl_search_criteria">Zoekcriteria</string>
     <string name="lbl_search_filtered_on_x">Gefiltered: %1$s</string>
     <string name="title_search_for_books">Zoeken naar boeken</string>
-    <string name="X_lbl_order">Volgorde</string>
+    <string name="pt_website_order_and_enable">Herordenen, inschakelen &amp; uitschakelen</string>
     <string name="lbl_websites">Websites</string>
     <string name="lbl_select_fields">Selecteer velden</string>
     <string name="lbl_send_debug_info">Zend debug informatie</string>
@@ -652,5 +652,8 @@
     <string name="pt_search_reformat_color">Standaardiseer namen van „boekkleuren”</string>
     <string name="lbl_data_import_export">Back-up &amp; import</string>
     <string name="lbl_author_type_intro">Introductie etc.</string>
+    <string name="swap">Wisselen</string>
+    <string name="pt_site_settings">Website instellingen</string>
+    <string name="btn_email">e-mail</string>
 
 </resources>

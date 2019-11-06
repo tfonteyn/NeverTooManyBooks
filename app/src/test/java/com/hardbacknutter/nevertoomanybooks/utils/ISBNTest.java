@@ -124,6 +124,24 @@ class ISBNTest {
     }
 
     @Test
+    void swap() {
+        for (String[] isbnPair : valid) {
+            assertEquals(isbnPair[1].replace("-", ""), ISBN.isbn2isbn(isbnPair[0]));
+            assertEquals(isbnPair[0].replace("-", ""), ISBN.isbn2isbn(isbnPair[1]));
+        }
+    }
+
+    @Test
+    void swap1013() {
+        for (String[] isbnPair : valid) {
+            ISBN isbn10 = new ISBN(isbnPair[0]);
+            ISBN isbn13 = new ISBN(isbnPair[1]);
+            assertEquals(isbn10.to13(), isbn13.to13());
+            assertEquals(isbn10.to10(), isbn13.to10());
+        }
+    }
+
+    @Test
     void matchesValidValid() {
         for (String[] isbnPair : valid) {
             assertTrue(ISBN.matches(isbnPair[0], isbnPair[1], true),

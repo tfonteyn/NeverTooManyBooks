@@ -789,6 +789,9 @@
     <!-- category: search sites -->
     <string name="pg_internet_search">Web Searches</string>
 
+    <string name="pt_website_order_and_enable">Reorder, enable &amp; disable</string>
+    <string name="pt_site_settings">Site settings</string>
+
     <!-- SwitchPreference - allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_mobile_data">Allow mobile data usage</string>
 
@@ -1075,6 +1078,7 @@
     <string name="btn_this_book">This Book</string>
     <string name="btn_reset">Reset</string>
     <string name="btn_delete_credentials">Remove Credentials</string>
+    <string name="btn_email">email</string>
 
     <!-- buttons on the "sorting / styles" dialog -->
     <string name="btn_show_more">Show more…</string>
@@ -1216,6 +1220,7 @@
     <string name="edit">Edit</string>
     <string name="unknown">Unknown</string>
     <string name="done">Done</string>
+    <string name="swap">Swap</string>
 
     <!-- e.g. indicates nothing was selected; nothing was done. -->
     <string name="none">None</string>
@@ -1498,7 +1503,6 @@
     <string name="X_acra_resNotifText">Please tap here for details</string>
 
     <string name="X_lbl_available">Available</string>
-    <string name="X_lbl_order">Order</string>
     <string name="X_lbl_other">Other</string>
     <string name="X_updated">Updated</string>
     <string name="X_size">Size</string>
@@ -1517,11 +1521,9 @@
     <!-- ####################################################################################### -->
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
 
-    <string name="email">email</string>
-
-
     <string name="book_color_full_color">Colored</string>
     <string name="book_color_uncolored">Black &amp; white</string>
+
     <!-- uncolored, but with a support-color.
          e.g. black and white, but additional red for emphasis -->
     <string name="book_color_support_color">Uncolored + support color</string>
@@ -1534,5 +1536,6 @@
     -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
     <string name="menu_scanner_ui">Scanner UI</string>
+
 
 </resources>

@@ -324,7 +324,7 @@
     <string name="lbl_search_criteria">Suchkriterien</string>
     <string name="lbl_search_filtered_on_x">Gefiltert: %1$s</string>
     <string name="title_search_for_books">Suche nach Büchern</string>
-    <string name="X_lbl_order">Reihenfolge</string>
+    <string name="pt_website_order_and_enable">Neu anordnen, aktivieren und deaktivieren</string>
     <string name="lbl_websites">Webseiten</string>
     <string name="lbl_select_fields">Felder auswählen</string>
     <string name="lbl_send_debug_info">Debug-Informationen senden</string>
@@ -648,4 +648,7 @@
     <string name="pt_search_reformat_color">Standardisieren Namen der Buchfarben</string>
     <string name="lbl_data_import_export">Sichern &amp; Importieren</string>
     <string name="lbl_author_type_intro">Einführung etc.</string>
+    <string name="swap">Tauschen</string>
+    <string name="pt_site_settings">Website-Einstellungen</string>
+    <string name="btn_email">Email</string>
 </resources>

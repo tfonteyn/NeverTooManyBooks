@@ -66,6 +66,39 @@
             app:layout_constraintStart_toEndOf="@id/isbn"
             />
 
+        <ImageButton
+            android:id="@+id/btn_swap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/swap"
+            android:src="@drawable/ic_swap_vertical_circle"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="@id/isbn"
+            app:layout_constraintTop_toBottomOf="@id/isbn"
+            tools:visibility="visible"
+            />
+
+        <TextView
+            android:id="@+id/altIsbn"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@id/btn_swap"
+            app:layout_constraintTop_toBottomOf="@id/isbn"
+            tools:text="1234567890"
+            tools:visibility="visible"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/topBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="btn_swap,altIsbn,isbn,isbn_del"
+            />
+
         <Button
             android:id="@+id/isbn_1"
             style="@style/IsbnKeyPadButton"
@@ -73,7 +106,7 @@
             app:layout_constraintBottom_toTopOf="@id/isbn_7"
             app:layout_constraintEnd_toStartOf="@id/isbn_2"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
+            app:layout_constraintTop_toBottomOf="@id/topBarrier"
             tools:ignore="HardcodedText"
             />
 
@@ -84,7 +117,7 @@
             app:layout_constraintBottom_toTopOf="@id/isbn_8"
             app:layout_constraintEnd_toStartOf="@id/isbn_3"
             app:layout_constraintStart_toEndOf="@id/isbn_1"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
+            app:layout_constraintTop_toBottomOf="@id/topBarrier"
             tools:ignore="HardcodedText"
             />
 
@@ -95,7 +128,7 @@
             app:layout_constraintBottom_toTopOf="@id/isbn_9"
             app:layout_constraintEnd_toStartOf="@id/isbn_4"
             app:layout_constraintStart_toEndOf="@id/isbn_2"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
+            app:layout_constraintTop_toBottomOf="@id/topBarrier"
             tools:ignore="HardcodedText"
             />
 
@@ -106,7 +139,7 @@
             app:layout_constraintBottom_toTopOf="@id/isbn_0"
             app:layout_constraintEnd_toStartOf="@id/isbn_5"
             app:layout_constraintStart_toEndOf="@id/isbn_3"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
+            app:layout_constraintTop_toBottomOf="@id/topBarrier"
             tools:ignore="HardcodedText"
             />
 
@@ -117,7 +150,7 @@
             app:layout_constraintBottom_toTopOf="@id/isbn_X"
             app:layout_constraintEnd_toStartOf="@id/isbn_6"
             app:layout_constraintStart_toEndOf="@id/isbn_4"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
+            app:layout_constraintTop_toBottomOf="@id/topBarrier"
             tools:ignore="HardcodedText"
             />
 
@@ -128,7 +161,7 @@
             app:layout_constraintBottom_toTopOf="@id/btn_search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/isbn_5"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
+            app:layout_constraintTop_toBottomOf="@id/topBarrier"
             tools:ignore="HardcodedText"
             />
 

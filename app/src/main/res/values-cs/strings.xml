@@ -322,7 +322,7 @@
     <string name="lbl_search_criteria">Kritéria pro vyhledávání</string>
     <string name="lbl_search_filtered_on_x">Filtrovaný: %1$s</string>
     <string name="title_search_for_books">Hledat knihy</string>
-    <string name="X_lbl_order">Objednávka vyhledávání na webu</string>
+    <string name="pt_website_order_and_enable">Změna pořadí, povolení a zakázání</string>
     <string name="lbl_websites">Webové stránky</string>
     <string name="lbl_select_fields">Zvolit pole</string>
     <string name="lbl_send_debug_info">Odeslat informace o ladění</string>
@@ -642,5 +642,8 @@
     <string name="pt_search_reformat_color">Standardizujte názvy barev knih</string>
     <string name="lbl_data_import_export">Zálohování a import</string>
     <string name="lbl_author_type_intro">Úvod atd.</string>
+    <string name="swap">Vyměnit</string>
+    <string name="pt_site_settings">Nastavení webových stránek</string>
+    <string name="btn_email">e-mailem</string>
 
 </resources>

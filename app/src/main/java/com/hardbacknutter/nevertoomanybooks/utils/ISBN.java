@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * Every product on Amazon has its own ASIN, a unique code used to identify it.
  * For books, the ASIN is the same as the ISBN-10 number, but for all other products a new ASIN
  * is created when the item is uploaded to their catalogue.
+ * <p>
+ * Lots of info:
+ * <a href="https://isbn-information.com">https://isbn-information.com</a>
  */
 public class ISBN {
 
@@ -168,6 +172,10 @@ public class ISBN {
 
     /**
      * Validate an ISBN.
+     *
+     * @param isbn to check
+     *
+     * @return {@code true} if valid
      */
     public static boolean isValid(@Nullable final String isbn) {
         if (isbn == null || isbn.isEmpty()) {
@@ -212,8 +220,6 @@ public class ISBN {
      * <li>Either one invalid ? no match</li>
      * <li>ISBN/UPC as objects equal ? MATCH</li>
      * </ol>
-     * <p>
-     * TODO: SIMPLIFY ISBN matches...
      *
      * @param code1  first code
      * @param code2  second code
@@ -247,11 +253,11 @@ public class ISBN {
             return o1.equals(o2);
 
         } else {
-            // this covers comparing 2 UPC codes, of in fact any code whatsoever.
-            String i1 = DASH_TO_EMPTY_PATTERN.matcher(code1)
-                                             .replaceAll(Matcher.quoteReplacement(""));
-            String i2 = DASH_TO_EMPTY_PATTERN.matcher(code2)
-                                             .replaceAll(Matcher.quoteReplacement(""));
+            // this covers comparing 2 UPC codes, or in fact any other code whatsoever.
+            // we first strip '-' characters.
+            String litRepString = Matcher.quoteReplacement("");
+            String i1 = DASH_TO_EMPTY_PATTERN.matcher(code1).replaceAll(litRepString);
+            String i2 = DASH_TO_EMPTY_PATTERN.matcher(code2).replaceAll(litRepString);
             if (i1.length() == i2.length()) {
                 return code1.equalsIgnoreCase(code2);
             } else {
@@ -264,6 +270,10 @@ public class ISBN {
      * Changes format from 10->13 or 13->10.
      * <p>
      * If the isbn was invalid, simply returns the input string.
+     *
+     * @param isbn to transform
+     *
+     * @return transformed isbn
      */
     @NonNull
     public static String isbn2isbn(@NonNull final String isbn) {
@@ -321,26 +331,19 @@ public class ISBN {
         if (digits == null) {
             return false;
         }
-
-        switch (digits.size()) {
-            case 10:
-                return getChecksum(digits) == 0;
-            case 13:
-                // Start with 978 or 979
-                return digits.get(0) == 9 && digits.get(1) == 7
-                       && (digits.get(2) == 8 || digits.get(2) == 9)
-                       && (getChecksum(digits) == 0);
-            default:
-                return false;
+        int len = digits.size();
+        if (len != 10 && len != 13) {
+            return false;
         }
+        return getCheckDigit(digits) == digits.get(digits.size() - 1);
     }
 
     public boolean is10() {
-        return isValid() && (mDigits.size() == 10);
+        return mDigits != null && (mDigits.size() == 10) && isValid();
     }
 
     public boolean is13() {
-        return isValid() && (mDigits.size() == 13);
+        return mDigits != null && (mDigits.size() == 13) && isValid();
     }
 
     /**
@@ -351,7 +354,8 @@ public class ISBN {
      * @throws NumberFormatException if conversion fails
      */
     @NonNull
-    private String to10()
+    @VisibleForTesting
+    String to10()
             throws NumberFormatException {
         if (!isValid()) {
             throw new NumberFormatException(ERROR_UNABLE_TO_CONVERT);
@@ -362,13 +366,13 @@ public class ISBN {
             return concat(mDigits);
         }
 
-        // need to convert from ISBN-13
+        // need to convert from ISBN-13, drop the first 3 digits, and copy the next 9.
         List<Integer> digits = new ArrayList<>();
         for (int i = 3; i < 12; i++) {
             digits.add(mDigits.get(i));
         }
-        // but replace the last one with the new checksum
-        digits.set(digits.size() - 1, (11 - getChecksum(digits)) % 11);
+        // and add the new checksum
+        digits.add(getCheckDigit(digits));
 
         return concat(digits);
     }
@@ -381,7 +385,8 @@ public class ISBN {
      * @throws NumberFormatException if conversion fails
      */
     @NonNull
-    private String to13()
+    @VisibleForTesting
+    String to13()
             throws NumberFormatException {
         if (!isValid()) {
             throw new NumberFormatException(ERROR_UNABLE_TO_CONVERT);
@@ -398,48 +403,86 @@ public class ISBN {
         digits.add(7);
         digits.add(8);
 
-        // copy
+        // copy the first 9 digits
         for (int i = 0; i < 9; i++) {
             digits.add(mDigits.get(i));
         }
 
-        // and set the checksum digit
-        digits.set(digits.size() - 1, (10 - getChecksum(digits)) % 10);
+        // and add the new checksum
+        digits.add(getCheckDigit(digits));
 
         return concat(digits);
     }
 
     /**
-     * @param digits list with the digits, either 13 or 10
+     * Calculate the check-digit (checksum) for the given ISBN.
      *
-     * @return 0 for valid, or the (10 - c) value,
-     * where (10 - getChecksum()) IS the checksum digit
+     * @param digits list with the digits, either 13 (or 12) or 10 (or 9)
+     *
+     * @return the check digit.
      *
      * @throws NumberFormatException if the digits list has an incorrect length
      */
-    private int getChecksum(@NonNull final List<Integer> digits)
+    private int getCheckDigit(@NonNull final List<Integer> digits)
             throws NumberFormatException {
-        int sum = 0;
+
         switch (digits.size()) {
-            case 10:
+            case 9:
+            case 10: {
+                // 1. Take the first 9 digits of the 10-digit ISBN.
+                // 2. Multiply each number in turn, from left to right by a number.
+                //    The first, leftmost, digit of the nine is multiplied by 10,
+                //    then working from left to right, each successive digit is
+                //    multiplied by one less than the one before.
+                //    So the second digit is multiplied by 9, the third by 8,
+                //    and so on to the ninth which is multiplied by 2.
+                //
+                // 3. Add all of the 9 products.
+                int sum = 0;
                 int multiplier = 10;
-                for (int d : digits) {
-                    sum += d * multiplier;
+                for (int dig = 1; dig < 10; dig++) {
+                    sum += digits.get(dig - 1) * multiplier;
                     multiplier--;
                 }
-                return sum % 11;
 
-            case 13:
-                for (int i = 0; i <= 12; i += 2) {
-                    sum += digits.get(i);
+                // 4. Do a modulo 11 division on the sum.
+                int modulo = sum % 11;
+                if (modulo == 0) {
+                    return 0;
+                } else {
+                    return 11 - modulo;
                 }
-                for (int i = 1; i < 12; i += 2) {
-                    sum += digits.get(i) * 3;
+            }
+            case 12:
+            case 13: {
+                // 1. Take the first 12 digits of the 13-digit ISBN
+                // 2. Multiply each number in turn, from left to right by a number.
+                //    The first, leftmost, digit is multiplied by 1, the second by 3,
+                //    the third by 1 again, the fourth by 3 again, and so on to
+                //    the eleventh which is multiplied by 1 and the twelfth by 3.
+                //
+                // 3. Add all of the 12 products.
+                int sum = 0;
+                for (int dig = 1; dig < 13; dig += 2) {
+                    sum += digits.get(dig - 1);
                 }
-                return sum % 10;
+                for (int dig = 2; dig < 13; dig += 2) {
+                    sum += digits.get(dig - 1) * 3;
+                }
 
+                // 4. Do a modulo 10 division on the sum.
+                int modulo = sum % 10;
+
+                if (modulo == 0) {
+                    // If it's a zero, then the check digit is zero.
+                    return 0;
+                } else {
+                    // Otherwise subtract the remainder from 10.
+                    return 10 - modulo;
+                }
+            }
             default:
-                throw new NumberFormatException("ISBN incorrect length");
+                throw new NumberFormatException("ISBN incorrect length: " + digits.size());
         }
     }
 
@@ -461,9 +504,31 @@ public class ISBN {
     }
 
     /**
+     * Get the ISBN as a text string.
+     *
+     * <strong>Note:</strong> string can be an invalid isbn.
+     *
+     * @return string
+     */
+    @NonNull
+    public String getText() {
+        return concat(mDigits);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ISBN{"
+               + "mDigits=" + mDigits
+               + '}';
+    }
+
+    /**
      * This method does NOT check if the actual digits form a valid ISBN.
      * <p>
-     * Allows and ignore '-' characters.
+     * Allows and ignore '-' and space characters.
+     *
+     * @param isbn to convert
      *
      * @return list of digits
      *
@@ -496,7 +561,7 @@ public class ISBN {
                 digit = 10;
                 foundX = true;
 
-            } else if (c == '-') {
+            } else if (c == '-' || c == ' ') {
                 continue;
 
             } else {
@@ -531,17 +596,11 @@ public class ISBN {
             return new ArrayList<>();
         }
 
-        List<Integer> tmp = isbnToDigits(isbnPrefix + upc.substring(12));
-        // add bogus checksum
-        tmp.add(10);
+        List<Integer> digits = isbnToDigits(isbnPrefix + upc.substring(12));
 
-        // calc and add real checksum
-        int c = getChecksum(tmp);
-        if (c != 0) {
-            c = 10 - c;
-        }
-        tmp.set(tmp.size() - 1, c);
-        return tmp;
+        // and add the new checksum
+        digits.add(getCheckDigit(digits));
+        return digits;
     }
 
     @Override
@@ -561,8 +620,6 @@ public class ISBN {
      * </ol>
      *
      * <strong>Note:</strong> hash codes are done over the {@link #mDigits} objects.
-     * <p>
-     * TODO: SIMPLIFY ISBN equals...
      */
     @Override
     public boolean equals(@Nullable final Object obj) {
@@ -586,24 +643,22 @@ public class ISBN {
 
         // Both are valid ISBN codes and we know the lengths are either 10 or 13
         // when we get here. So ... compare the significant digits:
-        // ISBN13: skip the first 3 character, and don't use the checksum.
-        // ISBN10: don't use the checksum.
-        // len is always 9, but allow future extensions (non-isbn?)
+        // ISBN13: skip the first 3 character, and don't include the checksum.
+        // ISBN10: don't include the checksum.
         if (mDigits.size() == 10) {
-            return digitsMatch(9, 0, cmp, 3);
+            return digitsMatch(0, cmp, 3);
         } else {
-            return digitsMatch(9, 3, cmp, 0);
+            return digitsMatch(3, cmp, 0);
         }
     }
 
     /**
      * Check if all digits are the same.
      */
-    private boolean digitsMatch(@SuppressWarnings("SameParameterValue") final int lenToCheck,
-                                int posFrom1,
+    private boolean digitsMatch(int posFrom1,
                                 @NonNull final ISBN dig2,
                                 int posFrom2) {
-        for (int i = 0; i < lenToCheck; i++) {
+        for (int i = 0; i < 9; i++) {
             if (!mDigits.get(posFrom1++).equals(dig2.mDigits.get(posFrom2++))) {
                 return false;
             }

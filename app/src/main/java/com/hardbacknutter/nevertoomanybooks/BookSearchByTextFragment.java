@@ -77,6 +77,8 @@ public class BookSearchByTextFragment
                                              @NonNull final Bundle bookData) {
                     try {
                         if (!wasCancelled) {
+                            // if any of the search fields are in fact not in the result,
+                            // we add them manually as the template for a new book.
                             if (!bookData.containsKey(DBDefinitions.KEY_TITLE)) {
                                 bookData.putString(DBDefinitions.KEY_TITLE,
                                                    mTitleView.getText().toString().trim());
@@ -98,10 +100,11 @@ public class BookSearchByTextFragment
                                     .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
 
-                            // Clear the data entry fields ready for the next one
+                            // Clear the data entry fields
                             mAuthorView.setText("");
                             mTitleView.setText("");
                             mPublisherView.setText("");
+                            mBookSearchBaseModel.clearSearchText();
                         }
                     } finally {
                         mBookSearchBaseModel.setSearchCoordinator(0);

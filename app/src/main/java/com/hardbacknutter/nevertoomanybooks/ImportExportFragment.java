@@ -302,7 +302,7 @@ public class ImportExportFragment
     @Override
     @CallSuper
     public void onResume() {
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugEnter(this, "onResume");
         }
         super.onResume();
@@ -312,7 +312,7 @@ public class ImportExportFragment
                 return;
             }
         }
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugExit(this, "onResume");
         }
     }
@@ -799,7 +799,7 @@ public class ImportExportFragment
                 .create();
 
         if (offerEmail) {
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.email),
+            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.btn_email),
                              (d, which) -> emailExportFile(exportHelper));
         }
 

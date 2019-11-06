@@ -320,7 +320,7 @@
     <string name="lbl_search_criteria">Параметры поиска</string>
     <string name="lbl_search_filtered_on_x">отфильтрованный: %1$s</string>
     <string name="title_search_for_books">Поиск книг</string>
-    <string name="X_lbl_order">порядок</string>
+    <string name="pt_website_order_and_enable">Изменить порядок, включить и отключить</string>
     <string name="lbl_websites">Веб-сайты</string>
     <string name="lbl_select_fields">Выберите поля</string>
     <string name="lbl_send_debug_info">Отправить отладочную информацию</string>
@@ -640,5 +640,8 @@
     <string name="pt_search_reformat_color">Стандартизировать названия книг</string>
     <string name="lbl_data_import_export">Резервное копирование и импорт</string>
     <string name="lbl_author_type_intro">Введение и т. Д.</string>
+    <string name="swap">обменивать</string>
+    <string name="pt_site_settings">Настройки сайта</string>
+    <string name="btn_email">е-мейл</string>
 
 </resources>

@@ -33,6 +33,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,6 +42,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -115,10 +120,6 @@ public class BookSearchByIsbnFragment
     /** User input field. */
     @Nullable
     private EditIsbn mIsbnView;
-    /** The scanner. */
-    @Nullable
-    private ScannerViewModel mScannerModel;
-
     /** process search results. */
     private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
             new SearchCoordinator.SearchFinishedListener() {
@@ -126,19 +127,34 @@ public class BookSearchByIsbnFragment
                 public void onSearchFinished(final boolean wasCancelled,
                                              @NonNull final Bundle bookData) {
                     try {
-                        if (!wasCancelled) {
-                            Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-                            startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-
-                            // Clear the data entry fields ready for the next one
-                            if (mIsbnView != null) {
-                                mIsbnView.setText("");
-                            }
-                        } else {
+                        if (wasCancelled) {
                             // the search was cancelled, resume scanning
                             if (isScanMode()) {
                                 startScannerActivity();
+                            }
+                        } else {
+                            // A non-empty result will have a title or at least 3 fields.
+                            // The isbn field will always be present as we searched on one.
+                            // The title field, *might* be there but *might* be empty.
+                            // So a valid result means we either need a title, or a
+                            // third field.
+                            String title = bookData.getString(DBDefinitions.KEY_TITLE);
+                            if ((title != null && !title.isEmpty())
+                                || bookData.size() > 2) {
+                                Intent intent = new Intent(getContext(), EditBookActivity.class)
+                                        .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                                startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+
+                                // Clear the data entry fields, ready for the next one.
+                                if (mIsbnView != null) {
+                                    mIsbnView.setText("");
+                                }
+                                mBookSearchBaseModel.clearSearchText();
+
+                            } else {
+                                //noinspection ConstantConditions
+                                UserMessage.show(getActivity(),
+                                                 R.string.warning_no_matching_book_found);
                             }
                         }
                     } finally {
@@ -147,6 +163,14 @@ public class BookSearchByIsbnFragment
                     }
                 }
             };
+    @Nullable
+    private TextView mAltIsbnView;
+
+    /** The scanner. */
+    @Nullable
+    private ScannerViewModel mScannerModel;
+    @Nullable
+    private ImageButton mAltBtnView;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -185,6 +209,8 @@ public class BookSearchByIsbnFragment
 
         View view = inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
         mIsbnView = view.findViewById(R.id.isbn);
+        mAltIsbnView = view.findViewById(R.id.altIsbn);
+        mAltBtnView = view.findViewById(R.id.btn_swap);
         return view;
     }
 
@@ -247,8 +273,15 @@ public class BookSearchByIsbnFragment
         view.findViewById(R.id.isbn_9).setOnClickListener(v -> mIsbnView.onKey("9"));
         view.findViewById(R.id.isbn_X).setOnClickListener(v -> mIsbnView.onKey("X"));
 
-        view.findViewById(R.id.isbn_del)
-            .setOnClickListener(v -> mIsbnView.onKey(KeyEvent.KEYCODE_DEL));
+        Button delBtn = view.findViewById(R.id.isbn_del);
+
+        delBtn.setOnClickListener(v -> mIsbnView.onKey(KeyEvent.KEYCODE_DEL));
+        delBtn.setOnLongClickListener(v -> {
+            mIsbnView.setText("");
+            //noinspection ConstantConditions
+            mAltIsbnView.setText("");
+            return true;
+        });
 
         view.findViewById(R.id.btn_search).setOnClickListener(v -> {
             //noinspection ConstantConditions
@@ -257,7 +290,47 @@ public class BookSearchByIsbnFragment
             prepareSearch(isbn);
         });
 
-        //URGENT: provide a 10-13 converter button. and in StripInfo add a search 'the other isbn'
+        // allow a click on either the icon or the text view to swap numbers
+        //noinspection ConstantConditions
+        mAltIsbnView.setOnClickListener(this::onSwapNumbers);
+        //noinspection ConstantConditions
+        mAltBtnView.setOnClickListener(this::onSwapNumbers);
+
+        // auto update the alternative ISBN number.
+        mIsbnView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(final CharSequence s,
+                                          final int start,
+                                          final int count,
+                                          final int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(final CharSequence s,
+                                      final int start,
+                                      final int before,
+                                      final int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(final Editable s) {
+                String isbn = s.toString();
+                int len = isbn.length();
+                if (len == 10 || len == 13) {
+                    String altIsbn = ISBN.isbn2isbn(isbn);
+                    if (!altIsbn.equals(isbn)) {
+                        mAltIsbnView.setText(altIsbn);
+                        mAltIsbnView.setVisibility(View.VISIBLE);
+                        mAltBtnView.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    mAltIsbnView.setVisibility(View.INVISIBLE);
+                    mAltBtnView.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
 
         // init the isbn edit field if needed (avoid initializing twice)
         if (mAllowAsin) {
@@ -612,6 +685,7 @@ public class BookSearchByIsbnFragment
             case UniqueId.REQ_BOOK_EDIT: {
                 // first do the common action when the user has saved the data for the book.
                 super.onActivityResult(requestCode, resultCode, data);
+
                 if (isScanMode()) {
                     // go scan next book until the user cancels scanning.
                     startScannerActivity();
@@ -651,5 +725,19 @@ public class BookSearchByIsbnFragment
             //noinspection ConstantConditions
             mBookSearchBaseModel.setIsbnSearchText(mIsbnView.getText().toString().trim());
         }
+    }
+
+    /**
+     * Swap the content of ISBN and alternative-ISBN texts.
+     *
+     * @param view that was clicked on
+     */
+    private void onSwapNumbers(@SuppressWarnings("unused") @NonNull final View view) {
+        //noinspection ConstantConditions
+        String isbn = mIsbnView.getText().toString().trim();
+        //noinspection ConstantConditions
+        String altIsbn = mAltIsbnView.getText().toString().trim();
+        mIsbnView.setText(altIsbn);
+        mAltIsbnView.setTag(isbn);
     }
 }
