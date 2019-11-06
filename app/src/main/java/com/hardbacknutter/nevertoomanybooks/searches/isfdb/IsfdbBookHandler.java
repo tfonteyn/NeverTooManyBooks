@@ -448,7 +448,7 @@ public class IsfdbBookHandler
         String tmpString;
 
         for (Element li : lis) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
                 Logger.debug(this, "fetch", li.toString());
             }
             try {
@@ -471,7 +471,7 @@ public class IsfdbBookHandler
                     fieldName = fieldName.substring(3, fieldName.length() - 4);
                 }
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
                     Logger.debug(this, "fetch", "fieldName=`" + fieldName + '`');
                 }
 

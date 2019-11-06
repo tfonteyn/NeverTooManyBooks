@@ -46,15 +46,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.net.ProtocolException;
 import java.nio.channels.FileChannel;
-import java.util.Comparator;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -167,6 +164,7 @@ public final class StorageUtils {
     /**
      * Check the current state of the primary shared/external storage media.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isExternalStorageMounted() {
         /*
          * Returns the current state of the primary Shared Storage media.
@@ -392,10 +390,6 @@ public final class StorageUtils {
             try {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                    Logger.debug(StorageUtils.class, "deleteFile",
-                                 "file=" + file.getAbsolutePath());
-                }
             } catch (@NonNull final SecurityException e) {
                 Logger.error(StorageUtils.class, e);
             }
@@ -414,11 +408,6 @@ public final class StorageUtils {
      */
     public static boolean renameFile(@NonNull final File source,
                                      @NonNull final File destination) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            Logger.debug(StorageUtils.class, "renameFile",
-                         "src=" + source.getAbsolutePath(),
-                         "dst=" + destination.getAbsolutePath());
-        }
         if (source.exists()) {
             try {
                 //noinspection ResultOfMethodCallIgnored
@@ -648,45 +637,6 @@ public final class StorageUtils {
         } else {
             // Show MB otherwise...
             return context.getString(R.string.megabytes, bytes / 1_000_000);
-        }
-    }
-
-    /**
-     * Compare two files based on date. Used for sorting file list by date.
-     *
-     * <a href="https://docs.oracle.com/javase/10/docs/api/java/util/Comparator.html">
-     * https://docs.oracle.com/javase/10/docs/api/java/util/Comparator.html</a>
-     * Note: It is generally a good idea for comparators to also implement java.io.Serializable
-     */
-    static class FileDateComparator
-            implements Comparator<File>, Serializable {
-
-        private static final long serialVersionUID = -1173177810355471106L;
-        /** Ascending is >= 0, Descending is < 0. */
-        private final int mDirection;
-
-        /**
-         * Constructor.
-         */
-        FileDateComparator(@SuppressWarnings("SameParameterValue") final int direction) {
-            mDirection = direction < 0 ? -1 : 1;
-        }
-
-        /**
-         * Compare based on modified date.
-         */
-        @Override
-        public int compare(@NonNull final File o1,
-                           @NonNull final File o2) {
-            final long l = o1.lastModified();
-            final long r = o2.lastModified();
-            if (l < r) {
-                return -mDirection;
-            } else if (l > r) {
-                return mDirection;
-            } else {
-                return 0;
-            }
         }
     }
 }

@@ -214,14 +214,14 @@ public class BookFragment
     @CallSuper
     @Override
     public void onResume() {
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugEnter(this, "onResume");
         }
         // The parent will kick of the process that triggers {@link #onLoadFieldsFromBook}.
         super.onResume();
         ((BookDetailsActivity) mHostActivity).registerOnTouchListener(mOnTouchListener);
 
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugExit(this, "onResume");
         }
     }

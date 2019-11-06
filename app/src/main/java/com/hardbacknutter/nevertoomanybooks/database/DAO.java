@@ -1622,10 +1622,6 @@ public class DAO
         book.updateLocale();
 
         try {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_INSERT) {
-                Logger.debug(this, "insertBook", book);
-            }
-            // Cleanup fields (Author, Series, title and remove blank fields, etc...)
             preprocessBook(context, book);
 
             // Make sure we have an author
@@ -1703,12 +1699,6 @@ public class DAO
         book.updateLocale();
 
         try {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_UPDATE) {
-                Logger.debug(this, "updateBook", book);
-            }
-
-            // Cleanup fields (Author, Series, title, 'sameAuthor' if anthology,
-            // and remove blank fields for which we have defaults)
             preprocessBook(context, book);
 
             ContentValues cv = filterValues(context, TBL_BOOKS, book, book.getLocale());

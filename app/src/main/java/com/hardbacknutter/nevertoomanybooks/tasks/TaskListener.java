@@ -128,6 +128,7 @@ public interface TaskListener<Result> {
      */
     class TaskProgressMessage {
 
+        @SuppressWarnings("WeakerAccess")
         public final int taskId;
         @SuppressWarnings("WeakerAccess")
         @Nullable

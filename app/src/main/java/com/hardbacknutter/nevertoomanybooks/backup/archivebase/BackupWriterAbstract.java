@@ -351,7 +351,7 @@ public abstract class BackupWriterAbstract
             results.coversProcessed += coversExported + missing + skipped;
         }
 
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
             Logger.debug(this, "doCovers",
                          " written=" + coversExported,
                         "missing=" + missing, "skipped=" + skipped);

@@ -808,7 +808,7 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public void onResume() {
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugEnter(this, "onResume");
         }
         super.onResume();
@@ -880,7 +880,7 @@ public class BooksOnBookshelf
         // always reset for next iteration.
         mModel.setForceRebuildInOnResume(false);
 
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugExit(this, "onResume");
         }
     }

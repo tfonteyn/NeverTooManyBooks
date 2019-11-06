@@ -429,7 +429,7 @@ public class OpenLibraryManager
     private Bundle handleResponse(@NonNull final JSONObject jsonObject,
                                   final boolean fetchThumbnail)
             throws JSONException {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY_SEARCH) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY) {
             Logger.debugEnter(this, "handleResponse", jsonObject.toString(2));
         }
         Iterator<String> it = jsonObject.keys();
@@ -605,7 +605,7 @@ public class OpenLibraryManager
         }
         bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY_SEARCH) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY) {
             Logger.debugExit(this, "handleBook", bookData.toString());
         }
         return bookData;

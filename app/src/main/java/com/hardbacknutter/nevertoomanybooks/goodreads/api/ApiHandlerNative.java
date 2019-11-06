@@ -110,7 +110,7 @@ abstract class ApiHandlerNative {
                     @Nullable final DefaultHandler requestHandler)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        if (BuildConfig.DEBUG && (DEBUG_SWITCHES.NETWORK || DEBUG_SWITCHES.DUMP_HTTP_URL)) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Logger.debug(this, "executeGet", "url=" + url);
         }
 
@@ -154,7 +154,7 @@ abstract class ApiHandlerNative {
                      @Nullable final DefaultHandler requestHandler)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        if (BuildConfig.DEBUG && (DEBUG_SWITCHES.NETWORK || DEBUG_SWITCHES.DUMP_HTTP_URL)) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Logger.debug(this, "executePost", "url=" + url);
         }
 
@@ -303,7 +303,7 @@ abstract class ApiHandlerNative {
                          @SuppressWarnings("SameParameterValue") final boolean requiresSignature)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        if (BuildConfig.DEBUG && (DEBUG_SWITCHES.NETWORK || DEBUG_SWITCHES.DUMP_HTTP_URL)) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Logger.debug(this, "executeRawGet", "url=" + url);
         }
 

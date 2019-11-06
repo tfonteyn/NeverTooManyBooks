@@ -36,8 +36,6 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
@@ -154,9 +152,6 @@ public class IndexDefinition {
         sql.append(" INDEX ").append(mName).append(" ON ").append(mTable.getName())
            .append('(').append(TextUtils.join(",", mDomains)).append(')');
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_DDL) {
-            Logger.debugExit(this, "getSqlCreateStatement", sql.toString());
-        }
         return sql.toString();
     }
 }

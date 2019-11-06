@@ -107,7 +107,7 @@ public abstract class BookSearchBaseFragment
     @Override
     @CallSuper
     public void onResume() {
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugEnter(this, "onResume");
         }
         super.onResume();
@@ -122,7 +122,7 @@ public abstract class BookSearchBaseFragment
                     .addListener(mBookSearchBaseModel.getSearchCoordinatorId(), true,
                                  getSearchFinishedListener());
         }
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugExit(this, "onResume");
         }
     }

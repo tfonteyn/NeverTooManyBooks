@@ -40,6 +40,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
@@ -269,7 +270,7 @@ public class CsvExporter
                 }
             }
         } finally {
-            if (BuildConfig.DEBUG /* always */) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
                 Logger.debug(this, "doBooks", "results=" + results);
             }
         }

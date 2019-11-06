@@ -138,7 +138,7 @@ public class IsfdbEditionsHandler
             Logger.warnWithStackTrace(this, "pageUrl=" + pageUrl);
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
             Logger.debugExit(this, "fetch", mEditions);
         }
         return mEditions;

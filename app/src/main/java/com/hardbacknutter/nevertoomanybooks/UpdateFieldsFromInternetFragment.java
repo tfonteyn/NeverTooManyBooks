@@ -208,7 +208,7 @@ public class UpdateFieldsFromInternetFragment
     @Override
     @CallSuper
     public void onResume() {
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugEnter(this, "onResume");
         }
         super.onResume();
@@ -223,7 +223,7 @@ public class UpdateFieldsFromInternetFragment
             UpdateFieldsFromInternetTask.MESSAGE_SWITCH
                     .addListener(mModel.getUpdateSenderId(), true, mManagedTaskListener);
         }
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugExit(this, "onResume");
         }
     }

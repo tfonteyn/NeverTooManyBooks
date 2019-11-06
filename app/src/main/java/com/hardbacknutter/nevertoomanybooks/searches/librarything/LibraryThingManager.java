@@ -221,7 +221,7 @@ public class LibraryThingManager
             return editions;
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
             Logger.debug(LibraryThingManager.class, "searchEditions", "isbn=" + isbn);
         }
 
@@ -248,7 +248,7 @@ public class LibraryThingManager
             }
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
             Logger.debug(LibraryThingManager.class, "searchEditions", "editions=" + editions);
         }
         return editions;

@@ -47,10 +47,8 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
@@ -147,9 +145,6 @@ public class TableDefinition
      */
     private static void drop(@NonNull final SynchronizedDb db,
                              @NonNull final String name) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_DDL) {
-            Logger.debug(TableDefinition.class, "drop", "TABLE:" + name);
-        }
         db.execSQL("DROP TABLE IF EXISTS " + name);
     }
 
@@ -763,9 +758,6 @@ public class TableDefinition
         // end of column/constraint list
         sql.append(')');
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_DDL) {
-            Logger.debugExit(this, "getSqlCreateStatement", sql.toString());
-        }
         return sql.toString();
     }
 

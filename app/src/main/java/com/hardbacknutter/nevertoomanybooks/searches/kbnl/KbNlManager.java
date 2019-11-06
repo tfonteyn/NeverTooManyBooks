@@ -102,7 +102,8 @@ public class KbNlManager
     /**
      * param 1: site specific author id.
      */
-//    private static final String AUTHOR_URL = getBaseURL(context) + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
+//    private static final String AUTHOR_URL = getBaseURL(context)
+//    + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
     public KbNlManager() {
     }
 

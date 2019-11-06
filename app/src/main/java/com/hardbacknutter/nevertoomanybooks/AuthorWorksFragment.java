@@ -142,7 +142,7 @@ public class AuthorWorksFragment
     @Override
     @CallSuper
     public void onResume() {
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugEnter(this, "onResume");
         }
         super.onResume();
@@ -152,7 +152,7 @@ public class AuthorWorksFragment
                 return;
             }
         }
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugExit(this, "onResume");
         }
     }

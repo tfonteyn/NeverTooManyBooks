@@ -78,16 +78,7 @@ public class StartupViewModel
             PREF_PREFIX + "rebuild.ob.title";
 
     /** Number of app startup's between offers to backup. */
-
-    private static final int PROMPT_WAIT_BACKUP;
-
-    static {
-        if (BuildConfig.DEBUG /* always */) {
-            PROMPT_WAIT_BACKUP = 5;
-        } else {
-            PROMPT_WAIT_BACKUP = 5;
-        }
-    }
+    private static final int PROMPT_WAIT_BACKUP = 5;
 
     /** TaskId holder. Added when started. Removed when stopped. */
     @NonNull

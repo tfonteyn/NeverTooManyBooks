@@ -25,15 +25,12 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbBookHandler;
-import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoBookHandler;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -56,109 +53,76 @@ public final class DEBUG_SWITCHES {
 //            System.setProperty("debug","true");
 //    }
 
-
-    /** Enable strict mode reporting on network,disc,... usage. */
-    static final boolean STRICT_MODE = false;
-
-    /* ****************************************************************************************** */
-    /** Make the {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}
+    /**
+     * Make the {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}
      * use standard tables instead of Temporary ones.
      */
     public static final boolean BOOK_LIST_USES_STANDARD_TABLES = false;
-
-    /** {@link BooksOnBookshelf}#fixPositionWhenDrawn. */
-    static final boolean BOB_FIX_POSITION = false;
-
-    /* ****************************************************************************************** */
     /** enable timers for performance measurements. */
     public static final boolean TIMERS = false;
+
     /** Log the full flow of {@link Activity#recreate()}. */
     public static final boolean RECREATE_ACTIVITY = false;
-
-    /* ****************************************************************************************** */
     /** track the flow & values on startActivityForResult & onActivityResult. */
     public static final boolean ON_ACTIVITY_RESULT = false;
+
     /** reading/writing a backup file. */
     public static final boolean BACKUP = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel}. */
     public static final boolean STARTUP_TASKS = false;
-
-    /* ****************************************************************************************** */
     /** {@link com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask}. */
     public static final boolean MANAGED_TASKS = false;
     /** Where listeners are held in a WeakReference, log dead references. */
     public static final boolean TRACE_WEAK_REFERENCES = false;
-    /* ****************************************************************************************** */
-
     /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}. */
     public static final boolean BOB_THE_BUILDER = false;
     /**
      * {@link com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel#initBookList}.
      */
     public static final boolean BOB_INIT_BOOK_LIST = false;
-
     /**
      * {@link com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel}.
      * Expand/Collapsing nodes.
      */
     public static final boolean BOOK_LIST_NODE_STATE = false;
-
     /**
      * {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor}.
      */
     public static final boolean BOB_PSEUDO_CURSOR = false;
-
-    /* ****************************************************************************************** */
-
     /** {@link CoverBrowserFragment}. */
     public static final boolean COVER_BROWSER = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.utils.ImageUtils}. */
     public static final boolean IMAGE_UTILS = false;
-    /** {@link com.hardbacknutter.nevertoomanybooks.utils.StorageUtils}. */
-    public static final boolean STORAGE_UTILS = false;
-    /** everything related to Dates/Timezone. */
+
+    /** all things Dates/Timezone related. */
     public static final boolean DATETIME = false;
     /** all things XML related. */
     public static final boolean XML = false;
-    /**
-     * {@link com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils}.
-     * {@link com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection}.
-     */
+    /** all things network related. */
     public static final boolean NETWORK = false;
+
+
+    /** {@link com.hardbacknutter.nevertoomanybooks.searches.JsoupBase}. */
+    public static final boolean JSOUP = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator} and related. */
     public static final boolean SEARCH_INTERNET = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.goodreads}. */
     public static final boolean GOODREADS = false;
-
-    /* ****************************************************************************************** */
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager}. */
-    public static final boolean LIBRARY_THING_MANAGER = false;
-    /** {@link IsfdbBookHandler}. */
-    public static final boolean ISFDB_SEARCH = false;
-    /** {@link IsfdbBookHandler}. */
-    public static final boolean ISFDB_LOAD_PAGE = false;
-    /** {@link StripInfoBookHandler}. */
-    public static final boolean STRIP_INFO_LOAD_PAGE = false;
+    public static final boolean LIBRARY_THING = false;
+    /** {@link com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbBookHandler}. */
+    public static final boolean ISFDB = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager}. */
-    public static final boolean OPEN_LIBRARY_SEARCH = false;
+    public static final boolean OPEN_LIBRARY = false;
     /** {@link DAO}. Check for leaking instances. */
     public static final boolean DAO_INSTANCE_COUNT = false;
-
-    /* ****************************************************************************************** */
-    /** Global replace Author/Series/... */
+    /** {@link DAO}. Global replace Author/Series/... */
     public static final boolean DAO_GLOBAL_REPLACE = false;
-    /** Insert & update TOC entries. */
+    /** {@link DAO}. Insert & update TOC entries. */
     public static final boolean DAO_TOC = false;
+
     /** {@link com.hardbacknutter.nevertoomanybooks.database.cursors.TrackedCursor}. */
     public static final boolean TRACKED_CURSOR = false;
-    /**
-     * Dump SQL CREATE / DROP strings to the log.
-     * {@link com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition}
-     * {@link com.hardbacknutter.nevertoomanybooks.database.definitions.IndexDefinition}
-     */
-    public static final boolean SQL_DDL = false;
-
-    /* ****************************************************************************************** */
     /** {@link com.hardbacknutter.nevertoomanybooks.database.dbsync}. */
     public static final boolean DB_SYNC = false;
     public static final boolean DB_SYNC_LOCKING = false;
@@ -190,40 +154,24 @@ public final class DEBUG_SWITCHES {
      * {@link SynchronizedStatement#executeUpdateDelete()}
      */
     public static final boolean DB_SYNC_EXECUTE_UPDATE_DELETE = false;
-    /**
-     * Dump the raw Bundle at insert time of a book - LARGE! , not recommended during imports.
-     * {@link DAO#insertBook}.
-     */
-    public static final boolean DUMP_BOOK_BUNDLE_AT_INSERT = false;
-    /**
-     * Dump the raw Bundle at update time of a book. LARGE!
-     * {@link DAO#updateBook}
-     */
-    public static final boolean DUMP_BOOK_BUNDLE_AT_UPDATE = false;
 
-    /* ****************************************************************************************** */
-    /**
-     * dump savedInstanceState/outState/extras/arguments for functions that have those parameters.
-     */
+
+    /** dump savedInstanceState/outState/extras/arguments. */
     public static final boolean DUMP_INSTANCE_STATE = false;
     /** dump the style each time it is accessed. Medium length in the log. */
     public static final boolean DUMP_STYLE = false;
 
-    /**
-     * Dump (just) the URL used in
-     * {@link com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection}.
-     */
-    public static final boolean DUMP_HTTP_URL = false;
-
-    /** Dump entire HTTP response to System.out. WARNING: can abort the function it's in. */
-    public static final boolean DUMP_HTTP_RESPONSE = false;
-
-
-    static final boolean THEME = false;
     public static final boolean USER_MESSAGE_STACK_TRACE = false;
     public static final boolean PRUNE_LIST = false;
-    public static final boolean FIELD_FORMATTER = false;
+    public static final boolean FIELD_TEXT_WATCHER = false;
     public static final boolean BOOK_LOCALE = false;
+
+    static final boolean TRACK = false;
+    /** Enable strict mode reporting on network,disc,... usage. */
+    static final boolean STRICT_MODE = false;
+    /** {@link BooksOnBookshelf}#fixPositionWhenDrawn. */
+    static final boolean BOB_FIX_POSITION = false;
+    static final boolean THEME = false;
 
     private DEBUG_SWITCHES() {
     }

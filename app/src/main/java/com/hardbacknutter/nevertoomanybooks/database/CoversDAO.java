@@ -436,9 +436,6 @@ public final class CoversDAO
          */
         @Override
         public void onCreate(@NonNull final SQLiteDatabase db) {
-            if (BuildConfig.DEBUG /* always */) {
-                Logger.debugEnter(this, "onCreate", "database=" + db.getPath());
-            }
             TableDefinition.createTables(new SynchronizedDb(db, SYNCHRONIZER), TBL_IMAGE);
         }
 

@@ -638,7 +638,7 @@ public class Fields {
             // extract to native value
             T value = field.extract(s.toString().trim());
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_FORMATTER) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_TEXT_WATCHER) {
                 Logger.debug(this, "afterTextChanged",
                              "s=`" + s.toString() + '`',
                              "extract=`" + value + '`'
@@ -1473,14 +1473,7 @@ public class Fields {
                 return "";
             }
 
-            String formatted = LanguageUtils.getDisplayName(source);
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_FORMATTER) {
-                Logger.debug(this, "format",
-                             "source=`" + source + '`',
-                             "formatted=`" + formatted + '`');
-            }
-            return formatted;
+            return LanguageUtils.getDisplayName(source);
         }
 
         /**

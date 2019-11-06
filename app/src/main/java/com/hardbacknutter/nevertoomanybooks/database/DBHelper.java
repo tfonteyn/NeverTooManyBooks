@@ -223,10 +223,6 @@ public final class DBHelper
         // 'Upgrade' from not being installed. Run this first to avoid racing issues.
         UpgradeMessageManager.setUpgradeAcknowledged();
 
-        if (BuildConfig.DEBUG /* always */) {
-            Logger.debugEnter(this, "onCreate", "database: " + db.getPath());
-        }
-
         SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
         TableDefinition.createTables(syncedDb,

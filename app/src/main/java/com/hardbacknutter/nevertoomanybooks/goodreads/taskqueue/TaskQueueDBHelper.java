@@ -33,9 +33,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-
 /**
  * Standard Android class to handle database open/creation.upgrade.
  */
@@ -129,10 +126,6 @@ class TaskQueueDBHelper
 
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
-        if (BuildConfig.DEBUG /* always */) {
-            Logger.debugEnter(this, "onCreate", "database: " + db.getPath());
-        }
-
         for (String table : TABLES) {
             db.execSQL(table);
         }
@@ -152,10 +145,6 @@ class TaskQueueDBHelper
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
                           final int newVersion) {
-        if (BuildConfig.DEBUG /* always */) {
-            Logger.debugEnter(this, "onUpgrade", "database: " + db.getPath());
-        }
-
         int currVersion = oldVersion;
 
         if (currVersion == 1) {

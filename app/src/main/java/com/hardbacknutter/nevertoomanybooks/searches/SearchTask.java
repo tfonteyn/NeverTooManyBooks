@@ -42,6 +42,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 
+import javax.net.ssl.SSLProtocolException;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -216,6 +218,33 @@ public class SearchTask
 
         } catch (@NonNull final MalformedURLException | UnknownHostException e) {
             setFinalError(R.string.error_search_failed_network, e);
+
+        } catch (@NonNull final SSLProtocolException e) {
+            // added catch to debug some day...
+            setFinalError(R.string.error_unknown, e);
+            // javax.net.ssl.SSLProtocolException: Read error: ssl=0xa33a2b40:
+            // Failure in SSL library, usually a protocol error
+            //  error:1e000065:Cipher functions:OPENSSL_internal:BAD_DECRYPT
+            //  (external/boringssl/src/crypto/cipher/e_aes.c:1143 0xa0d78e9f:0x00000000)
+            //  error:1000008b:SSL routines:OPENSSL_internal:DECRYPTION_FAILED_OR_BAD_RECORD_MAC
+            //  (external/boringssl/src/ssl/tls_record.c:277 0xa0d78e9f:0x00000000)
+            //  at com.android.org.conscrypt.NativeCrypto.SSL_read(Native Method)
+            //  at com.android.org.conscrypt.OpenSSLSocketImpl$SSLInputStream.read(OpenSSLSocketImpl.java:741)
+            //  at com.android.okhttp.okio.Okio$2.read(Okio.java:136)
+            //  at com.android.okhttp.okio.AsyncTimeout$2.read(AsyncTimeout.java:211)
+            //  at com.android.okhttp.okio.RealBufferedSource.indexOf(RealBufferedSource.java:306)
+            //  at com.android.okhttp.okio.RealBufferedSource.indexOf(RealBufferedSource.java:300)
+            //  at com.android.okhttp.okio.RealBufferedSource.readUtf8LineStrict(RealBufferedSource.java:196)
+            //  at com.android.okhttp.internal.http.Http1xStream.readResponse(Http1xStream.java:186)
+            //  at com.android.okhttp.internal.http.Http1xStream.readResponseHeaders(Http1xStream.java:127)
+            //  at com.android.okhttp.internal.http.HttpEngine.readNetworkResponse(HttpEngine.java:737)
+            //  at com.android.okhttp.internal.http.HttpEngine.readResponse(HttpEngine.java:609)
+            //  at com.android.okhttp.internal.huc.HttpURLConnectionImpl.execute(HttpURLConnectionImpl.java:471)
+            //  at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getResponse(HttpURLConnectionImpl.java:407)
+            //  at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getInputStream(HttpURLConnectionImpl.java:244)
+            //  at com.android.okhttp.internal.huc.DelegatingHttpsURLConnection.getInputStream(DelegatingHttpsURLConnection.java:210)
+            //  at com.android.okhttp.internal.huc.HttpsURLConnectionImpl.getInputStream(Unknown Source:0)
+            //  at com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection.open(TerminatorConnection.java:190)
 
         } catch (@NonNull final IOException e) {
             setFinalError(R.string.error_search_failed, e);

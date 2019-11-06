@@ -136,8 +136,7 @@ public abstract class JsoupBase {
             throws SocketTimeoutException {
 
         if (mDoc == null) {
-            if (BuildConfig.DEBUG
-                && (DEBUG_SWITCHES.ISFDB_LOAD_PAGE || DEBUG_SWITCHES.STRIP_INFO_LOAD_PAGE)) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                 Logger.debug(this, "loadPage", "REQUESTED",
                              "url=" + url);
             }
@@ -156,16 +155,14 @@ public abstract class JsoupBase {
                     con.setReadTimeout(mReadTimeout);
                 }
 
-                if (BuildConfig.DEBUG
-                    && (DEBUG_SWITCHES.ISFDB_LOAD_PAGE || DEBUG_SWITCHES.STRIP_INFO_LOAD_PAGE)) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                     Logger.debug(this, "loadPage", "BEFORE open",
                                  "con.getURL()=" + con.getURL().toString());
                 }
                 // GO!
                 terminatorConnection.open();
 
-                if (BuildConfig.DEBUG
-                    && (DEBUG_SWITCHES.ISFDB_LOAD_PAGE || DEBUG_SWITCHES.STRIP_INFO_LOAD_PAGE)) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                     Logger.debug(this, "loadPage", "AFTER open",
                                  "con.getURL()=" + con.getURL().toString());
                     Logger.debug(this, "loadPage", "AFTER open",
@@ -179,9 +176,7 @@ public abstract class JsoupBase {
                 if (locationHeader == null || locationHeader.isEmpty()) {
                     locationHeader = con.getURL().toString();
 
-                    if (BuildConfig.DEBUG
-                        && (DEBUG_SWITCHES.ISFDB_LOAD_PAGE
-                            || DEBUG_SWITCHES.STRIP_INFO_LOAD_PAGE)) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                         Logger.debug(this, "loadPage",
                                      "location header not set, using url");
                     }
@@ -205,8 +200,7 @@ public abstract class JsoupBase {
                 */
                 mDoc = Jsoup.parse(terminatorConnection.inputStream, mCharSetName, locationHeader);
 
-                if (BuildConfig.DEBUG
-                    && (DEBUG_SWITCHES.ISFDB_LOAD_PAGE || DEBUG_SWITCHES.STRIP_INFO_LOAD_PAGE)) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                     Logger.debug(this, "loadPage", "AFTER parsing",
                                  "mDoc.location()=" + mDoc.location());
                 }

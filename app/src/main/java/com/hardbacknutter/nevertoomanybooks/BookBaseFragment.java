@@ -283,7 +283,7 @@ public abstract class BookBaseFragment
     @Override
     @CallSuper
     public void onResume() {
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugEnter(this, "onResume");
         }
         super.onResume();
@@ -299,7 +299,7 @@ public abstract class BookBaseFragment
 
         loadFields();
 
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugExit(this, "onResume");
         }
     }
@@ -307,7 +307,7 @@ public abstract class BookBaseFragment
     @Override
     public void onPause() {
         super.onPause();
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Logger.debugExit(this, "onPause");
         }
     }
