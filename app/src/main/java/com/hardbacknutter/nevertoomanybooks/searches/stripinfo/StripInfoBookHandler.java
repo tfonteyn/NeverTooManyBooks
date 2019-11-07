@@ -70,6 +70,7 @@ public class StripInfoBookHandler
     /** The description contains h4 tags which we need to remove. */
     private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>", Pattern.LITERAL);
     private static final Pattern H4_CLOSE_PATTERN = Pattern.compile("</h4>", Pattern.LITERAL);
+    private static final Pattern AMPERSAND_PATTERN = Pattern.compile("&amp;", Pattern.LITERAL);
     /** accumulate all Authors for this book. */
     private final ArrayList<Author> mAuthors = new ArrayList<>();
     /** accumulate all Series for this book. */
@@ -240,8 +241,8 @@ public class StripInfoBookHandler
 
                 }
 
-                String title = titleElement.childNode(1).childNode(0).toString().trim();
-                bookData.putString(DBDefinitions.KEY_TITLE, title);
+                bookData.putString(DBDefinitions.KEY_TITLE,
+                                   cleanText(titleElement.childNode(1).childNode(0)));
 
                 Elements tds = row.select("td");
                 int i = 0;
@@ -309,7 +310,7 @@ public class StripInfoBookHandler
                             break;
 
                         case "Barcode":
-                            i += processText(td, StripInfoField.BARCODE, bookData);
+                            i += processText(td, StripInfoField.EAN13, bookData);
                             break;
 
                         case "&nbsp;":
@@ -478,11 +479,19 @@ public class StripInfoBookHandler
                             @NonNull final Bundle bookData) {
         Element dataElement = td.nextElementSibling();
         if (dataElement.childNodeSize() == 1) {
-            String text = dataElement.childNode(0).toString().trim();
-            bookData.putString(key, text);
+            bookData.putString(key, cleanText(dataElement.childNode(0)));
             return 1;
         }
         return 0;
+    }
+
+    private String cleanText(@NonNull final Node node) {
+        String text = node.toString().trim();
+        // add more rules when needed.
+        if (text.contains("&")) {
+            text = AMPERSAND_PATTERN.matcher(text).replaceAll(Matcher.quoteReplacement("&"));
+        }
+        return text;
     }
 
     /**
@@ -561,7 +570,7 @@ public class StripInfoBookHandler
             for (int i = 0; i < aas.size(); i++) {
                 Node nameNode = aas.get(i).childNode(0);
                 if (nameNode != null) {
-                    String name = nameNode.toString();
+                    String name = cleanText(nameNode);
                     Series currentSeries = Series.fromString(name);
                     // check if already present
                     for (Series series : mSeries) {
@@ -592,7 +601,7 @@ public class StripInfoBookHandler
             for (int i = 0; i < aas.size(); i++) {
                 Node nameNode = aas.get(i).childNode(0);
                 if (nameNode != null) {
-                    String name = nameNode.toString();
+                    String name = cleanText(nameNode);
                     Publisher currentPublisher = Publisher.fromString(name);
                     // check if already present
                     for (Publisher publisher : mPublishers) {
@@ -614,8 +623,8 @@ public class StripInfoBookHandler
      */
     public static final class StripInfoField {
 
-        /** The barcode is not always an ISBN. The site usually provides both. */
-        public static final String BARCODE = "__barcode";
+        /** The barcode (i.e. the EAN code) is not always an ISBN. */
+        public static final String EAN13 = "__ean13";
 
         private StripInfoField() {
         }
