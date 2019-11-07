@@ -31,6 +31,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -72,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -106,6 +106,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  */
 public class XmlExporter
         implements Exporter, Closeable {
+
+    private static final String TAG = "XmlExporter";
 
     /** uber-version of the exporter (not necessarily the same as the archive container !). */
     private static final int XML_EXPORTER_VERSION = 2;
@@ -1290,8 +1292,7 @@ public class XmlExporter
         @Override
         public Object get(@NonNull final String key) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Logger.debug(this, "get",
-                             "uuid=" + currentStyle.getUuid(), "key=" + key);
+                Log.d(TAG, "get|uuid=" + currentStyle.getUuid() + "|key=" + key);
             }
             //noinspection ConstantConditions
             return currentStylePPrefs.get(key).get();

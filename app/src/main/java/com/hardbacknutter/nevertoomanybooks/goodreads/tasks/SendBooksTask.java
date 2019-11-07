@@ -32,6 +32,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
@@ -50,6 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  */
 public class SendBooksTask
         extends TaskBase<Integer> {
+
+    private static final String TAG = "SendBooksTask";
 
     @NonNull
     private final String mTaskDescription;
@@ -95,7 +98,7 @@ public class SendBooksTask
             }
             return msg;
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e);
+            Logger.error(App.getAppContext(), TAG, e);
             mException = e;
             return R.string.error_unexpected_error;
         }

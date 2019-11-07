@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
@@ -97,6 +97,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  */
 public class OpenLibraryManager
         implements SearchEngine {
+
+    private static final String TAG = "OpenLibraryManager";
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "openlibrary.";
@@ -430,7 +432,7 @@ public class OpenLibraryManager
                                   final boolean fetchThumbnail)
             throws JSONException {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY) {
-            Logger.debugEnter(this, "handleResponse", jsonObject.toString(2));
+            Log.d(TAG, "ENTER|handleResponse|" + jsonObject.toString(2));
         }
         Iterator<String> it = jsonObject.keys();
         // we only handle the first result for now.
@@ -606,7 +608,7 @@ public class OpenLibraryManager
         bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY) {
-            Logger.debugExit(this, "handleBook", bookData.toString());
+            Log.d(TAG, "EXIT|handleBook|" + bookData.toString());
         }
         return bookData;
     }

@@ -62,6 +62,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 class CropImageView
         extends CropImageViewTouchBase {
 
+    private static final String TAG = "CropImageView";
+
     private static final boolean ENSURE_VISIBLE = true;
 
     final List<CropHighlightView> mHighlightViews = new ArrayList<>();
@@ -316,7 +318,7 @@ class CropImageView
                 mHighlightViews.get(i).draw(canvas);
             }
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(getContext(), this, e);
+            Logger.error(getContext(), TAG, e);
         }
     }
 

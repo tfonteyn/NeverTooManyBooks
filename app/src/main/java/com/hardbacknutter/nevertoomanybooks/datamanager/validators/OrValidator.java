@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ public class OrValidator
         extends ArrayList<DataValidator>
         implements DataValidator {
 
+    private static final String TAG = "OrValidator";
 
     private static final long serialVersionUID = -1917008033194867105L;
 
@@ -76,12 +79,13 @@ public class OrValidator
         if (lastException != null) {
             throw lastException;
         } else {
+            Context context = App.getLocalizedAppContext();
             // This should never happen (flw)
-            Logger.warnWithStackTrace(this, "validate",
+            Logger.warnWithStackTrace(context, TAG, "validate",
                                       "no exceptions were thrown in the validator?",
                                       "key=" + key);
             throw new ValidatorException(R.string.vldt_failed_for_x,
-                                         App.getLocalizedAppContext().getString(errorLabelId));
+                                         context.getString(errorLabelId));
         }
     }
 }

@@ -49,6 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class BooklistMappedCursorRow {
 
+    private static final String TAG = "BooklistMappedCursorRow";
+
     /** Associated cursor object. */
     @NonNull
     private final Cursor mCursor;
@@ -160,7 +162,7 @@ public class BooklistMappedCursorRow {
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
             //DO NOT add this.toString() ... will recursively throw CursorIndexOutOfBoundsException
-            Logger.error(context, this, e, "level=" + level,
+            Logger.error(context, TAG, e, "level=" + level,
                          "columnIndex=" + columnIndex);
         }
 

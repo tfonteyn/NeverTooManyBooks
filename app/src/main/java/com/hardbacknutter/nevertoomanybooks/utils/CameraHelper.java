@@ -44,9 +44,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class CameraHelper {
+
+    private static final String TAG = "CameraHelper";
 
     /** We use a single temporary file. */
     private static final String CAMERA_FILENAME = "Camera";
@@ -153,7 +156,7 @@ public class CameraHelper {
                     return file;
 
                 } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-                    Logger.error(this, e);
+                    Logger.error(App.getAppContext(), TAG, e);
                 }
             }
         }

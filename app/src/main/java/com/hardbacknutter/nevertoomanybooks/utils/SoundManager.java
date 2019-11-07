@@ -43,6 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class SoundManager {
 
+    private static final String TAG = "SoundManager";
+
     private SoundManager() {
     }
 
@@ -77,7 +79,7 @@ public final class SoundManager {
             throw new IllegalStateException(e);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
             // No sound is critical.
-            Logger.warn(context, SoundManager.class, "playFile", e);
+            Logger.warn(context, TAG, "playFile", e);
         }
     }
 }

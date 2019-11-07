@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.database.cursors;
 
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
@@ -60,6 +62,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class TrackedCursor
         extends SynchronizedCursor
         implements Closeable {
+
+    private static final String TAG = "TrackedCursor";
 
     /** DEBUG instance counter, goes up and down. */
     @NonNull
@@ -92,8 +96,8 @@ public class TrackedCursor
         super(driver, editTable, query, sync);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
-            Logger.debug(this, "TrackedCursor", "instances created: "
-                                                + DEBUG_INSTANCE_COUNTER.incrementAndGet());
+            Log.d(TAG, "TrackedCursor|instances created: "
+                       + DEBUG_INSTANCE_COUNTER.incrementAndGet());
             // Record who called us. It's only from about the 7th element that matters.
             mStackTrace = Thread.currentThread().getStackTrace();
 
@@ -108,96 +112,30 @@ public class TrackedCursor
     }
 
     /**
-     * DEBUG.
-     * <p>
-     * Get the total number of cursors that have not called close(). This is subtly
-     * different from the list of open cursors because non-referenced cursors may
-     * have been deleted and the finalizer not called.
-     */
-    @SuppressWarnings("unused")
-    public static long getCursorCountApproximate() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
-            synchronized (CURSORS) {
-                return CURSORS.size();
-            }
-        }
-        return 0;
-    }
-
-    /**
-     * DEBUG.
-     * <p>
-     * Get the total number of open cursors; verifies that existing weak refs are valid
-     * and removes from collection if not.
-     * <p>
-     * <strong>Note:</strong> This is not a *cheap* operation.
-     */
-    @SuppressWarnings({"unused"})
-    public static long getCursorCount() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
-            long count = 0;
-            List<WeakReference<TrackedCursor>> list = new ArrayList<>();
-            synchronized (CURSORS) {
-                for (WeakReference<TrackedCursor> r : CURSORS) {
-                    TrackedCursor c = r.get();
-                    if (c != null) {
-                        count++;
-                    } else {
-                        list.add(r);
-                    }
-                }
-                for (WeakReference<TrackedCursor> r : list) {
-                    CURSORS.remove(r);
-                }
-            }
-            return count;
-        }
-        return 0;
-    }
-
-    /**
      * DEBUG Dump all open cursors.
      */
     public static void dumpCursors() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
-            List<TrackedCursor> cursors = getCursors();
-            if (cursors == null) {
-                Logger.debug(TrackedCursor.class, "dumpCursors", "No cursors");
-            } else {
-                for (TrackedCursor c : cursors) {
-                    Logger.debug(TrackedCursor.class, "dumpCursors",
-                                 "Cursor " + c.getCursorId());
-                    for (StackTraceElement s : c.getStackTrace()) {
-                        Logger.debug(TrackedCursor.class, "dumpCursors",
-                                     s.getFileName(),
-                                     "Line=" + s.getLineNumber(),
-                                     "Method=" + s.getMethodName());
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * DEBUG.
-     * <p>
-     * Get a collection of open cursors at the current time.
-     */
-    @Nullable
-    private static List<TrackedCursor> getCursors() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
             List<TrackedCursor> list = new ArrayList<>();
             synchronized (CURSORS) {
                 for (WeakReference<TrackedCursor> r : CURSORS) {
-                    TrackedCursor c = r.get();
-                    if (c != null) {
-                        list.add(c);
+                    TrackedCursor c1 = r.get();
+                    if (c1 != null) {
+                        list.add(c1);
                     }
                 }
             }
-            return list;
+
+            for (TrackedCursor c : list) {
+                Log.d(TAG, "dumpCursors|Cursor=" + c.getCursorId());
+                for (StackTraceElement s : c.getStackTrace()) {
+                    Log.d(TAG, "dumpCursors"
+                               + "|file=" + s.getFileName()
+                               + "|Line=" + s.getLineNumber()
+                               + "|Method=" + s.getMethodName());
+                }
+            }
         }
-        return null;
     }
 
     /**
@@ -212,8 +150,7 @@ public class TrackedCursor
                 removeCursor();
                 mCloseWasCalled = true;
             }
-            Logger.debug(this, "close", "instances left: "
-                                        + DEBUG_INSTANCE_COUNTER.decrementAndGet());
+            Log.d(TAG, "close|cursors left: " + DEBUG_INSTANCE_COUNTER.decrementAndGet());
         }
     }
 
@@ -229,8 +166,7 @@ public class TrackedCursor
     protected void finalize() {
         if (!mCloseWasCalled) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
-                Logger.warn(this, "finalize",
-                            "mCloseWasCalled=false; calling removeCursor() now");
+                Logger.warn(App.getAppContext(), TAG, "finalize|calling close()");
                 removeCursor();
             }
         }

@@ -91,6 +91,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
  */
 public class CoverHandler {
 
+    private static final String TAG = "CoverHandler";
+
     /** The cropper uses a single file. */
     private static final String CROPPED_COVER_FILENAME = "Cropped";
     private static final String IMAGE_MIME_TYPE = "image/*";
@@ -348,7 +350,7 @@ public class CoverHandler {
         String uuid = (String) mCoverView.getTag(R.id.TAG_UUID);
         // if we forgot to set it in some bad code... log the fact, and make a trip to the db.
         if (uuid == null) {
-            Logger.warnWithStackTrace(mContext, this, "getUuid",
+            Logger.warnWithStackTrace(mContext, TAG, "getUuid",
                                       "UUID was not available on the view");
             uuid = mDb.getBookUuid(mBook.getId());
         }
@@ -387,7 +389,7 @@ public class CoverHandler {
         try {
             StorageUtils.deleteFile(getCoverFile());
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(mContext, this, e);
+            Logger.error(mContext, TAG, e);
         }
         // Ensure that the cached images for this book are deleted (if present).
         if (mBook.getId() != 0) {
@@ -488,7 +490,7 @@ public class CoverHandler {
                 bytesRead = StorageUtils.saveInputStreamToFile(is, getCoverFile());
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-                Logger.error(mContext, this, e, "Unable to copy content to file");
+                Logger.error(mContext, TAG, e, "Unable to copy content to file");
             }
 
             if (bytesRead > 0) {

@@ -86,6 +86,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
 public class FastScrollerOverlay
         extends RecyclerView.ItemDecoration {
 
+    private static final String TAG = "FastScrollerOverlay";
+
     /**
      * false: we only support standard RecyclerView.
      * true: we support BOTH standard RecyclerView and CFSRecyclerView.
@@ -342,7 +344,7 @@ public class FastScrollerOverlay
 
         } catch (@NonNull final IllegalAccessException e) {
             // should not happen.... yeah right!
-            Logger.warn(recyclerView.getContext(), this,
+            Logger.warn(recyclerView.getContext(), TAG,
                         "fastScrollerIsDragging", e.getLocalizedMessage());
             mHasFastScroller = false;
         }
@@ -371,7 +373,7 @@ public class FastScrollerOverlay
                 }
             }
         } catch (@NonNull final NoSuchFieldException | SecurityException e) {
-            Logger.warn(recyclerView.getContext(), this,
+            Logger.warn(recyclerView.getContext(), TAG,
                         "enableFastScrollerAccess", e.getLocalizedMessage());
         }
 

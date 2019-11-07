@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -51,6 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
  */
 public abstract class TaskBase<Result>
         extends AsyncTask<Void, TaskProgressMessage, Result> {
+
+    private static final String TAG = "TaskBase";
 
     /** id set at construction time, passed back in all messages. */
     protected final int mTaskId;
@@ -93,8 +96,7 @@ public abstract class TaskBase<Result>
             mTaskListener.get().onTaskProgress(values[0]);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onProgressUpdate",
-                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                Log.d(TAG, "onProgressUpdate" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }
@@ -107,8 +109,7 @@ public abstract class TaskBase<Result>
                     new TaskFinishedMessage<>(mTaskId, TaskStatus.Cancelled, result, mException));
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onCancelled",
-                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                Log.d(TAG, "onCancelled" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }
@@ -123,8 +124,7 @@ public abstract class TaskBase<Result>
                     new TaskFinishedMessage<>(mTaskId, status, result, mException));
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onPostExecute",
-                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                Log.d(TAG, "onPostExecute" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }

@@ -32,6 +32,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,8 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
 public class StylePickerDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
-    public static final String TAG = "StylePickerDialogFragment";
+    public static final String TAG = "StylePickerDialogFrag";
 
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
     private final ArrayList<BooklistStyle> mBooklistStyles = new ArrayList<>();
@@ -195,8 +195,7 @@ public class StylePickerDialogFragment
             mListener.get().onStyleChanged(style);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onStyleChanged",
-                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                Log.d(TAG, "onStyleChanged" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
 

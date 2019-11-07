@@ -58,6 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 public class SearchAdminActivity
         extends BaseActivity {
 
+    private static final String TAG = "SearchAdminActivity";
+
     private ViewPager2 mViewPager;
     private TabAdapter mTabAdapter;
 
@@ -138,7 +140,7 @@ public class SearchAdminActivity
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(this, this,
+                        Logger.warnWithStackTrace(this, TAG,
                                                   "item=" + mViewPager.getCurrentItem());
                         break;
                 }

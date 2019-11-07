@@ -32,8 +32,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
@@ -136,6 +135,8 @@ public abstract class ManagedTask
     protected abstract void runTask()
             throws Exception;
 
+    private static final String TAG = "ManagedTask";
+
 
     @NonNull
     protected Context getContext() {
@@ -152,7 +153,7 @@ public abstract class ManagedTask
         } catch (@NonNull final InterruptedException e) {
             mCancelFlg = true;
         } catch (@NonNull final Exception e) {
-            Logger.error(this, e);
+            Logger.error(App.getAppContext(), TAG, e);
         }
 
         // Let the implementation know it is finished
@@ -160,11 +161,6 @@ public abstract class ManagedTask
 
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
         MESSAGE_SWITCH.send(mMessageSenderId, listener -> {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                Logger.debug(this, "run",
-                             "ManagedTask=" + getName(),
-                             "Delivering 'onTaskFinished' to: " + listener);
-            }
             listener.onTaskFinished(this);
             return false;
         });
@@ -174,9 +170,6 @@ public abstract class ManagedTask
      * Mark this thread as 'cancelled'.
      */
     protected void cancelTask() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debug(this, "cancelTask");
-        }
         mCancelFlg = true;
         interrupt();
     }

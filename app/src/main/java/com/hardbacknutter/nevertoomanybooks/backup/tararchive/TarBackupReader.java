@@ -60,6 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class TarBackupReader
         extends BackupReaderAbstract {
 
+    private static final String TAG = "TarBackupReader";
+
     private static final Pattern LEGACY_STYLES_PATTERN =
             Pattern.compile('^' + "style.blob." + "[0-9]*$",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -208,7 +210,7 @@ public class TarBackupReader
             return Type.XML;
 
         } else {
-            Logger.warn(App.getAppContext(), this, "getBackupEntityType",
+            Logger.warn(App.getAppContext(), TAG, "getBackupEntityType",
                         "Unknown file in archive: " + entry.getName());
             return Type.Unknown;
         }

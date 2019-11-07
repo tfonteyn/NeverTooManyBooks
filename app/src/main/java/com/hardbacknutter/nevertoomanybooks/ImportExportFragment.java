@@ -32,6 +32,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +83,6 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ImportHelperModel;
 public class ImportExportFragment
         extends Fragment {
 
-    /** Fragment manager tag. */
     public static final String TAG = "ImportExportFragment";
     static final String BKEY_AUTO_START_BACKUP = TAG + ":autoStartBackup";
 
@@ -208,7 +208,7 @@ public class ImportExportFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
         // collect all data for passing to the calling Activity
         if (data != null) {
@@ -283,7 +283,7 @@ public class ImportExportFragment
                                 msgId = R.string.warning_select_an_existing_folder;
                             }
                         } catch (@NonNull final IOException e) {
-                            Logger.error(getContext(), this, e);
+                            Logger.error(getContext(), TAG, e);
                             msgId = R.string.error_backup_failed;
                         }
                         //noinspection ConstantConditions
@@ -303,7 +303,7 @@ public class ImportExportFragment
     @CallSuper
     public void onResume() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugEnter(this, "onResume");
+            Log.d(TAG, "ENTER|onResume");
         }
         super.onResume();
         if (getActivity() instanceof BaseActivity) {
@@ -313,7 +313,7 @@ public class ImportExportFragment
             }
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugExit(this, "onResume");
+            Log.d(TAG, "EXIT|onResume");
         }
     }
 
@@ -508,7 +508,7 @@ public class ImportExportFragment
             }
             default: {
                 //noinspection ConstantConditions
-                Logger.warnWithStackTrace(getContext(), this, "taskId=" + message.taskId);
+                Logger.warnWithStackTrace(getContext(), TAG, "taskId=" + message.taskId);
                 break;
             }
         }
@@ -748,7 +748,7 @@ public class ImportExportFragment
             }
             default: {
                 //noinspection ConstantConditions
-                Logger.warnWithStackTrace(getContext(), getView(), "taskId=" + message.taskId);
+                Logger.warnWithStackTrace(getContext(), TAG, "taskId=" + message.taskId);
                 break;
             }
         }
@@ -851,7 +851,7 @@ public class ImportExportFragment
             startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
         } catch (@NonNull final NullPointerException e) {
             //noinspection ConstantConditions
-            Logger.error(getContext(), this, e);
+            Logger.error(getContext(), TAG, e);
             //noinspection ConstantConditions
             UserMessage.show(getView(), R.string.error_email_failed);
         }

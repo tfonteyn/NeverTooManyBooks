@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -63,6 +64,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 public class StartupViewModel
         extends ViewModel {
 
+    private static final String TAG = "StartupViewModel";
+
     private static final String PREF_PREFIX = "startup.";
 
     /** the 'LastVersion' i.e. the version which was installed before the current one. */
@@ -96,7 +99,7 @@ public class StartupViewModel
         public void onTaskFinished(@NonNull final TaskFinishedMessage<Boolean> message) {
             synchronized (mAllTasks) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                    Logger.debug(this, "onTaskFinished", message);
+                    Log.d(TAG, "onTaskFinished|" + message);
                 }
                 mAllTasks.remove(message.taskId);
                 if (mAllTasks.isEmpty()) {
@@ -201,7 +204,7 @@ public class StartupViewModel
             mDb = new DAO();
 
         } catch (@NonNull final DBHelper.UpgradeException e) {
-            Logger.error(this, e, "startTasks");
+            Logger.error(App.getAppContext(), TAG, e, "startTasks");
             mTaskException.setValue(e);
             return;
         }
@@ -315,14 +318,14 @@ public class StartupViewModel
             Thread.currentThread().setName("BuildLanguageMappingsTask");
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Logger.debug(this, "doInBackground", "taskId=" + getId());
+                Log.d(TAG, "doInBackground|taskId=" + getId());
             }
             publishProgress(new TaskProgressMessage(mTaskId, R.string.progress_msg_optimizing));
             try {
                 LanguageUtils.createLanguageMappingCache();
 
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(this, e);
+                Logger.error(App.getAppContext(), TAG, e);
                 mException = e;
                 return false;
             }
@@ -395,7 +398,7 @@ public class StartupViewModel
             Thread.currentThread().setName("DBCleanerTask");
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Logger.debug(this, "doInBackground", "taskId=" + getId());
+                Log.d(TAG, "doInBackground|taskId=" + getId());
             }
             publishProgress(new TaskProgressMessage(mTaskId, R.string.progress_msg_optimizing));
             try {
@@ -409,7 +412,7 @@ public class StartupViewModel
                 // check & log, but don't update yet... need more testing
                 cleaner.maybeUpdate(true);
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(this, e);
+                Logger.error(App.getAppContext(), TAG, e);
                 mException = e;
                 return false;
             }
@@ -448,14 +451,14 @@ public class StartupViewModel
             Thread.currentThread().setName("RebuildFtsTask");
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Logger.debug(this, "doInBackground", "taskId=" + getId());
+                Log.d(TAG, "doInBackground|taskId=" + getId());
             }
             publishProgress(new TaskProgressMessage(mTaskId,
                                                     R.string.progress_msg_rebuilding_search_index));
             try {
                 mDb.rebuildFts();
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(this, e);
+                Logger.error(App.getAppContext(), TAG, e);
                 mException = e;
                 return false;
             }
@@ -505,7 +508,7 @@ public class StartupViewModel
             Thread.currentThread().setName("RebuildOrderByTitleColumnsTask");
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Logger.debug(this, "doInBackground", "taskId=" + getId());
+                Log.d(TAG, "doInBackground|taskId=" + getId());
             }
             // incorrect progress message, but it's half-true.
             publishProgress(new TaskProgressMessage(mTaskId,
@@ -514,7 +517,7 @@ public class StartupViewModel
                 boolean reorder = Prefs.reorderTitleForSorting(App.getAppContext());
                 mDb.rebuildOrderByTitleColumns(reorder);
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(this, e);
+                Logger.error(App.getAppContext(), TAG, e);
                 mException = e;
                 return false;
             }
@@ -561,7 +564,7 @@ public class StartupViewModel
             Thread.currentThread().setName("AnalyzeDbTask");
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Logger.debug(this, "doInBackground", "taskId=" + getId());
+                Log.d(TAG, "doInBackground|taskId=" + getId());
             }
             publishProgress(new TaskProgressMessage(mTaskId, R.string.progress_msg_optimizing));
             try {
@@ -577,7 +580,7 @@ public class StartupViewModel
                 }
 
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(this, e);
+                Logger.error(App.getAppContext(), TAG, e);
                 mException = e;
                 return false;
             }

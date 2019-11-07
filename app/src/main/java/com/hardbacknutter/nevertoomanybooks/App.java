@@ -42,6 +42,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -141,6 +142,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 )
 public class App
         extends Application {
+
+    private static final String TAG = "App";
 
     /**
      * Users can select which fields they use / don't want to use.
@@ -549,7 +552,7 @@ public class App
                 break;
         }
 
-        Logger.debug(App.class, "dumpDayNightMode", sb);
+        Log.d(TAG, "dumpDayNightMode|" + sb);
     }
 
     public static void setNeedsRecreating() {
@@ -687,7 +690,7 @@ public class App
             } else {
                 locale = newConfig.locale;
             }
-            Logger.debug(this, "onConfigurationChanged", locale);
+            Log.d(TAG, "onConfigurationChanged|" + locale);
         }
     }
 

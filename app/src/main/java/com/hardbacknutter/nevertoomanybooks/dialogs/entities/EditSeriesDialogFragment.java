@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -64,8 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 public class EditSeriesDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
-    public static final String TAG = "EditSeriesDialogFragment";
+    public static final String TAG = "EditSeriesDialogFrag";
 
     /** Database Access. */
     private DAO mDb;
@@ -172,8 +172,7 @@ public class EditSeriesDialogFragment
                                             .onBookChanged(0, BookChangedListener.SERIES, null);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Logger.debug(this, "onBookChanged",
-                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                            Log.d(TAG, "onBookChanged" + Logger.WEAK_REFERENCE_DEAD);
                         }
                     }
                 })

@@ -261,8 +261,7 @@ public class EditBookAuthorsActivity
     public static class EditBookAuthorDialogFragment
             extends DialogFragment {
 
-        /** Fragment manager tag. */
-        static final String TAG = "EditBookAuthorDialogFragment";
+        static final String TAG = "EditBookAuthorDialogFrag";
         /** Key: type. */
         @SuppressLint("UseSparseArrays")
         private final Map<Integer, CompoundButton> mTypeButtons = new HashMap<>();

@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -41,8 +43,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * See <a href="http://en.wikipedia.org/wiki/International_Standard_Book_Number">
@@ -60,6 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * <a href="https://isbn-information.com">https://isbn-information.com</a>
  */
 public class ISBN {
+
+    private static final String TAG = "ISBN";
 
     private static final String ERROR_UNABLE_TO_CONVERT = "Unable to convert invalid ISBN";
 
@@ -153,7 +155,7 @@ public class ISBN {
             }
         } catch (@NonNull final NumberFormatException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, e, "s=" + s);
+                Log.d(TAG, "s=" + s, e);
             }
         }
 
@@ -165,7 +167,7 @@ public class ISBN {
             }
         } catch (@NonNull final NumberFormatException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, e, "s=" + s);
+                Log.d(TAG, "s=" + s, e);
             }
         }
     }
@@ -231,9 +233,6 @@ public class ISBN {
     public static boolean matches(@Nullable final String code1,
                                   @Nullable final String code2,
                                   final boolean isIsbn) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.debug(ISBN.class, "matches", code1 + " ?= " + code2);
-        }
         if (code1 == null || code2 == null) {
             return false;
         }

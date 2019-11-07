@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsFromInternetModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsModel;
 
 /**
  * Searches the internet for book details based on ISBN or Author/Title.
@@ -50,13 +50,14 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsFromInternetM
 public class UpdateFieldsFromInternetActivity
         extends BaseActivityWithTasks {
 
+    private static final String TAG = "UpdateFields";
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocaleUtils.insanityCheck(this);
 
-        replaceFragment(R.id.main_fragment, UpdateFieldsFromInternetFragment.class,
-                        UpdateFieldsFromInternetFragment.TAG);
+        replaceFragment(R.id.main_fragment, UpdateFieldsFragment.class, UpdateFieldsFragment.TAG);
     }
 
     @Override
@@ -64,7 +65,7 @@ public class UpdateFieldsFromInternetActivity
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
 
         if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
@@ -72,8 +73,8 @@ public class UpdateFieldsFromInternetActivity
                 ArrayList<Site> sites = data.getParcelableArrayListExtra(
                         SearchSites.BKEY_SEARCH_SITES_BOOKS);
                 if (sites != null) {
-                    UpdateFieldsFromInternetModel model =
-                            new ViewModelProvider(this).get(UpdateFieldsFromInternetModel.class);
+                    UpdateFieldsModel model =
+                            new ViewModelProvider(this).get(UpdateFieldsModel.class);
                     model.setSearchSites(sites);
                 }
             }

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -68,6 +69,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class SqlStatementManager
         implements AutoCloseable {
+
+    private static final String TAG = "SqlStatementManager";
 
     @NonNull
     private final Map<String, SynchronizedStatement> mStatements =
@@ -187,7 +190,7 @@ public class SqlStatementManager
     protected void finalize()
             throws Throwable {
         if (!mStatements.isEmpty()) {
-            Logger.warn(this, "finalize", "closing statements.");
+            Logger.warn(App.getAppContext(), TAG, "finalize|calling close()");
             close();
         }
         super.finalize();

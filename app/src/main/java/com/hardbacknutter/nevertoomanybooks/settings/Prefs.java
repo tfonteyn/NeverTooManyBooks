@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -43,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
@@ -57,103 +57,51 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public final class Prefs {
 
-    /** Global settings - PreferenceScreen/PreferenceCategory Key. */
-    static final String psk_search_site_order = "psk_search_site_order";
-
     /**
      * Unique name. This is a stored in our preference file (with the same name)
      * and is used for backup/restore purposes as the 'ID'.
      */
     public static final String pk_bob_uuid = "style.booklist.uuid";
-
-
-    /** Global settings - Purge action. */
-    static final String psk_purge_image_cache = "psk_purge_image_cache";
-    /** Global settings - Purge action. */
-    static final String psk_purge_files = "psk_purge_files";
-
-    /** Global settings - Reset tips. */
-    static final String psk_tip_reset_all = "psk_tip_reset_all";
-    /** Global settings - Send debug info. */
-    static final String psk_send_debug_info = "psk_send_debug_info";
-
-
-    /** Global settings - Credentials. */
-    static final String psk_credentials_goodreads = "psk_credentials_goodreads";
-    /** Global settings - Credentials. */
-    static final String psk_credentials_library_thing = "psk_credentials_library_thing";
-
-
-    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    static final String psk_style_filters = "psk_style_filters";
-    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    static final String psk_style_show_details = "psk_style_show_details";
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_style_author = "psk_style_author";
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_style_series = "psk_style_series";
-
-
     /** PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_barcode_scanner = "psk_barcode_scanner";
-
-
     /** Preference Key. */
     public static final String pk_ui_locale = "ui.locale";
     public static final String pk_ui_theme = "ui.theme";
     public static final String pk_ui_messages_use = "ui.messages.use";
-
     public static final String pk_network_allow_metered = "network.allow.metered";
-
     public static final String pk_scanner_preferred = "scanner.preferred";
     public static final String pk_scanner_has_ui = "scanner.ui";
-
     public static final String pk_search_form_advanced = "search.form.advanced";
-
     public static final String pk_sounds_scan_isbn_valid = "sounds.scan.isbn.valid";
     public static final String pk_sounds_scan_isbn_invalid = "sounds.scan.isbn.invalid";
-
-    static final String pk_reformat_titles_sort = "reformat.titles.sort";
-    private static final String pk_reformat_titles_display = "reformat.titles.display";
-
-
     public static final String pk_search_reformat_format = "search.reformat.format";
     public static final String pk_search_reformat_color = "search.reformat.color";
-
-
     public static final String pk_camera_image_autorotate = "camera.image.autorotate";
-
     public static final String pk_image_cropper_external = "image.cropper.external";
     public static final String pk_image_cropper_frame_whole = "image.cropper.frame.whole";
     public static final String pk_image_cache_resized = "image.cache.resized";
-
     public static final String pk_bob_levels_rebuild_state = "style.booklist.levels.rebuild.state";
     public static final String pk_bob_levels_default = "style.booklist.levels.default";
-
     public static final String pk_bob_use_task_for_extras = "style.booklist.task.extras";
-
     public static final String pk_compat_image_cropper_layer_type =
             "compat.image.cropper.viewlayertype";
-    /** Global settings - Purge action. */
-    static final String psk_purge_blns = "psk_purge_blns";
-
     public static final String pk_bob_style_name = "style.booklist.name";
-
     public static final String pk_bob_groups = "style.booklist.groups";
     public static final String pk_bob_preferred_style = "style.booklist.preferred";
     public static final String pk_bob_font_scale = "style.booklist.scale.font";
     public static final String pk_bob_thumbnail_scale = "style.booklist.scale.thumbnails";
-
     public static final String pk_bob_books_under_multiple_series =
             "style.booklist.group.series.show.all";
     public static final String pk_bob_books_under_multiple_authors =
             "style.booklist.group.authors.show.all";
     public static final String pk_bob_format_author_name =
             "style.booklist.group.authors.show.first_last";
-
     public static final String pk_bob_sort_author_name =
             "style.booklist.sort.author.given_first";
-
     /** MultiSelectListPreference. */
     public static final String pk_bob_header = "style.booklist.show.header";
     /** Show the cover image for each book. */
@@ -172,7 +120,6 @@ public final class Prefs {
     public static final String pk_bob_show_isbn = "style.booklist.show.isbn";
     /** Show format for each book. */
     public static final String pk_bob_show_format = "style.booklist.show.format";
-
     /** Booklist Filter - ListPreference. */
     public static final String pk_bob_filter_read = "style.booklist.filter.read";
     /** Booklist Filter - ListPreference. */
@@ -183,6 +130,29 @@ public final class Prefs {
     public static final String pk_bob_filter_anthology = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
     public static final String pk_bob_filter_editions = "style.booklist.filter.editions";
+    /** Global settings - PreferenceScreen/PreferenceCategory Key. */
+    static final String psk_search_site_order = "psk_search_site_order";
+    /** Global settings - Purge action. */
+    static final String psk_purge_image_cache = "psk_purge_image_cache";
+    /** Global settings - Purge action. */
+    static final String psk_purge_files = "psk_purge_files";
+    /** Global settings - Reset tips. */
+    static final String psk_tip_reset_all = "psk_tip_reset_all";
+    /** Global settings - Send debug info. */
+    static final String psk_send_debug_info = "psk_send_debug_info";
+    /** Global settings - Credentials. */
+    static final String psk_credentials_goodreads = "psk_credentials_goodreads";
+    /** Global settings - Credentials. */
+    static final String psk_credentials_library_thing = "psk_credentials_library_thing";
+    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
+    static final String psk_style_filters = "psk_style_filters";
+    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
+    static final String psk_style_show_details = "psk_style_show_details";
+    static final String pk_reformat_titles_sort = "reformat.titles.sort";
+    /** Global settings - Purge action. */
+    static final String psk_purge_blns = "psk_purge_blns";
+    private static final String TAG = "Prefs";
+    private static final String pk_reformat_titles_display = "reformat.titles.display";
 
     private Prefs() {
     }
@@ -262,7 +232,7 @@ public final class Prefs {
                 //noinspection unchecked
                 ed.putStringSet(entry.getKey(), (Set<String>) entry.getValue());
             } else {
-                Logger.warnWithStackTrace(context, Prefs.class,
+                Logger.warnWithStackTrace(context, TAG,
                                           entry.getValue().getClass().getCanonicalName());
             }
         }
@@ -300,7 +270,7 @@ public final class Prefs {
             }
             sb.append("\n\n");
 
-            Logger.debug(App.class, "dumpPreferences", sb);
+            Log.d(TAG, "dumpPreferences|" + sb);
         }
     }
 

@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -65,6 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
  */
 public final class AmazonManager
         implements SearchEngine {
+
+    private static final String TAG = "AmazonManager";
 
     private static final String UTF_8 = "UTF-8";
     /** Preferences prefix. */
@@ -108,7 +111,7 @@ public final class AmazonManager
             try {
                 extra += "&field-author=" + URLEncoder.encode(cAuthor, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(context, AmazonManager.class, e, "Unable to add author to URL");
+                Logger.error(context, TAG, e, "Unable to add author to URL");
             }
         }
 
@@ -116,7 +119,7 @@ public final class AmazonManager
             try {
                 extra += "&field-keywords=" + URLEncoder.encode(cSeries, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(context, AmazonManager.class, e, "Unable to add series to URL");
+                Logger.error(context, TAG, e, "Unable to add series to URL");
             }
         }
 
@@ -190,7 +193,7 @@ public final class AmazonManager
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, e, url);
+                Log.d(TAG, url, e);
             }
             throw new IOException(e);
         }

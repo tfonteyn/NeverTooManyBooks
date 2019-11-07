@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.util.Log;
+
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,13 +49,14 @@ import java.util.TimeZone;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * ENHANCE: Migrate to java.time.* ... which required Android 8.0 (API 26)
  * or use this backport: https://github.com/JakeWharton/ThreeTenABP
  */
 public final class DateUtils {
+
+    private static final String TAG = "DateUtils";
 
     /** Month full names cache for each Locale. */
     private static final Map<String, String[]> MONTH_LONG_NAMES = new HashMap<>();
@@ -305,7 +308,7 @@ public final class DateUtils {
                 }
                 // failed to parse
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
-                    Logger.debugWithStackTrace(DateUtils.class, "dateString=" + dateString);
+                    Log.d(TAG, "toPrettyDate=" + dateString, new Throwable());
                 }
                 return dateString;
 
@@ -322,7 +325,7 @@ public final class DateUtils {
             default:
                 // failed to parse
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
-                    Logger.debugWithStackTrace(DateUtils.class, "dateString=" + dateString);
+                    Log.d(TAG, "toPrettyDate=" + dateString, new Throwable());
                 }
                 return dateString;
         }
@@ -330,7 +333,8 @@ public final class DateUtils {
 
     /**
      * Pretty format a datetime.
-     * @param date   to format
+     *
+     * @param date to format
      */
     @NonNull
     public static String toPrettyDateTime(@NonNull final Date date) {

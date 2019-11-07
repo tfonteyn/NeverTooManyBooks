@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.ui;
 
 import android.app.Dialog;
 import android.content.res.Configuration;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Checkable;
@@ -46,6 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public abstract class OptionsDialogBase<T extends Options>
         extends DialogFragment {
+
+    private static final String TAG = "OptionsDialogBase";
 
     private Checkable cbxBooks;
     private Checkable cbxCovers;
@@ -82,8 +85,7 @@ public abstract class OptionsDialogBase<T extends Options>
             mListener.get().onOptionsSet(options);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onOptionsSet",
-                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                Log.d(TAG, "onOptionsSet" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }

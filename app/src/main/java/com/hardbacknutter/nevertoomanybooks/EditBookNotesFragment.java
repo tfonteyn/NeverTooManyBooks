@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 public class EditBookNotesFragment
         extends EditBookBaseFragment<Integer> {
 
-    /** Fragment manager tag. */
     public static final String TAG = "EditBookNotesFragment";
 
     @Override

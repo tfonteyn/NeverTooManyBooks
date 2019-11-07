@@ -44,12 +44,10 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.lang.ref.WeakReference;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -57,7 +55,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -209,7 +206,6 @@ public class DAO
      * If this flag is not set, the UPDATE_DATE will be set based on the current time
      */
     public static final int BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT = 1;
-
     /**
      * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM),
      * Android supplies two more.
@@ -228,6 +224,7 @@ public class DAO
      * <strong>Note:</strong> Important to have start/end spaces!
      */
     public static final String COLLATION = " Collate LOCALIZED ";
+    private static final String TAG = "DAO";
     /** log error string. */
     private static final String ERROR_FAILED_CREATING_BOOK_FROM = "Failed creating book from\n";
 
@@ -245,11 +242,6 @@ public class DAO
             (db, masterQuery, editTable, query) ->
                     new BookCursor(masterQuery, editTable, query, SYNCHRONIZER);
 
-    /** DEBUG only. */
-    private static final ArrayList<InstanceRefDebug> INSTANCES = new ArrayList<>();
-    /** DEBUG instance counter. */
-    @NonNull
-    private static final AtomicInteger DEBUG_INSTANCE_COUNT = new AtomicInteger();
     /** Column alias. */
     private static final String COLUMN_ALIAS_NR_OF_SERIES = "_num_series";
     /** Column alias. */
@@ -304,7 +296,7 @@ public class DAO
 
     // curiosity... check when the JDK loads this class.
     static {
-        Logger.debug(DAO.class, "DAO static init");
+        Log.d(TAG, "DAO static init");
     }
 
     /** a cache for statements, where they are pre-compiled. */
@@ -331,10 +323,6 @@ public class DAO
 
         // statements are instance based/managed
         mStatements = new SqlStatementManager(sSyncedDb);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSTANCE_COUNT) {
-            debugAddInstance(this);
-        }
     }
 
     /**
@@ -379,70 +367,6 @@ public class DAO
 
         // remove all non-word characters. i.e. all characters not in [a-zA-Z_0-9]
         return ENCODE_ORDERBY_PATTERN.matcher(value).replaceAll("").toLowerCase(locale);
-    }
-
-    /**
-     * DEBUG only.
-     *
-     * @param db Database Access
-     */
-    private static void debugAddInstance(@NonNull final DAO db) {
-        Logger.debug(db, "debugAddInstance",
-                     "count=" + DEBUG_INSTANCE_COUNT.incrementAndGet());
-
-        INSTANCES.add(new InstanceRefDebug(db));
-
-    }
-
-    /**
-     * DEBUG only.
-     *
-     * @param db Database Access
-     */
-    private static void debugRemoveInstance(@NonNull final DAO db) {
-        Logger.debug(db, "debugRemoveInstance",
-                     "count=" + DEBUG_INSTANCE_COUNT.decrementAndGet());
-
-        Iterator<InstanceRefDebug> it = INSTANCES.iterator();
-        while (it.hasNext()) {
-            InstanceRefDebug ref = it.next();
-            DAO refDb = ref.get();
-            if (refDb == null) {
-                Logger.debug(DAO.class, "debugRemoveInstance",
-                             "**** Missing ref (not closed?) ****", ref);
-            } else {
-                if (refDb == db) {
-                    it.remove();
-                }
-            }
-        }
-
-    }
-
-    /**
-     * DEBUG only.
-     */
-    @SuppressWarnings("unused")
-    public static void debugDumpInstances() {
-        for (InstanceRefDebug ref : INSTANCES) {
-            if (ref.get() == null) {
-                Logger.debug(DAO.class, "debugDumpInstances",
-                             "**** Missing ref (not closed?) ****", ref);
-            } else {
-                Logger.debug(DAO.class, "debugDumpInstances", ref);
-            }
-        }
-    }
-
-    /**
-     * DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
-     * there are still non-fatal anomalies.
-     */
-    @SuppressWarnings("unused")
-    public static void debugPrintReferenceCount(@Nullable final String message) {
-        if (sSyncedDb != null) {
-            SynchronizedDb.printRefCount(message, sSyncedDb.getUnderlyingDatabase());
-        }
     }
 
     /**
@@ -644,10 +568,6 @@ public class DAO
             // the close() will perform a clear, ready to be re-used.
             mStatements.close();
         }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSTANCE_COUNT) {
-            debugRemoveInstance(this);
-        }
         mCloseWasCalled = true;
     }
 
@@ -660,8 +580,7 @@ public class DAO
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(this, "finalize",
-                        "Leaking instances: " + DEBUG_INSTANCE_COUNT.get());
+            Logger.warn(App.getAppContext(), TAG, "finalize|calling close()");
             close();
         }
         super.finalize();
@@ -1009,13 +928,13 @@ public class DAO
 
         // process the destination Author
         if (!updateOrInsertAuthor(context, to)) {
-            Logger.warnWithStackTrace(context, this, "Could not update", "author=" + to);
+            Logger.warnWithStackTrace(context, TAG, "Could not update", "author=" + to);
             return false;
         }
 
         // Do some basic sanity checks.
         if (from.getId() == 0 && from.fixId(context, this, Locale.getDefault()) == 0) {
-            Logger.warnWithStackTrace(context, this, "Old Author is not defined");
+            Logger.warnWithStackTrace(context, TAG, "Old Author is not defined");
             return false;
         }
 
@@ -1024,8 +943,9 @@ public class DAO
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
-            Logger.debug(this, "globalReplaceAuthor",
-                         "from=" + from.getId(), "to=" + to.getId());
+            Log.d(TAG, "globalReplaceAuthor"
+                       + "|from=" + from.getId()
+                       + "|to=" + to.getId());
         }
 
         SyncLock txLock = sSyncedDb.beginTransaction(true);
@@ -1043,7 +963,7 @@ public class DAO
 
             sSyncedDb.setTransactionSuccessful();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, this, e);
+            Logger.error(context, TAG, e);
             return false;
         } finally {
             sSyncedDb.endTransaction(txLock);
@@ -1247,7 +1167,7 @@ public class DAO
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(context, this, "type=" + domain.getType());
+                        Logger.warnWithStackTrace(context, TAG, "type=" + domain.getType());
                         break;
                 }
             }
@@ -1389,9 +1309,8 @@ public class DAO
             Author author = Author.fromString(book.getString(KEY_AUTHOR_FORMATTED));
             if (author.fixId(context, this, Locale.getDefault()) == 0) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debug(this, "preprocessLegacyAuthor",
-                                 "KEY_AUTHOR_FORMATTED",
-                                 "inserting author: " + author);
+                    Log.d(TAG, "preprocessLegacyAuthor|KEY_AUTHOR_FORMATTED"
+                               + "|inserting author: " + author);
                 }
                 insertAuthor(author);
             }
@@ -1409,9 +1328,8 @@ public class DAO
             Author author = new Author(family, given);
             if (author.fixId(context, this, Locale.getDefault()) == 0) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debug(this, "preprocessLegacyAuthor",
-                                 "KEY_AUTHOR_FAMILY_NAME",
-                                 "inserting author: " + author);
+                    Log.d(TAG, "preprocessLegacyAuthor|KEY_AUTHOR_FAMILY_NAME"
+                               + "|inserting author: " + author);
                 }
                 insertAuthor(author);
             }
@@ -1537,7 +1455,7 @@ public class DAO
             // need the UUID to delete the thumbnail.
             uuid = getBookUuid(bookId);
         } catch (@NonNull final SQLiteDoneException e) {
-            Logger.error(this, e, "Failed to get book UUID");
+            Logger.error(App.getAppContext(), TAG, e, "Failed to get book UUID");
         }
 
         int rowsAffected = 0;
@@ -1557,7 +1475,7 @@ public class DAO
             }
             sSyncedDb.setTransactionSuccessful();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e, "Failed to delete book");
+            Logger.error(App.getAppContext(), TAG, e, "Failed to delete book");
         } finally {
             sSyncedDb.endTransaction(txLock);
         }
@@ -1627,7 +1545,7 @@ public class DAO
             // Make sure we have an author
             List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
             if (authors.isEmpty()) {
-                Logger.warnWithStackTrace(context, this, "No authors\n", book);
+                Logger.warnWithStackTrace(context, TAG, "No authors\n", book);
                 return -1L;
             }
 
@@ -1665,7 +1583,7 @@ public class DAO
             return newBookId;
 
         } catch (@NonNull final NumberFormatException e) {
-            Logger.error(context, this, e, ERROR_FAILED_CREATING_BOOK_FROM + book);
+            Logger.error(context, TAG, e, ERROR_FAILED_CREATING_BOOK_FROM + book);
             return -1L;
         } finally {
             if (txLock != null) {
@@ -1732,7 +1650,7 @@ public class DAO
 
             return rowsAffected;
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, this, e);
+            Logger.error(context, TAG, e);
             throw new RuntimeException(
                     "Error updating book from " + book + ": " + e.getLocalizedMessage(), e);
         } finally {
@@ -1942,11 +1860,11 @@ public class DAO
         for (Series series : list) {
             if (series.fixId(context, this, bookLocale) == 0) {
                 if (insertSeries(context, series, bookLocale) <= 0) {
-                    Logger.warnWithStackTrace(context, this, "insertSeries failed??");
+                    Logger.warnWithStackTrace(context, TAG, "insertSeries failed??");
                 }
             } else {
                 if (updateSeries(context, series, bookLocale) <= 0) {
-                    Logger.warnWithStackTrace(context, this, "updateSeries failed??");
+                    Logger.warnWithStackTrace(context, TAG, "updateSeries failed??");
                 }
             }
 
@@ -2076,14 +1994,14 @@ public class DAO
                 // ignore and reset the position counter.
                 position--;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
-                    Logger.debug(this, "updateOrInsertTOC", e);
+                    Log.d(TAG, "updateOrInsertTOC", e);
                 }
             }
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
-                Logger.debug(this, "updateOrInsertTOC",
-                             "\n     bookId   : " + bookId,
-                             "\n     authorId : " + author.getId(),
-                             "\n     position : " + position);
+                Log.d(TAG, "updateOrInsertTOC"
+                           + "\n     bookId   : " + bookId
+                           + "\n     authorId : " + author.getId()
+                           + "\n     position : " + position);
             }
         }
     }
@@ -2400,10 +2318,10 @@ public class DAO
                 long replacementIdPos = replacementIdPosStmt.simpleQueryForLong();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
-                    Logger.debug(this, "globalReplacePositionedBookItem",
-                                 "bookId=" + bookId,
-                                 "toId=" + toId,
-                                 "replacementIdPos=" + replacementIdPos);
+                    Log.d(TAG, "globalReplacePositionedBookItem"
+                               + "|bookId=" + bookId
+                               + "|toId=" + toId
+                               + "|replacementIdPos=" + replacementIdPos);
                 }
 
                 // Delete the old record
@@ -2415,10 +2333,10 @@ public class DAO
                 // move the new one up
                 if (replacementIdPos > pos) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
-                        Logger.debug(this, "globalReplacePositionedBookItem",
-                                     "bookId=" + bookId,
-                                     "pos=" + pos,
-                                     "replacementIdPos=" + replacementIdPos);
+                        Log.d(TAG, "globalReplacePositionedBookItem"
+                                   + "|bookId=" + bookId
+                                   + "|pos=" + pos
+                                   + "|replacementIdPos=" + replacementIdPos);
                     }
                     moveStmt.bindLong(1, pos);
                     moveStmt.bindLong(2, bookId);
@@ -2436,9 +2354,9 @@ public class DAO
                 // If it's > 1, move it to 1
                 if (minPos > 1) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
-                        Logger.debug(this, "globalReplacePositionedBookItem",
-                                     "bookId=" + bookId,
-                                     "minPos=" + minPos);
+                        Log.d(TAG, "globalReplacePositionedBookItem"
+                                   + "|bookId=" + bookId
+                                   + "|minPos=" + minPos);
                     }
                     moveStmt.bindLong(1, 1);
                     moveStmt.bindLong(2, bookId);
@@ -3632,13 +3550,13 @@ public class DAO
 
         // process the destination Series.
         if (!updateOrInsertSeries(context, bookLocale, to)) {
-            Logger.warnWithStackTrace(context, this, "Could not update", "series=" + to);
+            Logger.warnWithStackTrace(context, TAG, "Could not update", "series=" + to);
             return false;
         }
 
         // sanity check
         if (from.getId() == 0 && from.fixId(context, this, bookLocale) == 0) {
-            Logger.warnWithStackTrace(context, this, "Old Series is not defined");
+            Logger.warnWithStackTrace(context, TAG, "Old Series is not defined");
             return false;
         }
 
@@ -3648,8 +3566,9 @@ public class DAO
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
-            Logger.debug(this, "globalReplaceSeries",
-                         "from=" + from.getId() + ", to=" + to.getId());
+            Log.d(TAG, "globalReplaceSeries"
+                       + "|from=" + from.getId()
+                       + "|to=" + to.getId());
         }
 
         SyncLock txLock = sSyncedDb.beginTransaction(true);
@@ -3664,7 +3583,7 @@ public class DAO
 
             sSyncedDb.setTransactionSuccessful();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, this, e);
+            Logger.error(context, TAG, e);
             return false;
         } finally {
             sSyncedDb.endTransaction(txLock);
@@ -3954,7 +3873,7 @@ public class DAO
                             }
                         }
                     } catch (@NonNull final NumberFormatException e) {
-                        Logger.error(context, this, e,
+                        Logger.error(context, TAG, e,
                                      "column=" + columnInfo.name,
                                      "stringValue=" + entry.toString());
                         // not really ok, but let's store it anyhow.
@@ -4133,7 +4052,7 @@ public class DAO
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(context, this, e, ERROR_FAILED_TO_UPDATE_FTS);
+            Logger.error(context, TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -4161,7 +4080,7 @@ public class DAO
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(context, this, e, ERROR_FAILED_TO_UPDATE_FTS);
+            Logger.error(context, TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -4226,7 +4145,7 @@ public class DAO
             sSyncedDb.setTransactionSuccessful();
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(this, e);
+            Logger.error(App.getAppContext(), TAG, e);
             gotError = true;
         } finally {
             sSyncedDb.endTransaction(txLock);
@@ -4243,8 +4162,7 @@ public class DAO
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.debug(this, "rebuildFts",
-                         (System.nanoTime() - t0) + "nano");
+            Log.d(TAG, "rebuildFts|completed in " + (System.nanoTime() - t0) / 1_000_000 + " ms");
         }
     }
 
@@ -4339,7 +4257,7 @@ public class DAO
         String language;
         Locale locale;
 
-        Logger.debug(this, "tempUnMangle", "starting BOOKS");
+        Log.d(TAG, "tempUnMangle|starting BOOKS");
         // Books
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.BOOK_TITLES, null)) {
             int langIdx = cursor.getColumnIndex(DOM_BOOK_LANGUAGE.getName());
@@ -4356,7 +4274,7 @@ public class DAO
 
         locale = Locale.getDefault();
 
-        Logger.debug(this, "tempUnMangle", "starting SERIES");
+        Log.d(TAG, "tempUnMangle|starting SERIES");
         // Series
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.SERIES_TITLES, null)) {
             while (cursor.moveToNext()) {
@@ -4365,7 +4283,7 @@ public class DAO
             }
         }
 
-        Logger.debug(this, "tempUnMangle", "starting TOCS");
+        Log.d(TAG, "tempUnMangle|starting TOCS");
 
         // TOC Entries - should use the primary book or Author Locale... huge overhead.
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.TOC_ENTRY_TITLES, null)) {
@@ -4374,7 +4292,7 @@ public class DAO
                              TBL_TOC_ENTRIES, DOM_TITLE, DOM_TITLE_OB);
             }
         }
-        Logger.debug(this, "tempUnMangle", "DONE");
+        Log.d(TAG, "tempUnMangle|DONE");
 
     }
 
@@ -4429,34 +4347,6 @@ public class DAO
             return "Het " + title.substring(0, title.length() - 5);
         } else {
             return title;
-        }
-    }
-
-    /**
-     * DEBUG only.
-     */
-    private static class InstanceRefDebug
-            extends WeakReference<DAO> {
-
-        @NonNull
-        private final Throwable mCreationStackTrace;
-
-        /**
-         * Constructor.
-         *
-         * @param db Database Access
-         */
-        InstanceRefDebug(@NonNull final DAO db) {
-            super(db);
-            mCreationStackTrace = new Throwable();
-        }
-
-        @Override
-        @NonNull
-        public String toString() {
-            return "DAOInstanceRefDebug{"
-                   + "mCreationStackTrace=\n" + Log.getStackTraceString(mCreationStackTrace)
-                   + "\n}";
         }
     }
 

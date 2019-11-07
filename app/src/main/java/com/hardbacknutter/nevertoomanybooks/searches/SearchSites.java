@@ -67,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  * <li>Implement {@link SearchEngine} to create the new engine (class).</li>
  * <li>Add your new engine to {@link #getSearchEngine}</li>
  *
- * <li>Create+add a new {@link Site} instance to the lists in {@link #getDefaultOrder}
+ * <li>Create+add a new {@link Site} instance to the lists in {@link #getSites}
  * and to {@link #DATA_RELIABILITY_ORDER}</li>
  *
  * <li>Add your new engine to {@link DebugReport#getSiteUrls}</li>
@@ -234,6 +234,7 @@ public final class SearchSites {
         }
     }
 
+    /** Hardcoded to ISFDB for now, as that's the only site supporting this flag. */
     public static boolean usePublisher(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(IsfdbManager.PREFS_USE_PUBLISHER, false);
@@ -250,28 +251,35 @@ public final class SearchSites {
      * @return {@code true} if an alert is currently shown
      */
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean alertRegistrationBeneficial(@NonNull final Context context,
-                                                      @NonNull final String prefSuffix,
-                                                      @SearchSites.Id final int searchSites) {
+    public static boolean promptToRegister(@NonNull final Context context,
+                                           @NonNull final String prefSuffix,
+                                           @SearchSites.Id final int searchSites) {
         boolean showingAlert = false;
 
         if ((searchSites & GOODREADS) != 0) {
-            showingAlert = GoodreadsManager.alertRegistrationBeneficial(context,
-                                                                        false, prefSuffix);
+            showingAlert = GoodreadsManager.promptToRegister(context, false, prefSuffix);
         }
 
         if ((searchSites & LIBRARY_THING) != 0) {
             showingAlert = showingAlert
-                           || LibraryThingManager.alertRegistrationBeneficial(context,
-                                                                              false, prefSuffix);
+                           || LibraryThingManager.promptToRegister(context, false, prefSuffix);
         }
 
         return showingAlert;
     }
 
-    private static ArrayList<Site> getDefaultOrder(@NonNull final Context context,
-                                                   @NonNull final ListType listType,
-                                                   final boolean loadPrefs) {
+    /**
+     * Get the global search site list. Optionally initialise sites and order.
+     *
+     * @param context   Current context
+     * @param listType  list to get
+     * @param loadPrefs set to {@code true} to initialise individual sites and the order
+     *
+     * @return list
+     */
+    private static ArrayList<Site> getSites(@NonNull final Context context,
+                                            @NonNull final ListType listType,
+                                            final boolean loadPrefs) {
         ArrayList<Site> list = new ArrayList<>();
 
         switch (listType) {
@@ -312,16 +320,25 @@ public final class SearchSites {
                 throw new IllegalStateException();
         }
 
+        if (loadPrefs) {
+            String order = PreferenceManager.getDefaultSharedPreferences(context)
+                                            .getString(listType.getKey(), null);
+            if (order != null) {
+                return reorder(order, list);
+            }
+        }
         return list;
     }
 
     static ArrayList<Site> getReliabilityOrder() {
+        // get the (cached) list with user preferences for the sites.
+        // Now reorder for reliability.
         return reorder(DATA_RELIABILITY_ORDER, getSites(App.getAppContext(), ListType.Data));
     }
 
     /**
      * Get the global search site list in the preferred order.
-     * Includes enabled <strong>AND</strong> disabled sites, in the preferred order.
+     * Includes enabled <strong>AND</strong> disabled sites.
      *
      * @param context  Current context
      * @param listType type
@@ -336,12 +353,14 @@ public final class SearchSites {
         switch (listType) {
             case Data:
                 if (sDataSearchOrder != null) {
+                    //noinspection unchecked
                     return (ArrayList<Site>) sDataSearchOrder.clone();
                 }
                 break;
 
             case Covers:
                 if (sCoverSearchOrder != null) {
+                    //noinspection unchecked
                     return (ArrayList<Site>) sCoverSearchOrder.clone();
                 }
                 break;
@@ -350,27 +369,17 @@ public final class SearchSites {
                 throw new IllegalStateException();
         }
 
-        // get the list in the default order and the sites preferences set.
-        ArrayList<Site> sites = getDefaultOrder(context, listType, true);
-
-        // and order as required
-        ArrayList<Site> orderedList;
-        String order = PreferenceManager.getDefaultSharedPreferences(context)
-                                        .getString(listType.getKey(), null);
-        if (order != null) {
-            orderedList = reorder(order, sites);
-        } else {
-            orderedList = sites;
-        }
+        // get the list according to user preferences.
+        ArrayList<Site> sites = getSites(context, listType, true);
 
         // cache the list for reuse
         switch (listType) {
             case Data:
-                sDataSearchOrder = orderedList;
+                sDataSearchOrder = sites;
                 break;
 
             case Covers:
-                sCoverSearchOrder = orderedList;
+                sCoverSearchOrder = sites;
                 break;
 
             default:
@@ -378,7 +387,8 @@ public final class SearchSites {
         }
 
 
-        return (ArrayList<Site>) orderedList.clone();
+        //noinspection unchecked
+        return (ArrayList<Site>) sites.clone();
     }
 
     /**
@@ -431,7 +441,7 @@ public final class SearchSites {
     public static void resetList(@NonNull final Context context,
                                  @NonNull final ListType listType) {
 
-        setList(context, listType, getDefaultOrder(context, listType, false));
+        setList(context, listType, getSites(context, listType, false));
     }
 
     /**

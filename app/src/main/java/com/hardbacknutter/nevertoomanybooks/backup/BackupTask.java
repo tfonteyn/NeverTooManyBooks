@@ -54,6 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public class BackupTask
         extends TaskBase<ExportHelper> {
 
+    private static final String TAG = "BackupTask";
+
     /** what and how to export. */
     @NonNull
     private final ExportHelper mExportHelper;
@@ -135,7 +137,7 @@ public class BackupTask
             return mExportHelper;
 
         } catch (@NonNull final IOException e) {
-            Logger.error(context, this, e);
+            Logger.error(context, TAG, e);
             mException = e;
             return mExportHelper;
         } finally {

@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dbsync;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -38,7 +40,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Implementation of a Readers/Writer lock that is fully reentrant.
@@ -60,6 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * pending locks.
  */
 public class Synchronizer {
+
+    private static final String TAG = "Synchronizer";
 
     /** Main lock for synchronization. */
     private final ReentrantLock mLock = new ReentrantLock();
@@ -171,10 +174,11 @@ public class Synchronizer {
                 // Cleanup any old threads that are dead.
                 purgeOldLocks();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-                    Logger.debug(this, "getExclusiveLock",
-                                 thread.getName() + " requesting EXCLUSIVE lock with "
-                                 + mSharedOwners.size() + " shared locks.",
-                                 "Lock held by " + mLock.getHoldCount());
+                    Log.d(TAG, "getExclusiveLock"
+                               + "|Thread " + thread.getName()
+                               + "|requesting EXCLUSIVE lock with "
+                               + mSharedOwners.size() + " shared locks."
+                               + "|Lock held by " + mLock.getHoldCount());
                 }
                 try {
                     // Simple case -- no locks held, just return and keep the lock
@@ -189,8 +193,9 @@ public class Synchronizer {
 
                     // Someone else has it. Wait.
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-                        Logger.debug(this, "getExclusiveLock",
-                                     "Thread " + thread.getName() + " waiting for DB access");
+                        Log.d(TAG, "getExclusiveLock"
+                                   + "|Thread=" + thread.getName()
+                                   + "|waiting for DB access");
                     }
                     mReleased.await();
 
@@ -206,15 +211,15 @@ public class Synchronizer {
         } finally {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
                 if (mLock.isHeldByCurrentThread()) {
-                    Logger.debug(this, "getExclusiveLock",
-                                 thread.getName() + " waited "
-                                 + (System.nanoTime() - t0)
-                                 + "nano for EXCLUSIVE access");
+                    Log.d(TAG, "getExclusiveLock"
+                               + "|Thread=" + thread.getName()
+                               + "|waited=" + (System.nanoTime() - t0) + " nano"
+                               + "|EXCLUSIVE access");
                 } else {
-                    Logger.debug(this, "getExclusiveLock",
-                                 thread.getName() + " waited "
-                                 + (System.nanoTime() - t0)
-                                 + "nano AND FAILED TO GET EXCLUSIVE access");
+                    Log.d(TAG, "getExclusiveLock"
+                               + "|Thread=" + thread.getName()
+                               + "|waited=" + (System.nanoTime() - t0) + " nano"
+                               + "|FAILED TO GET EXCLUSIVE access");
                 }
             }
         }

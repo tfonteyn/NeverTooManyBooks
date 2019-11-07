@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -62,6 +63,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
  */
 public abstract class BookSearchBaseFragment
         extends Fragment {
+
+    private static final String TAG = "BookSearchBaseFrag";
 
     /** hosting activity. */
     FragmentActivity mHostActivity;
@@ -108,7 +111,7 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     public void onResume() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugEnter(this, "onResume");
+            Log.d(TAG, "ENTER|onResume");
         }
         super.onResume();
         if (getActivity() instanceof BaseActivity) {
@@ -123,7 +126,7 @@ public abstract class BookSearchBaseFragment
                                  getSearchFinishedListener());
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugExit(this, "onResume");
+            Log.d(TAG, "EXIT|onResume");
         }
     }
 
@@ -226,7 +229,7 @@ public abstract class BookSearchBaseFragment
 
         } catch (@NonNull final RuntimeException e) {
             //noinspection ConstantConditions
-            Logger.error(getContext(), this, e);
+            Logger.error(getContext(), TAG, e);
             //noinspection ConstantConditions
             UserMessage.show(getActivity(), R.string.error_search_failed);
         }
@@ -245,7 +248,7 @@ public abstract class BookSearchBaseFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
@@ -278,10 +281,9 @@ public abstract class BookSearchBaseFragment
 
             default: {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.debugWithStackTrace(this, "BookSearchBaseFragment.onActivityResult",
-                                               "NOT HANDLED:",
-                                               "requestCode=" + requestCode,
-                                               "resultCode=" + resultCode);
+                    Log.d(TAG, "onActivityResult|NOT HANDLED"
+                               + "|requestCode=" + requestCode
+                               + "|resultCode=" + resultCode, new Throwable());
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;

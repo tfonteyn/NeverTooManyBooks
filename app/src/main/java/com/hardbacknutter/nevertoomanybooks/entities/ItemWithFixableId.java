@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -40,13 +41,14 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * An entity (item) in the database which is capable of finding itself in the database
  * without using its id.
  */
 public interface ItemWithFixableId {
+
+    String TAG = "ItemWithFixableId";
 
     /**
      * Passed a list of Objects, remove duplicates.
@@ -101,8 +103,7 @@ public interface ItemWithFixableId {
                 ids.add(itemId);
                 hashCodes.add(hashCode);
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.PRUNE_LIST) {
-                    Logger.debug(ItemWithFixableId.class, "pruneList",
-                                 "if-1", "item=" + item);
+                    Log.d(TAG, "pruneList|if-1|item=" + item);
                 }
 
             } else if (hashCodes.contains(hashCode) || (itemId != 0 && ids.contains(itemId))) {
@@ -110,8 +111,7 @@ public interface ItemWithFixableId {
                 it.remove();
                 modified = true;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.PRUNE_LIST) {
-                    Logger.debug(ItemWithFixableId.class, "pruneList",
-                                 "if-2", "item=" + item);
+                    Log.d(TAG, "pruneList|if-2|item=" + item);
                 }
 
             } else {

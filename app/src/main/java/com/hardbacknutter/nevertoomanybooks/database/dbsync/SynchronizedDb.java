@@ -30,17 +30,16 @@ package com.hardbacknutter.nevertoomanybooks.database.dbsync;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteClosable;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.lang.reflect.Field;
-
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -51,6 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * Database wrapper class that performs thread synchronization on all operations.
  */
 public class SynchronizedDb {
+
+    private static final String TAG = "SynchronizedDb";
 
     /** log error string. */
     private static final String ERROR_UPDATE_INSIDE_SHARED_TX = "Update inside shared TX";
@@ -119,47 +120,6 @@ public class SynchronizedDb {
     }
 
     /**
-     * DEBUG.
-     * <p>
-     * Utility routine, purely for debugging ref count issues (mainly Android 2.1).
-     *
-     * @param message Message to display (relating to context)
-     * @param db      SQLiteDatabase object
-     **/
-    @SuppressWarnings({"JavaReflectionMemberAccess"})
-    public static void printRefCount(@Nullable final String message,
-                                     @NonNull final SQLiteDatabase db) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
-            System.gc();
-            try {
-                Field field = SQLiteClosable.class.getDeclaredField("mReferenceCount");
-                field.setAccessible(true);
-                Integer refs = (Integer) field.get(db);
-                if (message != null) {
-                    Logger.debug(SynchronizedDb.class, "printRefCount",
-                                 "DBRefs (" + message + "): " + refs);
-//                    if (refs < 100) {
-//                        Logger.debug(SynchronizedDb.class, "printRefCount",
-//                                     "DBRefs (" + message + "): " + refs
-//                                     + " <-- TOO LOW (< 100)!");
-//                    } else if (refs < 1001) {
-//                        Logger.debug(SynchronizedDb.class, "printRefCount",
-//                                     "DBRefs (" + message + "): " + refs
-//                                     + " <-- TOO LOW (< 1000)!");
-//                    } else {
-//                        Logger.debug(SynchronizedDb.class, "printRefCount",
-//                                     "DBRefs (" + message + "): " + refs);
-//                    }
-
-                }
-            } catch (@NonNull final NoSuchFieldException | IllegalAccessException e) {
-                // already in debug block
-                Logger.debug(SynchronizedDb.class, "printRefCount", e);
-            }
-        }
-    }
-
-    /**
      * Call the passed database opener with retries to reduce risks of access conflicts
      * causing crashes.
      * <p>
@@ -195,8 +155,9 @@ public class SynchronizedDb {
             try {
                 SQLiteDatabase db = opener.getWritableDatabase();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
-                    Logger.debug(this, "openWithRetries",
-                                 db.getPath(), "retriesLeft=" + retriesLeft);
+                    Log.d(TAG, "openWithRetries"
+                               + "|path=" + db.getPath()
+                               + "|retriesLeft=" + retriesLeft);
                     debugDumpInfo(db);
                 }
                 return db;
@@ -234,8 +195,7 @@ public class SynchronizedDb {
         for (String s : sql) {
             try (Cursor cursor = db.rawQuery(s, null)) {
                 if (cursor.moveToNext()) {
-                    Logger.debug(this, "debugDumpInfo",
-                                 s + " = " + cursor.getString(0));
+                    Log.d(TAG, "debugDumpInfo|" + s + " = " + cursor.getString(0));
                 }
             }
         }
@@ -318,12 +278,12 @@ public class SynchronizedDb {
         try {
             long id = mSqlDb.insert(table, nullColumnHack, cv);
             if (id == -1) {
-                Logger.warnWithStackTrace(this, "Insert failed");
+                Logger.warnWithStackTrace(App.getAppContext(), TAG, "Insert failed");
             }
             return id;
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(this, e);
+            Logger.error(App.getAppContext(), TAG, e);
             throw e;
         } finally {
             if (txLock != null) {
@@ -359,7 +319,7 @@ public class SynchronizedDb {
             return mSqlDb.update(table, cv, whereClause, whereArgs);
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(this, e);
+            Logger.error(App.getAppContext(), TAG, e);
             throw e;
         } finally {
             if (txLock != null) {
@@ -397,7 +357,7 @@ public class SynchronizedDb {
             return mSqlDb.delete(table, whereClause, whereArgs);
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(this, e);
+            Logger.error(App.getAppContext(), TAG, e);
             throw e;
         } finally {
             if (txLock != null) {
@@ -473,7 +433,7 @@ public class SynchronizedDb {
      */
     public void execSQL(@NonNull final String sql) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXEC_SQL) {
-            Logger.debugEnter(this, "execSQL", sql);
+            Log.d(TAG, "ENTER|execSQL|sql=" + sql);
         }
 
         try {
@@ -492,7 +452,7 @@ public class SynchronizedDb {
             }
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(this, e, sql);
+            Logger.error(App.getAppContext(), TAG, e, sql);
             throw e;
         }
     }
@@ -526,7 +486,7 @@ public class SynchronizedDb {
      * @return the underlying SQLiteDatabase object.
      */
     @NonNull
-    public SQLiteDatabase getUnderlyingDatabase() {
+    SQLiteDatabase getUnderlyingDatabase() {
         return mSqlDb;
     }
 
@@ -539,7 +499,7 @@ public class SynchronizedDb {
         try {
             execSQL("analyze");
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e, "Analyze failed");
+            Logger.error(App.getAppContext(), TAG, e, "Analyze failed");
         }
     }
 
@@ -588,7 +548,7 @@ public class SynchronizedDb {
             if (mTxLock == null) {
                 mSqlDb.beginTransaction();
             } else {
-                Logger.warnWithStackTrace(this,
+                Logger.warnWithStackTrace(App.getAppContext(), TAG,
                                           "Starting a transaction when one is already started");
             }
         } catch (@NonNull final RuntimeException e) {
@@ -644,8 +604,7 @@ public class SynchronizedDb {
         if (sIsCollationCaseSensitive == null) {
             sIsCollationCaseSensitive = collationIsCaseSensitive();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
-                Logger.debug(this, "isCollationCaseSensitive",
-                             sIsCollationCaseSensitive);
+                Log.d(TAG, "isCollationCaseSensitive|" + sIsCollationCaseSensitive);
             }
         }
         return sIsCollationCaseSensitive;
@@ -692,13 +651,13 @@ public class SynchronizedDb {
             return !"a".equals(s);
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(this, e);
+            Logger.error(App.getAppContext(), TAG, e);
             throw e;
         } finally {
             try {
                 mSqlDb.execSQL(dropTable);
             } catch (@NonNull final SQLException e) {
-                Logger.error(this, e);
+                Logger.error(App.getAppContext(), TAG, e);
             }
         }
     }

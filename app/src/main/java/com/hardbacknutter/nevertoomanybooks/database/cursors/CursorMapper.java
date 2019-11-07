@@ -49,6 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class CursorMapper {
 
+    private static final String TAG = "CursorMapper";
+
     /** the mapped cursor. */
     private final Cursor mCursor;
 
@@ -219,7 +221,7 @@ public class CursorMapper {
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(context, this, "columnName=" + columnName,
+                        Logger.warnWithStackTrace(context, TAG, "columnName=" + columnName,
                                                   "type=" + mCursor.getType(col));
                         break;
                 }

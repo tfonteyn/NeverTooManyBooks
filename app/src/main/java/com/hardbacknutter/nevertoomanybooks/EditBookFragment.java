@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 public class EditBookFragment
         extends BookBaseFragment {
 
-    /** Fragment manager tag. */
     public static final String TAG = "EditBookFragment";
 
     /**

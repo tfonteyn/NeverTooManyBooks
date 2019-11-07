@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +40,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -50,6 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class IsfdbEditionsHandler
         extends AbstractBase {
+
+    private static final String TAG = "IsfdbEditionsHandler";
 
     /** Search URL template. */
     private static final String EDITIONS_URL = IsfdbManager.CGI_BIN
@@ -135,11 +139,11 @@ public class IsfdbEditionsHandler
             findEntries(mDoc, "tr.table1", "tr.table0");
         } else {
             // dunno, let's log it
-            Logger.warnWithStackTrace(this, "pageUrl=" + pageUrl);
+            Logger.warnWithStackTrace(App.getAppContext(), TAG, "pageUrl=" + pageUrl);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
-            Logger.debugExit(this, "fetch", mEditions);
+            Log.d(TAG, "EXIT|fetch|" + mEditions);
         }
         return mEditions;
     }

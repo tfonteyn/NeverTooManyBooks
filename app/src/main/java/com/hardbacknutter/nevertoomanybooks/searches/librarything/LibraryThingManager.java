@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -94,6 +94,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
  */
 public class LibraryThingManager
         implements SearchEngine {
+
+    private static final String TAG = "LibraryThingManager";
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "librarything.";
@@ -159,9 +161,9 @@ public class LibraryThingManager
      *
      * @return {@code true} if an alert is currently shown
      */
-    public static boolean alertRegistrationBeneficial(@NonNull final Context context,
-                                                      final boolean required,
-                                                      @NonNull final String prefSuffix) {
+    public static boolean promptToRegister(@NonNull final Context context,
+                                           final boolean required,
+                                           @NonNull final String prefSuffix) {
         if (!hasKey()) {
             return alertRegistrationNeeded(context, required, prefSuffix);
         }
@@ -222,7 +224,7 @@ public class LibraryThingManager
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
-            Logger.debug(LibraryThingManager.class, "searchEditions", "isbn=" + isbn);
+            Log.d(TAG, "searchEditions|isbn=" + isbn);
         }
 
         // add the original isbn, as there might be more images at the time this search is done.
@@ -244,12 +246,12 @@ public class LibraryThingManager
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(LibraryThingManager.class, e, url);
+                Log.d(TAG, url, e);
             }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
-            Logger.debug(LibraryThingManager.class, "searchEditions", "editions=" + editions);
+            Log.d(TAG, "searchEditions|editions=" + editions);
         }
         return editions;
     }
@@ -262,7 +264,7 @@ public class LibraryThingManager
     public static boolean hasKey() {
         boolean hasKey = !getDevKey().isEmpty();
         if (BuildConfig.DEBUG && !hasKey) {
-            Logger.debug(LibraryThingManager.class, "hasKey", "LibraryThing key not available");
+            Log.d(TAG, "hasKey|LibraryThing key not available");
         }
         return hasKey;
     }
@@ -331,7 +333,7 @@ public class LibraryThingManager
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, e, url);
+                Log.d(TAG, url, e);
             }
             throw new IOException(e);
         }

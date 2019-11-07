@@ -66,6 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
  */
 public final class TipManager {
 
+    private static final String TAG = "TipManager";
+
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "tips.";
     /** Preferences prefix for all tips. */
@@ -175,7 +177,7 @@ public final class TipManager {
         final Tip tip = ALL.get(stringId);
         if (tip == null) {
             // log but ignore.
-            Logger.warnWithStackTrace(context, TipManager.class, "display", "stringId=" + stringId);
+            Logger.warnWithStackTrace(context, TAG, "display", "stringId=" + stringId);
             return;
         }
         if (!tip.shouldBeShown(context)) {

@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.searches.googlebooks;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,7 +50,6 @@ import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -59,6 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  */
 public final class GoogleBooksManager
         implements SearchEngine {
+
+    private static final String TAG = "GoogleBooksManager";
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "googlebooks.";
@@ -143,7 +145,7 @@ public final class GoogleBooksManager
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, e, url);
+                Log.d(TAG, url, e);
             }
             throw new IOException(e);
         }

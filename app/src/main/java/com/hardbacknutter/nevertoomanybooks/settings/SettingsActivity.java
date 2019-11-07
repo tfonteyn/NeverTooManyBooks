@@ -64,6 +64,8 @@ public class SettingsActivity
                    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
                    SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String TAG = "SettingsActivity";
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main_nav;
@@ -225,7 +227,7 @@ public class SettingsActivity
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
 
         if (data != null) {

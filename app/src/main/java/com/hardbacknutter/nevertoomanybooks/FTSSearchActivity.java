@@ -65,6 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class FTSSearchActivity
         extends BaseActivity {
 
+    private static final String TAG = "FTSSearchActivity";
+
     /** create timer to tick every 250ms. */
     private static final int TIMER_TICK = 250;
     /** Handle inter-thread messages. */
@@ -260,7 +262,7 @@ public class FTSSearchActivity
                 }
             }
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, this, e);
+            Logger.error(this, TAG, e);
         }
 
         final String message = tmpMsg != null ? tmpMsg : "";

@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.searches.amazon;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -43,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
@@ -218,6 +218,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 class AmazonHandler
         extends DefaultHandler {
 
+    private static final String TAG = "AmazonHandler";
+
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_AM";
 
@@ -364,9 +366,8 @@ class AmazonHandler
                 mBookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
             } catch (@NonNull final NumberFormatException ignore) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debug(this, "handleListPrice",
-                                 "mCurrencyCode=" + mCurrencyCode,
-                                 "mCurrencyAmount=" + mCurrencyAmount);
+                    Log.d(TAG, "handleListPrice|mCurrencyCode=" + mCurrencyCode
+                               + "|mCurrencyAmount=" + mCurrencyAmount);
                 }
             }
         }
@@ -528,10 +529,9 @@ class AmazonHandler
                 addIfNotPresent(mBookData, DBDefinitions.KEY_EID_ASIN, mBuilder.toString());
 
             } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                     // see what we are missing.
-                    Logger.debug(this, "endElement", "Skipping: "
-                                                     + localName + "->`" + mBuilder + '`');
+                    Log.d(TAG, "endElement|Skipping: " + localName + "->`" + mBuilder + '`');
                 }
             }
         } //else if (localName.equalsIgnoreCase(XML_TOTAL_RESULTS)){

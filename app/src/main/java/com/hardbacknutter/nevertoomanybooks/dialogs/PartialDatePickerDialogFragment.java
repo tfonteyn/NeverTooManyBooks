@@ -33,6 +33,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,8 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 public class PartialDatePickerDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
-    public static final String TAG = "PartialDatePickerDialogFragment";
+    public static final String TAG = "PartialDatePickerDialog";
 
     /** a standard sql style date string, must be correct. */
     private static final String BKEY_DATE = TAG + ":date";
@@ -130,8 +130,7 @@ public class PartialDatePickerDialogFragment
             date = currentValue;
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
-            Logger.debug(PartialDatePickerDialogFragment.class, "newInstance",
-                         "date.toString(): " + date);
+            Log.d(TAG, "newInstance|date.toString(): " + date);
         }
 
         PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();
@@ -257,8 +256,7 @@ public class PartialDatePickerDialogFragment
             mListener.get().onPartialDatePickerSave(mDestinationFieldId, mYear, mMonth, mDay);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onPartialDatePickerSave",
-                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                Log.d(TAG, "onPartialDatePickerSave|" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }
@@ -357,7 +355,7 @@ public class PartialDatePickerDialogFragment
                                 break;
 
                             default:
-                                Logger.warnWithStackTrace(getContext(), this,
+                                Logger.warnWithStackTrace(getContext(), TAG,
                                                           "id=" + picker.getId());
                                 break;
                         }

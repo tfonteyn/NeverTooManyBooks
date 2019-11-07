@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
@@ -43,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * Class to store an index using a table name and a list of domain definitions.
  */
 public class IndexDefinition {
+
+    private static final String TAG = "IndexDefinition";
 
     /** SQL to get the names of all indexes. */
     private static final String SQL_GET_INDEX_NAMES =
@@ -92,10 +95,11 @@ public class IndexDefinition {
                     db.execSQL("DROP INDEX " + indexName);
                 } catch (@NonNull final SQLException e) {
                     // bad sql is a developer issue... die!
-                    Logger.error(IndexDefinition.class, e);
+                    Logger.error(App.getAppContext(), TAG, e);
                     throw e;
                 } catch (@NonNull final RuntimeException e) {
-                    Logger.error(IndexDefinition.class, e, "Index deletion failed: " + indexName);
+                    Logger.error(App.getAppContext(), TAG, e,
+                                 "Index deletion failed: " + indexName);
                 }
             }
         }

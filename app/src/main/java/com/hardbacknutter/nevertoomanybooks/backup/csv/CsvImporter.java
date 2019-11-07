@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv;
 import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -97,6 +98,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
  */
 public class CsvImporter
         implements Importer {
+
+    private static final String TAG = "CsvImporter";
 
     /** Only send progress updates every 200ms. */
     private static final int PROGRESS_UPDATE_INTERVAL = 200;
@@ -306,7 +309,7 @@ public class CsvImporter
                         }
                     }
                 } catch (@NonNull final IOException | SQLiteDoneException e) {
-                    Logger.error(context, this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
+                    Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 }
 
                 // limit the amount of progress updates, otherwise this will cause a slowdown.
@@ -336,11 +339,10 @@ public class CsvImporter
         mResults.booksProcessed = row - 1;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Logger.debugExit(this, "doBooks",
-                             "Csv Import successful:",
-                             "processed=" + mResults.booksProcessed,
-                             "created=" + mResults.booksCreated,
-                             "updated=" + mResults.booksUpdated);
+            Log.d(TAG, "EXIT|doBooks|Csv Import successful"
+                       + "|processed=" + mResults.booksProcessed
+                       + "|created=" + mResults.booksCreated
+                       + "|updated=" + mResults.booksUpdated);
         }
         return mResults;
     }
@@ -351,7 +353,7 @@ public class CsvImporter
             // do some cleaning
             mDb.purge();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e);
+            Logger.error(App.getAppContext(), TAG, e);
         }
         mDb.close();
     }

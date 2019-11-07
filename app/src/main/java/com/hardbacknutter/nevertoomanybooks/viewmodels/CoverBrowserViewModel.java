@@ -34,6 +34,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -67,6 +68,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 public class CoverBrowserViewModel
         extends ViewModel {
+
+    private static final String TAG = "CoverBrowserViewModel";
 
     /** Holder for all active tasks, so we can cancel them if needed. */
     private final Set<AsyncTask> mAllTasks = new HashSet<>();
@@ -343,7 +346,7 @@ public class CoverBrowserViewModel
                 } catch (@NonNull final RuntimeException e) {
                     // Failed to decode; probably not an image
                     ok = false;
-                    Logger.error(this, e, "Unable to decode file");
+                    Logger.error(App.getAppContext(), TAG, e, "Unable to decode file");
                 }
             }
 
@@ -393,7 +396,7 @@ public class CoverBrowserViewModel
                     && isGood(new File(fileInfo.fileSpec))) {
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                        Logger.debug(this, "download", "FILESYSTEM", fileInfo);
+                        Log.d(TAG, "download|FILESYSTEM|" + fileInfo);
                     }
                     // use it
                     return fileInfo;
@@ -455,18 +458,14 @@ public class CoverBrowserViewModel
                 mFiles.put(key, fileInfo);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                    Logger.debug(this, "downloadFromSite",
-                                 "FOUND", fileInfo);
+                    Log.d(TAG, "downloadFromSite|FOUND|" + fileInfo);
                 }
                 return fileInfo;
 
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                    Logger.debug(this, "downloadFromSite",
-                                 "MISSING",
-                                 "site=" + site.getName(),
-                                 "isbn=" + isbn,
-                                 "size=" + size);
+                    Log.d(TAG, "downloadFromSite|MISSING|site=" + site.getName()
+                               + "|isbn=" + isbn + "|size=" + size);
                 }
             }
             return null;
@@ -556,8 +555,7 @@ public class CoverBrowserViewModel
                 mTaskListener.get().onGetEditionsTaskFinished(this, result);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onPostExecute",
-                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                    Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
                 }
             }
         }
@@ -621,8 +619,7 @@ public class CoverBrowserViewModel
                 mTaskListener.get().onGetGalleryImageTaskFinished(this, result);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onPostExecute",
-                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                    Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
                 }
             }
         }
@@ -634,8 +631,7 @@ public class CoverBrowserViewModel
                 mTaskListener.get().onGetGalleryImageTaskFinished(this, result);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onCancelled",
-                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                    Log.d(TAG, "onCancelled|" + Logger.WEAK_REFERENCE_DEAD);
                 }
             }
         }
@@ -702,8 +698,7 @@ public class CoverBrowserViewModel
                 mTaskListener.get().onGetSwitcherImageTaskFinished(this, result);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onPostExecute",
-                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                    Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
                 }
             }
         }
@@ -715,8 +710,7 @@ public class CoverBrowserViewModel
                 mTaskListener.get().onGetSwitcherImageTaskFinished(this, result);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onCancelled",
-                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                    Log.d(TAG, "onCancelled|" + Logger.WEAK_REFERENCE_DEAD);
                 }
             }
         }

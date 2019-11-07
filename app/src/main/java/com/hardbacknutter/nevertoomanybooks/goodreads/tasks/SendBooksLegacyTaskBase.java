@@ -72,6 +72,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 abstract class SendBooksLegacyTaskBase
         extends TQTask {
 
+    private static final String TAG = "SendBooksLegacyTaskBase";
+
     private static final long serialVersionUID = 5950331916209877890L;
 
     /** wait time before declaring network failure. */
@@ -106,14 +108,14 @@ abstract class SendBooksLegacyTaskBase
             if (grManager.hasValidCredentials()) {
                 return send(queueManager, context, grManager);
             } else {
-                Logger.warnWithStackTrace(context, this, "no valid credentials");
+                Logger.warnWithStackTrace(context, TAG, "no valid credentials");
             }
         } else {
             // Only wait 5 minutes max on network errors.
             if (getRetryDelay() > FIVE_MINUTES) {
                 setRetryDelay(FIVE_MINUTES);
             }
-            Logger.warn(context, this, "run", "network or site not available");
+            Logger.warn(context, TAG, "run", "network or site not available");
         }
 
         return false;

@@ -33,6 +33,7 @@ import android.database.sqlite.SQLiteStatement;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -57,6 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class FlattenedBooklist
         implements AutoCloseable {
+
+    private static final String TAG = "FlattenedBooklist";
 
     /** Name for the 'next' statement. */
     private static final String STMT_NEXT = "next";
@@ -347,7 +350,7 @@ public class FlattenedBooklist
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(this, "finalize", "mCloseWasCalled=false; calling close() now");
+            Logger.warn(App.getAppContext(), TAG, "finalize|calling close()");
             close();
         }
         super.finalize();

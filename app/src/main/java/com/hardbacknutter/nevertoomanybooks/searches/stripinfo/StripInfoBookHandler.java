@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.searches.stripinfo;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -43,6 +44,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -55,6 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 
 public class StripInfoBookHandler
         extends JsoupBase {
+
+    private static final String TAG = "StripInfoBookHandler";
 
     public static final String FILENAME_SUFFIX = "_SI";
 
@@ -318,8 +322,7 @@ public class StripInfoBookHandler
                             break;
 
                         default:
-                            Logger.debug(this, "parseDoc",
-                                         "unknown label=" + label);
+                            Log.d(TAG, "parseDoc|unknown label=" + label);
                     }
                     i++;
                 }
@@ -328,7 +331,7 @@ public class StripInfoBookHandler
 
             } catch (@NonNull final Exception e) {
                 // log, abandon row, and try next row.
-                Logger.error(this, e, "mIsbn=" + mIsbn);
+                Logger.error(App.getAppContext(), TAG, e, "mIsbn=" + mIsbn);
             }
         }
 

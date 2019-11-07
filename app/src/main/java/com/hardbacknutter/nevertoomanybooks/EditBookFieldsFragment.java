@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public class EditBookFieldsFragment
         extends EditBookBaseFragment<Bookshelf> {
 
-    /** Fragment manager tag. */
     public static final String TAG = "EditBookFieldsFragment";
 
     private static final int REQ_EDIT_AUTHORS = 0;
@@ -165,7 +164,7 @@ public class EditBookFieldsFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
         Book book = mBookModel.getBook();
 

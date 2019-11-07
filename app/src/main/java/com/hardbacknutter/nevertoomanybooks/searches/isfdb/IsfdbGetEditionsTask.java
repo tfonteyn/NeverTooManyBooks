@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class IsfdbGetEditionsTask
         extends AsyncTask<Void, Void, ArrayList<IsfdbEditionsHandler.Edition>> {
+
+    private static final String TAG = "IsfdbGetEditionsTask";
 
     @NonNull
     private final String mIsbn;
@@ -72,7 +75,7 @@ public class IsfdbGetEditionsTask
         try {
             return new IsfdbEditionsHandler().fetch(App.getAppContext(), mIsbn);
         } catch (@NonNull final SocketTimeoutException e) {
-            Logger.warn(this, "doInBackground", e.getLocalizedMessage());
+            Logger.warn(App.getAppContext(), TAG, "doInBackground", e.getLocalizedMessage());
             return null;
         }
     }
@@ -85,8 +88,7 @@ public class IsfdbGetEditionsTask
             mTaskListener.get().onGotIsfdbEditions(result);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onPostExecute",
-                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }

@@ -48,8 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
 public class SimpleXmlFilter {
 
     @NonNull
-    private static final XmlHandler mHandleStart = context -> {
-        BuilderContext bc = (BuilderContext) context.getUserArg();
+    private static final XmlHandler mHandleStart = elementContext -> {
+        BuilderContext bc = (BuilderContext) elementContext.getUserArg();
         if (bc.isArray()) {
             bc.initArray();
         }
@@ -57,13 +57,13 @@ public class SimpleXmlFilter {
             bc.pushBundle();
         }
         if (bc.listener != null) {
-            bc.listener.onStart(bc, context);
+            bc.listener.onStart(bc, elementContext);
         }
         List<AttrFilter> attrs = bc.attrs;
         if (attrs != null) {
             for (AttrFilter f : attrs) {
                 final String name = f.name;
-                final String value = context.getAttributes().getValue(name);
+                final String value = elementContext.getAttributes().getValue(name);
                 if (value != null) {
                     try {
                         f.put(bc, value);
@@ -76,13 +76,13 @@ public class SimpleXmlFilter {
     };
 
     @NonNull
-    private static final XmlHandler mHandleFinish = context -> {
-        final BuilderContext bc = (BuilderContext) context.getUserArg();
+    private static final XmlHandler mHandleFinish = elementContext -> {
+        final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
         if (bc.finishHandler != null) {
-            bc.finishHandler.process(context);
+            bc.finishHandler.process(elementContext);
         }
         if (bc.listener != null) {
-            bc.listener.onFinish(bc, context);
+            bc.listener.onFinish(bc, elementContext);
         }
         if (bc.isArrayItem()) {
             Bundle b = bc.popBundle();
@@ -94,27 +94,27 @@ public class SimpleXmlFilter {
     };
 
     @NonNull
-    private static final XmlHandler mTextHandler = context -> {
-        final BuilderContext c = (BuilderContext) context.getUserArg();
-        c.getData().putString(c.collectField, context.getBody());
+    private static final XmlHandler mTextHandler = elementContext -> {
+        final BuilderContext c = (BuilderContext) elementContext.getUserArg();
+        c.getData().putString(c.collectField, elementContext.getBody());
     };
 
     @NonNull
-    private static final XmlHandler mLongHandler = context -> {
-        final BuilderContext bc = (BuilderContext) context.getUserArg();
+    private static final XmlHandler mLongHandler = elementContext -> {
+        final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
         final String name = bc.collectField;
         try {
-            long l = Long.parseLong(context.getBody());
+            long l = Long.parseLong(elementContext.getBody());
             bc.getData().putLong(name, l);
         } catch (@NonNull final NumberFormatException ignore) {
         }
     };
     @NonNull
-    private static final XmlHandler mBooleanHandler = context -> {
-        final BuilderContext bc = (BuilderContext) context.getUserArg();
+    private static final XmlHandler mBooleanHandler = elementContext -> {
+        final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
         final String name = bc.collectField;
         try {
-            boolean b = textToBoolean(context.getBody());
+            boolean b = textToBoolean(elementContext.getBody());
             bc.getData().putBoolean(name, b);
         } catch (@NonNull final NumberFormatException ignore) {
             // Ignore but don't add
@@ -142,11 +142,11 @@ public class SimpleXmlFilter {
         mLocale = locale;
 
         // defined here due to compiler wanting mLocale to be defined.
-        mDoubleHandler = context -> {
-            final BuilderContext bc = (BuilderContext) context.getUserArg();
+        mDoubleHandler = elementContext -> {
+            final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
             final String name = bc.collectField;
             try {
-                double d = ParseUtils.parseDouble(context.getBody(), mLocale);
+                double d = ParseUtils.parseDouble(elementContext.getBody(), mLocale);
                 bc.getData().putDouble(name, d);
 
             } catch (@NonNull final NumberFormatException ignore) {

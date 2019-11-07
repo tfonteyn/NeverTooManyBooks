@@ -79,9 +79,9 @@ public class AddBookToShelfApiHandler
     /** Resulting review-id after the request. */
     private long mReviewId;
     /** Handler for the review-id. */
-    private final XmlHandler mHandleReviewId = context -> {
+    private final XmlHandler mHandleReviewId = elementContext -> {
         try {
-            mReviewId = Long.parseLong(context.getBody());
+            mReviewId = Long.parseLong(elementContext.getBody());
         } catch (@NonNull final NumberFormatException ignore) {
             mReviewId = 0;
         }

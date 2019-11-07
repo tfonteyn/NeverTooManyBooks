@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsFromInternetTask;
+import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsTask;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
@@ -68,29 +69,28 @@ import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsFromInternetModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsModel;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
 
 /**
- * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsFromInternetTask}.
+ * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsTask}.
  * <p>
  * TODO: re-introduce remembering the last id done, and restarting from that id onwards.
- * See {@link UpdateFieldsFromInternetModel} mFromBookIdOnwards
+ * See {@link UpdateFieldsModel} mFromBookIdOnwards
  */
-public class UpdateFieldsFromInternetFragment
+public class UpdateFieldsFragment
         extends Fragment {
 
-    /** Fragment manager tag. */
-    public static final String TAG = "UpdateFieldsFromInternetFragment";
+    public static final String TAG = "UpdateFieldsFragment";
 
     /** the ViewGroup where we'll add the list of fields. */
     private ViewGroup mFieldListView;
 
     private TaskManager mTaskManager;
 
-    private UpdateFieldsFromInternetModel mModel;
+    private UpdateFieldsModel mModel;
 
     private final ManagedTaskListener mManagedTaskListener = new ManagedTaskListener() {
         @Override
@@ -110,7 +110,7 @@ public class UpdateFieldsFromInternetFragment
             ArrayList<Long> bookIds = mModel.getBookIds();
 
 //            // the last book id which was handled; can be used to restart the update.
-//            long lastBookId = ((UpdateFieldsFromInternetTask)task).getLastBookIdDone();
+//            long lastBookId = ((UpdateFieldsTask)task).getLastBookIdDone();
 //            boolean fullListDone =
 //                    (bookIds != null && !bookIds.isEmpty())
 //                    && bookIds.get(bookIds.size()-1) == lastBookId;
@@ -153,7 +153,7 @@ public class UpdateFieldsFromInternetFragment
         setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
-        mModel = new ViewModelProvider(getActivity()).get(UpdateFieldsFromInternetModel.class);
+        mModel = new ViewModelProvider(getActivity()).get(UpdateFieldsModel.class);
         //noinspection ConstantConditions
         mModel.init(getContext(), getArguments());
     }
@@ -192,8 +192,8 @@ public class UpdateFieldsFromInternetFragment
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            SearchSites.alertRegistrationBeneficial(getContext(), "update_from_internet",
-                                                    mModel.getEnabledSearchSites());
+            SearchSites.promptToRegister(getContext(), "update_from_internet",
+                                         mModel.getEnabledSearchSites());
 
             TipManager.display(getContext(), R.string.tip_update_fields_from_internet, null);
         }
@@ -209,7 +209,7 @@ public class UpdateFieldsFromInternetFragment
     @CallSuper
     public void onResume() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugEnter(this, "onResume");
+            Log.d(TAG, "ENTER|onResume");
         }
         super.onResume();
         if (getActivity() instanceof BaseActivity) {
@@ -220,11 +220,11 @@ public class UpdateFieldsFromInternetFragment
         }
 
         if (mModel.getUpdateSenderId() != 0) {
-            UpdateFieldsFromInternetTask.MESSAGE_SWITCH
+            UpdateFieldsTask.MESSAGE_SWITCH
                     .addListener(mModel.getUpdateSenderId(), true, mManagedTaskListener);
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugExit(this, "onResume");
+            Log.d(TAG, "EXIT|onResume");
         }
     }
 
@@ -262,7 +262,7 @@ public class UpdateFieldsFromInternetFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
@@ -289,7 +289,7 @@ public class UpdateFieldsFromInternetFragment
     @CallSuper
     public void onPause() {
         if (mModel.getUpdateSenderId() != 0) {
-            UpdateFieldsFromInternetTask.MESSAGE_SWITCH
+            UpdateFieldsTask.MESSAGE_SWITCH
                     .removeListener(mModel.getUpdateSenderId(), mManagedTaskListener);
         }
         super.onPause();
@@ -399,11 +399,11 @@ public class UpdateFieldsFromInternetFragment
         mModel.addRelatedField(DBDefinitions.KEY_PRICE_LISTED,
                                DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
 
-        UpdateFieldsFromInternetTask updateTask =
-                new UpdateFieldsFromInternetTask(mTaskManager,
-                                                 mModel.getSearchSites(),
-                                                 mModel.getFieldUsages(),
-                                                 mManagedTaskListener);
+        UpdateFieldsTask updateTask =
+                new UpdateFieldsTask(mTaskManager,
+                                     mModel.getSearchSites(),
+                                     mModel.getFieldUsages(),
+                                     mManagedTaskListener);
         ArrayList<Long> list = mModel.getBookIds();
         if (list != null) {
             updateTask.setBookId(list);
@@ -413,7 +413,7 @@ public class UpdateFieldsFromInternetFragment
         }
 
         mModel.setUpdateSenderId(updateTask.getSenderId());
-        UpdateFieldsFromInternetTask.MESSAGE_SWITCH
+        UpdateFieldsTask.MESSAGE_SWITCH
                 .addListener(mModel.getUpdateSenderId(), false, mManagedTaskListener);
         updateTask.start();
     }

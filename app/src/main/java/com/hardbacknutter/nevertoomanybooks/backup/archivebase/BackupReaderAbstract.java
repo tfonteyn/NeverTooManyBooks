@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -62,12 +63,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public abstract class BackupReaderAbstract
         implements BackupReader {
 
+    private static final String TAG = "BackupReaderAbstract";
+    protected final ContentResolver mContentResolver;
     /** Database Access. */
     @NonNull
     private final DAO mDb;
-
-    protected final ContentResolver mContentResolver;
-
     /** progress message. */
     private final String mProcessPreferences;
     /** progress message. */
@@ -177,7 +177,7 @@ public abstract class BackupReaderAbstract
             // process each entry based on type, unless we are cancelled.
             while (entity != null && !progressListener.isCancelled()) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                    Logger.debug(this, "restore", "entity=" + entity.getName());
+                    Log.d(TAG, "restore|entity=" + entity.getName());
                 }
                 switch (entity.getType()) {
                     case Cover: {
@@ -261,7 +261,7 @@ public abstract class BackupReaderAbstract
                         break;
 
                     case Unknown:
-                        Logger.warn(context, this, "restore", "type=" + entity.getType());
+                        Logger.warn(context, TAG, "restore", "type=" + entity.getType());
                         break;
                 }
                 entity = nextEntity();
@@ -276,9 +276,7 @@ public abstract class BackupReaderAbstract
             mSettings.addResults(mResults);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                Logger.debug(this, "restore",
-                             "results=" + mResults,
-                             "mSettings=" + mSettings);
+                Log.d(TAG, "restore|results=" + mResults + "|mSettings=" + mSettings);
             }
             try {
                 close();

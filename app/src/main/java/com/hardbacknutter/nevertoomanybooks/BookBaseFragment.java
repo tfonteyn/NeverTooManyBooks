@@ -31,6 +31,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +76,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
  */
 public abstract class BookBaseFragment
         extends Fragment {
+
+    private static final String TAG = "BookBaseFragment";
 
     /** The book. Must be in the Activity scope for {@link EditBookActivity#onBackPressed()}. */
     BookBaseFragmentModel mBookModel;
@@ -211,7 +214,7 @@ public abstract class BookBaseFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
@@ -228,8 +231,9 @@ public abstract class BookBaseFragment
                         mBookModel.setBook(bookIds.get(0));
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                            Logger.debug(this, "BookBaseFragment.onActivityResult",
-                                         "wasCancelled= " + data.getBooleanExtra(
+                            Log.d(TAG, "onActivityResult"
+                                       + "|REQ_UPDATE_FIELDS_FROM_INTERNET"
+                                       + "|wasCancelled= " + data.getBooleanExtra(
                                                  UniqueId.BKEY_CANCELED, false));
                         }
                     }
@@ -238,10 +242,10 @@ public abstract class BookBaseFragment
 
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.debugWithStackTrace("BookBaseFragment.onActivityResult",
-                                               "NOT HANDLED:",
-                                               "requestCode=" + requestCode,
-                                               "resultCode=" + resultCode);
+                    Log.d(TAG, "onActivityResult"
+                               + "|NOT HANDLED"
+                               + "|requestCode=" + requestCode
+                               + "|resultCode=" + resultCode, new Throwable());
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
@@ -284,7 +288,7 @@ public abstract class BookBaseFragment
     @CallSuper
     public void onResume() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugEnter(this, "onResume");
+            Log.d(TAG, "ENTER|onResume");
         }
         super.onResume();
         if (getActivity() instanceof BaseActivity) {
@@ -300,7 +304,7 @@ public abstract class BookBaseFragment
         loadFields();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugExit(this, "onResume");
+            Log.d(TAG, "EXIT|onResume");
         }
     }
 
@@ -308,7 +312,7 @@ public abstract class BookBaseFragment
     public void onPause() {
         super.onPause();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugExit(this, "onPause");
+            Log.d(TAG, "EXIT|onPause");
         }
     }
 
@@ -495,7 +499,7 @@ public abstract class BookBaseFragment
             } catch (@NonNull final RuntimeException e) {
                 // Log, but ignore. This is a non-critical feature that prevents crashes
                 // when the 'next' key is pressed and some views have been hidden.
-                Logger.error(root.getContext(), FocusSettings.class, e);
+                Logger.error(root.getContext(), TAG, e);
             }
         }
 
@@ -586,7 +590,7 @@ public abstract class BookBaseFragment
                 value = value.substring(0, Math.min(value.length(), 20));
                 sb.append(value);
             } else {
-                Logger.debug(BookBaseFragment.class, "debugDumpViewTree", sb);
+                Log.d(TAG, "debugDumpViewTree|" + sb);
             }
             if (view instanceof ViewGroup) {
                 ViewGroup g = (ViewGroup) view;

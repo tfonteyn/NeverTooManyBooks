@@ -86,6 +86,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 class ImportLegacyTask
         extends TQTask {
 
+    private static final String TAG = "ImportLegacyTask";
+
     private static final long serialVersionUID = 2944686967082059350L;
 
     /**
@@ -289,7 +291,7 @@ class ImportLegacyTask
             db.analyze();
         } catch (@NonNull final RuntimeException e) {
             // Do nothing. Not a critical step.
-            Logger.info(context, this, "processReviews", e);
+            Logger.warn(context, TAG, "processReviews", e);
         }
         return true;
     }
@@ -537,7 +539,7 @@ class ImportLegacyTask
          */
         ArrayList<Bundle> grAuthors = review.getParcelableArrayList(ReviewField.AUTHORS);
         if (grAuthors == null) {
-            Logger.warnWithStackTrace(context, this, "grAuthors was null");
+            Logger.warnWithStackTrace(context, TAG, "grAuthors was null");
             return bookData;
         }
         ArrayList<Author> authors;
@@ -601,7 +603,7 @@ class ImportLegacyTask
         if (review.containsKey(ReviewField.SHELVES)) {
             ArrayList<Bundle> grShelves = review.getParcelableArrayList(ReviewField.SHELVES);
             if (grShelves == null) {
-                Logger.warnWithStackTrace(context, this, "grShelves was null");
+                Logger.warnWithStackTrace(context, TAG, "grShelves was null");
                 return bookData;
             }
 

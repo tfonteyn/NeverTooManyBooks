@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.CallSuper;
@@ -85,6 +86,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  */
 public abstract class BaseActivity
         extends AppCompatActivity {
+
+    private static final String TAG = "BaseActivity";
 
     /** Locale at {@link #onCreate} time. */
     protected String mInitialLocaleSpec;
@@ -261,7 +264,7 @@ public abstract class BaseActivity
             recreate();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.debugExit(this, "BaseActivity.onResume", "Recreate!");
+                Log.d(TAG, "EXIT|BaseActivity.onResume|Recreate!");
             }
 
             return true;
@@ -270,7 +273,7 @@ public abstract class BaseActivity
             // this is the second time we got here in onResume, so we have been re-created.
             App.clearRecreateFlag();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.debugExit(this, "BaseActivity.onResume", "Resuming");
+                Log.d(TAG, "EXIT|BaseActivity.onResume|Resuming");
             }
         }
 
@@ -381,7 +384,7 @@ public abstract class BaseActivity
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
 
         // generic actions & logging. Anything specific should be done in a child class.
@@ -390,8 +393,7 @@ public abstract class BaseActivity
             case UniqueId.REQ_NAV_PANEL_SETTINGS:
                 if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT
                                           || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
-                    Logger.debug(this, "BaseActivity.onActivityResult",
-                                 "REQ_NAV_PANEL_SETTINGS");
+                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_SETTINGS");
                 }
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
@@ -404,32 +406,28 @@ public abstract class BaseActivity
             // logging only
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.debug(this, "BaseActivity.onActivityResult",
-                                 "REQ_NAV_PANEL_EDIT_BOOKSHELVES");
+                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
                 return;
 
             // logging only
             case UniqueId.REQ_NAV_PANEL_EDIT_STYLES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.debug(this, "BaseActivity.onActivityResult",
-                                 "REQ_NAV_PANEL_EDIT_STYLES");
+                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EDIT_STYLES");
                 }
                 return;
 
             // logging only
             case UniqueId.REQ_NAV_PANEL_IMP_EXP:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.debug(this, "BaseActivity.onActivityResult",
-                                 "REQ_NAV_PANEL_IMP_EXP");
+                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_IMP_EXP");
                 }
                 return;
 
             // logging only
             case UniqueId.REQ_NAV_PANEL_GOODREADS:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.debug(this, "BaseActivity.onActivityResult",
-                                 "REQ_NAV_PANEL_GOODREADS");
+                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_GOODREADS");
                 }
                 return;
 
@@ -439,7 +437,7 @@ public abstract class BaseActivity
                     // codes for fragments have upper 16 bits in use, don't log those.
                     // the super call will redirect those.
                     if ((requestCode & 0xFF) != 0) {
-                        Logger.warn(this, this, "BaseActivity.onActivityResult",
+                        Logger.warn(this, TAG, "BaseActivity.onActivityResult",
                                     "NOT HANDLED",
                                     "requestCode=" + requestCode,
                                     "resultCode=" + resultCode);

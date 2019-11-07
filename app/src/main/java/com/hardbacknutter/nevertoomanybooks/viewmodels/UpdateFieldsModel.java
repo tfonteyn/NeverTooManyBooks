@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
 
-public class UpdateFieldsFromInternetModel
+public class UpdateFieldsModel
         extends ViewModel {
 
     /** which fields to update and how. */

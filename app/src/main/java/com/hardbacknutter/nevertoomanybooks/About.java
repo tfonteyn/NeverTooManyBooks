@@ -49,6 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 public class About
         extends BaseActivity {
 
+    private static final String TAG = "AboutActivity";
+
     /** Manifest string. */
     private static final String BETA_BUILD = "beta.build";
 
@@ -109,7 +111,7 @@ public class About
                     .putExtra(Intent.EXTRA_SUBJECT, subject);
             startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
         } catch (@NonNull final ActivityNotFoundException e) {
-            Logger.error(this, this, e);
+            Logger.error(this, TAG, e);
         }
     }
 }

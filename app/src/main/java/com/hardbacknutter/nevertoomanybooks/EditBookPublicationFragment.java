@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 public class EditBookPublicationFragment
         extends EditBookBaseFragment {
 
-    /** Fragment manager tag. */
     public static final String TAG = "EditBookPublicationFragment";
 
     @Override

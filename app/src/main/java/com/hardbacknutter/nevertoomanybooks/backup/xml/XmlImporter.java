@@ -32,6 +32,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -63,6 +64,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
@@ -91,6 +93,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  */
 public class XmlImporter
         implements Importer {
+
+    private static final String TAG = "XmlImporter";
 
     private static final String ERROR_UNABLE_TO_PROCESS_XML_ENTITY =
             "Unable to process XML entity ";
@@ -260,7 +264,7 @@ public class XmlImporter
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, e);
+                Log.d(TAG, "fromXml", e);
             }
             throw new IOException(e);
         }
@@ -275,30 +279,29 @@ public class XmlImporter
 
         // A new element under the root
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement)
-                 .setStartAction(context -> {
+                 .setStartAction(elementContext -> {
                      // use as top-tag
-                     mTag = new TagInfo(context);
+                     mTag = new TagInfo(elementContext);
                      // we only have a version on the top tag, not on every tag.
-                     String version = context.getAttributes().getValue(XmlTags.ATTR_VERSION);
+                     String version = elementContext.getAttributes().getValue(XmlTags.ATTR_VERSION);
 
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Logger.debug(this, "fromXml",
-                                      "NEW-ELEMENT",
-                                      "localName=`" + context.getLocalName() + '`', mTag);
+                         Log.d(TAG, "fromXml|NEW-ELEMENT"
+                                    + "|localName=" + elementContext.getLocalName()
+                                    + "|tag=" + mTag);
                      }
                      accessor.startElement(version == null ? 0 : Integer.parseInt(version), mTag);
                  })
-                 .setEndAction(context -> accessor.endElement());
+                 .setEndAction(elementContext -> accessor.endElement());
 
         // typed tag starts. for both attribute and body based elements.
-        XmlFilter.XmlHandler startTypedTag = context -> {
+        XmlFilter.XmlHandler startTypedTag = elementContext -> {
             mTagStack.push(mTag);
-            mTag = new TagInfo(context);
+            mTag = new TagInfo(elementContext);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Logger.debug(this, "fromXml",
-                             "startTypedTag",
-                             "localName=`" + context.getLocalName() + '`', mTag);
+                Log.d(TAG, "fromXml|startTypedTag"
+                           + "|localName=" + elementContext.getLocalName() + "|tag=" + mTag);
             }
             // if we have a value attribute, this tag is done. Handle here.
             if (mTag.value != null) {
@@ -329,7 +332,8 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(this, "mTag.type=" + mTag.type);
+                        Logger.warnWithStackTrace(App.getAppContext(), TAG,
+                                                  "mTag.type=" + mTag.type);
                         break;
                 }
                 mTag = mTagStack.pop();
@@ -337,17 +341,16 @@ public class XmlImporter
         };
 
         // the end of a typed tag with a body
-        XmlFilter.XmlHandler endTypedTag = context -> {
+        XmlFilter.XmlHandler endTypedTag = elementContext -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Logger.debug(this, "fromXml",
-                             "endTypedTag",
-                             "localName=`" + context.getLocalName() + '`', mTag);
+                Log.d(TAG, "fromXml|endTypedTag"
+                           + "|localName=" + elementContext.getLocalName() + "|tag=" + mTag);
             }
             try {
                 switch (mTag.type) {
                     case XmlTags.XML_STRING:
                         // body Strings use CDATA
-                        accessor.putString(mTag.name, context.getBody());
+                        accessor.putString(mTag.name, elementContext.getBody());
                         break;
 
                     case XmlTags.XML_SET:
@@ -363,12 +366,13 @@ public class XmlImporter
                         break;
 
                     case XmlTags.XML_SERIALIZABLE:
-                        accessor.putSerializable(mTag.name,
-                                                 Base64.decode(context.getBody(), Base64.DEFAULT));
+                        accessor.putSerializable(mTag.name, Base64.decode(elementContext.getBody(),
+                                                                          Base64.DEFAULT));
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(this, "mTag.type=" + mTag.type);
+                        Logger.warnWithStackTrace(App.getAppContext(), TAG,
+                                                  "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -411,14 +415,13 @@ public class XmlImporter
          * but importing an Element in a Collection is always done as a String in a List (for now?)
          */
         // set/list elements with attributes.
-        XmlFilter.XmlHandler startElementInCollection = context -> {
+        XmlFilter.XmlHandler startElementInCollection = elementContext -> {
             mTagStack.push(mTag);
-            mTag = new TagInfo(context);
+            mTag = new TagInfo(elementContext);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Logger.debug(this, "fromXml",
-                             "startElementInCollection",
-                             "localName=`" + context.getLocalName() + '`', mTag);
+                Log.d(TAG, "fromXml|startElementInCollection"
+                           + "|localName=" + elementContext.getLocalName() + "|tag=" + mTag);
             }
 
             // if we have a value attribute, this tag is done. Handle here.
@@ -434,7 +437,8 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(this, "mTag.type=" + mTag.type);
+                        Logger.warnWithStackTrace(App.getAppContext(), TAG,
+                                                  "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -443,11 +447,10 @@ public class XmlImporter
         };
 
         // set/list elements with bodies.
-        XmlFilter.XmlHandler endElementInCollection = context -> {
+        XmlFilter.XmlHandler endElementInCollection = elementContext -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Logger.debug(this, "fromXml",
-                             "endElementInCollection",
-                             "localName=`" + context.getLocalName() + '`', mTag);
+                Log.d(TAG, "fromXml|endElementInCollection"
+                           + "|localName=`" + elementContext.getLocalName() + "|tag=" + mTag);
             }
 
             // handle tags with bodies.
@@ -460,11 +463,12 @@ public class XmlImporter
                         // this 'case' is only here for completeness sake.
                     case XmlTags.XML_STRING:
                         // body strings use CDATA
-                        currentStringList.add(context.getBody());
+                        currentStringList.add(elementContext.getBody());
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(this, "mTag.type=" + mTag.type);
+                        Logger.warnWithStackTrace(App.getAppContext(), TAG,
+                                                  "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -507,24 +511,24 @@ public class XmlImporter
                                     @NonNull final EntityReader<String> accessor) {
 
         XmlFilter.buildFilter(rootFilter, "collection", "item")
-                 .setStartAction(context -> {
+                 .setStartAction(elementContext -> {
 
-                     mTag = new TagInfo(context);
+                     mTag = new TagInfo(elementContext);
 
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Logger.debug(this, "buildLegacyFilters",
-                                      "StartAction",
-                                      "localName=`" + context.getLocalName() + '`', mTag);
+                         Log.d(TAG, "buildLegacyFilters|StartAction"
+                                    + "|localName=" + elementContext.getLocalName()
+                                    + "|tag=" + mTag);
                      }
                  })
-                 .setEndAction(context -> {
+                 .setEndAction(elementContext -> {
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Logger.debug(this, "buildLegacyFilters",
-                                      "EndAction",
-                                      "localName=`" + context.getLocalName() + '`', mTag);
+                         Log.d(TAG, "buildLegacyFilters|EndAction"
+                                    + "|localName=" + elementContext.getLocalName()
+                                    + "|tag=" + mTag);
                      }
                      try {
-                         String body = context.getBody();
+                         String body = elementContext.getBody();
                          switch (mTag.type) {
                              case "Int":
                                  accessor.putInt(mTag.name, Integer.parseInt(body));
@@ -567,7 +571,7 @@ public class XmlImporter
             // now do some cleaning
             mDb.purge();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, e);
+            Logger.error(App.getAppContext(), TAG, e);
         }
         mDb.close();
     }
@@ -703,7 +707,7 @@ public class XmlImporter
                 try {
                     id = Integer.parseInt(idStr);
                 } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(this, e, "attr=" + name, "idStr=" + idStr);
+                    Logger.error(App.getAppContext(), TAG, e, "attr=" + name, "idStr=" + idStr);
                 }
             }
             value = attrs.getValue(XmlTags.ATTR_VALUE);

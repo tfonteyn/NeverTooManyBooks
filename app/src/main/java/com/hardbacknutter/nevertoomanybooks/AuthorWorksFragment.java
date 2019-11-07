@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -56,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
@@ -77,13 +77,12 @@ import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
 public class AuthorWorksFragment
         extends Fragment {
 
-    /** Fragment manager tag. */
     public static final String TAG = "AuthorWorksFragment";
 
     /** Optional. Show the TOC. Defaults to {@code true}. */
-    public static final String BKEY_WITH_TOC = TAG + ":withTocEntries";
+    public static final String BKEY_WITH_TOC = TAG + ":tocs";
     /** Optional. Show the books. Defaults to {@code true}. */
-    public static final String BKEY_WITH_BOOKS = TAG + ":withBooks";
+    public static final String BKEY_WITH_BOOKS = TAG + ":books";
 
     /** The ViewModel. */
     private AuthorWorksModel mModel;
@@ -143,7 +142,7 @@ public class AuthorWorksFragment
     @CallSuper
     public void onResume() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugEnter(this, "onResume");
+            Log.d(TAG, "ENTER|onResume");
         }
         super.onResume();
         if (getActivity() instanceof BaseActivity) {
@@ -153,7 +152,7 @@ public class AuthorWorksFragment
             }
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugExit(this, "onResume");
+            Log.d(TAG, "EXIT|onResume");
         }
     }
 

@@ -35,6 +35,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -70,8 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 public class LendBookDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
-    public static final String TAG = "LendBookDialogFragment";
+    public static final String TAG = "LendBookDialogFrag";
 
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID,
@@ -193,8 +193,7 @@ public class LendBookDialogFragment
                                 .onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, null);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Logger.debug(this, "onBookChanged",
-                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                            Log.d(TAG, "onBookChanged" + Logger.WEAK_REFERENCE_DEAD);
                         }
                     }
                 })
@@ -223,8 +222,7 @@ public class LendBookDialogFragment
                                 .onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, data);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Logger.debug(this, "onBookChanged",
-                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                            Log.d(TAG, "onBookChanged" + Logger.WEAK_REFERENCE_DEAD);
                         }
                     }
                 })
@@ -321,7 +319,7 @@ public class LendBookDialogFragment
 
             default:
                 //noinspection ConstantConditions
-                Logger.warnWithStackTrace(getContext(), this, "requestCode=" + requestCode);
+                Logger.warnWithStackTrace(getContext(), TAG, "requestCode=" + requestCode);
                 break;
         }
     }

@@ -102,8 +102,7 @@ public abstract class EditBookBaseFragment<T>
 
         } else if (CheckListDialogFragment.TAG.equals(childFragment.getTag())) {
             //noinspection unchecked
-            ((CheckListDialogFragment<T>) childFragment)
-                    .setListener(mCheckListResultsListener);
+            ((CheckListDialogFragment<T>) childFragment).setListener(mCheckListResultsListener);
         }
     }
 

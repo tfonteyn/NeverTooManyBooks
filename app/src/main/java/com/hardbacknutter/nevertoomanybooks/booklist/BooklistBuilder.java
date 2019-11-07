@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
@@ -136,7 +137,7 @@ public class BooklistBuilder
     public static final int PREF_LIST_REBUILD_ALWAYS_COLLAPSED = 2;
     @SuppressWarnings("WeakerAccess")
     public static final int PREF_LIST_REBUILD_PREFERRED_STATE = 3;
-
+    private static final String TAG = "BooklistBuilder";
     /** Counter for BooklistBuilder ID's. Used to create unique table names etc... */
     @NonNull
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
@@ -251,8 +252,8 @@ public class BooklistBuilder
      */
     public BooklistBuilder(@NonNull final BooklistStyle style) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            Logger.debugEnter(this, "BooklistBuilder",
-                              "instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet());
+            Log.d(TAG, "ENTER|BooklistBuilder"
+                       + "|instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet());
         }
         // Allocate ID
         mInstanceId = ID_COUNTER.incrementAndGet();
@@ -420,7 +421,7 @@ public class BooklistBuilder
 
         for (SynchronizedStatement stmt : mRebuildStmts) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Logger.debug(this, "rebuild", "mRebuildStmts", stmt);
+                Log.d(TAG, "rebuild|mRebuildStmts" + stmt);
             }
             stmt.execute();
         }
@@ -439,8 +440,7 @@ public class BooklistBuilder
         final long t00 = System.nanoTime();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            Logger.debugEnter(this, "build",
-                              "mInstanceId=" + mInstanceId);
+            Log.d(TAG, "ENTER|build|mInstanceId=" + mInstanceId);
         }
 
         // Setup the tables (but don't create them yet)
@@ -592,31 +592,30 @@ public class BooklistBuilder
             final long t10_stateTable_analyzed = System.nanoTime();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Logger.debug(this, "build",
-                             String.format(Locale.UK, ""
-                                                      + "\ntable created         : %.10d"
-                                                      + "\nbase sql              : %.10d"
-                                                      + "\njoins                 : %.10d"
-                                                      + "\nwhere clause          : %.10d"
-                                                      + "\norder-by clause       : %.10d"
-                                                      + "\nbase insert executed  : %.10d"
-                                                      + "\ntable analyzed        : %.10d"
-                                                      + "\nstateTable build      : %.10d"
-                                                      + "\nstateTable idx created: %.10d"
-                                                      + "\nstateTable_analyzed   : %.10d",
+                Log.d(TAG, "build|" +
+                           String.format(Locale.UK, ""
+                                                    + "\ntable created         : %.10d"
+                                                    + "\nbase sql              : %.10d"
+                                                    + "\njoins                 : %.10d"
+                                                    + "\nwhere clause          : %.10d"
+                                                    + "\norder-by clause       : %.10d"
+                                                    + "\nbase insert executed  : %.10d"
+                                                    + "\ntable analyzed        : %.10d"
+                                                    + "\nstateTable build      : %.10d"
+                                                    + "\nstateTable idx created: %.10d"
+                                                    + "\nstateTable_analyzed   : %.10d",
 
-                                           t01_table_created - t00,
-                                           t02_build_base_sql - t01_table_created,
-                                           t03_build_join - t02_build_base_sql,
-                                           t04_build_where - t03_build_join,
-                                           t05_build_order_by - t04_build_where,
-                                           t06_base_insert_done - t05_build_order_by,
-                                           t07_listTable_analyzed - t06_base_insert_done,
+                                         t01_table_created - t00,
+                                         t02_build_base_sql - t01_table_created,
+                                         t03_build_join - t02_build_base_sql,
+                                         t04_build_where - t03_build_join,
+                                         t05_build_order_by - t04_build_where,
+                                         t06_base_insert_done - t05_build_order_by,
+                                         t07_listTable_analyzed - t06_base_insert_done,
 
-                                           t08_stateTable_build - t07_listTable_analyzed,
-                                           t09_stateTable_idx_created - t08_stateTable_build,
-                                           t10_stateTable_analyzed - t09_stateTable_idx_created)
-                            );
+                                         t08_stateTable_build - t07_listTable_analyzed,
+                                         t09_stateTable_idx_created - t08_stateTable_build,
+                                         t10_stateTable_analyzed - t09_stateTable_idx_created));
             }
             mSyncedDb.setTransactionSuccessful();
 
@@ -625,9 +624,8 @@ public class BooklistBuilder
 
             // we don't catch exceptions but we do want to log the time it took here.
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Logger.debugExit(this, "build",
-                                 "mInstanceId=" + mInstanceId,
-                                 "Total time in ms: " + ((System.nanoTime() - t00) / TO_MILLIS));
+                Log.d(TAG, "EXIT|build|mInstanceId=" + mInstanceId
+                           + "|Total time in ms: " + ((System.nanoTime() - t00) / TO_MILLIS));
             }
         }
     }
@@ -870,9 +868,8 @@ public class BooklistBuilder
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                     int rowsUpdated = stmt.executeUpdateDelete();
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                        Logger.debug(this, "PREF_LIST_REBUILD_ALWAYS_EXPANDED",
-                                     "rowsUpdated=" + rowsUpdated,
-                                     "sql=" + sql);
+                        Log.d(TAG, "PREF_LIST_REBUILD_ALWAYS_EXPANDED"
+                                   + "|rowsUpdated=" + rowsUpdated + "|sql=" + sql);
                     }
                 }
                 break;
@@ -895,9 +892,9 @@ public class BooklistBuilder
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                     int rowsUpdated = stmt.executeUpdateDelete();
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                        Logger.debug(this, "PREF_LIST_REBUILD_ALWAYS_COLLAPSED",
-                                     "rowsUpdated=" + rowsUpdated,
-                                     "sql=" + sql);
+                        Log.d(TAG, "PREF_LIST_REBUILD_ALWAYS_COLLAPSED"
+                                   + "|rowsUpdated=" + rowsUpdated
+                                   + "|sql=" + sql);
                     }
                 }
                 break;
@@ -906,9 +903,9 @@ public class BooklistBuilder
                 // Use already-defined SQL for preserve state.
                 int rowsUpdated = rebuildSavedStateStmt.executeUpdateDelete();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Logger.debug(this, "PREF_LIST_REBUILD_SAVED_STATE",
-                                 "rowsUpdated=" + rowsUpdated,
-                                 "sql=" + sqlPreserved);
+                    Log.d(TAG, "PREF_LIST_REBUILD_SAVED_STATE"
+                               + "|rowsUpdated=" + rowsUpdated
+                               + "|sql=" + sqlPreserved);
                 }
 
 //                TBL_BOOK_LIST_NODE_STATE
@@ -920,7 +917,7 @@ public class BooklistBuilder
             case PREF_LIST_REBUILD_PREFERRED_STATE: {
                 expandNodes(topLevel, false);
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Logger.debug(this, "PREF_LIST_REBUILD_PREFERRED_STATE");
+                    Log.d(TAG, "PREF_LIST_REBUILD_PREFERRED_STATE");
                 }
                 break;
             }
@@ -1144,8 +1141,7 @@ public class BooklistBuilder
             preserveAllNodes();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Logger.debug(this, "expandNodes",
-                             (System.nanoTime() - t0) / TO_MILLIS);
+                Log.d(TAG, "expandNodes|" + (System.nanoTime() - t0) / TO_MILLIS);
             }
 
             if (txLock != null) {
@@ -1277,9 +1273,9 @@ public class BooklistBuilder
 
             int rowsDeleted = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Logger.debug(this, "preserveAllNodes",
-                             "bookshelfId=" + mBookshelf.getId(),
-                             "rowsDeleted=" + rowsDeleted);
+                Log.d(TAG, "preserveAllNodes"
+                           + "|bookshelfId=" + mBookshelf.getId()
+                           + "|rowsDeleted=" + rowsDeleted);
             }
 
             // Read all nodes, and send them to the permanent table.
@@ -1294,10 +1290,10 @@ public class BooklistBuilder
 
             int rowsUpdated = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Logger.debug(this, "preserveAllNodes",
-                             "bookshelfId=" + mBookshelf.getId(),
-                             "styleId=" + mStyle.getId(),
-                             "rowsUpdated=" + rowsUpdated);
+                Log.d(TAG, "preserveAllNodes"
+                           + "|bookshelfId=" + mBookshelf.getId()
+                           + "|styleId=" + mStyle.getId()
+                           + "|rowsUpdated=" + rowsUpdated);
             }
             if (txLock != null) {
                 mSyncedDb.setTransactionSuccessful();
@@ -1348,11 +1344,11 @@ public class BooklistBuilder
 
             int rowsDeleted = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Logger.debug(this, "preserveNodes",
-                             "bookshelfId=" + mBookshelf.getId(),
-                             "startRow=" + startRow,
-                             "endRow=" + endRow,
-                             "rowsDeleted=" + rowsDeleted);
+                Log.d(TAG, "preserveNodes"
+                           + "|bookshelfId=" + mBookshelf.getId()
+                           + "|startRow=" + startRow
+                           + "|endRow=" + endRow
+                           + "|rowsDeleted=" + rowsDeleted);
             }
 
 //            TBL_BOOK_LIST_NODE_STATE
@@ -1374,18 +1370,17 @@ public class BooklistBuilder
             stmt.bindLong(++p, endRow);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Logger.debug(this, "preserveNodes",
-                             "bookshelfId=" + mBookshelf.getId(),
-                             "styleId=" + mStyle.getId(),
-
-                             "startRow=" + startRow,
-                             "endRow=" + endRow);
+                Log.d(TAG, "preserveNodes"
+                           + "|bookshelfId=" + mBookshelf.getId()
+                           + "|styleId=" + mStyle.getId()
+                           + "|startRow=" + startRow
+                           + "|endRow=" + endRow);
             }
 
             int rowsUpdated = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Logger.debug(this, "preserveNodes",
-                             "rowsUpdated=" + rowsUpdated);
+                Log.d(TAG, "preserveNodes"
+                           + "|rowsUpdated=" + rowsUpdated);
             }
 
 //            TBL_BOOK_LIST_NODE_STATE
@@ -1428,7 +1423,7 @@ public class BooklistBuilder
             if (!mDebugReferenceDecremented) {
                 int inst = DEBUG_INSTANCE_COUNTER.decrementAndGet();
                 // Only de-reference once! Paranoia ... close() might be called twice?
-                Logger.debug(this, "close", "instances left: " + inst);
+                Log.d(TAG, "close|instances left: " + inst);
             }
             mDebugReferenceDecremented = true;
         }
@@ -1475,7 +1470,7 @@ public class BooklistBuilder
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(this, "finalize", "Closing unclosed builder");
+            Logger.warn(App.getAppContext(), TAG, "finalize|calling close()");
             close();
         }
         super.finalize();
@@ -1563,9 +1558,9 @@ public class BooklistBuilder
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.debug(this, "getDistinctBookCount",
-                         "count=" + count,
-                         "completed in " + (System.nanoTime() - t0) + " nano");
+            Log.d(TAG, "getDistinctBookCount"
+                       + "|count=" + count
+                       + "|completed in " + (System.nanoTime() - t0) + " nano");
         }
         return (int) count;
     }
@@ -1594,9 +1589,9 @@ public class BooklistBuilder
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.debug(this, "getBookCount",
-                         "count=" + count,
-                         "completed in " + (System.nanoTime() - t0) + " nano");
+            Log.d(TAG, "getBookCount"
+                       + "|count=" + count
+                       + "|completed in " + (System.nanoTime() - t0) + " nano");
         }
         return (int) count;
     }
@@ -1873,7 +1868,7 @@ public class BooklistBuilder
                          + " ORDER BY " + mOrderByClause;
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Logger.debug(this, "build", "sql=" + sql);
+                Log.d(TAG, "build|sql=" + sql);
             }
             return sql;
         }
@@ -1963,8 +1958,9 @@ public class BooklistBuilder
                     // same expression, we do NOT want to add it.
                     // This is NOT a bug, although one could argue it's an efficiency issue.
                     if (BuildConfig.DEBUG /* always */) {
-                        Logger.warnWithStackTrace(this, "duplicate domain/expression",
-                                                  "domain.name=" + domain.getName());
+                        Log.d(TAG, "duplicate domain/expression"
+                                   + "|domain.name=" + domain.getName(),
+                              new Throwable());
                     }
                     return;
                 }
@@ -2514,9 +2510,9 @@ public class BooklistBuilder
             //        }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Logger.debug(this, "countVisibleRows",
-                             "count=" + count,
-                             "completed in " + (System.nanoTime() - t0) + " nano");
+                Log.d(TAG, "countVisibleRows"
+                           + "|count=" + count
+                           + "|completed in " + (System.nanoTime() - t0) + " nano");
             }
             return (int) count;
         }
@@ -2651,11 +2647,11 @@ public class BooklistBuilder
 
             }
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Logger.debug(this, "updateNodes",
-                             "expand=" + expand,
-                             "visible=" + visible,
-                             "rowId=" + rowId,
-                             "rowsUpdated=" + rowsUpdated);
+                Log.d(TAG, "updateNodes"
+                           + "|expand=" + expand
+                           + "|visible=" + visible
+                           + "|rowId=" + rowId
+                           + "|rowsUpdated=" + rowsUpdated);
             }
         }
 
@@ -2692,12 +2688,12 @@ public class BooklistBuilder
                 rowsUpdated = stmt.executeUpdateDelete();
             }
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Logger.debug(this, "updateNodes",
-                             "expand=" + expand,
-                             "visible=" + visible,
-                             "startRow=" + startRow,
-                             "endRow=" + endRow,
-                             "rowsUpdated=" + rowsUpdated);
+                Log.d(TAG, "updateNodes"
+                           + "|expand=" + expand
+                           + "|visible=" + visible
+                           + "|startRow=" + startRow
+                           + "|endRow=" + endRow
+                           + "|rowsUpdated=" + rowsUpdated);
             }
         }
 
@@ -2730,11 +2726,11 @@ public class BooklistBuilder
                 stmt.bindLong(3, level);
                 int rowsUpdated = stmt.executeUpdateDelete();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Logger.debug(this, "updateNodes",
-                                 "expand=" + expand,
-                                 "visible=" + visible,
-                                 "level" + levelOperand + level,
-                                 "rowsUpdated=" + rowsUpdated);
+                    Log.d(TAG, "updateNodes"
+                               + "|expand=" + expand
+                               + "|visible=" + visible
+                               + "|level" + levelOperand + level
+                               + "|rowsUpdated=" + rowsUpdated);
                 }
             }
         }

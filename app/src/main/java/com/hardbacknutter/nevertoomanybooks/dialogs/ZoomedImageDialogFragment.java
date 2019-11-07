@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class ZoomedImageDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
     private static final String TAG = "ZoomedImageDialogFragment";
 
     /** File to display. */

@@ -32,6 +32,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -100,7 +101,7 @@ public final class DBHelper
      * db1 == app1 == 1.0.0
      */
     public static final int DATABASE_VERSION = 2;
-
+    private static final String TAG = "DBHelper";
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
 
@@ -195,8 +196,7 @@ public final class DBHelper
                 // oops... after inserting '-1' our debug logging will claim that insert failed.
                 if (BuildConfig.DEBUG /* always */) {
                     if (id == -1) {
-                        Logger.debug(BooklistStyle.Helper.class, "prepareStylesTable",
-                                     "Ignore the debug message about inserting -1 here...");
+                        Log.d(TAG, "prepareStylesTable|Ignore debug message inserting -1 here");
                     }
                 }
                 stmt.executeInsert();
@@ -300,9 +300,9 @@ public final class DBHelper
                           final int newVersion) {
 
         if (BuildConfig.DEBUG /* always */) {
-            Logger.debugEnter(this, "onUpgrade",
-                              "Old database version: " + oldVersion,
-                              "Upgrading database: " + db.getPath());
+            Log.d(TAG, "ENTER|onUpgrade"
+                       + "|Old database version: " + oldVersion
+                       + "|Upgrading database: " + db.getPath());
         }
 
         StartupActivity startup = StartupActivity.getActiveActivity();
@@ -588,10 +588,10 @@ public final class DBHelper
                 syncedDb.execSQL(createIndex);
             } catch (@NonNull final SQLException e) {
                 // bad sql is a developer issue... die!
-                Logger.error(this, e);
+                Logger.error(App.getAppContext(), TAG, e);
                 throw e;
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(this, e, "Index creation failed: " + createIndex);
+                Logger.error(App.getAppContext(), TAG, e, "Index creation failed: " + createIndex);
             }
         }
         syncedDb.analyze();

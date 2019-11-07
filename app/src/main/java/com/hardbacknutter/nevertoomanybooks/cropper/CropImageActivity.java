@@ -519,7 +519,7 @@ public class CropImageActivity
                 setResult(Activity.RESULT_OK, data);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-                Logger.error(this, this, e);
+                Logger.error(this, TAG, e);
             }
         }
         // clean up and quit.

@@ -32,6 +32,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -88,7 +89,6 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.FlattenedBooklistModel;
 public class BookFragment
         extends BookBaseFragment {
 
-    /** Fragment manager tag. */
     public static final String TAG = "BookFragment";
 
     /** Table name of the {@link FlattenedBooklist}. */
@@ -107,7 +107,7 @@ public class BookFragment
             } else {
                 // we don't expect/implement any others.
                 //noinspection ConstantConditions
-                Logger.warnWithStackTrace(getContext(), this, "bookId=" + bookId,
+                Logger.warnWithStackTrace(getContext(), TAG, "bookId=" + bookId,
                                           "fieldsChanged=" + fieldsChanged);
             }
         }
@@ -215,14 +215,14 @@ public class BookFragment
     @Override
     public void onResume() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugEnter(this, "onResume");
+            Log.d(TAG, "ENTER|onResume");
         }
         // The parent will kick of the process that triggers {@link #onLoadFieldsFromBook}.
         super.onResume();
         ((BookDetailsActivity) mHostActivity).registerOnTouchListener(mOnTouchListener);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugExit(this, "onResume");
+            Log.d(TAG, "EXIT|onResume");
         }
     }
 
@@ -239,7 +239,7 @@ public class BookFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
 
         switch (requestCode) {

@@ -5,11 +5,12 @@
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +33,7 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
@@ -44,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 
 public class FetchWorksTask
         extends TaskBase<List<GoodreadsWork>> {
+
+    private static final String TAG = "FetchWorksTask";
 
     private final String mSearchText;
 
@@ -71,7 +75,7 @@ public class FetchWorksTask
 
         } catch (@NonNull final CredentialsException | BookNotFoundException | IOException
                                         | RuntimeException e) {
-            Logger.error(this, e);
+            Logger.error(App.getAppContext(), TAG, e);
             mException = e;
         }
         return null;

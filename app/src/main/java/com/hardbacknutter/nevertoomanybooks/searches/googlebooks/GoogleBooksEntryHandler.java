@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.searches.googlebooks;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -45,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
@@ -159,6 +159,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  */
 class GoogleBooksEntryHandler
         extends DefaultHandler {
+
+    private static final String TAG = "GoogleBooksEntryHandler";
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_GB";
@@ -419,10 +421,9 @@ class GoogleBooksEntryHandler
                 break;
 
             default:
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                     // see what we are missing.
-                    Logger.debug(this, "endElement",
-                                 "Skipping: " + localName + "->`" + mBuilder + '`');
+                    Log.d(TAG, "endElement|Skipping: " + localName + "->`" + mBuilder + '`');
                 }
                 break;
 

@@ -181,7 +181,7 @@ public class GoodreadsAdminFragment
             }
             default: {
                 //noinspection ConstantConditions
-                Logger.warnWithStackTrace(getContext(), this, "taskId=" + message.taskId);
+                Logger.warnWithStackTrace(getContext(), TAG, "taskId=" + message.taskId);
                 break;
             }
         }

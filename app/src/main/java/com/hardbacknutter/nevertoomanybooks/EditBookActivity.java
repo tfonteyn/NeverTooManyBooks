@@ -76,7 +76,6 @@ public class EditBookActivity
             return;
         }
 
-        //ENHANCE: global changes not detected, so it should be assume they happened.
         Intent resultData = model.getActivityResultData();
         setResult(Activity.RESULT_OK, resultData);
         super.onBackPressed();

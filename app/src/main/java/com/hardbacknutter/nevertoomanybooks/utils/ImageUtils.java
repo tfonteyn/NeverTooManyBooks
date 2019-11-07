@@ -32,6 +32,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.annotation.AnyThread;
@@ -95,6 +96,8 @@ public final class ImageUtils {
      * (43 bytes after compression on disk).
      */
     public static final int MIN_IMAGE_FILE_SIZE = 300;
+    /** Thumbnail Scaling. */
+    public static final int SCALE_NOT_DISPLAYED = 0;
 
     /*
      * Scaling of thumbnails.
@@ -102,8 +105,6 @@ public final class ImageUtils {
      *
      * res/xml/preferences_styles.xml contains the default set to SCALE_MEDIUM
      */
-    /** Thumbnail Scaling. */
-    public static final int SCALE_NOT_DISPLAYED = 0;
     /** Thumbnail Scaling. */
     public static final int SCALE_X_SMALL = 1;
     /** Thumbnail Scaling. */
@@ -116,13 +117,12 @@ public final class ImageUtils {
     public static final int SCALE_X_LARGE = 5;
     /** Thumbnail Scaling. */
     public static final int SCALE_2X_LARGE = 6;
-
     // temp debug
     public static final AtomicLong cacheTicks = new AtomicLong();
     public static final AtomicLong fileTicks = new AtomicLong();
     public static final AtomicInteger cacheChecks = new AtomicInteger();
     public static final AtomicInteger fileChecks = new AtomicInteger();
-
+    private static final String TAG = "ImageUtils";
     private static final int BUFFER_SIZE = 32768;
 
     private ImageUtils() {
@@ -282,12 +282,12 @@ public final class ImageUtils {
                                         final int maxHeight,
                                         final boolean allowUpscaling) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.debug(ImageUtils.class, "setImageView",
-                         "maxWidth=" + maxWidth,
-                         "maxHeight=" + maxHeight,
-                         "upscale=" + allowUpscaling,
-                         source != null ? "bm.width=" + source.getWidth() : "no bm",
-                         source != null ? "bm.height=" + source.getHeight() : "no bm");
+            Log.d(TAG, "setImageView"
+                       + "|maxWidth=" + maxWidth
+                       + "|maxHeight=" + maxHeight
+                       + "|upscale=" + allowUpscaling
+                       + (source != null ? "|bm.width=" + source.getWidth() : "no bm")
+                       + (source != null ? "|bm.height=" + source.getHeight() : "no bm"));
         }
 
         imageView.setMaxWidth(maxWidth);
@@ -426,18 +426,18 @@ public final class ImageUtils {
         int samplePow2 = (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.debug(ImageUtils.class, "createScaledBitmap",
-                         "filename = " + fileSpec,
-                         "exact=" + exact,
-                         "maxWidth=" + maxWidth,
-                         "opt.outWidth=" + opt.outWidth,
-                         "widthRatio=" + widthRatio,
-                         "maxHeight=" + maxHeight,
-                         "opt.outHeight=" + opt.outHeight,
-                         "heightRatio=" + heightRatio,
-                         "ratio=" + ratio,
-                         "idealSampleSize =" + idealSampleSize,
-                         "samplePow2=" + samplePow2);
+            Log.d(TAG, "createScaledBitmap"
+                       + "|filename = " + fileSpec
+                       + "|exact=" + exact
+                       + "|maxWidth=" + maxWidth
+                       + "|opt.outWidth=" + opt.outWidth
+                       + "|widthRatio=" + widthRatio
+                       + "|maxHeight=" + maxHeight
+                       + "|opt.outHeight=" + opt.outHeight
+                       + "|heightRatio=" + heightRatio
+                       + "|ratio=" + ratio
+                       + "|idealSampleSize =" + idealSampleSize
+                       + "|samplePow2=" + samplePow2);
         }
 
         @Nullable
@@ -475,14 +475,14 @@ public final class ImageUtils {
                 bm = BitmapFactory.decodeFile(fileSpec, opt);
             }
         } catch (@NonNull final OutOfMemoryError e) {
-            Logger.error(ImageUtils.class, e);
+            Logger.error(App.getAppContext(), TAG, e);
             return null;
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.debug(ImageUtils.class, "createScaledBitmap",
-                         "bm.width=" + bm.getWidth(),
-                         "bm.height=" + bm.getHeight());
+            Log.d(TAG, "createScaledBitmap"
+                       + "|bm.width=" + bm.getWidth()
+                       + "|bm.height=" + bm.getHeight());
         }
 
         return bm;
@@ -516,7 +516,7 @@ public final class ImageUtils {
             bytesRead = StorageUtils.saveInputStreamToFile(con.inputStream, file);
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(ImageUtils.class, e);
+                Log.d(TAG, "saveImage", e);
             }
         }
 
@@ -545,7 +545,7 @@ public final class ImageUtils {
                 return out.toByteArray();
             }
         } catch (@NonNull final IOException e) {
-            Logger.error(ImageUtils.class, e);
+            Logger.error(App.getAppContext(), TAG, e);
         }
         return null;
     }
@@ -568,9 +568,8 @@ public final class ImageUtils {
                                                       new BitmapFactory.Options());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.debug(ImageUtils.class, "getBitmap",
-                         "Array " + bytes.length + " bytes",
-                         "bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
+            Log.d(TAG, "getBitmap|Array " + bytes.length + " bytes"
+                       + "|bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
         }
         return bitmap;
     }
@@ -703,7 +702,7 @@ public final class ImageUtils {
                     rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
 
                 } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-                    Logger.error(ImageUtils.class, e);
+                    Logger.error(App.getAppContext(), TAG, e);
                     return false;
                 }
 

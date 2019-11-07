@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,6 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class IsfdbGetBookTask
         extends AsyncTask<Void, Void, Bundle> {
+
+    private static final String TAG = "IsfdbGetBookTask";
 
     /** Where to send our results to. */
     @NonNull
@@ -110,13 +113,12 @@ public class IsfdbGetBookTask
 
             } else {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debugWithStackTrace(this, "doInBackground",
-                                               "how did we get here?");
+                    Log.d(TAG, "doInBackground|how did we get here?", new Throwable());
                 }
             }
 
         } catch (@NonNull final SocketTimeoutException e) {
-            Logger.warn(this, "doInBackground", e.getLocalizedMessage());
+            Logger.warn(context, TAG, "doInBackground", e.getLocalizedMessage());
         }
 
         return null;
@@ -130,8 +132,7 @@ public class IsfdbGetBookTask
             mTaskListener.get().onGotIsfdbBook(result);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onPostExecute",
-                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                Log.d(TAG, "onPostExecute" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }

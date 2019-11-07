@@ -36,6 +36,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
@@ -79,6 +80,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  */
 public final class CoversDAO
         implements AutoCloseable {
+
+    private static final String TAG = "CoversDAO";
 
     /** Compresses images to 80% to store in the cache. This does not affect the file itself. */
     private static final int IMAGE_QUALITY_PERCENTAGE = 80;
@@ -186,7 +189,7 @@ public final class CoversDAO
 
         int noi = INSTANCE_COUNTER.incrementAndGet();
         if (BuildConfig.DEBUG /* always */) {
-            Logger.debug(sCoversDAO, "getInstance", "instances in use=" + noi);
+            Log.d(TAG, "getInstance|instances in use=" + noi);
         }
         return sCoversDAO;
     }
@@ -242,7 +245,7 @@ public final class CoversDAO
                 }
             }
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(CoversDAO.class, e);
+            Logger.error(App.getAppContext(), TAG, e);
         }
         return null;
     }
@@ -266,7 +269,7 @@ public final class CoversDAO
                              // starts with the uuid, remove all sizes
                              DOM_CACHE_ID + " LIKE ?", new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
-            Logger.error(CoversDAO.class, e);
+            Logger.error(App.getAppContext(), TAG, e);
         }
     }
 
@@ -281,7 +284,7 @@ public final class CoversDAO
             }
             sSyncedDb.execSQL("DELETE FROM " + TBL_IMAGE);
         } catch (@NonNull final SQLiteException e) {
-            Logger.error(CoversDAO.class, e);
+            Logger.error(App.getAppContext(), TAG, e);
         }
     }
 
@@ -296,7 +299,7 @@ public final class CoversDAO
             }
             sSyncedDb.analyze();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(CoversDAO.class, e);
+            Logger.error(App.getAppContext(), TAG, e);
         }
     }
 
@@ -307,7 +310,7 @@ public final class CoversDAO
             sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
         } catch (@NonNull final RuntimeException e) {
             // Assume exception means DB corrupt. Don't care, it's only a cache.
-            Logger.error(this, e, "Failed to open covers db");
+            Logger.error(App.getAppContext(), TAG, e, "Failed to open covers db");
             App.getAppContext().deleteDatabase(COVERS_DATABASE_NAME);
 
             // retry...
@@ -315,7 +318,7 @@ public final class CoversDAO
                 sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
             } catch (@NonNull final RuntimeException e2) {
                 // If we fail after creating a new DB, just give up.
-                Logger.error(this, e2, "Covers database unavailable");
+                Logger.error(App.getAppContext(), TAG, e2, "Covers database unavailable");
             }
         }
     }
@@ -332,8 +335,7 @@ public final class CoversDAO
         synchronized (INSTANCE_COUNTER) {
             int noi = INSTANCE_COUNTER.decrementAndGet();
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, "close",
-                             "instances left: " + INSTANCE_COUNTER);
+                Log.d(TAG, "close|instances left: " + INSTANCE_COUNTER);
             }
 
             if (noi == 0) {
@@ -448,9 +450,9 @@ public final class CoversDAO
                               final int oldVersion,
                               final int newVersion) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugEnter(this, "onUpgrade",
-                                  "Old database version: " + oldVersion,
-                                  "Upgrading database: " + db.getPath());
+                Log.d(TAG, "ENTER|onUpgrade"
+                           + "|Old database version: " + oldVersion
+                           + "|Upgrading database: " + db.getPath());
             }
             // This is a cache, so no data needs preserving. Drop & recreate.
             db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE);

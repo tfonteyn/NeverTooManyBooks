@@ -53,6 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
 public class BookSearchActivity
         extends BaseActivityWithTasks {
 
+    private static final String TAG = "BookSearchActivity";
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,8 +84,8 @@ public class BookSearchActivity
                 replaceFragment(containerViewId, BookSearchByTextFragment.class, tag);
                 return;
 
-            case UpdateFieldsFromInternetFragment.TAG:
-                replaceFragment(containerViewId, UpdateFieldsFromInternetFragment.class, tag);
+            case UpdateFieldsFragment.TAG:
+                replaceFragment(containerViewId, UpdateFieldsFragment.class, tag);
                 return;
 
             default:
@@ -96,7 +98,7 @@ public class BookSearchActivity
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
 
         if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {

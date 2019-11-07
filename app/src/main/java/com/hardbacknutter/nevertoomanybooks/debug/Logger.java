@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public final class Logger {
 
     /** Widely used DEBUG error message. */
-    public static final String WEAK_REFERENCE_TO_LISTENER_WAS_DEAD = "Listener was dead";
+    public static final String WEAK_REFERENCE_DEAD = "|Listener was dead";
 
     /** Full log path name. Used by ACRA configuration which only accepts a constant. */
     public static final String LOG_PATH = "log/error.log";
@@ -81,7 +81,6 @@ public final class Logger {
     /** Prefix for logfile entries. Not used on the console. */
     private static final String ERROR = "ERROR";
     private static final String WARN = "WARN";
-    private static final String INFO = "INFO";
     private static final DateFormat DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", App.getSystemLocale());
 
@@ -93,7 +92,7 @@ public final class Logger {
      * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
      */
     public static void error(@NonNull final Context context,
-                             @NonNull final Object tag,
+                             @NonNull final String tag,
                              @NonNull final Throwable e,
                              @Nullable final Object... params) {
         String msg;
@@ -104,14 +103,8 @@ public final class Logger {
         }
         writeToLog(context, ERROR, msg, e);
         if (BuildConfig.DEBUG /* always */) {
-            Log.e(tag(tag), State.Running.toString() + '|' + msg, e);
+            Log.e(tag, msg, e);
         }
-    }
-
-    public static void error(@NonNull final Object tag,
-                             @NonNull final Throwable e,
-                             @Nullable final Object... params) {
-        error(App.getAppContext(), tag, e, params);
     }
 
     /**
@@ -123,19 +116,14 @@ public final class Logger {
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
      */
     public static void warnWithStackTrace(@NonNull final Context context,
-                                          @NonNull final Object tag,
+                                          @NonNull final String tag,
                                           @NonNull final Object... params) {
         Throwable e = new Throwable();
         String msg = concat(params);
         writeToLog(context, WARN, msg, e);
         if (BuildConfig.DEBUG /* always */) {
-            Log.w(tag(tag), State.Running.toString() + '|' + msg, e);
+            Log.w(tag, msg, e);
         }
-    }
-
-    public static void warnWithStackTrace(@NonNull final Object tag,
-                                          @NonNull final Object... params) {
-        warnWithStackTrace(App.getAppContext(), tag, params);
     }
 
     /**
@@ -147,90 +135,13 @@ public final class Logger {
      * No stacktrace!
      */
     public static void warn(@NonNull final Context context,
-                            @NonNull final Object tag,
+                            @NonNull final String tag,
                             @NonNull final String methodName,
                             @NonNull final Object... params) {
         String msg = methodName + '|' + concat(params);
         writeToLog(context, WARN, msg, null);
         if (BuildConfig.DEBUG /* always */) {
-            Log.w(tag(tag), State.Running.toString() + '|' + msg);
-        }
-    }
-
-    public static void warn(@NonNull final Object tag,
-                            @NonNull final String methodName,
-                            @NonNull final Object... params) {
-        warn(App.getAppContext(), tag, methodName, params);
-    }
-
-    /**
-     * INFO message. Send to the logfile (always) and the console (when in DEBUG mode).
-     * <p>
-     * Use very sparingly, writing to the log is expensive.
-     *
-     * @param context Current context
-     */
-    public static void info(@NonNull final Context context,
-                            @NonNull final Object tag,
-                            @NonNull final String methodName,
-                            @NonNull final Object... params) {
-        String msg = methodName + '|' + concat(params);
-        writeToLog(context, INFO, msg, null);
-        if (BuildConfig.DEBUG /* always */) {
-            Log.i(tag(tag), State.Running.toString() + '|' + msg);
-        }
-    }
-
-    public static void debugEnter(@NonNull final Object tag,
-                                  @NonNull final String methodName,
-                                  @NonNull final Object... params) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(tag), State.Enter.toString() + '|' + methodName + '|' + concat(params));
-        }
-    }
-
-    public static void debugExit(@NonNull final Object tag,
-                                 @NonNull final String methodName,
-                                 @NonNull final Object... params) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(tag), State.Exit.toString() + '|' + methodName + '|' + concat(params));
-        }
-    }
-
-    public static void debug(@NonNull final Object tag,
-                             @NonNull final String methodName,
-                             @NonNull final Object... params) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(tag), State.Running.toString() + '|' + methodName + '|' + concat(params));
-        }
-    }
-
-    public static void debug(@NonNull final Object tag,
-                             @NonNull final Throwable e,
-                             @NonNull final Object... params) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(tag), State.Running.toString() + '|' + concat(params), e);
-        }
-    }
-
-    public static void debugWithStackTrace(@NonNull final Object tag,
-                                           @NonNull final String methodName,
-                                           @NonNull final Object... params) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag(tag),
-                  State.Running.toString() + '|' + methodName + '|' + concat(params),
-                  new Throwable());
-        }
-    }
-
-    private static String tag(@NonNull final Object tag) {
-        if (tag instanceof String) {
-            return (String) tag;
-        } else if (tag instanceof Class) {
-            return ((Class) tag).getCanonicalName();
-        } else {
-            return tag.getClass().isAnonymousClass() ? "AnonymousClass"
-                                                     : tag.getClass().getCanonicalName();
+            Log.w(tag, msg);
         }
     }
 
@@ -242,7 +153,7 @@ public final class Logger {
      *
      * @return String
      */
-    private static String concat(@NonNull final Object[] params) {
+    private static String concat(@NonNull final Object... params) {
         StringBuilder message = new StringBuilder();
         Exception e = null;
         for (Object parameter : params) {
@@ -312,7 +223,8 @@ public final class Logger {
      * DEBUG. Dump an InputStream to the console.
      */
     @SuppressWarnings("unused")
-    public static void dump(@NonNull final Object object,
+    public static void dump(@NonNull final String tag,
+                            @NonNull final Object object,
                             @NonNull final InputStream inputStream) {
         try {
             BufferedInputStream bis = new BufferedInputStream(inputStream);
@@ -322,29 +234,30 @@ public final class Logger {
                 buf.write((byte) result);
                 result = bis.read();
             }
-            Log.d(tag(object), buf.toString("UTF-8"));
+            Log.d(tag, buf.toString("UTF-8"));
         } catch (@NonNull final IOException e) {
-            Log.d(tag(object), "dumping failed: ", e);
+            Log.d(tag, "dumping failed: ", e);
         }
     }
 
-    private static void debugArguments(@NonNull final Object a,
+    private static void debugArguments(@NonNull final String tag,
+                                       @NonNull final Object fragmentOrActivity,
                                        @SuppressWarnings("SameParameterValue")
                                        @NonNull final String methodName) {
-        if (a instanceof Activity) {
-            Bundle extras = ((Activity) a).getIntent().getExtras();
+        if (fragmentOrActivity instanceof Activity) {
+            Bundle extras = ((Activity) fragmentOrActivity).getIntent().getExtras();
             if (extras != null) {
-                debug(a, methodName, "extras=" + extras);
+                Log.d(tag, methodName + "|extras=" + extras);
                 if (extras.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                    debug(a, methodName, "extras=" + extras.getBundle(UniqueId.BKEY_BOOK_DATA));
+                    Log.d(tag, methodName + "|extras=" + extras.getBundle(UniqueId.BKEY_BOOK_DATA));
                 }
             }
-        } else if (a instanceof Fragment) {
-            Bundle args = ((Fragment) a).getArguments();
+        } else if (fragmentOrActivity instanceof Fragment) {
+            Bundle args = ((Fragment) fragmentOrActivity).getArguments();
             if (args != null) {
-                Logger.debug(a, methodName, "args=" + args);
+                Log.d(tag, methodName + "|args=" + args);
                 if (args.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                    Logger.debug(a, methodName, "args=" + args.getBundle(UniqueId.BKEY_BOOK_DATA));
+                    Log.d(tag, methodName + "|args=" + args.getBundle(UniqueId.BKEY_BOOK_DATA));
                 }
             }
         }
@@ -405,54 +318,32 @@ public final class Logger {
     /**
      * Dump all information from an onCreate method.
      *
-     * @param a                  Activity or Fragment
+     * @param fragmentOrActivity                  Activity or Fragment
      * @param savedInstanceState Bundle
      */
     @SuppressWarnings("unused")
-    public static void enterOnCreate(@NonNull final Object a,
+    public static void enterOnCreate(@NonNull final String tag,
+                                     @NonNull final Object fragmentOrActivity,
                                      @Nullable final Bundle savedInstanceState) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
-            debugEnter(a, "onCreate",
-                       "savedInstanceState=" + savedInstanceState);
-            debugArguments(a, "onCreate");
+            Log.d(tag, "ENTER|onCreate|savedInstanceState=" + savedInstanceState);
+            debugArguments(tag, fragmentOrActivity, "onCreate");
 
         }
     }
 
     /**
      * Dump all information from an onActivityResult method.
-     *
-     * @param a Activity or Fragment
      */
-    public static void enterOnActivityResult(@NonNull final Object a,
+    public static void enterOnActivityResult(@NonNull final String tag,
                                              final int requestCode,
                                              final int resultCode,
                                              @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            debugEnter(a, "onActivityResult",
-                       "requestCode=" + requestCode,
-                       "resultCode=" + resultCode,
-                       "data=" + data);
-        }
-    }
-
-    public enum State {
-        Enter,
-        Exit,
-        Running;
-
-        @NonNull
-        @Override
-        public String toString() {
-            switch (this) {
-                case Enter:
-                    return "Enter";
-                case Exit:
-                    return "Exit";
-                case Running:
-                    return "Running";
-            }
-            return null;
+            Log.d(tag, "ENTER|onActivityResult"
+                       + "|requestCode=" + requestCode
+                       + "|resultCode=" + resultCode
+                       + "|data=" + data);
         }
     }
 }

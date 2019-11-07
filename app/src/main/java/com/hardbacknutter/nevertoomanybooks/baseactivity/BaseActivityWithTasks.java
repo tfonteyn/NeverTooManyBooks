@@ -220,8 +220,8 @@ public abstract class BaseActivityWithTasks
                 if (controller != null) {
                     mTaskManager = controller.getTaskManager();
                 } else {
-                    Logger.warnWithStackTrace(this, this, "Have ID(" + mTaskManagerId + "),"
-                                                          + " but controller not found");
+                    Logger.warnWithStackTrace(this, TAG, "Have ID(" + mTaskManagerId + "),"
+                                                         + " but controller not found");
                 }
             }
 

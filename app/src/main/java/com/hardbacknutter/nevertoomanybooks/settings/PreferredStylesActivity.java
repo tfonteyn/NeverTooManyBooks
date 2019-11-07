@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -78,6 +79,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  */
 public class PreferredStylesActivity
         extends BaseActivity {
+
+    private static final String TAG = "PreferredStylesActivity";
 
     /** The adapter for the list. */
     private BooklistStylesAdapter mListAdapter;
@@ -158,7 +161,7 @@ public class PreferredStylesActivity
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
 
         //noinspection SwitchStatementWithTooFewBranches
@@ -304,7 +307,7 @@ public class PreferredStylesActivity
     private void editStyle(@NonNull final BooklistStyle style,
                            final long templateStyleId) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            Logger.debugEnter(this, "editStyle", style);
+            Log.d(TAG, "ENTER|editStyle|" + style);
         }
 
         //FIXME: create the style fully when cloning it. Then only pass the id around.

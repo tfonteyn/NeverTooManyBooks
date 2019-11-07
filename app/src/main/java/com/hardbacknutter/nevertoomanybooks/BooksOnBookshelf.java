@@ -32,6 +32,7 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -113,6 +114,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
 public class BooksOnBookshelf
         extends BaseActivity {
 
+    private static final String TAG = "BooksOnBookshelf";
+
     /** This is very important: the number of FAB sub-buttons we're using. */
     private static final int FAB_ITEMS = 4;
 
@@ -154,8 +157,9 @@ public class BooksOnBookshelf
                     String previous = mModel.getCurrentBookshelf().getName();
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                        Logger.debug(this, "mOnBookshelfSelectionChanged",
-                                     "previous=" + previous, "selected=" + selected);
+                        Log.d(TAG, "mOnBookshelfSelectionChanged"
+                                   + "|previous=" + previous
+                                   + "|selected=" + selected);
                     }
 
                     if (selected != null && !selected.equalsIgnoreCase(previous)) {
@@ -177,10 +181,10 @@ public class BooksOnBookshelf
      */
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Logger.debug(this, "onBookChanged",
-                         "bookId=" + bookId,
-                         "fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged),
-                         data);
+            Log.d(TAG, "onBookChanged"
+                       + "|bookId=" + bookId
+                       + "fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged)
+                       + "|data=" + data);
         }
         savePosition();
         initBookList();
@@ -599,8 +603,7 @@ public class BooksOnBookshelf
                             return true;
 
                         case R.id.MENU_DEBUG_STYLE:
-                            Logger.debug(this, "onOptionsItemSelected",
-                                         mModel.getCurrentStyle());
+                            Log.d(TAG, "onOptionsItemSelected|" + mModel.getCurrentStyle());
                             return true;
 
                         case R.id.MENU_DEBUG_UNMANGLE:
@@ -669,7 +672,7 @@ public class BooksOnBookshelf
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
 
         switch (requestCode) {
@@ -809,16 +812,16 @@ public class BooksOnBookshelf
     @CallSuper
     public void onResume() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugEnter(this, "onResume");
+            Log.d(TAG, "ENTER|onResume");
         }
         super.onResume();
 
         // get out, nothing to do.
         if (isFinishing() || isDestroyed()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.debugExit(this, "onResume",
-                                 "isFinishing=" + isFinishing(),
-                                 "isDestroyed=" + isDestroyed());
+                Log.d(TAG, "EXIT|onResume"
+                           + "|isFinishing=" + isFinishing()
+                           + "|isDestroyed=" + isDestroyed());
             }
             return;
         }
@@ -826,8 +829,7 @@ public class BooksOnBookshelf
         // don't build the list needlessly
         if (App.isRecreating()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.debugExit("onResume", "isRecreating",
-                                 LanguageUtils.toDebugString(this));
+                Log.d(TAG, "EXIT|isRecreating|" + LanguageUtils.toDebugString(this));
             }
             return;
         }
@@ -845,32 +847,28 @@ public class BooksOnBookshelf
         if (bookshelfChanged) {
             // bookshelf changed, we need a new list
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Logger.debug(this, "onResume",
-                             "bookshelf changed, we need a new list");
+                Log.d(TAG, "onResume|bookshelf changed, we need a new list");
             }
             initBookList();
 
         } else if (mModel.isForceRebuildInOnResume()) {
             // onActivityResult told us to rebuild
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Logger.debug(this, "onResume",
-                             "onActivityResult told us to rebuild");
+                Log.d(TAG, "onResume|onActivityResult told us to rebuild");
             }
             initBookList();
 
         } else if (!mModel.isListLoaded()) {
             // we never did a build before
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Logger.debug(this, "onResume",
-                             "we never did a build before");
+                Log.d(TAG, "onResume|we never did a build before");
             }
             initBookList();
 
         } else {
             // no rebuild needed
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Logger.debug(this, "onResume",
-                             "reusing existing list");
+                Log.d(TAG, "onResume|reusing existing list");
             }
 
             //noinspection ConstantConditions
@@ -881,7 +879,7 @@ public class BooksOnBookshelf
         mModel.setForceRebuildInOnResume(false);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Logger.debugExit(this, "onResume");
+            Log.d(TAG, "EXIT|onResume");
         }
     }
 
@@ -980,8 +978,9 @@ public class BooksOnBookshelf
         String selected = mModel.getCurrentBookshelf().getName();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Logger.debug(this, "populateBookShelfSpinner",
-                         "previous=" + previous, "selected=" + selected);
+            Log.d(TAG, "populateBookShelfSpinner"
+                       + "|previous=" + previous
+                       + "|selected=" + selected);
         }
 
         // Flag up if the selection was different.
@@ -996,7 +995,7 @@ public class BooksOnBookshelf
     private void initBookList() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             // with stack trace, so we know who called us.
-            Logger.debugWithStackTrace(this, "initBookList");
+            Log.d(TAG, "initBookList", new Throwable());
         }
 
         LocaleUtils.insanityCheck(this);
@@ -1017,8 +1016,7 @@ public class BooksOnBookshelf
     private void builderResultsAreReadyToDisplay(
             @Nullable final BooksOnBookshelfModel.BuilderHolder holder) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Logger.debugEnter(this, "builderResultsAreReadyToDisplay",
-                              "holder=" + holder);
+            Log.d(TAG, "ENTER|builderResultsAreReadyToDisplay|holder=" + holder);
         }
 
         // *always* ...
@@ -1040,8 +1038,7 @@ public class BooksOnBookshelf
         initAdapter(mModel.getListCursor());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Logger.debugEnter(this, "builderResultsAreReadyToDisplay",
-                              "restoring old cursor");
+            Log.d(TAG, "ENTER|builderResultsAreReadyToDisplay|restoring old cursor");
         }
     }
 
@@ -1055,8 +1052,7 @@ public class BooksOnBookshelf
                              @Nullable final ArrayList<RowDetails> targetRows) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Logger.debugEnter(this, "displayList",
-                              "newListCursor=" + newListCursor);
+            Log.d(TAG, "ENTER|displayList|newListCursor=" + newListCursor);
         }
 
         // remove the default title to make space for the bookshelf spinner.
@@ -1076,7 +1072,7 @@ public class BooksOnBookshelf
         //noinspection ConstantConditions
         final int count = mModel.getListCursor().getCount();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Logger.debugExit(this, "displayList", "count=" + count);
+            Log.d(TAG, "EXIT|displayList|count=" + count);
         }
 
         // Restore saved position
@@ -1107,7 +1103,7 @@ public class BooksOnBookshelf
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Logger.debugExit(this, "displayList");
+            Log.d(TAG, "EXIT|displayList");
         }
     }
 
@@ -1120,7 +1116,7 @@ public class BooksOnBookshelf
     private void initAdapter(@Nullable final Cursor cursor) {
         // sanity check
         if (cursor == null) {
-            Logger.warn(this, this, "initAdapter", "Cursor was NULL");
+            Logger.warn(this, TAG, "initAdapter", "Cursor was NULL");
             return;
         }
         mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(), mModel.getDb(), cursor);
@@ -1142,8 +1138,7 @@ public class BooksOnBookshelf
         final int last = mLayoutManager.findLastVisibleItemPosition();
         final int centre = (last + first) / 2;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-            Logger.debug(this, "fixPositionWhenDrawn",
-                         " New List: (" + first + ", " + last + ")<-" + centre);
+            Log.d(TAG, "fixPositionWhenDrawn| New List: (" + first + ", " + last + ")<-" + centre);
         }
         // Get the first 'target' and make it 'best candidate'
         RowDetails best = targetRows.get(0);
@@ -1159,14 +1154,12 @@ public class BooksOnBookshelf
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-            Logger.debug(this, "fixPositionWhenDrawn",
-                         " Best listPosition @" + best.listPosition);
+            Log.d(TAG, "fixPositionWhenDrawn| Best listPosition @" + best.listPosition);
         }
         // Try to put at top if not already visible, or only partially visible
         if (first >= best.listPosition || last <= best.listPosition) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-                Logger.debug(this, "fixPositionWhenDrawn",
-                             " Adjusting position");
+                Log.d(TAG, "fixPositionWhenDrawn| Adjusting position");
             }
             // setSelectionFromTop does not seem to always do what is expected.
             // But adding smoothScrollToPosition seems to get the job done reasonably well.
@@ -1441,7 +1434,7 @@ public class BooksOnBookshelf
                 break;
             }
             default: {
-                Logger.warnWithStackTrace(this, this, "rowKind=" + rowKind);
+                Logger.warnWithStackTrace(this, TAG, "rowKind=" + rowKind);
                 break;
             }
         }
@@ -1589,7 +1582,7 @@ public class BooksOnBookshelf
                         break;
                     }
                     default: {
-                        Logger.warnWithStackTrace(this, this, "onContextItemSelected",
+                        Logger.warnWithStackTrace(this, TAG, "onContextItemSelected",
                                                   "MENU_BOOK_UPDATE_FROM_INTERNET not supported",
                                                   "RowKind="
                                                   + row.getInt(DBDefinitions.KEY_BL_NODE_KIND));

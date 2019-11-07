@@ -72,10 +72,10 @@ public abstract class ShowBookApiHandler
 
     // Current Series being processed
     // private int mCurrSeriesId = 0;
-    private final XmlHandler mHandleSeriesStart = context -> {
+    private final XmlHandler mHandleSeriesStart = elementContext -> {
 //        mCurrSeries = new Series();
     };
-    private final XmlHandler mHandleSeriesId = context -> {
+    private final XmlHandler mHandleSeriesId = elementContext -> {
 //        try {
 //            mCurrSeriesId = Integer.parseInt(context.getBody());
 //        } catch (@NonNull final NumberFormatException ignore) {
@@ -83,10 +83,10 @@ public abstract class ShowBookApiHandler
     };
     // Current author being processed
     // private long mCurrAuthorId = 0;
-    private final XmlHandler mHandleAuthorStart = context -> {
+    private final XmlHandler mHandleAuthorStart = elementContext -> {
 //        mCurrAuthor = new Author();
     };
-    private final XmlHandler mHandleAuthorId = context -> {
+    private final XmlHandler mHandleAuthorId = elementContext -> {
 //        try {
 //            mCurrAuthorId = Long.parseLong(context.getBody());
 //        } catch (@NonNull final Exception ignore) {
@@ -96,32 +96,33 @@ public abstract class ShowBookApiHandler
     private final String mEBookString;
     /** Global data for the <b>current work</b> in search results. */
     private Bundle mBookData;
-    private final XmlHandler mHandleText = context -> {
-        final String name = (String) context.getUserArg();
-        mBookData.putString(name, context.getBody());
+    private final XmlHandler mHandleText = elementContext -> {
+        final String name = (String) elementContext.getUserArg();
+        mBookData.putString(name, elementContext.getBody());
     };
-    private final XmlHandler mHandleLong = context -> {
-        final String name = (String) context.getUserArg();
+    private final XmlHandler mHandleLong = elementContext -> {
+        final String name = (String) elementContext.getUserArg();
         try {
-            long l = Long.parseLong(context.getBody());
+            long l = Long.parseLong(elementContext.getBody());
             mBookData.putLong(name, l);
         } catch (@NonNull final NumberFormatException ignore) {
             // Ignore but don't add
         }
     };
-    private final XmlHandler mHandleDouble = context -> {
-        final String name = (String) context.getUserArg();
+    private final XmlHandler mHandleDouble = elementContext -> {
+        final String name = (String) elementContext.getUserArg();
         try {
-            double d = ParseUtils.parseDouble(context.getBody(), GoodreadsManager.SITE_LOCALE);
+            double d = ParseUtils.parseDouble(elementContext.getBody(),
+                                              GoodreadsManager.SITE_LOCALE);
             mBookData.putDouble(name, d);
         } catch (@NonNull final NumberFormatException ignore) {
             // Ignore but don't add
         }
     };
-    private final XmlHandler mHandleBoolean = context -> {
-        final String name = (String) context.getUserArg();
+    private final XmlHandler mHandleBoolean = elementContext -> {
+        final String name = (String) elementContext.getUserArg();
         try {
-            String s = context.getBody();
+            String s = elementContext.getBody();
             boolean b;
             if (s.isEmpty() || "false".equalsIgnoreCase(s) || "f".equalsIgnoreCase(s)) {
                 b = false;
@@ -146,12 +147,12 @@ public abstract class ShowBookApiHandler
     /**
      * Create a new shelves collection when the "shelves" tag is encountered.
      */
-    private final XmlHandler mHandleShelvesStart = context -> mShelves = new ArrayList<>();
+    private final XmlHandler mHandleShelvesStart = elementContext -> mShelves = new ArrayList<>();
     /**
      * Add a shelf to the array.
      */
-    private final XmlHandler mHandleShelf = context -> {
-        String name = context.getAttributes().getValue(XmlTags.XML_NAME);
+    private final XmlHandler mHandleShelf = elementContext -> {
+        String name = elementContext.getAttributes().getValue(XmlTags.XML_NAME);
         if (name != null) {
             mShelves.add(name);
         }
@@ -175,9 +176,9 @@ public abstract class ShowBookApiHandler
      * <p>
      * We skip the virtual shelves.
      */
-    private final XmlHandler mHandlePopularShelf = context -> {
+    private final XmlHandler mHandlePopularShelf = elementContext -> {
         if (mGenre == null) {
-            String name = context.getAttributes().getValue(XmlTags.XML_NAME);
+            String name = elementContext.getAttributes().getValue(XmlTags.XML_NAME);
             if (name != null
                 && !GoodreadsShelf.VIRTUAL_TO_READ.equals(name)
                 && !GoodreadsShelf.VIRTUAL_CURRENTLY_READING.equals(name)
@@ -191,10 +192,11 @@ public abstract class ShowBookApiHandler
     /** Current author being processed. */
     @Nullable
     private String mCurrAuthorName;
-    private final XmlHandler mHandleAuthorName = context -> mCurrAuthorName = context.getBody();
+    private final XmlHandler mHandleAuthorName = elementContext ->
+            mCurrAuthorName = elementContext.getBody();
     @Nullable
     private String mCurrAuthorRole;
-    private final XmlHandler mHandleAuthorEnd = context -> {
+    private final XmlHandler mHandleAuthorEnd = elementContext -> {
         if (mCurrAuthorName != null && !mCurrAuthorName.isEmpty()) {
             if (mAuthors == null) {
                 mAuthors = new ArrayList<>();
@@ -208,15 +210,17 @@ public abstract class ShowBookApiHandler
             mCurrAuthorRole = null;
         }
     };
-    private final XmlHandler mHandleAuthorRole = context -> mCurrAuthorRole = context.getBody();
+    private final XmlHandler mHandleAuthorRole = elementContext ->
+            mCurrAuthorRole = elementContext.getBody();
     /** Current Series being processed. */
     @Nullable
     private String mCurrSeriesName;
-    private final XmlHandler mHandleSeriesName = context -> mCurrSeriesName = context.getBody();
+    private final XmlHandler mHandleSeriesName = elementContext ->
+            mCurrSeriesName = elementContext.getBody();
     /** Current Series being processed. */
     @Nullable
     private Integer mCurrSeriesPosition;
-    private final XmlHandler mHandleSeriesEnd = context -> {
+    private final XmlHandler mHandleSeriesEnd = elementContext -> {
         if (mCurrSeriesName != null && !mCurrSeriesName.isEmpty()) {
             if (mSeries == null) {
                 mSeries = new ArrayList<>();
@@ -231,9 +235,9 @@ public abstract class ShowBookApiHandler
             mCurrSeriesPosition = null;
         }
     };
-    private final XmlHandler mHandleSeriesPosition = context -> {
+    private final XmlHandler mHandleSeriesPosition = elementContext -> {
         try {
-            mCurrSeriesPosition = Integer.parseInt(context.getBody());
+            mCurrSeriesPosition = Integer.parseInt(elementContext.getBody());
         } catch (@NonNull final NumberFormatException ignore) {
         }
     };

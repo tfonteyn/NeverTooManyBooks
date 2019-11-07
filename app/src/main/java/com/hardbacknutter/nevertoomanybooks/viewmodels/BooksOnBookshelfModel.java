@@ -32,6 +32,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.AnyThread;
@@ -167,7 +168,7 @@ public class BooksOnBookshelfModel
                 public void onTaskFinished(
                         @NonNull final TaskFinishedMessage<BuilderHolder> message) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                        Logger.debugEnter(this, "onTaskFinished", message);
+                        Log.d(TAG, "ENTER|onTaskFinished|" + message);
                     }
 
                     // Save a flag to say list was loaded at least once successfully (or not)
@@ -1027,8 +1028,8 @@ public class BooksOnBookshelfModel
                 final long t6_total_count_done = System.nanoTime();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    Logger.debug(this, "doInBackground",
-                                 String.format(Locale.UK, ""
+                    Log.d(TAG, "doInBackground|"
+                               + String.format(Locale.UK, ""
                                                           + "\nBuild                    : %.10d"
                                                           + "\nsync done                : %.10d"
                                                           + "\ngot new cursor           : %.10d"
@@ -1058,7 +1059,7 @@ public class BooksOnBookshelfModel
 
             } catch (@NonNull final Exception e) {
                 // catch ALL exceptions, so we get them logged for certain.
-                Logger.error(this, e);
+                Logger.error(App.getAppContext(), TAG, e);
                 mException = e;
                 cleanup();
             }
@@ -1075,7 +1076,7 @@ public class BooksOnBookshelfModel
         @AnyThread
         private void cleanup() {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Logger.debug(this, "cleanup", mException);
+                Log.d(TAG, "cleanup", mException);
             }
             if (tempListCursor != null && tempListCursor != mCurrentListCursor) {
                 if (mCurrentListCursor == null

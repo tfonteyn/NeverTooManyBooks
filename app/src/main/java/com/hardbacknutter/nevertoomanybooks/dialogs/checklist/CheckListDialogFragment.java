@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.checklist;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class CheckListDialogFragment<T>
         extends DialogFragment {
 
-    /** Fragment manager tag. */
     public static final String TAG = "CheckListDialogFragment";
 
     /** Argument. */
@@ -149,8 +149,8 @@ public class CheckListDialogFragment<T>
                             } else {
                                 if (BuildConfig.DEBUG
                                     && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                                    Logger.debug(this, "onCheckListEditorSave",
-                                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                                    Log.d(TAG, "onCheckListEditorSave"
+                                               + Logger.WEAK_REFERENCE_DEAD);
                                 }
                             }
                         })

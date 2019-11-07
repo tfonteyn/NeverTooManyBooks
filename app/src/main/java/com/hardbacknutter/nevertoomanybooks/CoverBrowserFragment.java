@@ -34,6 +34,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +58,6 @@ import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
@@ -77,7 +77,6 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.CoverBrowserViewModel;
 public class CoverBrowserFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
     public static final String TAG = "CoverBrowserFragment";
 
     /** {@code ArrayList<String>} with edition isbn's. */
@@ -193,8 +192,7 @@ public class CoverBrowserFragment
             // When the image was loaded, the filename was stored in the tag.
             String fileSpec = (String) mImageSwitcherView.getTag(R.id.TAG_FILE_SPEC);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                Logger.debug(CoverBrowserFragment.this, "mImageSwitcherView.onClick",
-                             "fileSpec=" + fileSpec);
+                Log.d(TAG, "mImageSwitcherView.onClick|fileSpec=" + fileSpec);
             }
             if (fileSpec != null) {
                 Intent data = new Intent().putExtra(UniqueId.BKEY_FILE_SPEC, fileSpec);
@@ -218,7 +216,7 @@ public class CoverBrowserFragment
         mDismissing = true;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debugExit(this, "onCancel");
+            Log.d(TAG, "EXIT|onCancel");
         }
         super.onCancel(dialog);
     }
@@ -236,7 +234,7 @@ public class CoverBrowserFragment
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debugExit(this, "onSaveInstanceState", outState);
+            Log.d(TAG, "EXIT|onSaveInstanceState|" + outState);
         }
     }
 
@@ -256,7 +254,7 @@ public class CoverBrowserFragment
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debugExit(this, "onResume");
+            Log.d(TAG, "EXIT|onResume");
         }
     }
 
@@ -299,7 +297,7 @@ public class CoverBrowserFragment
         int index = mAlternativeEditions.indexOf(fileInfo.isbn);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debug(this, "setGalleryImage", fileInfo);
+            Log.d(TAG, "setGalleryImage|" + fileInfo);
         }
 
         if (fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
@@ -334,8 +332,7 @@ public class CoverBrowserFragment
         mSwitcherImageFileInfo = fileInfo;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debug(this, "setSwitcherImage",
-                         "fileInfo=" + fileInfo);
+            Log.d(TAG, "setSwitcherImage|fileInfo=" + fileInfo);
         }
 
         if (fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
@@ -423,8 +420,7 @@ public class CoverBrowserFragment
                                                               SearchEngine.ImageSize.Large);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                Logger.debug(this, "onBindViewHolder",
-                             "fileInfo=" + holder.fileInfo);
+                Log.d(TAG, "onBindViewHolder|fileInfo=" + holder.fileInfo);
             }
 
             File imageFile = null;
@@ -447,9 +443,8 @@ public class CoverBrowserFragment
                     } catch (@NonNull final RejectedExecutionException e) {
                         // some books have a LOT of editions... Dr. Asimov
                         if (BuildConfig.DEBUG /* always */) {
-                            Logger.debug(this, "onBindViewHolder",
-                                         "isbn=" + isbn,
-                                         "Exception msg=" + e.getLocalizedMessage());
+                            Log.d(TAG, "onBindViewHolder|isbn=" + isbn
+                                       + "Exception msg=" + e.getLocalizedMessage());
                         }
                     }
                 }

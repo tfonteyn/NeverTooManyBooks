@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_ARTIST;
@@ -47,6 +48,8 @@ import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_WRITER;
  * and not a resource id.
  */
 public class AuthorTypeMapper {
+
+    private static final String TAG = "AuthorTypeMapper";
 
     private static final Map<String, Integer> MAPPER = new HashMap<>();
 
@@ -97,7 +100,7 @@ public class AuthorTypeMapper {
         }
 
         // unknown, log it for future enhancement.
-        Logger.warn(AuthorTypeMapper.class, "map", "typeName=`" + typeName + "`");
+        Logger.warn(App.getAppContext(), TAG, "map", "typeName=`" + typeName + "`");
         return TYPE_UNKNOWN;
     }
 }

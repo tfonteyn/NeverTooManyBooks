@@ -31,6 +31,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.DataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
@@ -78,7 +80,7 @@ public class DataManager {
     protected static final DataValidator BLANK_OR_DOUBLE_VALIDATOR = new OrValidator(
             new BlankValidator(),
             new DoubleValidator());
-
+    private static final String TAG = "DataManager";
     /** DataValidators. */
     private final Map<String, DataValidator> mValidatorsMap = new UniqueMap<>();
     /** DataValidators. Sake key as mValidatorsMap; value: @StringRes. */
@@ -169,7 +171,7 @@ public class DataManager {
 
             } else {
                 // THIS IS NOT IDEAL! Keep checking the log if we ever get here.
-                Logger.warnWithStackTrace(this, "putAll",
+                Logger.warnWithStackTrace(App.getAppContext(), TAG, "putAll",
                                           "key=`" + key + '`',
                                           "value=" + value);
                 if (value != null) {
@@ -502,9 +504,8 @@ public class DataManager {
     private void putSerializable(@NonNull final String key,
                                  @NonNull final Serializable value) {
         if (BuildConfig.DEBUG /* always */) {
-            Logger.debugWithStackTrace(this, "putSerializable",
-                                       "key=" + key,
-                                       "type=" + value.getClass().getCanonicalName());
+            Log.d(TAG, "putSerializable|key=" + key
+                       + "|type=" + value.getClass().getCanonicalName(), new Throwable());
         }
         mRawData.putSerializable(key, value);
     }

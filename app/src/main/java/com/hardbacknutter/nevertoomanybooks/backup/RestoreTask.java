@@ -48,6 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessa
 public class RestoreTask
         extends TaskBase<ImportHelper> {
 
+    private static final String TAG = "RestoreTask";
+
     /** what and how to import. */
     @NonNull
     private final ImportHelper mImportHelper;
@@ -104,7 +106,7 @@ public class RestoreTask
             reader.restore(context, mImportHelper, mProgressListener);
 
         } catch (@NonNull final IOException | ImportException | InvalidArchiveException e) {
-            Logger.error(context, this, e);
+            Logger.error(context, TAG, e);
             mException = e;
         }
         return mImportHelper;

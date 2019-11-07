@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -64,8 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 public class EditTocEntryDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
-    public static final String TAG = "EditTocEntryDialogFragment";
+    public static final String TAG = "EditTocEntryDialogFrag";
 
     private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
     private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
@@ -200,8 +200,7 @@ public class EditTocEntryDialogFragment
             mListener.get().addOrUpdateEntry(mTocEntry);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onConfirm",
-                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                Log.d(TAG, "onConfirm" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }

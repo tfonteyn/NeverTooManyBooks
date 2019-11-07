@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.tasks.managedtasks;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -72,6 +73,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
  * {@link TaskProgressMessage}, {@link TaskUserMessage} and {@link TaskFinishedMessage}
  */
 public class TaskManager {
+
+    private static final String TAG = "TaskManager";
 
     /**
      * STATIC Object for passing messages from background tasks to activities
@@ -123,8 +126,8 @@ public class TaskManager {
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                     for (TaskInfo taskInfo : mTaskInfoList) {
-                        Logger.debug(this, "onTaskFinished",
-                                     "Task `" + taskInfo.task.getName() + "` still running");
+                        Log.d(TAG, "onTaskFinished"
+                                   + "|Task `" + taskInfo.task.getName() + "` still running");
                     }
                 }
             }
@@ -167,7 +170,7 @@ public class TaskManager {
      */
     public TaskManager(@NonNull final Context context) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debug(this, "Constructor", "context=" + context);
+            Log.d(TAG, "Constructor|context=" + context);
         }
         mContext = context;
         mMessageSenderId = MESSAGE_SWITCH.createSender(mController);
@@ -333,7 +336,7 @@ public class TaskManager {
                                                         progressMessage.toString()));
 
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(mContext, this, e, "Error updating progress");
+            Logger.error(mContext, TAG, e, "Error updating progress");
         }
     }
 
@@ -363,7 +366,7 @@ public class TaskManager {
      */
     public void cancelAllTasksAndStopListening() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debug(this, "cancelAllTasksAndStopListening");
+            Log.d(TAG, "cancelAllTasksAndStopListening");
 
         }
         // stop listening, used as sanity check in addTask.
@@ -376,7 +379,7 @@ public class TaskManager {
      */
     public void cancelAllTasks() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debug(this, "cancelAllTasks");
+            Log.d(TAG, "cancelAllTasks");
 
         }
         synchronized (mTaskInfoList) {
@@ -412,7 +415,7 @@ public class TaskManager {
     protected void finalize()
             throws Throwable {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debug(this, "finalize");
+            Log.d(TAG, "finalize");
         }
         super.finalize();
     }

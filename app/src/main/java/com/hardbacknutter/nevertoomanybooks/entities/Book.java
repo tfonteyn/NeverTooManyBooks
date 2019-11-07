@@ -34,6 +34,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -60,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.BitmaskDataAcc
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.BooleanDataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.DataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItemBase;
@@ -81,30 +81,25 @@ public class Book
      * Type: Boolean
      */
     public static final String IS_READ = "+IsRead";
-
     /**
      * Key for accessor to the underlying {@link DBDefinitions#KEY_TOC_BITMASK}.
      * Type: Boolean
      * true: anthology by one or more authors
      */
     public static final String HAS_MULTIPLE_WORKS = "+HasMultiWorks";
-
     /**
      * Key for accessor to the underlying {@link DBDefinitions#KEY_TOC_BITMASK}.
      * Type: Boolean
      * true: anthology by multiple authors
      */
     public static final String HAS_MULTIPLE_AUTHORS = "+HasMultiAuthors";
-
     /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
-
     /** mapping the edition bit to a resource string for displaying. Ordered. */
     @SuppressLint("UseSparseArrays")
     public static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
-
     /**
      * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
      * <p>
@@ -123,8 +118,7 @@ public class Book
     public static final int TOC_SINGLE_AUTHOR_SINGLE_WORK = 0;
     public static final int TOC_MULTIPLE_WORKS = 1;
     public static final int TOC_MULTIPLE_AUTHORS = 1 << 1;
-
-
+    private static final String TAG = "Book";
     private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
 
     /*
@@ -641,10 +635,9 @@ public class Book
             // this is not an issue as such, but helps during debug when the book *should*
             // have a language and did not.
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LOCALE) {
-                Logger.debugWithStackTrace(this, "getLocale",
-                                           "no language set",
-                                           "id=" + getId(),
-                                           "title=" + get(DBDefinitions.KEY_TITLE));
+                Log.d(TAG, "getLocale|no language set|id=" + getId()
+                           + "|title=" + get(DBDefinitions.KEY_TITLE),
+                      new Throwable());
             }
             // none, use fallback.
             return fallbackLocale;

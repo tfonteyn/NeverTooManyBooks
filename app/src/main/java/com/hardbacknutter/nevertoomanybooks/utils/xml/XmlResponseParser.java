@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils.xml;
 
+import android.util.Log;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
@@ -37,7 +39,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Base class for parsing the output any web request that returns an XML response.
@@ -49,6 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class XmlResponseParser
         extends DefaultHandler {
+
+    private static final String TAG = "XmlResponseParser";
 
     /** Temporary storage for inter-tag text. */
     private final StringBuilder mBuilder = new StringBuilder();
@@ -77,7 +80,7 @@ public class XmlResponseParser
                              @NonNull final Attributes attributes) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-            Logger.debug(this, "startElement", "localName=`" + localName + '`');
+            Log.d(TAG, "startElement|localName=`" + localName + '`');
         }
         // Create a new context for this new tag saving the current inter-tag text for later
         ElementContext tag = new ElementContext(uri, localName, qName, attributes,

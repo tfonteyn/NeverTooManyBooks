@@ -311,6 +311,7 @@ public class GoodreadsManager
 
     /**
      * Clear the credentials from the preferences and local cache.
+     *
      * @param context Current context
      */
     static void resetCredentials(@NonNull final Context context) {
@@ -328,7 +329,7 @@ public class GoodreadsManager
     public static boolean hasKey() {
         boolean hasKey = !DEV_KEY.isEmpty() && !DEV_SECRET.isEmpty();
         if (!hasKey) {
-            Logger.warn(GoodreadsManager.class, "hasKey", "Goodreads dev key not available");
+            Logger.warn(App.getAppContext(), TAG, "hasKey", "Goodreads dev key not available");
         }
         return hasKey;
     }
@@ -369,47 +370,23 @@ public class GoodreadsManager
      *
      * @return {@code true} if an alert is currently shown
      */
-    public static boolean alertRegistrationBeneficial(@NonNull final Context context,
-                                                      final boolean required,
-                                                      @NonNull final String prefSuffix) {
-        if (!hasCredentials()) {
-            return alertRegistrationNeeded(context, required, prefSuffix);
-        }
-        return false;
-    }
-
-    /**
-     * Alert the user if not shown before that we require or would benefit from Goodreads access.
-     *
-     * @param context    Current context
-     * @param required   {@code true} if we must have access to Goodreads.
-     *                   {@code false} it it would be beneficial.
-     * @param prefSuffix String used to flag in preferences if we showed the alert from
-     *                   that caller already or not yet.
-     *
-     * @return {@code true} if an alert is currently shown
-     */
-    @SuppressWarnings("WeakerAccess")
-    public static boolean alertRegistrationNeeded(@NonNull final Context context,
-                                                  final boolean required,
-                                                  @NonNull final String prefSuffix) {
-
-        final String prefName = PREFS_HIDE_ALERT + prefSuffix;
-        boolean showAlert;
-        if (required) {
-            showAlert = true;
-        } else {
-            showAlert = !PreferenceManager.getDefaultSharedPreferences(context)
-                                          .getBoolean(prefName, false);
+    public static boolean promptToRegister(@NonNull final Context context,
+                                           final boolean required,
+                                           @NonNull final String prefSuffix) {
+        if (hasCredentials()) {
+            return false;
         }
 
-        if (showAlert) {
+        final String key = PREFS_HIDE_ALERT + prefSuffix;
+        boolean show = required || !PreferenceManager.getDefaultSharedPreferences(context)
+                                                     .getBoolean(key, false);
+
+        if (show) {
             Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
             StandardDialogs.registrationDialog(context, R.string.goodreads,
-                                               intent, required, prefName);
+                                               intent, required, key);
         }
-
-        return showAlert;
+        return show;
     }
 
     /**
@@ -1017,7 +994,7 @@ public class GoodreadsManager
 
         // Some urls come back without a scheme, add it to make a valid URL for the parser
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
-            Logger.warn(this, "requestAuthorization",
+            Logger.warn(App.getAppContext(), TAG, "requestAuthorization",
                         "no scheme for authUrl=" + authUrl);
             authUrl = "http://" + authUrl;
         }

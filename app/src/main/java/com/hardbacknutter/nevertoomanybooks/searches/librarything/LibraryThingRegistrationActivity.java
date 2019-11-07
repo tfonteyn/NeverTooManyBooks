@@ -61,6 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 public class LibraryThingRegistrationActivity
         extends BaseActivity {
 
+    private static final String TAG = "LibraryThingReg";
+
     private EditText mDevKeyView;
 
     private final TaskListener<Integer> mListener = new TaskListener<Integer>() {
@@ -158,7 +160,7 @@ public class LibraryThingRegistrationActivity
                 return R.string.warning_cover_not_found;
 
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(this, e);
+                Logger.error(App.getAppContext(), TAG, e);
                 mException = e;
                 return R.string.error_unexpected_error;
             }

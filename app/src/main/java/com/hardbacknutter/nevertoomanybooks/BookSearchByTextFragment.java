@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
 
-    /** Fragment manager tag. */
     public static final String TAG = "BookSearchByTextFragment";
 
     /** A list of author names we have already searched for in this session. */
@@ -152,7 +151,7 @@ public class BookSearchByTextFragment
         });
 
         if (savedInstanceState == null) {
-            SearchSites.alertRegistrationBeneficial(
+            SearchSites.promptToRegister(
                     getContext(), "search",
                     mBookSearchBaseModel.getEnabledSearchSites());
 
@@ -212,18 +211,13 @@ public class BookSearchByTextFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(this, requestCode, resultCode, data);
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
         // first do the common action when the user has saved the data for the book.
         super.onActivityResult(requestCode, resultCode, data);
         // refresh, we could have modified/created Authors while editing
         // (even when the edit was cancelled )
         populateAuthorList();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     @Override

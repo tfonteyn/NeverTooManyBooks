@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -39,7 +40,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -53,6 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * to display brief messages to the user.
  */
 public final class UserMessage {
+
+    private static final String TAG = "UserMessage";
 
     private static final int TOAST = 0;
     private static final int SNACKBAR = 1;
@@ -73,8 +75,7 @@ public final class UserMessage {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
-            Logger.debugWithStackTrace(UserMessage.class, "show1",
-                                       activity.getString(message));
+            Log.d(TAG, "show1|" + activity.getString(message), new Throwable());
         }
     }
 
@@ -88,7 +89,7 @@ public final class UserMessage {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
-            Logger.debugWithStackTrace(UserMessage.class, "show2", message);
+            Log.d(TAG, "show2|" + message, new Throwable());
         }
     }
 
@@ -101,8 +102,7 @@ public final class UserMessage {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
-            Logger.debugWithStackTrace(UserMessage.class, "show3",
-                                       view.getContext().getString(message));
+            Log.d(TAG, "show3|" + view.getContext().getString(message), new Throwable());
         }
     }
 
@@ -115,7 +115,7 @@ public final class UserMessage {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
-            Logger.debugWithStackTrace(UserMessage.class, "show4", message);
+            Log.d(TAG, "show4|" + message, new Throwable());
         }
     }
 }

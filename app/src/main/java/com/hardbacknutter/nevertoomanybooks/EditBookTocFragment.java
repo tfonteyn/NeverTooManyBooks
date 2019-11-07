@@ -32,6 +32,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -70,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsFromInternetTask;
+import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbEditionsHandler;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
@@ -88,7 +89,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 /**
  * This class is called by {@link EditBookFragment} and displays the Content Tab.
  * <p>
- * Doesn't use {@link UpdateFieldsFromInternetTask}
+ * Doesn't use {@link UpdateFieldsTask}
  * as this would actually introduce the ManagedTask usage which we want to phase out.
  * <p>
  * The ISFDB direct interaction should however be seen as temporary as this class should not
@@ -98,7 +99,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 public class EditBookTocFragment
         extends EditBookBaseFragment {
 
-    /** Fragment manager tag. */
     public static final String TAG = "EditBookTocFragment";
 
     private final SimpleAdapterDataObserver mAdapterDataObserver =
@@ -167,9 +167,10 @@ public class EditBookTocFragment
 
             // finally the TOC itself;  only put on display for the user to approve
             FragmentManager fm = getChildFragmentManager();
-            if (fm.findFragmentByTag(ConfirmToc.TAG) == null) {
+            if (fm.findFragmentByTag(ConfirmTocDialogFragment.TAG) == null) {
                 boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
-                ConfirmToc.newInstance(bookData, hasOtherEditions).show(fm, ConfirmToc.TAG);
+                ConfirmTocDialogFragment.newInstance(bookData, hasOtherEditions)
+                                        .show(fm, ConfirmTocDialogFragment.TAG);
             }
         }
 
@@ -188,8 +189,8 @@ public class EditBookTocFragment
             }
         }
     };
-    private final ConfirmToc.ConfirmTocResults mConfirmTocResultsListener =
-            new ConfirmToc.ConfirmTocResults() {
+    private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
+            new ConfirmTocDialogFragment.ConfirmTocResults() {
                 /**
                  * The user approved, so add the TOC to the list and refresh the screen
                  * (still not saved to database).
@@ -341,8 +342,8 @@ public class EditBookTocFragment
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (ConfirmToc.TAG.equals(childFragment.getTag())) {
-            ((ConfirmToc) childFragment).setListener(mConfirmTocResultsListener);
+        if (ConfirmTocDialogFragment.TAG.equals(childFragment.getTag())) {
+            ((ConfirmTocDialogFragment) childFragment).setListener(mConfirmTocResultsListener);
 
         } else if (EditTocEntryDialogFragment.TAG.equals(childFragment.getTag())) {
             ((EditTocEntryDialogFragment) childFragment).setListener(mEditTocEntryResultsListener);
@@ -467,11 +468,10 @@ public class EditBookTocFragment
      * <p>
      * Uses {@link Fragment#getParentFragment()} for sending results back.
      */
-    public static class ConfirmToc
+    public static class ConfirmTocDialogFragment
             extends DialogFragment {
 
-        /** Fragment manager tag. */
-        private static final String TAG = "ConfirmToc";
+        private static final String TAG = "ConfirmTocDialogFrag";
 
         private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";
 
@@ -488,9 +488,9 @@ public class EditBookTocFragment
          *
          * @return the instance
          */
-        static ConfirmToc newInstance(@NonNull final Bundle bookData,
-                                      final boolean hasOtherEditions) {
-            ConfirmToc frag = new ConfirmToc();
+        static ConfirmTocDialogFragment newInstance(@NonNull final Bundle bookData,
+                                                    final boolean hasOtherEditions) {
+            ConfirmTocDialogFragment frag = new ConfirmTocDialogFragment();
             bookData.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
             frag.setArguments(bookData);
             return frag;
@@ -569,8 +569,7 @@ public class EditBookTocFragment
                 mListener.get().commitIsfdbData(mTocBitMask, mTocEntries);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onCommitToc",
-                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                    Log.d(TAG, "onCommitToc|" + Logger.WEAK_REFERENCE_DEAD);
                 }
             }
         }
@@ -581,8 +580,7 @@ public class EditBookTocFragment
                 mListener.get().getNextEdition();
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onGetNext",
-                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                    Log.d(TAG, "onGetNext|" + Logger.WEAK_REFERENCE_DEAD);
                 }
             }
         }

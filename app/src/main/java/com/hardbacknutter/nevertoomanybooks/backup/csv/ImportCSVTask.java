@@ -56,6 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessa
 public class ImportCSVTask
         extends TaskBase<ImportHelper> {
 
+    private static final String TAG = "ImportCSVTask";
+
     @NonNull
     private final Uri mUri;
     @NonNull
@@ -131,7 +133,7 @@ public class ImportCSVTask
             return mImportHelper;
 
         } catch (@NonNull final IOException | ImportException e) {
-            Logger.error(context, this, e);
+            Logger.error(context, TAG, e);
             mException = e;
             return mImportHelper;
         } finally {

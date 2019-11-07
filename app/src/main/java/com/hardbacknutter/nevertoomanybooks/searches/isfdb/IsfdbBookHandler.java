@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +49,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -63,6 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 public class IsfdbBookHandler
         extends AbstractBase {
+
+    private static final String TAG = "IsfdbBookHandler";
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_ISFDB";
@@ -374,7 +378,15 @@ public class IsfdbBookHandler
      *             </ul>
      *           <li><a href="http://www.isfdb.org/wiki/index.php/Special:Upload?
      *                  wpDestFile=THDSFPRKPT1991.jpg
-     *                  &amp;wpUploadDescription=%7B%7BCID1%0A%7CTitle%3DThe%20Days%20of%20Perky%20Pat%0A%7CEdition%3DGrafton%201991%20tp%0A%7CPub%3DTHDSFPRKPT1991%0A%7CPublisher%3DGrafton%0A%7CArtist%3DChris%20Moore%0A%7CArtistId%3D21338%0A%7CSource%3DScanned%20by%20%5B%5BUser%3AHardbackNut%5D%5D%7D%7D">Upload new cover scan</a>
+     *                  &amp;wpUploadDescription=%7B%7BCID1%0A
+     *                  %7CTitle%3DThe%20Days%20of%20Perky%20Pat%0A
+     *                  %7CEdition%3DGrafton%201991%20tp%0A
+     *                  %7CPub%3DTHDSFPRKPT1991%0A
+     *                  %7CPublisher%3DGrafton%0A
+     *                  %7CArtist%3DChris%20Moore%0A
+     *                  %7CArtistId%3D21338%0A
+     *                  %7CSource%3DScanned%20by%20%5B%5BUser%3AHardbackNut%5D%5D%7D%7D"
+     *                  >Upload new cover scan</a>
      *         </ul>
      *       </td>
      *   </table>
@@ -435,8 +447,7 @@ public class IsfdbBookHandler
         Elements allContentBoxes = mDoc.select("div.contentbox");
         // sanity check
         if (allContentBoxes == null) {
-            Logger.warn(this, "parseDoc",
-                        "no contentbox found",
+            Logger.warn(App.getAppContext(), TAG, "parseDoc", "no contentbox found",
                         "mDoc.location()=" + mDoc.location());
             return bookData;
         }
@@ -449,7 +460,7 @@ public class IsfdbBookHandler
 
         for (Element li : lis) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
-                Logger.debug(this, "fetch", li.toString());
+                Log.d(TAG, "fetch|" + li.toString());
             }
             try {
                 Elements children = li.children();
@@ -472,7 +483,7 @@ public class IsfdbBookHandler
                 }
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
-                    Logger.debug(this, "fetch", "fieldName=`" + fieldName + '`');
+                    Log.d(TAG, "fetch|fieldName=" + fieldName);
                 }
 
                 if ("Publication:".equalsIgnoreCase(fieldName)) {
@@ -601,7 +612,8 @@ public class IsfdbBookHandler
             } catch (@NonNull final IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
-                Logger.error(this, e, "path: " + mPath + "\n\nLI: " + li.toString());
+                Logger.error(App.getAppContext(), TAG, e,
+                             "path: " + mPath + "\n\nLI: " + li.toString());
             }
         }
 
@@ -985,14 +997,14 @@ public class IsfdbBookHandler
             // unlikely, but if so, then grab first book author
             if (author == null) {
                 author = mAuthors.get(0);
-                Logger.warn(this, "getTocList",
+                Logger.warn(App.getAppContext(), TAG, "getTocList",
                             "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
                             "ISFDB search for content found no author for li=" + li);
             }
             // very unlikely
             if (title == null) {
                 title = "";
-                Logger.warn(this, "getTocList",
+                Logger.warn(App.getAppContext(), TAG, "getTocList",
                             "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
                             "ISFDB search for content found no title for li=" + li);
             }

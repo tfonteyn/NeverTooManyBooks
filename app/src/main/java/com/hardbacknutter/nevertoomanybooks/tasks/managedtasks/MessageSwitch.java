@@ -43,8 +43,7 @@ import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -347,6 +346,8 @@ public class MessageSwitch<T, U> {
     private class MessageRoutingSlip
             implements RoutingSlip {
 
+        private static final String TAG = "MessageRoutingSlip";
+
         /** Message to deliver. */
         @NonNull
         final Message<T> message;
@@ -383,19 +384,14 @@ public class MessageSwitch<T, U> {
                 while (queueIterator.hasNext()) {
                     T listener = queueIterator.next();
                     try {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                            Logger.debug(this, "deliver",
-                                         "queueIterator",
-                                         "listener=" + listener,
-                                         "msg=" + message.toString());
-                        }
                         if (message.deliver(listener)) {
                             handled = true;
                             break;
                         }
 
                     } catch (@NonNull final RuntimeException e) {
-                        Logger.error(this, e, "Error delivering message to listener");
+                        Logger.error(App.getAppContext(), TAG, e,
+                                     "Error delivering message to listener");
                     }
                 }
                 if (handled) {

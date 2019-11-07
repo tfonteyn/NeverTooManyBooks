@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
@@ -66,7 +66,7 @@ public class CsvExporter
     static final String CSV_COLUMN_SERIES = "series_details";
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_AUTHORS = "author_details";
-
+    private static final String TAG = "CsvExporter";
     private static final int BUFFER_SIZE = 32768;
 
     /** Only send progress updates every 200ms. */
@@ -271,7 +271,7 @@ public class CsvExporter
             }
         } finally {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                Logger.debug(this, "doBooks", "results=" + results);
+                Log.d(TAG, "doBooks|results=" + results);
             }
         }
         return results;

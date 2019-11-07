@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.simplestring;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -53,6 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 abstract class EditStringBaseDialog {
+
+    private static final String TAG = "EditStringBaseDialog";
 
     /** Database Access. */
     @NonNull
@@ -153,8 +156,7 @@ abstract class EditStringBaseDialog {
             mBookChangedListener.get().onBookChanged(0, changeFlags, data);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onBookChanged",
-                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                Log.d(TAG, "onBookChanged" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }

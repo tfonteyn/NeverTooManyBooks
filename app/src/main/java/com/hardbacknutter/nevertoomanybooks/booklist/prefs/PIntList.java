@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
 import android.os.Parcel;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -35,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * An {@code List<Integer>} is stored as a CSV String.
@@ -44,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class PIntList
         extends PCollectionBase<Integer, List<Integer>> {
+
+    private static final String TAG = "PIntList";
 
     /**
      * Constructor.
@@ -104,9 +106,7 @@ public class PIntList
             } catch (@NonNull final NumberFormatException e) {
                 // should not happen unless we had a bug while previously writing the pref.
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debug(this, e,
-                                               "key=" + getKey(),
-                                               "values=`" + values + '`');
+                    Log.d(TAG, "key=" + getKey() + "|values=`" + values + '`', e);
                 }
             }
         }

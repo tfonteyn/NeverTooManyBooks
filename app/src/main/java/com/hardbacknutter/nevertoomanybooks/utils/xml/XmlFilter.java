@@ -284,7 +284,7 @@ public class XmlFilter {
     /** Interface definition for filter handlers. */
     public interface XmlHandler {
 
-        void process(@NonNull ElementContext context);
+        void process(@NonNull ElementContext elementContext);
     }
 
 }

@@ -37,6 +37,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorizationException;
@@ -51,6 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  */
 public class RequestAuthTask
         extends TaskBase<Integer> {
+
+    private static final String TAG = "RequestAuthTask";
 
     /**
      * Constructor.
@@ -101,13 +104,12 @@ public class RequestAuthTask
         }
         GoodreadsManager grManager = new GoodreadsManager();
 
-
         // This next step can take several seconds....
         if (!grManager.hasValidCredentials()) {
             try {
                 grManager.requestAuthorization();
             } catch (@NonNull final IOException e) {
-                Logger.error(this, e);
+                Logger.error(App.getAppContext(), TAG, e);
                 mException = e;
                 return R.string.gr_access_error;
             } catch (@NonNull final AuthorizationException e) {

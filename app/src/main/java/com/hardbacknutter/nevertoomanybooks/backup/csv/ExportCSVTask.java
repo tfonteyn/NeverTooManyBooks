@@ -53,6 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public class ExportCSVTask
         extends TaskBase<ExportHelper> {
 
+    private static final String TAG = "ExportCSVTask";
+
     @NonNull
     private final CsvExporter mExporter;
     @NonNull
@@ -123,7 +125,7 @@ public class ExportCSVTask
             return mExportHelper;
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-            Logger.error(context, this, e);
+            Logger.error(context, TAG, e);
             mException = e;
             return mExportHelper;
         } finally {

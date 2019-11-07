@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -54,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvExporter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlExporter;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -63,6 +63,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  */
 public abstract class BackupWriterAbstract
         implements BackupWriter {
+
+    private static final String TAG = "BackupWriterAbstract";
 
     private static final int BUFFER_SIZE = 32768;
 
@@ -192,8 +194,7 @@ public abstract class BackupWriterAbstract
         } finally {
             mExportHelper.options = entitiesWritten;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                Logger.debug(this, "backup",
-                             "mExportHelper.getResults()=" + exportResults);
+                Log.d(TAG, "backup|mExportHelper.getResults()=" + exportResults);
             }
             try {
                 close();
@@ -352,9 +353,10 @@ public abstract class BackupWriterAbstract
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Logger.debug(this, "doCovers",
-                         " written=" + coversExported,
-                        "missing=" + missing, "skipped=" + skipped);
+            Log.d(TAG, "doCovers"
+                       + "|written=" + coversExported
+                       + "|missing=" + missing
+                       + "|skipped=" + skipped);
         }
     }
 }

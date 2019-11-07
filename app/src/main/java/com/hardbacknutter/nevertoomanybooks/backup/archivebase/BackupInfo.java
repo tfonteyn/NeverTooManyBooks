@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,13 +41,14 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 /**
  * Class to encapsulate the INFO block from an archive.
  */
 public class BackupInfo {
+
+    private static final String TAG = "BackupInfo";
 
     /**
      * version of archiver used to write this archive.
@@ -281,7 +283,7 @@ public class BackupInfo {
     public void validate()
             throws InvalidArchiveException {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Logger.debug(this, "validate", mBundle);
+            Log.d(TAG, "validate|" + mBundle);
         }
 
         // extremely simple check: we assume that if one field is present, the rest will be there.

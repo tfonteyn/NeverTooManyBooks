@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dbsync;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -52,6 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class SynchronizedStatement
         implements Closeable {
+
+    private static final String TAG = "SynchronizedStatement";
 
     /** Synchronizer from database. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -100,7 +103,7 @@ public class SynchronizedStatement
                            @Nullable final String value) {
         if (value == null) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(this, "bindString", "binding NULL");
+                Log.d(TAG, "bindString|binding NULL", new Throwable());
             }
             mStatement.bindNull(index);
         } else {
@@ -216,8 +219,7 @@ public class SynchronizedStatement
         try {
             long result = mStatement.simpleQueryForLong();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
-                Logger.debug(this, "simpleQueryForLong",
-                             mStatement, "result: " + result);
+                Log.d(TAG, "simpleQueryForLong|" + mStatement + "|result: " + result);
             }
             return result;
         } finally {
@@ -239,8 +241,7 @@ public class SynchronizedStatement
         try {
             long result = mStatement.simpleQueryForLong();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
-                Logger.debug(this, "simpleQueryForLongOrZero",
-                             mStatement, "result: " + result);
+                Log.d(TAG, "simpleQueryForLongOrZero|" + mStatement + "|result: " + result);
             }
             return result;
         } catch (@NonNull final SQLiteDoneException ignore) {
@@ -263,8 +264,7 @@ public class SynchronizedStatement
     public long count() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
             if (!mIsCount) {
-                Logger.debugWithStackTrace(this, "count",
-                                           "count statement not a count?");
+                Log.d(TAG, "count|count statement not a count?", new Throwable());
             }
         }
         return simpleQueryForLongOrZero();
@@ -286,7 +286,7 @@ public class SynchronizedStatement
         try {
             String result = mStatement.simpleQueryForString();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
-                Logger.debug(this, "simpleQueryForString", mStatement, result);
+                Log.d(TAG, "simpleQueryForString|" + mStatement + '|' + result);
             }
             return result;
 
@@ -311,8 +311,7 @@ public class SynchronizedStatement
             return mStatement.simpleQueryForString();
         } catch (@NonNull final SQLiteDoneException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, "simpleQueryForStringOrNull",
-                             mStatement, "NULL");
+                Log.d(TAG, "simpleQueryForStringOrNull|" + mStatement + "|NULL");
             }
             return null;
         } finally {
@@ -335,12 +334,12 @@ public class SynchronizedStatement
         }
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE) {
-                Logger.debug(this, "execute", mStatement);
+                Log.d(TAG, "execute|" + mStatement);
             }
             mStatement.execute();
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(this, e, mStatement.toString());
+            Logger.error(App.getAppContext(), TAG, e, mStatement.toString());
             throw e;
         } finally {
             txLock.unlock();
@@ -361,13 +360,12 @@ public class SynchronizedStatement
         try {
             int rowsAffected = mStatement.executeUpdateDelete();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE_UPDATE_DELETE) {
-                Logger.debug(this, "executeUpdateDelete",
-                             mStatement, "rowsAffected=" + rowsAffected);
+                Log.d(TAG, "executeUpdateDelete|" + mStatement + "|rowsAffected=" + rowsAffected);
             }
             return rowsAffected;
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(App.getAppContext(), this, e, mStatement.toString());
+            Logger.error(App.getAppContext(), TAG, e, mStatement.toString());
             throw e;
         } finally {
             exclusiveLock.unlock();
@@ -388,17 +386,16 @@ public class SynchronizedStatement
             long id = mStatement.executeInsert();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE_INSERT) {
-                Logger.debug(this, "executeInsert",
-                             mStatement, "id=" + id);
+                Log.d(TAG, "executeInsert|" + mStatement + "|id=" + id);
 
                 if (id == -1) {
-                    Logger.warnWithStackTrace(App.getAppContext(), this, "Insert failed");
+                    Logger.warnWithStackTrace(App.getAppContext(), TAG, "Insert failed");
                 }
             }
             return id;
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(this, e, mStatement.toString());
+            Logger.error(App.getAppContext(), TAG, e, mStatement.toString());
             throw e;
         } finally {
             exclusiveLock.unlock();
@@ -425,7 +422,7 @@ public class SynchronizedStatement
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(this, "finalize",
+            Logger.warn(App.getAppContext(), TAG, "finalize",
                         "Closing unclosed statement:\n" + mStatement);
             mStatement.close();
         }

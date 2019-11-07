@@ -36,6 +36,7 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -66,6 +67,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 public final class DebugReport {
+
+    private static final String TAG = "DebugReport";
 
     /** files with these prefixes will be bundled in the report. */
     private static final String[] FILE_PREFIXES = new String[]{
@@ -220,7 +223,7 @@ public final class DebugReport {
                .append(context.getString(R.string.debug_body)).append("\n\n");
 
         if (BuildConfig.DEBUG /* always */) {
-            Logger.debug(DebugReport.class, "sendDebugInfo", message);
+            Log.d(TAG, "sendDebugInfo|" + message);
         }
 
         try {
@@ -261,7 +264,7 @@ public final class DebugReport {
             return true;
 
         } catch (@NonNull final NullPointerException | IOException e) {
-            Logger.error(context, DebugReport.class, e);
+            Logger.error(context, TAG, e);
             return false;
         }
     }

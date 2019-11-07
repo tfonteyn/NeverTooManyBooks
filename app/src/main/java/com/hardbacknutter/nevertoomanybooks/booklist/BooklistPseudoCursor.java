@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.AbstractCursor;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -39,7 +40,6 @@ import java.util.Hashtable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
@@ -82,6 +82,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class BooklistPseudoCursor
         extends AbstractCursor
         implements CursorRowProvider {
+
+    private static final String TAG = "BooklistPseudoCursor";
 
     /** Number of 'pages' a cursor has to 'away' to be considered for purging. */
     private static final int PAGES_AWAY_FOR_PURGE = 3;
@@ -172,7 +174,7 @@ public class BooklistPseudoCursor
         // Purge them
         for (Integer i : toPurge) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
-                Logger.debug(this, "purgeOldCursors", "Removing cursor at " + i);
+                Log.d(TAG, "purgeOldCursors|Removing cursor at " + i);
             }
             BooklistCursor c = mCursors.remove(i);
             if (c != null) {
@@ -273,7 +275,7 @@ public class BooklistPseudoCursor
     @CallSuper
     public boolean requery() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
-            Logger.debugEnter(this, "requery ", this);
+            Log.d(TAG, "ENTER|requery|" + this);
         }
 
         clearCursors();
@@ -302,10 +304,10 @@ public class BooklistPseudoCursor
                           final int newPosition) {
         if (newPosition < 0 || newPosition >= getCount()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
-                Logger.debugEnter(this, "onMove",
-                                  "illegal position",
-                                  "newPosition=" + newPosition,
-                                  "getCount()=" + getCount());
+                Log.d(TAG, "ENTER|onMove"
+                           + "|illegal position"
+                           + "|newPosition=" + newPosition
+                           + "|getCount()=" + getCount());
             }
             return false;
         }
@@ -382,20 +384,18 @@ public class BooklistPseudoCursor
             mActiveCursor.moveToPosition(newPosition - cursorStartPos);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
-                Logger.debugExit(this, "onMove",
-                                 "cursorId=" + cursorId,
-                                 "mActiveCursor=" + mActiveCursor);
+                Log.d(TAG, "EXIT|onMove"
+                           + "|cursorId=" + cursorId
+                           + "|mActiveCursor=" + mActiveCursor);
             }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.debug(this, "onMove",
-                         "ImageUtils.cacheChecks=" + ImageUtils.cacheChecks,
-                         "ImageUtils.cacheTicks=" + (ImageUtils.cacheTicks.get() / TO_MILLIS),
-
-                         "ImageUtils.fileChecks=" + ImageUtils.fileChecks,
-                         "ImageUtils.fileTicks=" + (ImageUtils.fileTicks.get() / TO_MILLIS)
-                        );
+            Log.d(TAG, "onMove"
+                       + "|ImageUtils.cacheChecks=" + ImageUtils.cacheChecks
+                       + "|ImageUtils.cacheTicks=" + (ImageUtils.cacheTicks.get() / TO_MILLIS)
+                       + "|ImageUtils.fileChecks=" + ImageUtils.fileChecks
+                       + "|ImageUtils.fileTicks=" + (ImageUtils.fileTicks.get() / TO_MILLIS));
         }
         return true;
     }

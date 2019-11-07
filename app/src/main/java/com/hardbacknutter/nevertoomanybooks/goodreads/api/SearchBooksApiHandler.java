@@ -69,70 +69,70 @@ public class SearchBooksApiHandler
      * At the START of a "work" tag, we create a new work.
      */
     private final XmlHandler mHandleWorkStart =
-            context -> mCurrentWork = new GoodreadsWork();
+            elementContext -> mCurrentWork = new GoodreadsWork();
     /**
      * At the END of a "work" tag, we add it to list and reset the pointer.
      */
-    private final XmlHandler mHandleWorkEnd = context -> {
+    private final XmlHandler mHandleWorkEnd = elementContext -> {
         mWorks.add(mCurrentWork);
         mCurrentWork = null;
     };
     private final XmlHandler mHandleWorkId =
-            context -> mCurrentWork.workId = Long.parseLong(context.getBody());
+            elementContext -> mCurrentWork.workId = Long.parseLong(elementContext.getBody());
 
-    private final XmlHandler mHandlePubDay = context -> {
+    private final XmlHandler mHandlePubDay = elementContext -> {
         try {
-            mCurrentWork.pubDay = Long.parseLong(context.getBody());
+            mCurrentWork.pubDay = Long.parseLong(elementContext.getBody());
         } catch (@NonNull final NumberFormatException ignored) {
         }
     };
-    private final XmlHandler mHandlePubMonth = context -> {
+    private final XmlHandler mHandlePubMonth = elementContext -> {
         try {
-            mCurrentWork.pubMonth = Long.parseLong(context.getBody());
+            mCurrentWork.pubMonth = Long.parseLong(elementContext.getBody());
         } catch (@NonNull final NumberFormatException ignored) {
         }
     };
-    private final XmlHandler mHandlePubYear = context -> {
+    private final XmlHandler mHandlePubYear = elementContext -> {
         try {
-            mCurrentWork.pubYear = Long.parseLong(context.getBody());
+            mCurrentWork.pubYear = Long.parseLong(elementContext.getBody());
         } catch (@NonNull final NumberFormatException ignored) {
         }
     };
 
     private final XmlHandler mHandleBookId =
-            context -> mCurrentWork.bookId = Long.parseLong(context.getBody());
+            elementContext -> mCurrentWork.bookId = Long.parseLong(elementContext.getBody());
     private final XmlHandler mHandleBookTitle =
-            context -> mCurrentWork.title = context.getBody();
+            elementContext -> mCurrentWork.title = elementContext.getBody();
 
     private final XmlHandler mHandleAuthorId =
-            context -> mCurrentWork.authorId = Long.parseLong(context.getBody());
+            elementContext -> mCurrentWork.authorId = Long.parseLong(elementContext.getBody());
     private final XmlHandler mHandleAuthorName =
-            context -> mCurrentWork.authorName = context.getBody();
+            elementContext -> mCurrentWork.authorName = elementContext.getBody();
     private final XmlHandler mHandleAuthorRole =
-            context -> mCurrentWork.authorRole = context.getBody();
+            elementContext -> mCurrentWork.authorRole = elementContext.getBody();
     private final XmlHandler mHandleImageUrl =
-            context -> mCurrentWork.imageUrl = context.getBody();
+            elementContext -> mCurrentWork.imageUrl = elementContext.getBody();
     private final XmlHandler mHandleSmallImageUrl =
-            context -> mCurrentWork.smallImageUrl = context.getBody();
+            elementContext -> mCurrentWork.smallImageUrl = elementContext.getBody();
 
     /**
      * Starting result # (for multi-page result sets). We don't use it (yet).
      */
     private Long mResultsStart;
     private final XmlHandler mHandleResultsStart =
-            context -> mResultsStart = Long.parseLong(context.getBody());
+            elementContext -> mResultsStart = Long.parseLong(elementContext.getBody());
     /**
      * Ending result # (for multi-page result sets). We don't use it (yet).
      */
     private Long mResultsEnd;
     private final XmlHandler mHandleResultsEnd =
-            context -> mResultsEnd = Long.parseLong(context.getBody());
+            elementContext -> mResultsEnd = Long.parseLong(elementContext.getBody());
     /**
      * Total results available, as opposed to number returned on first page.
      */
     private Long mTotalResults;
     private final XmlHandler mHandleTotalResults =
-            context -> mTotalResults = Long.parseLong(context.getBody());
+            elementContext -> mTotalResults = Long.parseLong(elementContext.getBody());
 
     /**
      * Constructor.

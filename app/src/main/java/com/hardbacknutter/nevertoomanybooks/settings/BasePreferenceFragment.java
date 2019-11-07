@@ -141,7 +141,7 @@ public abstract class BasePreferenceFragment
                     // This re-surfaces sometimes after a careless dev. change.
                     //noinspection ConstantConditions
                     Logger.warnWithStackTrace(
-                            getContext(), this,
+                            getContext(), TAG,
                             "MultiSelectListPreference:"
                             + "\n s=" + s
                             + "\n key=" + msp.getKey()

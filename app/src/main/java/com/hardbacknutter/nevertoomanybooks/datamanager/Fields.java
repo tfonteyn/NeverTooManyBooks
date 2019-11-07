@@ -37,6 +37,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -612,6 +613,8 @@ public class Fields {
     private static class EditTextWatcher<T>
             implements TextWatcher {
 
+        private static final String TAG = "EditTextWatcher";
+
         @NonNull
         private final Field<T> field;
 
@@ -639,10 +642,8 @@ public class Fields {
             T value = field.extract(s.toString().trim());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_TEXT_WATCHER) {
-                Logger.debug(this, "afterTextChanged",
-                             "s=`" + s.toString() + '`',
-                             "extract=`" + value + '`'
-                            );
+                Log.d(TAG, "afterTextChanged|s=`" + s.toString() + '`'
+                           + "extract=`" + value + '`');
             }
 
             // Set the field with the new data.
@@ -659,6 +660,8 @@ public class Fields {
      */
     private abstract static class BaseDataAccessor<T>
             implements FieldDataAccessor<T> {
+
+        private static final String TAG = "BaseDataAccessor";
 
         @NonNull
         final Field<T> mField;
@@ -691,7 +694,7 @@ public class Fields {
                     // Due to the way a Book loads data from the database,
                     // it's possible that it gets the column type wrong.
                     // See {@link BookCursor} class docs.
-                    Logger.error(this, e, value);
+                    Logger.error(mField.getView().getContext(), TAG, e, value);
                 }
             }
 
@@ -1318,6 +1321,8 @@ public class Fields {
     public static class MonetaryFormatter
             implements FieldFormatter<Double> {
 
+        private static final String TAG = "MonetaryFormatter";
+
         /** Optional; if null we use the default Locale. */
         @Nullable
         private Locale mLocale;
@@ -1376,9 +1381,7 @@ public class Fields {
                 return nf.format(source);
 
             } catch (@NonNull final IllegalArgumentException e) {
-                Logger.debug(this, e,
-                             "currencyCode=`" + mCurrencyCode + "`,"
-                             + " source=`" + source + '`');
+                Log.d(TAG, "currencyCode=" + mCurrencyCode + "|source=" + source, e);
 
                 // fallback if getting a Currency instance fail.
                 return mCurrencyCode + ' ' + String.format(mLocale, "%.2f", source);
@@ -1546,6 +1549,8 @@ public class Fields {
     private static class ActivityContext
             implements FieldsContext {
 
+        private static final String TAG = "ActivityContext";
+
         @NonNull
         private final WeakReference<Activity> mActivity;
 
@@ -1564,8 +1569,7 @@ public class Fields {
         public View findViewById(@IdRes final int id) {
             if (mActivity.get() == null) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debugWithStackTrace(this, "findViewById",
-                                               "Activity is NULL");
+                    Log.d(TAG, "findViewById|Activity is NULL", new Throwable());
                 }
                 return null;
             }
@@ -1576,6 +1580,8 @@ public class Fields {
     /** fronts a Fragment context. */
     private static class FragmentContext
             implements FieldsContext {
+
+        private static final String TAG = "FragmentContext";
 
         @NonNull
         private final WeakReference<Fragment> mFragment;
@@ -1595,14 +1601,14 @@ public class Fields {
         public View findViewById(@IdRes final int id) {
             if (mFragment.get() == null) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debugWithStackTrace(this, "findViewById", "Fragment is NULL");
+                    Log.d(TAG, "findViewById|Fragment is NULL", new Throwable());
                 }
                 return null;
             }
             View view = mFragment.get().getView();
             if (view == null) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debugWithStackTrace(this, "findViewById", "Fragment View is NULL");
+                    Log.d(TAG, "findViewById|Fragment View is NULL", new Throwable());
                 }
                 return null;
             }
@@ -1618,6 +1624,8 @@ public class Fields {
      * @param <T> type of Field value.
      */
     public static class Field<T> {
+
+        private static final String TAG = "Field";
 
         /** Field ID. */
         @IdRes
@@ -1752,9 +1760,7 @@ public class Fields {
                 //noinspection unchecked
                 accessor = new StringDataAccessor((Field<String>) this);
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debug(this, "Field",
-                                 "Using StringDataAccessor",
-                                 "key=" + mKey);
+                    Log.d(TAG, "Using StringDataAccessor|key=" + mKey);
                 }
             }
 

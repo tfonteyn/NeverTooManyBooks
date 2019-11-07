@@ -83,7 +83,7 @@ public class AuthUserApiHandler
             return mUserId;
 
         } catch (@NonNull final CredentialsException | BookNotFoundException | IOException
-                                        | RuntimeException e) {
+                | RuntimeException e) {
             return 0;
         }
     }
@@ -113,14 +113,12 @@ public class AuthUserApiHandler
      */
     private void buildFilters() {
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XML_USER)
-                 .setStartAction(context -> mUserId
-                                                    = Long.parseLong(
-                         context.getAttributes().getValue("", XmlTags.XML_ID)));
+                 .setStartAction(elementContext -> mUserId = Long.parseLong(
+                         elementContext.getAttributes().getValue("", XmlTags.XML_ID)));
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XML_USER,
                               XmlTags.XML_NAME)
-                 .setEndAction(context -> mUsername
-                                                  = context.getBody());
+                 .setEndAction(elementContext -> mUsername = elementContext.getBody());
     }
 
     @Nullable

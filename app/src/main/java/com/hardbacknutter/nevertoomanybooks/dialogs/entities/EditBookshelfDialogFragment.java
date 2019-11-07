@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -63,8 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 public class EditBookshelfDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
-    public static final String TAG = "EditBookshelfDialogFragment";
+    public static final String TAG = "EditBookshelfDialogFrag";
 
     /** Database Access. */
     private DAO mDb;
@@ -178,8 +178,7 @@ public class EditBookshelfDialogFragment
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
                 } else {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                        Logger.debug(this, "onBookshelfChanged",
-                                     Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                        Log.d(TAG, "onBookshelfChanged" + Logger.WEAK_REFERENCE_DEAD);
                     }
                 }
             }
@@ -221,8 +220,7 @@ public class EditBookshelfDialogFragment
                         mListener.get().onBookshelfChanged(destination.getId(), booksMoved);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Logger.debug(this, "onBookshelfChanged",
-                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                            Log.d(TAG, "onBookshelfChanged" + Logger.WEAK_REFERENCE_DEAD);
                         }
                     }
                 })

@@ -62,6 +62,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 public class StartupActivity
         extends AppCompatActivity {
 
+    private static final String TAG = "StartupActivity";
+
     /** Indicates the upgrade message has been shown. */
     private static boolean sUpgradeMessageShown;
     /** Self reference for use by tasks and during upgrades. */
@@ -133,7 +135,7 @@ public class StartupActivity
         mStartupStage++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-            Logger.debug(this, "startNextStage", "stage=" + mStartupStage);
+            Log.d(TAG, "startNextStage|stage=" + mStartupStage);
         }
 
         switch (mStartupStage) {
@@ -310,7 +312,7 @@ public class StartupActivity
                 break;
 
             default:
-                Logger.warnWithStackTrace(this, this, "requestCode=" + requestCode);
+                Logger.warnWithStackTrace(this, TAG, "requestCode=" + requestCode);
                 break;
         }
     }

@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,7 +53,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
@@ -65,6 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
  * {@link SearchBooksApiHandler} and to process the output.
  */
 abstract class ApiHandlerNative {
+
+    private static final String TAG = "ApiHandlerNative";
 
     /** initial connection time to websites timeout. */
     private static final int CONNECT_TIMEOUT = 10_000;
@@ -111,7 +113,7 @@ abstract class ApiHandlerNative {
             throws CredentialsException, BookNotFoundException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-            Logger.debug(this, "executeGet", "url=" + url);
+            Log.d(TAG, "executeGet|url=" + url);
         }
 
         String fullUrl = url;
@@ -155,7 +157,7 @@ abstract class ApiHandlerNative {
             throws CredentialsException, BookNotFoundException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-            Logger.debug(this, "executePost", "url=" + url);
+            Log.d(TAG, "executePost|url=" + url);
         }
 
         HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
@@ -192,10 +194,9 @@ abstract class ApiHandlerNative {
 //            }
 //            String oauth_query = sb.toString();
 //
-//            Logger.debug(this,"SIGN","native_query=" + query);
-//            Logger.debug(this,"SIGN","query_oath=" + oauth_query);
-//            Logger.debug(this,"SIGN","oauth_query.equals(native_query)= "
-//                                        + oauth_query.equals(query));
+//            Log.d(TAG,"SIGN|native_query=" + query);
+//            Log.d(TAG,"SIGN|query_oath=" + oauth_query);
+//            Log.d(TAG,"SIGN|oauth_query.equals(native_query)= " + oauth_query.equals(query));
 
             try (OutputStream os = request.getOutputStream();
                  OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
@@ -232,9 +233,8 @@ abstract class ApiHandlerNative {
 
         int code = request.getResponseCode();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
-            Logger.debug(this, "execute",
-                         "\nrequest: " + request.getURL(),
-                         "\nresponse: " + code + ' ' + request.getResponseMessage());
+            Log.d(TAG, "execute\nrequest: " + request.getURL()
+                       + "\nresponse: " + code + ' ' + request.getResponseMessage());
         }
 
         switch (code) {
@@ -280,7 +280,7 @@ abstract class ApiHandlerNative {
 
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, e);
+                Log.d(TAG, "parseResponse", e);
             }
             throw new IOException(e);
         }
@@ -304,7 +304,7 @@ abstract class ApiHandlerNative {
             throws CredentialsException, BookNotFoundException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-            Logger.debug(this, "executeRawGet", "url=" + url);
+            Log.d(TAG, "executeRawGet|url=" + url);
         }
 
         HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
@@ -322,9 +322,8 @@ abstract class ApiHandlerNative {
 
         int code = request.getResponseCode();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
-            Logger.debug(this, "execute",
-                         "\nrequest: " + request.getURL(),
-                         "\nresponse: " + code + ' ' + request.getResponseMessage());
+            Log.d(TAG, "execute\nrequest: " + request.getURL()
+                       + "\nresponse: " + code + ' ' + request.getResponseMessage());
         }
         switch (code) {
             case HttpURLConnection.HTTP_OK:

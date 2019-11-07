@@ -33,6 +33,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -82,6 +83,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * </pre>
  */
 public final class LocaleUtils {
+
+    private static final String TAG = "LocaleUtils";
 
     /**
      * Value stored in preferences if the user runs our app in the default device language.
@@ -163,9 +166,7 @@ public final class LocaleUtils {
 
         } catch (@NonNull final MissingResourceException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(LocaleUtils.class, "isValid",
-                             "e=" + e.getLocalizedMessage(),
-                             "locale=" + locale);
+                Log.d(TAG, "isValid|e=" + e.getLocalizedMessage() + "locale=" + locale);
             }
             return false;
 
@@ -310,7 +311,7 @@ public final class LocaleUtils {
                            + ", getConfiguration().locale=" + conIso3
                            + ", SharedPreferences=" + persistedIso3;
             Error e = new java.lang.VerifyError(error);
-            Logger.error(context, LocaleUtils.class, e, error);
+            Logger.error(context, TAG, e, error);
             throw e;
         }
     }
@@ -384,10 +385,12 @@ public final class LocaleUtils {
      */
     @Nullable
     public static Locale getLocale(@NonNull final String inputLang) {
+        Context context = App.getLocalizedAppContext();
+
         String lang = inputLang.trim().toLowerCase(Locale.getDefault());
         int len = lang.length();
         if (len > 3) {
-            lang = LanguageUtils.getISO3FromDisplayName(App.getLocalizedAppContext(), lang);
+            lang = LanguageUtils.getISO3FromDisplayName(context, lang);
         }
 
         // THIS IS A MUST
@@ -401,7 +404,7 @@ public final class LocaleUtils {
                 LOCALE_MAP.put(lang, locale);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.warn(LocaleUtils.class, "getLocale", "invalid locale",
+                    Logger.warn(context, TAG, "getLocale", "invalid locale",
                                 "inputLang=" + inputLang,
                                 "lang=" + lang,
                                 "locale=" + locale);

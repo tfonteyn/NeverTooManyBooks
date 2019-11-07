@@ -53,6 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 public final class LegacyPreferences {
 
+    private static final String TAG = "LegacyPreferences";
+
     /** Legacy preferences name. */
     public static final String PREF_LEGACY_PREFS = "bookCatalogue";
 
@@ -338,7 +340,7 @@ public final class LegacyPreferences {
 
                         } else if (!entry.getKey().startsWith("state_current_group")
                                    && !entry.getKey().startsWith("Backup")) {
-                            Logger.info(context, Prefs.class, "migrateLegacyPreferences",
+                            Logger.warn(context, TAG, "migrateLegacyPreferences",
                                         "unknown key=" + entry.getKey(),
                                         "value=" + oldValue);
                         }
@@ -347,7 +349,7 @@ public final class LegacyPreferences {
 
             } catch (@NonNull final RuntimeException e) {
                 // to bad... skip that key, not fatal, use default.
-                Logger.error(context, Prefs.class, e, "key=" + entry.getKey());
+                Logger.error(context, TAG, e, "key=" + entry.getKey());
             }
         }
         ed.apply();

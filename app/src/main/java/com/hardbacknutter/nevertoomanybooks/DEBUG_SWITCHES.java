@@ -30,7 +30,9 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -76,18 +78,11 @@ public final class DEBUG_SWITCHES {
     public static final boolean TRACE_WEAK_REFERENCES = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}. */
     public static final boolean BOB_THE_BUILDER = false;
-    /**
-     * {@link com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel#initBookList}.
-     */
+    /** {@link BooksOnBookshelfModel#initBookList}. */
     public static final boolean BOB_INIT_BOOK_LIST = false;
-    /**
-     * {@link com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel}.
-     * Expand/Collapsing nodes.
-     */
+    /** {@link BooksOnBookshelfModel} Expand/Collapsing nodes. */
     public static final boolean BOOK_LIST_NODE_STATE = false;
-    /**
-     * {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor}.
-     */
+    /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor}. */
     public static final boolean BOB_PSEUDO_CURSOR = false;
     /** {@link CoverBrowserFragment}. */
     public static final boolean COVER_BROWSER = false;
@@ -104,8 +99,8 @@ public final class DEBUG_SWITCHES {
 
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.JsoupBase}. */
     public static final boolean JSOUP = false;
-    /** {@link com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator} and related. */
-    public static final boolean SEARCH_INTERNET = false;
+    /** {@link com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator}. */
+    public static final boolean SEARCH_COORDINATOR = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.goodreads}. */
     public static final boolean GOODREADS = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager}. */
@@ -114,8 +109,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean ISFDB = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager}. */
     public static final boolean OPEN_LIBRARY = false;
-    /** {@link DAO}. Check for leaking instances. */
-    public static final boolean DAO_INSTANCE_COUNT = false;
+
     /** {@link DAO}. Global replace Author/Series/... */
     public static final boolean DAO_GLOBAL_REPLACE = false;
     /** {@link DAO}. Insert & update TOC entries. */
@@ -126,35 +120,23 @@ public final class DEBUG_SWITCHES {
     /** {@link com.hardbacknutter.nevertoomanybooks.database.dbsync}. */
     public static final boolean DB_SYNC = false;
     public static final boolean DB_SYNC_LOCKING = false;
-    /**
-     * Dump execSQL strings to the log.
-     * {@link com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb#execSQL(String)}
-     */
+
+    /** Dump SQL for {@link SynchronizedDb#execSQL(String)}. */
     public static final boolean DB_SYNC_EXEC_SQL = false;
     /**
-     * Dump the SQL and the result.
+     * Dump SQL and the result.
      * {@link SynchronizedStatement#simpleQueryForLong()}
      * {@link SynchronizedStatement#simpleQueryForLongOrZero()}
      * {@link SynchronizedStatement#count()}
      * {@link SynchronizedStatement#simpleQueryForString()}
      */
     public static final boolean DB_SYNC_SIMPLE_QUERY_FOR = false;
-    /**
-     * Dump the SQL for all 'execute...' calls.
-     * {@link SynchronizedStatement#execute()}
-     */
+    /** Dump SQL for {@link SynchronizedStatement#execute()}. */
     public static final boolean DB_SYNC_EXECUTE = false;
-    /**
-     * Dump the SQL.
-     * {@link SynchronizedStatement#executeInsert()}
-     */
+    /** Dump SQL for {@link SynchronizedStatement#executeInsert()}. */
     public static final boolean DB_SYNC_EXECUTE_INSERT = false;
-    /**
-     * Dump the SQL and the rowsAffected.
-     * {@link SynchronizedStatement#executeUpdateDelete()}
-     */
+    /** Dump SQL and rowsAffected for {@link SynchronizedStatement#executeUpdateDelete()} */
     public static final boolean DB_SYNC_EXECUTE_UPDATE_DELETE = false;
-
 
     /** dump savedInstanceState/outState/extras/arguments. */
     public static final boolean DUMP_INSTANCE_STATE = false;

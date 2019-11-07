@@ -50,6 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
  */
 public final class BackupManager {
 
+    private static final String TAG = "BackupManager";
+
     /** Last full backup date. */
     private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
     /** Proposed extension for backup files. Not mandatory. */
@@ -130,7 +132,7 @@ public final class BackupManager {
             hasValidDates = info.hasValidDates();
         } catch (@NonNull final IOException | InvalidArchiveException e) {
             // InvalidArchiveException is irrelevant here, as we would not have gotten this far
-            Logger.error(context, BackupManager.class, e);
+            Logger.error(context, TAG, e);
             hasValidDates = false;
         }
         return hasValidDates;

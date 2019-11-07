@@ -31,6 +31,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -50,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class NetworkUtils {
 
+    private static final String TAG = "NetworkUtils";
     /**
      * timeout we allow for a connection to work.
      * Initial tests show the sites we use, connect in less than 200ms.
@@ -88,10 +90,9 @@ public final class NetworkUtils {
                         boolean notMetered =
                                 nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
 
-                        Logger.debug(NetworkUtils.class, "getNetworkConnectivity",
-                                     "notMetered=" + notMetered,
-                                     "hasInternet=" + hasInternet,
-                                     "isConnected=" + isValidated);
+                        Log.d(TAG, "getNetworkConnectivity|notMetered=" + notMetered
+                                   + "|hasInternet=" + hasInternet
+                                   + "|isConnected=" + isValidated);
                     }
 
                     return !hasInternet || !isValidated
@@ -99,7 +100,7 @@ public final class NetworkUtils {
 
                 }
             } else {
-                Logger.warn(context, NetworkUtils.class, "networkUnavailable",
+                Logger.warn(context, TAG, "networkUnavailable",
                             "no active network");
             }
         }
@@ -150,17 +151,15 @@ public final class NetworkUtils {
             sock.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT_MS);
             sock.close();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Logger.debug(NetworkUtils.class, "isAlive",
-                             "Site: " + host + ':' + port
-                             + ", took " + (System.nanoTime() - t) + " nano");
+                Log.d(TAG, "isAlive|Site: " + host + ':' + port
+                           + ", took " + (System.nanoTime() - t) + " nano");
             }
             return true;
 
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Logger.debug(NetworkUtils.class, "isAlive",
-                             "Site unreachable: " + host + ':' + port + '\n'
-                             + e.getLocalizedMessage());
+                Log.d(TAG, "isAlive|Site unreachable: " + host + ':' + port + '\n'
+                           + e.getLocalizedMessage());
             }
             return false;
         }

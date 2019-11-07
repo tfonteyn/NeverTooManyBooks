@@ -57,6 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 public class SendOneBookTask
         extends TaskBase<Integer> {
 
+    private static final String TAG = "SendOneBookTask";
+
     private final long mBookId;
 
     /**
@@ -106,19 +108,19 @@ public class SendOneBookTask
                 }
             }
         } catch (@NonNull final CredentialsException e) {
-            Logger.error(context, this, e);
+            Logger.error(context, TAG, e);
             result = GoodreadsManager.ExportResult.credentialsError;
             mException = e;
         } catch (@NonNull final BookNotFoundException e) {
-            Logger.error(context, this, e);
+            Logger.error(context, TAG, e);
             result = GoodreadsManager.ExportResult.notFound;
             mException = e;
         } catch (@NonNull final IOException e) {
-            Logger.error(context, this, e);
+            Logger.error(context, TAG, e);
             result = GoodreadsManager.ExportResult.ioError;
             mException = e;
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, this, e);
+            Logger.error(context, TAG, e);
             result = GoodreadsManager.ExportResult.error;
             mException = e;
         }

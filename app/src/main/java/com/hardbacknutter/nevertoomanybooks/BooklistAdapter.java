@@ -32,6 +32,7 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,6 +93,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
 public class BooklistAdapter
         extends RecyclerView.Adapter<BooklistAdapter.RowViewHolder>
         implements FastScrollerOverlay.SectionIndexerV2 {
+
+    private static final String TAG = "BooklistAdapter";
 
     /** The padding indent (in pixels) added for each level: padding = (level-1) * mLevelIndent. */
     private final int mLevelIndent;
@@ -381,6 +384,8 @@ public class BooklistAdapter
     private static class GetBookExtrasTask
             extends AsyncTask<Void, Void, Boolean> {
 
+        private static final String TAG = "GetBookExtrasTask";
+
         /** Format string. */
         @NonNull
         private final String mX_bracket_Y_bracket;
@@ -485,7 +490,7 @@ public class BooklistAdapter
                 }
 
             } catch (@NonNull final NumberFormatException e) {
-                Logger.error(this, e);
+                Logger.error(App.getAppContext(), TAG, e);
                 return false;
             }
             return true;
@@ -534,8 +539,7 @@ public class BooklistAdapter
                 mTaskListener.get().onTaskFinished(mResults);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onPostExecute",
-                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                    Log.d(TAG, "onPostExecute" + Logger.WEAK_REFERENCE_DEAD);
                 }
             }
         }
@@ -607,7 +611,7 @@ public class BooklistAdapter
         private final String mX_bracket_Y_bracket;
 
         /** Whether titles should be reordered. */
-        private boolean mReorderTitle;
+        private final boolean mReorderTitle;
 
         /** Based on style; bitmask with the extra fields to use. */
         @BooklistStyle.ExtraOption
@@ -1085,7 +1089,7 @@ public class BooklistAdapter
                         return;
                     }
                 } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(this, e);
+                    Logger.error(App.getAppContext(), TAG, e);
                 }
             }
 
@@ -1180,7 +1184,7 @@ public class BooklistAdapter
                         return;
                     }
                 } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(this, e);
+                    Logger.error(App.getAppContext(), TAG, e);
                 }
             }
             super.setText(text, level);
@@ -1194,7 +1198,7 @@ public class BooklistAdapter
             extends CheckableStringHolder {
 
         /** Whether titles should be reordered. */
-        private boolean mReorderTitle;
+        private final boolean mReorderTitle;
 
         /**
          * Constructor.

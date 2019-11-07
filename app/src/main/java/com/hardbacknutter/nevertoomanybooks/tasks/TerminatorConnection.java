@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
+import android.util.Log;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +42,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -63,6 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 @WorkerThread
 public final class TerminatorConnection
         implements AutoCloseable {
+
+    private static final String TAG = "TerminatorConnection";
 
     /** initial connection time to websites timeout. */
     private static final int CONNECT_TIMEOUT_MS = 5_000;
@@ -119,7 +124,7 @@ public final class TerminatorConnection
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-            Logger.debugEnter(this, "TerminatorConnection", "url=" + url);
+            Log.d(TAG, "Constructor|url=" + url);
         }
 
         mKillDelayInMillis = KILL_CONNECT_DELAY_MS;
@@ -205,8 +210,8 @@ public final class TerminatorConnection
                 return;
 
             } catch (@NonNull final SocketTimeoutException
-                                            | FileNotFoundException
-                                            | UnknownHostException e) {
+                    | FileNotFoundException
+                    | UnknownHostException e) {
                 // retry for these exceptions.
                 nrOfTries--;
                 if (nrOfTries-- == 0) {
@@ -255,7 +260,7 @@ public final class TerminatorConnection
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(this, "finalize", "mCloseWasCalled=false; calling close() now");
+            Logger.warn(App.getAppContext(), TAG, "finalize|calling close()");
             close();
         }
         super.finalize();
@@ -290,9 +295,8 @@ public final class TerminatorConnection
                 Thread.sleep(mKillDelayInMillis);
                 if (mConnection.isOpen) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                        Logger.debug(this, "run",
-                                     "Closing TerminatorConnection: "
-                                     + mConnection.mCon.getURL());
+                        Log.d(TAG, "run|Closing TerminatorConnection: "
+                                   + mConnection.mCon.getURL());
                     }
                     mConnection.close();
                 }

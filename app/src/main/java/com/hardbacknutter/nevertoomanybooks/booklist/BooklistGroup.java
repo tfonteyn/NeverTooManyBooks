@@ -579,6 +579,8 @@ public class BooklistGroup
      */
     public static final class RowKind {
 
+        private static final String TAG = "RowKind";
+
         /** See {@link Kind}. */
         // The code relies on BOOK being == 0
         public static final int BOOK = 0;
@@ -901,7 +903,7 @@ public class BooklistGroup
                                           .getQuantityString(R.plurals.n_stars, i, i);
                         }
                     } catch (@NonNull final NumberFormatException e) {
-                        Logger.error(context, RowKind.class, e);
+                        Logger.error(context, TAG, e);
                     }
                     return source;
                 }
@@ -921,7 +923,7 @@ public class BooklistGroup
                             return DateUtils.getMonthName(i, false);
                         }
                     } catch (@NonNull final NumberFormatException e) {
-                        Logger.error(context, RowKind.class, e);
+                        Logger.error(context, TAG, e);
                     }
                     return source;
                 }
@@ -952,7 +954,7 @@ public class BooklistGroup
                     return source;
 
                 default:
-                    Logger.warnWithStackTrace(context, RowKind.class, "format",
+                    Logger.warnWithStackTrace(context, TAG, "format",
                                               "source=" + source,
                                               "kind=" + kind);
                     throw new UnexpectedValueException(kind);

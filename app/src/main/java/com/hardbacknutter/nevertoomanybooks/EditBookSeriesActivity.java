@@ -209,7 +209,6 @@ public class EditBookSeriesActivity
     public static class EditBookSeriesDialogFragment
             extends DialogFragment {
 
-        /** Fragment manager tag. */
         private static final String TAG = "EditBookSeriesDialogFragment";
 
         private EditBookSeriesActivity mHostActivity;

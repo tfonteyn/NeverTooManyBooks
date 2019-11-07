@@ -33,6 +33,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -84,6 +85,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * CON: added to the user media, which could be overload.
  */
 public final class StorageUtils {
+
+    private static final String TAG = "StorageUtils";
 
     /** error result code for {@link #getSharedStorageFreeSpace}. */
     public static final int ERROR_CANNOT_STAT = -2;
@@ -140,7 +143,7 @@ public final class StorageUtils {
             return 0;
 
         } catch (@NonNull final ExternalStorageException | IOException e) {
-            Logger.error(context, StorageUtils.class, e, "initSharedDirectories failed");
+            Logger.error(context, TAG, e, "initSharedDirectories failed");
             return R.string.error_storage_not_writable;
         }
     }
@@ -156,7 +159,7 @@ public final class StorageUtils {
             StatFs stat = new StatFs(getRootDir(context).getPath());
             return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
         } catch (@NonNull final IllegalArgumentException | ExternalStorageException e) {
-            Logger.error(context, StorageUtils.class, e);
+            Logger.error(context, TAG, e);
             return ERROR_CANNOT_STAT;
         }
     }
@@ -307,7 +310,7 @@ public final class StorageUtils {
 
         } catch (@NonNull final SecurityException | ExternalStorageException e) {
             // not critical, just log it.
-            Logger.error(context, StorageUtils.class, e);
+            Logger.error(context, TAG, e);
         }
         return totalSize;
     }
@@ -369,11 +372,10 @@ public final class StorageUtils {
         } catch (@NonNull final ProtocolException e) {
             // typically happens when the server hangs up: unexpected end of stream
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(StorageUtils.class, "saveInputStreamToFile",
-                             e.getLocalizedMessage());
+                Log.d(TAG, "saveInputStreamToFile|" + e.getLocalizedMessage());
             }
         } catch (@NonNull final IOException e) {
-            Logger.error(StorageUtils.class, e);
+            Logger.error(App.getAppContext(), TAG, e);
         } finally {
             deleteFile(tmpFile);
         }
@@ -391,7 +393,7 @@ public final class StorageUtils {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             } catch (@NonNull final SecurityException e) {
-                Logger.error(StorageUtils.class, e);
+                Logger.error(App.getAppContext(), TAG, e);
             }
         }
     }
@@ -413,7 +415,7 @@ public final class StorageUtils {
                 //noinspection ResultOfMethodCallIgnored
                 source.renameTo(destination);
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(StorageUtils.class, e);
+                Logger.error(App.getAppContext(), TAG, e);
             }
         }
         return destination.exists();
@@ -506,7 +508,7 @@ public final class StorageUtils {
             copyFile(source, destinationFile);
 
         } catch (@NonNull final IOException e) {
-            Logger.error(StorageUtils.class, e);
+            Logger.error(App.getAppContext(), TAG, e);
         }
     }
 

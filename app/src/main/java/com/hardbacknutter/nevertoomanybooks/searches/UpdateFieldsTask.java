@@ -43,15 +43,12 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.UpdateFieldsFromInternetActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
@@ -64,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * <p>
  * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsFromInternetActivity}
  */
-public class UpdateFieldsFromInternetTask
+public class UpdateFieldsTask
         extends ManagedTask {
 
     /** The fields that the user requested to update. */
@@ -100,39 +97,30 @@ public class UpdateFieldsFromInternetTask
      */
     @SuppressWarnings("FieldCanBeLocal")
     private final SearchCoordinator.SearchFinishedListener mListener =
-            new SearchCoordinator.SearchFinishedListener() {
-                @Override
-                public void onSearchFinished(final boolean wasCancelled,
-                                             @NonNull final Bundle bookData) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                        Logger.debugEnter(this, "onSearchFinished",
-                                          "bookId=" + mCurrentBookId);
-                    }
+            (wasCancelled, bookData) -> {
+                if (wasCancelled) {
+                    // if the search was cancelled, propagate by cancelling ourselves.
+                    cancelTask();
 
-                    if (wasCancelled) {
-                        // if the search was cancelled, propagate by cancelling ourselves.
-                        cancelTask();
+                } else if (bookData.isEmpty()) {
+                    // tell the user if the search failed.
+                    mTaskManager.sendUserMessage(R.string.warning_unable_to_find_book);
+                }
 
-                    } else if (bookData.isEmpty()) {
-                        // tell the user if the search failed.
-                        mTaskManager.sendUserMessage(R.string.warning_unable_to_find_book);
-                    }
+                // Save the local data from the context so we can start a new search
+                if (!isCancelled() && !bookData.isEmpty()) {
+                    processSearchResults(bookData);
+                }
 
-                    // Save the local data from the context so we can start a new search
-                    if (!isCancelled() && !bookData.isEmpty()) {
-                        processSearchResults(bookData);
-                    }
-
-                    /*
-                     * The search is complete AND the class-level data has been cached
-                     * by the processing thread. Let another search begin.
-                     */
-                    mSearchLock.lock();
-                    try {
-                        mSearchDone.signal();
-                    } finally {
-                        mSearchLock.unlock();
-                    }
+                /*
+                 * The search is complete AND the class-level data has been cached
+                 * by the processing thread. Let another search begin.
+                 */
+                mSearchLock.lock();
+                try {
+                    mSearchDone.signal();
+                } finally {
+                    mSearchLock.unlock();
                 }
             };
 
@@ -148,11 +136,11 @@ public class UpdateFieldsFromInternetTask
      * @param fields      fields to update
      * @param listener    where to send our results to
      */
-    public UpdateFieldsFromInternetTask(@NonNull final TaskManager taskManager,
-                                        @NonNull final ArrayList<Site> searchSites,
-                                        @NonNull final Map<String, FieldUsage> fields,
-                                        @NonNull final ManagedTaskListener listener) {
-        super(taskManager, "UpdateFieldsFromInternetTask");
+    public UpdateFieldsTask(@NonNull final TaskManager taskManager,
+                            @NonNull final ArrayList<Site> searchSites,
+                            @NonNull final Map<String, FieldUsage> fields,
+                            @NonNull final ManagedTaskListener listener) {
+        super(taskManager, "UpdateFieldsTask");
 
         mDb = new DAO();
         mFields = fields;
@@ -383,11 +371,6 @@ public class UpdateFieldsFromInternetTask
      * @param newBookData Data gathered from internet
      */
     private void processSearchResults(@NonNull final Bundle newBookData) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.debug(this, "processSearchResults",
-                         "bookId=" + mCurrentBookId);
-        }
-
         // Filter the data to remove keys we don't care about
         List<String> toRemove = new ArrayList<>();
         for (String key : newBookData.keySet()) {

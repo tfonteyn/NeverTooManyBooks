@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
@@ -50,6 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * The interface a search engine for a {@link Site} needs to implement.
  */
 public interface SearchEngine {
+
+    String TAG = "SearchEngine";
 
     /**
      * If an implementation does not support a specific (and faster) way/api
@@ -91,7 +94,7 @@ public interface SearchEngine {
                 return destination;
             }
         } catch (@NonNull final CredentialsException | IOException e) {
-            Logger.error(SearchSites.class, e);
+            Logger.error(App.getAppContext(), TAG, e);
         }
 
         return null;

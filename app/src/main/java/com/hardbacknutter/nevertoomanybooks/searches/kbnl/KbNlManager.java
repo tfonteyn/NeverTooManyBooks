@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.searches.kbnl;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,7 +49,6 @@ import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -64,6 +64,7 @@ public class KbNlManager
         implements SearchEngine {
 
     public static final Locale SITE_LOCALE = new Locale("nl", "NL");
+    private static final String TAG = "KbNlManager";
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "kbnl.";
     /** Type: {@code String}. */
@@ -149,7 +150,7 @@ public class KbNlManager
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this, e, url);
+                Log.d(TAG, url, e);
             }
             throw new IOException(e);
         }
@@ -164,7 +165,7 @@ public class KbNlManager
      * Ths kb.nl site does not have images, but we try bibliotheek.be.
      * <p>
      * https://webservices.bibliotheek.be/index.php?func=cover&ISBN=9789463731454&coversize=large
-     *
+     * <p>
      * Get a cover image.
      *
      * @param context Current context (i.e. with the current Locale)

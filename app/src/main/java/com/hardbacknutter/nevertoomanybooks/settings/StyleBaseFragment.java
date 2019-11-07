@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -42,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Settings editor for a Style.
@@ -77,12 +77,11 @@ public abstract class StyleBaseFragment
         if (mStyle == null) {
             // we're doing the global preferences
             mStyle = new BooklistStyle();
-            Logger.debug(this, "onCreatePreferences",
-                         "we're doing the global preferences");
+            Log.d(TAG, "onCreatePreferences|we're doing the global preferences");
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            Logger.debug(this, "onCreatePreferences", mStyle);
+            Log.d(TAG, "onCreatePreferences|" + mStyle);
         }
 
         // We use the style UUID as the filename for the prefs.
