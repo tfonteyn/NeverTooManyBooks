@@ -505,22 +505,34 @@ public final class ImageUtils {
                                    @NonNull final String suffix,
                                    @Nullable final String size) {
 
+        // If the site drops connection, we retry once.
+        int retry = 2;
+
         String fullName = name + suffix;
         if (size != null) {
             fullName += '_' + size;
         }
         File file = StorageUtils.getTempCoverFile(fullName);
 
-        int bytesRead = 0;
-        try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
-            bytesRead = StorageUtils.saveInputStreamToFile(con.inputStream, file);
-        } catch (@NonNull final IOException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "saveImage", e);
+        while (retry > 0) {
+            int bytesRead;
+            try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
+                bytesRead = StorageUtils.saveInputStreamToFile(con.inputStream, file);
+                return bytesRead > 0 ? file.getAbsolutePath() : null;
+            } catch (@NonNull final IOException e) {
+                retry--;
+
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "saveImage|will retry=" + (retry > 0), e);
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignore) {
+                }
+
             }
         }
-
-        return bytesRead > 0 ? file.getAbsolutePath() : null;
+        return null;
     }
 
     /**

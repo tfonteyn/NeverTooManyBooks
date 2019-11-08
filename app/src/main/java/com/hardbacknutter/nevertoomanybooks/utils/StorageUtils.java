@@ -33,7 +33,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,12 +46,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ProtocolException;
 import java.nio.channels.FileChannel;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -86,10 +83,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public final class StorageUtils {
 
-    private static final String TAG = "StorageUtils";
-
     /** error result code for {@link #getSharedStorageFreeSpace}. */
     public static final int ERROR_CANNOT_STAT = -2;
+    private static final String TAG = "StorageUtils";
     /** buffer size for file copy operations. */
     private static final int FILE_COPY_BUFFER_SIZE = 32768;
 
@@ -354,10 +350,13 @@ public final class StorageUtils {
      * @param is   InputStream to read
      * @param file File to write to
      *
-     * @return number of bytes read; -1 on failure but could be 0 on if the stream was empty.
+     * @return number of bytes read; can be 0 if the stream was empty.
+     *
+     * @throws IOException on failures
      */
     public static int saveInputStreamToFile(@Nullable final InputStream is,
-                                            @NonNull final File file) {
+                                            @NonNull final File file)
+            throws IOException {
         Objects.requireNonNull(is, "no InputStream");
 
         File tmpFile = getTempCoverFile("is");
@@ -368,18 +367,9 @@ public final class StorageUtils {
             // All OK, so rename to real output file
             renameFile(tmpFile, file);
             return total;
-
-        } catch (@NonNull final ProtocolException e) {
-            // typically happens when the server hangs up: unexpected end of stream
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "saveInputStreamToFile|" + e.getLocalizedMessage());
-            }
-        } catch (@NonNull final IOException e) {
-            Logger.error(App.getAppContext(), TAG, e);
         } finally {
             deleteFile(tmpFile);
         }
-        return -1;
     }
 
     /**
