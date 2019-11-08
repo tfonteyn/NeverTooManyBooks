@@ -1030,12 +1030,12 @@ public class BooksOnBookshelfModel
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     Log.d(TAG, "doInBackground|"
                                + String.format(Locale.UK, ""
-                                                          + "\nBuild                    : %.10d"
-                                                          + "\nsync done                : %.10d"
-                                                          + "\ngot new cursor           : %.10d"
-                                                          + "\ncount all rows (%.5d)   : %.10d"
-                                                          + "\ndistinctBookCount(%.5d) : %.10d"
-                                                          + "\ntotalBookCount(%.5d)    : %.10d"
+                                                          + "\nBuild                    : %10d"
+                                                          + "\nsync done                : %10d"
+                                                          + "\ngot new cursor           : %10d"
+                                                          + "\ncount all rows (%5d)   : %10d"
+                                                          + "\ndistinctBookCount(%5d) : %10d"
+                                                          + "\ntotalBookCount(%5d)    : %10d"
                                                           + "\n ==================================="
                                                           + "\n Total time in ms: %f",
                                                t1_build_done - t0,

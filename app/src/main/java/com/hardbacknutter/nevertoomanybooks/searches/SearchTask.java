@@ -74,8 +74,6 @@ public class SearchTask
     @NonNull
     private final SearchEngine mSearchEngine;
 
-    /** identifier for this task. */
-    private final int mTaskId;
     /** whether to fetch thumbnails. */
     private boolean mFetchThumbnail;
     /** search criteria. */
@@ -113,8 +111,7 @@ public class SearchTask
                final int taskId,
                @NonNull final String taskName,
                @NonNull final SearchEngine searchEngine) {
-        super(manager, taskName);
-        mTaskId = taskId;
+        super(manager, taskId, taskName);
         mSearchEngine = searchEngine;
 
         Context context = getContext();
@@ -170,13 +167,6 @@ public class SearchTask
     @NonNull
     Bundle getBookData() {
         return mBookData;
-    }
-
-    /**
-     * @return an identifier for this task.
-     */
-    int getTaskId() {
-        return mTaskId;
     }
 
     @Override

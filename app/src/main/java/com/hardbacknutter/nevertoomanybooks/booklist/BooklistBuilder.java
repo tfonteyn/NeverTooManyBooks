@@ -594,16 +594,16 @@ public class BooklistBuilder
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 Log.d(TAG, "build|" +
                            String.format(Locale.UK, ""
-                                                    + "\ntable created         : %.10d"
-                                                    + "\nbase sql              : %.10d"
-                                                    + "\njoins                 : %.10d"
-                                                    + "\nwhere clause          : %.10d"
-                                                    + "\norder-by clause       : %.10d"
-                                                    + "\nbase insert executed  : %.10d"
-                                                    + "\ntable analyzed        : %.10d"
-                                                    + "\nstateTable build      : %.10d"
-                                                    + "\nstateTable idx created: %.10d"
-                                                    + "\nstateTable_analyzed   : %.10d",
+                                                    + "\ntable created         : %10d"
+                                                    + "\nbase sql              : %10d"
+                                                    + "\njoins                 : %10d"
+                                                    + "\nwhere clause          : %10d"
+                                                    + "\norder-by clause       : %10d"
+                                                    + "\nbase insert executed  : %10d"
+                                                    + "\ntable analyzed        : %10d"
+                                                    + "\nstateTable build      : %10d"
+                                                    + "\nstateTable idx created: %10d"
+                                                    + "\nstateTable_analyzed   : %10d",
 
                                          t01_table_created - t00,
                                          t02_build_base_sql - t01_table_created,

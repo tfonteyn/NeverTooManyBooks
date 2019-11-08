@@ -75,20 +75,21 @@ public abstract class ManagedTask
      */
     public static final MessageSwitch<ManagedTaskListener, ManagedTaskController>
             MESSAGE_SWITCH = new MessageSwitch<>();
-
+    private static final String TAG = "ManagedTask";
     /** The manager who we will use for progress etc, and who we will inform about our state. */
     @NonNull
     protected final TaskManager mTaskManager;
-    /**
-     *
-     */
+
+    /** identifier for this task. This is different from the internal thread id. */
+    private final int mTaskId;
+
+
     private final long mMessageSenderId;
     /** message to send to the TaskManager when all is said and done. */
     @Nullable
     protected String mFinalMessage;
     /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
     private boolean mCancelFlg;
-
     /** Controller instance (strong reference) for this specific ManagedTask. */
     @SuppressWarnings("FieldCanBeLocal")
     private final ManagedTaskController mController = new ManagedTaskController() {
@@ -108,10 +109,14 @@ public abstract class ManagedTask
      * Constructor.
      *
      * @param taskManager Associated task manager
+     * @param taskId      identifier
      * @param taskName    of this task(thread)
      */
     protected ManagedTask(@NonNull final TaskManager taskManager,
+                          final int taskId,
                           @NonNull final String taskName) {
+
+        mTaskId = taskId;
 
         // Set the thread name to something helpful.
         setName(taskName);
@@ -121,6 +126,13 @@ public abstract class ManagedTask
         mTaskManager = taskManager;
         // Add myself to my manager
         mTaskManager.addTask(this);
+    }
+
+    /**
+     * @return an identifier for this task.
+     */
+    public int getTaskId() {
+        return mTaskId;
     }
 
     /**
@@ -134,9 +146,6 @@ public abstract class ManagedTask
      */
     protected abstract void runTask()
             throws Exception;
-
-    private static final String TAG = "ManagedTask";
-
 
     @NonNull
     protected Context getContext() {

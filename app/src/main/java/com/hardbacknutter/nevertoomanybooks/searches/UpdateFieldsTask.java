@@ -140,7 +140,7 @@ public class UpdateFieldsTask
                             @NonNull final ArrayList<Site> searchSites,
                             @NonNull final Map<String, FieldUsage> fields,
                             @NonNull final ManagedTaskListener listener) {
-        super(taskManager, "UpdateFieldsTask");
+        super(taskManager, 0, "UpdateFieldsTask");
 
         mDb = new DAO();
         mFields = fields;
@@ -353,7 +353,7 @@ public class UpdateFieldsTask
 
             }
         } finally {
-            // Tell our listener they can clear the progress message.
+            // Tell our listener they can close the progress dialog.
             mTaskManager.sendHeaderUpdate(null);
             // Create the final message for them (user message, not a Progress message)
             mFinalMessage = context.getString(R.string.progress_end_n_books_searched,

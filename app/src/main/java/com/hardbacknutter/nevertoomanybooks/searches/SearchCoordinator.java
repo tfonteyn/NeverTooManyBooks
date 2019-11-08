@@ -78,6 +78,7 @@ public class SearchCoordinator {
     public static final MessageSwitch<SearchFinishedListener, SearchCoordinatorController>
             MESSAGE_SWITCH = new MessageSwitch<>();
     private static final String TAG = "SearchCoordinator";
+    private static final int TO_MILLIS = 1_000_000;
     /**
      * Unique identifier for this instance.
      * <p>
@@ -152,6 +153,11 @@ public class SearchCoordinator {
     @Nullable
     private FormatMapper mFormatMapper;
     private long mSearchStartTime;
+    @SuppressLint("UseSparseArrays")
+    private Map<Integer, Long> mSearchTasksStartTime = new HashMap<>();
+    @SuppressLint("UseSparseArrays")
+    private Map<Integer, Long> mSearchTasksEndTime = new HashMap<>();
+
     /** Listen for finished searches. */
     private final TaskManagerListener mListener = new TaskManagerListener() {
 
@@ -163,6 +169,10 @@ public class SearchCoordinator {
          */
         @Override
         public void onTaskFinished(@NonNull final ManagedTask task) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+                mSearchTasksEndTime.put(task.getTaskId(), System.nanoTime());
+            }
+
             // display final message from task.
             String finalMessage = task.getFinalMessage();
             if (finalMessage != null) {
@@ -186,8 +196,14 @@ public class SearchCoordinator {
             }
             // no more tasks ? Then send the results back to our creator.
             if (tasksActive == 0) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "onTaskFinished"
+                               + "|removing TM listener id=" + mTaskManager.getId()
+                               + "|calling sendResults()");
+                }
+
                 // Stop listening FIRST...otherwise, if sendResults() calls a listener
-                // that starts a new task, we will stop listening for the new task.
+                // that starts a new task, we will keep listening for the new task.
                 TaskManager.MESSAGE_SWITCH.removeListener(mTaskManager.getId(), this);
                 // all searches done.
                 sendResults();
@@ -255,7 +271,9 @@ public class SearchCoordinator {
                        @NonNull final String publisher,
                        final boolean fetchThumbnail) {
 
-        mSearchStartTime = System.nanoTime();
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+            mSearchStartTime = System.nanoTime();
+        }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             Log.d(TAG, "search"
@@ -340,15 +358,18 @@ public class SearchCoordinator {
                 tasksStarted = startNext();
             }
         } finally {
+            // if we did not start any tasks we are done.
             if (!tasksStarted) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "search"
+                               + "|removing TM listener id=" + mTaskManager.getId()
+                               + "|calling sendResults()");
+                }
                 // accumulate all data and send it back to our caller.
                 sendResults();
                 // stop listening
                 TaskManager.MESSAGE_SWITCH.removeListener(mTaskManager.getId(), mListener);
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "search"
-                               + "|listener stopped id=" + mTaskManager.getId());
-                }
+
             }
         }
     }
@@ -419,6 +440,8 @@ public class SearchCoordinator {
             return false;
         }
 
+        // Note to self: we pass id/name and not site in the presumption we might
+        // have search tasks for non-site related searches.
         SearchTask task = new SearchTask(mTaskManager, site.id, site.getName(), searchEngine);
         task.setIsbn(mIsbn);
         task.setAuthor(mAuthor);
@@ -435,7 +458,9 @@ public class SearchCoordinator {
             Log.d(TAG, "startOneSearch"
                        + "|Starting search: " + task.getName());
         }
-
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+            mSearchTasksStartTime.put(task.getTaskId(), System.nanoTime());
+        }
         task.start();
         return true;
     }
@@ -528,9 +553,8 @@ public class SearchCoordinator {
      * => moving the check (if applicable) to the receiver of the results.
      */
     private void sendResults() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "sendResults|All searches done, preparing results");
-        }
+        // set the end of the actual search task timer, and start a new timer for the processing.
+        long processTime = System.nanoTime();
 
         // This list will be the actual order of the result we apply, based on the
         // actual results and the default order.
@@ -603,17 +627,31 @@ public class SearchCoordinator {
 
         // All done, Pass the data back
         MESSAGE_SWITCH.send(mMessageSenderId, listener -> {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                Log.d(TAG, "sendResults"
-                           + "|Delivering to=" + listener
-                           + "|title=`" + mBookData.getString(DBDefinitions.KEY_TITLE) + '`');
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+                for (Map.Entry<Integer, Long> entry : mSearchTasksStartTime.entrySet()) {
+                    String name = SearchSites.getName(entry.getKey());
+                    long start = entry.getValue();
+                    Long end = mSearchTasksEndTime.get(entry.getKey());
+                    if (end != null) {
+                        Log.d(TAG, String.format(Locale.UK,
+                                                 "onSearchFinished|taskId=%20s:%10d ms",
+                                                 name, (end - start) / TO_MILLIS));
+                    } else {
+                        Log.d(TAG, String.format(Locale.UK,
+                                                 "onSearchFinished|task=%20s|never finished",
+                                                 name));
+                    }
+                }
+
+                Log.d(TAG, String.format(Locale.UK,
+                                         "onSearchFinished|total search time: %10d ms",
+                                         (processTime - mSearchStartTime) / TO_MILLIS));
+                Log.d(TAG, String.format(Locale.UK,
+                                         "onSearchFinished|processing time: %10d ms",
+                                         (System.nanoTime() - processTime) / TO_MILLIS));
             }
 
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, String.format(Locale.UK, "onSearchFinished"
-                                                    + "\nTotal time : %.10d",
-                                         (System.nanoTime() - mSearchStartTime) / 1_000_000));
-            }
             listener.onSearchFinished(mCancelledFlg, mBookData);
             return true;
         });
@@ -629,7 +667,7 @@ public class SearchCoordinator {
      *
      * @param siteId site
      */
-    private void accumulateAllData(final int siteId) {
+    private void accumulateAllData(@SearchSites.Id final int siteId) {
         // See if we got data from this site
         if (!mSearchResults.containsKey(siteId)) {
             return;
@@ -643,7 +681,7 @@ public class SearchCoordinator {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             Log.d(TAG, "accumulateAllData"
-                       + "|Processing data from search engine: id=" + siteId);
+                       + "|Processing data from search engine: " + SearchSites.getName(siteId));
         }
         for (String key : bookData.keySet()) {
             if (DBDefinitions.KEY_DATE_PUBLISHED.equals(key)
