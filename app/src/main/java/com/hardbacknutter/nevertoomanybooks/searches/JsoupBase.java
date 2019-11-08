@@ -244,7 +244,7 @@ public abstract class JsoupBase {
                 // at com.hardbacknutter.nevertoomanybooks.searches.JsoupBase.loadPage(JsoupBase.java:163)
 
                 Logger.warn(App.getAppContext(), TAG, "loadPage", e);
-                // So, retry once.
+                // retry once.
                 if (mRetry) {
                     mRetry = false;
                     mDoc = null;

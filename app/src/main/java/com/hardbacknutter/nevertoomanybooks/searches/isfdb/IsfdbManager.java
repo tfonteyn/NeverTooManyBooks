@@ -189,11 +189,10 @@ public class IsfdbManager
         }
 
         if (!editions.isEmpty()) {
-            boolean addSeriesFromToc =
+            boolean seriesFromToc =
                     PreferenceManager.getDefaultSharedPreferences(context)
                                      .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC, false);
-            return new IsfdbBookHandler().fetch(context, editions,
-                                                addSeriesFromToc, fetchThumbnail);
+            return new IsfdbBookHandler(context).fetch(editions, seriesFromToc, fetchThumbnail);
         } else {
             return new Bundle();
         }

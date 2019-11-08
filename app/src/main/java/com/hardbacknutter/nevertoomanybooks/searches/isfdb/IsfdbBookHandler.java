@@ -52,6 +52,7 @@ import org.jsoup.select.Elements;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -148,11 +149,11 @@ public class IsfdbBookHandler
     /** accumulate all Series for this book. */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
+    private final String mUnknown;
     /** The fully qualified ISFDB search url. */
     private String mPath;
     /** List of all editions (ISFDB 'publicationRecord') of this book. */
     private List<IsfdbEditionsHandler.Edition> mEditions;
-
     /** set during book load, used during content table load. */
     @Nullable
     private String mTitle;
@@ -160,21 +161,31 @@ public class IsfdbBookHandler
     @Nullable
     private String mFirstPublication;
 
+    private final String mBaseUrl;
+
     /**
      * Constructor.
+     *
+     * @param context Current context
      */
-    IsfdbBookHandler() {
+    IsfdbBookHandler(@NonNull final Context context) {
         super();
+        mBaseUrl = IsfdbManager.getBaseURL(context);
+        mUnknown = context.getString(R.string.unknown);
     }
 
     /**
      * Constructor used for testing.
      *
-     * @param doc the JSoup Document.
+     * @param context Current context
+     * @param doc     the JSoup Document.
      */
     @VisibleForTesting
-    IsfdbBookHandler(@NonNull final Document doc) {
+    IsfdbBookHandler(final Context context,
+                     @NonNull final Document doc) {
         super(doc);
+        mBaseUrl = IsfdbManager.getBaseURL(context);
+        mUnknown = context.getString(R.string.unknown);
     }
 
     @Nullable
@@ -185,7 +196,6 @@ public class IsfdbBookHandler
     /**
      * Fetch a book.
      *
-     * @param context          Current context
      * @param isfdbId          ISFDB native book ID
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   whether to get thumbnails as well
@@ -195,14 +205,12 @@ public class IsfdbBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    public Bundle fetch(@NonNull final Context context,
-                        final long isfdbId,
+    public Bundle fetch(final long isfdbId,
                         final boolean addSeriesFromToc,
                         final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
-        return fetch(IsfdbManager.getBaseURL(context)
-                     + String.format(BOOK_URL, isfdbId), addSeriesFromToc, fetchThumbnail);
+        return fetch(mBaseUrl + String.format(BOOK_URL, isfdbId), addSeriesFromToc, fetchThumbnail);
     }
 
     /**
@@ -217,9 +225,9 @@ public class IsfdbBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    public Bundle fetch(@NonNull final String path,
-                        final boolean addSeriesFromToc,
-                        final boolean fetchThumbnail)
+    private Bundle fetch(@NonNull final String path,
+                         final boolean addSeriesFromToc,
+                         final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
         mPath = path;
@@ -235,7 +243,6 @@ public class IsfdbBookHandler
     /**
      * Fetch a book.
      *
-     * @param context          Current context
      * @param editions         List of ISFDB Editions with native book ID
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   whether to get thumbnails as well
@@ -245,8 +252,7 @@ public class IsfdbBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    public Bundle fetch(@NonNull final Context context,
-                        @Size(min = 1) @NonNull final List<IsfdbEditionsHandler.Edition> editions,
+    public Bundle fetch(@Size(min = 1) @NonNull final List<IsfdbEditionsHandler.Edition> editions,
                         final boolean addSeriesFromToc,
                         final boolean fetchThumbnail)
             throws SocketTimeoutException {
@@ -254,7 +260,7 @@ public class IsfdbBookHandler
         mEditions = editions;
 
         IsfdbEditionsHandler.Edition edition = editions.get(0);
-        mPath = IsfdbManager.getBaseURL(context) + String.format(BOOK_URL, edition.isfdbId);
+        mPath = mBaseUrl + String.format(BOOK_URL, edition.isfdbId);
 
         // check if we already got the book
         if (edition.doc != null) {
@@ -994,19 +1000,20 @@ public class IsfdbBookHandler
                 }
             }
 
-            // unlikely, but if so, then grab first book author
+            // no author found, set to 'unknown, unknown'
+            // example when this happens: ISBN=044100590X
+            // <li> 475 • <a href="http://www.isfdb.org/cgi-bin/title.cgi?1659151" dir="ltr">
+            //      Appendixes (Dune)</a> • essay by uncredited
+            // </li>
             if (author == null) {
-                author = mAuthors.get(0);
-                Logger.warn(App.getAppContext(), TAG, "getTocList",
-                            "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
-                            "ISFDB search for content found no author for li=" + li);
+                author = new Author(mUnknown, mUnknown);
             }
             // very unlikely
             if (title == null) {
                 title = "";
                 Logger.warn(App.getAppContext(), TAG, "getTocList",
                             "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
-                            "ISFDB search for content found no title for li=" + li);
+                            "no title for li=" + li);
             }
 
             // scan for first occurrence of "• (1234)"

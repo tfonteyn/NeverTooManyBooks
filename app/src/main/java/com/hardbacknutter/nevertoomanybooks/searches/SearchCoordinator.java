@@ -152,6 +152,7 @@ public class SearchCoordinator {
     /** TerminologyMapper. */
     @Nullable
     private FormatMapper mFormatMapper;
+
     private long mSearchStartTime;
     @SuppressLint("UseSparseArrays")
     private Map<Integer, Long> mSearchTasksStartTime = new HashMap<>();

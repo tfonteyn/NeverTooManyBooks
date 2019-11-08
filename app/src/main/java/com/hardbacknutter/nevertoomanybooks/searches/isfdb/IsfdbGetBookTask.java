@@ -106,10 +106,12 @@ public class IsfdbGetBookTask
 
         try {
             if (mEditions != null) {
-                return new IsfdbBookHandler().fetch(context, mEditions, mAddSeriesFromToc, false);
+                return new IsfdbBookHandler(context)
+                        .fetch(mEditions, mAddSeriesFromToc, false);
 
             } else if (mIsfdbId != 0) {
-                return new IsfdbBookHandler().fetch(context, mIsfdbId, mAddSeriesFromToc, false);
+                return new IsfdbBookHandler(context)
+                        .fetch(mIsfdbId, mAddSeriesFromToc, false);
 
             } else {
                 if (BuildConfig.DEBUG /* always */) {

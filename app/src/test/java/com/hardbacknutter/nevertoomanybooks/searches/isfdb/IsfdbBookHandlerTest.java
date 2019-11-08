@@ -93,7 +93,7 @@ class IsfdbBookHandlerTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(doc);
+        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(mContext, doc);
         // we've set the doc, so no internet download will be done.
         Bundle bookData = isfdbBookHandler.parseDoc(mBookData, false, false);
 

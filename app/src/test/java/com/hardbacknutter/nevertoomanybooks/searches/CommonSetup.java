@@ -84,6 +84,8 @@ public class CommonSetup {
         when(mContext.getString(R.string.book_format_softcover)).thenReturn("Softcover");
         when(mContext.getString(R.string.book_format_hardcover)).thenReturn("Hardcover");
 
+        when(mContext.getString(R.string.unknown)).thenReturn("Unknown");
+
         when(mSharedPreferences.getString(eq("nederlands"), eq("Nederlands"))).thenReturn("nld");
         when(mSharedPreferences.getString(eq("frans"), eq("Frans"))).thenReturn("fre");
         when(mSharedPreferences.getString(eq("duits"), eq("Duits"))).thenReturn("ger");
