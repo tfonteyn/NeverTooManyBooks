@@ -72,7 +72,7 @@
         />
 
     <!-- reminder: this is an ImageButton -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
         android:id="@+id/fab"
         style="@style/FAB"
         android:src="@drawable/ic_add"
