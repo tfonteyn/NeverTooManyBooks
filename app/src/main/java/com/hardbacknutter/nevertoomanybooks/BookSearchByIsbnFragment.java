@@ -68,7 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
@@ -163,6 +162,7 @@ public class BookSearchByIsbnFragment
                         }
                     } finally {
                         mBookSearchBaseModel.setSearchCoordinator(0);
+                        // Tell our listener they can close the progress dialog.
                         mTaskManager.sendHeaderUpdate(null);
                     }
                 }
@@ -173,6 +173,9 @@ public class BookSearchByIsbnFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Mandatory
+        setHasOptionsMenu(true);
 
         //TODO: not sure we'll keep this... for now enabled via the debug menu only
         //noinspection ConstantConditions
@@ -413,12 +416,11 @@ public class BookSearchByIsbnFragment
         }
         // at this point, we have a valid isbn/asin.
         if (isScanMode()) {
-            // Optionally beep if scan was valid.
             //noinspection ConstantConditions
-            SoundManager.beepHigh(getContext());
+            mScannerModel.onValidBeep(getContext());
         }
 
-        // See if ISBN already exists in our database, if not then start the search and get details.
+        // See if ISBN already exists in our database, if not then start the search.
         final long existingId = mBookSearchBaseModel.getDb().getBookIdFromIsbn(isbn, true);
         if (existingId != 0) {
             isbnAlreadyPresent(existingId);
@@ -435,8 +437,9 @@ public class BookSearchByIsbnFragment
      */
     boolean startSearch() {
         if (!super.startSearch()) {
+            //TEST: should we actually restart the scanner here ?
             if (isScanMode()) {
-                // we don't have an isbn, but we're scanning. Restart scanner.
+                // we didn't have an isbn, but we're scanning. Restart scanner.
                 startScannerActivity();
             }
         }
@@ -482,11 +485,6 @@ public class BookSearchByIsbnFragment
      * @param isbn the isbn which was invalid
      */
     private void isbnInvalid(@NonNull final String isbn) {
-        if (isScanMode()) {
-            // Optionally beep if scan failed.
-            //noinspection ConstantConditions
-            SoundManager.beepLow(getContext());
-        }
         String msg;
         if (mAllowAsin) {
             msg = getString(R.string.warning_x_is_not_a_valid_isbn_or_asin, isbn);
@@ -496,9 +494,13 @@ public class BookSearchByIsbnFragment
 
         if (isScanMode()) {
             //noinspection ConstantConditions
+            mScannerModel.onInvalidBeep(getContext());
+
+            //noinspection ConstantConditions
             UserMessage.show(getActivity(), msg);
             // reset the now-discarded details
             mBookSearchBaseModel.clearSearchText();
+
             startScannerActivity();
         } else {
             //noinspection ConstantConditions
