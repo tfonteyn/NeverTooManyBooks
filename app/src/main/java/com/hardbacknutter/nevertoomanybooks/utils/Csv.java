@@ -78,7 +78,7 @@ public final class Csv {
     public static <E> String join(@NonNull final CharSequence delimiter,
                                   @NonNull final Iterable<E> collection,
                                   @Nullable final Formatter<E> formatter) {
-        return join(delimiter, collection, true, null, formatter);
+        return join(delimiter, collection, false, null, formatter);
     }
 
     /**
@@ -90,7 +90,7 @@ public final class Csv {
      *
      * @param delimiter    e.g. "," or ", " etc...
      * @param collection   collection
-     * @param allowEmpties Flag to allow null/empty values to be allowed or skipped.
+     * @param skipEmptyStrings Flag skip null/empty values.
      * @param prefix       (optional) prefix that will be added to each element.
      *                     Caller is responsible to add spaces if desired.
      * @param formatter    (optional) formatter to use on each element, or {@code null} for none.
@@ -101,7 +101,7 @@ public final class Csv {
     @NonNull
     public static <E> String join(@NonNull final CharSequence delimiter,
                                   @NonNull final Iterable<E> collection,
-                                  final boolean allowEmpties,
+                                  final boolean skipEmptyStrings,
                                   @Nullable final String prefix,
                                   @Nullable final Formatter<E> formatter) {
 //        if (collection.isEmpty()) {
@@ -118,7 +118,7 @@ public final class Csv {
                 value = formatter.format(element);
             }
 
-            if ((value != null && !value.isEmpty()) || allowEmpties) {
+            if ((value != null && !value.isEmpty()) || !skipEmptyStrings) {
                 if (first) {
                     first = false;
                 } else {
@@ -152,6 +152,26 @@ public final class Csv {
         for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
             if ((entry.getKey() & bitmask) != 0) {
                 list.add(context.getString(entry.getValue()));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Not strictly a Csv method, but closely related as it's usually (always?) followed
+     * by sending the list to a join method.
+     *
+     * @param map     Map with bits mapped to strings
+     * @param bitmask to turn into strings
+     *
+     * @return list of Strings with the names for each bit.
+     */
+    public static List<String> bitmaskToList(@NonNull final Map<Integer, String> map,
+                                             final long bitmask) {
+        List<String> list = new ArrayList<>();
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            if ((entry.getKey() & bitmask) != 0) {
+                list.add(entry.getValue());
             }
         }
         return list;

@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks.managedtasks;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -136,21 +134,10 @@ public abstract class ManagedTask
     }
 
     /**
-     * Called when the task has finished, override if needed.
-     */
-    protected void onTaskFinish() {
-    }
-
-    /**
      * Called to do the main thread work.
      */
     protected abstract void runTask()
             throws Exception;
-
-    @NonNull
-    protected Context getContext() {
-        return mTaskManager.getContext();
-    }
 
     /**
      * Executed in main task thread.
@@ -164,9 +151,6 @@ public abstract class ManagedTask
         } catch (@NonNull final Exception e) {
             Logger.error(App.getAppContext(), TAG, e);
         }
-
-        // Let the implementation know it is finished
-        onTaskFinish();
 
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
         MESSAGE_SWITCH.send(mMessageSenderId, listener -> {

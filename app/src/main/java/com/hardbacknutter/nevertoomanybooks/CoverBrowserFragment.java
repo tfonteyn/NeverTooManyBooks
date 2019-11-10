@@ -59,7 +59,6 @@ import java.util.concurrent.RejectedExecutionException;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.CoverBrowserViewModel;
@@ -112,11 +111,6 @@ public class CoverBrowserFragment
      */
     @NonNull
     public static CoverBrowserFragment newInstance(@NonNull final String isbn) {
-
-        if (!LibraryThingManager.hasKey()) {
-            throw new IllegalStateException("LibraryThing Key must be tested before calling this");
-        }
-
         CoverBrowserFragment frag = new CoverBrowserFragment();
         Bundle args = new Bundle();
         args.putString(DBDefinitions.KEY_ISBN, isbn);
@@ -414,10 +408,11 @@ public class CoverBrowserFragment
             String isbn = mAlternativeEditions.get(position);
 
             // Get the image file; try the sizes in order as specified here.
-            holder.fileInfo = mModel.getFileManager().getFile(isbn,
-                                                              SearchEngine.ImageSize.Small,
-                                                              SearchEngine.ImageSize.Medium,
-                                                              SearchEngine.ImageSize.Large);
+            holder.fileInfo = mModel.getFileManager()
+                                    .getFile(isbn,
+                                             SearchEngine.CoverByIsbn.ImageSize.Small,
+                                             SearchEngine.CoverByIsbn.ImageSize.Medium,
+                                             SearchEngine.CoverByIsbn.ImageSize.Large);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Log.d(TAG, "onBindViewHolder|fileInfo=" + holder.fileInfo);
@@ -456,7 +451,7 @@ public class CoverBrowserFragment
                 String fileSpec = holder.fileInfo.fileSpec;
                 if (fileSpec != null && !fileSpec.isEmpty()) {
                     //noinspection ConstantConditions
-                    if (holder.fileInfo.size.equals(SearchEngine.ImageSize.Large)) {
+                    if (holder.fileInfo.size.equals(SearchEngine.CoverByIsbn.ImageSize.Large)) {
                         // no need to search, just load it.
                         ImageUtils.setImageView(holder.imageView,
                                                 new File(fileSpec),

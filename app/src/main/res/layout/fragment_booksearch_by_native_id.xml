@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/topScroller"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".BookSearchActivity"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/border1"
+        >
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/indent_fields"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/indent3"
+            />
+
+        <TextView
+            android:id="@+id/lbl_site"
+            style="@style/Label.Field"
+            android:text="@string/info_search_by_native_id"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <!-- //NEWTHINGS: add new site specific ID: -->
+        <RadioGroup
+            android:id="@+id/sites_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_site"
+            >
+
+            <!-- TODO: have a think... allow searching for ASIN here or in the ISBN fragment.
+                For now it's academic as Amazon search is disabled. -->
+            <RadioButton
+                android:id="@+id/site_amazon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/amazon"
+                android:visibility="gone"
+                />
+
+            <RadioButton
+                android:id="@+id/site_goodreads"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/goodreads"
+                />
+
+            <RadioButton
+                android:id="@+id/site_isfdb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/isfdb"
+                />
+
+            <RadioButton
+                android:id="@+id/site_library_thing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/library_thing"
+                />
+
+            <RadioButton
+                android:id="@+id/site_open_library"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/open_library"
+                />
+
+            <RadioButton
+                android:id="@+id/site_strip_info_be"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/stripinfo"
+                />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/lbl_native_id"
+            style="@style/Label.Field"
+            android:labelFor="@id/native_id"
+            android:text="@string/lbl_site_book_id"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sites_group"
+            />
+
+        <!-- input type will be reset by code as needed -->
+        <EditText
+            android:id="@+id/native_id"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            app:layout_constraintEnd_toStartOf="@id/btn_search"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_native_id"
+            tools:ignore="Autofill"
+            />
+
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_search"
+            app:layout_constraintBaseline_toBaselineOf="@id/native_id"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/native_id"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

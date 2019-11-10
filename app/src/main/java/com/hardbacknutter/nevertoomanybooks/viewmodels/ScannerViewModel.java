@@ -27,10 +27,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.scanner.Scanner;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 
 /**
  * Holds the Scanner and related data.
@@ -73,5 +79,30 @@ public class ScannerViewModel
 
     public void setScanner(@Nullable final Scanner scanner) {
         mScanner = scanner;
+    }
+
+    /**
+     * Optionally beep if the scan succeeded.
+     *
+     * @param context Current context
+     */
+    public void onValidBeep(@NonNull final Context context) {
+
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(Prefs.pk_sounds_scan_isbn_valid, false)) {
+            SoundManager.beepHigh(context);
+        }
+    }
+
+    /**
+     * Optionally beep if the scan failed.
+     *
+     * @param context Current context
+     */
+    public void onInvalidBeep(@NonNull final Context context) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true)) {
+            SoundManager.beepLow(context);
+        }
     }
 }

@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
  * Searches the internet for book details based on:
  * - manually provided or scanned ISBN.
  * - Author/Title.
+ * - Specific web site book id (Native id).
  */
 public class BookSearchActivity
         extends BaseActivityWithTasks {
@@ -76,12 +77,20 @@ public class BookSearchActivity
                                  @IdRes final int containerViewId,
                                  @NonNull final String tag) {
         switch (tag) {
+            case BookSearchByScanFragment.TAG:
+                replaceFragment(containerViewId, BookSearchByScanFragment.class, tag);
+                return;
+
             case BookSearchByIsbnFragment.TAG:
                 replaceFragment(containerViewId, BookSearchByIsbnFragment.class, tag);
                 return;
 
             case BookSearchByTextFragment.TAG:
                 replaceFragment(containerViewId, BookSearchByTextFragment.class, tag);
+                return;
+
+            case BookSearchByNativeIdFragment.TAG:
+                replaceFragment(containerViewId, BookSearchByNativeIdFragment.class, tag);
                 return;
 
             case UpdateFieldsFragment.TAG:

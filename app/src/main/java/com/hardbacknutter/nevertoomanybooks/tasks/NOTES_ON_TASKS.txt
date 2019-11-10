@@ -2,15 +2,12 @@ PROBLEM:
 too many ways of using tasks.
 
 GOALS:
- 1. FragmentTask ==> replaced with AsyncTask. DONE.
- 2. replace SimpleTask with AsyncTask executing on an Executor (multi-threaded). ==> DONE
-
- 3. Removal of ManagedTask
- 4. Removal of taskqueue
- 5. cropper ?
+ 1. Removal of ManagedTask
+ 2. Removal of taskqueue
+ 3. cropper ?
 
 ----------------------------------------------------------------------------------------------------
-3. ManagedTask's started from a BaseActivityWithTasks.
+1. ManagedTask's started from a BaseActivityWithTasks.
 
  * abstract {@link ManagedTask} extends Thread
  * Background task that is managed by TaskManager and uses TaskManager to coordinate
@@ -36,7 +33,7 @@ Used by:
 ==> the SearchCoordinator/SearchTasks for getting book information from web sites.
 
 ----------------------------------------------------------------------------------------------------
-4. task-queue - minimalistic traditional database backed 'MessageQueue' like product
+2. task-queue - minimalistic traditional database backed 'MessageQueue' like product
    Task
    LegacyTask extends Task
    RunnableTask extends Task
@@ -48,7 +45,7 @@ Hardcoded defaults clean up dead tasks after 7 days.
 WorkManager sounds like a good replacement.
 
  ---------------------------------------------------------------------------------------------------
-5. CropImageActivity
+3. CropImageActivity
 Has yet another form of background job definition. This one is small/clean.
  ---------------------------------------------------------------------------------------------------
 

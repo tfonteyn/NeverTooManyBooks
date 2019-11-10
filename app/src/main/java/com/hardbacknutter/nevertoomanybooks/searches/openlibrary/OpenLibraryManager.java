@@ -96,7 +96,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * Below is a rudimentary "data" implementation. "details" was tested with curl.
  */
 public class OpenLibraryManager
-        implements SearchEngine {
+        implements SearchEngine,
+                   SearchEngine.ByIsbn,
+                   SearchEngine.CoverByIsbn {
 
     private static final String TAG = "OpenLibraryManager";
 
@@ -140,60 +142,39 @@ public class OpenLibraryManager
     /**
      * <a href="https://openlibrary.org/dev/docs/api/books">
      * https://openlibrary.org/dev/docs/api/books</a>
-     *
-     * <br>Only the ISBN is supported.
-     *
-     * @param context   Current context
-     * @param isbn      to lookup. Must be a valid ISBN
-     * @param author    unused
-     * @param title     unused
-     * @param publisher unused
-     *                  <br>
-     *                  <br>{@inheritDoc}
+     * <br>
+     * {@inheritDoc}
      */
     @NonNull
     @Override
-    @WorkerThread
-    public Bundle search(@NonNull final Context context,
-                         @Nullable final String isbn,
-                         @Nullable final /* not supported */ String author,
-                         @Nullable final /* not supported */ String title,
-                         @Nullable final /* not supported */ String publisher,
-                         final boolean fetchThumbnail)
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String isbn,
+                               final boolean fetchThumbnail)
             throws IOException {
 
-        if (ISBN.isValid(isbn)) {
-            String url =
-                    getBaseURL(context) + "/api/books?jscmd=data&format=json&bibkeys=ISBN:" + isbn;
+        String url = getBaseURL(context) + "/api/books?jscmd=data&format=json&bibkeys=ISBN:" + isbn;
 
-            // get and store the result into a string.
-            String response;
-            try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
-                //noinspection ConstantConditions
-                BufferedReader streamReader = new BufferedReader(
-                        new InputStreamReader(con.inputStream, StandardCharsets.UTF_8));
-                String inputStr;
-                StringBuilder responseStrBuilder = new StringBuilder();
-                while ((inputStr = streamReader.readLine()) != null) {
-                    responseStrBuilder.append(inputStr);
-                }
-                response = responseStrBuilder.toString();
+        // get and store the result into a string.
+        String response;
+        try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
+            //noinspection ConstantConditions
+            BufferedReader streamReader = new BufferedReader(
+                    new InputStreamReader(con.inputStream, StandardCharsets.UTF_8));
+            String inputStr;
+            StringBuilder responseStrBuilder = new StringBuilder();
+            while ((inputStr = streamReader.readLine()) != null) {
+                responseStrBuilder.append(inputStr);
             }
+            response = responseStrBuilder.toString();
+        }
 
-            // json-ify and handle.
-            try {
-                Bundle bookData = handleResponse(new JSONObject(response), fetchThumbnail);
-                return bookData != null ? bookData : new Bundle();
+        // json-ify and handle.
+        try {
+            Bundle bookData = handleResponse(new JSONObject(response), fetchThumbnail);
+            return bookData != null ? bookData : new Bundle();
 
-            } catch (@NonNull final JSONException e) {
-                throw new IOException(e);
-            }
-
-        } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
-            throw new UnsupportedOperationException();
-
-        } else {
-            return new Bundle();
+        } catch (@NonNull final JSONException e) {
+            throw new IOException(e);
         }
     }
 
@@ -257,11 +238,6 @@ public class OpenLibraryManager
     @Override
     public String getUrl(@NonNull final Context context) {
         return getBaseURL(context);
-    }
-
-    @Override
-    public boolean requiresIsbn() {
-        return true;
     }
 
     @Override

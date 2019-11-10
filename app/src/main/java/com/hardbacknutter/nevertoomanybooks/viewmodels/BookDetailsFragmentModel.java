@@ -35,17 +35,25 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.BookFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.FlattenedBooklist;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 
 /**
- * In addition to the {@link BookBaseFragmentModel}, this model holds the flattened booklist
- * for sweeping left/right.
+ * In addition to the {@link BookBaseFragmentModel}.
  */
-public class FlattenedBooklistModel
+public class BookDetailsFragmentModel
         extends ViewModel {
 
+    private static final String TAG = "BookDetailsFragModel";
+
+    /** Table name of the {@link FlattenedBooklist}. */
+    public static final String BKEY_FLAT_BOOKLIST_TABLE = TAG + ":FBL_Table";
+    /** Position in the {@link FlattenedBooklist} of this book. Used for left/right swipes. */
+    public static final String BKEY_FLAT_BOOKLIST_POSITION = TAG + ":FBL_Position";
+    /** The fields collection. */
+    @NonNull
+    private final Fields mFields = new Fields();
     @Nullable
     private FlattenedBooklist mFlattenedBooklist;
 
@@ -60,27 +68,27 @@ public class FlattenedBooklistModel
     /**
      * Pseudo constructor.
      *
-     * @param syncedDb the database
-     * @param args     {@link Intent#getExtras()} or {@link Fragment#getArguments()}
-     * @param bookId   The book this model will represent.
+     * @param db     Database Access
+     * @param args   {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param bookId The book this model will represent.
      */
-    public void init(@NonNull final SynchronizedDb syncedDb,
+    public void init(@NonNull final DAO db,
                      @Nullable final Bundle args,
                      final long bookId) {
-        if (mFlattenedBooklist == null) {
 
+        if (mFlattenedBooklist == null) {
             // no arguments ? -> no list!
             if (args == null) {
                 return;
             }
             // no list ?
-            String listTableName = args.getString(BookFragment.BKEY_FLAT_BOOKLIST_TABLE);
+            String listTableName = args.getString(BKEY_FLAT_BOOKLIST_TABLE);
             if (listTableName == null || listTableName.isEmpty()) {
                 return;
             }
 
             // looks like we have a list, but...
-            mFlattenedBooklist = new FlattenedBooklist(syncedDb, listTableName);
+            mFlattenedBooklist = new FlattenedBooklist(db, listTableName);
             // Check to see it really exists. The underlying table disappeared once in testing
             // which is hard to explain; it theoretically should only happen if the app closes
             // the database (DAO#sSyncedDb)
@@ -95,7 +103,7 @@ public class FlattenedBooklistModel
             }
 
             // ok, we absolutely have a list, get the position we need to be on.
-            int pos = args.getInt(BookFragment.BKEY_FLAT_BOOKLIST_POSITION, 0);
+            int pos = args.getInt(BKEY_FLAT_BOOKLIST_POSITION, 0);
 
             mFlattenedBooklist.moveTo(pos);
             // the book might have moved around. So see if we can find it.
@@ -112,6 +120,11 @@ public class FlattenedBooklistModel
                 mFlattenedBooklist = null;
             }
         }
+    }
+
+    @NonNull
+    public Fields getFields() {
+        return mFields;
     }
 
     @Nullable

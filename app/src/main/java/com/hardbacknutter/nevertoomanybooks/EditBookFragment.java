@@ -44,6 +44,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -55,15 +56,16 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 
 /**
  * Fragment that hosts child fragments to edit a book.
  * <p>
- * Note that this class does not (need to) extend {@link EditBookBaseFragment}
- * but merely {@link BookBaseFragment}.
+ * Does not have fields of its own, as it's merely the coordinator/container for the actual
+ * editor fragments.
  */
 public class EditBookFragment
-        extends BookBaseFragment {
+        extends Fragment {
 
     public static final String TAG = "EditBookFragment";
 
@@ -86,6 +88,9 @@ public class EditBookFragment
     private ViewPager2 mViewPager;
     private TabAdapter mTabAdapter;
 
+    /** The book. Must be in the Activity scope. */
+    private BookBaseFragmentModel mBookModel;
+
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
@@ -106,6 +111,10 @@ public class EditBookFragment
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        //noinspection ConstantConditions
+        mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
+        mBookModel.init(getArguments());
 
         // any specific tab desired as 'selected' ?
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState : getArguments();

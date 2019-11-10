@@ -80,42 +80,39 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  */
 public final class SearchSites {
 
-    /** Site. */
-    public static final int AMAZON = 1 << 1;
+
     /**
      * The Amazon handler uses the BookCatalogue proxy.
      * DO NOT USE UNTIL WE REMOVE THAT DEPENDENCY.
      */
     public static final boolean ENABLE_AMAZON_AWS = false;
 
+    /** Site. */
+    public static final int AMAZON = 1 << 1;
+    /** Site. */
+    public static final int GOOGLE_BOOKS = 1;
+    /** Site. */
+    public static final int LIBRARY_THING = 1 << 2;
+    /** Site. */
+    public static final int GOODREADS = 1 << 3;
+    /** Site: Speculative Fiction only. i.e. Science-Fiction/Fantasy etc... */
+    public static final int ISFDB = 1 << 4;
+    /** Site. */
+    public static final int OPEN_LIBRARY = 1 << 5;
+    /** Site: Dutch language books & comics. */
+    public static final int KB_NL = 1 << 6;
+    /** Site: Dutch language (and to an extend French) comics. */
+    public static final int STRIP_INFO_BE = 1 << 7;
+    /** Mask including all search sources. */
+    static final int SEARCH_FLAG_MASK = GOOGLE_BOOKS | AMAZON
+                                        | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY
+                                        | KB_NL | STRIP_INFO_BE;
     /** tag. */
     private static final String TAG = "SearchSites";
     /** Used to pass a list of sites around. */
     public static final String BKEY_SEARCH_SITES_BOOKS = TAG + ":books";
     /** Used to pass a list of sites around. */
     public static final String BKEY_SEARCH_SITES_COVERS = TAG + ":covers";
-
-    /** Site. */
-    private static final int GOOGLE_BOOKS = 1;
-    /** Site. */
-    private static final int LIBRARY_THING = 1 << 2;
-    /** Site. */
-    private static final int GOODREADS = 1 << 3;
-    /** Site: Speculative Fiction only. i.e. Science-Fiction/Fantasy etc... */
-    private static final int ISFDB = 1 << 4;
-    /** Site. */
-    private static final int OPEN_LIBRARY = 1 << 5;
-
-    /** Site: Dutch language books & comics. */
-    private static final int KB_NL = 1 << 6;
-    /** Site: Dutch language (and to an extend French) comics. */
-    private static final int STRIP_INFO_BE = 1 << 7;
-
-    /** Mask including all search sources. */
-    static final int SEARCH_FLAG_MASK = GOOGLE_BOOKS | AMAZON
-                                        | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY
-                                        | KB_NL | STRIP_INFO_BE;
-
     private static final String PREFS_ORDER_PREFIX = "search.siteOrder.";
     private static final String PREFS_SEARCH_SITE_ORDER_DATA = PREFS_ORDER_PREFIX + "data";
     private static final String PREFS_SEARCH_SITE_ORDER_COVERS = PREFS_ORDER_PREFIX + "covers";

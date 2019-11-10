@@ -43,6 +43,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -54,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
@@ -62,6 +64,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * <p>
  * (the 'results' being this while Task object first send to the {@link TaskManager} which
  * then routes it to our creator, the @link SearchCoordinator})
+ *
+ * TODO: split according to which interface the search-engine implements ?
  */
 public class SearchTask
         extends ManagedTask {
@@ -88,6 +92,9 @@ public class SearchTask
     /** search criteria. */
     @Nullable
     private String mIsbn;
+    /** search criteria. */
+    @Nullable
+    private String mNativeId;
 
     /**
      * Accumulated book info.
@@ -114,9 +121,17 @@ public class SearchTask
         super(manager, taskId, taskName);
         mSearchEngine = searchEngine;
 
-        Context context = getContext();
+        Context context = App.getLocalizedAppContext();
         mProgressTitle = context.getString(R.string.progress_msg_searching_site,
                                            context.getString(mSearchEngine.getNameResId()));
+    }
+
+    /**
+     * @param nativeId to search for
+     */
+    public void setNativeId(@NonNull final String nativeId) {
+        // trims might not be needed, but heck.
+        mNativeId = nativeId.trim();
     }
 
     /**
@@ -170,11 +185,6 @@ public class SearchTask
     }
 
     @Override
-    protected void onTaskFinish() {
-        mTaskManager.sendProgress(this, R.string.done, 0);
-    }
-
-    @Override
     @WorkerThread
     protected void runTask() {
 
@@ -182,20 +192,37 @@ public class SearchTask
             Log.d(TAG, "ENTER|runTask|" + mProgressTitle);
         }
 
+        Context context = App.getLocalizedAppContext();
+
         mTaskManager.sendProgress(this, mProgressTitle, 0);
 
         try {
             // can we reach the site ?
-            if (!NetworkUtils.isAlive(mSearchEngine.getUrl(getContext()))) {
+            if (!NetworkUtils.isAlive(mSearchEngine.getUrl(context))) {
                 setFinalError(R.string.error_search_failed_network, null);
                 return;
             }
 
             // SEARCH!
-            // manager checks the arguments
-            //ENHANCE: it seems most implementations can return multiple book bundles quite easily.
-            mBookData = mSearchEngine.search(getContext(),
-                                             mIsbn, mAuthor, mTitle, mPublisher, mFetchThumbnail);
+            if (mSearchEngine instanceof SearchEngine.ByNativeId
+                && mNativeId != null && !mNativeId.isEmpty()) {
+                mBookData = ((SearchEngine.ByNativeId) mSearchEngine)
+                        .searchByNativeId(context, mNativeId, mFetchThumbnail);
+
+            } else if (mSearchEngine instanceof SearchEngine.ByIsbn
+                       && ISBN.isValid(mIsbn)) {
+                mBookData = ((SearchEngine.ByIsbn) mSearchEngine)
+                        .searchByIsbn(context, mIsbn, mFetchThumbnail);
+
+            } else if (mSearchEngine instanceof SearchEngine.ByText) {
+                mBookData = ((SearchEngine.ByText) mSearchEngine)
+                        .search(context, mIsbn, mAuthor, mTitle, mPublisher, mFetchThumbnail);
+
+            } else {
+                throw new IllegalStateException("search engine does not implement any search?"
+                                                + context.getString(mSearchEngine.getNameResId()));
+            }
+
             if (!mBookData.isEmpty()) {
                 // Look for Series name in the book title and clean KEY_TITLE
                 checkForSeriesNameInTitle();
@@ -214,7 +241,7 @@ public class SearchTask
             setFinalError(R.string.error_search_failed, e);
 
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(getContext(), TAG, e);
+            Logger.error(context, TAG, e);
             setFinalError(R.string.error_unknown, e);
         }
     }
@@ -260,14 +287,14 @@ public class SearchTask
     private void setFinalError(@StringRes final int error,
                                @Nullable final Exception e) {
 
-        Context context = getContext();
+        Context context = App.getLocalizedAppContext();
         String siteName = context.getString(mSearchEngine.getNameResId());
         String message = context.getString(error);
 
         if (e != null) {
             String eMsg;
             if (e instanceof FormattedMessageException) {
-                eMsg = ((FormattedMessageException) e).getLocalizedMessage(getContext());
+                eMsg = ((FormattedMessageException) e).getLocalizedMessage(context);
             } else {
                 eMsg = e.getLocalizedMessage();
             }

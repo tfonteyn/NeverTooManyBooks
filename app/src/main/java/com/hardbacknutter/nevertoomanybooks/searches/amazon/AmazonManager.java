@@ -65,7 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
  *
  */
 public final class AmazonManager
-        implements SearchEngine {
+        implements SearchEngine,
+                   SearchEngine.ByText {
 
     private static final String TAG = "AmazonManager";
 

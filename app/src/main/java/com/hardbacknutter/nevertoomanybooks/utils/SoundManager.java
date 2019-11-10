@@ -32,14 +32,13 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
-import androidx.preference.PreferenceManager;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class SoundManager {
 
@@ -49,17 +48,11 @@ public final class SoundManager {
     }
 
     public static void beepLow(@NonNull final Context context) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true)) {
-            playFile(context, R.raw.beep_low);
-        }
+        playFile(context, R.raw.beep_low);
     }
 
     public static void beepHigh(@NonNull final Context context) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_sounds_scan_isbn_valid, false)) {
-            playFile(context, R.raw.beep_high);
-        }
+        playFile(context, R.raw.beep_high);
     }
 
     private static void playFile(@NonNull final Context context,
@@ -79,7 +72,9 @@ public final class SoundManager {
             throw new IllegalStateException(e);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
             // No sound is critical.
-            Logger.warn(context, TAG, "playFile", e);
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "playFile", e);
+            }
         }
     }
 }

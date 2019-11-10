@@ -65,7 +65,7 @@
         <item name="android:inputType">textCapWords</item>
     </style>
 
-    <!-- The book format field. -->
+    <!-- The book color field. -->
     <style name="bookColorTextEntry" parent="@style/EditText.AutoComplete">
         <item name="android:inputType">textCapWords</item>
     </style>

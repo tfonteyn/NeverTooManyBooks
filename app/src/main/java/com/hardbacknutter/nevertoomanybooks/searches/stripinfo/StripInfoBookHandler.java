@@ -58,15 +58,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 public class StripInfoBookHandler
         extends JsoupBase {
 
-    private static final String TAG = "StripInfoBookHandler";
-
     public static final String FILENAME_SUFFIX = "_SI";
-
+    private static final String TAG = "StripInfoBookHandler";
     /** Color string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
 
     /** Param 1: search criteria. */
     private static final String BOOK_SEARCH_URL = "/zoek/zoek?zoekstring=%1$s";
+
+    /** Param 1: the native id; really a 'long'. */
+    private static final String BOOK_BY_NATIVE_ID = "/reeks/strip/%1$s";
+
+
     /** The description contains h4 tags which we need to remove. */
     private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>", Pattern.LITERAL);
     private static final Pattern H4_CLOSE_PATTERN = Pattern.compile("</h4>", Pattern.LITERAL);
@@ -120,7 +123,8 @@ public class StripInfoBookHandler
 
         Bundle bookData = new Bundle();
 
-        String path = StripInfoManager.getBaseURL(context) + String.format(BOOK_SEARCH_URL, isbn);
+        String path = StripInfoManager.getBaseURL(context)
+                      + String.format(BOOK_SEARCH_URL, isbn);
         if (loadPage(path) == null) {
             return bookData;
         }
@@ -128,6 +132,23 @@ public class StripInfoBookHandler
         if (mDoc.title().startsWith("Zoeken naar")) {
             // handle multi-results page.
             return parseMultiResult(context, bookData, fetchThumbnail);
+        }
+
+        return parseDoc(context, bookData, fetchThumbnail);
+    }
+
+    @NonNull
+    Bundle fetchByNativeId(@NonNull final Context context,
+                           @NonNull final String nativeId,
+                           final boolean fetchThumbnail)
+            throws SocketTimeoutException {
+
+        Bundle bookData = new Bundle();
+
+        String path = StripInfoManager.getBaseURL(context)
+                      + String.format(BOOK_BY_NATIVE_ID, nativeId);
+        if (loadPage(path) == null) {
+            return bookData;
         }
 
         return parseDoc(context, bookData, fetchThumbnail);

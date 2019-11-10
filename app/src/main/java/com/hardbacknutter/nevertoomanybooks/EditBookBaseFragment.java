@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
@@ -72,6 +73,9 @@ public abstract class EditBookBaseFragment<T>
         extends BookBaseFragment
         implements DataEditor {
 
+    /** The fields collection. */
+    private Fields mFields;
+
     private final CheckListDialogFragment.CheckListResultsListener<T>
             mCheckListResultsListener = (fieldId, list) -> {
         Book book = mBookModel.getBook();
@@ -79,19 +83,24 @@ public abstract class EditBookBaseFragment<T>
         if (fieldId == R.id.bookshelves) {
             ArrayList<Bookshelf> bsList = (ArrayList<Bookshelf>) list;
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
-            getField(R.id.bookshelves).setValue(Csv.join(", ", bsList, Bookshelf::getName));
+            getFields().getField(R.id.bookshelves)
+                       .setValue(Csv.join(", ", bsList, Bookshelf::getName));
 
         } else if (fieldId == R.id.edition) {
             book.putEditions((ArrayList<Integer>) list);
-            getField(R.id.edition).setValue(book.getLong(DBDefinitions.KEY_EDITION_BITMASK));
+            getFields().getField(R.id.edition)
+                       .setValue(book.getLong(DBDefinitions.KEY_EDITION_BITMASK));
         }
     };
 
     private final PartialDatePickerDialogFragment.PartialDatePickerResultsListener
             mPartialDatePickerResultsListener =
-            (destinationFieldId, year, month, day) ->
-                    getField(destinationFieldId)
-                            .setValue(DateUtils.buildPartialDate(year, month, day));
+            (destinationFieldId, year, month, day) -> getFields().getField(destinationFieldId)
+                                                                 .setValue(DateUtils
+                                                                                   .buildPartialDate(
+                                                                                           year,
+                                                                                           month,
+                                                                                           day));
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
@@ -104,6 +113,18 @@ public abstract class EditBookBaseFragment<T>
             //noinspection unchecked
             ((CheckListDialogFragment<T>) childFragment).setListener(mCheckListResultsListener);
         }
+    }
+
+    @NonNull
+    @Override
+    Fields getFields() {
+        return mFields;
+    }
+
+    @Override
+    void initFields() {
+        mFields = new Fields();
+        super.initFields();
     }
 
     /**
@@ -168,8 +189,7 @@ public abstract class EditBookBaseFragment<T>
      */
     @CallSuper
     void onSaveFieldsToBook() {
-        Fields fields = getFields();
-        fields.putAllInto(mBookModel.getBook());
+        getFields().putAllInto(mBookModel.getBook());
     }
 
     /**
@@ -185,6 +205,7 @@ public abstract class EditBookBaseFragment<T>
      * @param list          list of strings to choose from.
      */
     void initValuePicker(@NonNull final Field<String> field,
+                         @NonNull final AutoCompleteTextView fieldView,
                          @StringRes final int dialogTitleId,
                          @IdRes final int fieldButtonId,
                          @NonNull final List<String> list) {
@@ -203,10 +224,11 @@ public abstract class EditBookBaseFragment<T>
         // We got a list, set it up.
 
         // Get the list to use in the AutoCompleteTextView
-        @SuppressWarnings("ConstantConditions")
+        //noinspection ConstantConditions
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, list);
-        getFields().setAdapter(field.getId(), adapter);
+
+        fieldView.setAdapter(adapter);
 
         // Get the drop-down button for the list and setup dialog
         fieldButton.setOnClickListener(v -> {
@@ -225,11 +247,12 @@ public abstract class EditBookBaseFragment<T>
      * @param todayIfNone   if true, and if the field was empty, pre-populate with today's date
      */
     void initPartialDatePicker(@NonNull final Field<String> field,
+                               @NonNull final View fieldView,
                                @StringRes final int dialogTitleId,
                                final boolean todayIfNone) {
         // only bother when it's in use
         if (field.isUsed()) {
-            field.getView().setOnClickListener(v -> {
+            fieldView.setOnClickListener(v -> {
                 FragmentManager fm = getChildFragmentManager();
                 if (fm.findFragmentByTag(PartialDatePickerDialogFragment.TAG) == null) {
                     String value = field.getValue();
@@ -250,12 +273,13 @@ public abstract class EditBookBaseFragment<T>
      *                      interface to get the *current* list
      */
     void initCheckListEditor(@NonNull final Field<?> field,
+                             @NonNull final View fieldView,
                              @StringRes final int dialogTitleId,
                              @NonNull final
                              CheckListDialogFragment.CheckListEditorListGetter<T> listGetter) {
         // only bother when it's in use
         if (field.isUsed()) {
-            field.getView().setOnClickListener(v -> {
+            fieldView.setOnClickListener(v -> {
                 FragmentManager fm = getChildFragmentManager();
                 if (fm.findFragmentByTag(CheckListDialogFragment.TAG) == null) {
                     CheckListDialogFragment.newInstance(field.getId(), dialogTitleId, listGetter)

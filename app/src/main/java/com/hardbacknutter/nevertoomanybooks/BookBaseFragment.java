@@ -58,17 +58,16 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 
 /**
- * Base class for {@link BookFragment} and {@link EditBookBaseFragment}.
+ * Base class for {@link BookDetailsFragment} and {@link EditBookBaseFragment}.
  * <p>
  * This class supports the loading of a book. See {@link #loadFields}.
  * <p>
- * BookBaseFragment -> BookFragment.
- * BookBaseFragment -> EditBookFragment.
+ * BookBaseFragment -> BookDetailsFragment.
+ * BookBaseFragment -> EditBookBaseFragment.
  * BookBaseFragment -> EditBookBaseFragment -> EditBookFieldsFragment
  * BookBaseFragment -> EditBookBaseFragment -> EditBookNotesFragment
  * BookBaseFragment -> EditBookBaseFragment -> EditBookPublicationFragment
@@ -79,14 +78,8 @@ public abstract class BookBaseFragment
 
     private static final String TAG = "BookBaseFragment";
 
-    /** The book. Must be in the Activity scope for {@link EditBookActivity#onBackPressed()}. */
+    /** The book. Must be in the Activity scope. */
     BookBaseFragmentModel mBookModel;
-
-    /**
-     * The fields collection.
-     * Does not store any context or Views, but does use WeakReferences.
-     */
-    private Fields mFields;
 
     /**
      * Set the activity title depending on View or Edit mode.
@@ -143,34 +136,17 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * Convenience method.
+     * Get the fields collection.
      *
-     * @return the fields collection
+     * @return the fields
      */
     @NonNull
-    Fields getFields() {
-        return mFields;
-    }
-
-    /**
-     * Convenience method.
-     *
-     * @param fieldId field to get
-     *
-     * @return the field
-     */
-    @NonNull
-    <T> Field<T> getField(@IdRes final int fieldId) {
-        return mFields.getField(fieldId);
-    }
+    abstract Fields getFields();
 
     /**
      * Add any {@link Field} we need to {@link Fields}.
-     * <p>
-     * Set corresponding formatter (if any)
-     * Set onClickListener etc...
-     * <p>
-     * Note this is NOT where we set values.
+     *
+     * Do not add any View related calls here.
      */
     @CallSuper
     void initFields() {
@@ -189,6 +165,7 @@ public abstract class BookBaseFragment
         getFields().setAfterFieldChangeListener(null);
         // preserve the 'dirty' status.
         final boolean wasDirty = mBookModel.isDirty();
+
         // make it so!
         onLoadFieldsFromBook();
         // get dirty...
@@ -234,7 +211,7 @@ public abstract class BookBaseFragment
                             Log.d(TAG, "onActivityResult"
                                        + "|REQ_UPDATE_FIELDS_FROM_INTERNET"
                                        + "|wasCancelled= " + data.getBooleanExtra(
-                                                 UniqueId.BKEY_CANCELED, false));
+                                    UniqueId.BKEY_CANCELED, false));
                         }
                     }
                 }
@@ -275,7 +252,6 @@ public abstract class BookBaseFragment
         mBookModel.getUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
         mBookModel.getNeedsGoodreads().observe(getViewLifecycleOwner(), this::needsGoodreads);
 
-        mFields = new Fields(this);
         initFields();
     }
 
@@ -298,9 +274,9 @@ public abstract class BookBaseFragment
             }
         }
 
-        //noinspection ConstantConditions
-        LocaleUtils.insanityCheck(getContext());
-
+        // set the View member.
+        getFields().setParentView(getView());
+        // and load the content into the views
         loadFields();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
@@ -351,7 +327,8 @@ public abstract class BookBaseFragment
     void showOrHideFields(final boolean hideIfEmpty) {
 
         // do all fields with their related fields
-        getFields().resetVisibility(hideIfEmpty);
+        //noinspection ConstantConditions
+        getFields().resetVisibility(getView(), hideIfEmpty);
 
 //        // Hide the baseline for the read labels if both labels are gone.
 //        // If both labels are visible, then make the baseline invisible.

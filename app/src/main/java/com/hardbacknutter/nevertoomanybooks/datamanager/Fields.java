@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
@@ -40,10 +39,10 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Checkable;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -54,9 +53,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.Fragment;
-
-import com.google.android.material.button.MaterialButton;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -79,7 +75,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -88,7 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * possible.
  * <ul>Features provides are:
  * <li> handling of visibility via preferences</li>
- * <li> handling of 'mGroup' visibility via the 'mGroup' property of a field.</li>
+ * <li> handling of group(RowKind) visibility via the 'mGroup' property of a field.</li>
  * <li> understanding of kinds of views (setting a Checkbox (Checkable) value to 'true' will work
  * as expected as will setting the value of a Spinner). As new view types are added, it
  * will be necessary to add new {@link FieldDataAccessor} implementations.</li>
@@ -118,55 +113,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * <br>(DataManager/Bundle) -> transform (in accessor) -> extract (via accessor) -> Object</li>
  * </ul>
  * <p>
- * <b>Usage:</b>
- * <ol>
- * <li>Which Views to Add?
- * <br>
- * It is not necessary to add every control to the 'Fields' collection, but as a general rule
- * any control that displays data from a database, or related derived data, or labels for such
- * data should be added.
- * <br>
- * Typical controls NOT added, are 'Save' and 'Cancel' buttons, or other controls whose
- * interactions are purely functional.</li>
- * <li>Handlers?
- * <br>
- * The add() method of Fields returns a new {@link Field} object which exposes the 'View' member;
- * this can be used to perform view-specific tasks like setting onClick() handlers.</li>
- * </ol>
- * TODO: Integrate the use of this collection with the {@link DataManager}.
  */
 public class Fields {
 
     /** the list with all fields. */
     @SuppressLint("UseSparseArrays")
     private final Map<Integer, Field> mAllFields = new HashMap<>();
-    /**
-     * The activity or fragment related to this object.
-     * Uses a WeakReference to the Activity/Fragment.
-     */
-    @NonNull
-    private final FieldsContext mFieldContext;
+
     /** TextEdit fields will be watched. */
     @Nullable
     private AfterFieldChangeListener mAfterFieldChangeListener;
-
-    /**
-     * Constructor.
-     *
-     * @param fragment The parent fragment which contains all Views this object will manage.
-     */
-    public Fields(@NonNull final Fragment fragment) {
-        mFieldContext = new FragmentContext(fragment);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param activity The parent activity which contains all Views this object will manage.
-     */
-    Fields(@NonNull final Activity activity) {
-        mFieldContext = new ActivityContext(activity);
-    }
 
     /**
      * @param listener the listener for field changes
@@ -183,16 +139,8 @@ public class Fields {
         }
     }
 
-    /**
-     * Accessor for related FieldsContext.
-     * <p>
-     * Provides access to {@link FieldsContext#findViewById(int)}
-     *
-     * @return FieldsContext for this collection.
-     */
-    @NonNull
-    private FieldsContext getFieldContext() {
-        return mFieldContext;
+    public boolean isEmpty() {
+        return mAllFields.isEmpty();
     }
 
     /**
@@ -205,6 +153,7 @@ public class Fields {
      */
     @NonNull
     public Field<String> addString(@IdRes final int fieldId,
+                                   @NonNull final View fieldView,
                                    @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
@@ -212,7 +161,7 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<String> field = new Field<>(this, fieldId, key, key);
+        Field<String> field = new Field<>(this, fieldId, fieldView, key, key);
         mAllFields.put(fieldId, field);
         return field;
     }
@@ -229,9 +178,10 @@ public class Fields {
      */
     @NonNull
     public Field<String> addString(@IdRes final int fieldId,
+                                   @NonNull final View fieldView,
                                    @NonNull final String key,
                                    @NonNull final String visibilityGroup) {
-        Field<String> field = new Field<>(this, fieldId, key, visibilityGroup);
+        Field<String> field = new Field<>(this, fieldId, fieldView, key, visibilityGroup);
         mAllFields.put(fieldId, field);
         return field;
     }
@@ -246,6 +196,7 @@ public class Fields {
      */
     @NonNull
     public Field<Boolean> addBoolean(@IdRes final int fieldId,
+                                     @NonNull final View fieldView,
                                      @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
@@ -253,7 +204,7 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<Boolean> field = new Field<>(this, fieldId, key, key);
+        Field<Boolean> field = new Field<>(this, fieldId, fieldView, key, key);
         mAllFields.put(fieldId, field);
         return field;
     }
@@ -269,6 +220,7 @@ public class Fields {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public Field<Long> addLong(@IdRes final int fieldId,
+                               @NonNull final View fieldView,
                                @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
@@ -276,7 +228,7 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<Long> field = new Field<>(this, fieldId, key, key);
+        Field<Long> field = new Field<>(this, fieldId, fieldView, key, key);
         mAllFields.put(fieldId, field);
         return field;
     }
@@ -292,6 +244,7 @@ public class Fields {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public Field<Float> addFloat(@IdRes final int fieldId,
+                                 @NonNull final View fieldView,
                                  @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
@@ -299,7 +252,7 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<Float> field = new Field<>(this, fieldId, key, key);
+        Field<Float> field = new Field<>(this, fieldId, fieldView, key, key);
         mAllFields.put(fieldId, field);
         return field;
     }
@@ -314,6 +267,7 @@ public class Fields {
      */
     @SuppressWarnings("UnusedReturnValue")
     public Field<Double> addMonetary(@IdRes final int fieldId,
+                                     @NonNull final View fieldView,
                                      @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
@@ -321,7 +275,7 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<Double> field = new Field<>(this, fieldId, key, key);
+        Field<Double> field = new Field<>(this, fieldId, fieldView, key, key);
         mAllFields.put(fieldId, field);
         return field;
     }
@@ -336,9 +290,10 @@ public class Fields {
      */
     @SuppressWarnings("UnusedReturnValue")
     public Field<Double> addMonetary(@IdRes final int fieldId,
+                                     @NonNull final View fieldView,
                                      @NonNull final String key,
                                      @NonNull final String visibilityGroup) {
-        Field<Double> field = new Field<>(this, fieldId, key, visibilityGroup);
+        Field<Double> field = new Field<>(this, fieldId, fieldView, key, visibilityGroup);
         mAllFields.put(fieldId, field);
         return field;
     }
@@ -361,21 +316,6 @@ public class Fields {
         }
 
         throw new IllegalArgumentException("fieldId= 0x" + Integer.toHexString(fieldId));
-    }
-
-    /**
-     * Convenience function: For an AutoCompleteTextView, set the adapter.
-     *
-     * @param fieldId Layout id of View
-     * @param adapter Adapter to use
-     */
-    public void setAdapter(@IdRes final int fieldId,
-                           @NonNull final ArrayAdapter<String> adapter) {
-        Field field = getField(fieldId);
-        View view = field.getView();
-        if (view instanceof AutoCompleteTextView) {
-            ((AutoCompleteTextView) view).setAdapter(adapter);
-        }
     }
 
     /**
@@ -430,12 +370,23 @@ public class Fields {
 
     /**
      * Reset all field visibility based on user preferences.
+     *
+     * @param parent      parent view for all fields.
+     * @param hideIfEmpty hide the field if it's empty
      */
-    public void resetVisibility(final boolean hideIfEmpty) {
+    public void resetVisibility(@NonNull final View parent,
+                                final boolean hideIfEmpty) {
         for (Field field : mAllFields.values()) {
-            field.resetVisibility(hideIfEmpty);
+            field.resetVisibility(parent, hideIfEmpty);
         }
     }
+
+    public void setParentView(final View parentView) {
+        for (Field field : mAllFields.values()) {
+            field.setParentView(parentView);
+        }
+    }
+
 
     /**
      * added to the Fields collection with (2018-11-11) a simple call to setDirty(true).
@@ -455,6 +406,11 @@ public class Fields {
      * @param <T> type of Field value.
      */
     public interface FieldDataAccessor<T> {
+
+        /**
+         * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.
+         */
+        void setView(@NonNull View view);
 
         /**
          * Set the optional formatter.
@@ -560,6 +516,8 @@ public class Fields {
     /**
      * Interface definition for Field formatter.
      *
+     * <strong>Do not store Context or View in a formatter.</strong>
+     *
      * @param <T> type of Field value.
      */
     public interface FieldFormatter<T> {
@@ -593,16 +551,84 @@ public class Fields {
     }
 
     /**
-     * fronts an Activity/Fragment context.
+     * TextWatcher for EditText fields. Sets the Field value after each EditText change.
      */
-    private interface FieldsContext {
+    private static class DecimalTextWatcher
+            implements TextWatcher {
+        //    public static class DecimalDigitsInputFilter implements InputFilter {
+//
+//        Pattern mPattern;
+//
+//        public DecimalDigitsInputFilter(int digitsBeforeZero,
+//                                        int digitsAfterZero) {
+//            DecimalFormatSymbols d = new DecimalFormatSymbols(Locale.getDefault());
+//            String s = "\\" + d.getDecimalSeparator();
+//            mPattern = Pattern.compile(
+//                    "[0-9]{0," + (digitsBeforeZero - 1) + "}+"
+//                    + "((" + s + "[0-9]{0," + (digitsAfterZero - 1) + "})?)"
+//                    + ""
+//                    + "|(" + s + ")?");
+//        }
+//
+//        @Override
+//        public CharSequence filter(CharSequence source,
+//                                   int start,
+//                                   int end,
+//                                   Spanned dest,
+//                                   int dstart,
+//                                   int dend) {
+//
+//            Matcher matcher = mPattern.matcher(dest);
+//            if (!matcher.matches())
+//                return "";
+//            return null;
+//        }
+//    }
 
-        /** DEBUG only. */
-        @Nullable
-        Object dbgGetOwnerClass();
+        private static final String DIGITS = "0123456789";
 
-        @Nullable
-        View findViewById(@IdRes int id);
+        private final String mDecimalSeparator;
+        /**
+         * Strong reference to View is fine.
+         * This watcher will get destroyed when the View gets destroyed.
+         * <strong>Note:</strong> do NOT keep a strong reference to the watcher itself!
+         */
+        @NonNull
+        private final EditText mView;
+
+        DecimalTextWatcher(@NonNull final EditText view) {
+            mView = view;
+            DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
+            DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
+            mDecimalSeparator = Character.toString(symbols.getDecimalSeparator());
+        }
+
+        @Override
+        public void beforeTextChanged(@NonNull final CharSequence s,
+                                      final int start,
+                                      final int count,
+                                      final int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(@NonNull final CharSequence s,
+                                  final int start,
+                                  final int before,
+                                  final int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(@NonNull final Editable editable) {
+            // allow only one decimal separator
+            if (editable.toString().contains(mDecimalSeparator)) {
+                mView.setKeyListener(DigitsKeyListener.getInstance(DIGITS));
+            } else {
+                mView.setKeyListener(DigitsKeyListener.getInstance(DIGITS + mDecimalSeparator));
+            }
+
+        }
     }
 
     /**
@@ -610,16 +636,16 @@ public class Fields {
      *
      * @param <T> type of Field value.
      */
-    private static class EditTextWatcher<T>
+    private static class ReformatTextWatcher<T>
             implements TextWatcher {
 
-        private static final String TAG = "EditTextWatcher";
+        private static final String TAG = "ReformatTextWatcher";
 
         @NonNull
-        private final Field<T> field;
+        private final Field<T> mField;
 
-        EditTextWatcher(@NonNull final Field<T> field) {
-            this.field = field;
+        ReformatTextWatcher(@NonNull final Field<T> field) {
+            mField = field;
         }
 
         @Override
@@ -639,7 +665,7 @@ public class Fields {
         @Override
         public void afterTextChanged(@NonNull final Editable s) {
             // extract to native value
-            T value = field.extract(s.toString().trim());
+            T value = mField.extract(s.toString().trim());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_TEXT_WATCHER) {
                 Log.d(TAG, "afterTextChanged|s=`" + s.toString() + '`'
@@ -648,10 +674,9 @@ public class Fields {
 
             // Set the field with the new data.
             // This will also redisplay the data, re-formatted as needed.
-            field.setValue(value);
+            mField.setValue(value);
         }
     }
-
 
     /**
      * Base implementation.
@@ -666,10 +691,34 @@ public class Fields {
         @NonNull
         final Field<T> mField;
         @Nullable
+        WeakReference<View> mView;
+        @Nullable
         private FieldFormatter<T> mFormatter;
 
         BaseDataAccessor(@NonNull final Field<T> field) {
             mField = field;
+        }
+
+        @Override
+        public void setView(@NonNull final View view) {
+            mView = new WeakReference<>(view);
+        }
+
+        /**
+         * Add on onTouch listener that signals a 'dirty' event when touched.
+         *
+         * @param view The view to watch
+         */
+        @SuppressLint("ClickableViewAccessibility")
+        void addTouchSignalsDirty(@NonNull final View view) {
+            // Touching this View is considered a change to the field.
+            //TODO: We need to find a better way to handle this as this can cause a false-positive
+            view.setOnTouchListener((v, event) -> {
+                if (MotionEvent.ACTION_UP == event.getAction()) {
+                    mField.getFields().afterFieldChange(mField, null);
+                }
+                return false;
+            });
         }
 
         public void setFormatter(@NonNull final FieldFormatter formatter) {
@@ -694,7 +743,7 @@ public class Fields {
                     // Due to the way a Book loads data from the database,
                     // it's possible that it gets the column type wrong.
                     // See {@link BookCursor} class docs.
-                    Logger.error(mField.getView().getContext(), TAG, e, value);
+                    Logger.error(App.getAppContext(), TAG, e, value);
                 }
             }
 
@@ -743,7 +792,7 @@ public class Fields {
 
         @Override
         public void getValueAndPut(@NonNull final DataManager target) {
-            target.putString(mField.getKey(), getValue());
+            target.putString(mField.getKey(), mLocalValue);
         }
 
         @Override
@@ -789,7 +838,6 @@ public class Fields {
         TextFieldAccessor(@NonNull final Field<T> field) {
             super(field);
         }
-
 
         @Override
         public boolean isEmpty() {
@@ -860,19 +908,22 @@ public class Fields {
 
         @Override
         public void setValue(@Nullable final T value) {
-            mRawValue = value;
-            TextView view = mField.getView();
-            if (mFormatHtml) {
-                String body = format(mRawValue);
+            //noinspection ConstantConditions
+            TextView view = (TextView) mView.get();
+            if (view != null) {
+                mRawValue = value;
+                if (mFormatHtml) {
+                    String body = format(mRawValue);
 
-                view.setText(LinkifyUtils.fromHtml(body));
-                view.setMovementMethod(LinkMovementMethod.getInstance());
+                    view.setText(LinkifyUtils.fromHtml(body));
+                    view.setMovementMethod(LinkMovementMethod.getInstance());
 
-                view.setFocusable(true);
-                view.setTextIsSelectable(true);
+                    view.setFocusable(true);
+                    view.setTextIsSelectable(true);
 
-            } else {
-                view.setText(format(mRawValue));
+                } else {
+                    view.setText(format(mRawValue));
+                }
             }
         }
 
@@ -897,9 +948,9 @@ public class Fields {
     private static class EditTextAccessor<T>
             extends TextFieldAccessor<T> {
 
-        private static final String DIGITS = "0123456789";
         @NonNull
-        private final TextWatcher mTextWatcher;
+        private final TextWatcher mReformatTextWatcher;
+        private boolean mIsDecimal;
 
         /**
          * Constructor.
@@ -908,40 +959,41 @@ public class Fields {
          */
         EditTextAccessor(@NonNull final Field<T> field) {
             super(field);
-            mTextWatcher = new EditTextWatcher<>(field);
-            EditText view = field.getView();
-            view.addTextChangedListener(mTextWatcher);
+            mReformatTextWatcher = new ReformatTextWatcher<>(field);
         }
 
         @NonNull
         @Override
         public T getValue() {
-            EditText view = mField.getView();
-            return extract(view.getText().toString().trim());
+            //noinspection ConstantConditions
+            return extract(((EditText) mView.get()).getText().toString().trim());
         }
 
         @Override
         public void setValue(@Nullable final T value) {
-            EditText view = mField.getView();
-            // 2018-12-11: There was recursion due to the setText call.
-            // So now disabling the TextWatcher while doing the latter.
-            // We don't want another thread re-enabling the listener before we're done
-            synchronized (mTextWatcher) {
-                view.removeTextChangedListener(mTextWatcher);
+            //noinspection ConstantConditions
+            EditText view = (EditText) mView.get();
+            if (view != null) {
+                // 2018-12-11: There was recursion due to the setText call.
+                // So now disabling the TextWatcher while doing the latter.
+                // We don't want another thread re-enabling the listener before we're done
+                synchronized (mReformatTextWatcher) {
+                    view.removeTextChangedListener(mReformatTextWatcher);
 
-                String newVal = format(value);
-                // do not use extract, we compare formatted/formatted value
-                String oldVal = view.getText().toString().trim();
-                if (!newVal.equals(oldVal)) {
-                    if (view instanceof AutoCompleteTextView) {
-                        // prevent auto-completion to kick in / stop the dropdown from opening.
-                        // this happened if the field had the focus when we'd be populating it.
-                        ((AutoCompleteTextView) view).setText(newVal, false);
-                    } else {
-                        view.setText(newVal);
+                    String newVal = format(value);
+                    // do not use extract, we compare formatted/formatted value
+                    String oldVal = view.getText().toString().trim();
+                    if (!newVal.equals(oldVal)) {
+                        if (view instanceof AutoCompleteTextView) {
+                            // prevent auto-completion to kick in / stop the dropdown from opening.
+                            // this happened if the field had the focus when we'd be populating it.
+                            ((AutoCompleteTextView) view).setText(newVal, false);
+                        } else {
+                            view.setText(newVal);
+                        }
                     }
+                    view.addTextChangedListener(mReformatTextWatcher);
                 }
-                view.addTextChangedListener(mTextWatcher);
             }
         }
 
@@ -949,74 +1001,22 @@ public class Fields {
          * For Locales which use ',' as the decimal separator, the input panel only allows '.'.
          * See class docs: {@link com.hardbacknutter.nevertoomanybooks.utils.ParseUtils}.
          */
-        void setInputIsDecimal() {
-
-            DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
-            DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
-            final String decimalSeparator = Character.toString(symbols.getDecimalSeparator());
-
-            final EditText view = mField.getView();
-
-            view.addTextChangedListener(new TextWatcher() {
-
-                @Override
-                public void beforeTextChanged(@NonNull final CharSequence s,
-                                              final int start,
-                                              final int count,
-                                              final int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(@NonNull final CharSequence s,
-                                          final int start,
-                                          final int before,
-                                          final int count) {
-
-                }
-
-                @Override
-                public void afterTextChanged(@NonNull final Editable editable) {
-                    // allow only one decimal separator
-                    if (editable.toString().contains(decimalSeparator)) {
-                        view.setKeyListener(DigitsKeyListener.getInstance(DIGITS));
-                    } else {
-                        view.setKeyListener(DigitsKeyListener.getInstance(DIGITS
-                                                                          + decimalSeparator));
-                    }
-                }
-            });
+        void setDecimalInput() {
+            mIsDecimal = true;
         }
-//    public static class DecimalDigitsInputFilter implements InputFilter {
-//
-//        Pattern mPattern;
-//
-//        public DecimalDigitsInputFilter(int digitsBeforeZero,
-//                                        int digitsAfterZero) {
-//            DecimalFormatSymbols d = new DecimalFormatSymbols(Locale.getDefault());
-//            String s = "\\" + d.getDecimalSeparator();
-//            mPattern = Pattern.compile(
-//                    "[0-9]{0," + (digitsBeforeZero - 1) + "}+"
-//                    + "((" + s + "[0-9]{0," + (digitsAfterZero - 1) + "})?)"
-//                    + ""
-//                    + "|(" + s + ")?");
-//        }
-//
-//        @Override
-//        public CharSequence filter(CharSequence source,
-//                                   int start,
-//                                   int end,
-//                                   Spanned dest,
-//                                   int dstart,
-//                                   int dend) {
-//
-//            Matcher matcher = mPattern.matcher(dest);
-//            if (!matcher.matches())
-//                return "";
-//            return null;
-//        }
-//    }
 
+        @Override
+        public void setView(@NonNull final View view) {
+            super.setView(view);
+            EditText editText = (EditText) view;
+
+            editText.addTextChangedListener(mReformatTextWatcher);
+
+            if (mIsDecimal) {
+                // do not keep a reference to the watcher! Doing so would cause a leak.
+                editText.addTextChangedListener(new DecimalTextWatcher(editText));
+            }
+        }
     }
 
     /**
@@ -1045,7 +1045,8 @@ public class Fields {
         @Override
         @NonNull
         public String getValue() {
-            Spinner spinner = mField.getView();
+            //noinspection ConstantConditions
+            Spinner spinner = (Spinner) mView.get();
             Object selItem = spinner.getSelectedItem();
             if (selItem != null) {
                 return extract(selItem.toString().trim());
@@ -1056,12 +1057,15 @@ public class Fields {
 
         @Override
         public void setValue(@Nullable final String value) {
-            Spinner spinner = mField.getView();
-            String formatted = format(value);
-            for (int i = 0; i < spinner.getCount(); i++) {
-                if (spinner.getItemAtPosition(i).equals(formatted)) {
-                    spinner.setSelection(i);
-                    return;
+            //noinspection ConstantConditions
+            Spinner spinner = (Spinner) mView.get();
+            if (spinner != null) {
+                String formatted = format(value);
+                for (int i = 0; i < spinner.getCount(); i++) {
+                    if (spinner.getItemAtPosition(i).equals(formatted)) {
+                        spinner.setSelection(i);
+                        return;
+                    }
                 }
             }
         }
@@ -1098,6 +1102,12 @@ public class Fields {
         }
 
         @Override
+        public void setView(@NonNull final View view) {
+            super.setView(view);
+            addTouchSignalsDirty(view);
+        }
+
+        @Override
         public void getValueAndPut(@NonNull final DataManager target) {
             target.putBoolean(mField.getKey(), getValue());
         }
@@ -1110,18 +1120,22 @@ public class Fields {
         @NonNull
         @Override
         public Boolean getValue() {
-            Checkable cb = mField.getView();
+            //noinspection ConstantConditions
+            Checkable cb = (Checkable) mView.get();
             return cb.isChecked();
         }
 
         @Override
         public void setValue(@Nullable final Boolean value) {
-            Checkable cb = mField.getView();
-            if (value != null) {
-                ((View) cb).setVisibility(value ? View.VISIBLE : View.GONE);
-                cb.setChecked(value);
-            } else {
-                cb.setChecked(false);
+            //noinspection ConstantConditions
+            Checkable cb = (Checkable) mView.get();
+            if (cb != null) {
+                if (value != null) {
+                    ((View) cb).setVisibility(value ? View.VISIBLE : View.GONE);
+                    cb.setChecked(value);
+                } else {
+                    cb.setChecked(false);
+                }
             }
         }
 
@@ -1149,6 +1163,12 @@ public class Fields {
         }
 
         @Override
+        public void setView(@NonNull final View view) {
+            super.setView(view);
+            addTouchSignalsDirty(view);
+        }
+
+        @Override
         public void getValueAndPut(@NonNull final DataManager target) {
             target.putFloat(mField.getKey(), getValue());
         }
@@ -1161,17 +1181,21 @@ public class Fields {
         @NonNull
         @Override
         public Float getValue() {
-            RatingBar bar = mField.getView();
+            //noinspection ConstantConditions
+            RatingBar bar = (RatingBar) mView.get();
             return bar.getRating();
         }
 
         @Override
         public void setValue(@Nullable final Float value) {
-            RatingBar bar = mField.getView();
-            if (value != null) {
-                bar.setRating(value);
-            } else {
-                bar.setRating(0.0f);
+            //noinspection ConstantConditions
+            RatingBar bar = (RatingBar) mView.get();
+            if (bar != null) {
+                if (value != null) {
+                    bar.setRating(value);
+                } else {
+                    bar.setRating(0.0f);
+                }
             }
         }
 
@@ -1234,7 +1258,8 @@ public class Fields {
         @NonNull
         @Override
         public String getValue() {
-            return (String) mField.getView().getTag(R.id.TAG_UUID);
+            //noinspection ConstantConditions
+            return (String) mView.get().getTag(R.id.TAG_UUID);
         }
 
         /**
@@ -1244,19 +1269,22 @@ public class Fields {
          */
         @Override
         public void setValue(@Nullable final String uuid) {
-            ImageView imageView = mField.getView();
+            //noinspection ConstantConditions
+            ImageView view = (ImageView) mView.get();
+            if (view != null) {
 
-            if (uuid != null) {
-                File imageFile;
-                if (uuid.isEmpty()) {
-                    imageFile = StorageUtils.getTempCoverFile();
+                if (uuid != null) {
+                    File imageFile;
+                    if (uuid.isEmpty()) {
+                        imageFile = StorageUtils.getTempCoverFile();
+                    } else {
+                        view.setTag(R.id.TAG_UUID, uuid);
+                        imageFile = StorageUtils.getCoverFileForUuid(uuid);
+                    }
+                    ImageUtils.setImageView(view, imageFile, mMaxWidth, mMaxHeight, true);
                 } else {
-                    imageView.setTag(R.id.TAG_UUID, uuid);
-                    imageFile = StorageUtils.getCoverFileForUuid(uuid);
+                    view.setImageResource(R.drawable.ic_image);
                 }
-                ImageUtils.setImageView(imageView, imageFile, mMaxWidth, mMaxHeight, true);
-            } else {
-                imageView.setImageResource(R.drawable.ic_image);
             }
         }
 
@@ -1396,7 +1424,8 @@ public class Fields {
         }
 
         // The ICU NumberFormatter is only available from ICU level 60, but Android lags behind:
-        // https://developer.android.com/guide/topics/resources/internationalization#versioning-nougat
+        // https://developer.android.com/guide/topics/resources/internationalization
+        // #versioning-nougat
         // So you need Android 9 (API level 28) and even then, the NumberFormatter
         // is not available in android.icu.* so you still would need to bundle the full ICU lib
         // For now, this is to much overkill.
@@ -1421,7 +1450,13 @@ public class Fields {
             implements FieldFormatter<String> {
 
         @NonNull
+        private final String mPagesString;
+        @NonNull
         private String mRawValue = "";
+
+        public PagesFormatter(@NonNull final Context context) {
+            mPagesString = context.getString(R.string.lbl_x_pages);
+        }
 
         @NonNull
         @Override
@@ -1433,9 +1468,7 @@ public class Fields {
 
                 try {
                     int pages = Integer.parseInt(source);
-                    Context context = field.getView().getContext();
-                    LocaleUtils.insanityCheck(context);
-                    return context.getString(R.string.lbl_x_pages, pages);
+                    return String.format(mPagesString, pages);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // don't log, both formats are valid.
                 }
@@ -1465,9 +1498,6 @@ public class Fields {
     public static class LanguageFormatter
             implements FieldFormatter<String> {
 
-        public LanguageFormatter() {
-        }
-
         @NonNull
         @Override
         public String format(@NonNull final Field<String> field,
@@ -1490,7 +1520,7 @@ public class Fields {
         @Override
         public String extract(@NonNull final Field<String> field,
                               @NonNull final String source) {
-            return LanguageUtils.getISO3FromDisplayName(field.getView().getContext(), source);
+            return LanguageUtils.getISO3FromDisplayName(App.getAppContext(), source);
         }
     }
 
@@ -1507,10 +1537,10 @@ public class Fields {
         /**
          * Editions.
          * Key: the edition bit.
-         * Value: the StringRes id for the label.
+         * Value: the label.
          */
         @NonNull
-        private final Map<Integer, Integer> mMap;
+        private final Map<Integer, String> mMap;
 
         private Long mRawValue = 0L;
 
@@ -1519,7 +1549,7 @@ public class Fields {
          *
          * @param editions a map with all supported editions
          */
-        public BitMaskFormatter(@NonNull final Map<Integer, Integer> editions) {
+        public BitMaskFormatter(@NonNull final Map<Integer, String> editions) {
             mMap = editions;
         }
 
@@ -1533,8 +1563,7 @@ public class Fields {
             }
 
             mRawValue = source;
-            Context context = field.getView().getContext();
-            return TextUtils.join(", ", Csv.bitmaskToList(context, mMap, mRawValue));
+            return TextUtils.join(", ", Csv.bitmaskToList(mMap, mRawValue));
         }
 
         @NonNull
@@ -1545,81 +1574,13 @@ public class Fields {
         }
     }
 
-    /** fronts an Activity context. */
-    private static class ActivityContext
-            implements FieldsContext {
-
-        private static final String TAG = "ActivityContext";
-
-        @NonNull
-        private final WeakReference<Activity> mActivity;
-
-        ActivityContext(@NonNull final Activity activity) {
-            mActivity = new WeakReference<>(activity);
-        }
-
-        @Override
-        @Nullable
-        public Object dbgGetOwnerClass() {
-            return mActivity.get();
-        }
-
-        @Override
-        @Nullable
-        public View findViewById(@IdRes final int id) {
-            if (mActivity.get() == null) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "findViewById|Activity is NULL", new Throwable());
-                }
-                return null;
-            }
-            return mActivity.get().findViewById(id);
-        }
-    }
-
-    /** fronts a Fragment context. */
-    private static class FragmentContext
-            implements FieldsContext {
-
-        private static final String TAG = "FragmentContext";
-
-        @NonNull
-        private final WeakReference<Fragment> mFragment;
-
-        FragmentContext(@NonNull final Fragment fragment) {
-            mFragment = new WeakReference<>(fragment);
-        }
-
-        @Override
-        @Nullable
-        public Object dbgGetOwnerClass() {
-            return mFragment.get();
-        }
-
-        @Override
-        @Nullable
-        public View findViewById(@IdRes final int id) {
-            if (mFragment.get() == null) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "findViewById|Fragment is NULL", new Throwable());
-                }
-                return null;
-            }
-            View view = mFragment.get().getView();
-            if (view == null) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "findViewById|Fragment View is NULL", new Throwable());
-                }
-                return null;
-            }
-
-            return view.findViewById(id);
-        }
-    }
-
     /**
      * Field definition contains all information and methods necessary to manage display and
      * extraction of data in a view.
+     *
+     * <strong>Note:</strong> visibility/isUsed is only visual.
+     * The logic around the view itself is still put in place and called upon.
+     * i.e. invisible fields are still populated with data etc...
      *
      * @param <T> type of Field value.
      */
@@ -1630,13 +1591,6 @@ public class Fields {
         /** Field ID. */
         @IdRes
         private final int mId;
-        /** DEBUG - Owning collection. */
-        @SuppressWarnings("FieldNotUsedInToString")
-        @NonNull
-        private final WeakReference<Fields> mFields;
-        /** Visibility mGroup name. Used in conjunction with preferences to show/hide Views. */
-        @NonNull
-        private final String mGroup;
         /**
          * Key (can be blank) used to access a {@link DataManager} or {@code Bundle}.
          * <p>
@@ -1653,17 +1607,24 @@ public class Fields {
          */
         @NonNull
         private final String mKey;
-
+        /** Visibility group name. Used in conjunction with preferences to show/hide Views. */
+        @NonNull
+        private final String mGroup;
         /**
          * Accessor to use (automatically defined).
          * Encapsulates the formatter.
          */
         @NonNull
         private final FieldDataAccessor<T> mFieldDataAccessor;
-
+        /** DEBUG - Owning collection. */
+        @SuppressWarnings("FieldNotUsedInToString")
+        @NonNull
+        private final Fields mFields;
+        @Nullable
+        @IdRes
+        private int[] mRelatedFields;
         /** Is the field in use; i.e. is it enabled in the user-preferences. **/
         private boolean mIsUsed;
-
         /**
          * Option indicating that even though field has a key, it should NOT be fetched
          * from a {@link DataManager} (or Bundle).
@@ -1672,33 +1633,30 @@ public class Fields {
          */
         private boolean mDoNoFetch;
 
-        @Nullable
-        private int[] mRelatedFields;
 
         /**
          * Constructor.
          *
          * @param fields          Parent collection
          * @param fieldId         Layout ID
+         * @param view            for this field. Is only used to determine the type.
          * @param key             Key used to access a {@link DataManager} or {@code Bundle}.
          *                        Set to "" to suppress all access.
-         * @param visibilityGroup Visibility mGroup. Can be blank.
+         * @param visibilityGroup Visibility group. Can be blank.
          */
         @VisibleForTesting
         public Field(@NonNull final Fields fields,
                      @IdRes final int fieldId,
+                     @NonNull final View view,
                      @NonNull final String key,
                      @NonNull final String visibilityGroup) {
 
-            mFields = new WeakReference<>(fields);
+            mFields = fields;
             mId = fieldId;
             mKey = key;
             mGroup = visibilityGroup;
 
-            // Lookup the view. {@link Fields} will have the context set to the activity/fragment.
-            final View view = getView();
-
-            // check if the user actually uses this mGroup.
+            // check if the user actually uses this group.
             mIsUsed = App.isUsed(mGroup);
             if (!mIsUsed) {
                 view.setVisibility(View.GONE);
@@ -1719,18 +1677,21 @@ public class Fields {
 
             FieldDataAccessor accessor;
 
-            // this was nasty... a MaterialButton implements Checkable,
-            // but you have to double check (pardon the pun) whether it IS checkable.
-            if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
+            if (view instanceof CompoundButton) {
                 //noinspection unchecked
                 accessor = new CheckableAccessor((Field<Boolean>) this);
-                addTouchSignalsDirty(view);
 
-            } else if (!((view instanceof MaterialButton)) && (view instanceof Checkable)) {
-                // the opposite of above, do not accept the MaterialButton.
-                //noinspection unchecked
-                accessor = new CheckableAccessor((Field<Boolean>) this);
-                addTouchSignalsDirty(view);
+                // this was nasty... a MaterialButton implements Checkable,
+                // but you have to double check (pardon the pun) whether it IS checkable.
+                // now replaced by above CompoundButton; but leaving this comment for the future.
+//            } else if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()){
+//                //noinspection unchecked
+//                accessor = new CheckableAccessor((Field<Boolean>) this);
+//
+//            } else if (!((view instanceof MaterialButton)) && (view instanceof Checkable)) {
+//                // the opposite of above, do not accept the MaterialButton.
+//                //noinspection unchecked
+//                accessor = new CheckableAccessor((Field<Boolean>) this);
 
             } else if (view instanceof EditText) {
                 accessor = new EditTextAccessor<>(this);
@@ -1749,7 +1710,6 @@ public class Fields {
             } else if (view instanceof RatingBar) {
                 //noinspection unchecked
                 accessor = new RatingBarAccessor((Field<Float>) this);
-                addTouchSignalsDirty(view);
 
             } else if (view instanceof Spinner) {
                 //noinspection unchecked
@@ -1768,18 +1728,20 @@ public class Fields {
             return (FieldDataAccessor<T>) accessor;
         }
 
-        @Override
+        /**
+         * The View is set in the constructor, which passes it on to
+         * the {@link FieldDataAccessor} which keeps a WeakReference.
+         * <p>
+         * After a restart of the hosting fragment, we need to set the view again.
+         */
+        void setParentView(@NonNull final View parentView) {
+            View view = parentView.findViewById(mId);
+            mFieldDataAccessor.setView(view);
+        }
+
         @NonNull
-        public String toString() {
-            return "Field{"
-                   + "mId=" + mId
-                   + ", mGroup='" + mGroup + '\''
-                   + ", mKey='" + mKey + '\''
-                   + ", mIsUsed=" + mIsUsed
-                   + ", mDoNoFetch=" + mDoNoFetch
-                   + ", mFieldDataAccessor=" + mFieldDataAccessor
-                   + ", mRelatedFields=" + Arrays.toString(mRelatedFields)
-                   + '}';
+        Fields getFields() {
+            return mFields;
         }
 
         /**
@@ -1818,7 +1780,7 @@ public class Fields {
         @NonNull
         public Field<T> setInputIsDecimal() {
             if (mFieldDataAccessor instanceof EditTextAccessor) {
-                ((EditTextAccessor) mFieldDataAccessor).setInputIsDecimal();
+                ((EditTextAccessor) mFieldDataAccessor).setDecimalInput();
             } else if (BuildConfig.DEBUG /* always */) {
                 throw new IllegalStateException("Field is not an EditText");
             }
@@ -1873,118 +1835,37 @@ public class Fields {
         /**
          * Set the visibility for the field.
          *
+         * @param parent      parent view for all fields.
          * @param hideIfEmpty hide the field if it's empty
          */
-        private void resetVisibility(final boolean hideIfEmpty) {
+        private void resetVisibility(@NonNull final View parent,
+                                     final boolean hideIfEmpty) {
 
             mIsUsed = App.isUsed(mGroup);
             int visibility = mIsUsed ? View.VISIBLE : View.GONE;
-            View fieldView = getView();
+            View view = parent.findViewById(mId);
 
             if (mIsUsed && hideIfEmpty) {
-                if (fieldView instanceof Checkable) {
+                if (view instanceof Checkable) {
                     // hide any unchecked Checkable.
-                    visibility = ((Checkable) fieldView).isChecked() ? View.VISIBLE : View.GONE;
+                    visibility = ((Checkable) view).isChecked() ? View.VISIBLE : View.GONE;
 
-                } else if (!(fieldView instanceof ImageView)) {
-                    // don't act on ImageView, but all other fields can be tested on being empty
+                } else if (!(view instanceof ImageView)) {
+                    // skip ImageView, but all other fields can be tested on being empty
                     visibility = !isEmpty() ? View.VISIBLE : View.GONE;
                 }
             }
 
-            fieldView.setVisibility(visibility);
+            view.setVisibility(visibility);
 
             if (mRelatedFields != null) {
-                FieldsContext context = mFields.get().getFieldContext();
                 for (int fieldId : mRelatedFields) {
-                    View field = context.findViewById(fieldId);
-                    if (field != null) {
-                        field.setVisibility(visibility);
+                    view = parent.findViewById(fieldId);
+                    if (view != null) {
+                        view.setVisibility(visibility);
                     }
                 }
             }
-        }
-
-        /**
-         * Add on onTouch listener that signals a 'dirty' event when touched.
-         *
-         * @param view The view to watch
-         */
-        @SuppressLint("ClickableViewAccessibility")
-        private void addTouchSignalsDirty(@NonNull final View view) {
-            // Touching this View is considered a change to the field.
-            //TODO: We need to find a better way to handle this as this can cause a false-positive
-            view.setOnTouchListener((v, event) -> {
-                if (MotionEvent.ACTION_UP == event.getAction()) {
-                    mFields.get().afterFieldChange(this, null);
-                }
-                return false;
-            });
-        }
-
-        /**
-         * Get the view associated with this Field.
-         *
-         * @return Resulting View
-         *
-         * @see #debugNullView
-         */
-        @NonNull
-        public <V extends View> V getView() {
-            Fields fields = mFields.get();
-            if (fields == null) {
-                throw new NullPointerException("mFields was NULL");
-            }
-            View view = fields.getFieldContext().findViewById(mId);
-            // see comment on debugNullView
-            if (view == null) {
-                throw new NullPointerException("View object not found\n" + debugNullView());
-            }
-            //noinspection unchecked
-            return (V) view;
-        }
-
-        /**
-         * 2018-10: the below description is from the original code.
-         * This issue has not been seen running this forked code on Android 5+.
-         * <p>
-         * This should NEVER happen, but it does. See Issue #505.
-         * So we need more info about why & when.
-         * <p>
-         * Allow for the (apparent) possibility that the view may have been removed due
-         * to a tab change or similar. See Issue #505.
-         * <p>
-         * Every field MUST have an associated View object, but sometimes it is not found.
-         * When not found, the app crashes.
-         * <p>
-         * The following code is to help diagnose these cases, not avoid them.
-         * This does NOT entirely fix the problem, it gathers debug info.
-         * but we have implemented one work-around
-         * <p>
-         * Work-around #1:
-         * <p>
-         * It seems that sometimes the afterTextChanged() event fires after the text field
-         * is removed from the screen. In this case, there is no need to synchronize the values
-         * since the view is gone.
-         */
-        private String debugNullView() {
-            String msg = "NULL View: key=" + mKey + ", id=" + mId + ", mGroup=" + mGroup;
-            Fields fields = mFields.get();
-            if (fields == null) {
-                msg += "|mFields=NULL";
-            } else {
-                msg += "|mFields=valid";
-                FieldsContext fieldContext = fields.getFieldContext();
-                msg += "|Context=" + fieldContext.getClass().getCanonicalName();
-                Object ownerClass = fieldContext.dbgGetOwnerClass();
-                msg += "|Owner=";
-                if (ownerClass == null) {
-                    msg += "NULL";
-                } else {
-                    msg += ownerClass.getClass().getCanonicalName() + " (" + ownerClass + ')';
-                }
-            }
-            return msg;
         }
 
         @IdRes
@@ -2010,11 +1891,13 @@ public class Fields {
         /**
          * Set the value of this Field.
          *
+         * Calls {@link Fields#afterFieldChange(Field, Object)}.
+         *
          * @param source New value
          */
         public void setValue(@NonNull final T source) {
             mFieldDataAccessor.setValue(source);
-            mFields.get().afterFieldChange(this, source);
+            mFields.afterFieldChange(this, source);
         }
 
         /**
@@ -2039,6 +1922,7 @@ public class Fields {
          */
         void setValueFrom(@NonNull final Bundle source) {
             if (!mKey.isEmpty() && !mDoNoFetch) {
+                // do NOT call afterFieldChange, as this is the initial load
                 mFieldDataAccessor.setValue(source);
             }
         }
@@ -2049,6 +1933,7 @@ public class Fields {
          */
         public void setValueFrom(@NonNull final DataManager source) {
             if (!mKey.isEmpty() && !mDoNoFetch) {
+                // do NOT call afterFieldChange, as this is the initial load
                 mFieldDataAccessor.setValue(source);
             }
         }
@@ -2078,6 +1963,20 @@ public class Fields {
         @NonNull
         T extract(@NonNull final String source) {
             return mFieldDataAccessor.extract(source);
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "Field{"
+                   + "mId=" + mId
+                   + ", mGroup='" + mGroup + '\''
+                   + ", mKey='" + mKey + '\''
+                   + ", mIsUsed=" + mIsUsed
+                   + ", mDoNoFetch=" + mDoNoFetch
+                   + ", mFieldDataAccessor=" + mFieldDataAccessor
+                   + ", mRelatedFields=" + Arrays.toString(mRelatedFields)
+                   + '}';
         }
     }
 }

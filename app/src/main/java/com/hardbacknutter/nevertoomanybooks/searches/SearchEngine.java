@@ -41,156 +41,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.CoverBrowserFragment;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
  * The interface a search engine for a {@link Site} needs to implement.
+ * At least one of the sub-interfaces needs to be implemented:
+ * <ul>
+ * <li>{@link ByNativeId}</li>
+ * <li>{@link ByIsbn}</li>
+ * <li>{@link ByText}</li>
+ * </ul>
+ * and if the site supports fetching images by ISBN: {@link CoverByIsbn}.
+ * The latter is used to get covers for alternative editions in {@link CoverBrowserFragment}.
+ * <p>
+ * ENHANCE: it seems most implementations can return multiple book bundles quite easily.
  */
 public interface SearchEngine {
 
     String TAG = "SearchEngine";
-
-    /**
-     * If an implementation does not support a specific (and faster) way/api
-     * to fetch a cover image, then {@link #getCoverImage(Context, String, ImageSize)}
-     * can call this fallback method.
-     * Do NOT use if the site either does not support returning images during search,
-     * or does not support isbn searches.
-     * <p>
-     * A search for the book is done, with the 'fetchThumbnail' flag set to true.
-     * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
-     * {@code null} returned.
-     *
-     * @param context Current context (i.e. with the current Locale)
-     * @param isbn    to search for
-     *
-     * @return found/saved File, or {@code null} when none found (or any other failure)
-     */
-    @Nullable
-    @WorkerThread
-    default File getCoverImageFallback(@NonNull final Context context,
-                                       @NonNull final String isbn) {
-        // sanity check
-        if (!ISBN.isValid(isbn)) {
-            return null;
-        }
-
-        try {
-            //ENHANCE: it seems most implementations can return multiple book bundles quite easily.
-            Bundle bookData = search(context, isbn, "", "", "", true);
-
-            ArrayList<String> imageList =
-                    bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
-            if (imageList != null && !imageList.isEmpty()) {
-                // simply get the first one found.
-                File downloadedFile = new File(imageList.get(0));
-                // let the system resolve any path variations
-                File destination = new File(downloadedFile.getAbsolutePath());
-                StorageUtils.renameFile(downloadedFile, destination);
-                return destination;
-            }
-        } catch (@NonNull final CredentialsException | IOException e) {
-            Logger.error(App.getAppContext(), TAG, e);
-        }
-
-        return null;
-    }
-
-    /**
-     * Start a search using the passed criteria.
-     * <p>
-     * Checking the arguments should really be done inside the implementation,
-     * as they generally will depend on what the object can do with them.
-     * <p>
-     * The implementation will/should give preference to using the ISBN if present,
-     * and only fall back to using author/title if needed.
-     *
-     * @param context        Current context (i.e. with the current Locale)
-     * @param isbn           to search for
-     * @param author         to search for
-     * @param title          to search for
-     * @param publisher      optional and in addition to author/title.
-     *                       i.e. author and/or title must be valid;
-     *                       only then the publisher is taken into account.
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
-     *
-     * @return bundle with book data. Can be empty, but never {@code null}.
-     * ENHANCE: it seems most implementations can return multiple book bundles quite easily.
-     *
-     * @throws CredentialsException with GoodReads
-     * @throws IOException          on other failures
-     */
-    @WorkerThread
-    @NonNull
-    Bundle search(@NonNull Context context,
-                  @Nullable String isbn,
-                  @Nullable String author,
-                  @Nullable String title,
-                  @Nullable String publisher,
-                  boolean fetchThumbnail)
-            throws CredentialsException, IOException;
-
-    /**
-     * A site can support a single (default) or multiple sizes.
-     *
-     * @return {@code true} if multiple sizes are supported.
-     */
-    @AnyThread
-    default boolean hasMultipleSizes() {
-        return false;
-    }
-
-    /**
-     * Get a cover image.
-     *
-     * @param context Current context (i.e. with the current Locale)
-     * @param isbn    to search for
-     * @param size    of image to get.
-     *
-     * @return found/saved File, or {@code null} when none found (or any other failure)
-     */
-    @Nullable
-    @WorkerThread
-    default File getCoverImage(@NonNull Context context,
-                               @NonNull String isbn,
-                               @Nullable ImageSize size) {
-        return getCoverImageFallback(context, isbn);
-    }
-
-    /**
-     * Get a cover image. Try in order of large, medium, small depending on the site supporting
-     * multiple sizes.
-     *
-     * @param context  Current context (i.e. with the current Locale)
-     * @param isbn     book to get an image for
-     * @param bookData bundle to populate with the image file spec
-     */
-    default void getCoverImage(@NonNull final Context context,
-                               @NonNull final String isbn,
-                               @NonNull final Bundle bookData) {
-        File file = getCoverImage(context, isbn, ImageSize.Large);
-        if (hasMultipleSizes()) {
-            if (file == null) {
-                file = getCoverImage(context, isbn, ImageSize.Medium);
-                if (file == null) {
-                    file = getCoverImage(context, isbn, ImageSize.Small);
-                }
-            }
-        }
-        if (file != null) {
-            ArrayList<String> imageList =
-                    bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
-            if (imageList == null) {
-                imageList = new ArrayList<>();
-            }
-            imageList.add(file.getAbsolutePath());
-            bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
-        }
-    }
 
     /**
      * Generic test to be implemented by individual site search managers to check if
@@ -219,19 +91,6 @@ public interface SearchEngine {
     String getUrl(@NonNull Context context);
 
     /**
-     * Check if the site is ISBN based only.
-     * <p>
-     * The default implementation assumes that the site can also use other criteria.
-     * Override and return {@code true} if the actual implementation cannot do this.
-     *
-     * @return {@code true} if the site can only be searched with a valid ISBN
-     */
-    @AnyThread
-    default boolean requiresIsbn() {
-        return false;
-    }
-
-    /**
      * Get the resource id for the human-readable name of the site.
      *
      * @return the resource id
@@ -240,12 +99,208 @@ public interface SearchEngine {
     @StringRes
     int getNameResId();
 
+    /** Optional. */
+    interface ByNativeId {
 
-    /**
-     * Sizes of thumbnails.
-     * These are open to interpretation (or not used at all) by individual {@link SearchEngine}.
-     */
-    enum ImageSize {
-        Large, Medium, Small
+        /**
+         * Called by the {@link SearchCoordinator#search}.
+         *
+         * @param context        Current context (i.e. with the current Locale)
+         * @param nativeId       the native id (as a String) for this particular search site.
+         * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+         *
+         * @return bundle with book data. Can be empty, but never {@code null}.
+         *
+         * @throws CredentialsException with sites which require credentials
+         * @throws IOException          on other failures
+         */
+        @WorkerThread
+        @NonNull
+        Bundle searchByNativeId(@NonNull final Context context,
+                                @NonNull final String nativeId,
+                                final boolean fetchThumbnail)
+                throws CredentialsException, IOException;
+    }
+
+    /** Optional. */
+    interface ByIsbn {
+
+        /**
+         * Called by the {@link SearchCoordinator#search}.
+         * The isbn will be <strong>valid</strong>.
+         *
+         * @param context        Current context (i.e. with the current Locale)
+         * @param isbn           to search for
+         * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+         *
+         * @return bundle with book data. Can be empty, but never {@code null}.
+         *
+         * @throws CredentialsException with sites which require credentials
+         * @throws IOException          on other failures
+         */
+        @WorkerThread
+        @NonNull
+        Bundle searchByIsbn(@NonNull final Context context,
+                            @NonNull final String isbn,
+                            final boolean fetchThumbnail)
+                throws CredentialsException, IOException;
+    }
+
+    /** Optional. */
+    interface ByText {
+
+        /**
+         * Called by the {@link SearchCoordinator#search}.
+         * The isbn is <strong>not tested</strong>.
+         * <p>
+         * Checking the arguments must be done inside the implementation,
+         * as they generally will depend on what the engine can do with them.
+         *
+         * @param context        Current context (i.e. with the current Locale)
+         * @param isbn           to search for
+         * @param author         to search for
+         * @param title          to search for
+         * @param publisher      optional and in addition to author/title.
+         *                       i.e. author and/or title must be valid;
+         *                       only then the publisher is taken into account.
+         * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+         *
+         * @return bundle with book data. Can be empty, but never {@code null}.
+         *
+         * @throws CredentialsException with sites which require credentials
+         * @throws IOException          on other failures
+         */
+        @WorkerThread
+        @NonNull
+        Bundle search(@NonNull Context context,
+                      @Nullable String isbn,
+                      @Nullable String author,
+                      @Nullable String title,
+                      @Nullable String publisher,
+                      boolean fetchThumbnail)
+                throws CredentialsException, IOException;
+    }
+
+    /** Optional. */
+    interface CoverByIsbn {
+
+        /**
+         * A site can support a single (default) or multiple sizes.
+         *
+         * @return {@code true} if multiple sizes are supported.
+         */
+        @AnyThread
+        default boolean hasMultipleSizes() {
+            return false;
+        }
+
+        /**
+         * Get a cover image.
+         *
+         * @param context Current context (i.e. with the current Locale)
+         * @param isbn    to search for, <strong>must</strong> be valid.
+         * @param size    of image to get.
+         *
+         * @return found/saved File, or {@code null} when none found (or any other failure)
+         */
+        @Nullable
+        @WorkerThread
+        default File getCoverImage(@NonNull Context context,
+                                   @NonNull String isbn,
+                                   @Nullable ImageSize size) {
+            return getCoverImageFallback(context, isbn);
+        }
+
+        /**
+         * Get a cover image. Will try in order of large, medium, small depending on the site
+         * supporting multiple sizes.
+         *
+         * @param context  Current context (i.e. with the current Locale)
+         * @param isbn     to search for, <strong>must</strong> be valid.
+         * @param bookData bundle to populate with the image file spec
+         */
+        default void getCoverImage(@NonNull final Context context,
+                                   @NonNull final String isbn,
+                                   @NonNull final Bundle bookData) {
+            File file = getCoverImage(context, isbn, ImageSize.Large);
+            if (hasMultipleSizes()) {
+                if (file == null) {
+                    file = getCoverImage(context, isbn, ImageSize.Medium);
+                    if (file == null) {
+                        file = getCoverImage(context, isbn, ImageSize.Small);
+                    }
+                }
+            }
+            if (file != null) {
+                ArrayList<String> imageList =
+                        bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+                if (imageList == null) {
+                    imageList = new ArrayList<>();
+                }
+                imageList.add(file.getAbsolutePath());
+                bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
+            }
+        }
+
+        /**
+         * If an implementation does not support a specific (and faster) way/api
+         * to fetch a cover image, then {@link #getCoverImage(Context, String, ImageSize)}
+         * can call this fallback method.
+         * Do NOT use if the site either does not support returning images during search,
+         * or does not support isbn searches.
+         * <p>
+         * A search for the book is done, with the 'fetchThumbnail' flag set to true.
+         * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
+         * {@code null} returned.
+         *
+         * @param context Current context (i.e. with the current Locale)
+         * @param isbn    to search for, <strong>must</strong> be valid.
+         *
+         * @return found/saved File, or {@code null} when none found (or any other failure)
+         */
+        @Nullable
+        @WorkerThread
+        default File getCoverImageFallback(@NonNull final Context context,
+                                           @NonNull final String isbn) {
+
+            try {
+                Bundle bookData;
+                if (this instanceof SearchEngine.ByIsbn) {
+                    bookData = ((SearchEngine.ByIsbn) this).searchByIsbn(context, isbn, true);
+
+                } else if (this instanceof SearchEngine.ByText) {
+                    bookData = ((SearchEngine.ByText) this)
+                            .search(context, isbn, "", "", "", true);
+                } else {
+                    return null;
+                }
+
+                ArrayList<String> imageList =
+                        bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+                if (imageList != null && !imageList.isEmpty()) {
+                    // simply get the first one found.
+                    File downloadedFile = new File(imageList.get(0));
+                    // let the system resolve any path variations
+                    File destination = new File(downloadedFile.getAbsolutePath());
+                    StorageUtils.renameFile(downloadedFile, destination);
+                    return destination;
+                }
+            } catch (@NonNull final CredentialsException | IOException e) {
+                Logger.error(App.getAppContext(), TAG, e);
+            }
+
+            return null;
+        }
+
+        /** See {@link SearchEngine#getNameResId()}. */
+        int getNameResId();
+
+        /**
+         * Sizes of thumbnails.
+         * These are open to interpretation (or not used at all) by individual {@link SearchEngine}.
+         */
+        enum ImageSize {
+            Large, Medium, Small
+        }
     }
 }

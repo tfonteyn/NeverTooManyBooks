@@ -200,11 +200,15 @@ public class GlobalPreferenceFragment
 
         switch (key) {
             case Prefs.pk_sounds_scan_isbn_invalid:
-                SoundManager.beepLow(context);
+                if (sharedPreferences.getBoolean(key, false)) {
+                    SoundManager.beepLow(context);
+                }
                 break;
 
             case Prefs.pk_sounds_scan_isbn_valid:
-                SoundManager.beepHigh(context);
+                if (sharedPreferences.getBoolean(key, false)) {
+                    SoundManager.beepHigh(context);
+                }
                 break;
 
             case Prefs.pk_scanner_preferred:

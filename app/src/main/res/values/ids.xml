@@ -199,7 +199,6 @@
     <item name="MENU_DEBUG_TRACKER" type="id" />
     <item name="MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE" type="id" />
     <item name="MENU_DEBUG_UNMANGLE" type="id" />
-    <item name="MENU_PREFS_SCANNER_UI" type="id" />
 
     <!-- END predefined menu items -->
 

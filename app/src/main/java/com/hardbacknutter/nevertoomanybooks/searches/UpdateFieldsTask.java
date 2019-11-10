@@ -103,8 +103,10 @@ public class UpdateFieldsTask
                     cancelTask();
 
                 } else if (bookData.isEmpty()) {
+                    Context context = App.getLocalizedAppContext();
                     // tell the user if the search failed.
-                    mTaskManager.sendUserMessage(R.string.warning_unable_to_find_book);
+                    String msg = context.getString(R.string.warning_unable_to_find_book);
+                    mTaskManager.sendUserMessage(msg);
                 }
 
                 // Save the local data from the context so we can start a new search
@@ -147,7 +149,6 @@ public class UpdateFieldsTask
         mSearchSites = searchSites;
 
         mSearchCoordinator = new SearchCoordinator(mTaskManager, mListener);
-        mTaskManager.sendHeaderUpdate(R.string.progress_msg_starting_search);
         MESSAGE_SWITCH.addListener(getSenderId(), false, listener);
     }
 
@@ -247,23 +248,12 @@ public class UpdateFieldsTask
         }
     }
 
-    /**
-     * The task is done.
-     */
-    @Override
-    public void onTaskFinish() {
-        if (mDb != null) {
-            mDb.close();
-            mDb = null;
-        }
-    }
-
     @Override
     public void runTask()
             throws InterruptedException {
         int progressCounter = 0;
 
-        Context context = getContext();
+        Context context = App.getLocalizedAppContext();
 
         try (BookCursor bookCursor = mDb.fetchBooks(mBookIds, mCurrentBookId)) {
 
@@ -306,7 +296,6 @@ public class UpdateFieldsTask
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
                 // Make sure the searchable fields are not NULL
-                // (legacy data, and possibly set to null when adding new book)
                 String isbn = mOriginalBookData.getString(DBDefinitions.KEY_ISBN, "");
                 String title = mOriginalBookData.getString(DBDefinitions.KEY_TITLE, "");
                 String publisher = mOriginalBookData.getString(DBDefinitions.KEY_PUBLISHER, "");
@@ -334,8 +323,9 @@ public class UpdateFieldsTask
                 }
 
                 // Start searching, then wait...
-                mSearchCoordinator.search(mSearchSites, isbn,
-                                          author, title, publisher, wantCoverImage);
+                mSearchCoordinator.setSearchSites(mSearchSites);
+                mSearchCoordinator.setFetchThumbnail(wantCoverImage);
+                mSearchCoordinator.search(isbn, author, title, publisher);
 
                 mSearchLock.lock();
                 try {
@@ -349,10 +339,14 @@ public class UpdateFieldsTask
                 }
 
                 // update the counter, another one done.
-                mTaskManager.sendProgress(this, 0, progressCounter);
-
+                mTaskManager.sendProgress(this, null, progressCounter);
             }
         } finally {
+            if (mDb != null) {
+                mDb.close();
+                mDb = null;
+            }
+
             // Tell our listener they can close the progress dialog.
             mTaskManager.sendHeaderUpdate(null);
             // Create the final message for them (user message, not a Progress message)

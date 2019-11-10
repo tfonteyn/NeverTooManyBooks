@@ -31,7 +31,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Checkable;
+import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -51,12 +53,36 @@ public class EditBookNotesFragment
 
     public static final String TAG = "EditBookNotesFragment";
 
+    private View mReadCbx;
+    private View mSignedCbx;
+    private View mRatingView;
+    private View mNotesView;
+    private EditText mPricePaidView;
+    private AutoCompleteTextView mPricePaidCurrencyView;
+    private AutoCompleteTextView mLocationView;
+    private View mEditionView;
+    private View mDateAcquiredView;
+    private View mDateReadStartView;
+    private View mDateReadEndView;
+
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_book_notes, container, false);
+        View view = inflater.inflate(R.layout.fragment_edit_book_notes, container, false);
+        mReadCbx = view.findViewById(R.id.cbx_read);
+        mSignedCbx = view.findViewById(R.id.cbx_signed);
+        mRatingView = view.findViewById(R.id.rating);
+        mNotesView = view.findViewById(R.id.notes);
+        mPricePaidView = view.findViewById(R.id.price_paid);
+        mPricePaidCurrencyView = view.findViewById(R.id.price_paid_currency);
+        mLocationView = view.findViewById(R.id.location);
+        mEditionView = view.findViewById(R.id.edition);
+        mDateAcquiredView = view.findViewById(R.id.date_acquired);
+        mDateReadStartView = view.findViewById(R.id.read_start);
+        mDateReadEndView = view.findViewById(R.id.read_end);
+        return view;
     }
 
     @Override
@@ -73,59 +99,66 @@ public class EditBookNotesFragment
 
         Field<String> field;
 
-        fields.addBoolean(R.id.cbx_read, DBDefinitions.KEY_READ)
-              .getView().setOnClickListener(v -> {
+        fields.addBoolean(R.id.cbx_read, mReadCbx, DBDefinitions.KEY_READ);
+        mReadCbx.setOnClickListener(v -> {
             // when user sets 'read', also set the read-end date to today (unless set before)
             Checkable cb = (Checkable) v;
             if (cb.isChecked()) {
-                Field<String> readEndView = fields.getField(R.id.read_end);
-                if (readEndView.isEmpty()) {
-                    readEndView.setValue(DateUtils.localSqlDateForToday());
+                Field<String> readEnd = fields.getField(R.id.read_end);
+                if (readEnd.isEmpty()) {
+                    readEnd.setValue(DateUtils.localSqlDateForToday());
                 }
             }
         });
 
-        fields.addBoolean(R.id.cbx_signed, DBDefinitions.KEY_SIGNED);
+        fields.addBoolean(R.id.cbx_signed, mSignedCbx, DBDefinitions.KEY_SIGNED);
 
-        fields.addFloat(R.id.rating, DBDefinitions.KEY_RATING)
+        fields.addFloat(R.id.rating, mRatingView, DBDefinitions.KEY_RATING)
               .setRelatedFields(R.id.lbl_rating);
 
-        fields.addString(R.id.notes, DBDefinitions.KEY_PRIVATE_NOTES)
+        fields.addString(R.id.notes, mNotesView, DBDefinitions.KEY_PRIVATE_NOTES)
               .setRelatedFields(R.id.lbl_notes);
 
-        fields.addMonetary(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID)
+        fields.addMonetary(R.id.price_paid, mPricePaidView, DBDefinitions.KEY_PRICE_PAID)
               .setInputIsDecimal();
 
-        field = fields.addString(R.id.price_paid_currency, DBDefinitions.KEY_PRICE_PAID_CURRENCY)
+        field = fields.addString(R.id.price_paid_currency, mPricePaidCurrencyView,
+                                 DBDefinitions.KEY_PRICE_PAID_CURRENCY)
                       .setRelatedFields(R.id.lbl_price_paid, R.id.price_paid_currency);
 
-        initValuePicker(field, R.string.lbl_currency, R.id.btn_price_paid_currency,
+        initValuePicker(field, mPricePaidCurrencyView, R.string.lbl_currency,
+                        R.id.btn_price_paid_currency,
                         mBookModel.getPricePaidCurrencyCodes());
 
-        field = fields.addString(R.id.location, DBDefinitions.KEY_LOCATION)
+        field = fields.addString(R.id.location, mLocationView, DBDefinitions.KEY_LOCATION)
                       .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
-        initValuePicker(field, R.string.lbl_location, R.id.btn_location, mBookModel.getLocations());
+        initValuePicker(field, mLocationView, R.string.lbl_location, R.id.btn_location,
+                        mBookModel.getLocations());
 
-        Field<Long> editionsField = fields.addLong(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
-                                          .setFormatter(new Fields.BitMaskFormatter(Book.EDITIONS))
-                                          .setRelatedFields(R.id.lbl_edition);
-        initCheckListEditor(editionsField, R.string.lbl_edition,
-                            () -> mBookModel.getBook().getEditableEditionList());
+        //noinspection ConstantConditions
+        Field<Long> editionsField = fields
+                .addLong(R.id.edition, mEditionView, DBDefinitions.KEY_EDITION_BITMASK)
+                .setFormatter(new Fields.BitMaskFormatter(
+                        Book.getEditions(getContext())))
+                .setRelatedFields(R.id.lbl_edition);
+        initCheckListEditor(editionsField, mEditionView, R.string.lbl_edition, () ->
+                mBookModel.getBook().getEditableEditionList());
 
-        field = fields.addString(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
-                      .setFormatter(dateFormatter)
-                      .setRelatedFields(R.id.lbl_date_acquired);
-        initPartialDatePicker(field, R.string.lbl_date_acquired, true);
+        field = fields
+                .addString(R.id.date_acquired, mDateAcquiredView, DBDefinitions.KEY_DATE_ACQUIRED)
+                .setFormatter(dateFormatter)
+                .setRelatedFields(R.id.lbl_date_acquired);
+        initPartialDatePicker(field, mDateAcquiredView, R.string.lbl_date_acquired, true);
 
-        field = fields.addString(R.id.read_start, DBDefinitions.KEY_READ_START)
+        field = fields.addString(R.id.read_start, mDateReadStartView, DBDefinitions.KEY_READ_START)
                       .setFormatter(dateFormatter)
                       .setRelatedFields(R.id.lbl_read_start);
-        initPartialDatePicker(field, R.string.lbl_read_start, true);
+        initPartialDatePicker(field, mDateReadStartView, R.string.lbl_read_start, true);
 
-        field = fields.addString(R.id.read_end, DBDefinitions.KEY_READ_END)
+        field = fields.addString(R.id.read_end, mDateReadEndView, DBDefinitions.KEY_READ_END)
                       .setFormatter(dateFormatter)
                       .setRelatedFields(R.id.lbl_read_end);
-        initPartialDatePicker(field, R.string.lbl_read_end, true);
+        initPartialDatePicker(field, mDateReadEndView, R.string.lbl_read_end, true);
     }
 
     @Override

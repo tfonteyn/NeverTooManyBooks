@@ -34,6 +34,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -70,16 +73,35 @@ public class EditBookFieldsFragment
     /** Handles cover replacement, rotation, etc. */
     private CoverHandler mCoverHandler;
 
+    private View mTitleView;
+    private View mAuthorView;
+    private View mSeriesView;
+    private View mDescriptionView;
+    private TextView mIsbnView;
+    private ImageView mCoverImageView;
+    private AutoCompleteTextView mGenreView;
+    private View mBookshelvesView;
+
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_book_fields, container, false);
+        View view = inflater.inflate(R.layout.fragment_edit_book_fields, container, false);
+        mAuthorView = view.findViewById(R.id.author);
+        mTitleView = view.findViewById(R.id.title);
+        mSeriesView = view.findViewById(R.id.series);
+        mDescriptionView = view.findViewById(R.id.description);
+        mIsbnView = view.findViewById(R.id.isbn);
+        mCoverImageView = view.findViewById(R.id.coverImage);
+        mGenreView = view.findViewById(R.id.genre);
+        mBookshelvesView = view.findViewById(R.id.bookshelves);
+
+        return view;
     }
 
     /**
-     * Some fields are only present (or need specific handling) on {@link BookFragment}.
+     * Some fields are only present (or need specific handling) on {@link BookDetailsFragment}.
      * <p>
      * <br>{@inheritDoc}
      */
@@ -92,12 +114,12 @@ public class EditBookFieldsFragment
 
         // book fields
 
-        fields.addString(R.id.title, DBDefinitions.KEY_TITLE);
+        fields.addString(R.id.title, mTitleView, DBDefinitions.KEY_TITLE);
 
         // defined, but fetched/stored manually
         // Storing the list back into the book is handled by onCheckListEditorSave
-        fields.addString(R.id.author, "", DBDefinitions.KEY_FK_AUTHOR)
-              .getView().setOnClickListener(v -> {
+        fields.addString(R.id.author, mAuthorView, "", DBDefinitions.KEY_FK_AUTHOR);
+        mAuthorView.setOnClickListener(v -> {
             String title = fields.getField(R.id.title).getValue().toString();
             ArrayList<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
@@ -112,9 +134,9 @@ public class EditBookFieldsFragment
 
         // defined, but fetched/stored manually
         // Storing the list back into the book is handled by onCheckListEditorSave
-        fields.addString(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE)
-              .setRelatedFields(R.id.lbl_series)
-              .getView().setOnClickListener(v -> {
+        fields.addString(R.id.series, mSeriesView, "", DBDefinitions.KEY_SERIES_TITLE)
+              .setRelatedFields(R.id.lbl_series);
+        mSeriesView.setOnClickListener(v -> {
             // use the current title.
             String title = fields.getField(R.id.title).getValue().toString();
             ArrayList<Series> series = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
@@ -128,33 +150,35 @@ public class EditBookFieldsFragment
             startActivityForResult(intent, REQ_EDIT_SERIES);
         });
 
-        fields.addString(R.id.description, DBDefinitions.KEY_DESCRIPTION)
+        fields.addString(R.id.description, mDescriptionView, DBDefinitions.KEY_DESCRIPTION)
               .setRelatedFields(R.id.lbl_description);
 
-        Field<String> isbnField = fields.addString(R.id.isbn, DBDefinitions.KEY_ISBN)
-                                        .setRelatedFields(R.id.lbl_isbn);
+        fields.addString(R.id.isbn, mIsbnView, DBDefinitions.KEY_ISBN)
+              .setRelatedFields(R.id.lbl_isbn);
 
-        Field<String> coverField =
-                fields.addString(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
-                      .setScale(ImageUtils.SCALE_MEDIUM);
-
+        fields.addString(R.id.coverImage, mCoverImageView, DBDefinitions.KEY_BOOK_UUID,
+                         UniqueId.BKEY_IMAGE)
+              .setScale(ImageUtils.SCALE_MEDIUM);
         mCoverHandler = new CoverHandler(this, mBookModel.getDb(), book,
-                                         isbnField.getView(), coverField.getView(),
+                                         mIsbnView,
+                                         mCoverImageView,
                                          ImageUtils.SCALE_MEDIUM);
 
         Field<String> field;
 
-        field = fields.addString(R.id.genre, DBDefinitions.KEY_GENRE)
+        field = fields.addString(R.id.genre, mGenreView, DBDefinitions.KEY_GENRE)
                       .setRelatedFields(R.id.lbl_genre);
-        initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, mBookModel.getGenres());
+        initValuePicker(field, mGenreView, R.string.lbl_genre, R.id.btn_genre,
+                        mBookModel.getGenres());
 
         // Personal fields
 
         // defined, but fetched/stored manually
         // Storing the list back into the book is handled by onCheckListEditorSave
-        field = fields.addString(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF)
-                      .setRelatedFields(R.id.lbl_bookshelves);
-        initCheckListEditor(field, R.string.lbl_bookshelves_long,
+        field = fields
+                .addString(R.id.bookshelves, mBookshelvesView, "", DBDefinitions.KEY_BOOKSHELF)
+                .setRelatedFields(R.id.lbl_bookshelves);
+        initCheckListEditor(field, mBookshelvesView, R.string.lbl_bookshelves_long,
                             () -> mBookModel.getEditableBookshelvesList());
     }
 
@@ -289,7 +313,7 @@ public class EditBookFieldsFragment
             //noinspection ConstantConditions
             Bookshelf bookshelf = mBookModel.getBookshelf(getContext());
 
-            getField(R.id.bookshelves).setValue(bookshelf.getName());
+            getFields().getField(R.id.bookshelves).setValue(bookshelf.getName());
             // add to set, and store in book.
             list.add(bookshelf);
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
@@ -317,7 +341,7 @@ public class EditBookFieldsFragment
             // in which case it contains whatever the user typed.
             name = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
         }
-        getField(R.id.author).setValue(name);
+        getFields().getField(R.id.author).setValue(name);
     }
 
     private void populateSeriesListField() {
@@ -345,7 +369,7 @@ public class EditBookFieldsFragment
             }
         }
 
-        getField(R.id.series).setValue(result);
+        getFields().getField(R.id.series).setValue(result);
     }
 
     /**
@@ -356,7 +380,8 @@ public class EditBookFieldsFragment
 
         ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         //noinspection ConstantConditions
-        getField(R.id.bookshelves)
-                .setValue(Csv.join(", ", list, bookshelf -> bookshelf.getLabel(getContext())));
+        getFields().getField(R.id.bookshelves)
+                   .setValue(
+                           Csv.join(", ", list, bookshelf -> bookshelf.getLabel(getContext())));
     }
 }

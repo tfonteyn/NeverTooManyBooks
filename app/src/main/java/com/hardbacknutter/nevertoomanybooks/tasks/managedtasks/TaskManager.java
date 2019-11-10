@@ -27,17 +27,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks.managedtasks;
 
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
@@ -74,8 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
  */
 public class TaskManager {
 
-    private static final String TAG = "TaskManager";
-
     /**
      * STATIC Object for passing messages from background tasks to activities
      * that may be recreated.
@@ -84,7 +81,7 @@ public class TaskManager {
      */
     public static final MessageSwitch<TaskManagerListener, TaskManagerController>
             MESSAGE_SWITCH = new MessageSwitch<>();
-
+    private static final String TAG = "TaskManager";
     /**
      * Unique identifier for this instance.
      * <p>
@@ -96,10 +93,6 @@ public class TaskManager {
      * List of ManagedTask being managed by *this* object.
      */
     private final List<TaskInfo> mTaskInfoList = new ArrayList<>();
-
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final Context mContext;
 
     /**
      * Current progress message to display, even if no tasks running.
@@ -166,26 +159,9 @@ public class TaskManager {
     /**
      * Constructor.
      *
-     * @param context Current context, will get cached.
      */
-    public TaskManager(@NonNull final Context context) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Log.d(TAG, "Constructor|context=" + context);
-        }
-        mContext = context;
+    public TaskManager() {
         mMessageSenderId = MESSAGE_SWITCH.createSender(mController);
-    }
-
-    /**
-     * Return the associated activity object.
-     *
-     * @return The context
-     */
-    @NonNull
-    public Context getContext() {
-        synchronized (this) {
-            return mContext;
-        }
     }
 
     @NonNull
@@ -210,20 +186,9 @@ public class TaskManager {
                 mTaskInfoList.add(new TaskInfo(task));
                 // Tell the ManagedTask we are listening for messages.
                 ManagedTask.MESSAGE_SWITCH.addListener(task.getSenderId(), true,
-                                                       mManagedTaskListener
-                                                      );
+                                                       mManagedTaskListener);
             }
         }
-    }
-
-    /**
-     * Creates and send a {@link TaskProgressMessage} with the base/header message.
-     * Used (generally) by {@link BaseActivityWithTasks} to display some text above
-     * the task info.
-     */
-    public void sendHeaderUpdate(@StringRes final int message) {
-        mBaseMessage = getContext().getString(message);
-        sendProgress();
     }
 
     /**
@@ -239,29 +204,10 @@ public class TaskManager {
     /**
      * Creates and send a {@link TaskUserMessage}.
      *
-     * @param messageId Message resource id to send
+     * @param message to send
      */
-    public void sendUserMessage(@StringRes final int messageId) {
-        MESSAGE_SWITCH.send(mMessageSenderId,
-                            new TaskUserMessage(getContext().getString(messageId)));
-    }
-
-    /**
-     * Creates and send a {@link TaskProgressMessage} based on information about a task.
-     *
-     * @param task      The task associated with this message
-     * @param messageId Message string id
-     * @param count     Counter for progress
-     */
-    public void sendProgress(@NonNull final ManagedTask task,
-                             @StringRes final int messageId,
-                             final int count) {
-        TaskInfo taskInfo = getTaskInfo(task);
-        if (taskInfo != null) {
-            taskInfo.progressMessage = messageId != 0 ? mContext.getString(messageId) : null;
-            taskInfo.progressCurrent = count;
-            sendProgress();
-        }
+    public void sendUserMessage(@NonNull final String message) {
+        MESSAGE_SWITCH.send(mMessageSenderId, new TaskUserMessage(message));
     }
 
     /**
@@ -272,7 +218,7 @@ public class TaskManager {
      * @param count   Counter for progress
      */
     public void sendProgress(@NonNull final ManagedTask task,
-                             @NonNull final String message,
+                             @Nullable final String message,
                              final int count) {
         TaskInfo taskInfo = getTaskInfo(task);
         if (taskInfo != null) {
@@ -314,8 +260,8 @@ public class TaskManager {
                     if (progressMessage.length() > 0) {
                         progressMessage.append('\n');
                     }
-                    progressMessage.append(Csv.join("\n", mTaskInfoList, false,
-                                                    " - ",
+                    progressMessage.append(Csv.join("\n", mTaskInfoList, true,
+                                                    "• ",
                                                     element -> element.progressMessage));
                 }
             }
@@ -336,7 +282,7 @@ public class TaskManager {
                                                         progressMessage.toString()));
 
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(mContext, TAG, e, "Error updating progress");
+            Logger.error(App.getAppContext(), TAG, e, "Error updating progress");
         }
     }
 

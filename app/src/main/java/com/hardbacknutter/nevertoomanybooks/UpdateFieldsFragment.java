@@ -399,11 +399,10 @@ public class UpdateFieldsFragment
         mModel.addRelatedField(DBDefinitions.KEY_PRICE_LISTED,
                                DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
 
-        UpdateFieldsTask updateTask =
-                new UpdateFieldsTask(mTaskManager,
-                                     mModel.getSearchSites(),
-                                     mModel.getFieldUsages(),
-                                     mManagedTaskListener);
+        UpdateFieldsTask updateTask = new UpdateFieldsTask(mTaskManager,
+                                                           mModel.getSearchSites(),
+                                                           mModel.getFieldUsages(),
+                                                           mManagedTaskListener);
         ArrayList<Long> list = mModel.getBookIds();
         if (list != null) {
             updateTask.setBookId(list);
@@ -415,6 +414,7 @@ public class UpdateFieldsFragment
         mModel.setUpdateSenderId(updateTask.getSenderId());
         UpdateFieldsTask.MESSAGE_SWITCH
                 .addListener(mModel.getUpdateSenderId(), false, mManagedTaskListener);
+        mTaskManager.sendHeaderUpdate(getString(R.string.progress_msg_starting_search));
         updateTask.start();
     }
 }

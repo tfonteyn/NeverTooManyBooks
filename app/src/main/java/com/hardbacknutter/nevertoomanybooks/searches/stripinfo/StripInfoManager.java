@@ -33,7 +33,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceManager;
 
@@ -42,7 +41,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
@@ -50,7 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * Dutch language (and to an extend French and a minimal amount of other languages) comics website.
  */
 public class StripInfoManager
-        implements SearchEngine {
+        implements SearchEngine,
+                   SearchEngine.ByNativeId,
+                   SearchEngine.ByIsbn {
 
     public static final Locale SITE_LOCALE = new Locale("nl", "BE");
     /** Preferences prefix. */
@@ -90,29 +90,20 @@ public class StripInfoManager
 
     @NonNull
     @Override
-    public Bundle search(@NonNull final Context context,
-                         @Nullable final String isbn,
-                         @Nullable final String author,
-                         @Nullable final String title,
-                         @Nullable final String publisher,
-                         final boolean fetchThumbnail)
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String isbn,
+                               final boolean fetchThumbnail)
             throws IOException {
-
-        if (ISBN.isValid(isbn)) {
-            return new StripInfoBookHandler().fetch(context, isbn, fetchThumbnail);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return new StripInfoBookHandler().fetch(context, isbn, fetchThumbnail);
     }
 
+    @NonNull
     @Override
-    public boolean hasMultipleSizes() {
-        return false;
-    }
-
-    @Override
-    public boolean requiresIsbn() {
-        return true;
+    public Bundle searchByNativeId(@NonNull final Context context,
+                                   @NonNull final String nativeId,
+                                   final boolean fetchThumbnail)
+            throws IOException {
+        return new StripInfoBookHandler().fetchByNativeId(context, nativeId, fetchThumbnail);
     }
 
     @StringRes

@@ -58,6 +58,9 @@ public class BookSearchBaseModel
     private ArrayList<Site> mSearchSites;
     /** Objects managing current search. */
     private long mSearchCoordinatorId;
+
+    @NonNull
+    private String mNativeIdSearchText = "";
     @NonNull
     private String mIsbnSearchText = "";
     @NonNull
@@ -86,8 +89,10 @@ public class BookSearchBaseModel
         if (mDb == null) {
             mDb = new DAO();
 
-            mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
+            mNativeIdSearchText = args.getString(UniqueId.BKEY_SEARCH_BOOK_NATIVE_ID, "");
             mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
+
+            mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
             mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
             mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
 
@@ -142,10 +147,20 @@ public class BookSearchBaseModel
     }
 
     public void clearSearchText() {
+        mNativeIdSearchText = "";
         mIsbnSearchText = "";
         mAuthorSearchText = "";
         mTitleSearchText = "";
         mPublisherSearchText = "";
+    }
+
+    @NonNull
+    public String getNativeIdSearchText() {
+        return mNativeIdSearchText;
+    }
+
+    public void setNativeIdSearchText(@NonNull final String nativeIdSearchText) {
+        mNativeIdSearchText = nativeIdSearchText;
     }
 
     @NonNull
@@ -191,18 +206,6 @@ public class BookSearchBaseModel
 
     public void setLastBookData(@NonNull final Intent lastBookData) {
         mResultData.putExtras(lastBookData);
-    }
-
-    /**
-     * At least one criteria must be available.
-     * The publisher is optional and in addition to the standard criteria.
-     *
-     * @return {@code true} if we have something to search on.
-     */
-    public boolean hasSearchData() {
-        return !mIsbnSearchText.isEmpty()
-               || !mAuthorSearchText.isEmpty()
-               || !mTitleSearchText.isEmpty();
     }
 
     @NonNull

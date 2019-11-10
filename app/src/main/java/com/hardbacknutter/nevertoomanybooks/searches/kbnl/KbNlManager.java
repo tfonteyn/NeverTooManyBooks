@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.searches.kbnl;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,7 +38,6 @@ import androidx.preference.PreferenceManager;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -47,7 +45,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
@@ -61,10 +58,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * 2019-10-01: "http://opc4.kb.nl" is not available on https.
  */
 public class KbNlManager
-        implements SearchEngine {
+        implements SearchEngine,
+                   SearchEngine.ByIsbn,
+                   SearchEngine.CoverByIsbn {
 
-    public static final Locale SITE_LOCALE = new Locale("nl", "NL");
-    private static final String TAG = "KbNlManager";
+    //public static final Locale SITE_LOCALE = new Locale("nl", "NL");
+
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "kbnl.";
     /** Type: {@code String}. */
@@ -116,18 +115,10 @@ public class KbNlManager
 
     @NonNull
     @Override
-    public Bundle search(@NonNull final Context context,
-                         @Nullable final String isbn,
-                         @Nullable final /* not supported */ String author,
-                         @Nullable final /* not supported */ String title,
-                         @Nullable final /* not supported */ String publisher,
-                         final boolean fetchThumbnail)
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String isbn,
+                               final boolean fetchThumbnail)
             throws IOException {
-
-        //ENHANCE: implement non-isbn searches.
-        if (isbn == null || isbn.isEmpty() || !ISBN.isValid(isbn)) {
-            return new Bundle();
-        }
 
         String url = getBaseURL(context) + String.format(BOOK_URL, isbn);
 
@@ -149,9 +140,6 @@ public class KbNlManager
 
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, url, e);
-            }
             throw new IOException(e);
         }
 
@@ -219,11 +207,6 @@ public class KbNlManager
     @Override
     public String getUrl(@NonNull final Context context) {
         return getBaseURL(context);
-    }
-
-    @Override
-    public boolean requiresIsbn() {
-        return true;
     }
 
     @StringRes

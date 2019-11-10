@@ -68,15 +68,12 @@
 
         <ImageButton
             android:id="@+id/btn_swap"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/swap"
-            android:src="@drawable/ic_swap_vertical_circle"
+            style="@style/SwapButton"
             android:visibility="invisible"
             app:layout_constraintStart_toStartOf="@id/isbn"
             app:layout_constraintTop_toBottomOf="@id/isbn"
             tools:visibility="visible"
+            tools:ignore="ContentDescription"
             />
 
         <TextView

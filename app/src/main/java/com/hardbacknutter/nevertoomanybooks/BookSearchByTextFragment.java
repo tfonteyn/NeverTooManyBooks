@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
@@ -65,52 +66,43 @@ public class BookSearchByTextFragment
     private AutoCompleteTextView mAuthorView;
     /** User input field. ENHANCE: add auto-completion for publishers? */
     private EditText mPublisherView;
-
-    /** Used to set visibility on a group of widgets all related to the Publisher. */
-    private Group mPublisherGroup;
-
     private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
-            new SearchCoordinator.SearchFinishedListener() {
-                @Override
-                public void onSearchFinished(final boolean wasCancelled,
-                                             @NonNull final Bundle bookData) {
-                    try {
-                        if (!wasCancelled) {
-                            // if any of the search fields are in fact not in the result,
-                            // we add them manually as the template for a new book.
-                            if (!bookData.containsKey(DBDefinitions.KEY_TITLE)) {
-                                bookData.putString(DBDefinitions.KEY_TITLE,
-                                                   mTitleView.getText().toString().trim());
-                            }
-                            //noinspection ConstantConditions
-                            if (!bookData.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)
-                                || bookData.getParcelableArrayList(
-                                    UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
-                                // do NOT use the array, that's reserved for verified names.
-                                bookData.putString(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                                   mAuthorView.getText().toString().trim());
-                            }
-                            if (!bookData.containsKey(DBDefinitions.KEY_PUBLISHER)) {
-                                bookData.putString(DBDefinitions.KEY_PUBLISHER,
-                                                   mPublisherView.getText().toString().trim());
-                            }
-
-                            Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-                            startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-
-                            // Clear the data entry fields
-                            mAuthorView.setText("");
-                            mTitleView.setText("");
-                            mPublisherView.setText("");
-                            mBookSearchBaseModel.clearSearchText();
+            (wasCancelled, bookData) -> {
+                try {
+                    if (!wasCancelled) {
+                        // if any of the search fields are not present in the result,
+                        // we add them manually as the template for a new book.
+                        if (!bookData.containsKey(DBDefinitions.KEY_TITLE)) {
+                            bookData.putString(DBDefinitions.KEY_TITLE,
+                                               mBookSearchBaseModel.getTitleSearchText());
                         }
-                    } finally {
-                        mBookSearchBaseModel.setSearchCoordinator(0);
-                        mTaskManager.sendHeaderUpdate(null);
+                        //noinspection ConstantConditions
+                        if (!bookData.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)
+                            || bookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY)
+                                       .isEmpty()) {
+                            // do NOT use the array, that's reserved for verified names.
+                            bookData.putString(DBDefinitions.KEY_AUTHOR_FORMATTED,
+                                               mBookSearchBaseModel.getAuthorSearchText());
+                        }
+                        if (!bookData.containsKey(DBDefinitions.KEY_PUBLISHER)) {
+                            bookData.putString(DBDefinitions.KEY_PUBLISHER,
+                                               mBookSearchBaseModel.getPublisherSearchText());
+                        }
+
+                        Intent intent = new Intent(getContext(), EditBookActivity.class)
+                                .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                        startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+
+                        clearPreviousSearchCriteria();
                     }
+                } finally {
+                    mBookSearchBaseModel.setSearchCoordinator(0);
+                    // Tell our listener they can close the progress dialog.
+                    mTaskManager.sendHeaderUpdate(null);
                 }
             };
+    /** Used to set visibility on a group of widgets all related to the Publisher. */
+    private Group mPublisherGroup;
 
     @Override
     @Nullable
@@ -123,6 +115,14 @@ public class BookSearchByTextFragment
         mPublisherView = view.findViewById(R.id.publisher);
         mPublisherGroup = view.findViewById(R.id.publisher_group);
         return view;
+    }
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Mandatory
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -180,6 +180,14 @@ public class BookSearchByTextFragment
         return mSearchFinishedListener;
     }
 
+    @Override
+    void clearPreviousSearchCriteria() {
+        super.clearPreviousSearchCriteria();
+        mAuthorView.setText("");
+        mTitleView.setText("");
+        mPublisherView.setText("");
+    }
+
     private void prepareSearch() {
 
         String authorSearchText = mBookSearchBaseModel.getAuthorSearchText();
@@ -200,6 +208,14 @@ public class BookSearchByTextFragment
                     mAuthorAdapter.add(authorSearchText);
                 }
             }
+        }
+
+        //sanity check
+        if (mBookSearchBaseModel.getAuthorSearchText().isEmpty()
+            && mBookSearchBaseModel.getTitleSearchText().isEmpty()) {
+            //noinspection ConstantConditions
+            UserMessage.show(getActivity(), R.string.warning_requires_at_least_one_field);
+            return;
         }
 
         startSearch();

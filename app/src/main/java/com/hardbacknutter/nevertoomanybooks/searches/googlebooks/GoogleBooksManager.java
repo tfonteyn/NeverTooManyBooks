@@ -58,7 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * ENHANCE: Get editions via http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
  */
 public final class GoogleBooksManager
-        implements SearchEngine {
+        implements SearchEngine,
+                   SearchEngine.ByText {
 
     private static final String TAG = "GoogleBooksManager";
 

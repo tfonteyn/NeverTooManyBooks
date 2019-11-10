@@ -127,7 +127,7 @@ public final class Site
         return site;
     }
 
-    static Site newSite(@SearchSites.Id final int id) {
+    public static Site newSite(@SearchSites.Id final int id) {
         return new Site(id, SearchSites.getName(id));
     }
 

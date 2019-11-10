@@ -294,7 +294,7 @@ public final class TerminatorConnection
             try {
                 Thread.sleep(mKillDelayInMillis);
                 if (mConnection.isOpen) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+                    if (BuildConfig.DEBUG /* always */) {
                         Log.d(TAG, "run|Closing TerminatorConnection: "
                                    + mConnection.mCon.getURL());
                     }

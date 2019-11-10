@@ -1182,7 +1182,7 @@ public class BooklistStyle
             throw new IllegalStateException("mUuid.isEmpty()");
         }
 
-        //URGENT: revisit... is this to complicated/inefficient?
+        //TODO: revisit... is this to complicated/inefficient?
         Parcel parcel = Parcel.obtain();
         writeToParcel(parcel, 0);
         byte[] bytes = parcel.marshall();

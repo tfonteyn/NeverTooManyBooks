@@ -225,25 +225,13 @@ public abstract class JsoupBase {
                 //  error:1000008b:SSL routines:OPENSSL_internal:DECRYPTION_FAILED_OR_BAD_RECORD_MAC
                 //  external/boringssl/src/ssl/tls_record.c:277 0xa0d78e9f:0x00000000)
                 // at com.android.org.conscrypt.NativeCrypto.SSL_read(Native Method)
-                // at com.android.org.conscrypt.OpenSSLSocketImpl$SSLInputStream.read(OpenSSLSocketImpl.java:741)
-                // at com.android.okhttp.okio.Okio$2.read(Okio.java:136)
-                // at com.android.okhttp.okio.AsyncTimeout$2.read(AsyncTimeout.java:211)
-                // at com.android.okhttp.okio.RealBufferedSource.indexOf(RealBufferedSource.java:306)
-                // at com.android.okhttp.okio.RealBufferedSource.indexOf(RealBufferedSource.java:300)
-                // at com.android.okhttp.okio.RealBufferedSource.readUtf8LineStrict(RealBufferedSource.java:196)
-                // at com.android.okhttp.internal.http.Http1xStream.readResponse(Http1xStream.java:186)
-                // at com.android.okhttp.internal.http.Http1xStream.readResponseHeaders(Http1xStream.java:127)
-                // at com.android.okhttp.internal.http.HttpEngine.readNetworkResponse(HttpEngine.java:737)
-                // at com.android.okhttp.internal.http.HttpEngine.readResponse(HttpEngine.java:609)
-                // at com.android.okhttp.internal.huc.HttpURLConnectionImpl.execute(HttpURLConnectionImpl.java:471)
-                // at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getResponse(HttpURLConnectionImpl.java:407)
-                // at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getInputStream(HttpURLConnectionImpl.java:244)
-                // at com.android.okhttp.internal.huc.DelegatingHttpsURLConnection.getInputStream(DelegatingHttpsURLConnection.java:210)
-                // at com.android.okhttp.internal.huc.HttpsURLConnectionImpl.getInputStream(Unknown Source:0)
-                // at com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection.open(TerminatorConnection.java:190)
-                // at com.hardbacknutter.nevertoomanybooks.searches.JsoupBase.loadPage(JsoupBase.java:163)
+                // ...
+                // at com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection.open
+                // at com.hardbacknutter.nevertoomanybooks.searches.JsoupBase.loadPage
 
-                Logger.warn(App.getAppContext(), TAG, "loadPage", e);
+                Logger.warn(App.getAppContext(), TAG, "loadPage"
+                                                      + "|url=" + url
+                                                      + "|e=" + e.getLocalizedMessage());
                 // retry once.
                 if (mRetry) {
                     mRetry = false;

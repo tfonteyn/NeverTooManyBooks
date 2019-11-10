@@ -51,7 +51,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -99,11 +98,13 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
+import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
 import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
 import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
@@ -117,7 +118,7 @@ public class BooksOnBookshelf
     private static final String TAG = "BooksOnBookshelf";
 
     /** This is very important: the number of FAB sub-buttons we're using. */
-    private static final int FAB_ITEMS = 4;
+    private static final int FAB_ITEMS = 5;
 
     /**
      * Views for the current row level-text.
@@ -378,14 +379,18 @@ public class BooksOnBookshelf
         mFabButton.setOnClickListener(v -> showFABMenu(!mFabMenuItems[0].isShown()));
         mFabOverlay = findViewById(R.id.fabOverlay);
         // modify FAB_ITEMS if adding more options.
-        mFabMenuItems[0] = findViewById(R.id.fab1);
-        mFabMenuItems[0].setOnClickListener(v -> startAddByScan());
-        mFabMenuItems[1] = findViewById(R.id.fab2);
+        mFabMenuItems[0] = findViewById(R.id.fab0);
+        mFabMenuItems[0].setOnClickListener(v -> startAddBySearch(BookSearchByScanFragment.TAG));
+        mFabMenuItems[1] = findViewById(R.id.fab1);
         mFabMenuItems[1].setOnClickListener(v -> startAddBySearch(BookSearchByIsbnFragment.TAG));
-        mFabMenuItems[2] = findViewById(R.id.fab3);
+        mFabMenuItems[2] = findViewById(R.id.fab2);
         mFabMenuItems[2].setOnClickListener(v -> startAddBySearch(BookSearchByTextFragment.TAG));
-        mFabMenuItems[3] = findViewById(R.id.fab4);
+        mFabMenuItems[3] = findViewById(R.id.fab3);
         mFabMenuItems[3].setOnClickListener(v -> startAddManually());
+
+        mFabMenuItems[4] = findViewById(R.id.fab4);
+        mFabMenuItems[4]
+                .setOnClickListener(v -> startAddBySearch(BookSearchByNativeIdFragment.TAG));
     }
 
     /**
@@ -421,12 +426,15 @@ public class BooksOnBookshelf
 
         for (int i = 0; i < mFabMenuItems.length; i++) {
             ExtendedFloatingActionButton fab = mFabMenuItems[i];
-            if (show) {
-                fab.show();
-                fab.animate().translationY(base + ((i + 1) * offset));
-            } else {
-                fab.animate().translationY(0);
-                fab.hide();
+            // allow for null items
+            if (fab != null) {
+                if (show) {
+                    fab.show();
+                    fab.animate().translationY(base + ((i + 1) * offset));
+                } else {
+                    fab.animate().translationY(0);
+                    fab.hide();
+                }
             }
         }
     }
@@ -501,10 +509,6 @@ public class BooksOnBookshelf
             SubMenu debugSubMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
                                                    0, R.string.debug);
 
-            debugSubMenu.add(Menu.NONE, R.id.MENU_PREFS_SCANNER_UI, 0, R.string.menu_scanner_ui)
-                        .setCheckable(true)
-                        .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-
             //debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_STYLE, 0, "Dump style");
 
@@ -523,11 +527,6 @@ public class BooksOnBookshelf
         menu.findItem(R.id.MENU_CLEAR_FILTERS).setEnabled(!mModel.getSearchCriteria().isEmpty());
 
         hideFABMenu();
-
-        MenuItem scannerUiItem = menu.findItem(R.id.MENU_PREFS_SCANNER_UI);
-        boolean scannerHasUi = PreferenceManager.getDefaultSharedPreferences(this)
-                                                .getBoolean(Prefs.pk_scanner_has_ui, false);
-        scannerUiItem.setChecked(scannerHasUi);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -571,7 +570,7 @@ public class BooksOnBookshelf
             }
 
             case R.id.MENU_BOOK_ADD_BY_SCAN: {
-                startAddByScan();
+                startAddBySearch(BookSearchByScanFragment.TAG);
                 return true;
             }
             case R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN: {
@@ -590,14 +589,6 @@ public class BooksOnBookshelf
             default: {
                 if (BuildConfig.DEBUG  /* always */) {
                     switch (item.getItemId()) {
-                        case R.id.MENU_PREFS_SCANNER_UI:
-                            boolean isSet = !item.isChecked();
-                            item.setChecked(isSet);
-                            PreferenceManager.getDefaultSharedPreferences(this)
-                                             .edit().putBoolean(Prefs.pk_scanner_has_ui, isSet)
-                                             .apply();
-                            return true;
-
                         case R.id.MENU_DEBUG_PREFS:
                             Prefs.dumpPreferences(this, null);
                             return true;
@@ -896,14 +887,6 @@ public class BooksOnBookshelf
             savePosition();
         }
         super.onPause();
-    }
-
-
-    private void startAddByScan() {
-        Intent intent = new Intent(this, BookSearchActivity.class)
-                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
-                .putExtra(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE, true);
-        startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
     }
 
     private void startAddBySearch(@NonNull final String tag) {
@@ -1212,8 +1195,8 @@ public class BooksOnBookshelf
             String listTableName = cursor.getBuilder().createFlattenedBooklist();
             Intent intent = new Intent(this, BookDetailsActivity.class)
                     .putExtra(DBDefinitions.KEY_PK_ID, bookId)
-                    .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_TABLE, listTableName)
-                    .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_POSITION, position);
+                    .putExtra(BookDetailsFragmentModel.BKEY_FLAT_BOOKLIST_TABLE, listTableName)
+                    .putExtra(BookDetailsFragmentModel.BKEY_FLAT_BOOKLIST_POSITION, position);
             startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
 
         } else {
@@ -1692,12 +1675,13 @@ public class BooksOnBookshelf
             }
             /* ********************************************************************************** */
 
-            case R.id.MENU_VIEW_BOOK_AT_ISFDB: {
-                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_EID_ISFDB));
-                return true;
-            }
+            //NEWTHINGS: add new site specific ID: add case
             case R.id.MENU_VIEW_BOOK_AT_GOODREADS: {
                 IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
+                return true;
+            }
+            case R.id.MENU_VIEW_BOOK_AT_ISFDB: {
+                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_EID_ISFDB));
                 return true;
             }
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING: {
@@ -1708,6 +1692,12 @@ public class BooksOnBookshelf
                 IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_EID_OPEN_LIBRARY));
                 return true;
             }
+            case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE: {
+                StripInfoManager.openWebsite(this,
+                                             row.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
+                return true;
+            }
+
             /* ********************************************************************************** */
             case R.id.SUBMENU_AMAZON_SEARCH: {
                 // after the user selects the submenu, we make individual items visible/hidden.

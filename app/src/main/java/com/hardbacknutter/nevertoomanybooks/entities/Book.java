@@ -99,7 +99,7 @@ public class Book
     public static final int RATING_STARS = 5;
     /** mapping the edition bit to a resource string for displaying. Ordered. */
     @SuppressLint("UseSparseArrays")
-    public static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
+    private static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
     /**
      * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
      * <p>
@@ -206,6 +206,15 @@ public class Book
     public Book(@NonNull final Bundle bookData) {
         initAccessorsAndValidators();
         putAll(bookData);
+    }
+
+    @NonNull
+    public static Map<Integer, String> getEditions(@NonNull final Context context) {
+        Map<Integer, String> map = new LinkedHashMap<>();
+        for (Map.Entry<Integer, Integer> entry : EDITIONS.entrySet()) {
+            map.put(entry.getKey(), context.getString(entry.getValue()));
+        }
+        return map;
     }
 
     /**

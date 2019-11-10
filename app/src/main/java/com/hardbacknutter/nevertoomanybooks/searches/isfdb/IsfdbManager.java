@@ -53,7 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * 2019-10-01: "http://www.isfdb.org" is not available on https.
  */
 public class IsfdbManager
-        implements SearchEngine {
+        implements SearchEngine,
+                   SearchEngine.ByText {
 
     /**
      * The site claims to use ISO-8859-1.
@@ -63,10 +64,9 @@ public class IsfdbManager
      * but the real encoding seems to be Windows-1252.
      * For example, a books list price with a specific currency symbol (e.g. dutch guilders)
      * fails to be decoded unless we force Windows-1252
+     * (tested with UTF-8 similarly fails to decode those symbols)
      */
     static final String CHARSET_DECODE_PAGE = "Windows-1252";
-//    static final String CHARSET_DECODE_PAGE="ISO-8859-1";
-//    static final String CHARSET_DECODE_PAGE="UTF-8";
 
     /** But to encode the search url (a GET), the charset must be 8859-1. */
     @SuppressWarnings("WeakerAccess")
@@ -89,7 +89,6 @@ public class IsfdbManager
     static final String URL_SE_CGI = "se.cgi";
     /** Advanced search FORM submission (using GET), and the returned results page url. */
     static final String URL_ADV_SEARCH_RESULTS_CGI = "adv_search_results.cgi";
-
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "isfdb.";

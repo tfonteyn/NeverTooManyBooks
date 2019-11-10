@@ -94,7 +94,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
  * Class to wrap all Goodreads calls and manage a connection.
  */
 public class GoodreadsManager
-        implements SearchEngine {
+        implements SearchEngine,
+                   SearchEngine.ByIsbn,
+                   SearchEngine.ByText,
+                   SearchEngine.CoverByIsbn {
 
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
@@ -775,6 +778,21 @@ public class GoodreadsManager
         }
     }
 
+    @NonNull
+    @Override
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String isbn,
+                               final boolean fetchThumbnail)
+            throws CredentialsException, IOException {
+        try {
+            return getBookByIsbn(context, isbn, fetchThumbnail);
+
+        } catch (@NonNull final BookNotFoundException e) {
+            // to bad.
+            return new Bundle();
+        }
+    }
+
     /**
      * Search for a book.
      * <p>
@@ -795,11 +813,7 @@ public class GoodreadsManager
                    IOException {
 
         try {
-            // getBookByIsbn will check on isbn being valid.
-            if (isbn != null && !isbn.isEmpty()) {
-                return getBookByIsbn(context, isbn, fetchThumbnail);
-
-            } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
+            if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
                 List<GoodreadsWork> goodreadsWorks = new SearchBooksApiHandler(this)
                         .search(author + ' ' + title);
 
@@ -827,6 +841,7 @@ public class GoodreadsManager
         if (!hasValidCredentials()) {
             return null;
         }
+
         return getCoverImageFallback(context, isbn);
     }
 

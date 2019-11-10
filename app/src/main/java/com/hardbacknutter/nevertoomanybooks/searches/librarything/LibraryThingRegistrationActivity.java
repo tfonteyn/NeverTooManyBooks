@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.librarything;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -138,10 +139,11 @@ public class LibraryThingRegistrationActivity
         protected Integer doInBackground(final Void... params) {
             Thread.currentThread().setName("LT.ValidateKey");
 
+            Context context = App.getAppContext();
             try {
                 LibraryThingManager ltm = new LibraryThingManager();
-                File tmpFile = ltm.getCoverImage(App.getAppContext(),
-                                                 "0451451783", SearchEngine.ImageSize.Small);
+                File tmpFile = ltm.getCoverImage(context, "0451451783",
+                                                 SearchEngine.CoverByIsbn.ImageSize.Small);
                 if (tmpFile != null) {
                     tmpFile.deleteOnExit();
                     long length = tmpFile.length();
@@ -160,7 +162,7 @@ public class LibraryThingRegistrationActivity
                 return R.string.warning_cover_not_found;
 
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(App.getAppContext(), TAG, e);
+                Logger.error(context, TAG, e);
                 mException = e;
                 return R.string.error_unexpected_error;
             }

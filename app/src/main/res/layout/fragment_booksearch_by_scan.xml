@@ -27,30 +27,20 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    style="@style/DialogFrame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
     >
 
-    <AutoCompleteTextView
-        android:id="@+id/name"
-        style="@style/autoCompleteTextEntry"
-        android:hint="@string/lbl_location"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="Autofill"
+    <Button
+        android:id="@+id/btn_scan"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/scan"
+        app:icon="@drawable/ic_photo_camera"
+        app:iconGravity="textStart"
         />
-
-    <TextView
-        android:id="@+id/blurb"
-        style="@style/Blurb"
-        android:text="@string/warning_immediate_global_changes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/name"
-        />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

@@ -174,6 +174,7 @@
     <string name="warning_requires_at_least_one_field">At least one field must not be blank.</string>
     <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
     <string name="warning_requires_date">Please add a valid date.</string>
+    <string name="warning_requires_id_and_site">An id must be entered and a site selected.</string>
 
     <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
     <string name="warning_missing_name">Name can not be blank</string>
@@ -1536,5 +1537,10 @@
     -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
     <string name="menu_scanner_ui">Scanner UI</string>
+
+    <string name="menu_add_book_native_id">Add by site book id</string>
+    <string name="lbl_site_book_id">Site book ID</string>
+    <string name="info_search_by_native_id">Select a site.</string>
+    <string name="scan">Scan</string>
 
 </resources>

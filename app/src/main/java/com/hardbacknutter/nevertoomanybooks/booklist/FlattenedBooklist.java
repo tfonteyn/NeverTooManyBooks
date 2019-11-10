@@ -34,6 +34,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -91,15 +92,15 @@ public class FlattenedBooklist
     /**
      * Constructor.
      *
-     * @param syncedDb  the database
+     * @param db        Database Access
      * @param tableName Name of underlying and <strong>existing</strong> table
      */
-    public FlattenedBooklist(@NonNull final SynchronizedDb syncedDb,
+    public FlattenedBooklist(@NonNull final DAO db,
                              @NonNull final String tableName) {
         TableDefinition table = DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR.clone();
         table.setName(tableName);
 
-        mSyncedDb = syncedDb;
+        mSyncedDb = db.getUnderlyingDatabase();
         mTable = table;
         mStatements = new SqlStatementManager(mSyncedDb);
     }

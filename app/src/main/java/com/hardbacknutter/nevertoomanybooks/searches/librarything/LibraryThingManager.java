@@ -93,7 +93,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
  * and use the href.
  */
 public class LibraryThingManager
-        implements SearchEngine {
+        implements SearchEngine,
+                   SearchEngine.ByIsbn,
+                   SearchEngine.CoverByIsbn {
 
     private static final String TAG = "LibraryThingManager";
 
@@ -208,7 +210,10 @@ public class LibraryThingManager
      * <p>
      * No dev-key needed for this call.
      *
-     * @param isbn to lookup. Must be a valid ISBN
+     * <strong>Note:</strong> we assume the isbn numbers from the site are valid.
+     * No extra checks are made.
+     *
+     * @param isbn to search for, <strong>must</strong> be valid.
      *
      * @return a list of isbn's of alternative editions of our original isbn, can be empty.
      */
@@ -243,11 +248,7 @@ public class LibraryThingManager
         try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
-            // Don't bother catching general exceptions, they will be caught by the caller.
-        } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, url, e);
-            }
+        } catch (@NonNull final ParserConfigurationException | SAXException | IOException ignore) {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
@@ -289,31 +290,15 @@ public class LibraryThingManager
 
     /**
      * Dev-key needed for this call.
-     * <br>Only the ISBN is supported.
-     *
-     * @param context   Current context (i.e. with the current Locale)
-     * @param isbn      to lookup. Must be a valid ISBN
-     * @param author    unused
-     * @param title     unused
-     * @param publisher unused
-     *                  <br>
-     *                  <br>{@inheritDoc}
+     * <p>
+     * {@inheritDoc}
      */
     @NonNull
     @Override
-    @WorkerThread
-    public Bundle search(@NonNull final Context context,
-                         @Nullable final String isbn,
-                         @Nullable final /* not supported */ String author,
-                         @Nullable final /* not supported */ String title,
-                         @Nullable final /* not supported */ String publisher,
-                         final boolean fetchThumbnail)
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String isbn,
+                               final boolean fetchThumbnail)
             throws IOException {
-
-        // sanity check
-        if (!ISBN.isValid(isbn)) {
-            return new Bundle();
-        }
 
         // Base path for an ISBN search
         String url = String.format(DETAIL_URL, getDevKey(), isbn);
@@ -332,9 +317,6 @@ public class LibraryThingManager
             parser.parse(con.inputStream, handler);
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, url, e);
-            }
             throw new IOException(e);
         }
 
@@ -352,10 +334,6 @@ public class LibraryThingManager
                               @NonNull final String isbn,
                               @Nullable final ImageSize size) {
 
-        // sanity check
-        if (!hasKey()) {
-            return null;
-        }
         // sanity check
         if (!ISBN.isValid(isbn)) {
             return null;
@@ -401,11 +379,6 @@ public class LibraryThingManager
     @Override
     public String getUrl(@NonNull final Context context) {
         return getBaseURL(context);
-    }
-
-    @Override
-    public boolean requiresIsbn() {
-        return true;
     }
 
     @Override

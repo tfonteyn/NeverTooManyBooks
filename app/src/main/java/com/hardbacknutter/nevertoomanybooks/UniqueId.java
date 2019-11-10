@@ -111,6 +111,8 @@ public final class UniqueId {
     public static final String BKEY_SEARCH_TITLE = "searchTitle";
     /** Bundle key for Series title search text. */
     public static final String BKEY_SEARCH_SERIES_TITLE = "searchSeriesTitle";
+    /** Bundle key for Book native swe site id search text. */
+    public static final String BKEY_SEARCH_BOOK_NATIVE_ID = "";
 
     /**
      * Single fileSpecs or uri.

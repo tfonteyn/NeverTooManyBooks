@@ -31,6 +31,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -48,16 +50,38 @@ public class EditBookPublicationFragment
 
     public static final String TAG = "EditBookPublicationFragment";
 
+    private View mPagesView;
+    private AutoCompleteTextView mFormatView;
+    private AutoCompleteTextView mColorView;
+    private AutoCompleteTextView mLanguageView;
+    private AutoCompleteTextView mPublisherView;
+    private View mDatePublishedView;
+    private View mPrintRunView;
+    private View mFirstPubView;
+    private EditText mPriceListedView;
+    private AutoCompleteTextView mPriceListedCurrencyView;
+
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_book_publication, container, false);
+        View view = inflater.inflate(R.layout.fragment_edit_book_publication, container, false);
+        mPagesView = view.findViewById(R.id.pages);
+        mFormatView = view.findViewById(R.id.format);
+        mColorView = view.findViewById(R.id.color);
+        mLanguageView = view.findViewById(R.id.language);
+        mPublisherView = view.findViewById(R.id.publisher);
+        mDatePublishedView = view.findViewById(R.id.date_published);
+        mPrintRunView = view.findViewById(R.id.print_run);
+        mFirstPubView = view.findViewById(R.id.first_publication);
+        mPriceListedView = view.findViewById(R.id.price_listed);
+        mPriceListedCurrencyView = view.findViewById(R.id.price_listed_currency);
+        return view;
     }
 
     /**
-     * Some fields are only present (or need specific handling) on {@link BookFragment}.
+     * Some fields are only present (or need specific handling) on {@link BookDetailsFragment}.
      * <p>
      * <br>{@inheritDoc}
      */
@@ -73,50 +97,54 @@ public class EditBookPublicationFragment
 
         // book fields
 
-        fields.addString(R.id.pages, DBDefinitions.KEY_PAGES)
+        fields.addString(R.id.pages, mPagesView, DBDefinitions.KEY_PAGES)
               .setRelatedFields(R.id.lbl_pages);
 
-        field = fields.addString(R.id.format, DBDefinitions.KEY_FORMAT)
+        field = fields.addString(R.id.format, mFormatView, DBDefinitions.KEY_FORMAT)
                       .setRelatedFields(R.id.lbl_format);
-        initValuePicker(field, R.string.lbl_format, R.id.btn_format,
+        initValuePicker(field, mFormatView, R.string.lbl_format, R.id.btn_format,
                         mBookModel.getFormats());
 
-        field = fields.addString(R.id.color, DBDefinitions.KEY_COLOR)
+        field = fields.addString(R.id.color, mColorView, DBDefinitions.KEY_COLOR)
                       .setRelatedFields(R.id.lbl_color);
-        initValuePicker(field, R.string.lbl_color, R.id.btn_color,
+        initValuePicker(field, mColorView, R.string.lbl_color, R.id.btn_color,
                         mBookModel.getColors());
 
-        field = fields.addString(R.id.language, DBDefinitions.KEY_LANGUAGE)
+        field = fields.addString(R.id.language, mLanguageView, DBDefinitions.KEY_LANGUAGE)
                       .setFormatter(new Fields.LanguageFormatter())
                       .setRelatedFields(R.id.lbl_language);
-        initValuePicker(field, R.string.lbl_language, R.id.btn_language,
+        initValuePicker(field, mLanguageView, R.string.lbl_language, R.id.btn_language,
                         mBookModel.getLanguagesCodes());
 
-        field = fields.addString(R.id.publisher, DBDefinitions.KEY_PUBLISHER)
+        field = fields.addString(R.id.publisher, mPublisherView, DBDefinitions.KEY_PUBLISHER)
                       .setRelatedFields(R.id.lbl_publisher);
-        initValuePicker(field, R.string.lbl_publisher, R.id.btn_publisher,
+        initValuePicker(field, mPublisherView, R.string.lbl_publisher, R.id.btn_publisher,
                         mBookModel.getPublishers());
 
-        field = fields.addString(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
+        field = fields.addString(R.id.date_published, mDatePublishedView,
+                                 DBDefinitions.KEY_DATE_PUBLISHED)
                       .setFormatter(dateFormatter)
                       .setRelatedFields(R.id.lbl_date_published);
-        initPartialDatePicker(field, R.string.lbl_date_published, false);
+        initPartialDatePicker(field, mDatePublishedView, R.string.lbl_date_published, false);
 
-        fields.addString(R.id.print_run, DBDefinitions.KEY_PRINT_RUN)
+        fields.addString(R.id.print_run, mPrintRunView, DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
-        field = fields.addString(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
+        field = fields.addString(R.id.first_publication, mFirstPubView,
+                                 DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
                       .setFormatter(dateFormatter)
                       .setRelatedFields(R.id.lbl_first_publication);
-        initPartialDatePicker(field, R.string.lbl_first_publication, false);
+        initPartialDatePicker(field, mFirstPubView, R.string.lbl_first_publication, false);
 
-        fields.addMonetary(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED)
+        fields.addMonetary(R.id.price_listed, mPriceListedView, DBDefinitions.KEY_PRICE_LISTED)
               .setInputIsDecimal();
 
         field = fields
-                .addString(R.id.price_listed_currency, DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
+                .addString(R.id.price_listed_currency, mPriceListedCurrencyView,
+                           DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
                 .setRelatedFields(R.id.lbl_price_listed, R.id.price_listed_currency);
-        initValuePicker(field, R.string.lbl_currency, R.id.btn_price_listed_currency,
+        initValuePicker(field, mPriceListedCurrencyView, R.string.lbl_currency,
+                        R.id.btn_price_listed_currency,
                         mBookModel.getListPriceCurrencyCodes());
     }
 

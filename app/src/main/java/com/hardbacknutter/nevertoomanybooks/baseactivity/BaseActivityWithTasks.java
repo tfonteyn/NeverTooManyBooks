@@ -227,7 +227,7 @@ public abstract class BaseActivityWithTasks
 
             // Create if necessary
             if (mTaskManager == null) {
-                TaskManager taskManager = new TaskManager(this);
+                TaskManager taskManager = new TaskManager();
                 mTaskManagerId = taskManager.getId();
                 mTaskManager = taskManager;
             }

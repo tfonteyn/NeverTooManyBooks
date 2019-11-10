@@ -573,5 +573,14 @@
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
+    <style name="SwapButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:contentDescription">@string/swap</item>
+        <item name="android:tint">?attr/checked_icon_tint</item>
+        <item name="android:src">@drawable/ic_swap_vertical_circle</item>
+    </style>
+
     <!-- *************************************************************************************** -->
 </resources>

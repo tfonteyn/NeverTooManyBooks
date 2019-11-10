@@ -121,6 +121,38 @@ public class EditBookTocFragment
     private RecyclerView mListView;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
+
+    private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
+            new ConfirmTocDialogFragment.ConfirmTocResults() {
+                /**
+                 * The user approved, so add the TOC to the list and refresh the screen
+                 * (still not saved to database).
+                 */
+                public void commitIsfdbData(final long tocBitMask,
+                                            @NonNull final List<TocEntry> tocEntries) {
+                    if (tocBitMask != 0) {
+                        Book book = mBookModel.getBook();
+                        book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
+                        getFields().getField(R.id.cbx_is_anthology).setValueFrom(book);
+                        getFields().getField(R.id.cbx_multiple_authors).setValueFrom(book);
+                    }
+
+                    mList.addAll(tocEntries);
+                    mListAdapter.notifyDataSetChanged();
+                }
+
+                /**
+                 * Start a task to get the next edition of this book (that we know of).
+                 */
+                public void getNextEdition() {
+                    // remove the top one, and try again
+                    mIsfdbEditions.remove(0);
+                    new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
+                                         mIsfdbResultsListener).execute();
+                }
+            };
+    private CompoundButton mIsAnthologyCbx;
+
     /**
      * ISFDB editions of a book(isbn).
      * We'll try them one by one if the user asks for a re-try.
@@ -189,37 +221,9 @@ public class EditBookTocFragment
             }
         }
     };
-    private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
-            new ConfirmTocDialogFragment.ConfirmTocResults() {
-                /**
-                 * The user approved, so add the TOC to the list and refresh the screen
-                 * (still not saved to database).
-                 */
-                public void commitIsfdbData(final long tocBitMask,
-                                            @NonNull final List<TocEntry> tocEntries) {
-                    if (tocBitMask != 0) {
-                        Book book = mBookModel.getBook();
-                        book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-                        getField(R.id.cbx_is_anthology).setValueFrom(book);
-                        getField(R.id.cbx_multiple_authors).setValueFrom(book);
-                    }
-
-                    mList.addAll(tocEntries);
-                    mListAdapter.notifyDataSetChanged();
-                }
-
-                /**
-                 * Start a task to get the next edition of this book (that we know of).
-                 */
-                public void getNextEdition() {
-                    // remove the top one, and try again
-                    mIsfdbEditions.remove(0);
-                    new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
-                                         mIsfdbResultsListener).execute();
-                }
-            };
     /** checkbox to hide/show the author edit field. */
     private CompoundButton mMultiAuthorsView;
+
     /** Hold the item position in the ist while we're editing an item. */
     @Nullable
     private Integer mEditPosition;
@@ -249,6 +253,8 @@ public class EditBookTocFragment
                              @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_book_toc, container, false);
         mListView = view.findViewById(android.R.id.list);
+        mIsAnthologyCbx = view.findViewById(R.id.cbx_is_anthology);
+        mMultiAuthorsView = view.findViewById(R.id.cbx_multiple_authors);
         return view;
     }
 
@@ -266,11 +272,11 @@ public class EditBookTocFragment
     protected void initFields() {
         super.initFields();
         Fields fields = getFields();
-        // Anthology is provided as a bitmask, see {@link Book#initAccessorsAndValidators()}
-        fields.addBoolean(R.id.cbx_is_anthology, Book.HAS_MULTIPLE_WORKS);
 
-        mMultiAuthorsView = fields.addBoolean(R.id.cbx_multiple_authors, Book.HAS_MULTIPLE_AUTHORS)
-                                  .getView();
+        // Anthology is provided as a bitmask, see {@link Book#initAccessorsAndValidators()}
+        fields.addBoolean(R.id.cbx_is_anthology, mIsAnthologyCbx, Book.HAS_MULTIPLE_WORKS);
+
+        fields.addBoolean(R.id.cbx_multiple_authors, mMultiAuthorsView, Book.HAS_MULTIPLE_AUTHORS);
 
         // adding a new TOC entry
         //noinspection ConstantConditions
