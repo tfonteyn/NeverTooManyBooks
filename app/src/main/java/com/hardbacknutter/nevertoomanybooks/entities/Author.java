@@ -85,10 +85,8 @@ public class Author
      * NEWTHINGS: author type: add a bit flag
      * Never change the bit value!
      */
-    /**
-     * Generic Author; the default. When we basically have a single person who created the book.
-     * They could be just the writer, or they might in addition have done illustrations etc...
-     */
+
+    /** Generic Author; the default. A single person created the book. */
     public static final int TYPE_UNKNOWN = 0b0000_0000_0000_0000;
 
     /** primary or only writer. i.e. in contrast to any of the below. */
@@ -106,10 +104,16 @@ public class Author
     /** generic collaborator. */
     public static final int TYPE_CONTRIBUTOR = 0b0000_0000_1000_0000;
 
+
     /** cover artist. */
     public static final int TYPE_COVER_ARTIST = 0b0000_0001_0000_0000;
+    /** cover artist. */
+    public static final int TYPE_COVER_INKING = 0b0000_0010_0000_0000;
+
+//    public static final int TYPE_ = 0b0000_0100_0000_0000;
     /** cover colorist. */
     public static final int TYPE_COVER_COLORIST = 0b0000_1000_0000_0000;
+
 
     /** Internal art work; could be illustrations, or the pages of a comic. */
     public static final int TYPE_ARTIST = 0b0001_0000_0000_0000;
@@ -120,6 +124,8 @@ public class Author
 
     /** internal colorist. */
     public static final int TYPE_COLORIST = 0b1000_0000_0000_0000;
+
+    //    15 more bits available in the higher word (minus the sign-bit)
 
 
     /** String encoding use: separator between family name and given-names. */
@@ -186,6 +192,7 @@ public class Author
         TYPES.put(TYPE_ARTIST, R.string.lbl_author_type_artist);
         TYPES.put(TYPE_INKING, R.string.lbl_author_type_inking);
         TYPES.put(TYPE_COLORIST, R.string.lbl_author_type_colorist);
+
         TYPES.put(TYPE_COVER_ARTIST, R.string.lbl_author_type_cover_artist);
         TYPES.put(TYPE_COVER_INKING, R.string.lbl_author_type_cover_inking);
         TYPES.put(TYPE_COVER_COLORIST, R.string.lbl_author_type_cover_colorist);
