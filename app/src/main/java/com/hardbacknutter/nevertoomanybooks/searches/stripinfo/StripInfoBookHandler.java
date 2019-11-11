@@ -283,9 +283,16 @@ public class StripInfoBookHandler
                         case "Kleuren":
                             i += processAuthor(td, Author.TYPE_COLORIST);
                             break;
+                        case "Inkting":
+                            i += processAuthor(td, Author.TYPE_INKING);
+                            break;
 
                         case "Cover":
                             i += processAuthor(td, Author.TYPE_COVER_ARTIST);
+                            break;
+
+                        case "Inkting cover":
+                            i += processAuthor(td, Author.TYPE_COVER_INKING);
                             break;
 
                         case "Vertaling":

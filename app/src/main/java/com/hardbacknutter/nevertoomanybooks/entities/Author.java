@@ -93,6 +93,9 @@ public class Author
 
     /** primary or only writer. i.e. in contrast to any of the below. */
     public static final int TYPE_WRITER = 0b0000_0000_0000_0001;
+//    public static final int TYPE_ = 0b0000_0000_0000_0010;
+//    public static final int TYPE_ = 0b0000_0000_0000_0100;
+//    public static final int TYPE_ = 0b0000_0000_0000_1000;
 
     /** translator. */
     public static final int TYPE_TRANSLATOR = 0b0000_0000_0001_0000;
@@ -110,6 +113,11 @@ public class Author
 
     /** Internal art work; could be illustrations, or the pages of a comic. */
     public static final int TYPE_ARTIST = 0b0001_0000_0000_0000;
+    /** Internal art work (if addition to artwork); comics. */
+    public static final int TYPE_INKING = 0b0010_0000_0000_0000;
+
+//    public static final int TYPE_ = 0b0100_0000_0000_0000;
+
     /** internal colorist. */
     public static final int TYPE_COLORIST = 0b1000_0000_0000_0000;
 
@@ -119,12 +127,12 @@ public class Author
     @SuppressLint("UseSparseArrays")
     private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
     /** All valid bits for the type. */
-    private static final int TYPE_MASK = TYPE_UNKNOWN
-                                         | TYPE_WRITER
-                                         | TYPE_TRANSLATOR | TYPE_INTRODUCTION
-                                         | TYPE_EDITOR | TYPE_CONTRIBUTOR
-                                         | TYPE_COVER_ARTIST | TYPE_COVER_COLORIST
-                                         | TYPE_ARTIST | TYPE_COLORIST;
+    private static final int TYPE_MASK =
+            TYPE_UNKNOWN
+            | TYPE_WRITER
+            | TYPE_TRANSLATOR | TYPE_INTRODUCTION | TYPE_EDITOR | TYPE_CONTRIBUTOR
+            | TYPE_COVER_ARTIST | TYPE_COVER_INKING | TYPE_COVER_COLORIST
+            | TYPE_ARTIST | TYPE_INKING | TYPE_COLORIST;
     /**
      * ENHANCE: author middle name; needs internationalisation ?
      * <p>
@@ -176,8 +184,10 @@ public class Author
         TYPES.put(TYPE_CONTRIBUTOR, R.string.lbl_author_type_contributor);
 
         TYPES.put(TYPE_ARTIST, R.string.lbl_author_type_artist);
+        TYPES.put(TYPE_INKING, R.string.lbl_author_type_inking);
         TYPES.put(TYPE_COLORIST, R.string.lbl_author_type_colorist);
         TYPES.put(TYPE_COVER_ARTIST, R.string.lbl_author_type_cover_artist);
+        TYPES.put(TYPE_COVER_INKING, R.string.lbl_author_type_cover_inking);
         TYPES.put(TYPE_COVER_COLORIST, R.string.lbl_author_type_cover_colorist);
     }
 

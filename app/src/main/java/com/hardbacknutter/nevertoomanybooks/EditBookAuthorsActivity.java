@@ -379,10 +379,14 @@ public class EditBookAuthorsActivity
                              root.findViewById(R.id.cbx_author_type_editor));
             mTypeButtons.put(Author.TYPE_ARTIST,
                              root.findViewById(R.id.cbx_author_type_artist));
+            mTypeButtons.put(Author.TYPE_INKING,
+                             root.findViewById(R.id.cbx_author_type_inking));
             mTypeButtons.put(Author.TYPE_COLORIST,
                              root.findViewById(R.id.cbx_author_type_colorist));
             mTypeButtons.put(Author.TYPE_COVER_ARTIST,
                              root.findViewById(R.id.cbx_author_type_cover_artist));
+            mTypeButtons.put(Author.TYPE_COVER_INKING,
+                             root.findViewById(R.id.cbx_author_type_cover_inking));
             mTypeButtons.put(Author.TYPE_COVER_COLORIST,
                              root.findViewById(R.id.cbx_author_type_cover_colorist));
 

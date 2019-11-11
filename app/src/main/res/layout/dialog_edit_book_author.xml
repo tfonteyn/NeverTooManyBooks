@@ -177,12 +177,21 @@
             />
 
         <CheckBox
+            android:id="@+id/cbx_author_type_inking"
+            style="@style/CheckboxEntry"
+            android:text="@string/lbl_author_type_inking"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/middleDivider"
+            app:layout_constraintTop_toBottomOf="@id/cbx_author_type_artist"
+            />
+
+        <CheckBox
             android:id="@+id/cbx_author_type_colorist"
             style="@style/CheckboxEntry"
             android:text="@string/lbl_author_type_colorist"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/middleDivider"
-            app:layout_constraintTop_toBottomOf="@id/cbx_author_type_artist"
+            app:layout_constraintTop_toBottomOf="@id/cbx_author_type_inking"
             />
 
         <CheckBox
@@ -195,12 +204,21 @@
             />
 
         <CheckBox
+            android:id="@+id/cbx_author_type_cover_inking"
+            style="@style/CheckboxEntry"
+            android:text="@string/lbl_author_type_cover_inking"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/middleDivider"
+            app:layout_constraintTop_toBottomOf="@id/cbx_author_type_cover_artist"
+            />
+
+        <CheckBox
             android:id="@+id/cbx_author_type_cover_colorist"
             style="@style/CheckboxEntry"
             android:text="@string/lbl_author_type_cover_colorist"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/middleDivider"
-            app:layout_constraintTop_toBottomOf="@id/cbx_author_type_cover_artist"
+            app:layout_constraintTop_toBottomOf="@id/cbx_author_type_cover_inking"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1192,7 +1192,8 @@
     <string name="style_builtin_read_and_unread">Read/Unread</string>
     <string name="style_builtin_read_date">Date Read</string>
     <string name="style_builtin_series">Series</string>
-    <string name="style_builtin_title_first_letter">Title first letter</string>
+    <string name="style_builtin_title_first_letter">Title 1st letter</string>
+    <string name="style_builtin_series_title_first_letter">Series title 1st letter</string>
     <string name="style_builtin_unread">Unread (Author/Series)</string>
     <string name="style_builtin_update_date">Date updated</string>
 
@@ -1325,9 +1326,11 @@
     <string name="lbl_author_type_intro">Introduction etc.</string>
     <!-- Interior art / illustrations -->
     <string name="lbl_author_type_artist">illustrations</string>
+    <string name="lbl_author_type_inking">Inking</string>
     <string name="lbl_author_type_colorist">colorist</string>
     <!-- Cover art / Cover illustration -->
     <string name="lbl_author_type_cover_artist">Cover art</string>
+    <string name="lbl_author_type_cover_inking">Cover inking</string>
     <string name="lbl_author_type_cover_colorist">Cover colorist</string>
 
     <!-- Book edition -->
@@ -1542,5 +1545,6 @@
     <string name="lbl_site_book_id">Site book ID</string>
     <string name="info_search_by_native_id">Select a site.</string>
     <string name="scan">Scan</string>
+
 
 </resources>

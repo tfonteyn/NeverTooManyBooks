@@ -36,7 +36,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_ARTIST;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_COLORIST;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_CONTRIBUTOR;
+import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_COVER_INKING;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_EDITOR;
+import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_INKING;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_TRANSLATOR;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_UNKNOWN;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_WRITER;
@@ -75,6 +77,8 @@ public class AuthorTypeMapper {
         // Dutch, unless listed above
         MAPPER.put("Scenario", TYPE_WRITER);
         MAPPER.put("Tekeningen", TYPE_ARTIST);
+        MAPPER.put("Inkting", TYPE_INKING);
+        MAPPER.put("Inkting cover", TYPE_COVER_INKING);
         MAPPER.put("Inkleuring", TYPE_COLORIST);
 
         // German, unless listed above
