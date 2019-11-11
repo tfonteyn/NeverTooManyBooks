@@ -69,23 +69,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  */
 public class SearchCoordinator {
 
-    /**
-     * STATIC Object for passing messages from background tasks to activities
-     * that may be recreated.
-     * <p>
-     * This object handles all underlying task messages for every instance of this class.
-     */
-    public static final MessageSwitch<OnSearchFinishedListener, SearchCoordinator>
-            MESSAGE_SWITCH = new MessageSwitch<>();
-
     /** log tag. */
     private static final String TAG = "SearchCoordinator";
+
     /** divider to convert nanoseconds to milliseconds. */
     private static final int TO_MILLIS = 1_000_000;
-
-    /** Unique identifier for this instance. */
-    @NonNull
-    private final Long mId;
 
     /** List of ManagedTask being managed by *this* object. */
     @NonNull
@@ -108,24 +96,8 @@ public class SearchCoordinator {
     private final Map<Integer, Bundle> mSearchResults =
             Collections.synchronizedMap(new HashMap<>());
 
-    /**
-     * MessageSwitch Controller instance (strong reference) for this object.
-     */
-    @SuppressWarnings("FieldCanBeLocal")
-    private final MessageSwitch.Controller<SearchCoordinator> mController =
-            new MessageSwitch.Controller<SearchCoordinator>() {
-
-                @Override
-                public void requestAbort() {
-                    mTaskManager.cancelActiveTasks();
-                }
-
-                @NonNull
-                @Override
-                public SearchCoordinator get() {
-                    return SearchCoordinator.this;
-                }
-            };
+    @NonNull
+    private final OnSearchFinishedListener mOnSearchFinishedListener;
 
     /** Sites to search on. */
     private ArrayList<Site> mSearchSites;
@@ -227,10 +199,7 @@ public class SearchCoordinator {
      */
     public SearchCoordinator(@NonNull final TaskManager taskManager,
                              @NonNull final OnSearchFinishedListener onSearchFinishedListener) {
-
-        // prepare our own message switch
-        mId = MESSAGE_SWITCH.createSender(mController);
-        MESSAGE_SWITCH.addListener(mId, false, onSearchFinishedListener);
+        mOnSearchFinishedListener = onSearchFinishedListener;
 
         mTaskManager = taskManager;
         // Tell the TaskManager to send us ManagedTask messages.
@@ -256,11 +225,6 @@ public class SearchCoordinator {
     private static boolean hasIsbn(@NonNull final Bundle bundle) {
         String s = bundle.getString(DBDefinitions.KEY_ISBN);
         return s != null && !s.trim().isEmpty();
-    }
-
-    @NonNull
-    public Long getId() {
-        return mId;
     }
 
     public void setSearchSites(@NonNull final ArrayList<Site> searchSites) {
@@ -305,11 +269,13 @@ public class SearchCoordinator {
      * @param author    to search for (can be empty)
      * @param title     to search for (can be empty)
      * @param publisher to search for (can be empty)
+     *
+     * @return {@code true} if at least one search was started.
      */
-    public void search(@NonNull final String isbn,
-                       @NonNull final String author,
-                       @NonNull final String title,
-                       @NonNull final String publisher) {
+    public boolean search(@NonNull final String isbn,
+                          @NonNull final String author,
+                          @NonNull final String title,
+                          @NonNull final String publisher) {
 
         if (mSearchSites == null) {
             throw new IllegalArgumentException("call setSearchSites() first");
@@ -321,34 +287,26 @@ public class SearchCoordinator {
         // not present, search the sites one at a time until we get an isbn
         boolean tasksStarted = false;
 
-        try {
-            if (mIsbn != null && !mIsbn.isEmpty()) {
-                mWaitingForIsbn = false;
-                if (mHasValidIsbn) {
-                    tasksStarted = startSearches(mSearchSites);
+        if (mIsbn != null && !mIsbn.isEmpty()) {
+            mWaitingForIsbn = false;
+            if (mHasValidIsbn) {
+                tasksStarted = startSearches(mSearchSites);
 
-                } else if (SearchSites.ENABLE_AMAZON_AWS) {
-                    // Assume it's an ASIN, and just search Amazon
-                    mSearchingAsin = true;
-                    ArrayList<Site> amazon = new ArrayList<>();
-                    amazon.add(Site.newSite(SearchSites.AMAZON));
-                    tasksStarted = startSearches(amazon);
-                }
-            } else {
-                // Run one at a time until we find an ISBN.
-                mWaitingForIsbn = true;
-                tasksStarted = startNext();
+            } else if (SearchSites.ENABLE_AMAZON_AWS) {
+                // Assume it's an ASIN, and just search Amazon
+                mSearchingAsin = true;
+                ArrayList<Site> amazon = new ArrayList<>();
+                amazon.add(Site.newSite(SearchSites.AMAZON));
+                tasksStarted = startSearches(amazon);
             }
-        } finally {
-            // if we did not start any tasks we are done.
-            if (!tasksStarted) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "search|calling sendResults()");
-                }
-
-                sendResults(false);
-            }
+        } else {
+            // Run one at a time until we find an ISBN. This in return will start
+            // a new search using that ISBN.
+            mWaitingForIsbn = true;
+            tasksStarted = startNext();
         }
+
+        return tasksStarted;
     }
 
     private void prepareSearch(@NonNull final String nativeId,
@@ -369,25 +327,25 @@ public class SearchCoordinator {
                        + "|publisher=" + publisher);
         }
 
-        // Developer sanity check
-        if (NetworkUtils.networkUnavailable()) {
-            throw new IllegalStateException("network should be checked before starting search");
-        }
+        // Developer sanity checks
+        if (BuildConfig.DEBUG /* always */) {
+            if (NetworkUtils.networkUnavailable()) {
+                throw new IllegalStateException("network should be checked before starting search");
+            }
 
-        // Developer sanity check
-        if (!mActiveTasks.isEmpty()) {
-            throw new IllegalStateException("don't start a new search while a search is running");
-        }
+            if (!mActiveTasks.isEmpty()) {
+                throw new IllegalStateException("a search is already running");
+            }
 
-        // Developer sanity check
-        // Note we don't care about publisher.
-        if (author.isEmpty() && title.isEmpty() && isbn.isEmpty() && nativeId.isEmpty()) {
-            throw new IllegalArgumentException("Must specify at least one criteria non-empty:"
-                                               + " nativeId=" + nativeId
-                                               + ", isbn=" + isbn
-                                               + ", author=" + author
-                                               + ", publisher=" + publisher
-                                               + ", title=" + title);
+            // Note we don't care about publisher.
+            if (author.isEmpty() && title.isEmpty() && isbn.isEmpty() && nativeId.isEmpty()) {
+                throw new IllegalArgumentException("Must specify at least one non-empty criteria|"
+                                                   + "|nativeId=" + nativeId
+                                                   + "|isbn=" + isbn
+                                                   + "|author=" + author
+                                                   + "|title=" + title
+                                                   + "|publisher=" + publisher);
+            }
         }
 
         mWaitingForIsbn = false;
@@ -595,36 +553,32 @@ public class SearchCoordinator {
             accumulateAllSites();
         }
 
-        // All done, deliver the data. Note we don't use the ManagedTask.ManagedTaskListener.
-        MESSAGE_SWITCH.send(mId, listener -> {
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                for (Map.Entry<Integer, Long> entry : mSearchTasksStartTime.entrySet()) {
-                    String name = SearchSites.getName(entry.getKey());
-                    long start = entry.getValue();
-                    Long end = mSearchTasksEndTime.get(entry.getKey());
-                    if (end != null) {
-                        Log.d(TAG, String.format(Locale.UK,
-                                                 "onSearchFinished|taskId=%20s:%10d ms",
-                                                 name, (end - start) / TO_MILLIS));
-                    } else {
-                        Log.d(TAG, String.format(Locale.UK,
-                                                 "onSearchFinished|task=%20s|never finished",
-                                                 name));
-                    }
+        // All done, deliver the data.
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+            for (Map.Entry<Integer, Long> entry : mSearchTasksStartTime.entrySet()) {
+                String name = SearchSites.getName(entry.getKey());
+                long start = entry.getValue();
+                Long end = mSearchTasksEndTime.get(entry.getKey());
+                if (end != null) {
+                    Log.d(TAG, String.format(Locale.UK,
+                                             "onSearchFinished|taskId=%20s:%10d ms",
+                                             name, (end - start) / TO_MILLIS));
+                } else {
+                    Log.d(TAG, String.format(Locale.UK,
+                                             "onSearchFinished|task=%20s|never finished",
+                                             name));
                 }
-
-                Log.d(TAG, String.format(Locale.UK,
-                                         "onSearchFinished|total search time: %10d ms",
-                                         (processTime - mSearchStartTime) / TO_MILLIS));
-                Log.d(TAG, String.format(Locale.UK,
-                                         "onSearchFinished|processing time: %10d ms",
-                                         (System.nanoTime() - processTime) / TO_MILLIS));
             }
 
-            listener.onSearchFinished(mIsCancelled, mBookData);
-            return true;
-        });
+            Log.d(TAG, String.format(Locale.UK,
+                                     "onSearchFinished|total search time: %10d ms",
+                                     (processTime - mSearchStartTime) / TO_MILLIS));
+            Log.d(TAG, String.format(Locale.UK,
+                                     "onSearchFinished|processing time: %10d ms",
+                                     (System.nanoTime() - processTime) / TO_MILLIS));
+        }
+
+        mOnSearchFinishedListener.onSearchFinished(mIsCancelled, mBookData);
     }
 
     /**

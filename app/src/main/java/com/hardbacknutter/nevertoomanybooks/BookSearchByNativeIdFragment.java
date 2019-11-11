@@ -43,7 +43,6 @@ import androidx.annotation.Nullable;
 
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
@@ -57,28 +56,6 @@ public class BookSearchByNativeIdFragment
 
     /** User input field. */
     private EditText mEntryView;
-    private final SearchCoordinator.OnSearchFinishedListener mOnSearchFinishedListener =
-            (wasCancelled, bookData) -> {
-                try {
-                    if (!wasCancelled && !bookData.isEmpty()) {
-                        Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-                        startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-
-                        clearPreviousSearchCriteria();
-
-                    } else {
-                        //noinspection ConstantConditions
-                        UserMessage.show(getActivity(),
-                                         R.string.warning_no_matching_book_found);
-                    }
-                } finally {
-                    mBookSearchBaseModel.setSearchCoordinator(0);
-                    // Tell our listener they can close the progress dialog.
-                    mTaskManager.sendHeaderUpdate(null);
-                }
-            };
-
     private Button mSearchBtn;
 
     private RadioGroup mRadioGroup;
@@ -148,13 +125,7 @@ public class BookSearchByNativeIdFragment
     }
 
     @Override
-    protected void startSearch(@NonNull final SearchCoordinator searchCoordinator) {
-
-        String idStr = mBookSearchBaseModel.getNativeIdSearchText();
-        if (idStr.isEmpty()) {
-            return;
-        }
-
+    protected boolean customizeSearch() {
         @IdRes
         int checkedId = mRadioGroup.getCheckedRadioButtonId();
 
@@ -189,13 +160,16 @@ public class BookSearchByNativeIdFragment
                 throw new UnexpectedValueException(checkedId);
         }
 
-        searchCoordinator.setFetchThumbnail(true);
-        searchCoordinator.searchByNativeId(site, idStr);
+        return mBookSearchBaseModel.searchByNativeId(site);
     }
 
     @Override
-    SearchCoordinator.OnSearchFinishedListener getOnSearchFinishedListener() {
-        return mOnSearchFinishedListener;
+    void onSearchResults(@NonNull final Bundle bookData) {
+
+        Intent intent = new Intent(getContext(), EditBookActivity.class)
+                .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+        startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+        clearPreviousSearchCriteria();
     }
 
     @Override

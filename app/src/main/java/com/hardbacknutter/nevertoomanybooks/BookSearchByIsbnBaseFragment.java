@@ -35,50 +35,41 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 public abstract class BookSearchByIsbnBaseFragment
         extends BookSearchBaseFragment {
 
-    /** process search results. */
-    private final SearchCoordinator.OnSearchFinishedListener mOnSearchFinishedListener =
-            (wasCancelled, bookData) -> {
-                try {
-                    if (!wasCancelled) {
-                        // A non-empty result will have a title or at least 3 fields.
-                        // The isbn field will always be present as we searched on one.
-                        // The title field, *might* be there but *might* be empty.
-                        // So a valid result means we either need a title, or a
-                        // third field.
-                        String title = bookData.getString(DBDefinitions.KEY_TITLE);
-                        if ((title != null && !title.isEmpty())
-                            || bookData.size() > 2) {
-                            Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-                            startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-
-                            clearPreviousSearchCriteria();
-                        } else {
-                            //noinspection ConstantConditions
-                            UserMessage.show(getView(), R.string.warning_no_matching_book_found);
-                        }
-                    } else {
-                        startInput();
-                    }
-                } finally {
-                    mBookSearchBaseModel.setSearchCoordinator(0);
-                    // Tell our listener they can close the progress dialog.
-                    mTaskManager.sendHeaderUpdate(null);
-                }
-            };
     /** Flag to allow ASIN key input (true) or pure ISBN input (false). */
     boolean mAllowAsin;
 
     @Override
-    SearchCoordinator.OnSearchFinishedListener getOnSearchFinishedListener() {
-        return mOnSearchFinishedListener;
+    void onSearchResults(@NonNull final Bundle bookData) {
+        // A non-empty result will have a title or at least 3 fields.
+        // The isbn field will always be present as we searched on one.
+        // The title field, *might* be there but *might* be empty.
+        // So a valid result means we either need a title, or a
+        // third field.
+        String title = bookData.getString(DBDefinitions.KEY_TITLE);
+        if ((title != null && !title.isEmpty())
+            || bookData.size() > 2) {
+            Intent intent = new Intent(getContext(), EditBookActivity.class)
+                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+            startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+
+            clearPreviousSearchCriteria();
+        } else {
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.warning_no_matching_book_found);
+        }
+    }
+
+    @Override
+    void onSearchCancelled(final boolean isCancelled) {
+        super.onSearchCancelled(isCancelled);
+
+        startInput();
     }
 
     @Override

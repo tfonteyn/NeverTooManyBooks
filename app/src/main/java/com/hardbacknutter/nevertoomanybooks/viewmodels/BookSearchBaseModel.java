@@ -32,7 +32,9 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -43,8 +45,10 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
 
 public class BookSearchBaseModel
         extends ViewModel
@@ -52,12 +56,13 @@ public class BookSearchBaseModel
 
     /** The last Intent returned as a result of creating a book. */
     private final Intent mResultData = new Intent();
+    private final MutableLiveData<Bundle> mBookData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> mSearchCancelled = new MutableLiveData<>();
+
     /** Database Access. */
     private DAO mDb;
     /** Sites to search on. */
     private ArrayList<Site> mSearchSites;
-    /** Objects managing current search. */
-    private long mSearchCoordinatorId;
 
     @NonNull
     private String mNativeIdSearchText = "";
@@ -70,6 +75,40 @@ public class BookSearchBaseModel
     @NonNull
     private String mPublisherSearchText = "";
 
+    private TaskManager mTaskManager;
+    private SearchCoordinator mSearchCoordinator;
+    private boolean mIsSearchActive;
+    private SearchCoordinator.OnSearchFinishedListener mOnSearchFinishedListener =
+            (wasCancelled, bookData) -> {
+                // Tell our listener they can close the progress dialog.
+                mTaskManager.sendHeaderUpdate(null);
+
+                mIsSearchActive = false;
+
+                if (!wasCancelled) {
+                    mBookData.setValue(bookData);
+                } else {
+                    mSearchCancelled.setValue(true);
+                }
+            };
+
+    @NonNull
+    public MutableLiveData<Bundle> getSearchResults() {
+        return mBookData;
+    }
+
+    public boolean isSearchActive() {
+        return mIsSearchActive;
+    }
+
+    public void setSearchActive(final boolean searchActive) {
+        mIsSearchActive = searchActive;
+    }
+
+    @NonNull
+    public MutableLiveData<Boolean> getSearchCancelled() {
+        return mSearchCancelled;
+    }
 
     @Override
     protected void onCleared() {
@@ -85,9 +124,11 @@ public class BookSearchBaseModel
      * @param context Current context
      */
     public void init(@NonNull final Context context,
-                     @NonNull final Bundle args) {
+                     @NonNull final Bundle args,
+                     @NonNull final TaskManager taskManager) {
         if (mDb == null) {
             mDb = new DAO();
+            mTaskManager = taskManager;
 
             mNativeIdSearchText = args.getString(UniqueId.BKEY_SEARCH_BOOK_NATIVE_ID, "");
             mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
@@ -136,14 +177,6 @@ public class BookSearchBaseModel
      */
     public int getEnabledSearchSites() {
         return SearchSites.getEnabledSites(mSearchSites);
-    }
-
-    public long getSearchCoordinatorId() {
-        return mSearchCoordinatorId;
-    }
-
-    public void setSearchCoordinator(final long searchCoordinator) {
-        mSearchCoordinatorId = searchCoordinator;
     }
 
     public void clearSearchText() {
@@ -228,4 +261,47 @@ public class BookSearchBaseModel
 
         return authors;
     }
+
+    private SearchCoordinator getSearchCoordinator() {
+        if (mSearchCoordinator == null) {
+            mSearchCoordinator = new SearchCoordinator(mTaskManager, mOnSearchFinishedListener);
+        }
+        return mSearchCoordinator;
+    }
+
+    public void sendHeaderUpdate(@Nullable final String message) {
+        mTaskManager.sendHeaderUpdate(message);
+    }
+
+    /**
+     * Start a {@link SearchCoordinator#search(String, String, String, String)}
+     *
+     * @return {@code true} if at least one search was started.
+     */
+    public boolean startSearch() {
+        SearchCoordinator searchCoordinator = getSearchCoordinator();
+        searchCoordinator.setSearchSites(getSearchSites());
+        searchCoordinator.setFetchThumbnail(true);
+        return searchCoordinator.search(mIsbnSearchText,
+                                        mAuthorSearchText, mTitleSearchText,
+                                        mPublisherSearchText);
+    }
+
+    /**
+     * Start a {@link SearchCoordinator#searchByNativeId(Site, String)}
+     *
+     * @return {@code true} if at least one search was started.
+     */
+    public boolean searchByNativeId(@NonNull final Site site) {
+        // sanity check
+        if (mNativeIdSearchText.isEmpty()) {
+            throw new IllegalStateException("mNativeIdSearchText was empty");
+        }
+
+        SearchCoordinator searchCoordinator = getSearchCoordinator();
+        searchCoordinator.setFetchThumbnail(true);
+        searchCoordinator.searchByNativeId(site, mNativeIdSearchText);
+        return true;
+    }
+
 }

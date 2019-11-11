@@ -45,7 +45,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.UpdateFieldsFromInternetActivity;
+import com.hardbacknutter.nevertoomanybooks.UpdateFieldsFragment;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 /**
  * ManagedTask to update requested fields by doing a search.
  * <p>
- * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsFromInternetActivity}
+ * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsFragment}
  */
 public class UpdateFieldsTask
         extends ManagedTask {
@@ -95,7 +95,7 @@ public class UpdateFieldsTask
      * <strong>Note:</strong> do not make it local... we need a strong reference here.
      */
     @SuppressWarnings("FieldCanBeLocal")
-    private final SearchCoordinator.OnSearchFinishedListener mListener =
+    private final SearchCoordinator.OnSearchFinishedListener mOnSearchFinishedListener =
             (wasCancelled, bookData) -> {
                 if (wasCancelled) {
                     // if the search was cancelled, propagate by cancelling ourselves.
@@ -132,24 +132,24 @@ public class UpdateFieldsTask
     /**
      * Constructor.
      *
-     * @param taskManager Associated task manager
-     * @param searchSites sites to search, see {@link SearchSites#SEARCH_FLAG_MASK}
-     * @param fields      fields to update
-     * @param listener    where to send our results to
+     * @param taskManager              Associated task manager
+     * @param searchSites              sites to search, see {@link SearchSites#SEARCH_FLAG_MASK}
+     * @param fields                   fields to update
+     * @param onSearchFinishedListener where to send our results to
      */
     public UpdateFieldsTask(@NonNull final TaskManager taskManager,
                             @NonNull final ArrayList<Site> searchSites,
                             @NonNull final Map<String, FieldUsage> fields,
-                            @NonNull final ManagedTaskListener listener) {
+                            @NonNull final ManagedTaskListener onSearchFinishedListener) {
         super(taskManager, 0, "UpdateFieldsTask");
 
         mDb = new DAO();
         mFields = fields;
         mSearchSites = searchSites;
 
-        MESSAGE_SWITCH.addListener(getSenderId(), false, listener);
+        MESSAGE_SWITCH.addListener(getSenderId(), false, onSearchFinishedListener);
 
-        mSearchCoordinator = new SearchCoordinator(mTaskManager, mListener);
+        mSearchCoordinator = new SearchCoordinator(mTaskManager, mOnSearchFinishedListener);
     }
 
     /**

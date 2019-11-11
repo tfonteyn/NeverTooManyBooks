@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
-import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
@@ -64,7 +63,6 @@ public abstract class BookSearchBaseFragment
 
     /** hosting activity. */
     FragmentActivity mHostActivity;
-    TaskManager mTaskManager;
 
     /** the ViewModel. */
     BookSearchBaseModel mBookSearchBaseModel;
@@ -73,7 +71,6 @@ public abstract class BookSearchBaseFragment
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
         mHostActivity = (FragmentActivity) context;
-        mTaskManager = ((BookSearchActivity) mHostActivity).getTaskManager();
     }
 
     @Override
@@ -83,20 +80,26 @@ public abstract class BookSearchBaseFragment
         //noinspection ConstantConditions
         mBookSearchBaseModel = new ViewModelProvider(getActivity()).get(BookSearchBaseModel.class);
         //noinspection ConstantConditions
-        mBookSearchBaseModel.init(getContext(), requireArguments());
+        mBookSearchBaseModel.init(getContext(), requireArguments(),
+                                  ((BookSearchActivity) mHostActivity).getTaskManager());
+        mBookSearchBaseModel.getSearchCancelled().observe(getViewLifecycleOwner(),
+                                                          this::onSearchCancelled);
+        mBookSearchBaseModel.getSearchResults().observe(getViewLifecycleOwner(), bookData -> {
+            if (!bookData.isEmpty()) {
+                onSearchResults(bookData);
+            } else {
+                //noinspection ConstantConditions
+                UserMessage.show(getView(), R.string.warning_no_matching_book_found);
+            }
+        });
 
-        // Check general network connectivity. If none, warn the user.
+        // Warn the user, but don't abort.
         if (NetworkUtils.networkUnavailable()) {
             //noinspection ConstantConditions
             UserMessage.show(getView(), R.string.error_network_no_connection);
         }
     }
 
-    /**
-     * (re)connect with the {@link SearchCoordinator} by starting to listen to its messages.
-     * <p>
-     * <br>{@inheritDoc}
-     */
     @Override
     @CallSuper
     public void onResume() {
@@ -110,30 +113,10 @@ public abstract class BookSearchBaseFragment
                 return;
             }
         }
-        if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
-            SearchCoordinator.MESSAGE_SWITCH
-                    .addListener(mBookSearchBaseModel.getSearchCoordinatorId(), true,
-                                 getOnSearchFinishedListener());
-        }
+
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Log.d(TAG, "EXIT|onResume");
         }
-    }
-
-    /**
-     * Cut us loose from the {@link SearchCoordinator} by stopping listening to its messages.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onPause() {
-        if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
-            SearchCoordinator.MESSAGE_SWITCH.removeListener(
-                    mBookSearchBaseModel.getSearchCoordinatorId(),
-                    getOnSearchFinishedListener());
-        }
-        super.onPause();
     }
 
     /**
@@ -173,7 +156,14 @@ public abstract class BookSearchBaseFragment
         }
     }
 
-    abstract SearchCoordinator.OnSearchFinishedListener getOnSearchFinishedListener();
+    abstract void onSearchResults(@NonNull final Bundle bookData);
+
+    void onSearchCancelled(final boolean isCancelled) {
+        if (isCancelled) {
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.progress_end_cancelled);
+        }
+    }
 
     @CallSuper
     void clearPreviousSearchCriteria() {
@@ -186,14 +176,15 @@ public abstract class BookSearchBaseFragment
      * The results will arrive in
      * {@link SearchCoordinator.OnSearchFinishedListener#onSearchFinished(boolean, Bundle)}
      *
+     * This is final; instead override {@link #customizeSearch()} if needed.
      */
-    void startSearch() {
+    final void startSearch() {
         // check if we have an active search, if so, quit silently.
-        if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
+        if (mBookSearchBaseModel.isSearchActive()) {
             return;
         }
 
-        // Don't start search if we have no approved network... FAIL.
+        // cannot search without network
         if (NetworkUtils.networkUnavailable()) {
             //noinspection ConstantConditions
             UserMessage.show(getView(), R.string.error_network_no_connection);
@@ -202,12 +193,11 @@ public abstract class BookSearchBaseFragment
 
         try {
             // Start the lookup in a background search task.
-            final SearchCoordinator searchCoordinator =
-                    new SearchCoordinator(mTaskManager, getOnSearchFinishedListener());
-            mBookSearchBaseModel.setSearchCoordinator(searchCoordinator.getId());
-
-            mTaskManager.sendHeaderUpdate(getString(R.string.progress_msg_searching));
-            startSearch(searchCoordinator);
+            if (customizeSearch()) {
+                // we started at least one search.
+                mBookSearchBaseModel.sendHeaderUpdate(getString(R.string.progress_msg_searching));
+                mBookSearchBaseModel.setSearchActive(true);
+            }
             return;
 
         } catch (@NonNull final RuntimeException e) {
@@ -226,16 +216,9 @@ public abstract class BookSearchBaseFragment
 
     /**
      * Override to customize which search function is called.
-     * The default here uses {@link SearchCoordinator#search(String, String, String, String)}.
      */
-    protected void startSearch(@NonNull final SearchCoordinator searchCoordinator) {
-        searchCoordinator.setSearchSites(mBookSearchBaseModel.getSearchSites());
-        searchCoordinator.setFetchThumbnail(true);
-        searchCoordinator.search(mBookSearchBaseModel.getIsbnSearchText(),
-                                 mBookSearchBaseModel.getAuthorSearchText(),
-                                 mBookSearchBaseModel.getTitleSearchText(),
-                                 mBookSearchBaseModel.getPublisherSearchText()
-                                );
+    protected boolean customizeSearch() {
+        return mBookSearchBaseModel.startSearch();
     }
 
     @Override
