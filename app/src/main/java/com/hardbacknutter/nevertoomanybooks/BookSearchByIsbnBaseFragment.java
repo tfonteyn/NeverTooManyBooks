@@ -43,7 +43,7 @@ public abstract class BookSearchByIsbnBaseFragment
         extends BookSearchBaseFragment {
 
     /** process search results. */
-    private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
+    private final SearchCoordinator.OnSearchFinishedListener mOnSearchFinishedListener =
             (wasCancelled, bookData) -> {
                 try {
                     if (!wasCancelled) {
@@ -77,8 +77,8 @@ public abstract class BookSearchByIsbnBaseFragment
     boolean mAllowAsin;
 
     @Override
-    SearchCoordinator.SearchFinishedListener getSearchFinishedListener() {
-        return mSearchFinishedListener;
+    SearchCoordinator.OnSearchFinishedListener getOnSearchFinishedListener() {
+        return mOnSearchFinishedListener;
     }
 
     @Override

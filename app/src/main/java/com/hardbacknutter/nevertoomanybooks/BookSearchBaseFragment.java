@@ -113,7 +113,7 @@ public abstract class BookSearchBaseFragment
         if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
             SearchCoordinator.MESSAGE_SWITCH
                     .addListener(mBookSearchBaseModel.getSearchCoordinatorId(), true,
-                                 getSearchFinishedListener());
+                                 getOnSearchFinishedListener());
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Log.d(TAG, "EXIT|onResume");
@@ -131,7 +131,7 @@ public abstract class BookSearchBaseFragment
         if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
             SearchCoordinator.MESSAGE_SWITCH.removeListener(
                     mBookSearchBaseModel.getSearchCoordinatorId(),
-                    getSearchFinishedListener());
+                    getOnSearchFinishedListener());
         }
         super.onPause();
     }
@@ -173,7 +173,7 @@ public abstract class BookSearchBaseFragment
         }
     }
 
-    abstract SearchCoordinator.SearchFinishedListener getSearchFinishedListener();
+    abstract SearchCoordinator.OnSearchFinishedListener getOnSearchFinishedListener();
 
     @CallSuper
     void clearPreviousSearchCriteria() {
@@ -184,7 +184,7 @@ public abstract class BookSearchBaseFragment
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * <p>
      * The results will arrive in
-     * {@link SearchCoordinator.SearchFinishedListener#onSearchFinished(boolean, Bundle)}
+     * {@link SearchCoordinator.OnSearchFinishedListener#onSearchFinished(boolean, Bundle)}
      *
      */
     void startSearch() {
@@ -203,7 +203,7 @@ public abstract class BookSearchBaseFragment
         try {
             // Start the lookup in a background search task.
             final SearchCoordinator searchCoordinator =
-                    new SearchCoordinator(mTaskManager, getSearchFinishedListener());
+                    new SearchCoordinator(mTaskManager, getOnSearchFinishedListener());
             mBookSearchBaseModel.setSearchCoordinator(searchCoordinator.getId());
 
             mTaskManager.sendHeaderUpdate(getString(R.string.progress_msg_searching));

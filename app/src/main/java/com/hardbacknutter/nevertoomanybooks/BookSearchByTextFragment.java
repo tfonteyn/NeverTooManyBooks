@@ -66,7 +66,7 @@ public class BookSearchByTextFragment
     private AutoCompleteTextView mAuthorView;
     /** User input field. ENHANCE: add auto-completion for publishers? */
     private EditText mPublisherView;
-    private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
+    private final SearchCoordinator.OnSearchFinishedListener mOnSearchFinishedListener =
             (wasCancelled, bookData) -> {
                 try {
                     if (!wasCancelled) {
@@ -176,8 +176,8 @@ public class BookSearchByTextFragment
     }
 
     @Override
-    SearchCoordinator.SearchFinishedListener getSearchFinishedListener() {
-        return mSearchFinishedListener;
+    SearchCoordinator.OnSearchFinishedListener getOnSearchFinishedListener() {
+        return mOnSearchFinishedListener;
     }
 
     @Override

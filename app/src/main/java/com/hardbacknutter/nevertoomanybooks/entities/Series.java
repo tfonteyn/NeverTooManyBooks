@@ -57,6 +57,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * <strong>Note:</strong> the Series "number" is a column of {@link DBDefinitions#TBL_BOOK_SERIES}
  * So this class does not strictly represent a Series, but a "BookInSeries"
  * When the number is disregarded, it is a real Series representation.
+ *
+ * The patterns defined are certainly not foolproof.
+ * The extraction of numbers and the meaning of brackets works well enough for books,
+ * but a particular pain is the titles/series for comics.
  */
 public class Series
         implements Parcelable, ItemWithFixableId, Entity, ItemWithTitle {

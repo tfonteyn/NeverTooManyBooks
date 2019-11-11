@@ -57,7 +57,7 @@ public class BookSearchByNativeIdFragment
 
     /** User input field. */
     private EditText mEntryView;
-    private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
+    private final SearchCoordinator.OnSearchFinishedListener mOnSearchFinishedListener =
             (wasCancelled, bookData) -> {
                 try {
                     if (!wasCancelled && !bookData.isEmpty()) {
@@ -194,8 +194,8 @@ public class BookSearchByNativeIdFragment
     }
 
     @Override
-    SearchCoordinator.SearchFinishedListener getSearchFinishedListener() {
-        return mSearchFinishedListener;
+    SearchCoordinator.OnSearchFinishedListener getOnSearchFinishedListener() {
+        return mOnSearchFinishedListener;
     }
 
     @Override
