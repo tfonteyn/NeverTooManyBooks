@@ -40,17 +40,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
@@ -64,8 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * <p>
  * (the 'results' being this while Task object first send to the {@link TaskManager} which
  * then routes it to our creator, the @link SearchCoordinator})
- *
- * TODO: split according to which interface the search-engine implements ?
  */
 public class SearchTask
         extends ManagedTask {
@@ -106,19 +99,23 @@ public class SearchTask
     private Bundle mBookData = new Bundle();
 
     /**
-     * Constructor. Will search according to passed parameters. If an ISBN
-     * is provided that will be used to the exclusion of all others.
+     * Constructor. Will search according to passed parameters.
+     * <p>
+     * 1. native id
+     * 2. ISBN
+     * 3. text
+     * <p>
      *
-     * @param manager      TaskHandler implementation
+     * @param taskManager  Associated task manager
      * @param taskId       identifier
      * @param taskName     thread name, used for debug only really.
      * @param searchEngine the search site manager
      */
-    SearchTask(@NonNull final TaskManager manager,
+    SearchTask(@NonNull final TaskManager taskManager,
                final int taskId,
                @NonNull final String taskName,
                @NonNull final SearchEngine searchEngine) {
-        super(manager, taskId, taskName);
+        super(taskManager, taskId, taskName);
         mSearchEngine = searchEngine;
 
         Context context = App.getLocalizedAppContext();
@@ -129,7 +126,7 @@ public class SearchTask
     /**
      * @param nativeId to search for
      */
-    public void setNativeId(@NonNull final String nativeId) {
+    void setNativeId(@NonNull final String nativeId) {
         // trims might not be needed, but heck.
         mNativeId = nativeId.trim();
     }
@@ -137,7 +134,7 @@ public class SearchTask
     /**
      * @param isbn to search for
      */
-    public void setIsbn(@NonNull final String isbn) {
+    void setIsbn(@NonNull final String isbn) {
         // trims might not be needed, but heck.
         mIsbn = isbn.trim();
     }
@@ -145,7 +142,7 @@ public class SearchTask
     /**
      * @param author to search for
      */
-    public void setAuthor(@NonNull final String author) {
+    void setAuthor(@NonNull final String author) {
         // trims might not be needed, but heck.
         mAuthor = author.trim();
     }
@@ -153,7 +150,7 @@ public class SearchTask
     /**
      * @param title to search for
      */
-    public void setTitle(@NonNull final String title) {
+    void setTitle(@NonNull final String title) {
         // trims might not be needed, but heck.
         mTitle = title.trim();
     }
@@ -161,7 +158,7 @@ public class SearchTask
     /**
      * @param publisher to search for
      */
-    public void setPublisher(@NonNull final String publisher) {
+    void setPublisher(@NonNull final String publisher) {
         // trims might not be needed, but heck.
         mPublisher = publisher.trim();
     }
@@ -169,7 +166,7 @@ public class SearchTask
     /**
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
-    public void setFetchThumbnail(final boolean fetchThumbnail) {
+    void setFetchThumbnail(final boolean fetchThumbnail) {
         mFetchThumbnail = fetchThumbnail;
     }
 
@@ -203,7 +200,7 @@ public class SearchTask
                 return;
             }
 
-            // SEARCH!
+            // SEARCH.
             if (mSearchEngine instanceof SearchEngine.ByNativeId
                 && mNativeId != null && !mNativeId.isEmpty()) {
                 mBookData = ((SearchEngine.ByNativeId) mSearchEngine)
@@ -225,7 +222,7 @@ public class SearchTask
 
             if (!mBookData.isEmpty()) {
                 // Look for Series name in the book title and clean KEY_TITLE
-                checkForSeriesNameInTitle();
+                mSearchEngine.checkForSeriesNameInTitle(mBookData);
             }
 
         } catch (@NonNull final CredentialsException e) {
@@ -243,38 +240,6 @@ public class SearchTask
         } catch (@NonNull final RuntimeException e) {
             Logger.error(context, TAG, e);
             setFinalError(R.string.error_unknown, e);
-        }
-    }
-
-    /**
-     * Look for a title; if present try to get a Series name from it and clean the title.
-     */
-    private void checkForSeriesNameInTitle() {
-        String fullTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
-        if (fullTitle != null) {
-            Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
-            if (matcher.find()) {
-                String bookTitle = matcher.group(1);
-                String seriesTitleWithNumber = matcher.group(2);
-                if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
-                    ArrayList<Series> seriesList =
-                            mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-                    if (seriesList == null) {
-                        seriesList = new ArrayList<>();
-                    }
-                    Series newSeries = Series.fromString(seriesTitleWithNumber);
-
-                    // add to the TOP of the list. This is based on translated books/comics
-                    // on Goodreads where the Series is in the original language, but the
-                    // Series name embedded in the title is in the same language as the title.
-                    seriesList.add(0, newSeries);
-
-                    // store Series back
-                    mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
-                    // and store cleaned book title back
-                    mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
-                }
-            }
         }
     }
 

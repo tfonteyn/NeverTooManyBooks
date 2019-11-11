@@ -39,11 +39,14 @@ import androidx.annotation.WorkerThread;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.CoverBrowserFragment;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
@@ -98,6 +101,45 @@ public interface SearchEngine {
     @AnyThread
     @StringRes
     int getNameResId();
+
+    /**
+     * Look for a book title; if present try to get a Series from it and clean the book title.
+     * <p>
+     * This default implementation is fine for most engines, but override when needed.
+     *
+     * @param bookData to read/write data
+     */
+    default void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
+        String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
+        if (fullTitle != null) {
+            Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
+            if (matcher.find()) {
+                // the cleaned title
+                String bookTitle = matcher.group(1);
+                // the series title/number
+                String seriesTitleWithNumber = matcher.group(2);
+
+                if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
+                    // we'll add to, or create the Series list
+                    ArrayList<Series> seriesList =
+                            bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+                    if (seriesList == null) {
+                        seriesList = new ArrayList<>();
+                    }
+
+                    // add to the TOP of the list. This is based on translated books/comics
+                    // on Goodreads where the Series is in the original language, but the
+                    // Series name embedded in the title is in the same language as the title.
+                    seriesList.add(0, Series.fromString(seriesTitleWithNumber));
+
+                    // store Series back
+                    bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
+                    // and store cleaned book title back
+                    bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
+                }
+            }
+        }
+    }
 
     /** Optional. */
     interface ByNativeId {

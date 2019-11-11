@@ -43,8 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.MessageSwitch;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
-import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManagerController;
-import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManagerListener;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
@@ -97,38 +95,39 @@ public abstract class BaseActivityWithTasks
     @NonNull
     private String mProgressMessage = "";
 
-    private final TaskManagerListener mTaskManagerListener = new TaskManagerListener() {
+    private final ManagedTask.ManagedTaskListener mManagedTaskListener =
+            new ManagedTask.ManagedTaskListener() {
 
-        @Override
-        public void onTaskFinished(@NonNull final ManagedTask task) {
-            String msg = task.getFinalMessage();
-            if (msg != null && !msg.isEmpty()) {
-                UserMessage.show(BaseActivityWithTasks.this, msg);
-            }
-        }
+                @Override
+                public void onTaskFinished(@NonNull final ManagedTask task) {
+                    String msg = task.getFinalMessage();
+                    if (msg != null && !msg.isEmpty()) {
+                        UserMessage.show(BaseActivityWithTasks.this, msg);
+                    }
+                }
 
-        @Override
-        public void onTaskProgress(final int absPosition,
-                                   final int max,
-                                   @NonNull final String message) {
-            // Save the details
-            mProgressCount = absPosition;
-            mProgressMax = max;
-            mProgressMessage = message.trim();
+                @Override
+                public void onTaskProgress(final int absPosition,
+                                           final int max,
+                                           @NonNull final String message) {
+                    // Save the details
+                    mProgressCount = absPosition;
+                    mProgressMax = max;
+                    mProgressMessage = message.trim();
 
-            // If empty and we reached the end, close any dialog
-            if ((mProgressMessage.isEmpty()) && max == absPosition) {
-                closeProgressDialog();
-            } else {
-                runOnUiThread(() -> updateProgressDialog());
-            }
-        }
+                    // If empty and we reached the end, close any dialog
+                    if ((mProgressMessage.isEmpty()) && max == absPosition) {
+                        closeProgressDialog();
+                    } else {
+                        runOnUiThread(() -> updateProgressDialog());
+                    }
+                }
 
-        @Override
-        public void onTaskUserMessage(@NonNull final String message) {
-            UserMessage.show(BaseActivityWithTasks.this, message);
-        }
-    };
+                @Override
+                public void onTaskUserMessage(@NonNull final String message) {
+                    UserMessage.show(BaseActivityWithTasks.this, message);
+                }
+            };
 
     @Override
     protected int getLayoutId() {
@@ -156,8 +155,9 @@ public abstract class BaseActivityWithTasks
      */
     @Override
     public void onBackPressed() {
+        // don't create a task manager if we don't have one.
         if (mTaskManager != null) {
-            mTaskManager.cancelAllTasks();
+            mTaskManager.cancelActiveTasks();
         }
         updateProgressDialog();
         super.onBackPressed();
@@ -171,7 +171,7 @@ public abstract class BaseActivityWithTasks
         if (!isFinishing()) {
             // Restore/create mTaskManager.
             getTaskManager();
-            TaskManager.MESSAGE_SWITCH.addListener(mTaskManagerId, true, mTaskManagerListener);
+            TaskManager.MESSAGE_SWITCH.addListener(mTaskManagerId, true, mManagedTaskListener);
         }
     }
 
@@ -180,11 +180,11 @@ public abstract class BaseActivityWithTasks
     protected void onPause() {
         // Stop listening
         if (mTaskManagerId != 0) {
-            TaskManager.MESSAGE_SWITCH.removeListener(mTaskManagerId, mTaskManagerListener);
+            TaskManager.MESSAGE_SWITCH.removeListener(mTaskManagerId, mManagedTaskListener);
             // If the Activity is finishing, tell the TaskManager to cancel all active
             // tasks and reject new ones.
             if (isFinishing()) {
-                getTaskManager().cancelAllTasksAndStopListening();
+                getTaskManager().terminate();
             }
         }
         closeProgressDialog();
@@ -215,10 +215,10 @@ public abstract class BaseActivityWithTasks
     public TaskManager getTaskManager() {
         if (mTaskManager == null) {
             if (mTaskManagerId != 0) {
-                TaskManagerController controller =
+                MessageSwitch.Controller<TaskManager> controller =
                         TaskManager.MESSAGE_SWITCH.getController(mTaskManagerId);
                 if (controller != null) {
-                    mTaskManager = controller.getTaskManager();
+                    mTaskManager = controller.get();
                 } else {
                     Logger.warnWithStackTrace(this, TAG, "Have ID(" + mTaskManagerId + "),"
                                                          + " but controller not found");
@@ -245,6 +245,7 @@ public abstract class BaseActivityWithTasks
      */
     private void updateProgressDialog() {
         // If we are cancelling, override the message
+        // don't create a task manager if we don't have one.
         if (mTaskManager != null && mTaskManager.isCancelling()) {
             mProgressMessage = getString(R.string.progress_msg_cancelling);
         }

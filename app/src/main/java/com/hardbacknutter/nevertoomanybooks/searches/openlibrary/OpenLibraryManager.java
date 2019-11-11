@@ -434,15 +434,11 @@ public class OpenLibraryManager
         String s;
         int i;
 
-        // mandatory, if no title found, throw
         s = result.optString("title");
         if (!s.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_TITLE, s);
-        } else {
-            throw new JSONException("no title");
         }
 
-        // mandatory, if no authors found, throw
         ArrayList<Author> authors = new ArrayList<>();
         a = result.optJSONArray("authors");
         if (a != null && a.length() > 0) {
@@ -453,9 +449,6 @@ public class OpenLibraryManager
                     authors.add(Author.fromString(name));
                 }
             }
-        }
-        if (authors.isEmpty()) {
-            throw new JSONException("no authors");
         }
         bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, authors);
 

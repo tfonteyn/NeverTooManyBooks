@@ -63,12 +63,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
  * A Switchboard to receive and deliver {@link MessageSwitch.Message}.
  * ------------------------------------------------------------------------------------------------
  * <p>
- * {@link TaskManagerController}
- * Ask the {@link MessageSwitch} for the controller. The controller gives access to the
- * Sender (a {@link TaskManager}) via its {@link TaskManagerController#getTaskManager()} task
- * or can call {@link TaskManagerController#requestAbort()}
- * <p>
- * {@link TaskManagerListener} can be implemented by other objects for receiving
+ * {@link MessageSwitch.Controller}
+ * Ask the {@link MessageSwitch} for the controller.
+ * The controller gives access to the {@link TaskManager}
+ * or you can call {@link MessageSwitch.Controller#requestAbort()}
+ * ------------------------------------------------------------------------------------------------
+ * {@link ManagedTask.ManagedTaskListener} can be implemented by other objects for receiving
  * {@link TaskProgressMessage}, {@link TaskUserMessage} and {@link TaskFinishedMessage}
  */
 public class TaskManager {
@@ -79,20 +79,17 @@ public class TaskManager {
      * <p>
      * This object handles all underlying task messages for *every* instance of this class.
      */
-    public static final MessageSwitch<TaskManagerListener, TaskManagerController>
+    public static final MessageSwitch<ManagedTask.ManagedTaskListener, TaskManager>
             MESSAGE_SWITCH = new MessageSwitch<>();
-    private static final String TAG = "TaskManager";
-    /**
-     * Unique identifier for this instance.
-     * <p>
-     * Used as senderId for SENDING messages specific to this instance.
-     */
-    private final Long mMessageSenderId;
 
-    /**
-     * List of ManagedTask being managed by *this* object.
-     */
-    private final List<TaskInfo> mTaskInfoList = new ArrayList<>();
+    /** log tag. */
+    private static final String TAG = "TaskManager";
+
+    /** Unique identifier for this instance. */
+    private final Long mId;
+
+    /** List of ManagedTask being managed by *this* object. */
+    private final List<TaskWrapper> mActiveTasks = new ArrayList<>();
 
     /**
      * Current progress message to display, even if no tasks running.
@@ -101,72 +98,71 @@ public class TaskManager {
      */
     @Nullable
     private String mBaseMessage;
+
     @SuppressWarnings("FieldNotUsedInToString")
-    private final ManagedTaskListener mManagedTaskListener = new ManagedTaskListener() {
-        /**
-         * Listener for ManagedTask messages.
-         */
-        @Override
-        public void onTaskFinished(@NonNull final ManagedTask task) {
-            // Remove the finished task from our list
-            synchronized (mTaskInfoList) {
-                for (TaskInfo i : mTaskInfoList) {
-                    if (i.task == task) {
-                        mTaskInfoList.remove(i);
-                        break;
+    private final ManagedTask.ManagedTaskListener mManagedTaskListener =
+            new ManagedTask.ManagedTaskListener() {
+                @Override
+                public void onTaskFinished(@NonNull final ManagedTask task) {
+                    // Remove the finished task from our list
+                    synchronized (mActiveTasks) {
+                        for (TaskWrapper taskWrapper : mActiveTasks) {
+                            if (taskWrapper.task == task) {
+                                mActiveTasks.remove(taskWrapper);
+                                break;
+                            }
+                        }
+
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+                            Log.d(TAG, "onTaskFinished|finished=" + task.getName());
+                            for (TaskWrapper taskWrapper : mActiveTasks) {
+                                Log.d(TAG, "onTaskFinished|running=" + taskWrapper.task.getName());
+                            }
+                        }
                     }
+
+                    // Tell all listeners that the task has finished.
+                    MESSAGE_SWITCH.send(mId, new TaskFinishedMessage(task));
+
+                    // Update the progress dialog
+                    sendProgress();
                 }
+            };
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                    for (TaskInfo taskInfo : mTaskInfoList) {
-                        Log.d(TAG, "onTaskFinished"
-                                   + "|Task `" + taskInfo.task.getName() + "` still running");
-                    }
-                }
-            }
+    /** Indicates tasks are being cancelled. This is reset when a new task is added. */
+    private boolean mIsCancelling;
 
-            // Tell all listeners that the task has finished.
-            MESSAGE_SWITCH.send(mMessageSenderId, new TaskFinishedMessage(task));
-
-            // Update the progress dialog
-            sendProgress();
-        }
-
-    };
     /**
-     * Indicates tasks are being cancelled. This is reset when a new task is added.
+     * MessageSwitch Controller instance (strong reference) for this object.
      */
-    private boolean mCancelling;
-    /** Controller instance (strong reference) for this object. */
     @SuppressWarnings({"FieldCanBeLocal", "FieldNotUsedInToString"})
-    private final TaskManagerController mController = new TaskManagerController() {
+    private final MessageSwitch.Controller<TaskManager> mController =
+            new MessageSwitch.Controller<TaskManager>() {
 
-        public void requestAbort() {
-            cancelAllTasks();
-        }
+                public void requestAbort() {
+                    cancelActiveTasks();
+                }
 
-        @Override
-        @NonNull
-        public TaskManager getTaskManager() {
-            return TaskManager.this;
-        }
-    };
-    /**
-     * Indicates the TaskManager is terminating; will close after last task exits.
-     */
-    private boolean mIsClosing;
+                @Override
+                @NonNull
+                public TaskManager get() {
+                    return TaskManager.this;
+                }
+            };
+
+    /** Indicates the TaskManager is terminating after the last task exits. */
+    private boolean mIsTerminating;
 
     /**
      * Constructor.
-     *
      */
     public TaskManager() {
-        mMessageSenderId = MESSAGE_SWITCH.createSender(mController);
+        mId = MESSAGE_SWITCH.createSender(mController);
     }
 
     @NonNull
     public Long getId() {
-        return mMessageSenderId;
+        return mId;
     }
 
     /**
@@ -174,16 +170,16 @@ public class TaskManager {
      *
      * @param task to add
      */
-    public void addTask(@NonNull final ManagedTask task) {
+    void addTask(@NonNull final ManagedTask task) {
         // sanity check.
-        if (mIsClosing) {
-            throw new IllegalStateException("Can not add a task when closing down");
+        if (mIsTerminating) {
+            throw new IllegalStateException("Can not add a task when terminating");
         }
 
-        mCancelling = false;
-        synchronized (mTaskInfoList) {
-            if (getTaskInfo(task) == null) {
-                mTaskInfoList.add(new TaskInfo(task));
+        mIsCancelling = false;
+        synchronized (mActiveTasks) {
+            if (getTaskWrapper(task) == null) {
+                mActiveTasks.add(new TaskWrapper(task));
                 // Tell the ManagedTask we are listening for messages.
                 ManagedTask.MESSAGE_SWITCH.addListener(task.getSenderId(), true,
                                                        mManagedTaskListener);
@@ -207,7 +203,7 @@ public class TaskManager {
      * @param message to send
      */
     public void sendUserMessage(@NonNull final String message) {
-        MESSAGE_SWITCH.send(mMessageSenderId, new TaskUserMessage(message));
+        MESSAGE_SWITCH.send(mId, new TaskUserMessage(message));
     }
 
     /**
@@ -220,10 +216,10 @@ public class TaskManager {
     public void sendProgress(@NonNull final ManagedTask task,
                              @Nullable final String message,
                              final int count) {
-        TaskInfo taskInfo = getTaskInfo(task);
-        if (taskInfo != null) {
-            taskInfo.progressMessage = message;
-            taskInfo.progressCurrent = count;
+        TaskWrapper taskWrapper = getTaskWrapper(task);
+        if (taskWrapper != null) {
+            taskWrapper.progressMessage = message;
+            taskWrapper.progressCurrent = count;
             sendProgress();
         }
     }
@@ -233,9 +229,9 @@ public class TaskManager {
      */
     public void setMaxProgress(@NonNull final ManagedTask task,
                                final int max) {
-        TaskInfo taskInfo = getTaskInfo(task);
-        if (taskInfo != null) {
-            taskInfo.progressMax = max;
+        TaskWrapper taskWrapper = getTaskWrapper(task);
+        if (taskWrapper != null) {
+            taskWrapper.progressMax = max;
             sendProgress();
         }
     }
@@ -253,14 +249,14 @@ public class TaskManager {
                 progressMessage = new StringBuilder();
             }
 
-            synchronized (mTaskInfoList) {
+            synchronized (mActiveTasks) {
                 // Append each task message
-                if (!mTaskInfoList.isEmpty()) {
+                if (!mActiveTasks.isEmpty()) {
                     // if there was a baseMessage, add a linefeed to it.
                     if (progressMessage.length() > 0) {
                         progressMessage.append('\n');
                     }
-                    progressMessage.append(Csv.join("\n", mTaskInfoList, true,
+                    progressMessage.append(Csv.join("\n", mActiveTasks, true,
                                                     "• ",
                                                     element -> element.progressMessage));
                 }
@@ -270,16 +266,15 @@ public class TaskManager {
             // These will be our total values.
             int progressMax = 0;
             int progressCount = 0;
-            synchronized (mTaskInfoList) {
-                for (TaskInfo taskInfo : mTaskInfoList) {
-                    progressMax += taskInfo.progressMax;
-                    progressCount += taskInfo.progressCurrent;
+            synchronized (mActiveTasks) {
+                for (TaskWrapper taskWrapper : mActiveTasks) {
+                    progressMax += taskWrapper.progressMax;
+                    progressCount += taskWrapper.progressCurrent;
                 }
             }
 
-            MESSAGE_SWITCH.send(mMessageSenderId,
-                                new TaskProgressMessage(progressCount, progressMax,
-                                                        progressMessage.toString()));
+            MESSAGE_SWITCH.send(mId, new TaskProgressMessage(progressCount, progressMax,
+                                                             progressMessage.toString()));
 
         } catch (@NonNull final RuntimeException e) {
             Logger.error(App.getAppContext(), TAG, e, "Error updating progress");
@@ -288,18 +283,18 @@ public class TaskManager {
 
 
     /**
-     * Lookup the TaskInfo for the passed task.
+     * Lookup the TaskWrapper for the passed task.
      *
      * @param task Task to lookup
      *
-     * @return TaskInfo associated with task.
+     * @return TaskWrapper associated with task.
      */
     @Nullable
-    private TaskInfo getTaskInfo(@NonNull final ManagedTask task) {
-        synchronized (mTaskInfoList) {
-            for (TaskInfo taskInfo : mTaskInfoList) {
-                if (taskInfo.task == task) {
-                    return taskInfo;
+    private TaskWrapper getTaskWrapper(@NonNull final ManagedTask task) {
+        synchronized (mActiveTasks) {
+            for (TaskWrapper taskWrapper : mActiveTasks) {
+                if (taskWrapper.task == task) {
+                    return taskWrapper;
                 }
             }
         }
@@ -310,45 +305,45 @@ public class TaskManager {
      * Cancel all tasks and stop listening.
      * Normally called when {@link BaseActivityWithTasks} itself is finishing.
      */
-    public void cancelAllTasksAndStopListening() {
+    public void terminate() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Log.d(TAG, "cancelAllTasksAndStopListening");
+            Log.d(TAG, "terminate");
 
         }
         // stop listening, used as sanity check in addTask.
-        mIsClosing = true;
-        cancelAllTasks();
+        mIsTerminating = true;
+        cancelActiveTasks();
     }
 
     /**
      * Cancel all tasks, but stay active and accept new tasks.
      */
-    public void cancelAllTasks() {
+    public void cancelActiveTasks() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Log.d(TAG, "cancelAllTasks");
+            Log.d(TAG, "cancelActiveTasks");
 
         }
-        synchronized (mTaskInfoList) {
-            mCancelling = true;
-            for (TaskInfo taskInfo : mTaskInfoList) {
-                taskInfo.task.cancelTask();
+        synchronized (mActiveTasks) {
+            mIsCancelling = true;
+            for (TaskWrapper taskWrapper : mActiveTasks) {
+                taskWrapper.task.cancelTask();
             }
         }
     }
 
     public boolean isCancelling() {
-        return mCancelling;
+        return mIsCancelling;
     }
 
     @Override
     @NonNull
     public String toString() {
         return "TaskManager{"
-               + "mMessageSenderId=" + mMessageSenderId
-               + ", mTaskInfoList=" + mTaskInfoList
+               + "mId=" + mId
+               + ", mActiveTasks=" + mActiveTasks
                + ", mBaseMessage=`" + mBaseMessage + '`'
-               + ", mCancelling=" + mCancelling
-               + ", mIsClosing=" + mIsClosing
+               + ", mIsCancelling=" + mIsCancelling
+               + ", mIsTerminating=" + mIsTerminating
                + '}';
     }
 
@@ -367,7 +362,7 @@ public class TaskManager {
     }
 
     public static class TaskFinishedMessage
-            implements Message<TaskManagerListener> {
+            implements Message<ManagedTask.ManagedTaskListener> {
 
         @NonNull
         private final ManagedTask mTask;
@@ -377,7 +372,7 @@ public class TaskManager {
         }
 
         @Override
-        public boolean deliver(@NonNull final TaskManagerListener listener) {
+        public boolean deliver(@NonNull final ManagedTask.ManagedTaskListener listener) {
             listener.onTaskFinished(mTask);
             return false;
         }
@@ -392,7 +387,7 @@ public class TaskManager {
     }
 
     public static class TaskProgressMessage
-            implements Message<TaskManagerListener> {
+            implements Message<ManagedTask.ManagedTaskListener> {
 
         private final int mPos;
         private final int mMax;
@@ -408,7 +403,7 @@ public class TaskManager {
         }
 
         @Override
-        public boolean deliver(@NonNull final TaskManagerListener listener) {
+        public boolean deliver(@NonNull final ManagedTask.ManagedTaskListener listener) {
             listener.onTaskProgress(mPos, mMax, mMessage);
             return false;
         }
@@ -425,7 +420,7 @@ public class TaskManager {
     }
 
     public static class TaskUserMessage
-            implements Message<TaskManagerListener> {
+            implements Message<ManagedTask.ManagedTaskListener> {
 
         @NonNull
         private final String mMessage;
@@ -435,7 +430,7 @@ public class TaskManager {
         }
 
         @Override
-        public boolean deliver(@NonNull final TaskManagerListener listener) {
+        public boolean deliver(@NonNull final ManagedTask.ManagedTaskListener listener) {
             listener.onTaskUserMessage(mMessage);
             return false;
         }
@@ -450,9 +445,9 @@ public class TaskManager {
     }
 
     /**
-     * Task info for each ManagedTask object so we can keep track of progress.
+     * Wraps a Task with progress info.
      */
-    private static class TaskInfo {
+    private static class TaskWrapper {
 
         @NonNull
         final ManagedTask task;
@@ -461,7 +456,7 @@ public class TaskManager {
         int progressMax;
         int progressCurrent;
 
-        TaskInfo(@NonNull final ManagedTask task) {
+        TaskWrapper(@NonNull final ManagedTask task) {
             this.task = task;
         }
     }

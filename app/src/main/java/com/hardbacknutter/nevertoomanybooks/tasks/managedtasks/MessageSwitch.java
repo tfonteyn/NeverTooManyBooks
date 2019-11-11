@@ -62,10 +62,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * or {@link #getController} as necessary.
  *
  * @param <T> The Class (a listener interface) of message that this switchboard sends
- * @param <U> The Class of controller object made available to listeners.
+ * @param <C> The Class of Controller<C> object made available to listeners.
  *            The controller gives access to the sender.
  */
-public class MessageSwitch<T, U> {
+public class MessageSwitch<T, C> {
 
     /** Handler object for posting to main thread and for testing if running on UI thread. */
     private static final Handler HANDLER = new Handler();
@@ -75,7 +75,7 @@ public class MessageSwitch<T, U> {
 
     /** List of message sources. */
     @SuppressLint("UseSparseArrays")
-    private final Map<Long, MessageSender<U>> mSenders =
+    private final Map<Long, MessageSender<Controller<C>>> mSenders =
             Collections.synchronizedMap(new HashMap<>());
 
     /** List of all messages in the message queue, both messages and replies. */
@@ -95,8 +95,8 @@ public class MessageSwitch<T, U> {
      * @return the unique id for this sender
      */
     @NonNull
-    public Long createSender(@NonNull final U controller) {
-        MessageSender<U> sender = new MessageSenderImpl(controller);
+    public Long createSender(@NonNull final Controller<C> controller) {
+        MessageSender<Controller<C>> sender = new MessageSenderImpl(controller);
         mSenders.put(sender.getId(), sender);
         return sender.getId();
     }
@@ -178,11 +178,11 @@ public class MessageSwitch<T, U> {
      *
      * @param senderId id of sender
      *
-     * @return Controller object of type 'U'
+     * @return Controller object of type 'C'
      */
     @Nullable
-    public U getController(@NonNull final Long senderId) {
-        MessageSender<U> sender = mSenders.get(senderId);
+    public Controller<C> getController(@NonNull final Long senderId) {
+        MessageSender<Controller<C>> sender = mSenders.get(senderId);
         if (sender != null) {
             return sender.getController();
         } else {
@@ -402,19 +402,38 @@ public class MessageSwitch<T, U> {
     }
 
     /**
+     * Controller interface for an object registered with a {@link MessageSwitch}.
+     * <p>
+     * Usage:
+     * <pre>
+     * {@code
+     *      Controller<T> controller = MESSAGE_SWITCH.getController(mObjectId);
+     *      T object = controller.get();
+     * }
+     * </pre>
+     */
+    public interface Controller<T> {
+
+        @NonNull
+        T get();
+
+        void requestAbort();
+    }
+
+    /**
      * Implementation of Message sender object.
      */
     private class MessageSenderImpl
-            implements MessageSender<U> {
+            implements MessageSender<Controller<C>> {
 
         // mId will be used as a key in maps, while 'long' would work,
         // let's be consistent and use Long.
         private final Long mId = SENDER_ID_COUNTER.incrementAndGet();
         @NonNull
-        private final U mController;
+        private final Controller<C> mController;
 
         /** Constructor. */
-        MessageSenderImpl(@NonNull final U controller) {
+        MessageSenderImpl(@NonNull final Controller<C> controller) {
             mController = controller;
         }
 
@@ -428,14 +447,14 @@ public class MessageSwitch<T, U> {
         public void close() {
             synchronized (mSenders) {
                 synchronized (mSenders) {
-                    mSenders.remove(((MessageSender<U>) this).getId());
+                    mSenders.remove(((MessageSender<Controller<C>>) this).getId());
                 }
             }
         }
 
         @NonNull
         @Override
-        public U getController() {
+        public Controller<C> getController() {
             return mController;
         }
     }

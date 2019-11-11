@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.MessageSwitch;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
-import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManagerListener;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
@@ -62,9 +61,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 /**
  * Class to co-ordinate {@link SearchTask} objects using an existing {@link TaskManager}.
  * <p>
- * Uses the {@link TaskManager} and listens to {@link TaskManagerListener} messages.
+ * Uses the {@link TaskManager} and listens to {@link ManagedTask.ManagedTaskListener} messages.
  * <p>
- * It maintains its own internal list of tasks {@link #mManagedTasks} and as tasks it knows about
+ * It maintains its own internal list of tasks {@link #mActiveTasks} and as tasks it knows about
  * finish, it processes the data. Once all tasks are complete, it sends a message to its
  * creator via the {@link MessageSwitch}
  */
@@ -76,24 +75,24 @@ public class SearchCoordinator {
      * <p>
      * This object handles all underlying task messages for every instance of this class.
      */
-    public static final MessageSwitch<SearchFinishedListener, SearchCoordinatorController>
+    public static final MessageSwitch<OnSearchFinishedListener, SearchCoordinator>
             MESSAGE_SWITCH = new MessageSwitch<>();
+
+    /** log tag. */
     private static final String TAG = "SearchCoordinator";
+    /** divider to convert nanoseconds to milliseconds. */
     private static final int TO_MILLIS = 1_000_000;
-    /**
-     * Unique identifier for this instance.
-     * <p>
-     * Used as senderId for SENDING messages specific to this instance.
-     */
+
+    /** Unique identifier for this instance. */
     @NonNull
-    private final Long mMessageSenderId;
+    private final Long mId;
 
     /** List of ManagedTask being managed by *this* object. */
     @NonNull
-    private final ArrayList<ManagedTask> mManagedTasks = new ArrayList<>();
+    private final ArrayList<ManagedTask> mActiveTasks = new ArrayList<>();
 
     /**
-     * TaskManager which will execute our tasks, and send {@link TaskManagerListener}
+     * TaskManager which will execute our tasks, and send {@link ManagedTask.ManagedTaskListener}
      * messages.
      * This TaskManager may have other ManagedTask's than the ones *this* object creates.
      */
@@ -109,21 +108,25 @@ public class SearchCoordinator {
     private final Map<Integer, Bundle> mSearchResults =
             Collections.synchronizedMap(new HashMap<>());
 
-    /** Controller instance (strong reference) for this object. */
+    /**
+     * MessageSwitch Controller instance (strong reference) for this object.
+     */
     @SuppressWarnings("FieldCanBeLocal")
-    private final SearchCoordinatorController mController = new SearchCoordinatorController() {
+    private final MessageSwitch.Controller<SearchCoordinator> mController =
+            new MessageSwitch.Controller<SearchCoordinator>() {
 
-        @Override
-        public void requestAbort() {
-            mTaskManager.cancelAllTasks();
-        }
+                @Override
+                public void requestAbort() {
+                    mTaskManager.cancelActiveTasks();
+                }
 
-        @NonNull
-        @Override
-        public SearchCoordinator getSearchCoordinator() {
-            return SearchCoordinator.this;
-        }
-    };
+                @NonNull
+                @Override
+                public SearchCoordinator get() {
+                    return SearchCoordinator.this;
+                }
+            };
+
     /** Sites to search on. */
     private ArrayList<Site> mSearchSites;
     /** Accumulated book data. */
@@ -132,8 +135,11 @@ public class SearchCoordinator {
     private boolean mSearchingAsin;
     /** Flag indicating searches will be non-concurrent until an ISBN is found. */
     private boolean mWaitingForIsbn;
-    /** Flag indicating a task was cancelled. */
-    private boolean mCancelledFlg;
+    /**
+     * Flag indicating a <strong>single</strong> task was cancelled.
+     * As soon as set, we cancel the whole search.
+     */
+    private boolean mIsCancelled;
     /** Original author for search. */
     private String mAuthor;
     /** Original title for search. */
@@ -162,72 +168,73 @@ public class SearchCoordinator {
     @SuppressLint("UseSparseArrays")
     private Map<Integer, Long> mSearchTasksEndTime = new HashMap<>();
 
-    /** Listen for finished searches. */
-    private final TaskManagerListener mTaskManagerListener = new TaskManagerListener() {
+    /** Listen for <strong>individual search tasks finishing</strong>. */
+    private final ManagedTask.ManagedTaskListener mManagedTaskListener =
+            new ManagedTask.ManagedTaskListener() {
 
-        /**
-         * When a task has ended, check if there are more tasks running.
-         * If not, finish and send results back with {@link SearchCoordinator#sendResults}
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public void onTaskFinished(@NonNull final ManagedTask task) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                mSearchTasksEndTime.put(task.getTaskId(), System.nanoTime());
-            }
+                /**
+                 * When a task has ended, check if there are more tasks running.
+                 * If not, finish and send results back with {@link SearchCoordinator#sendResults}
+                 *
+                 * {@inheritDoc}
+                 */
+                @Override
+                public void onTaskFinished(@NonNull final ManagedTask task) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+                        mSearchTasksEndTime.put(task.getTaskId(), System.nanoTime());
+                    }
 
-            // display final message from task.
-            String finalMessage = task.getFinalMessage();
-            if (finalMessage != null) {
-                onTaskUserMessage(finalMessage);
-            }
+                    // display final message from task.
+                    String finalMessage = task.getFinalMessage();
+                    if (finalMessage != null) {
+                        onTaskUserMessage(finalMessage);
+                    }
 
-            // Handle the result, and optionally queue another task
-            if (task instanceof SearchTask) {
-                handleSearchTaskFinished((SearchTask) task);
-            }
+                    // Handle the result, and optionally queue another task
+                    if (task instanceof SearchTask) {
+                        onSearchTaskFinished((SearchTask) task);
+                    }
 
-            int tasksActive;
-            // Remove the finished task from our list
-            synchronized (mManagedTasks) {
-                mManagedTasks.remove(task);
-                tasksActive = mManagedTasks.size();
+                    int tasksActive;
+                    // Remove the finished task from our list
+                    synchronized (mActiveTasks) {
+                        mActiveTasks.remove(task);
+                        tasksActive = mActiveTasks.size();
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "onTaskFinished"
-                               + "|Task `" + task.getName() + "` finished");
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                            Log.d(TAG, "onTaskFinished|finished=" + task.getName());
+                            for (ManagedTask t : mActiveTasks) {
+                                Log.d(TAG, "onTaskFinished|running=" + t.getName());
+                            }
+                        }
+                    }
+                    // no more tasks ? Then send the results back to our creator.
+                    if (tasksActive == 0) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                            Log.d(TAG, "onTaskFinished|calling sendResults()");
+                        }
 
-                    for (ManagedTask t : mManagedTasks) {
-                        Log.d(TAG, "onTaskFinished"
-                                   + "|Task `" + t.getName() + "` still running");
+                        sendResults(true);
                     }
                 }
-            }
-            // no more tasks ? Then send the results back to our creator.
-            if (tasksActive == 0) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "onTaskFinished|calling sendResults()");
-                }
-
-                sendResults(true);
-            }
-        }
-    };
+            };
 
     /**
      * Constructor.
      *
-     * @param taskManager            TaskManager to use
-     * @param searchFinishedListener to send results to
+     * @param taskManager              Associated task manager
+     * @param onSearchFinishedListener to send results to
      */
     public SearchCoordinator(@NonNull final TaskManager taskManager,
-                             @NonNull final SearchFinishedListener searchFinishedListener) {
+                             @NonNull final OnSearchFinishedListener onSearchFinishedListener) {
 
-        mMessageSenderId = MESSAGE_SWITCH.createSender(mController);
+        // prepare our own message switch
+        mId = MESSAGE_SWITCH.createSender(mController);
+        MESSAGE_SWITCH.addListener(mId, false, onSearchFinishedListener);
 
         mTaskManager = taskManager;
-        MESSAGE_SWITCH.addListener(mMessageSenderId, false, searchFinishedListener);
+        // Tell the TaskManager to send us ManagedTask messages.
+        TaskManager.MESSAGE_SWITCH.addListener(mTaskManager.getId(), false, mManagedTaskListener);
 
         Context context = App.getLocalizedAppContext();
 
@@ -253,7 +260,7 @@ public class SearchCoordinator {
 
     @NonNull
     public Long getId() {
-        return mMessageSenderId;
+        return mId;
     }
 
     public void setSearchSites(@NonNull final ArrayList<Site> searchSites) {
@@ -368,7 +375,7 @@ public class SearchCoordinator {
         }
 
         // Developer sanity check
-        if (!mManagedTasks.isEmpty()) {
+        if (!mActiveTasks.isEmpty()) {
             throw new IllegalStateException("don't start a new search while a search is running");
         }
 
@@ -385,7 +392,7 @@ public class SearchCoordinator {
 
         mWaitingForIsbn = false;
         mSearchingAsin = false;
-        mCancelledFlg = false;
+        mIsCancelled = false;
 
         // Save the input and initialize
         mBookData = new Bundle();
@@ -405,9 +412,6 @@ public class SearchCoordinator {
             // delete any orphaned temporary cover file
             StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
         }
-
-        // Listen for TaskManager messages.
-        TaskManager.MESSAGE_SWITCH.addListener(mTaskManager.getId(), false, mTaskManagerListener);
     }
 
     /**
@@ -460,12 +464,15 @@ public class SearchCoordinator {
      * @return {@code true} if the search was started.
      */
     private boolean startOneSearch(@NonNull final Site site) {
-        if (mCancelledFlg) {
+        if (mIsCancelled) {
             return false;
         }
 
         SearchEngine searchEngine = site.getSearchEngine();
-        //URGENT: split the SearchTask ... we're testing conditions twice now.
+        if (!searchEngine.isAvailable()) {
+            return false;
+        }
+
         boolean canSearch =
                 // if we have a native id, and the engine supports it, we can search.
                 (!mNativeId.isEmpty() && (searchEngine instanceof SearchEngine.ByNativeId))
@@ -477,30 +484,30 @@ public class SearchCoordinator {
                 (((!mAuthor.isEmpty() && !mTitle.isEmpty()) || !mIsbn.isEmpty())
                  && (searchEngine instanceof SearchEngine.ByText));
 
-        if (!(canSearch && searchEngine.isAvailable())) {
+        if (!canSearch) {
             return false;
         }
 
         // Note to self: we pass id/name and not site in the presumption we might
         // have search tasks for non-site related searches.
         SearchTask task = new SearchTask(mTaskManager, site.id, site.getName(), searchEngine);
+        task.setFetchThumbnail(mFetchThumbnail);
+
         task.setNativeId(mNativeId);
         task.setIsbn(mIsbn);
         task.setAuthor(mAuthor);
         task.setTitle(mTitle);
         task.setPublisher(mPublisher);
-        task.setFetchThumbnail(mFetchThumbnail);
-
-        synchronized (mManagedTasks) {
-            mManagedTasks.add(task);
-            mTaskManager.addTask(task);
-        }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             Log.d(TAG, "startOneSearch|site=" + site);
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             mSearchTasksStartTime.put(task.getTaskId(), System.nanoTime());
+        }
+
+        synchronized (mActiveTasks) {
+            mActiveTasks.add(task);
         }
         task.start();
         return true;
@@ -509,17 +516,17 @@ public class SearchCoordinator {
     /**
      * Handle task search results; start another task if necessary.
      */
-    private void handleSearchTaskFinished(@NonNull final SearchTask task) {
+    private void onSearchTaskFinished(@NonNull final SearchTask task) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "handleSearchTaskFinished"
+            Log.d(TAG, "onSearchTaskFinished"
                        + "|task=" + task.getName() + '`');
         }
 
-        mCancelledFlg = task.isCancelled();
+        mIsCancelled = task.isCancelled();
         Bundle bookData = task.getBookData();
         mSearchResults.put(task.getTaskId(), bookData);
 
-        if (mCancelledFlg) {
+        if (mIsCancelled) {
             mWaitingForIsbn = false;
         } else {
             if (mSearchingAsin) {
@@ -542,7 +549,7 @@ public class SearchCoordinator {
                     }
                 }
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "handleSearchTaskFinished"
+                    Log.d(TAG, "onSearchTaskFinished"
                                + "|mSearchingAsin"
                                + "|mWaitingForIsbn=" + mWaitingForIsbn);
                 }
@@ -555,7 +562,7 @@ public class SearchCoordinator {
                     mIsbn = bookData.getString(DBDefinitions.KEY_ISBN);
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                        Log.d(TAG, "handleSearchTaskFinished"
+                        Log.d(TAG, "onSearchTaskFinished"
                                    + "|mWaitingForIsbn"
                                    + "|isbn=" + mIsbn);
                     }
@@ -571,6 +578,7 @@ public class SearchCoordinator {
         }
     }
 
+
     /**
      * Accumulate all data and send it back to our caller.
      *
@@ -578,17 +586,17 @@ public class SearchCoordinator {
      */
     private void sendResults(final boolean searchesDone) {
         // don't accept new tasks.
-        TaskManager.MESSAGE_SWITCH.removeListener(mTaskManager.getId(), mTaskManagerListener);
+        TaskManager.MESSAGE_SWITCH.removeListener(mTaskManager.getId(), mManagedTaskListener);
 
         // set the end of the actual search task timer, and start a new timer for the processing.
         long processTime = System.nanoTime();
 
         if (searchesDone) {
-            prepareResults();
+            accumulateAllSites();
         }
 
-        // All done, Pass the data back
-        MESSAGE_SWITCH.send(mMessageSenderId, listener -> {
+        // All done, deliver the data. Note we don't use the ManagedTask.ManagedTaskListener.
+        MESSAGE_SWITCH.send(mId, listener -> {
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 for (Map.Entry<Integer, Long> entry : mSearchTasksStartTime.entrySet()) {
@@ -614,16 +622,20 @@ public class SearchCoordinator {
                                          (System.nanoTime() - processTime) / TO_MILLIS));
             }
 
-            listener.onSearchFinished(mCancelledFlg, mBookData);
+            listener.onSearchFinished(mIsCancelled, mBookData);
             return true;
         });
     }
 
-    private void prepareResults() {
+    /**
+     * Accumulate data from all sites.
+     */
+    private void accumulateAllSites() {
         // This list will be the actual order of the result we apply, based on the
         // actual results and the default order.
         final List<Integer> sites = new ArrayList<>();
 
+        // determine the order of the sites which should give us the most reliable data.
         if (mHasValidIsbn) {
             // If ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
@@ -663,7 +675,7 @@ public class SearchCoordinator {
 
         // Merge the data we have. We do this in a fixed order rather than as the threads finish.
         for (int siteId : sites) {
-            accumulateAllData(siteId);
+            accumulateSiteData(siteId);
         }
 
         // run the mappers
@@ -702,36 +714,29 @@ public class SearchCoordinator {
      *
      * @param siteId site
      */
-    private void accumulateAllData(@SearchSites.Id final int siteId) {
-        // See if we got data from this site
-        if (!mSearchResults.containsKey(siteId)) {
-            return;
-        }
-        Bundle bookData = mSearchResults.get(siteId);
-
-        // See if we REALLY got data from this source
-        if (bookData == null || bookData.isEmpty()) {
+    private void accumulateSiteData(@SearchSites.Id final int siteId) {
+        Bundle siteData = mSearchResults.get(siteId);
+        if (siteData == null || siteData.isEmpty()) {
             return;
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "accumulateAllData"
-                       + "|Processing data from search engine: " + SearchSites.getName(siteId));
+            Log.d(TAG, "accumulateSiteData|site: " + SearchSites.getName(siteId));
         }
-        for (String key : bookData.keySet()) {
+        for (String key : siteData.keySet()) {
             if (DBDefinitions.KEY_DATE_PUBLISHED.equals(key)
                 || DBDefinitions.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
-                accumulateDates(key, bookData);
+                accumulateDates(key, siteData);
 
             } else if (UniqueId.BKEY_AUTHOR_ARRAY.equals(key)
                        || UniqueId.BKEY_SERIES_ARRAY.equals(key)
                        || UniqueId.BKEY_TOC_ENTRY_ARRAY.equals(key)
                        || UniqueId.BKEY_FILE_SPEC_ARRAY.equals(key)) {
-                accumulateList(key, bookData);
+                accumulateList(key, siteData);
 
             } else {
                 // handle all normal String based entries
-                accumulateStringData(key, bookData);
+                accumulateStringData(key, siteData);
             }
         }
     }
@@ -741,11 +746,11 @@ public class SearchCoordinator {
      * Handles other types via a .toString()
      *
      * @param key      Key of data
-     * @param bookData Source Bundle
+     * @param siteData Source Bundle
      */
     private void accumulateStringData(@NonNull final String key,
-                                      @NonNull final Bundle bookData) {
-        Object dataToAdd = bookData.get(key);
+                                      @NonNull final Bundle siteData) {
+        Object dataToAdd = siteData.get(key);
         if (dataToAdd == null || dataToAdd.toString().trim().isEmpty()) {
             return;
         }
@@ -772,36 +777,33 @@ public class SearchCoordinator {
      * if not, use new date.
      */
     private void accumulateDates(@NonNull final String key,
-                                 @NonNull final Bundle bookData) {
+                                 @NonNull final Bundle siteData) {
         String currentDateHeld = mBookData.getString(key);
-        String dataToAdd = bookData.getString(key);
-        // for debug message only
-        boolean skipped = true;
+        String dataToAdd = siteData.getString(key);
 
         if (currentDateHeld == null || currentDateHeld.isEmpty()) {
-            // copy, even if the incoming date might not be valid. We'll deal with that later.
+            // copy, even if the incoming date might not be valid.
+            // We'll deal with that later.
             mBookData.putString(key, dataToAdd);
+
         } else {
-            // Overwrite with the new date if we can parse it and if the current one
-            // was present but not valid.
+            // Overwrite with the new date if we can parse it and
+            // if the current one was present but not valid.
             if (dataToAdd != null) {
                 Date newDate = DateUtils.parseDate(dataToAdd);
                 if (newDate != null) {
                     if (DateUtils.parseDate(currentDateHeld) == null) {
                         // current date was invalid, use new one.
                         mBookData.putString(key, DateUtils.utcSqlDate(newDate));
-                        skipped = false;
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                             Log.d(TAG, "accumulateDates|copied: key=" + key);
                         }
+                    } else {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                            Log.d(TAG, "accumulateDates|skipped: key=" + key);
+                        }
                     }
                 }
-            }
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            if (skipped) {
-                Log.d(TAG, "accumulateDates|skipped: key=" + key);
             }
         }
     }
@@ -811,12 +813,12 @@ public class SearchCoordinator {
      * Add if not present, or append.
      *
      * @param key      Key of data
-     * @param bookData Source bundle with a ParcelableArrayList for the key
+     * @param siteData Source bundle with a ParcelableArrayList for the key
      * @param <T>      type of items in the ArrayList
      */
     private <T extends Parcelable> void accumulateList(@NonNull final String key,
-                                                       @NonNull final Bundle bookData) {
-        ArrayList<T> dataToAdd = bookData.getParcelableArrayList(key);
+                                                       @NonNull final Bundle siteData) {
+        ArrayList<T> dataToAdd = siteData.getParcelableArrayList(key);
         if (dataToAdd == null || dataToAdd.isEmpty()) {
             return;
         }
@@ -843,21 +845,16 @@ public class SearchCoordinator {
     }
 
     /**
-     * Controller interface for this Object.
+     * Allows other objects to know when the search completed.
      */
-    interface SearchCoordinatorController {
+    public interface OnSearchFinishedListener {
 
-        void requestAbort();
-
-        @NonNull
-        SearchCoordinator getSearchCoordinator();
-    }
-
-    /**
-     * Allows other objects to know when a task completed.
-     */
-    public interface SearchFinishedListener {
-
+        /**
+         * Called when the whole search is done.
+         *
+         * @param wasCancelled Flag indicating the search was cancelled
+         * @param bookData     resulting data, can be empty
+         */
         void onSearchFinished(boolean wasCancelled,
                               @NonNull Bundle bookData);
     }

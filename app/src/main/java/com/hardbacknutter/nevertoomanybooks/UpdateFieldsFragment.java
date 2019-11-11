@@ -64,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsTask;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -92,22 +91,23 @@ public class UpdateFieldsFragment
 
     private UpdateFieldsModel mModel;
 
-    private final ManagedTaskListener mManagedTaskListener = new ManagedTaskListener() {
-        @Override
-        public void onTaskFinished(@NonNull final ManagedTask task) {
-            mModel.setUpdateSenderId(0);
+    private final ManagedTask.ManagedTaskListener mManagedTaskListener =
+            new ManagedTask.ManagedTaskListener() {
+                @Override
+                public void onTaskFinished(@NonNull final ManagedTask task) {
+                    mModel.setUpdateSenderId(0);
 
-            Activity activity = getActivity();
+                    Activity activity = getActivity();
 
-            if (mModel.isSingleBook() && task.isCancelled()) {
-                // Nothing was changed, just quit
-                //noinspection ConstantConditions
-                activity.setResult(Activity.RESULT_CANCELED);
-                activity.finish();
-                return;
-            }
+                    if (mModel.isSingleBook() && task.isCancelled()) {
+                        // Nothing was changed, just quit
+                        //noinspection ConstantConditions
+                        activity.setResult(Activity.RESULT_CANCELED);
+                        activity.finish();
+                        return;
+                    }
 
-            ArrayList<Long> bookIds = mModel.getBookIds();
+                    ArrayList<Long> bookIds = mModel.getBookIds();
 
 //            // the last book id which was handled; can be used to restart the update.
 //            long lastBookId = ((UpdateFieldsTask)task).getLastBookIdDone();
@@ -115,30 +115,30 @@ public class UpdateFieldsFragment
 //                    (bookIds != null && !bookIds.isEmpty())
 //                    && bookIds.get(bookIds.size()-1) == lastBookId;
 
-            Intent data = new Intent()
-                    // null if we did 'all books'
-                    // or the ID's (1 or more) of the (hopefully) updated books
-                    .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
-                    // task cancelled does not mean that nothing was done.
-                    // Books *will* be updated until the cancelling happened
-                    .putExtra(UniqueId.BKEY_CANCELED, task.isCancelled())
-                    // One or more books were changed.
-                    // Technically speaking when doing a list of books,
-                    // the task might have been cancelled before the first
-                    // book was done. We disregard this fringe case.
-                    .putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
+                    Intent data = new Intent()
+                            // null if we did 'all books'
+                            // or the ID's (1 or more) of the (hopefully) updated books
+                            .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
+                            // task cancelled does not mean that nothing was done.
+                            // Books *will* be updated until the cancelling happened
+                            .putExtra(UniqueId.BKEY_CANCELED, task.isCancelled())
+                            // One or more books were changed.
+                            // Technically speaking when doing a list of books,
+                            // the task might have been cancelled before the first
+                            // book was done. We disregard this fringe case.
+                            .putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
 
-            if (bookIds != null && !bookIds.isEmpty()) {
-                // Pass the first book for reposition the list (if applicable)
-                data.putExtra(DBDefinitions.KEY_PK_ID, bookIds.get(0));
-            }
+                    if (bookIds != null && !bookIds.isEmpty()) {
+                        // Pass the first book for reposition the list (if applicable)
+                        data.putExtra(DBDefinitions.KEY_PK_ID, bookIds.get(0));
+                    }
 
-            //noinspection ConstantConditions
-            activity.setResult(Activity.RESULT_OK, data);
+                    //noinspection ConstantConditions
+                    activity.setResult(Activity.RESULT_OK, data);
 
-            activity.finish();
-        }
-    };
+                    activity.finish();
+                }
+            };
 
     @Override
     public void onAttach(@NonNull final Context context) {

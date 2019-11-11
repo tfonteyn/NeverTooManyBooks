@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
@@ -96,7 +95,7 @@ public class UpdateFieldsTask
      * <strong>Note:</strong> do not make it local... we need a strong reference here.
      */
     @SuppressWarnings("FieldCanBeLocal")
-    private final SearchCoordinator.SearchFinishedListener mListener =
+    private final SearchCoordinator.OnSearchFinishedListener mListener =
             (wasCancelled, bookData) -> {
                 if (wasCancelled) {
                     // if the search was cancelled, propagate by cancelling ourselves.
@@ -133,7 +132,7 @@ public class UpdateFieldsTask
     /**
      * Constructor.
      *
-     * @param taskManager Object to manage background tasks
+     * @param taskManager Associated task manager
      * @param searchSites sites to search, see {@link SearchSites#SEARCH_FLAG_MASK}
      * @param fields      fields to update
      * @param listener    where to send our results to
@@ -148,8 +147,9 @@ public class UpdateFieldsTask
         mFields = fields;
         mSearchSites = searchSites;
 
-        mSearchCoordinator = new SearchCoordinator(mTaskManager, mListener);
         MESSAGE_SWITCH.addListener(getSenderId(), false, listener);
+
+        mSearchCoordinator = new SearchCoordinator(mTaskManager, mListener);
     }
 
     /**

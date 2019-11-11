@@ -53,10 +53,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * A Switchboard to receive and deliver {@link MessageSwitch.Message}.
  * ------------------------------------------------------------------------------------------------
  * <p>
- * {@link ManagedTaskController}
- * Ask the {@link MessageSwitch} for the controller. The controller gives access to the
- * Sender (a {@link ManagedTask}) via its {@link ManagedTaskController#getManagedTask()} task
- * or can call {@link ManagedTaskController#requestAbort()}
+ * {@link MessageSwitch.Controller}
+ * Ask the {@link MessageSwitch} for the controller.
+ * The controller gives access to the {@link ManagedTask}
+ * or you can call {@link MessageSwitch.Controller#requestAbort()}
  * <p>
  * {@link ManagedTaskListener} can be implemented by other objects if they want to receive
  * {@link MessageSwitch.Message} of the task finishing via the
@@ -71,8 +71,10 @@ public abstract class ManagedTask
      * <p>
      * This object handles all underlying task messages for every instance of this class.
      */
-    public static final MessageSwitch<ManagedTaskListener, ManagedTaskController>
+    public static final MessageSwitch<ManagedTaskListener, ManagedTask>
             MESSAGE_SWITCH = new MessageSwitch<>();
+
+    /** log tag. */
     private static final String TAG = "ManagedTask";
     /** The manager who we will use for progress etc, and who we will inform about our state. */
     @NonNull
@@ -90,21 +92,24 @@ public abstract class ManagedTask
     private boolean mCancelFlg;
     /** Controller instance (strong reference) for this specific ManagedTask. */
     @SuppressWarnings("FieldCanBeLocal")
-    private final ManagedTaskController mController = new ManagedTaskController() {
-        @Override
-        public void requestAbort() {
-            cancelTask();
-        }
+    private final MessageSwitch.Controller<ManagedTask> mController =
+            new MessageSwitch.Controller<ManagedTask>() {
+                @Override
+                public void requestAbort() {
+                    cancelTask();
+                }
 
-        @NonNull
-        @Override
-        public ManagedTask getManagedTask() {
-            return ManagedTask.this;
-        }
-    };
+                @NonNull
+                @Override
+                public ManagedTask get() {
+                    return ManagedTask.this;
+                }
+            };
 
     /**
      * Constructor.
+     * <p>
+     * The task will be added to the task manager.
      *
      * @param taskManager Associated task manager
      * @param taskId      identifier
@@ -181,5 +186,42 @@ public abstract class ManagedTask
     @Nullable
     public String getFinalMessage() {
         return mFinalMessage;
+    }
+
+    /**
+     * Listener that lets other objects know about task progress and task completion.
+     * <p>
+     * See {@link com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator} for an example.
+     */
+    public interface ManagedTaskListener {
+
+        /**
+         * A task is finished.
+         *
+         * @param task the task
+         */
+        void onTaskFinished(@NonNull ManagedTask task);
+
+        /**
+         * Notification of progress.
+         *
+         * @param absPosition the new value to set
+         * @param max         the (potentially) new estimate maximum value
+         * @param message     to display. Set to "" to close the ProgressDialog
+         */
+        default void onTaskProgress(int absPosition,
+                                    int max,
+                                    @NonNull String message) {
+            // ignore
+        }
+
+        /**
+         * Notification of an interactive message.
+         *
+         * @param message to display to the user
+         */
+        default void onTaskUserMessage(@NonNull String message) {
+            // ignore
+        }
     }
 }
