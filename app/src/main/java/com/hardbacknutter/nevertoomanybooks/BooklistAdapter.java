@@ -208,6 +208,7 @@ public class BooklistAdapter
             case RowKind.LOCATION:
             case RowKind.PUBLISHER:
             case RowKind.TITLE_LETTER:
+            case RowKind.SERIES_TITLE_LETTER:
             default:
                 return new GenericStringHolder(itemView, columnIndex,
                                                R.string.hint_empty_field);

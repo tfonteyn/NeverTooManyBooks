@@ -290,6 +290,8 @@ public final class DBDefinitions {
     /** Display-domain in {@link BooklistGroup.RowKind}. */
     public static final DomainDefinition DOM_RK_TITLE_LETTER;
     /** Display-domain in {@link BooklistGroup.RowKind}. */
+    public static final DomainDefinition DOM_RK_SERIES_TITLE_LETTER;
+    /** Display-domain in {@link BooklistGroup.RowKind}. */
     public static final DomainDefinition DOM_RK_DATE_ADDED_DAY;
     /** Display-domain in {@link BooklistGroup.RowKind}. */
     public static final DomainDefinition DOM_RK_DATE_ADDED_MONTH;
@@ -782,55 +784,56 @@ public final class DBDefinitions {
          *  RowKind display-domains
          * ====================================================================================== */
         DOM_RK_AUTHOR_SORT =
-                new DomainDefinition("dd_author_sort", ColumnInfo.TYPE_TEXT, true);
+                new DomainDefinition("dd_aut_sort", ColumnInfo.TYPE_TEXT, true);
 
         DOM_RK_TITLE_LETTER =
-                new DomainDefinition("dd_title_letter", ColumnInfo.TYPE_TEXT, true);
+                new DomainDefinition("dd_tit_let", ColumnInfo.TYPE_TEXT, true);
+        DOM_RK_SERIES_TITLE_LETTER =
+                new DomainDefinition("dd_ser_tit_let", ColumnInfo.TYPE_TEXT, true);
 
         DOM_RK_READ_STATUS =
-                new DomainDefinition("dd_read_status", ColumnInfo.TYPE_TEXT, true);
-
+                new DomainDefinition("dd_rd_sts", ColumnInfo.TYPE_TEXT, true);
 
         DOM_RK_SERIES_SORT =
-                new DomainDefinition("dd_series_sort", ColumnInfo.TYPE_TEXT);
+                new DomainDefinition("dd_ser_sort", ColumnInfo.TYPE_TEXT);
 
         DOM_RK_DATE_ADDED_DAY =
-                new DomainDefinition("dd_added_day", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_add_d", ColumnInfo.TYPE_INTEGER);
         DOM_RK_DATE_ADDED_MONTH =
-                new DomainDefinition("dd_added_month", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_add_m", ColumnInfo.TYPE_INTEGER);
         DOM_RK_DATE_ADDED_YEAR =
-                new DomainDefinition("dd_added_year", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_add_y", ColumnInfo.TYPE_INTEGER);
 
         DOM_RK_DATE_LAST_UPDATED_DAY =
-                new DomainDefinition("dd_upd_day", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_upd_d", ColumnInfo.TYPE_INTEGER);
         DOM_RK_DATE_LAST_UPDATED_MONTH =
-                new DomainDefinition("dd_upd_month", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_upd_m", ColumnInfo.TYPE_INTEGER);
         DOM_RK_DATE_LAST_UPDATED_YEAR =
-                new DomainDefinition("dd_upd_year", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_upd_y", ColumnInfo.TYPE_INTEGER);
 
         DOM_RK_DATE_READ_DAY =
-                new DomainDefinition("dd_read_day", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_rd_d", ColumnInfo.TYPE_INTEGER);
         DOM_RK_DATE_READ_MONTH =
-                new DomainDefinition("dd_read_month", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_rd_m", ColumnInfo.TYPE_INTEGER);
         DOM_RK_DATE_READ_YEAR =
-                new DomainDefinition("dd_read_year", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_rd_y", ColumnInfo.TYPE_INTEGER);
 
         DOM_RK_DATE_ACQUIRED_DAY =
-                new DomainDefinition("dd_acq_day", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_acq_d", ColumnInfo.TYPE_INTEGER);
         DOM_RK_DATE_ACQUIRED_MONTH =
-                new DomainDefinition("dd_acq_month", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_acq_m", ColumnInfo.TYPE_INTEGER);
         DOM_RK_DATE_ACQUIRED_YEAR =
-                new DomainDefinition("dd_acq_year", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_acq_y", ColumnInfo.TYPE_INTEGER);
 
         DOM_RK_DATE_FIRST_PUBLICATION_MONTH =
-                new DomainDefinition("dd_first_pub_month", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_1pub_m", ColumnInfo.TYPE_INTEGER);
         DOM_RK_DATE_FIRST_PUBLICATION_YEAR =
-                new DomainDefinition("dd_first_pub_year", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_1pub_y", ColumnInfo.TYPE_INTEGER);
 
         DOM_RK_DATE_PUBLISHED_MONTH =
-                new DomainDefinition("dd_pub_month", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_pub_m", ColumnInfo.TYPE_INTEGER);
         DOM_RK_DATE_PUBLISHED_YEAR =
-                new DomainDefinition("dd_pub_year", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition("dd_pub_y", ColumnInfo.TYPE_INTEGER);
 
         /* ======================================================================================
          *  BooklistBuilder domains

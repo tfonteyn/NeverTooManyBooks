@@ -104,8 +104,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_READ_MONTH;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_DATE_READ_YEAR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_READ_STATUS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_SERIES_TITLE_LETTER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_TITLE_LETTER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -613,9 +615,11 @@ public class BooklistGroup
         public static final int DATE_FIRST_PUB_YEAR = 27;
         public static final int DATE_FIRST_PUB_MONTH = 28;
         public static final int COLOR = 29;
+        public static final int SERIES_TITLE_LETTER = 30;
+
         // NEWTHINGS: ROW_KIND_x
         // the highest valid index of kinds - ALWAYS to be updated after adding a row kind...
-        private static final int ROW_KIND_MAX = 29;
+        private static final int ROW_KIND_MAX = 30;
         private static final Map<Integer, RowKind> ALL_KINDS = new UniqueMap<>();
 
         static {
@@ -685,6 +689,13 @@ public class BooklistGroup
             rowKind = new RowKind(TITLE_LETTER, R.string.style_builtin_title_first_letter, "t")
                     .setDomain(DOM_RK_TITLE_LETTER,
                                "SUBSTR(" + TBL_BOOKS.dot(DOM_TITLE_OB) + ",1,1)");
+            ALL_KINDS.put(rowKind.mKind, rowKind);
+
+            // uses the OrderBy column
+            rowKind = new RowKind(SERIES_TITLE_LETTER,
+                                  R.string.style_builtin_series_title_first_letter, "st")
+                    .setDomain(DOM_RK_SERIES_TITLE_LETTER,
+                               "SUBSTR(" + TBL_SERIES.dot(DOM_SERIES_TITLE_OB) + ",1,1)");
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
 
@@ -950,6 +961,7 @@ public class BooklistGroup
                 case PUBLISHER:
                 case SERIES:
                 case TITLE_LETTER:
+                case SERIES_TITLE_LETTER:
                     // no specific formatting done.
                     return source;
 
@@ -1065,33 +1077,36 @@ public class BooklistGroup
                  RowKind.READ_STATUS,
 
                  RowKind.LOANED,
-                 RowKind.DATE_PUBLISHED_YEAR,
-                 RowKind.DATE_PUBLISHED_MONTH,
-                 RowKind.TITLE_LETTER,
-                 RowKind.DATE_ADDED_YEAR,
 
-                 RowKind.DATE_ADDED_MONTH,
-                 RowKind.DATE_ADDED_DAY,
-                 RowKind.DATE_READ_YEAR,
+                 RowKind.TITLE_LETTER,
+                 RowKind.SERIES_TITLE_LETTER,
                  RowKind.FORMAT,
                  RowKind.COLOR,
-                 RowKind.DATE_READ_MONTH,
-
-                 RowKind.DATE_READ_DAY,
                  RowKind.LOCATION,
                  RowKind.LANGUAGE,
-                 RowKind.DATE_LAST_UPDATE_YEAR,
-                 RowKind.DATE_LAST_UPDATE_MONTH,
-
-                 RowKind.DATE_LAST_UPDATE_DAY,
                  RowKind.RATING,
                  RowKind.BOOKSHELF,
+
+                 RowKind.DATE_PUBLISHED_YEAR,
+                 RowKind.DATE_PUBLISHED_MONTH,
+                 RowKind.DATE_FIRST_PUB_YEAR,
+                 RowKind.DATE_FIRST_PUB_MONTH,
+
+                 RowKind.DATE_READ_YEAR,
+                 RowKind.DATE_READ_MONTH,
+                 RowKind.DATE_READ_DAY,
+
+                 RowKind.DATE_ADDED_YEAR,
+                 RowKind.DATE_ADDED_MONTH,
+                 RowKind.DATE_ADDED_DAY,
+
+                 RowKind.DATE_LAST_UPDATE_YEAR,
+                 RowKind.DATE_LAST_UPDATE_MONTH,
+                 RowKind.DATE_LAST_UPDATE_DAY,
+
                  RowKind.DATE_ACQUIRED_YEAR,
                  RowKind.DATE_ACQUIRED_MONTH,
-
                  RowKind.DATE_ACQUIRED_DAY,
-                 RowKind.DATE_FIRST_PUB_YEAR,
-                 RowKind.DATE_FIRST_PUB_MONTH
                 })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Kind {

@@ -159,7 +159,7 @@ public class BooklistBuilder
     private static final String STMT_BL_DISTINCT_BOOK_COUNT = "bl:distinctBookCount";
 
 
-    /** Divider nano seconds to milli seconds. */
+    /** divider to convert nanoseconds to milliseconds. */
     private static final int TO_MILLIS = 1_000_000;
 
     /**
@@ -2126,7 +2126,8 @@ public class BooklistBuilder
                 case BooklistGroup.RowKind.LOCATION:
                 case BooklistGroup.RowKind.FORMAT:
                 case BooklistGroup.RowKind.COLOR:
-                case BooklistGroup.RowKind.TITLE_LETTER: {
+                case BooklistGroup.RowKind.TITLE_LETTER:
+                case BooklistGroup.RowKind.SERIES_TITLE_LETTER: {
                     addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
                               BuildHelper.FLAG_GROUP
                               | BuildHelper.FLAG_SORTED);
