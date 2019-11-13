@@ -181,7 +181,7 @@ public class IsfdbBookHandler
      * @param doc     the JSoup Document.
      */
     @VisibleForTesting
-    IsfdbBookHandler(final Context context,
+    IsfdbBookHandler(@NonNull final Context context,
                      @NonNull final Document doc) {
         super(doc);
         mBaseUrl = IsfdbManager.getBaseURL(context);

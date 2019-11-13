@@ -80,7 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
  * &apikey={DEVKEY}&isbn={ISBN}
  *
  * <p>
- * xml see {@link SearchCoordinator#search} header
+ * xml see {@link SearchCoordinator#searchByText} header
  * <p>
  * ENHANCE: extend the use of LibraryThing:
  * - Lookup title using keywords: http://www.librarything.com/api/thingTitle/hand oberon

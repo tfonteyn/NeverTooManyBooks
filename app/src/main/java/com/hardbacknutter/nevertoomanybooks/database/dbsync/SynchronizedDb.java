@@ -604,7 +604,7 @@ public class SynchronizedDb {
         if (sIsCollationCaseSensitive == null) {
             sIsCollationCaseSensitive = collationIsCaseSensitive();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
-                Log.d(TAG, "isCollationCaseSensitive|" + sIsCollationCaseSensitive);
+                Log.d(TAG, "isCollationCaseSensitive=" + sIsCollationCaseSensitive);
             }
         }
         return sIsCollationCaseSensitive;

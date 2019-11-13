@@ -289,6 +289,7 @@ public class DAO
     /** any non-word character. */
     private static final Pattern ENCODE_ORDERBY_PATTERN = Pattern.compile("\\W");
     private static final Pattern ASCII_REGEX = Pattern.compile("[^\\p{ASCII}]");
+    private static final int TO_MILLIS = 1_000_000;
     /** Actual SQLiteOpenHelper. */
     private static DBHelper sDbHelper;
     /** Synchronization wrapper around the real database. */
@@ -3764,7 +3765,7 @@ public class DAO
      * @return New and filtered ContentValues
      */
     @NonNull
-    private ContentValues filterValues(final Context context,
+    private ContentValues filterValues(@NonNull final Context context,
                                        @SuppressWarnings("SameParameterValue")
                                        @NonNull final TableDefinition tableDefinition,
                                        @NonNull final DataManager data,
@@ -4162,7 +4163,7 @@ public class DAO
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Log.d(TAG, "rebuildFts|completed in " + (System.nanoTime() - t0) / 1_000_000 + " ms");
+            Log.d(TAG, "rebuildFts|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
         }
     }
 

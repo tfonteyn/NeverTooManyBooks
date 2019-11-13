@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 public class Synchronizer {
 
     private static final String TAG = "Synchronizer";
+    private static final int TO_MILLIS = 1_000_000;
 
     /** Main lock for synchronization. */
     private final ReentrantLock mLock = new ReentrantLock();
@@ -213,12 +214,12 @@ public class Synchronizer {
                 if (mLock.isHeldByCurrentThread()) {
                     Log.d(TAG, "getExclusiveLock"
                                + "|Thread=" + thread.getName()
-                               + "|waited=" + (System.nanoTime() - t0) + " nano"
+                               + "|waited=" + (System.nanoTime() - t0) / TO_MILLIS + " ms"
                                + "|EXCLUSIVE access");
                 } else {
                     Log.d(TAG, "getExclusiveLock"
                                + "|Thread=" + thread.getName()
-                               + "|waited=" + (System.nanoTime() - t0) + " nano"
+                               + "|waited=" + (System.nanoTime() - t0) / TO_MILLIS + " ms"
                                + "|FAILED TO GET EXCLUSIVE access");
                 }
             }

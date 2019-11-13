@@ -115,7 +115,7 @@ public final class StorageUtils {
      * //@RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
      */
     @StringRes
-    public static int initSharedDirectories(final Context context)
+    public static int initSharedDirectories(@NonNull final Context context)
             throws SecurityException {
 
         if (!isExternalStorageMounted()) {

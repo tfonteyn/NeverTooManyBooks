@@ -85,7 +85,7 @@ public abstract class OptionsDialogBase<T extends Options>
             mListener.get().onOptionsSet(options);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onOptionsSet" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onOptionsSet|" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }

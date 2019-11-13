@@ -423,7 +423,7 @@ class GoogleBooksEntryHandler
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                     // see what we are missing.
-                    Log.d(TAG, "endElement|Skipping: " + localName + "->`" + mBuilder + '`');
+                    Log.d(TAG, "endElement|Skipping|" + localName + "->`" + mBuilder + '`');
                 }
                 break;
 

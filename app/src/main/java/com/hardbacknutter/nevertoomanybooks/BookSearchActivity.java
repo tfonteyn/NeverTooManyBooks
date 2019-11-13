@@ -50,6 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
  * - manually provided or scanned ISBN.
  * - Author/Title.
  * - Specific web site book id (Native id).
+ *
+ * - update fields for a book or set of books.
  */
 public class BookSearchActivity
         extends BaseActivityWithTasks {
@@ -112,6 +114,7 @@ public class BookSearchActivity
 
         if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
+                // update the search sites list.
                 ArrayList<Site> sites = data.getParcelableArrayListExtra(
                         SearchSites.BKEY_SEARCH_SITES_BOOKS);
                 if (sites != null) {
@@ -121,6 +124,7 @@ public class BookSearchActivity
                 }
             }
         }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -129,6 +133,7 @@ public class BookSearchActivity
         BookSearchBaseModel model = new ViewModelProvider(this).get(BookSearchBaseModel.class);
         Intent resultData = model.getActivityResultData();
         if (resultData.getExtras() != null) {
+            // ok, even if the extras is empty.
             setResult(Activity.RESULT_OK, resultData);
         }
         super.onBackPressed();

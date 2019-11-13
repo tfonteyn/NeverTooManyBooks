@@ -276,7 +276,9 @@ public abstract class BackupReaderAbstract
             mSettings.addResults(mResults);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                Log.d(TAG, "restore|results=" + mResults + "|mSettings=" + mSettings);
+                Log.d(TAG, "restore"
+                           + "|results=" + mResults
+                           + "|mSettings=" + mSettings);
             }
             try {
                 close();

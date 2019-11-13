@@ -366,7 +366,8 @@ class AmazonHandler
                 mBookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
             } catch (@NonNull final NumberFormatException ignore) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "handleListPrice|mCurrencyCode=" + mCurrencyCode
+                    Log.d(TAG, "handleListPrice"
+                               + "|mCurrencyCode=" + mCurrencyCode
                                + "|mCurrencyAmount=" + mCurrencyAmount);
                 }
             }
@@ -531,7 +532,7 @@ class AmazonHandler
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                     // see what we are missing.
-                    Log.d(TAG, "endElement|Skipping: " + localName + "->`" + mBuilder + '`');
+                    Log.d(TAG, "endElement|Skipping|" + localName + "->`" + mBuilder + '`');
                 }
             }
         } //else if (localName.equalsIgnoreCase(XML_TOTAL_RESULTS)){

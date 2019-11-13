@@ -837,7 +837,7 @@ public class TableDefinition
                           final int startRow,
                           final int endRow,
                           @NonNull final String header) {
-        Log.d(tag, "Table: `" + mName + ": " + header);
+        Log.d(tag, "Table: " + mName + ": " + header);
 
         String pk = mPrimaryKey.get(0).getName();
 

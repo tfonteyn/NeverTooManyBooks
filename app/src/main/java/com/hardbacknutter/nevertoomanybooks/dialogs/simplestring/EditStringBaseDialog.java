@@ -156,7 +156,7 @@ abstract class EditStringBaseDialog {
             mBookChangedListener.get().onBookChanged(0, changeFlags, data);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onBookChanged" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onBookChanged|" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }

@@ -200,7 +200,7 @@ public class EditTocEntryDialogFragment
             mListener.get().addOrUpdateEntry(mTocEntry);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onConfirm" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onConfirm|" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }

@@ -291,7 +291,8 @@ public class CoverBrowserFragment
         int index = mAlternativeEditions.indexOf(fileInfo.isbn);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Log.d(TAG, "setGalleryImage|" + fileInfo);
+            Log.d(TAG, "setGalleryImage"
+                       + "|fileInfo=" + fileInfo);
         }
 
         if (fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {

@@ -291,7 +291,7 @@ public final class Logger {
      *
      * @param context Current context
      */
-    public static void cycleLogs(final Context context) {
+    public static void cycleLogs(@NonNull final Context context) {
         try {
             File logFile = new File(getLogDir(context), ERROR_LOG_FILE);
             if (logFile.exists() && logFile.length() > 0) {

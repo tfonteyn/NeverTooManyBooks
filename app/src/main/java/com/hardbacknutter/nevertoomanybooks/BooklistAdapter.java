@@ -540,7 +540,7 @@ public class BooklistAdapter
                 mTaskListener.get().onTaskFinished(mResults);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onPostExecute" + Logger.WEAK_REFERENCE_DEAD);
+                    Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
                 }
             }
         }

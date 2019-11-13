@@ -191,7 +191,7 @@ public class EditAuthorDialogFragment
                                             .onBookChanged(0, BookChangedListener.AUTHOR, null);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Log.d(TAG, "onBookChanged" + Logger.WEAK_REFERENCE_DEAD);
+                            Log.d(TAG, "onBookChanged|" + Logger.WEAK_REFERENCE_DEAD);
                         }
                     }
                 })

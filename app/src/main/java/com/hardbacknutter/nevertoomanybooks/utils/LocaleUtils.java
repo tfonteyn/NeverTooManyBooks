@@ -166,7 +166,7 @@ public final class LocaleUtils {
 
         } catch (@NonNull final MissingResourceException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "isValid|e=" + e.getLocalizedMessage() + "locale=" + locale);
+                Log.d(TAG, "isValid|e=" + e.getLocalizedMessage() + "|locale=" + locale);
             }
             return false;
 

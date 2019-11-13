@@ -523,7 +523,9 @@ public final class ImageUtils {
                 retry--;
 
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "saveImage|will retry=" + (retry > 0), e);
+                    Log.d(TAG, "saveImage|will retry=" + (retry > 0)
+                               + "|url=" + url
+                               + "|e=" + e.getLocalizedMessage());
                 }
                 try {
                     Thread.sleep(500);

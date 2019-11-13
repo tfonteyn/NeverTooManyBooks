@@ -381,7 +381,7 @@ public class Fields {
         }
     }
 
-    public void setParentView(final View parentView) {
+    public void setParentView(@NonNull final View parentView) {
         for (Field field : mAllFields.values()) {
             field.setParentView(parentView);
         }
@@ -669,7 +669,7 @@ public class Fields {
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_TEXT_WATCHER) {
                 Log.d(TAG, "afterTextChanged|s=`" + s.toString() + '`'
-                           + "extract=`" + value + '`');
+                           + "|extract=`" + value + '`');
             }
 
             // Set the field with the new data.

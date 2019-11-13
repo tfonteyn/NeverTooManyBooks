@@ -84,12 +84,12 @@ public class Throttler {
                 wait = 0;
             }
             mLastRequestTime = now + wait;
-            //Log.d("Throttler", "mLastRequestTime=" + mLastRequestTime);
+            //Log.d(TAG, "mLastRequestTime=" + mLastRequestTime);
         }
 
         if (wait > 0) {
             try {
-                //Log.d("Throttler", "wait=" + wait);
+                //Log.d(TAG, "wait=" + wait);
                 Thread.sleep(wait);
             } catch (@NonNull final InterruptedException ignored) {
             }

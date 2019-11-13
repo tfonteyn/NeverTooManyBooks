@@ -390,7 +390,7 @@ public class CoverBrowserViewModel
                     && isGood(new File(fileInfo.fileSpec))) {
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                        Log.d(TAG, "download|FILESYSTEM|" + fileInfo);
+                        Log.d(TAG, "download|FILESYSTEM|fileInfo=" + fileInfo);
                     }
                     // use it
                     return fileInfo;
@@ -460,7 +460,7 @@ public class CoverBrowserViewModel
                 mFiles.put(key, fileInfo);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                    Log.d(TAG, "download|FOUND|" + fileInfo);
+                    Log.d(TAG, "download|FOUND|fileInfo=" + fileInfo);
                 }
                 return fileInfo;
 

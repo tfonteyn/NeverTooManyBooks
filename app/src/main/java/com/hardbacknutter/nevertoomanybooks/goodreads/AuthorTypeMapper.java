@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads;
 
+import androidx.annotation.NonNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,7 +99,7 @@ public class AuthorTypeMapper {
 
     }
 
-    public static int map(final String typeName) {
+    public static int map(@NonNull final String typeName) {
         Integer mapped = MAPPER.get(typeName.trim());
         if (mapped != null) {
             return mapped;

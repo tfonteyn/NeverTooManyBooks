@@ -32,6 +32,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -138,6 +139,7 @@ public abstract class JsoupBase {
      * @throws SocketTimeoutException if the connection times out
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    @WorkerThread
     @Nullable
     public String loadPage(@NonNull final String url)
             throws SocketTimeoutException {
@@ -168,7 +170,7 @@ public abstract class JsoupBase {
                 terminatorConnection.open();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Log.d(TAG, "loadPage|AFTER open|con.getURL()=" + con.getURL().toString());
+                    Log.d(TAG, "loadPage|AFTER open|con.getURL()=" + con.getURL());
                     Log.d(TAG, "loadPage|AFTER open|con.getHeaderField(\"location\")="
                                + con.getHeaderField("location"));
                 }

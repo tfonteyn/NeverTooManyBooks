@@ -134,7 +134,7 @@ public class IsfdbGetBookTask
             mTaskListener.get().onGotIsfdbBook(result);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onPostExecute" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }

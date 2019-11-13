@@ -304,8 +304,7 @@ public class BooklistPseudoCursor
                           final int newPosition) {
         if (newPosition < 0 || newPosition >= getCount()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
-                Log.d(TAG, "ENTER|onMove"
-                           + "|illegal position"
+                Log.d(TAG, "ENTER|onMove|illegal position"
                            + "|newPosition=" + newPosition
                            + "|getCount()=" + getCount());
             }

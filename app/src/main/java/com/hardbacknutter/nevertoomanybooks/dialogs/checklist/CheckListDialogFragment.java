@@ -147,9 +147,8 @@ public class CheckListDialogFragment<T>
                                 mListener.get().onCheckListEditorSave(mDestinationFieldId,
                                                                       extractList(mList));
                             } else {
-                                if (BuildConfig.DEBUG
-                                    && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                                    Log.d(TAG, "onCheckListEditorSave"
+                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                                    Log.d(TAG, "onCheckListEditorSave|"
                                                + Logger.WEAK_REFERENCE_DEAD);
                                 }
                             }

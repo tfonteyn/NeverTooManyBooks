@@ -624,7 +624,8 @@ public class BooklistBuilder
 
             // we don't catch exceptions but we do want to log the time it took here.
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Log.d(TAG, "EXIT|build|mInstanceId=" + mInstanceId
+                Log.d(TAG, "EXIT|build"
+                           + "|mInstanceId=" + mInstanceId
                            + "|Total time in ms: " + ((System.nanoTime() - t00) / TO_MILLIS));
             }
         }
@@ -869,7 +870,8 @@ public class BooklistBuilder
                     int rowsUpdated = stmt.executeUpdateDelete();
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                         Log.d(TAG, "PREF_LIST_REBUILD_ALWAYS_EXPANDED"
-                                   + "|rowsUpdated=" + rowsUpdated + "|sql=" + sql);
+                                   + "|rowsUpdated=" + rowsUpdated
+                                   + "|sql=" + sql);
                     }
                 }
                 break;
@@ -1141,7 +1143,7 @@ public class BooklistBuilder
             preserveAllNodes();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "expandNodes|" + (System.nanoTime() - t0) / TO_MILLIS);
+                Log.d(TAG, "expandNodes|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
             }
 
             if (txLock != null) {
@@ -1423,7 +1425,7 @@ public class BooklistBuilder
             if (!mDebugReferenceDecremented) {
                 int inst = DEBUG_INSTANCE_COUNTER.decrementAndGet();
                 // Only de-reference once! Paranoia ... close() might be called twice?
-                Log.d(TAG, "close|instances left: " + inst);
+                Log.d(TAG, "close|instances left=" + inst);
             }
             mDebugReferenceDecremented = true;
         }
@@ -1560,7 +1562,7 @@ public class BooklistBuilder
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             Log.d(TAG, "getDistinctBookCount"
                        + "|count=" + count
-                       + "|completed in " + (System.nanoTime() - t0) + " nano");
+                       + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
         }
         return (int) count;
     }
@@ -1591,7 +1593,7 @@ public class BooklistBuilder
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             Log.d(TAG, "getBookCount"
                        + "|count=" + count
-                       + "|completed in " + (System.nanoTime() - t0) + " nano");
+                       + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
         }
         return (int) count;
     }

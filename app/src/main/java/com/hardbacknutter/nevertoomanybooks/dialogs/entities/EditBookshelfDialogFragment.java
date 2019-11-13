@@ -178,7 +178,7 @@ public class EditBookshelfDialogFragment
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
                 } else {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                        Log.d(TAG, "onBookshelfChanged" + Logger.WEAK_REFERENCE_DEAD);
+                        Log.d(TAG, "onBookshelfChanged|" + Logger.WEAK_REFERENCE_DEAD);
                     }
                 }
             }
@@ -220,7 +220,7 @@ public class EditBookshelfDialogFragment
                         mListener.get().onBookshelfChanged(destination.getId(), booksMoved);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Log.d(TAG, "onBookshelfChanged" + Logger.WEAK_REFERENCE_DEAD);
+                            Log.d(TAG, "onBookshelfChanged|" + Logger.WEAK_REFERENCE_DEAD);
                         }
                     }
                 })

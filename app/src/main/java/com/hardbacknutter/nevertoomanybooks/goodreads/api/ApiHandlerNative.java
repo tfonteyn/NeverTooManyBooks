@@ -233,7 +233,8 @@ abstract class ApiHandlerNative {
 
         int code = request.getResponseCode();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
-            Log.d(TAG, "execute\nrequest: " + request.getURL()
+            Log.d(TAG, "execute"
+                       + "\nrequest: " + request.getURL()
                        + "\nresponse: " + code + ' ' + request.getResponseMessage());
         }
 
@@ -322,7 +323,8 @@ abstract class ApiHandlerNative {
 
         int code = request.getResponseCode();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
-            Log.d(TAG, "execute\nrequest: " + request.getURL()
+            Log.d(TAG, "execute"
+                       + "\nrequest: " + request.getURL()
                        + "\nresponse: " + code + ' ' + request.getResponseMessage());
         }
         switch (code) {

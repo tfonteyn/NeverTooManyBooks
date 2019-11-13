@@ -193,7 +193,7 @@ public class LendBookDialogFragment
                                 .onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, null);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Log.d(TAG, "onBookChanged" + Logger.WEAK_REFERENCE_DEAD);
+                            Log.d(TAG, "onBookChanged|" + Logger.WEAK_REFERENCE_DEAD);
                         }
                     }
                 })
@@ -222,7 +222,7 @@ public class LendBookDialogFragment
                                 .onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, data);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Log.d(TAG, "onBookChanged" + Logger.WEAK_REFERENCE_DEAD);
+                            Log.d(TAG, "onBookChanged|" + Logger.WEAK_REFERENCE_DEAD);
                         }
                     }
                 })

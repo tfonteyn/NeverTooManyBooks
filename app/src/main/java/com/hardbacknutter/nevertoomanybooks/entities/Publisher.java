@@ -80,7 +80,7 @@ public class Publisher
     }
 
 
-    public static Publisher fromString(final String name) {
+    public static Publisher fromString(@NonNull final String name) {
         return new Publisher(name);
     }
 

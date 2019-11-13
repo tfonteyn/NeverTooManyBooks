@@ -644,7 +644,8 @@ public class Book
             // this is not an issue as such, but helps during debug when the book *should*
             // have a language and did not.
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LOCALE) {
-                Log.d(TAG, "getLocale|no language set|id=" + getId()
+                Log.d(TAG, "getLocale|no language set"
+                           + "|id=" + getId()
                            + "|title=" + get(DBDefinitions.KEY_TITLE),
                       new Throwable());
             }

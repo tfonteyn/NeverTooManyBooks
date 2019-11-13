@@ -301,7 +301,8 @@ public class XmlImporter
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Log.d(TAG, "fromXml|startTypedTag"
-                           + "|localName=" + elementContext.getLocalName() + "|tag=" + mTag);
+                           + "|localName=" + elementContext.getLocalName()
+                           + "|tag=" + mTag);
             }
             // if we have a value attribute, this tag is done. Handle here.
             if (mTag.value != null) {
@@ -344,7 +345,8 @@ public class XmlImporter
         XmlFilter.XmlHandler endTypedTag = elementContext -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Log.d(TAG, "fromXml|endTypedTag"
-                           + "|localName=" + elementContext.getLocalName() + "|tag=" + mTag);
+                           + "|localName=" + elementContext.getLocalName()
+                           + "|tag=" + mTag);
             }
             try {
                 switch (mTag.type) {
@@ -421,7 +423,8 @@ public class XmlImporter
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Log.d(TAG, "fromXml|startElementInCollection"
-                           + "|localName=" + elementContext.getLocalName() + "|tag=" + mTag);
+                           + "|localName=" + elementContext.getLocalName()
+                           + "|tag=" + mTag);
             }
 
             // if we have a value attribute, this tag is done. Handle here.
@@ -450,7 +453,8 @@ public class XmlImporter
         XmlFilter.XmlHandler endElementInCollection = elementContext -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Log.d(TAG, "fromXml|endElementInCollection"
-                           + "|localName=`" + elementContext.getLocalName() + "|tag=" + mTag);
+                           + "|localName=`" + elementContext.getLocalName()
+                           + "|tag=" + mTag);
             }
 
             // handle tags with bodies.
