@@ -54,7 +54,7 @@
         <TextView
             android:id="@+id/lbl_site"
             style="@style/Label.Field"
-            android:text="@string/info_search_by_native_id"
+            android:text="@string/lbl_select_website"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />

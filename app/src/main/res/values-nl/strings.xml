@@ -51,7 +51,7 @@
     <string name="pe_bob_filter_loaned_no">Niet Uitgeleende boeken</string>
 
     <string name="pv_bob_header_nr_of_books">Aantal boeken</string>
-    <string name="pv_bob_header_level_1">Toon 1ste niveau</string>
+    <string name="pv_bob_header_level_1">Toon 1e niveau</string>
     <string name="pv_bob_header_level_2">Toon 2de niveau</string>
 
     <string name="size_x_small">X-Klein</string>
@@ -150,9 +150,9 @@
     <string name="error_no_external_crop_app">Een toepassing voor het bijsnijden van afbeeldingen werd niet gevonden</string>
     <string name="error_network_no_connection">Geen Internet verbinding beschikbaar.</string>
     <string name="error_not_available">%1$s is niet beschikbaar</string>
-    <string name="error_search_failed_network">Configuratie fout. Open de instellingen en kijk de Zoek-webpaginas na.</string>
-    <string name="error_search_exception">Zoeken op %1$s is mislukt: %2$s</string>
-    <string name="error_search_failed">Het zoeken naar het boek is mislukt. Controleer uw netwerk instellingen.</string>
+    <string name="error_search_failed_network">Open de instellingen en controleer uw netwerk- en zoeksite-voorkeuren.\nControleer ook de netwerkinstellingen van uw apparaat</string>
+    <string name="error_search_x_failed_y">Zoeken op %1$s is mislukt: %2$s</string>
+    <string name="title_search_failed">Het zoeken naar het boek is mislukt.</string>
     <string name="error_site_authentication_failed">%1$s authenticatie mislukt</string>
     <string name="error_storage_no_space_left">Onvoldoende opslag beschikbaar</string>
     <string name="error_storage_not_accessible">Opslag niet toegankelijk</string>
@@ -169,7 +169,7 @@
     <string name="export_options_dialog_title">Selecteer wat geëxporteerd zal worden naar het archief.</string>
     <string name="gr_access_error">Er was een netwerkprobleem terwijl u probeerde toegang te krijgen tot Goodreads. Controleer of de website van Goodreads in de lucht is en als het probleem aanhoudt maak dan contact met ondersteuning</string>
     <string name="gr_action_cannot_be_completed">Deze actie kan niet worden voltooid voordat deze applicatie door Goodreads is geautoriseerd. Probeer het nog eens als de autorisatie is geslaagd.\n\nWilt u de autorisatie nu doen?</string>
-    <string name="gr_auth_access_already_auth">Het lijkt erop dat u deze applicatie al toegang heeft verleend. Alle Goodreads functies moeten reeds beschikbaar zijn</string>
+    <string name="gr_auth_access_already_granted">Het lijkt erop dat u deze applicatie al toegang heeft verleend. Alle Goodreads functies moeten reeds beschikbaar zijn</string>
     <string name="gr_auth_blurb_part1">Goodreads is een website met de missie: „mensen helpen boeken te vinden en te delen met anderen”. Ze hebben een uitgebreide database met boeken en boekbesprekingen. Als geregistreerde gebruiker kan &APP_NAME;
         uw boeken, boekenplanken en boekbesprekingen exporteren en importeren naar en van Goodreads. &APP_NAME;
         is een op zichzelf staande applicatie en heeft Goodreads niet nodig, maar als u toch geïnteresseerd bent kunt u zich registreren op:</string>
@@ -181,18 +181,18 @@
     <string name="X_gr_auth_check">Goodreads autorisatie controle</string>
     <string name="gr_auth_error">Goodreads autorisatie leidde tot een fout.</string>
     <string name="gr_auth_successful">Goodreads autorisatie gelukt</string>
-    <string name="gr_btn_send_all">Zend alles</string>
-    <string name="gr_btn_send_updated">Zend bijgewerkte</string>
-    <string name="gr_explain_no_isbn">Het geselecteerde boek heeft geen ISBN en kan niet automatisch worden gesynchroniseerd met Goodreads. De simpelste oplossing is om:\n\n(1) het boek te verwijderen uit &APP_NAME;\n\n(2) het boek handmatig toe te voegen aan Goodreads via hun website\n\n(3) synchroniseren met Goodreads\n\nDit zal als resultaat hebben dat het boek opnieuw wordt aangemaakt in &APP_NAME;
+    <string name="gr_menu_send_all">Zend alles</string>
+    <string name="gr_menu_send_updated">Zend bijgewerkte</string>
+    <string name="gr_info_no_isbn">Het geselecteerde boek heeft geen ISBN en kan niet automatisch worden gesynchroniseerd met Goodreads. De simpelste oplossing is om:\n\n(1) het boek te verwijderen uit &APP_NAME;\n\n(2) het boek handmatig toe te voegen aan Goodreads via hun website\n\n(3) synchroniseren met Goodreads\n\nDit zal als resultaat hebben dat het boek opnieuw wordt aangemaakt in &APP_NAME;
         en dat de twee van af dat moment gekoppeld blijven.</string>
-    <string name="gr_explain_no_match">Het ISBN van het geselecteerde boek kon niet worden gevonden in Goodreads. Er zijn twee mogelijke oorzaken hiervoor: Of de boekgegevens zijn onjuist (controleer het ISBN), of het boek staat niet in Goodreads.\n\nAls u de boekgegevens in &APP_NAME;
+    <string name="gr_info_no_match">Het ISBN van het geselecteerde boek kon niet worden gevonden in Goodreads. Er zijn twee mogelijke oorzaken hiervoor: Of de boekgegevens zijn onjuist (controleer het ISBN), of het boek staat niet in Goodreads.\n\nAls u de boekgegevens in &APP_NAME;
         gaat veranderen drukt u daarna op de „Probeer opnieuw” knop en controleert of de op de achtergrond opgestarte taak met succes is beëindigd.\n\nAls de boekgegevens correct lijken en het boek nog steeds niet kan worden gevonden dan moet een boek met dat ISBN handmatig worden toegevoegd aan Goodreads via hun website. Nadat dat is gedaan kunt u proberen het boek opnieuw te zenden.</string>
-    <string name="gr_import_all_from_goodreads">Importeer alles uit Goodreads</string>
+    <string name="gr_menu_import_all_from_goodreads">Importeer alles uit Goodreads</string>
     <string name="gr_info_send_books">Dit zendt uw bibliotheek naar Goodreads.\n\nJe kan er voor kiezen alle boeken te sturen of alleen de boeken die u heeft bijgewerkt sinds deze werden gekopieerd van of naar Goodreads (inclusief alle boeken die nog niet werden verzonden) of u kunt de update annuleren.\n\n Als u nog nooit boeken heeft verzonden is er geen verschil tussen de eerste twee opties.</string>
     <string name="gr_menu_send_to_goodreads">Zend naar Goodreads</string>
-    <string name="gr_send_all_books_results">%1$d boeken verwerkt: %2$d met succes verzonden, %3$d zonder ISBN en %4$d met ISBN maar niet gevonden in Goodreads</string>
+    <string name="gr_info_send_all_books_results">%1$d boeken verwerkt: %2$d met succes verzonden, %3$d zonder ISBN en %4$d met ISBN maar niet gevonden in Goodreads</string>
     <string name="gr_send_book_to_goodreads">Zend boek %1$d naar Goodreads</string>
-    <string name="gr_sync_with_goodreads">Synchroniseer met Goodreads</string>
+    <string name="gr_title_sync_with_goodreads">Synchroniseer met Goodreads</string>
     <string name="gr_title_auth_access">Toegang autoriseren</string>
     <string name="gr_title_send_book">Zend boeken naar Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Opschonen oude gebeurtenissen</string>
@@ -364,9 +364,9 @@
     <string name="megabytes">%.2fMB</string>
     <string name="menu_about">Over deze App</string>
     <string name="X_menu_add_book">Boek Toevoegen…</string>
-    <string name="menu_add_book_by_barcode_scan">Scan streepjescode/ISBN</string>
-    <string name="menu_add_book_by_isbn">Invullen ISBN</string>
-    <string name="menu_add_book_manually">Handmatig toevoegen</string>
+    <string name="fab_add_book_by_barcode_scan">Scan streepjescode</string>
+    <string name="fab_add_book_by_isbn">Invullen ISBN</string>
+    <string name="fab_add_book_manually">Handmatig toevoegen</string>
     <string name="X_menu_administration">Beheer…</string>
     <string name="menu_amazon_books_by_author">Boeken van deze auteur</string>
     <string name="menu_amazon_books_by_author_in_series">Boeken per auteur/serie</string>
@@ -396,7 +396,7 @@
     <string name="menu_loan_return_book">Uitgeleend boek is terug</string>
     <string name="menu_populate_toc">Automatisch titels invullen (alleen ISFDB)</string>
     <string name="btn_search">Zoeken</string>
-    <string name="menu_add_book_by_internet_search">Internet doorzoeken</string>
+    <string name="fab_add_book_by_internet_search">Internet doorzoeken</string>
     <string name="menu_set_complete">Markeer als volledig</string>
     <string name="menu_set_incomplete">Markeer als onvolledig</string>
     <string name="menu_set_read">Markeer als gelezen</string>
@@ -500,7 +500,7 @@
     <string name="style_builtin_read_and_unread">Gelezen en ongelezen</string>
     <string name="style_builtin_read_date">Datum gelezen</string>
     <string name="style_builtin_series">Series</string>
-    <string name="style_builtin_title_first_letter">Eerste letter van de titel</string>
+    <string name="style_builtin_first_letter_book_title">Eerste letter van de titel</string>
     <string name="style_builtin_unread">Ongelezen (Auteur/Serie)</string>
     <string name="style_builtin_update_date">Datum update</string>
     <string name="style_builtin_bookshelf">Boekenplank</string>
@@ -572,7 +572,7 @@
     <string name="info_bad_scanner">Het lijkt er op dat de door u gebruikt streepjescode scanner app niet compatibel is met &APP_NAME;.</string>
     <string name="info_install_scanner_recommendation">Wij kunnen de Zxing streepjescode scanner application aanbevelen. Als deze al is geïnstalleerd raden we aan deze te deïnstalleren en daarna weer opnieuw te installeren.</string>
     <string name="warning_book_no_longer_exists">Het gespecificeerde boek bestaat niet meer</string>
-    <string name="warning_book_not_found">Het gescande boek is niet gevonden. Je kan de juiste streepjescode aan de achterkant van de omslag vinden. Vul anders de gegevens handmatig in.</string>
+    <string name="tip_book_not_found">Het gescande boek is niet gevonden. Je kan de juiste streepjescode aan de achterkant van de omslag vinden. Vul anders de gegevens handmatig in.</string>
     <string name="X_warning_book_was_deleted_uc">DIT BOEK IS VERWIJDERD</string>
     <string name="warning_cannot_delete_1st_bs">De eerste boekenplank kan niet verwijderd worden</string>
     <string name="warning_cover_copy_failed">Afbeelding kon niet gekopiërt worden</string>
@@ -592,7 +592,7 @@
     <string name="warning_select_at_least_1_field">Selecteer tenminste één veld om te updaten.</string>
     <string name="warning_series_already_in_list">Serie staat al in de lijst</string>
     <string name="warning_toc_confirm">Bevestig dat deze titels (merendeels) correct zijn</string>
-    <string name="warning_unable_to_find_book">Kan gespecificeerd boek niet vinden</string>
+    <string name="warning_book_not_found">Kan gespecificeerd boek niet vinden</string>
     <string name="warning_unsaved_edits">Je hebt niet opgeslagen veranderingen. Als u nu afsluit gaan die verloren.</string>
     <string name="warning_unsaved_edits2">De door u gemaakte veranderingen zijn niet opgeslagen. Wilt u toch doorgaan?</string>
     <string name="warning_x_already_exists">%1$s bestaat al.</string>
@@ -655,5 +655,12 @@
     <string name="swap">Wisselen</string>
     <string name="pt_site_settings">Website instellingen</string>
     <string name="btn_email">e-mail</string>
+    <string name="warning_requires_site_and_id">Selecteer een website en voer een ID in.</string>
+    <string name="style_builtin_first_letter_series_title">Serietitel 1e letter</string>
+    <string name="scan">Scan barcode</string>
+    <string name="lbl_author_type_inking">Inking</string>
+    <string name="lbl_select_website">Selecteer een website:</string>
+    <string name="lbl_site_book_id">Website boek ID:</string>
+    <string name="fab_add_book_by_native_id">Website boek-id</string>
 
 </resources>

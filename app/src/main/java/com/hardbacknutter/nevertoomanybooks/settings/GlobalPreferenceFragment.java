@@ -179,7 +179,7 @@ public class GlobalPreferenceFragment
         switch (requestCode) {
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mResultDataModel.putExtra(data);
+                    mResultDataModel.putExtras(data);
                 }
                 break;
 
@@ -240,14 +240,14 @@ public class GlobalPreferenceFragment
                 // this dialog is important. Make sure the user pays some attention
                 .setCancelable(false)
                 .setNegativeButton(android.R.string.cancel, (d, w) ->
-                        StartupViewModel.setScheduleOrderByRebuild(false))
+                        StartupViewModel.setScheduleOrderByRebuild(getContext(), false))
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     //prefs.edit().putBoolean(Prefs.pk_reformat_titles_sort, !current).apply();
                     SwitchPreference sp = findPreference(Prefs.pk_reformat_titles_sort);
                     //noinspection ConstantConditions
                     sp.setChecked(!current);
 
-                    StartupViewModel.setScheduleOrderByRebuild(true);
+                    StartupViewModel.setScheduleOrderByRebuild(getContext(), true);
                 })
                 .create()
                 .show();

@@ -72,8 +72,6 @@ public final class DEBUG_SWITCHES {
     public static final boolean BACKUP = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel}. */
     public static final boolean STARTUP_TASKS = false;
-    /** {@link com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask}. */
-    public static final boolean MANAGED_TASKS = false;
     /** Where listeners are held in a WeakReference, log dead references. */
     public static final boolean TRACE_WEAK_REFERENCES = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}. */

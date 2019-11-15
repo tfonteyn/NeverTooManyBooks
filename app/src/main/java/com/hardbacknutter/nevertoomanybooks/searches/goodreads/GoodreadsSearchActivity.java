@@ -109,7 +109,7 @@ public class GoodreadsSearchActivity
         }
 
         Intent data = new Intent(context, GoodreadsSearchActivity.class)
-                              .putExtra(DBDefinitions.KEY_PK_ID, bookId);
+                .putExtra(DBDefinitions.KEY_PK_ID, bookId);
         context.startActivity(data);
     }
 
@@ -137,7 +137,7 @@ public class GoodreadsSearchActivity
 
         updateViews();
 
-        mListView = findViewById(android.R.id.list);
+        mListView = findViewById(R.id.resultList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         mListView.setLayoutManager(linearLayoutManager);
         mListView.addItemDecoration(
@@ -220,7 +220,18 @@ public class GoodreadsSearchActivity
         private final MutableLiveData<List<GoodreadsWork>> mWorks = new MutableLiveData<>();
         private final MutableLiveData<Boolean> mBookNoLongerExists = new MutableLiveData<>();
         private final TaskListener<List<GoodreadsWork>> mTaskListener =
-                message -> mWorks.setValue(message.result);
+                new TaskListener<List<GoodreadsWork>>() {
+                    @Override
+                    public void onFinished(
+                            @NonNull final FinishMessage<List<GoodreadsWork>> message) {
+                        mWorks.setValue(message.result);
+                    }
+
+                    @Override
+                    public void onProgress(@NonNull final ProgressMessage message) {
+                        // ignore
+                    }
+                };
 
         /** Database Access. */
         private DAO mDb;
@@ -357,7 +368,7 @@ public class GoodreadsSearchActivity
                                          final int viewType) {
 
             View view = getLayoutInflater()
-                                .inflate(R.layout.row_goodreads_work_item, parent, false);
+                    .inflate(R.layout.row_goodreads_work_item, parent, false);
             return new Holder(view);
         }
 

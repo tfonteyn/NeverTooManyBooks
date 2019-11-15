@@ -118,7 +118,7 @@ public class AuthorWorksFragment
         getActivity().setTitle(mModel.getScreenTitle(context));
 
         //noinspection ConstantConditions
-        RecyclerView listView = getView().findViewById(android.R.id.list);
+        RecyclerView listView = getView().findViewById(R.id.authorWorks);
         listView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         listView.setLayoutManager(linearLayoutManager);

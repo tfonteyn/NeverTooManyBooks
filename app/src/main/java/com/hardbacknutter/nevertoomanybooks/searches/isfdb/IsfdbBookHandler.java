@@ -196,7 +196,7 @@ public class IsfdbBookHandler
     /**
      * Fetch a book.
      *
-     * @param isfdbId          ISFDB native book ID
+     * @param isfdbId          ISFDB native book ID (as a String)
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   whether to get thumbnails as well
      *
@@ -205,9 +205,9 @@ public class IsfdbBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    public Bundle fetch(final long isfdbId,
-                        final boolean addSeriesFromToc,
-                        final boolean fetchThumbnail)
+    Bundle fetchByNativeId(@NonNull final String isfdbId,
+                           final boolean addSeriesFromToc,
+                           final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
         return fetch(mBaseUrl + String.format(BOOK_URL, isfdbId), addSeriesFromToc, fetchThumbnail);

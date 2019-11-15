@@ -129,7 +129,7 @@ public class KbNlManager
         try (TerminatorConnection terminatorConnection = new TerminatorConnection(url)) {
             HttpURLConnection con = terminatorConnection.getHttpURLConnection();
 
-            // needed so we get the XML
+            // needed so we get the XML instead of the rendered page
             con.setInstanceFollowRedirects(false);
             // the site does not return full data unless this is set to a valid browser.
             con.setRequestProperty("User-Agent", USER_AGENT);

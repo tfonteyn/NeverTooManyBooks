@@ -111,7 +111,7 @@ public class IsfdbGetBookTask
 
             } else if (mIsfdbId != 0) {
                 return new IsfdbBookHandler(context)
-                        .fetch(mIsfdbId, mAddSeriesFromToc, false);
+                        .fetchByNativeId(String.valueOf(mIsfdbId), mAddSeriesFromToc, false);
 
             } else {
                 if (BuildConfig.DEBUG /* always */) {

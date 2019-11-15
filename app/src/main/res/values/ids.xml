@@ -90,6 +90,11 @@
     <item name="TASK_ID_GR_IMPORT" type="id" />
     <item name="TASK_ID_GR_GET_WORKS" type="id" />
 
+    <!-- not an actual task, but this serves to identify messages from the SearchCoordinator -->
+    <item name="TASK_ID_SEARCH_COORDINATOR" type="id" />
+
+    <item name="TASK_ID_UPDATE_FIELDS" type="id" />
+
     <!-- END predefined AsyncTask IDs -->
 
     <!-- BEGIN predefined menu items -->

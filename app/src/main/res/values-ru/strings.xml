@@ -149,9 +149,9 @@
     <string name="error_no_external_crop_app">Заявка на обрезку изображений не найдена</string>
     <string name="error_network_no_connection">Интернет соединение отсутствует.</string>
     <string name="error_not_available">%1$s недоступен</string>
-    <string name="error_search_failed_network">Ошибка конфигурации. Пожалуйста, откройте страницу администратора и проверьте настройки поиска.</string>
-    <string name="error_search_exception">Поиск по %1$s не удался: %2$s</string>
-    <string name="error_search_failed">Поиск книги не удался. Пожалуйста, проверьте настройки интернет-соединения.</string>
+    <string name="error_search_failed_network">Пожалуйста, откройте «Настройки» и проверьте настройки сети и поиска на сайте.\nТакже проверьте настройки сети вашего устройства</string>
+    <string name="error_search_x_failed_y">Поиск по %1$s не удался: %2$s</string>
+    <string name="title_search_failed">Поиск книги не удался.</string>
     <string name="error_site_authentication_failed">%1$s аутентификация не удалась</string>
     <string name="error_storage_no_space_left">Недостаточно места</string>
     <string name="error_storage_not_accessible">Хранение недоступно</string>
@@ -168,23 +168,24 @@
     <string name="export_options_dialog_title">Выберите, что будет экспортировано в архив.</string>
     <string name="gr_access_error">Возникли проблемы с соединением во время доступа к Goodreads. Пожалуйста, проверьте работает ли сайт Goodreads и если проблема останется сообщите в поддержку</string>
     <string name="gr_action_cannot_be_completed">Данное действие не может быть завершено пока приложение не будет авторизовано через сайт Goodreads. Пожалуйста, попробуйте ещё раз, после авторизации приложения.\n\nХотите ли Вы авторизоваться сейчас?</string><string name="btn_tell_me_more">Расскажите мне ещё</string>
-    <string name="gr_auth_access_already_auth">Кажется, вы уже авторизованы. Все функции Goodreads уже должны быть доступны</string>
+    <string name="gr_auth_access_already_granted">Кажется, вы уже авторизованы. Все функции Goodreads уже должны быть доступны</string>
     <string name="gr_auth_blurb_part1">Goodreads это сайт, чья основная миссия это «помогать людям находить и делиться книгами, которые они любят». У них есть обширная база данных с книгами и отзывами на них. И если Вы зарегистрированный пользователь Goodreads, наше приложение может экспортировать и импортировать ваши книги, полки и обзоры. Наше приложение полностью автономно и не требует Goodreads, но если Вам интересно, вы можете зарегистрироваться здесь:</string>
     <string name="gr_auth_blurb_part2">Как только Вы зарегистрируетесь или если уже зарегистрировались на Goodreads, Вы сможете авторизоваться через наше приложение для доступа к вашим данным на Goodreads. Для этого нажмите на кнопку Авторизация ниже. Вы перейдете на страницу, где сможете авторизоваться. Наше приложение не знает и не хранит Ваши пароли. Также Вы можете заблокировать доступ через сайт Goodreads. Из-за капризов интернет соединения Вы можете увидеть пустую страницу. В этом случае просто нажмите кнопку Назад, чтобы вернуться сюда!</string><string name="gr_auth_blurb_part3">Но помните…всё это делать не обязательно: наше приложение замечательно работает и без этого!</string>
     <string name="gr_auth_blurb_part4">Похоже, вы уже авторизовали это приложение. Если вы хотите удалить учетные данные с этого телефона, то вы можете сделать это, нажав кнопку ниже. В этом случае не забудьте деавторизировать приложение на сайте Goodreads.</string>
     <string name="X_gr_auth_check">Проверка авторизации Goodreads</string>
     <string name="gr_auth_error">Авторизация Goodreads завершилась с ошибкой.</string>
     <string name="gr_auth_successful">Авторизация Goodreads прошла успешно</string>
-    <string name="gr_btn_send_all">Отправить все</string>
-    <string name="gr_btn_send_updated">Отправить обновленные</string>
-    <string name="gr_explain_no_isbn">Выбранная книга не имеет ISBN; невозможно автоматически синхронизировать с Goodreads. Вот самое простое решение:\n\n(1) Удалить книгу в этом приложении\n\n(2) Добавить книгу в Goodreads вручную через веб интерфейс\n\n(3) Синхронизировать приложение с Goodreads\n\nВ результате, во-первых книга будет пересоздана в &APP_NAME; и во-вторых уже будет связана с Goodreads.</string>
-    <string name="gr_explain_no_match">ISBN выбранной книги не найден на Goodreads. Для этого есть несколько причин: либо данные о книги не правильны (проверьте ISBN), либо книги нет на Goodreads.\n\nЕсли Вы сделаете какие-либо изменения в &APP_NAME;, просто нажмите кнопку «Повторить» и проверьте выполнилась ли фоновая задача.\n\nЕсли данные о книге правильны и книга все еще не найдена, то эта книга должна быть добавлена на Goodreads вручную через сайт. После того, как это будет сделано, Вы можете повторить отправление книги.</string>
-    <string name="gr_import_all_from_goodreads">Импортировать все из Goodreads</string>
+    <string name="gr_menu_send_all">Отправить все</string>
+    <string name="gr_menu_send_updated">Отправить обновленные</string>
+    <string name="gr_info_no_isbn">Выбранная книга не имеет ISBN; невозможно автоматически синхронизировать с Goodreads. Вот самое простое решение:\n\n(1) Удалить книгу в этом приложении\n\n(2) Добавить книгу в Goodreads вручную через веб интерфейс\n\n(3) Синхронизировать приложение с Goodreads\n\nВ результате, во-первых книга будет пересоздана в &APP_NAME;
+        и во-вторых уже будет связана с Goodreads.</string>
+    <string name="gr_info_no_match">ISBN выбранной книги не найден на Goodreads. Для этого есть несколько причин: либо данные о книги не правильны (проверьте ISBN), либо книги нет на Goodreads.\n\nЕсли Вы сделаете какие-либо изменения в &APP_NAME;, просто нажмите кнопку «Повторить» и проверьте выполнилась ли фоновая задача.\n\nЕсли данные о книге правильны и книга все еще не найдена, то эта книга должна быть добавлена на Goodreads вручную через сайт. После того, как это будет сделано, Вы можете повторить отправление книги.</string>
+    <string name="gr_menu_import_all_from_goodreads">Импортировать все из Goodreads</string>
     <string name="gr_info_send_books">Это отправит Вашу библиотеку на Goodreads.\n\nВы можете выбрать так, чтобы отослать все ваши книги или только те, которые были обновлены с тех пор как были копированы с или на Goodreads (включая все книги, которые ещё не были отправлены). Также Вы можете отменить обновление.\n\nЕсли никогда не отправляли книги, тогда нет никакой разницы между первыми двумя вариантами.</string>
     <string name="gr_menu_send_to_goodreads">Послать на Goodreads</string>
-    <string name="gr_send_all_books_results">%1$d книг обработано: %2$d отправлено успешно, %3$d без ISBN и %4$d с ISBN но не найдено в Goodreads</string>
+    <string name="gr_info_send_all_books_results">%1$d книг обработано: %2$d отправлено успешно, %3$d без ISBN и %4$d с ISBN но не найдено в Goodreads</string>
     <string name="gr_send_book_to_goodreads">Отправить книгу %1$d на Goodreads</string>
-    <string name="gr_sync_with_goodreads">Синхронизировать с Goodreads</string>
+    <string name="gr_title_sync_with_goodreads">Синхронизировать с Goodreads</string>
     <string name="gr_title_auth_access">Авторизация</string>
     <string name="gr_title_send_book">Отправить книги на Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Очистить старые события</string>
@@ -356,9 +357,9 @@
     <string name="megabytes">%.2fМб</string>
     <string name="menu_about">О приложении…</string>
     <string name="X_menu_add_book">Добавить книгу…</string>
-    <string name="menu_add_book_by_barcode_scan">Сканировать штрих-код/ISBN</string>
-    <string name="menu_add_book_by_isbn">Ввести ISBN</string>
-    <string name="menu_add_book_manually">Добавить вручную</string>
+    <string name="fab_add_book_by_barcode_scan">Сканировать штрих-код</string>
+    <string name="fab_add_book_by_isbn">Ввести ISBN</string>
+    <string name="fab_add_book_manually">Добавить вручную</string>
     <string name="X_menu_administration">управление…</string>
     <string name="menu_amazon_books_by_author">Книги этого автора</string>
     <string name="menu_amazon_books_by_author_in_series">Книги по автору/серии</string>
@@ -388,7 +389,7 @@
     <string name="menu_loan_return_book">Заимствованная книга возвращается</string>
     <string name="menu_populate_toc">Автоматически заполнить названия (ЭКСПЕРИМЕНТАЛЬНО)</string>
     <string name="btn_search">Поиск</string>
-    <string name="menu_add_book_by_internet_search">Поиск в Интернете</string>
+    <string name="fab_add_book_by_internet_search">Поиск в Интернете</string>
     <string name="menu_set_complete">Отметка завершена</string>
     <string name="menu_set_incomplete">Отметить не полностью</string>
     <string name="menu_set_read">Марк читать</string>
@@ -489,7 +490,7 @@
     <string name="style_builtin_read_and_unread">Прочтена и непрочтена</string>
     <string name="style_builtin_read_date">Дата прочтения</string>
     <string name="style_builtin_series">Серии</string>
-    <string name="style_builtin_title_first_letter">Первая буква названия</string>
+    <string name="style_builtin_first_letter_book_title">Первая буква названия</string>
     <string name="style_builtin_unread">Непрочтенные (Автор/Серии)</string>
     <string name="style_builtin_update_date">Дата обновления</string>
     <string name="style_builtin_bookshelf">Книжная полка</string>
@@ -561,7 +562,7 @@
     <string name="info_bad_scanner">Возможно, ваше приложение-сканер не совместимо с &APP_NAME;.</string>
     <string name="info_install_scanner_recommendation">Мы рекомендуем установить Zxing сканер, или если он уже установлен, удалите его, затем снова установите.</string>
     <string name="warning_book_no_longer_exists">Указанная книга больше не существует</string>
-    <string name="warning_book_not_found">Не найдена книга, соответствующая отсканированному штрих-коду. Возможно правильный штрих-код находится внутри книги. Иначе, пожалуйста, введите детализированную информацию о книге вручную.</string>
+    <string name="tip_book_not_found">Не найдена книга, соответствующая отсканированному штрих-коду. Возможно правильный штрих-код находится внутри книги. Иначе, пожалуйста, введите детализированную информацию о книге вручную.</string>
     <string name="X_warning_book_was_deleted_uc">ЭТА КИНГА БЫЛА УДАЛЕНА</string>
     <string name="warning_cannot_delete_1st_bs">Невозможно удалить единственную книжную полку</string>
     <string name="warning_cover_copy_failed">Не возможно скопировать изображение</string>
@@ -581,7 +582,7 @@
     <string name="warning_select_at_least_1_field">Выберите хотя бы одно поле для обновления.</string>
     <string name="warning_series_already_in_list">Серия уже есть в списке</string>
     <string name="warning_toc_confirm">Пожалуйста, подтвердите, что названия антологий (в основном) правильны</string>
-    <string name="warning_unable_to_find_book">Поиск указанной книги не удался</string>
+    <string name="warning_book_not_found">Поиск указанной книги не удался</string>
     <string name="warning_unsaved_edits">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
     <string name="warning_unsaved_edits2">У Вас есть несохранённые изменения. Вы уверены что хотите продолжить?</string>
     <string name="warning_x_already_exists">%1$s уже существует.</string>
@@ -643,5 +644,12 @@
     <string name="swap">обменивать</string>
     <string name="pt_site_settings">Настройки сайта</string>
     <string name="btn_email">е-мейл</string>
+    <string name="warning_requires_site_and_id">Выберите сайт и введите идентификатор.</string>
+    <string name="style_builtin_first_letter_series_title">Название серии 1 буква</string>
+    <string name="scan">Сканирование штрих-кода</string>
+    <string name="lbl_author_type_inking">красочного</string>
+    <string name="lbl_select_website">Выберите сайт:</string>
+    <string name="lbl_site_book_id">Идентификатор книги сайта:</string>
+    <string name="fab_add_book_by_native_id">Идентификатор книги сайта</string>
 
 </resources>

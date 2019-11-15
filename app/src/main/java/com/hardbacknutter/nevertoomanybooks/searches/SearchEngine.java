@@ -145,7 +145,7 @@ public interface SearchEngine {
     interface ByNativeId {
 
         /**
-         * Called by the {@link SearchCoordinator#search}.
+         * Called by the {@link SearchCoordinator#searchByText}.
          *
          * @param context        Current context (i.e. with the current Locale)
          * @param nativeId       the native id (as a String) for this particular search site.
@@ -153,7 +153,7 @@ public interface SearchEngine {
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @throws CredentialsException with sites which require credentials
+         * @throws CredentialsException for sites which require credentials
          * @throws IOException          on other failures
          */
         @WorkerThread
@@ -168,7 +168,7 @@ public interface SearchEngine {
     interface ByIsbn {
 
         /**
-         * Called by the {@link SearchCoordinator#search}.
+         * Called by the {@link SearchCoordinator#searchByText}.
          * The isbn will be <strong>valid</strong>.
          *
          * @param context        Current context (i.e. with the current Locale)
@@ -177,7 +177,7 @@ public interface SearchEngine {
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @throws CredentialsException with sites which require credentials
+         * @throws CredentialsException for sites which require credentials
          * @throws IOException          on other failures
          */
         @WorkerThread
@@ -192,7 +192,7 @@ public interface SearchEngine {
     interface ByText {
 
         /**
-         * Called by the {@link SearchCoordinator#search}.
+         * Called by the {@link SearchCoordinator#searchByText}.
          * The isbn is <strong>not tested</strong>.
          * <p>
          * Checking the arguments must be done inside the implementation,
@@ -209,7 +209,7 @@ public interface SearchEngine {
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @throws CredentialsException with sites which require credentials
+         * @throws CredentialsException for sites which require credentials
          * @throws IOException          on other failures
          */
         @WorkerThread

@@ -68,8 +68,13 @@ public class LibraryThingRegistrationActivity
 
     private final TaskListener<Integer> mListener = new TaskListener<Integer>() {
         @Override
-        public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
+        public void onFinished(@NonNull final FinishMessage<Integer> message) {
             UserMessage.show(mDevKeyView, message.result);
+        }
+
+        @Override
+        public void onProgress(@NonNull final ProgressMessage message) {
+            // ignore
         }
     };
 

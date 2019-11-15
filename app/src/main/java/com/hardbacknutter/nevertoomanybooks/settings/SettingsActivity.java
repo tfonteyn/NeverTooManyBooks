@@ -233,7 +233,7 @@ public class SettingsActivity
         if (data != null) {
             ResultDataModel resultDataModel =
                     new ViewModelProvider(this).get(ResultDataModel.class);
-            resultDataModel.putExtra(data);
+            resultDataModel.putExtras(data);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

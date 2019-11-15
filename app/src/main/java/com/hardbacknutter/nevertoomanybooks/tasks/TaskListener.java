@@ -31,12 +31,6 @@ import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.annotation.UiThread;
-
-import java.util.Arrays;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
 /**
  * Warning: To prevent unintended garbage collection, you must store a strong reference to
@@ -58,31 +52,24 @@ public interface TaskListener<Result> {
     /**
      * Called when a task finishes.
      */
-    @UiThread
-    void onTaskFinished(@NonNull TaskFinishedMessage<Result> message);
+    void onFinished(@NonNull FinishMessage<Result> message);
 
     /**
-     * Optional progress messages.
+     * Progress messages.
      */
-    @UiThread
-    default void onTaskProgress(@NonNull final TaskProgressMessage message) {
-        // do nothing.
-        if (BuildConfig.DEBUG /* always */) {
-            throw new IllegalStateException("taskId=" + message.taskId);
-        }
-    }
+    void onProgress(@NonNull ProgressMessage message);
 
-    /** Possible outcomes as passed in {@link TaskFinishedMessage}. */
+    /** Possible outcomes as passed in {@link FinishMessage}. */
     enum TaskStatus {
         Success, Cancelled, Failed
     }
 
     /**
-     * Value class holding task-finished values.
+     * Value class holding task-finished value.
      *
      * @param <Result> type of the actual result of the task.
      */
-    class TaskFinishedMessage<Result> {
+    class FinishMessage<Result> {
 
         public final int taskId;
         public final Result result;
@@ -101,10 +88,10 @@ public interface TaskListener<Result> {
          *                  Nullable/NonNull is up to the implementation.
          * @param exception if the task finished with an exception, or {@code null}.
          */
-        public TaskFinishedMessage(final int taskId,
-                                   @NonNull final TaskStatus status,
-                                   final Result result,
-                                   @Nullable final Exception exception) {
+        public FinishMessage(final int taskId,
+                             @NonNull final TaskStatus status,
+                             final Result result,
+                             @Nullable final Exception exception) {
             this.taskId = taskId;
             this.status = status;
             this.result = result;
@@ -114,7 +101,7 @@ public interface TaskListener<Result> {
         @Override
         @NonNull
         public String toString() {
-            return "TaskFinishedMessage{"
+            return "FinishMessage{"
                    + "taskId=" + taskId
                    + ", status=" + status
                    + ", result=" + result
@@ -124,53 +111,48 @@ public interface TaskListener<Result> {
     }
 
     /**
-     * Value class holding progress values.
+     * Value class holding progress value.
      */
-    class TaskProgressMessage {
+    class ProgressMessage {
 
-        @SuppressWarnings("WeakerAccess")
         public final int taskId;
-        @SuppressWarnings("WeakerAccess")
+        public final int maxPosition;
+        public final int absPosition;
         @Nullable
-        public final Integer maxPosition;
-        @SuppressWarnings("WeakerAccess")
-        @Nullable
-        public final Integer absPosition;
-        @Nullable
-        public final Object[] values;
+        public final String text;
 
-        public TaskProgressMessage(final int taskId,
-                                   @Nullable final Integer maxPosition,
-                                   @Nullable final Integer absPosition,
-                                   @Nullable final Object[] values) {
+        public ProgressMessage(final int taskId,
+                               final int maxPosition,
+                               final int absPosition,
+                               @Nullable final String text) {
             this.taskId = taskId;
             this.maxPosition = maxPosition;
             this.absPosition = absPosition;
-            this.values = values;
+            this.text = text;
         }
 
         /**
          * Constructor using a simple/single {@code StringRes}.
          *
-         * @param taskId   task ID
-         * @param stringId string resource if
+         * @param taskId task ID
+         * @param text   string
          */
-        public TaskProgressMessage(final int taskId,
-                                   @StringRes final int stringId) {
+        public ProgressMessage(final int taskId,
+                               @Nullable final String text) {
             this.taskId = taskId;
-            this.maxPosition = null;
-            this.absPosition = null;
-            this.values = new Object[]{stringId};
+            this.maxPosition = 0;
+            this.absPosition = 0;
+            this.text = text;
         }
 
         @Override
         @NonNull
         public String toString() {
-            return "TaskProgressMessage{"
+            return "ProgressMessage{"
                    + "taskId=" + taskId
                    + ", maxPosition=" + maxPosition
                    + ", absPosition=" + absPosition
-                   + ", values=" + Arrays.toString(values)
+                   + ", text=" + text
                    + '}';
         }
     }

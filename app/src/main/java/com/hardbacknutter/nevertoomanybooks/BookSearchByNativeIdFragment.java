@@ -77,7 +77,10 @@ public class BookSearchByNativeIdFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mEntryView.setText(mBookSearchBaseModel.getNativeIdSearchText());
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.fab_add_book_by_native_id);
+
+        mEntryView.setText(mSearchCoordinator.getNativeId());
 
         mRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             //NEWTHINGS: add new site specific ID:
@@ -114,18 +117,17 @@ public class BookSearchByNativeIdFragment
             String nativeId = mEntryView.getText().toString().trim();
             //sanity check
             if (nativeId.isEmpty() || mRadioGroup.getCheckedRadioButtonId() == View.NO_ID) {
-                //noinspection ConstantConditions
-                UserMessage.show(getActivity(), R.string.warning_requires_id_and_site);
+                UserMessage.show(mEntryView, R.string.warning_requires_site_and_id);
                 return;
             }
 
-            mBookSearchBaseModel.setNativeIdSearchText(nativeId);
+            mSearchCoordinator.setNativeId(nativeId);
             startSearch();
         });
     }
 
     @Override
-    protected boolean customizeSearch() {
+    protected boolean onSearch() {
         @IdRes
         int checkedId = mRadioGroup.getCheckedRadioButtonId();
 
@@ -155,17 +157,15 @@ public class BookSearchByNativeIdFragment
                 site = Site.newSite(SearchSites.STRIP_INFO_BE);
                 break;
 
-
             default:
                 throw new UnexpectedValueException(checkedId);
         }
 
-        return mBookSearchBaseModel.searchByNativeId(site);
+        return mSearchCoordinator.searchByNativeId(site);
     }
 
     @Override
     void onSearchResults(@NonNull final Bundle bookData) {
-
         Intent intent = new Intent(getContext(), EditBookActivity.class)
                 .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
         startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);

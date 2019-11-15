@@ -154,7 +154,7 @@ class SendBooksLegacyTask
         // Notify the user with a system Notification.
         App.showNotification(context,
                              context.getString(R.string.gr_title_send_book),
-                             context.getString(R.string.gr_send_all_books_results,
+                             context.getString(R.string.gr_info_send_all_books_results,
                                                mCount, mSent, mNoIsbn, mNotFound));
         return true;
     }

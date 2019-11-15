@@ -70,8 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ui.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskFinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
@@ -146,7 +145,8 @@ public class ImportExportFragment
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog != null) {
-            mProgressDialog.setTask(mModel.getTask());
+            // reconnect after a fragment restart
+            mProgressDialog.setCancellable(mModel.getTask());
         }
 
         View root = getView();
@@ -212,7 +212,7 @@ public class ImportExportFragment
         }
         // collect all data for passing to the calling Activity
         if (data != null) {
-            mResultDataModel.putExtra(data);
+            mResultDataModel.putExtras(data);
         }
 
         switch (requestCode) {
@@ -317,7 +317,7 @@ public class ImportExportFragment
         }
     }
 
-    private void onTaskProgressMessage(@NonNull final TaskProgressMessage message) {
+    private void onTaskProgressMessage(@NonNull final TaskListener.ProgressMessage message) {
         if (mProgressDialog != null) {
             mProgressDialog.onProgress(message);
         }
@@ -377,8 +377,8 @@ public class ImportExportFragment
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialogFragment.newInstance(
-                    R.string.title_importing, false, 0);
+            mProgressDialog = ProgressDialogFragment
+                    .newInstance(R.string.title_importing, false, 0);
             mProgressDialog.show(fm, TAG);
 
             RestoreTask task = new RestoreTask(importHelper,
@@ -386,7 +386,7 @@ public class ImportExportFragment
             mModel.setTask(task);
             task.execute();
         }
-        mProgressDialog.setTask(mModel.getTask());
+        mProgressDialog.setCancellable(mModel.getTask());
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -461,8 +461,8 @@ public class ImportExportFragment
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialogFragment.newInstance(
-                    R.string.title_importing, false, 0);
+            mProgressDialog = ProgressDialogFragment
+                    .newInstance(R.string.title_importing, false, 0);
             mProgressDialog.show(fm, TAG);
 
             //noinspection ConstantConditions
@@ -470,9 +470,8 @@ public class ImportExportFragment
                                                    mImportHelperModel.getTaskListener());
             mModel.setTask(task);
             task.execute();
-
         }
-        mProgressDialog.setTask(mModel.getTask());
+        mProgressDialog.setCancellable(mModel.getTask());
     }
 
     /**
@@ -480,7 +479,7 @@ public class ImportExportFragment
      *
      * @param message with results from the import task
      */
-    private void onImportFinished(@NonNull final TaskFinishedMessage<ImportHelper> message) {
+    private void onImportFinished(@NonNull final TaskListener.FinishMessage<ImportHelper> message) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
@@ -652,7 +651,7 @@ public class ImportExportFragment
             mModel.setTask(task);
             task.execute();
         }
-        mProgressDialog.setTask(mModel.getTask());
+        mProgressDialog.setCancellable(mModel.getTask());
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -682,8 +681,8 @@ public class ImportExportFragment
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialogFragment.newInstance(
-                    R.string.title_backing_up, false, 0);
+            mProgressDialog = ProgressDialogFragment
+                    .newInstance(R.string.title_backing_up, false, 0);
             mProgressDialog.show(fm, TAG);
             //noinspection ConstantConditions
             ExportCSVTask task = new ExportCSVTask(getContext(),
@@ -692,7 +691,7 @@ public class ImportExportFragment
             mModel.setTask(task);
             task.execute();
         }
-        mProgressDialog.setTask(mModel.getTask());
+        mProgressDialog.setCancellable(mModel.getTask());
     }
 
     /**
@@ -700,7 +699,7 @@ public class ImportExportFragment
      *
      * @param message with results from the export task
      */
-    private void onExportFinished(@NonNull final TaskFinishedMessage<ExportHelper> message) {
+    private void onExportFinished(@NonNull final TaskListener.FinishMessage<ExportHelper> message) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }

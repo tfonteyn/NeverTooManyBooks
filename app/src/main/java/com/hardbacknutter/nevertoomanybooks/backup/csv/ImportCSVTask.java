@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ProgressListenerBase;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
 
 /**
  * Task result: Integer: # books processed (i.e. not # books imported which could be lower)
@@ -69,18 +68,16 @@ public class ImportCSVTask
 
         @Override
         public void onProgress(final int pos,
-                               @Nullable final Object message) {
+                               @Nullable final String message) {
             mPos = pos;
-            Object[] values = {message};
-            publishProgress(new TaskProgressMessage(mTaskId, getMax(), pos, values));
+            publishProgress(new TaskListener.ProgressMessage(mTaskId, getMax(), pos, message));
         }
 
         @Override
         public void onProgressStep(final int delta,
-                                   @Nullable final Object message) {
+                                   @Nullable final String message) {
             mPos += delta;
-            Object[] values = {message};
-            publishProgress(new TaskProgressMessage(mTaskId, getMax(), mPos, values));
+            publishProgress(new TaskListener.ProgressMessage(mTaskId, getMax(), mPos, message));
         }
 
         @Override

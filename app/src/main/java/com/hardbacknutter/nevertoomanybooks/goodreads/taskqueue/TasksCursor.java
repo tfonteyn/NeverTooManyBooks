@@ -36,6 +36,7 @@ import android.database.sqlite.SQLiteQuery;
 
 import androidx.annotation.NonNull;
 
+import java.io.Closeable;
 import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -59,7 +60,7 @@ import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueue
  */
 public final class TasksCursor
         extends SQLiteCursor
-        implements BindableItemCursor {
+        implements BindableItemCursor, Closeable {
 
     /** Static Factory object to create the custom cursor. */
     private static final CursorFactory CURSOR_FACTORY =

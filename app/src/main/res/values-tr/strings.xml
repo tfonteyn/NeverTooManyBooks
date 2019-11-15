@@ -149,9 +149,9 @@
     <string name="error_no_external_crop_app">Görüntüleri kırpmak için bir uygulama bulunamadı</string>
     <string name="error_network_no_connection">Ağ bağlantısı yok.</string>
     <string name="error_not_available">%1$s kullanılamıyor</string>
-    <string name="error_search_failed_network">Yapılandırma hatası. Lütfen Ayarlar sayfasını açın ve Arama Sitesi tercihlerinizi kontrol edin.</string>
-    <string name="error_search_exception">%1$s\'de arama başarısız oldu: %2$s</string>
-    <string name="error_search_failed">Kitap araması başarısız oldu. Ağ ayarlarınızı denetleyiniz.</string>
+    <string name="error_search_failed_network">Lütfen Ayarlar\'ı açın ve ağ ve Arama Sitesi tercihlerinizi kontrol edin.\nAyrıca cihaz ağ ayarlarınızı da kontrol edin.</string>
+    <string name="error_search_x_failed_y">%1$s\'de arama başarısız oldu: %2$s</string>
+    <string name="title_search_failed">Kitap araması başarısız oldu.</string>
     <string name="error_site_authentication_failed">%1$s kimlik doğrulaması başarısız oldu</string>
     <string name="error_storage_no_space_left">Mevcut depolama yetersiz</string>
     <string name="error_storage_not_accessible">Depolama erişilebilir değil</string>
@@ -168,7 +168,7 @@
     <string name="export_options_dialog_title">Arşive nelerin aktarılacağını seçin.</string>
     <string name="gr_access_error">Goodreads\'e erişmeye çalışırken bir ağ sorunu oluştu. Lütfen Goodreads ağ sayfasının çalışıyor olduğundan emin olun, sorun sürerse lütfen destek bölümü ile iletişime geçin.</string>
     <string name="gr_action_cannot_be_completed">Bu uygulama Goodreads ağ sayfasında yetkilendirilmeden verilen bu görev tamamlanamaz. Uygulamayı yetkilendirdikten sonra yeniden deneyiniz. \n\nŞimdi yetkilendirmek istiyor musunuz?</string>
-    <string name="gr_auth_access_already_auth">Bu uygulamayı zaten önceden yetkilendirmişsiniz. Tüm Goodreads işlevleri halihazırda kullanılabilir olmalı</string>
+    <string name="gr_auth_access_already_granted">Bu uygulamayı zaten önceden yetkilendirmişsiniz. Tüm Goodreads işlevleri halihazırda kullanılabilir olmalı</string>
     <string name="gr_auth_blurb_part1">Goodreads, ağ sayfasında belirtildiği üzere ereği “kişilerin sevdiği kitapları bulmasına ve paylaşmasına yardımcı olmak” olan bir servistir. Çok geniş bir kitap ve yorum veritabanına iye olan Goodreads\'te kayıtlı bir kullanıcı iseniz Goodreads\'ten kitaplarınızı, raflarınızı ve yorumlarınızı alabilir veya Goodreads\'e gönderebilir. &APP_NAME; kendi başına bir uygulama olup Goodreads\'i gerektirmemektedir, ancak ilgilendiyseniz buradan kayıt olabilirsiniz:</string>
     <string name="gr_auth_blurb_part2">Kayıt olduktan sonra veya kayıtlı bir kullanıcı iseniz Goodreads verilerinize ulaşmak için aşağıdaki düğmeye basın. Sizi Goodreads\'e giriş yapabileceğiniz bir ağ sayfasına yönlendirecektir. Açarsözünüzü (şifrenizi) biz kesinlikle görmeyeceğiz ve dilediğiniz zaman erişimi Goodreads ağ sayfasından iptal edebilirsiniz. Bazen boş bir bete düşerseniz geri düğmesine basıp buraya dönebilirsiniz!</string>
     <string name="gr_auth_blurb_part3">Ancak unutmayın… bunu yapmanız zorunlu değil, &APP_NAME; tek başına da gayet de çalışır!</string>
@@ -176,16 +176,16 @@
     <string name="X_gr_auth_check">Goodreads yetkilendirme denetimi</string>
     <string name="gr_auth_error">Goodreads yetkilendirmesi bir hataya neden oldu</string>
     <string name="gr_auth_successful">Goodreads yetkilendirmesi başarılı</string>
-    <string name="gr_btn_send_all">Tümünü gönder</string>
-    <string name="gr_btn_send_updated">Güncellenenleri gönder</string>
-    <string name="gr_explain_no_isbn">Seçili kitabın bir ISBN numarası yok, dolayısıyla Goodreads ile özdevinimli olarak eşitlenmesi olanaklı değil. En yalın çözüm olarak:\n\n(1) Kitabı Goodreads\'ten silin,\n\n(2) Kitabı Goodreads\'e el ile ağ sayfasından ekleyin,\n\n(3) Goodreads ile eşitleme yapın.\n\nBu kitabın &APP_NAME;\'de yeniden oluşturulmasını sağlar ve her iki giri birbiri ile sürekli eşitlenmiş kalacaktır.</string>
-    <string name="gr_explain_no_match">Seçili kitabın ISBN\'si Goodreads\'te bulunamadı. Bunun olası iki nedeni vardır: Ya kitap için girdiğiniz veri hatalı (ISBN\'yi kontrol edin) veya kitap Goodreads\'te bulunmuyor.\n\nEğer &APP_NAME;\'de herhangi bir veriyi değiştirirseniz, yalnızca “Yeniden dene” düğmesine basın ve oluşan ardalan görevinin başarıyla tamamlanıp tamamlanmadığına bakın.\n\nEğer veri doğru olup, ancak kitap hala bulunamıyorsa bu kitabın ISBN\'si ile birlikte Goodreads\'e el ile ağ sayfasından eklenmesi gerekmektedir. Bu yapıldıktan sonra kitabı yeniden göndermeyi deneyebilirsiniz.</string>
-    <string name="gr_import_all_from_goodreads">Tümünü Goodreads\'den içe aktar</string>
+    <string name="gr_menu_send_all">Tümünü gönder</string>
+    <string name="gr_menu_send_updated">Güncellenenleri gönder</string>
+    <string name="gr_info_no_isbn">Seçili kitabın bir ISBN numarası yok, dolayısıyla Goodreads ile özdevinimli olarak eşitlenmesi olanaklı değil. En yalın çözüm olarak:\n\n(1) Kitabı Goodreads\'ten silin,\n\n(2) Kitabı Goodreads\'e el ile ağ sayfasından ekleyin,\n\n(3) Goodreads ile eşitleme yapın.\n\nBu kitabın &APP_NAME;\'de yeniden oluşturulmasını sağlar ve her iki giri birbiri ile sürekli eşitlenmiş kalacaktır.</string>
+    <string name="gr_info_no_match">Seçili kitabın ISBN\'si Goodreads\'te bulunamadı. Bunun olası iki nedeni vardır: Ya kitap için girdiğiniz veri hatalı (ISBN\'yi kontrol edin) veya kitap Goodreads\'te bulunmuyor.\n\nEğer &APP_NAME;\'de herhangi bir veriyi değiştirirseniz, yalnızca “Yeniden dene” düğmesine basın ve oluşan ardalan görevinin başarıyla tamamlanıp tamamlanmadığına bakın.\n\nEğer veri doğru olup, ancak kitap hala bulunamıyorsa bu kitabın ISBN\'si ile birlikte Goodreads\'e el ile ağ sayfasından eklenmesi gerekmektedir. Bu yapıldıktan sonra kitabı yeniden göndermeyi deneyebilirsiniz.</string>
+    <string name="gr_menu_import_all_from_goodreads">Tümünü Goodreads\'den içe aktar</string>
     <string name="gr_info_send_books">Bu işlem kitaplığınızı Goodreads\'e gönderecektir.\n\nİster tüm kitaplarınızı gönderebilir veya son göndermenizden bu yana güncellenen, alınan veya gönderilen kitapları seçebilir (henüz gönderilmeyen kitaplar da dahil olmak üzere) veya güncellemeyi iptal edebilirsiniz.\n\nEğer daha önce hiç kitap göndermediyseniz ilk iki seçenek arasında hiçbir ayrım bulunmamaktadır.</string>
     <string name="gr_menu_send_to_goodreads">Goodreads\'e gönder</string>
-    <string name="gr_send_all_books_results">%1$d kitap işlendi: %2$d tanesi başarıyla gönderildi, %3$d tanesinin ISBN\'si yok ve %4$d tanesinin ISBN\'si Goodreads\'te bulunamadı</string>
+    <string name="gr_info_send_all_books_results">%1$d kitap işlendi: %2$d tanesi başarıyla gönderildi, %3$d tanesinin ISBN\'si yok ve %4$d tanesinin ISBN\'si Goodreads\'te bulunamadı</string>
     <string name="gr_send_book_to_goodreads">Bu kitabı Goodreads\'e gönder: %1$d</string>
-    <string name="gr_sync_with_goodreads">Goodreads ile eşitle</string>
+    <string name="gr_title_sync_with_goodreads">Goodreads ile eşitle</string>
     <string name="gr_title_auth_access">Erişime izin ver</string>
     <string name="gr_title_send_book">Kitapları Goodreads\'e gönder</string>
     <string name="gr_tq_btn_cleanup_old_events">Eski olayları temizle</string>
@@ -357,9 +357,9 @@
     <string name="megabytes">%.2fMB</string>
     <string name="menu_about">Uygulama hakkında</string>
     <string name="X_menu_add_book">Kitap ekle…</string>
-    <string name="menu_add_book_by_barcode_scan">Barkod/ISBN tara</string>
-    <string name="menu_add_book_by_isbn">ISBN gir</string>
-    <string name="menu_add_book_manually">El ile ekle</string>
+    <string name="fab_add_book_by_barcode_scan">Barkod tara</string>
+    <string name="fab_add_book_by_isbn">ISBN gir</string>
+    <string name="fab_add_book_manually">El ile ekle</string>
     <string name="X_menu_administration">Yönetim…</string>
     <string name="menu_amazon_books_by_author">Bu yazarın kitapları</string>
     <string name="menu_amazon_books_by_author_in_series">Yazara/diziye göre kitaplar</string>
@@ -389,7 +389,7 @@
     <string name="menu_loan_return_book">Ödünç alınan kitap geri döndü</string>
     <string name="menu_populate_toc">Kitap adlarını kendiliğinden doldur (DENEYSEL ÖZELLİK)</string>
     <string name="btn_search">Ara</string>
-    <string name="menu_add_book_by_internet_search">Genelağ\'da ara</string>
+    <string name="fab_add_book_by_internet_search">Genelağ\'da ara</string>
     <string name="menu_set_complete">“Tamamla” olarak ayarla</string>
     <string name="menu_set_incomplete">Eksik ayarla</string>
     <string name="menu_set_read">Okundu olarak işaretle</string>
@@ -490,7 +490,7 @@
     <string name="style_builtin_read_and_unread">Okunmuş ve okunmamış</string>
     <string name="style_builtin_read_date">Okunan günay</string>
     <string name="style_builtin_series">Seriler</string>
-    <string name="style_builtin_title_first_letter">İlk harf başlık</string>
+    <string name="style_builtin_first_letter_book_title">İlk harf başlık</string>
     <string name="style_builtin_unread">Okunmayan (Yazar/Seri)</string>
     <string name="style_builtin_update_date">Gün ve ayı güncelle</string>
     <string name="style_builtin_bookshelf">Kitaplık</string>
@@ -563,7 +563,7 @@
         ile uyumlu değil.</string>
     <string name="info_install_scanner_recommendation">Biz Zxing barkod tarayıcısını yüklemenizi öneriyoruz. Eğer zaten yüklüyse silip yeniden yüklemeniz yardımcı olabilir.</string>
     <string name="warning_book_no_longer_exists">Belirtilen kitap artık yok</string>
-    <string name="warning_book_not_found">Aranan kitap bulunamadı. Bazen doğru barkodu kitap kapağının içinde bulabilirsiniz. Bulamazsanız, bilgileri elle giriniz.</string>
+    <string name="tip_book_not_found">Aranan kitap bulunamadı. Bazen doğru barkodu kitap kapağının içinde bulabilirsiniz. Bulamazsanız, bilgileri elle giriniz.</string>
     <string name="X_warning_book_was_deleted_uc">BU BETİK SİLİNDİ</string>
     <string name="warning_cannot_delete_1st_bs">Birinci kitaplık silinemiyor</string>
     <string name="warning_cover_copy_failed">Resim eşlemlenemedi</string>
@@ -583,7 +583,7 @@
     <string name="warning_select_at_least_1_field">Güncellemek için en azından bir alan seçin.</string>
     <string name="warning_series_already_in_list">Seri zaten ekli</string>
     <string name="warning_toc_confirm">Lütfen bu seçki adlarının doğru olduğunu onaylayın</string>
-    <string name="warning_unable_to_find_book">Belirtilen kitap bulunamıyor</string>
+    <string name="warning_book_not_found">Belirtilen kitap bulunamıyor</string>
     <string name="warning_unsaved_edits">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
     <string name="warning_unsaved_edits2">Kaydedilmemiş değişiklikleriniz var. Sürdürmek istediğinizden emin misiniz?</string>
     <string name="warning_x_already_exists">%1$s zaten var.</string>
@@ -645,5 +645,12 @@
     <string name="swap">Değiştirmek</string>
     <string name="pt_site_settings">Web sitesi ayarları</string>
     <string name="btn_email">E-posta</string>
+    <string name="warning_requires_site_and_id">Bir web sitesi seçin ve bir kimlik girin.</string>
+    <string name="style_builtin_first_letter_series_title">Seri başlığı 1. harf</string>
+    <string name="scan">Barkod tara</string>
+    <string name="lbl_author_type_inking">mürekkepleme</string>
+    <string name="lbl_select_website">Bir web sitesi seçin:</string>
+    <string name="lbl_site_book_id">Web sitesi kitap kimliği:</string>
+    <string name="fab_add_book_by_native_id">Web sitesi kitap kimliği</string>
 
 </resources>

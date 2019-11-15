@@ -96,6 +96,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 public class GoodreadsManager
         implements SearchEngine,
                    SearchEngine.ByIsbn,
+                   SearchEngine.ByNativeId,
                    SearchEngine.ByText,
                    SearchEngine.CoverByIsbn {
 
@@ -784,6 +785,7 @@ public class GoodreadsManager
                                @NonNull final String isbn,
                                final boolean fetchThumbnail)
             throws CredentialsException, IOException {
+
         try {
             return getBookByIsbn(context, isbn, fetchThumbnail);
 
@@ -792,6 +794,24 @@ public class GoodreadsManager
             return new Bundle();
         }
     }
+
+    @NonNull
+    @Override
+    public Bundle searchByNativeId(@NonNull final Context context,
+                                   @NonNull final String nativeId,
+                                   final boolean fetchThumbnail)
+            throws CredentialsException, IOException {
+
+        try {
+            long bookId = Long.parseLong(nativeId);
+            return getBookById(context, bookId, fetchThumbnail);
+
+        } catch (@NonNull final BookNotFoundException | NumberFormatException e) {
+            // to bad.
+            return new Bundle();
+        }
+    }
+
 
     /**
      * Search for a book.
@@ -1099,7 +1119,7 @@ public class GoodreadsManager
                     return R.string.done;
                 case noIsbn:
 
-                    return R.string.gr_explain_no_isbn;
+                    return R.string.gr_info_no_isbn;
                 case notFound:
 
                     return R.string.warning_no_matching_book_found;

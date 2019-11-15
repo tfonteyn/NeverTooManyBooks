@@ -150,9 +150,9 @@
     <string name="error_no_external_crop_app">Nie znaleziono aplikacji do przycinania obrazów</string>
     <string name="error_network_no_connection">Połączenie internetowe nie jest dostępne.</string>
     <string name="error_not_available">%1$s jest niedostępny</string>
-    <string name="error_search_failed_network">Błąd konfiguracji. Otwórz stronę Ustawienia i sprawdź preferencje strony wyszukiwania.</string>
-    <string name="error_search_exception">Wyszukiwanie w %1$s nie powiodło się: %2$s</string>
-    <string name="error_search_failed">Wyszukiwanie książki nie powiodło się. Sprawdź połączenie z siecią.</string>
+    <string name="error_search_failed_network">Otwórz Ustawienia i sprawdź preferencje sieci i witryny wyszukiwania.\nSprawdź także ustawienia sieciowe urządzenia</string>
+    <string name="error_search_x_failed_y">Wyszukiwanie w %1$s nie powiodło się: %2$s</string>
+    <string name="title_search_failed">Wyszukiwanie książki nie powiodło się.</string>
     <string name="error_site_authentication_failed">Uwierzytelnienie %1$s nie powiodło się</string>
     <string name="error_storage_no_space_left">Niewystarczająca pamięć dostępna</string>
     <string name="error_storage_not_accessible">Pamięć niedostępna</string>
@@ -169,7 +169,7 @@
     <string name="export_options_dialog_title">Wybierz, co zostanie wyeksportowane do archiwum.</string>
     <string name="gr_access_error">Wystąpił problem z siecią podczas uzyskiwania dostępu do Goodreads. Sprawdź, czy witryna Goodreads obsługuje ją, a jeśli problem nadal występuje, skontaktuj się z pomocą techniczną.</string>
     <string name="gr_action_cannot_be_completed">Ta akcja nie może zostać zakończona, dopóki ta aplikacja nie zostanie autoryzowana na stronie internetowej Goodreads. Po autoryzacji tej aplikacji spróbuj ponownie. Czy chcesz teraz autoryzować?</string>
-    <string name="gr_auth_access_already_auth">Wygląda na to, że już autoryzowałeś tę aplikację. Wszystkie funkcje Goodreads powinny być już dostępne.</string>
+    <string name="gr_auth_access_already_granted">Wygląda na to, że już autoryzowałeś tę aplikację. Wszystkie funkcje Goodreads powinny być już dostępne.</string>
     <string name="gr_auth_blurb_part1">Goodreads to strona internetowa, której misją jest „pomaganie ludziom w znajdowaniu i dzieleniu się książkami, które kochają”. Posiadają obszerną bazę książek i recenzji, a jeśli jesteś zarejestrowanym użytkownikiem Goodreads, możesz eksportować swoje książki, półki i recenzje do Goodreads i importować swoje książki, półki i recenzje z Goodreads. jest samodzielną aplikacją i nie wymaga Goodreads, ale jeśli jesteś zainteresowany, możesz zarejestrować się na:</string>
     <string name="gr_auth_blurb_part2">Po zarejestrowaniu lub jeśli jesteś już użytkownikiem Goodreads, możesz autoryzować dostęp do danych Goodreads, naciskając poniższy przycisk. Spowoduje to przejście do strony internetowej, na której będziesz musiał zalogować się do Goodreads i autoryzować tę aplikację. Nigdy nie zobaczymy Twojego hasła i możesz wyłączyć dostęp za pośrednictwem strony Goodreads. Ze względu na kaprysy sieci, możesz skończyć na pustej stronie internetowej. Wystarczy dotknąć przycisku Wstecz, aby wrócić tutaj!</string>
     <string name="gr_auth_blurb_part3">Ale pamiętaj… nie ma potrzeby tego robić: bez niego działa dobrze!</string>
@@ -177,16 +177,16 @@
     <string name="X_gr_auth_check">Sprawdzanie autoryzacji Goodreads</string>
     <string name="gr_auth_error">Autoryzacja Goodreads spowodowała błąd.</string>
     <string name="gr_auth_successful">Autoryzacja Goodreads powiodła się</string>
-    <string name="gr_btn_send_all">Wyślij wszystko</string>
-    <string name="gr_btn_send_updated">Wyślij zaktualizowane</string>
-    <string name="gr_explain_no_isbn">Wybrana książka nie ma numeru ISBN; nie jest możliwe automatyczne zsynchronizowanie go z Goodreads. Najprostszym rozwiązaniem jest: (1) usunięcie książki z (2) ręczne dodanie książki w Goodreads za pośrednictwem interfejsu internetowego (3) Synchronizacja z Goodreads Spowoduje to ponowne utworzenie książki i pozostanie z nią połączona dalej.</string>
-    <string name="gr_explain_no_match">ISBN wybranej książki nie można znaleźć w Goodreads. Istnieją dwie możliwe przyczyny: albo dane książki są błędne (powinieneś sprawdzić ISBN), albo książka nie jest w Goodreads. Jeśli wprowadzisz jakiekolwiek zmiany w danych, po prostu naciśnij przycisk „Ponów próbę” i sprawdź, czy wynikowe zadanie w tle się powiedzie. Jeśli dane wyglądają poprawnie, a książka nadal nie została znaleziona, książka z tym ISBN musi zostać ręcznie dodana do Goodreads za pośrednictwem strony internetowej. Gdy to zrobisz, możesz spróbować ponownie wysłać książkę.</string>
-    <string name="gr_import_all_from_goodreads">Importuj wszystkie z Goodreads</string>
+    <string name="gr_menu_send_all">Wyślij wszystko</string>
+    <string name="gr_menu_send_updated">Wyślij zaktualizowane</string>
+    <string name="gr_info_no_isbn">Wybrana książka nie ma numeru ISBN; nie jest możliwe automatyczne zsynchronizowanie go z Goodreads. Najprostszym rozwiązaniem jest: (1) usunięcie książki z (2) ręczne dodanie książki w Goodreads za pośrednictwem interfejsu internetowego (3) Synchronizacja z Goodreads Spowoduje to ponowne utworzenie książki i pozostanie z nią połączona dalej.</string>
+    <string name="gr_info_no_match">ISBN wybranej książki nie można znaleźć w Goodreads. Istnieją dwie możliwe przyczyny: albo dane książki są błędne (powinieneś sprawdzić ISBN), albo książka nie jest w Goodreads. Jeśli wprowadzisz jakiekolwiek zmiany w danych, po prostu naciśnij przycisk „Ponów próbę” i sprawdź, czy wynikowe zadanie w tle się powiedzie. Jeśli dane wyglądają poprawnie, a książka nadal nie została znaleziona, książka z tym ISBN musi zostać ręcznie dodana do Goodreads za pośrednictwem strony internetowej. Gdy to zrobisz, możesz spróbować ponownie wysłać książkę.</string>
+    <string name="gr_menu_import_all_from_goodreads">Importuj wszystkie z Goodreads</string>
     <string name="gr_info_send_books">Spowoduje to wysłanie biblioteki do Goodreads. Możesz wysłać wszystkie swoje książki lub tylko książki zaktualizowane od czasu ich ostatniego skopiowania do lub z Goodreads (w tym wszystkie książki, które nie zostały jeszcze wysłane) lub możesz anulować aktualizację. Jeśli nigdy nie wysłałeś żadnych książek, nie ma różnicy między pierwszymi dwiema opcjami.</string>
     <string name="gr_menu_send_to_goodreads">Wyślij do Goodreads</string>
-    <string name="gr_send_all_books_results">Przetworzono %1$d książek: %2$d wysłano pomyślnie, %3$d bez ISBN, a %4$d z ISBN, ale nie znaleziono w Goodreads</string>
+    <string name="gr_info_send_all_books_results">Przetworzono %1$d książek: %2$d wysłano pomyślnie, %3$d bez ISBN, a %4$d z ISBN, ale nie znaleziono w Goodreads</string>
     <string name="gr_send_book_to_goodreads">Wyślij książkę %1$d do Goodreads</string>
-    <string name="gr_sync_with_goodreads">Synchronizuj z Goodreads</string>
+    <string name="gr_title_sync_with_goodreads">Synchronizuj z Goodreads</string>
     <string name="gr_title_auth_access">Autoryzuj dostęp</string>
     <string name="gr_title_send_book">Wysyłaj książki do Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Oczyszczanie starych wydarzeń</string>
@@ -358,9 +358,9 @@
     <string name="megabytes">%.2fMB</string>
     <string name="menu_about">O programie</string>
     <string name="X_menu_add_book">Dodaj książkę…</string>
-    <string name="menu_add_book_by_barcode_scan">Skanowanie kodów kreskowych / ISBN</string>
-    <string name="menu_add_book_by_isbn">Wpisz ISBN</string>
-    <string name="menu_add_book_manually">Dodaj ręcznie</string>
+    <string name="fab_add_book_by_barcode_scan">Skanowanie kodów kreskowych</string>
+    <string name="fab_add_book_by_isbn">Wpisz ISBN</string>
+    <string name="fab_add_book_manually">Dodaj ręcznie</string>
     <string name="X_menu_administration">Zarządzanie…</string>
     <string name="menu_amazon_books_by_author">Książki tego autora</string>
     <string name="menu_amazon_books_by_author_in_series">Książki według autora / serii</string>
@@ -390,7 +390,7 @@
     <string name="menu_loan_return_book">Pożyczona książka powraca</string>
     <string name="menu_populate_toc">Automatycznie obsadź pozycje antologii(EKSPERYMENTALNIE)</string>
     <string name="btn_search">Szukaj</string>
-    <string name="menu_add_book_by_internet_search">Szukaj w Internecie</string>
+    <string name="fab_add_book_by_internet_search">Szukaj w Internecie</string>
     <string name="menu_set_complete">Ustaw na „uzupełnij”</string>
     <string name="menu_set_incomplete">Ustaw na „niekompletny”</string>
     <string name="menu_set_read">Ustaw jako „czytaj”</string>
@@ -491,7 +491,7 @@
     <string name="style_builtin_read_and_unread">Odczyt / nieprzeczytane</string>
     <string name="style_builtin_read_date">Data odczytu</string>
     <string name="style_builtin_series">Seria</string>
-    <string name="style_builtin_title_first_letter">Tytuł pierwszej litery</string>
+    <string name="style_builtin_first_letter_book_title">Tytuł pierwszej litery</string>
     <string name="style_builtin_unread">Nieprzeczytane (autor / seria)</string>
     <string name="style_builtin_update_date">Data aktualizacji</string>
     <string name="style_builtin_bookshelf">Półka</string>
@@ -563,7 +563,7 @@
     <string name="info_bad_scanner">Wygląda na to, że istniejąca aplikacja skanera kodów kreskowych nie jest kompatybilna z &APP_NAME;.</string>
     <string name="info_install_scanner_recommendation">Zalecamy zainstalowanie aplikacji skanera kodów kreskowych Zxing, a jeśli jest już zainstalowana, zalecamy odinstalowanie i ponowne zainstalowanie.</string>
     <string name="warning_book_no_longer_exists">Określona książka już nie istnieje</string>
-    <string name="warning_book_not_found">Zeskanowana książka nie została odnaleziona. Spóbuj ponownie z kodem, który może znajdować się w środku okładki lub wprowadź dane ręcznie.</string>
+    <string name="tip_book_not_found">Zeskanowana książka nie została odnaleziona. Spóbuj ponownie z kodem, który może znajdować się w środku okładki lub wprowadź dane ręcznie.</string>
     <string name="X_warning_book_was_deleted_uc">NINIEJSZA KSIĄŻKA ZOSTAŁA USUNIĘTA</string>
     <string name="warning_cannot_delete_1st_bs">Nie można usunąć pierwszej półki</string>
     <string name="warning_cover_copy_failed">Nie można skopiować obrazu</string>
@@ -583,7 +583,7 @@
     <string name="warning_select_at_least_1_field">Wybierz przynajmniej jedno pole do zaktualizowania.</string>
     <string name="warning_series_already_in_list">Seria (tom) jest na liście</string>
     <string name="warning_toc_confirm">Potwierdź, czy te pozycje antologii są (zasadniczo) poprawne</string>
-    <string name="warning_unable_to_find_book">Nie mogę znaleźć tej książki</string>
+    <string name="warning_book_not_found">Nie mogę znaleźć tej książki</string>
     <string name="warning_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
     <string name="warning_unsaved_edits2">Nie zapisałeś zmian. Czy na pewno chcesz kontynuować?</string>
     <string name="warning_x_already_exists">%1$s już istnieje.</string>
@@ -645,4 +645,11 @@
     <string name="swap">Wymieniać</string>
     <string name="pt_site_settings">Ustawienia strony internetowej</string>
     <string name="btn_email">e-mail</string>
+    <string name="warning_requires_site_and_id">Wybierz stronę internetową i wprowadź identyfikator.</string>
+    <string name="style_builtin_first_letter_series_title">Tytuł serii 1. litera</string>
+    <string name="scan">Zeskanuj kod kreskowy</string>
+    <string name="lbl_author_type_inking">Tusz</string>
+    <string name="lbl_select_website">Wybierz stronę internetową:</string>
+    <string name="lbl_site_book_id">Identyfikator książki internetowej:</string>
+    <string name="fab_add_book_by_native_id">Identyfikator książki internetowej</string>
 </resources>

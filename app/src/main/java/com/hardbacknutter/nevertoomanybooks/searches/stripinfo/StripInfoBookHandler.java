@@ -70,9 +70,11 @@ public class StripInfoBookHandler
     private static final String BOOK_BY_NATIVE_ID = "/reeks/strip/%1$s";
 
 
-    /** The description contains h4 tags which we need to remove. */
+    /** The description contains h4 and div tags which we remove to make the text shorter. */
     private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>", Pattern.LITERAL);
     private static final Pattern H4_CLOSE_PATTERN = Pattern.compile("</h4>", Pattern.LITERAL);
+    private static final Pattern DIV_OPEN_PATTERN = Pattern.compile("<div>", Pattern.LITERAL);
+    private static final Pattern DIV_CLOSE_PATTERN = Pattern.compile("</div>", Pattern.LITERAL);
     private static final Pattern AMPERSAND_PATTERN = Pattern.compile("&amp;", Pattern.LITERAL);
     /** accumulate all Authors for this book. */
     private final ArrayList<Author> mAuthors = new ArrayList<>();
@@ -373,11 +375,16 @@ public class StripInfoBookHandler
                 for (int i = 0; i < sections.size(); i++) {
                     Element sectionElement = sections.get(i);
                     // a section usually has 'h4' tags, replace with 'b' and add a line feed 'br'
-                    String tmp = H4_OPEN_PATTERN.matcher(sectionElement.html())
-                                                .replaceAll(Matcher.quoteReplacement("<b>"));
-                    content.append(H4_CLOSE_PATTERN.matcher(tmp)
-                                                   .replaceAll(
-                                                           Matcher.quoteReplacement("</b><br>")));
+                    String cleanedText = H4_OPEN_PATTERN
+                            .matcher(sectionElement.html())
+                            .replaceAll(Matcher.quoteReplacement("<b>"));
+                    cleanedText = H4_CLOSE_PATTERN
+                            .matcher(cleanedText)
+                            .replaceAll(Matcher.quoteReplacement("</b><br>"));
+                    cleanedText = DIV_OPEN_PATTERN.matcher(cleanedText).replaceAll("");
+                    cleanedText = DIV_CLOSE_PATTERN.matcher(cleanedText).replaceAll("");
+
+                    content.append(cleanedText);
                     if (i < sections.size() - 1) {
                         // separate multiple sections
                         content.append("<br><br>");

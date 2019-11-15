@@ -56,14 +56,14 @@
             android:id="@+id/row_author"
             style="@style/RowTextLine.Primary"
             tools:ignore="SelectableText"
-            tools:text="row_author"
+            tools:text="Isaac Asimov"
             />
 
         <TextView
             android:id="@+id/row_author_sort"
             style="@style/RowTextLine.Secondary"
             tools:ignore="SelectableText"
-            tools:text="row_author_sort"
+            tools:text="Asimov, Isaac"
             />
 
         <TextView
@@ -71,8 +71,9 @@
             style="@style/RowTextLine.Secondary"
             android:textStyle="italic"
             tools:ignore="SelectableText"
-            tools:text="row_author_type"
+            tools:text="Writer, Editor"
             />
+
     </LinearLayout>
 
     <ImageView

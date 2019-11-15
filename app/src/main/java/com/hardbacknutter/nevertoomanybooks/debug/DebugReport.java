@@ -276,7 +276,7 @@ public final class DebugReport {
                + IsfdbManager.getBaseURL(context) + '\n'
                + KbNlManager.getBaseURL(context) + '\n'
                + LibraryThingManager.getBaseURL(context) + '\n'
-               + OpenLibraryManager.getBaseURL(context) + '\n'
+               + OpenLibraryManager.BASE_URL + '\n'
                + StripInfoManager.getBaseURL(context) + '\n';
         //NEWTHINGS: add new search engine
     }

@@ -530,33 +530,33 @@ public class XmlExporter
                .append(">\n");
 
             if (!progressListener.isCancelled()) {
-                progressListener.onProgressStep(1, R.string.lbl_bookshelves);
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_bookshelves));
                 doBookshelves(out, progressListener);
             }
 
             if (!progressListener.isCancelled()) {
-                progressListener.onProgressStep(1, R.string.lbl_author);
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_author));
                 doAuthors(out, progressListener);
             }
 
             if (!progressListener.isCancelled()) {
-                progressListener.onProgressStep(1, R.string.lbl_series);
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_series));
                 doSeries(out, progressListener);
             }
 
             if (!progressListener.isCancelled()) {
-                progressListener.onProgressStep(1, R.string.lbl_book);
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_book));
                 doBooks(out, progressListener);
             }
 
             if (!progressListener.isCancelled() && incStyles) {
-                progressListener.onProgressStep(1, R.string.lbl_styles);
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_styles));
                 doStyles(out);
                 doStyles2(out, progressListener);
             }
 
             if (!progressListener.isCancelled() && incPrefs) {
-                progressListener.onProgressStep(1, R.string.lbl_settings);
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_settings));
                 doPreferences(context, out);
             }
 
@@ -909,7 +909,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int doPreferences(final Context context,
+    public int doPreferences(@NonNull final Context context,
                              @NonNull final BufferedWriter writer)
             throws IOException {
 
@@ -1292,7 +1292,9 @@ public class XmlExporter
         @Override
         public Object get(@NonNull final String key) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Log.d(TAG, "get|uuid=" + currentStyle.getUuid() + "|key=" + key);
+                Log.d(TAG, "get"
+                           + "|uuid=" + currentStyle.getUuid()
+                           + "|key=" + key);
             }
             //noinspection ConstantConditions
             return currentStylePPrefs.get(key).get();

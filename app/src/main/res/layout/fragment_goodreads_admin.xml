@@ -47,28 +47,28 @@
             android:id="@+id/lbl_sync_with_goodreads"
             style="@style/OptionRow.Menu"
             android:drawableStart="@drawable/ic_autorenew"
-            android:text="@string/gr_sync_with_goodreads"
+            android:text="@string/gr_title_sync_with_goodreads"
             />
 
         <TextView
             android:id="@+id/lbl_import_all_from_goodreads"
             style="@style/OptionRow.Menu"
             android:drawableStart="@drawable/ic_file_download"
-            android:text="@string/gr_import_all_from_goodreads"
+            android:text="@string/gr_menu_import_all_from_goodreads"
             />
 
         <TextView
             android:id="@+id/lbl_send_updated_books_to_goodreads"
             style="@style/OptionRow.Menu"
             android:drawableStart="@drawable/ic_send"
-            android:text="@string/gr_btn_send_updated"
+            android:text="@string/gr_menu_send_updated"
             />
 
         <TextView
             android:id="@+id/lbl_send_all_books_to_goodreads"
             style="@style/OptionRow.Menu"
             android:drawableStart="@drawable/ic_file_upload"
-            android:text="@string/gr_btn_send_all"
+            android:text="@string/gr_menu_send_all"
             />
 
         <TextView

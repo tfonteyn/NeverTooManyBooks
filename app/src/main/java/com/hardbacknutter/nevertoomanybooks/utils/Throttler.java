@@ -31,6 +31,8 @@ import androidx.annotation.NonNull;
 
 public class Throttler {
 
+//    private static final String TAG = "Throttler";
+
     /**
      * Stores the last time a request was made to avoid breaking site usage rules.
      * Only modify this value from inside a synchronized (LAST_REQUEST_TIME_LOCK)

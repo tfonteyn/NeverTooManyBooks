@@ -59,7 +59,7 @@ public interface ProgressListener {
      * @param message to display, either a String or a StringRes
      */
     default void onProgressStep(int delta,
-                                @Nullable Object message) {
+                                @Nullable String message) {
         throw new UnsupportedOperationException();
     }
 
@@ -70,7 +70,7 @@ public interface ProgressListener {
      * @param message to display, either a String or a StringRes
      */
     void onProgress(int pos,
-                    @Nullable Object message);
+                    @Nullable String message);
 
     /**
      * @return {@code true} if operation is cancelled.

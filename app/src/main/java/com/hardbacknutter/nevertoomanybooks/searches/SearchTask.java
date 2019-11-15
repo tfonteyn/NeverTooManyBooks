@@ -29,39 +29,26 @@ package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
- * Searches a single {@link SearchEngine},
- * and send the results back to the {@link SearchCoordinator}.
- * <p>
- * (the 'results' being this while Task object first send to the {@link TaskManager} which
- * then routes it to our creator, the @link SearchCoordinator})
+ * Searches a single {@link SearchEngine}.
  */
 public class SearchTask
-        extends ManagedTask {
+        extends TaskBase<Bundle> {
 
     private static final String TAG = "SearchTask";
 
@@ -90,15 +77,6 @@ public class SearchTask
     private String mNativeId;
 
     /**
-     * Accumulated book info.
-     * <p>
-     * NEWTHINGS: if you add a new Search task/site that adds non-string based data,
-     * {@link SearchCoordinator} #accumulateAllData(int) must be able to handle it.
-     */
-    @NonNull
-    private Bundle mBookData = new Bundle();
-
-    /**
      * Constructor. Will search according to passed parameters.
      * <p>
      * 1. native id
@@ -106,16 +84,13 @@ public class SearchTask
      * 3. text
      * <p>
      *
-     * @param taskManager  Associated task manager
      * @param taskId       identifier
-     * @param taskName     thread name, used for debug only really.
      * @param searchEngine the search site manager
      */
-    SearchTask(@NonNull final TaskManager taskManager,
-               final int taskId,
-               @NonNull final String taskName,
-               @NonNull final SearchEngine searchEngine) {
-        super(taskManager, taskId, taskName);
+    SearchTask(final int taskId,
+               @NonNull final SearchEngine searchEngine,
+               @NonNull final TaskListener<Bundle> taskListener) {
+        super(taskId, taskListener);
         mSearchEngine = searchEngine;
 
         Context context = App.getLocalizedAppContext();
@@ -170,49 +145,32 @@ public class SearchTask
         mFetchThumbnail = fetchThumbnail;
     }
 
-    /**
-     * Accessor, so when thread has finished, data can be retrieved.
-     * <p>
-     *
-     * @return a Bundle containing standard Book fields AND specific site fields.
-     */
-    @NonNull
-    Bundle getBookData() {
-        return mBookData;
-    }
-
     @Override
-    @WorkerThread
-    protected void runTask() {
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Log.d(TAG, "ENTER|runTask|" + mProgressTitle);
-        }
-
+    @Nullable
+    protected Bundle doInBackground(final Void... voids) {
         Context context = App.getLocalizedAppContext();
 
-        mTaskManager.sendProgress(this, mProgressTitle, 0);
+        publishProgress(new TaskListener.ProgressMessage(mTaskId, mProgressTitle));
 
         try {
             // can we reach the site ?
-            if (!NetworkUtils.isAlive(mSearchEngine.getUrl(context))) {
-                setFinalError(R.string.error_search_failed_network, null);
-                return;
-            }
+            NetworkUtils.poke(context, mSearchEngine.getUrl(context));
+
+            Bundle bookData;
 
             // SEARCH.
             if (mSearchEngine instanceof SearchEngine.ByNativeId
                 && mNativeId != null && !mNativeId.isEmpty()) {
-                mBookData = ((SearchEngine.ByNativeId) mSearchEngine)
+                bookData = ((SearchEngine.ByNativeId) mSearchEngine)
                         .searchByNativeId(context, mNativeId, mFetchThumbnail);
 
             } else if (mSearchEngine instanceof SearchEngine.ByIsbn
                        && ISBN.isValid(mIsbn)) {
-                mBookData = ((SearchEngine.ByIsbn) mSearchEngine)
+                bookData = ((SearchEngine.ByIsbn) mSearchEngine)
                         .searchByIsbn(context, mIsbn, mFetchThumbnail);
 
             } else if (mSearchEngine instanceof SearchEngine.ByText) {
-                mBookData = ((SearchEngine.ByText) mSearchEngine)
+                bookData = ((SearchEngine.ByText) mSearchEngine)
                         .search(context, mIsbn, mAuthor, mTitle, mPublisher, mFetchThumbnail);
 
             } else {
@@ -220,57 +178,16 @@ public class SearchTask
                                                 + context.getString(mSearchEngine.getNameResId()));
             }
 
-            if (!mBookData.isEmpty()) {
+            if (!bookData.isEmpty()) {
                 // Look for Series name in the book title and clean KEY_TITLE
-                mSearchEngine.checkForSeriesNameInTitle(mBookData);
+                mSearchEngine.checkForSeriesNameInTitle(bookData);
             }
+            return bookData;
 
-        } catch (@NonNull final CredentialsException e) {
-            setFinalError(R.string.error_authentication_failed, e);
-
-        } catch (@NonNull final SocketTimeoutException e) {
-            setFinalError(R.string.error_network_timeout, e);
-
-        } catch (@NonNull final MalformedURLException | UnknownHostException e) {
-            setFinalError(R.string.error_search_failed_network, e);
-
-        } catch (@NonNull final IOException e) {
-            setFinalError(R.string.error_search_failed, e);
-
-        } catch (@NonNull final RuntimeException e) {
+        } catch (@NonNull final CredentialsException | IOException | RuntimeException e) {
             Logger.error(context, TAG, e);
-            setFinalError(R.string.error_unknown, e);
+            mException = e;
+            return null;
         }
-    }
-
-    /**
-     * Prepare an error message to show after the task finishes.
-     *
-     * @param error String resource id; without parameter place holders.
-     * @param e     (optional) the exception
-     */
-    private void setFinalError(@StringRes final int error,
-                               @Nullable final Exception e) {
-
-        Context context = App.getLocalizedAppContext();
-        String siteName = context.getString(mSearchEngine.getNameResId());
-        String message = context.getString(error);
-
-        if (e != null) {
-            String eMsg;
-            if (e instanceof FormattedMessageException) {
-                eMsg = ((FormattedMessageException) e).getLocalizedMessage(context);
-            } else {
-                eMsg = e.getLocalizedMessage();
-            }
-
-            if (eMsg != null) {
-                message += "\n\n" + eMsg;
-            }
-
-            Logger.warn(context, TAG, "setFinalError", "siteName=" + siteName, e);
-        }
-
-        mFinalMessage = context.getString(R.string.error_search_exception, siteName, message);
     }
 }

@@ -165,10 +165,9 @@ public class BooksOnBookshelfModel
     private final TaskListener<BuilderHolder> mOnGetBookListTaskListener =
             new TaskListener<BuilderHolder>() {
                 @Override
-                public void onTaskFinished(
-                        @NonNull final TaskFinishedMessage<BuilderHolder> message) {
+                public void onFinished(@NonNull final FinishMessage<BuilderHolder> message) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                        Log.d(TAG, "ENTER|onTaskFinished|" + message);
+                        Log.d(TAG, "ENTER|onFinished|" + message);
                     }
 
                     // Save a flag to say list was loaded at least once successfully (or not)
@@ -189,6 +188,11 @@ public class BooksOnBookshelfModel
 
                     // always call back, even if there is no new list.
                     mBuilderResult.setValue(message.result);
+                }
+
+                @Override
+                public void onProgress(@NonNull final ProgressMessage message) {
+                    // ignore
                 }
             };
     /** Current displayed list cursor. */
@@ -740,7 +744,7 @@ public class BooksOnBookshelfModel
             mOnGoodreadsTaskListener = new TaskListener<Integer>() {
 
                 @Override
-                public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
+                public void onFinished(@NonNull final FinishMessage<Integer> message) {
                     switch (message.status) {
                         case Success:
                         case Failed: {
@@ -762,9 +766,9 @@ public class BooksOnBookshelfModel
                 }
 
                 @Override
-                public void onTaskProgress(@NonNull final TaskProgressMessage message) {
-                    if (message.values != null && message.values.length > 0) {
-                        mUserMessage.setValue(message.values[0]);
+                public void onProgress(@NonNull final ProgressMessage message) {
+                    if (message.text != null) {
+                        mUserMessage.setValue(message.text);
                     }
                 }
             };
@@ -1028,7 +1032,7 @@ public class BooksOnBookshelfModel
                 final long t6_total_count_done = System.nanoTime();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    Log.d(TAG, "doInBackground|"
+                    Log.d(TAG, "doInBackground|taskId=" + getId()
                                + String.format(Locale.UK, ""
                                                           + "\nBuild                    : %10d"
                                                           + "\nsync done                : %10d"

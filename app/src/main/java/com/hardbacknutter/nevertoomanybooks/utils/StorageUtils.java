@@ -97,6 +97,8 @@ public final class StorageUtils {
 
     /** Mime type for exporting database files. */
     private static final String MIME_TYPE_SQLITE = "application/x-sqlite3";
+    private static final int TO_MEGABYTES = 1_000_000;
+    private static final int TO_KILOBYTES = 1_000;
 
     private StorageUtils() {
     }
@@ -609,7 +611,7 @@ public final class StorageUtils {
     /**
      * Format a number of bytes in a human readable form.
      * <p>
-     * 2019-03-16: decimalize as per IEC: <a href="https://en.wikipedia.org/wiki/File_size">
+     * 2019-03-16: decimalized as per IEC: <a href="https://en.wikipedia.org/wiki/File_size">
      * https://en.wikipedia.org/wiki/File_size</a>
      *
      * @param context Current context
@@ -625,10 +627,10 @@ public final class StorageUtils {
             return context.getString(R.string.bytes, bytes);
         } else if (bytes < 250_000) {
             // Show Kb if less than 250kB
-            return context.getString(R.string.kilobytes, bytes / 1_000);
+            return context.getString(R.string.kilobytes, bytes / TO_KILOBYTES);
         } else {
             // Show MB otherwise...
-            return context.getString(R.string.megabytes, bytes / 1_000_000);
+            return context.getString(R.string.megabytes, bytes / TO_MEGABYTES);
         }
     }
 }

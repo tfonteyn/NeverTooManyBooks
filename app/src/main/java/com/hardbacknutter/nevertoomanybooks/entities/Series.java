@@ -537,7 +537,9 @@ public class Series
                             @NonNull final Locale bookLocale) {
 
         //FIXME: need a reliable way to cache the Locale here. See also {@link #pruneList}
-        // were we use batch mode.
+        // were we use batch mode. Also: a french book belonging to a dutch series...
+        // the series title OB is wrong.
+        //URGENT: *store* the language of a series.
         String lang = db.getSeriesLanguage(mId);
         if (!lang.isEmpty()) {
             Locale seriesLocale = LocaleUtils.getLocale(lang);

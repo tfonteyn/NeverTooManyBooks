@@ -54,11 +54,11 @@ public class GoodreadsRegistrationActivity
 
     private final TaskListener<Integer> mTaskListener = new TaskListener<Integer>() {
         @Override
-        public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
+        public void onFinished(@NonNull final FinishMessage<Integer> message) {
             String msg = GoodreadsTasks.handleResult(GoodreadsRegistrationActivity.this,
                                                      message);
             if (msg != null) {
-                showUserMessage(msg);
+                UserMessage.show(mAuthButton, msg);
             } else {
                 RequestAuthTask.needsRegistration(GoodreadsRegistrationActivity.this,
                                                   mTaskListener);
@@ -66,9 +66,9 @@ public class GoodreadsRegistrationActivity
         }
 
         @Override
-        public void onTaskProgress(@NonNull final TaskProgressMessage message) {
-            if (message.values != null && message.values.length > 0) {
-                showUserMessage(message.values[0]);
+        public void onProgress(@NonNull final ProgressMessage message) {
+            if (message.text != null) {
+                UserMessage.show(mAuthButton, message.text);
             }
         }
     };
@@ -107,22 +107,6 @@ public class GoodreadsRegistrationActivity
         } else {
             blurb.setVisibility(View.GONE);
             removeButton.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * Allows the ViewModel to send us a message to display to the user.
-     * <p>
-     * If the type is {@code Integer} we assume it's a {@code StringRes}
-     * else we do a toString() it.
-     *
-     * @param message to display, either a {@code Integer (StringRes)} or a {@code String}
-     */
-    private void showUserMessage(@Nullable final Object message) {
-        if (message instanceof Integer) {
-            UserMessage.show(mAuthButton, (int) message);
-        } else if (message != null) {
-            UserMessage.show(mAuthButton, message.toString());
         }
     }
 }

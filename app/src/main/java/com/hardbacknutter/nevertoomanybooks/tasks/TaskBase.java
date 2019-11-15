@@ -40,8 +40,6 @@ import java.lang.ref.WeakReference;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskFinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
 
 
@@ -51,7 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
  * @param <Result> the type of the result of the background computation.
  */
 public abstract class TaskBase<Result>
-        extends AsyncTask<Void, TaskProgressMessage, Result> {
+        extends AsyncTask<Void, TaskListener.ProgressMessage, Result>
+        implements Cancellable {
 
     private static final String TAG = "TaskBase";
 
@@ -91,12 +90,12 @@ public abstract class TaskBase<Result>
 
     @Override
     @UiThread
-    protected void onProgressUpdate(@NonNull final TaskProgressMessage... values) {
+    protected void onProgressUpdate(@NonNull final TaskListener.ProgressMessage... values) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskProgress(values[0]);
+            mTaskListener.get().onProgress(values[0]);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onProgressUpdate" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onProgressUpdate|" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }
@@ -105,11 +104,11 @@ public abstract class TaskBase<Result>
     @CallSuper
     protected void onCancelled(@NonNull final Result result) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskFinished(
-                    new TaskFinishedMessage<>(mTaskId, TaskStatus.Cancelled, result, mException));
+            mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
+                    mTaskId, TaskStatus.Cancelled, result, mException));
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onCancelled" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onCancelled|" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }
@@ -120,11 +119,11 @@ public abstract class TaskBase<Result>
         if (mTaskListener.get() != null) {
             TaskStatus status = mException == null ? TaskStatus.Success
                                                    : TaskStatus.Failed;
-            mTaskListener.get().onTaskFinished(
-                    new TaskFinishedMessage<>(mTaskId, status, result, mException));
+            mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
+                    mTaskId, status, result, mException));
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onPostExecute" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
             }
         }
     }

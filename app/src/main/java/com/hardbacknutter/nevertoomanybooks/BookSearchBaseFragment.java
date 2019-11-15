@@ -39,22 +39,25 @@ import android.view.MenuItem;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 public abstract class BookSearchBaseFragment
         extends Fragment {
@@ -64,8 +67,13 @@ public abstract class BookSearchBaseFragment
     /** hosting activity. */
     FragmentActivity mHostActivity;
 
+    DAO mDb;
+
     /** the ViewModel. */
-    BookSearchBaseModel mBookSearchBaseModel;
+    ResultDataModel mResultDataModel;
+    SearchCoordinator mSearchCoordinator;
+
+    private ProgressDialogFragment mProgressDialog;
 
     @Override
     public void onAttach(@NonNull final Context context) {
@@ -77,14 +85,24 @@ public abstract class BookSearchBaseFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mDb = new DAO();
+
         //noinspection ConstantConditions
-        mBookSearchBaseModel = new ViewModelProvider(getActivity()).get(BookSearchBaseModel.class);
-        //noinspection ConstantConditions
-        mBookSearchBaseModel.init(getContext(), requireArguments(),
-                                  ((BookSearchActivity) mHostActivity).getTaskManager());
-        mBookSearchBaseModel.getSearchCancelled().observe(getViewLifecycleOwner(),
-                                                          this::onSearchCancelled);
-        mBookSearchBaseModel.getSearchResults().observe(getViewLifecycleOwner(), bookData -> {
+        mSearchCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
+        mSearchCoordinator.init(requireArguments());
+        mSearchCoordinator.getCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
+        mSearchCoordinator.getError().observe(getViewLifecycleOwner(), this::onError);
+        mSearchCoordinator.getProgress().observe(getViewLifecycleOwner(), progressMessage -> {
+            if (mProgressDialog != null) {
+                mProgressDialog.onProgress(progressMessage);
+            }
+        });
+        mSearchCoordinator.getFinished().observe(getViewLifecycleOwner(), bookData -> {
+            if (mProgressDialog != null) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+            }
+
             if (!bookData.isEmpty()) {
                 onSearchResults(bookData);
             } else {
@@ -93,8 +111,18 @@ public abstract class BookSearchBaseFragment
             }
         });
 
+        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+
+        FragmentManager fm = getChildFragmentManager();
+        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
+        if (mProgressDialog != null) {
+            // reconnect after a fragment restart
+            mProgressDialog.setCancellable(mSearchCoordinator);
+        }
+
         // Warn the user, but don't abort.
-        if (NetworkUtils.networkUnavailable()) {
+        //noinspection ConstantConditions
+        if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
             UserMessage.show(getView(), R.string.error_network_no_connection);
         }
@@ -103,25 +131,18 @@ public abstract class BookSearchBaseFragment
     @Override
     @CallSuper
     public void onResume() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "ENTER|onResume");
-        }
         super.onResume();
-        if (getActivity() instanceof BaseActivity) {
-            BaseActivity activity = (BaseActivity) getActivity();
-            if (activity.isGoingToRecreate()) {
-                return;
-            }
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "EXIT|onResume");
-        }
+//        if (getActivity() instanceof BaseActivity) {
+//            BaseActivity activity = (BaseActivity) getActivity();
+//            if (activity.isGoingToRecreate()) {
+//                return;
+//            }
+//        }
     }
 
     /**
-     * Child classes must call {@code setHasOptionsMenu(true)} from their {@link #onCreate}
-     * to enable the option menu.
+     * <strong>Child classes</strong> must call {@code setHasOptionsMenu(true)}
+     * from their {@link #onCreate} to enable the option menu.
      * <br><br>
      * {@inheritDoc}
      */
@@ -132,7 +153,7 @@ public abstract class BookSearchBaseFragment
 
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
                  MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_websites)
-            .setIcon(R.drawable.ic_search)
+            .setIcon(R.drawable.ic_find_in_page)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -147,7 +168,7 @@ public abstract class BookSearchBaseFragment
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminModel.BKEY_TABS_TO_SHOW, SearchAdminModel.TAB_BOOKS)
                         .putExtra(SearchSites.BKEY_SEARCH_SITES_BOOKS,
-                                  mBookSearchBaseModel.getSearchSites());
+                                  mSearchCoordinator.getSearchSites());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
 
@@ -156,58 +177,85 @@ public abstract class BookSearchBaseFragment
         }
     }
 
-    abstract void onSearchResults(@NonNull final Bundle bookData);
+    abstract void onSearchResults(@NonNull Bundle bookData);
 
-    void onSearchCancelled(final boolean isCancelled) {
+    @CallSuper
+    void onCancelled(final boolean isCancelled) {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
+
         if (isCancelled) {
             //noinspection ConstantConditions
             UserMessage.show(getView(), R.string.progress_end_cancelled);
         }
     }
 
+    private void onError(@Nullable final String message) {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
+        if (message != null) {
+            //noinspection ConstantConditions
+            new AlertDialog.Builder(getContext())
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setTitle(R.string.title_search_failed)
+                    .setMessage(message)
+                    .create()
+                    .show();
+        }
+    }
+
     @CallSuper
     void clearPreviousSearchCriteria() {
-        mBookSearchBaseModel.clearSearchText();
+        mSearchCoordinator.clearSearchText();
     }
 
     /**
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * <p>
-     * The results will arrive in
-     * {@link SearchCoordinator.OnSearchFinishedListener#onSearchFinished(boolean, Bundle)}
-     *
-     * This is final; instead override {@link #customizeSearch()} if needed.
+     * This is final; instead override {@link #onSearch()} if needed.
      */
     final void startSearch() {
         // check if we have an active search, if so, quit silently.
-        if (mBookSearchBaseModel.isSearchActive()) {
+        if (mSearchCoordinator.isSearchActive()) {
             return;
         }
-
-        // cannot search without network
-        if (NetworkUtils.networkUnavailable()) {
+        if (mSearchCoordinator.getSearchSites().isEmpty()) {
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.error_no_sites);
+            return;
+        }
+        //noinspection ConstantConditions
+        if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
             UserMessage.show(getView(), R.string.error_network_no_connection);
             return;
         }
 
-        try {
+        FragmentManager fm = getChildFragmentManager();
+        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
+        if (mProgressDialog == null) {
+            mProgressDialog = ProgressDialogFragment
+                    .newInstance(R.string.progress_msg_searching, true, 0);
+            mProgressDialog.show(fm, TAG);
             // Start the lookup in a background search task.
-            if (customizeSearch()) {
+            if (onSearch()) {
                 // we started at least one search.
-                mBookSearchBaseModel.sendHeaderUpdate(getString(R.string.progress_msg_searching));
-                mBookSearchBaseModel.setSearchActive(true);
+                mProgressDialog.setCancellable(mSearchCoordinator);
+            } else {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+                //TODO: not the best error message, but it will do for now.
+                //noinspection ConstantConditions
+                UserMessage.show(getView(), R.string.error_search_failed_network);
             }
             return;
-
-        } catch (@NonNull final RuntimeException e) {
-            //noinspection ConstantConditions
-            Logger.error(getContext(), TAG, e);
-            //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_search_failed);
         }
 
-        Intent resultData = mBookSearchBaseModel.getActivityResultData();
+        Intent resultData = mResultDataModel.getActivityResultData();
         if (resultData.getExtras() != null) {
             mHostActivity.setResult(Activity.RESULT_OK, resultData);
         }
@@ -217,8 +265,8 @@ public abstract class BookSearchBaseFragment
     /**
      * Override to customize which search function is called.
      */
-    protected boolean customizeSearch() {
-        return mBookSearchBaseModel.startSearch();
+    protected boolean onSearch() {
+        return mSearchCoordinator.searchByText();
     }
 
     @Override
@@ -236,7 +284,7 @@ public abstract class BookSearchBaseFragment
                     ArrayList<Site> sites = data.getParcelableArrayListExtra(
                             SearchSites.BKEY_SEARCH_SITES_BOOKS);
                     if (sites != null) {
-                        mBookSearchBaseModel.setSearchSites(sites);
+                        mSearchCoordinator.setSearchSites(sites);
                     }
                     // Make sure that the ASIN option (Amazon) is (not) offered.
                     //noinspection ConstantConditions
@@ -248,14 +296,13 @@ public abstract class BookSearchBaseFragment
                 if (resultCode == Activity.RESULT_OK) {
                     // Created a book? Save the intent
                     if (data != null) {
-                        mBookSearchBaseModel.setLastBookData(data);
+                        mResultDataModel.putExtras(data);
                     }
                 }
                 break;
             }
 //            case UniqueId.REQ_NAV_PANEL_SETTINGS: {
-//
-//                mBookSearchBaseModel.setSearchSites(sites);
+//                mSearchCoordinator.setSearchSites(sites);
 //            }
 
             default: {
@@ -268,5 +315,13 @@ public abstract class BookSearchBaseFragment
                 break;
             }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
     }
 }

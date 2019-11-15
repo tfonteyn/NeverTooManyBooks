@@ -49,19 +49,26 @@ import com.hardbacknutter.nevertoomanybooks.UpdateFieldsFragment;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
-import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.ManagedTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.managedtasks.TaskManager;
+import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
  * ManagedTask to update requested fields by doing a search.
+ *
+ * <strong>Note:</strong> this is currently a low-level Thread!
  * <p>
  * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsFragment}
  */
 public class UpdateFieldsTask
-        extends ManagedTask {
+        extends Thread
+        implements Cancellable {
+
+    /** log tag. */
+    private static final String TAG = "ManagedTask";
 
     /** The fields that the user requested to update. */
     @NonNull
@@ -69,14 +76,12 @@ public class UpdateFieldsTask
     /** Lock help by pop and by push when an item was added to an empty stack. */
     private final ReentrantLock mSearchLock = new ReentrantLock();
     /** Signal for available items. */
-    private final Condition mSearchDone = mSearchLock.newCondition();
-    /** Sites to search on. */
-    private final ArrayList<Site> mSearchSites;
+    private final Condition mOneSearch = mSearchLock.newCondition();
+
     /** Active search manager. */
     private final SearchCoordinator mSearchCoordinator;
+    private final TaskListener<Long> mTaskListener;
 
-    /** Database Access. */
-    private DAO mDb;
 
     // Data related to current row being processed
     /** Original row data. */
@@ -88,68 +93,78 @@ public class UpdateFieldsTask
 
     /** The (subset) of fields relevant to the current book. */
     private Map<String, FieldUsage> mCurrentBookFieldUsages;
+    /** List of book ID's to update, {@code null} for all books. */
+    @Nullable
+    private List<Long> mBookIds;
+    /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
+    private boolean mIsCancelled;
 
+    @Nullable
+    private Exception mException;
+
+    private DAO mDb;
     /**
      * Called in the main thread for this object when the search for one book has completed.
      * <p>
      * <strong>Note:</strong> do not make it local... we need a strong reference here.
      */
     @SuppressWarnings("FieldCanBeLocal")
-    private final SearchCoordinator.OnSearchFinishedListener mOnSearchFinishedListener =
-            (wasCancelled, bookData) -> {
-                if (wasCancelled) {
-                    // if the search was cancelled, propagate by cancelling ourselves.
-                    cancelTask();
+    private final SearchCoordinator.Listener mOnSearchListener = new SearchCoordinator.Listener() {
+        @Override
+        public void onFinished(final boolean wasCancelled,
+                               @NonNull final Bundle bookData,
+                               @Nullable final String searchErrors) {
+            Context context = App.getLocalizedAppContext();
 
-                } else if (bookData.isEmpty()) {
-                    Context context = App.getLocalizedAppContext();
-                    // tell the user if the search failed.
-                    String msg = context.getString(R.string.warning_unable_to_find_book);
-                    mTaskManager.sendUserMessage(msg);
-                }
+            if (wasCancelled) {
+                // if the search was cancelled, propagate by cancelling ourselves.
+                mIsCancelled = true;
+                interrupt();
+            }
 
-                // Save the local data from the context so we can start a new search
-                if (!isCancelled() && !bookData.isEmpty()) {
-                    processSearchResults(bookData);
-                }
+            if (!mIsCancelled && !bookData.isEmpty()) {
+                processSearchResults(context, bookData);
+            }
 
-                /*
-                 * The search is complete AND the class-level data has been cached
-                 * by the processing thread. Let another search begin.
-                 */
-                mSearchLock.lock();
-                try {
-                    mSearchDone.signal();
-                } finally {
-                    mSearchLock.unlock();
-                }
-            };
+            // This search is complete. Let another search begin.
+            mSearchLock.lock();
+            try {
+                mOneSearch.signal();
+            } finally {
+                mSearchLock.unlock();
+            }
+        }
 
-    /** List of book ID's to update, {@code null} for all books. */
-    @Nullable
-    private List<Long> mBookIds;
+        @Override
+        public void onProgress(@NonNull final TaskListener.ProgressMessage message) {
+            mTaskListener.onProgress(message);
+        }
+    };
 
     /**
      * Constructor.
      *
-     * @param taskManager              Associated task manager
-     * @param searchSites              sites to search, see {@link SearchSites#SEARCH_FLAG_MASK}
-     * @param fields                   fields to update
-     * @param onSearchFinishedListener where to send our results to
+     * @param searchSites  sites to search, see {@link SearchSites#SEARCH_FLAG_MASK}
+     * @param fields       fields to update
+     * @param taskListener were to send the UpdateFieldsTask messages
      */
-    public UpdateFieldsTask(@NonNull final TaskManager taskManager,
+    public UpdateFieldsTask(@NonNull final DAO db,
                             @NonNull final ArrayList<Site> searchSites,
                             @NonNull final Map<String, FieldUsage> fields,
-                            @NonNull final ManagedTaskListener onSearchFinishedListener) {
-        super(taskManager, 0, "UpdateFieldsTask");
+                            @NonNull final TaskListener<Long> taskListener) {
 
-        mDb = new DAO();
+        // Set the thread name to something helpful.
+        setName("UpdateFieldsTask");
+
+        mTaskListener = taskListener;
+
+        mDb = db;
         mFields = fields;
-        mSearchSites = searchSites;
 
-        MESSAGE_SWITCH.addListener(getSenderId(), false, onSearchFinishedListener);
-
-        mSearchCoordinator = new SearchCoordinator(mTaskManager, mOnSearchFinishedListener);
+        mSearchCoordinator = new SearchCoordinator();
+        mSearchCoordinator.init(null);
+        mSearchCoordinator.setSearchSites(searchSites);
+        mSearchCoordinator.setOnSearchListener(mOnSearchListener);
     }
 
     /**
@@ -163,22 +178,13 @@ public class UpdateFieldsTask
     }
 
     /**
-     * If you keep a handle to this task, then you can call this to check what book was last done.
-     *
-     * @return bookId
-     */
-    public long getLastBookIdDone() {
-        return mCurrentBookId;
-    }
-
-    /**
      * Allows to set the 'lowest' Book id to start from. See {@link DAO#fetchBooks(List, long)}
      *
      * @param fromBookIdOnwards the lowest book id to start from.
      *                          This allows to fetch a subset of the requested set.
      *                          Defaults to 0, i.e. the full set.
      */
-    public void setCurrentBookId(final long fromBookIdOnwards) {
+    public void setFromBookIdOnwards(final long fromBookIdOnwards) {
         mCurrentBookId = fromBookIdOnwards;
     }
 
@@ -248,123 +254,13 @@ public class UpdateFieldsTask
         }
     }
 
-    @Override
-    public void runTask()
-            throws InterruptedException {
-        int progressCounter = 0;
-
-        Context context = App.getLocalizedAppContext();
-
-        try (BookCursor bookCursor = mDb.fetchBooks(mBookIds, mCurrentBookId)) {
-
-            int langCol = bookCursor.getColumnIndex(DBDefinitions.KEY_LANGUAGE);
-
-            mTaskManager.setMaxProgress(this, bookCursor.getCount());
-            while (bookCursor.moveToNext() && !isCancelled()) {
-                progressCounter++;
-
-                // Copy the fields from the cursor and build a complete set of data for this book.
-                // This only needs to include data that we can fetch (so, for example,
-                // bookshelves are ignored).
-                mOriginalBookData = new Bundle();
-                for (int i = 0; i < bookCursor.getColumnCount(); i++) {
-                    mOriginalBookData
-                            .putString(bookCursor.getColumnName(i), bookCursor.getString(i));
-                }
-
-                // always add the language to the ORIGINAL data if we have one,
-                // so we can use it for the Locale details when processing the results.
-                if (langCol > 0) {
-                    String lang = bookCursor.getString(langCol);
-                    if (lang != null && !lang.isEmpty()) {
-                        mOriginalBookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
-                    }
-                }
-
-                // Get the book ID
-                mCurrentBookId = bookCursor.getId();
-                // Get the book UUID
-                mCurrentUuid = mOriginalBookData.getString(DBDefinitions.KEY_BOOK_UUID);
-
-                // Get the array data about the book
-                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
-                                                         mDb.getAuthorsByBookId(mCurrentBookId));
-                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
-                                                         mDb.getSeriesByBookId(mCurrentBookId));
-                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY,
-                                                         mDb.getTocEntryByBook(mCurrentBookId));
-
-                // Grab the searchable fields. Ideally we will have an ISBN but we may not.
-                // Make sure the searchable fields are not NULL
-                String isbn = mOriginalBookData.getString(DBDefinitions.KEY_ISBN, "");
-                String title = mOriginalBookData.getString(DBDefinitions.KEY_TITLE, "");
-                String publisher = mOriginalBookData.getString(DBDefinitions.KEY_PUBLISHER, "");
-                String author = mOriginalBookData.getString(
-                        DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST, "");
-
-                // Check which fields this book needs.
-                mCurrentBookFieldUsages = getCurrentBookFieldUsages(mFields);
-                // if no data required, skip to next book
-                if (mCurrentBookFieldUsages.isEmpty()
-                    || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
-                    // Update progress appropriately
-                    mTaskManager.sendHeaderUpdate(
-                            context.getString(R.string.progress_msg_skip_title, title));
-                    continue;
-                }
-
-                boolean wantCoverImage = mCurrentBookFieldUsages.containsKey(UniqueId.BKEY_IMAGE);
-
-                // at this point we know we want a search, update the progress base message.
-                if (!title.isEmpty()) {
-                    mTaskManager.sendHeaderUpdate(title);
-                } else {
-                    mTaskManager.sendHeaderUpdate(isbn);
-                }
-
-                // Start searching, then wait...
-                mSearchCoordinator.setSearchSites(mSearchSites);
-                mSearchCoordinator.setFetchThumbnail(wantCoverImage);
-                mSearchCoordinator.search(isbn, author, title, publisher);
-
-                mSearchLock.lock();
-                try {
-                    /*
-                     * Wait for the search to complete.
-                     * After processing the results, it wil call mSearchDone.signal()
-                     */
-                    mSearchDone.await();
-                } finally {
-                    mSearchLock.unlock();
-                }
-
-                // update the counter, another one done.
-                mTaskManager.sendProgress(this, null, progressCounter);
-            }
-        } finally {
-            if (mDb != null) {
-                mDb.close();
-                mDb = null;
-            }
-
-            // Tell our listener they can close the progress dialog.
-            mTaskManager.sendHeaderUpdate(null);
-            // Create the final message for them (user message, not a Progress message)
-            mFinalMessage = context.getString(R.string.progress_end_n_books_searched,
-                                              progressCounter);
-            if (isCancelled()) {
-                mFinalMessage = context.getString(R.string.progress_end_cancelled_info,
-                                                  mFinalMessage);
-            }
-        }
-    }
-
     /**
      * Passed the old & new data, construct the update data and perform the update.
      *
      * @param newBookData Data gathered from internet
      */
-    private void processSearchResults(@NonNull final Bundle newBookData) {
+    private void processSearchResults(@NonNull final Context context,
+                                      @NonNull final Bundle newBookData) {
         // Filter the data to remove keys we don't care about
         List<String> toRemove = new ArrayList<>();
         for (String key : newBookData.keySet()) {
@@ -435,7 +331,6 @@ public class UpdateFieldsTask
 
         // Commit the new data
         if (!newBookData.isEmpty()) {
-
             // Get the language, if there was one requested for updating.
             String bookLang = newBookData.getString(DBDefinitions.KEY_LANGUAGE);
             if (bookLang == null || bookLang.isEmpty()) {
@@ -446,7 +341,6 @@ public class UpdateFieldsTask
                 }
             }
 
-            Context context = App.getLocalizedAppContext();
             mDb.updateBook(context, mCurrentBookId, new Book(newBookData), 0);
         }
     }
@@ -512,5 +406,139 @@ public class UpdateFieldsTask
                 }
                 break;
         }
+    }
+
+    /**
+     * Executed in main task thread.
+     */
+    @Override
+    public void run() {
+        Context context = App.getLocalizedAppContext();
+        int progressCounter = 0;
+
+        try (BookCursor bookCursor = mDb.fetchBooks(mBookIds, mCurrentBookId)) {
+
+            int langCol = bookCursor.getColumnIndex(DBDefinitions.KEY_LANGUAGE);
+            int maxProgress = bookCursor.getCount();
+
+            while (bookCursor.moveToNext() && !mIsCancelled) {
+                progressCounter++;
+
+                // Copy the fields from the cursor and build a complete set of data for this book.
+                // This only needs to include data that we can fetch (so, for example,
+                // bookshelves are ignored).
+                mOriginalBookData = new Bundle();
+                for (int i = 0; i < bookCursor.getColumnCount(); i++) {
+                    mOriginalBookData
+                            .putString(bookCursor.getColumnName(i), bookCursor.getString(i));
+                }
+
+                // always add the language to the ORIGINAL data if we have one,
+                // so we can use it for the Locale details when processing the results.
+                if (langCol > 0) {
+                    String lang = bookCursor.getString(langCol);
+                    if (lang != null && !lang.isEmpty()) {
+                        mOriginalBookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
+                    }
+                }
+
+                // Get the book ID
+                mCurrentBookId = bookCursor.getId();
+                // Get the book UUID
+                mCurrentUuid = mOriginalBookData.getString(DBDefinitions.KEY_BOOK_UUID);
+
+                // Get the array data about the book
+                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
+                                                         mDb.getAuthorsByBookId(
+                                                                 mCurrentBookId));
+                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
+                                                         mDb.getSeriesByBookId(mCurrentBookId));
+                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY,
+                                                         mDb.getTocEntryByBook(mCurrentBookId));
+
+                // Grab the searchable fields. Ideally we will have an ISBN but we may not.
+                // Make sure the searchable fields are not NULL
+                String isbn = mOriginalBookData.getString(DBDefinitions.KEY_ISBN, "");
+                String title = mOriginalBookData.getString(DBDefinitions.KEY_TITLE, "");
+                String author = mOriginalBookData.getString(
+                        DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST, "");
+
+                // Check which fields this book needs.
+                mCurrentBookFieldUsages = getCurrentBookFieldUsages(mFields);
+                // if no data required, skip to next book
+                if (mCurrentBookFieldUsages.isEmpty()
+                    || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
+                    //update the progress base message.
+                    mSearchCoordinator.setBaseMessage(
+                            context.getString(R.string.progress_msg_skip_title, title));
+                    continue;
+                }
+
+                // at this point we know we want a search,update the progress base message.
+                if (!title.isEmpty()) {
+                    mSearchCoordinator.setBaseMessage(title);
+                } else {
+                    mSearchCoordinator.setBaseMessage(isbn);
+                }
+
+                boolean wantCoverImage = mCurrentBookFieldUsages.containsKey(UniqueId.BKEY_IMAGE);
+                // optional
+                String publisher = mOriginalBookData.getString(DBDefinitions.KEY_PUBLISHER, "");
+
+                // Start searching, then wait...
+                mSearchCoordinator.setFetchThumbnail(wantCoverImage);
+
+                mSearchCoordinator.setIsbn(isbn);
+                mSearchCoordinator.setAuthor(author);
+                mSearchCoordinator.setTitle(title);
+                mSearchCoordinator.setPublisher(publisher);
+                mSearchCoordinator.searchByText();
+
+                mSearchLock.lock();
+                try {
+                    /*
+                     * Wait for the one search to complete.
+                     * After processing the results, it wil call mOneSearch.signal()
+                     */
+                    mOneSearch.await();
+                } finally {
+                    mSearchLock.unlock();
+                }
+
+                //update the counter, another one done.
+                mTaskListener.onProgress(new TaskListener.ProgressMessage(
+                        R.id.TASK_ID_UPDATE_FIELDS, maxProgress, progressCounter, null));
+            }
+
+        } catch (@NonNull final InterruptedException e) {
+            mIsCancelled = true;
+
+        } catch (@NonNull final Exception e) {
+            Logger.error(context, TAG, e);
+            mException = e;
+
+        } finally {
+            // Tell the SearchCoordinator we're done.
+            mSearchCoordinator.setBaseMessage(null);
+            mSearchCoordinator.cancel(false);
+
+            if (mIsCancelled) {
+                mTaskListener.onFinished(new TaskListener.FinishMessage<>(
+                        R.id.TASK_ID_UPDATE_FIELDS, TaskListener.TaskStatus.Cancelled,
+                        mCurrentBookId, mException));
+            } else {
+                mTaskListener.onFinished(new TaskListener.FinishMessage<>(
+                        R.id.TASK_ID_UPDATE_FIELDS,
+                        mException != null ? TaskListener.TaskStatus.Failed
+                                           : TaskListener.TaskStatus.Success,
+                        mCurrentBookId, mException));
+            }
+        }
+    }
+
+    @Override
+    public boolean cancel(final boolean mayInterruptIfRunning) {
+        interrupt();
+        return true;
     }
 }

@@ -45,6 +45,21 @@ public abstract class BookSearchByIsbnBaseFragment
     boolean mAllowAsin;
 
     @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Mandatory
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    void onCancelled(final boolean isCancelled) {
+        super.onCancelled(isCancelled);
+
+        startInput();
+    }
+
+    @Override
     void onSearchResults(@NonNull final Bundle bookData) {
         // A non-empty result will have a title or at least 3 fields.
         // The isbn field will always be present as we searched on one.
@@ -52,8 +67,7 @@ public abstract class BookSearchByIsbnBaseFragment
         // So a valid result means we either need a title, or a
         // third field.
         String title = bookData.getString(DBDefinitions.KEY_TITLE);
-        if ((title != null && !title.isEmpty())
-            || bookData.size() > 2) {
+        if ((title != null && !title.isEmpty()) || bookData.size() > 2) {
             Intent intent = new Intent(getContext(), EditBookActivity.class)
                     .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
@@ -63,21 +77,6 @@ public abstract class BookSearchByIsbnBaseFragment
             //noinspection ConstantConditions
             UserMessage.show(getView(), R.string.warning_no_matching_book_found);
         }
-    }
-
-    @Override
-    void onSearchCancelled(final boolean isCancelled) {
-        super.onSearchCancelled(isCancelled);
-
-        startInput();
-    }
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Mandatory
-        setHasOptionsMenu(true);
     }
 
     /**
@@ -106,7 +105,7 @@ public abstract class BookSearchByIsbnBaseFragment
         onValid();
 
         // See if ISBN already exists in our database, if not then start the search.
-        final long existingId = mBookSearchBaseModel.getDb().getBookIdFromIsbn(isbn, true);
+        final long existingId = mDb.getBookIdFromIsbn(isbn, true);
         if (existingId != 0) {
             isbnAlreadyPresent(existingId);
         } else {

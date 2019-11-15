@@ -75,6 +75,11 @@
         app:layout_constraintTop_toTopOf="parent"
         >
 
+        <TextView
+            style="@style/RadioGroupHeader"
+            android:text="@string/lbl_books"
+            />
+
         <RadioButton
             android:id="@+id/radioAllBooks"
             style="@style/OptionRow.Checkable"
@@ -101,17 +106,12 @@
             />
     </RadioGroup>
 
-    <View
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
-        style="@style/VerticalDivider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_percent="0.35"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintGuide_percent="0.3"
         />
 
     <androidx.constraintlayout.widget.Group

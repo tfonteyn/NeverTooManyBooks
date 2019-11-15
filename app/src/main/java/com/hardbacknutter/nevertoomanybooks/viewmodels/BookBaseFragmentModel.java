@@ -106,6 +106,7 @@ public class BookBaseFragmentModel
     private List<String> mPublishers;
     /** Field drop down list. */
     private List<String> mListPriceCurrencies;
+
     /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
     private TaskListener<Integer> mOnGoodreadsTaskListener;
 
@@ -426,7 +427,7 @@ public class BookBaseFragmentModel
             mOnGoodreadsTaskListener = new TaskListener<Integer>() {
 
                 @Override
-                public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
+                public void onFinished(@NonNull final FinishMessage<Integer> message) {
                     switch (message.status) {
                         case Success:
                         case Failed: {
@@ -448,9 +449,9 @@ public class BookBaseFragmentModel
                 }
 
                 @Override
-                public void onTaskProgress(@NonNull final TaskProgressMessage message) {
-                    if (message.values != null && message.values.length > 0) {
-                        mUserMessage.setValue(message.values[0]);
+                public void onProgress(@NonNull final ProgressMessage message) {
+                    if (message.text != null) {
+                        mUserMessage.setValue(message.text);
                     }
                 }
             };

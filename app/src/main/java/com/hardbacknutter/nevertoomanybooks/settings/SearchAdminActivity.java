@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * USE scenario is (2019-07-05) on a per-page basis only. Hence we 'use' the current displayed list.
@@ -96,7 +97,7 @@ public class SearchAdminActivity
             }
             case SearchAdminModel.SHOW_ALL_TABS:
             default: {
-                setTitle(R.string.menu_add_book_by_internet_search);
+                setTitle(R.string.lbl_websites);
                 mPersist = true;
                 break;
             }
@@ -111,17 +112,26 @@ public class SearchAdminActivity
 
     @Override
     public void onBackPressed() {
+        // When in 'real' settings mode, we always check the book website list.
+        // When in 'use' scenario, we check the list which we're editing.
+        boolean noSitesEnabled;
         SearchAdminModel model = new ViewModelProvider(this).get(SearchAdminModel.class);
         if (mPersist) {
             model.persist(this);
-
+            //noinspection ConstantConditions
+            noSitesEnabled = SearchSites.getEnabledSites(model.getBooks()) == 0;
         } else {
             Intent data = new Intent()
                     .putExtra(SearchSites.BKEY_SEARCH_SITES_BOOKS, model.getList());
             setResult(Activity.RESULT_OK, data);
+            noSitesEnabled = SearchSites.getEnabledSites(model.getList()) == 0;
         }
 
-        super.onBackPressed();
+        if (noSitesEnabled) {
+            UserMessage.show(mViewPager, R.string.warning_enable_at_least_1_website);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

@@ -92,12 +92,13 @@ public final class TerminatorConnection
     private boolean mCloseWasCalled;
 
     /**
-     * Constructor.
+     * Constructor. Get an open TerminatorConnection from a URL.
      *
      * @param urlStr URL to retrieve
      *
      * @throws IOException on failure
      */
+    @WorkerThread
     public TerminatorConnection(@NonNull final String urlStr)
             throws IOException {
         // redirect MUST BE SET TO TRUE here.
@@ -105,13 +106,14 @@ public final class TerminatorConnection
     }
 
     /**
-     * Constructor.
+     * Constructor. Get an open TerminatorConnection from a URL.
      *
      * @param urlStr   URL to retrieve
      * @param redirect whether redirects should be followed or not
      *
      * @throws IOException on failure
      */
+    @WorkerThread
     private TerminatorConnection(@NonNull final String urlStr,
                                  final boolean redirect)
             throws IOException {
@@ -119,17 +121,23 @@ public final class TerminatorConnection
         final URL url = new URL(urlStr);
 
         // lets make sure name resolution and basic site access works.
-        if (!NetworkUtils.isAlive(urlStr)) {
-            throw new IOException("site cannot be contacted: " + urlStr);
-        }
+        NetworkUtils.poke(App.getAppContext(), urlStr);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-            Log.d(TAG, "Constructor|url=" + url);
+            Log.d(TAG, "Constructor|url=\"" + url + '\"');
         }
 
         mKillDelayInMillis = KILL_CONNECT_DELAY_MS;
 
-        mCon = (HttpURLConnection) url.openConnection();
+        try {
+            mCon = (HttpURLConnection) url.openConnection();
+        } catch (@NonNull final IOException e) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+                Logger.error(App.getAppContext(), TAG, e, "url=" + urlStr);
+            }
+            throw e;
+        }
+
         mCon.setInstanceFollowRedirects(redirect);
         mCon.setUseCaches(false);
         mCon.setConnectTimeout(CONNECT_TIMEOUT_MS);
@@ -137,7 +145,7 @@ public final class TerminatorConnection
     }
 
     /**
-     * Convenience function. Get an *open* TerminatorConnection from a URL
+     * Convenience function. Get an open TerminatorConnection from a URL.
      *
      * @param urlStr URL to retrieve
      *
@@ -149,29 +157,17 @@ public final class TerminatorConnection
     @NonNull
     public static TerminatorConnection openConnection(@NonNull final String urlStr)
             throws IOException {
-        TerminatorConnection tCon = new TerminatorConnection(urlStr);
-        tCon.open();
-        return tCon;
-    }
+        try {
+            TerminatorConnection tCon = new TerminatorConnection(urlStr);
+            tCon.open();
+            return tCon;
 
-    /**
-     * Convenience function. Get an *open* TerminatorConnection from a URL
-     *
-     * @param urlStr URL to retrieve
-     *
-     * @return the open connection
-     *
-     * @throws IOException on failure
-     */
-    @SuppressWarnings("unused")
-    @WorkerThread
-    @NonNull
-    public static TerminatorConnection openConnection(@NonNull final String urlStr,
-                                                      final boolean redirect)
-            throws IOException {
-        TerminatorConnection tCon = new TerminatorConnection(urlStr, redirect);
-        tCon.open();
-        return tCon;
+        } catch (@NonNull final IOException e) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+                Logger.error(App.getAppContext(), TAG, e, "url=" + urlStr);
+            }
+            throw e;
+        }
     }
 
     @NonNull
@@ -223,7 +219,7 @@ public final class TerminatorConnection
                 }
 
             } catch (@NonNull final IOException e) {
-                // give up for this exception.
+                // give up .
                 close();
                 throw e;
             }

@@ -35,31 +35,24 @@
     >
 
     <TextView
-        android:id="@+id/title"
-        style="@style/TextDetail"
-        android:layout_marginStart="@dimen/indent2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SelectableText"
-        tools:text="@string/lbl_title"
-        />
-
-    <TextView
         android:id="@+id/author"
         style="@style/TextDetail.Small"
         android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_author"
+        tools:text="by Isaac Asimov"
         />
 
-    <View
-        android:id="@+id/list_divider"
-        style="@style/HorizontalDivider"
-        app:layout_constraintEnd_toEndOf="parent"
+    <TextView
+        android:id="@+id/lbl_lend_to"
+        style="@style/Label.Field"
+        android:layout_marginTop="@dimen/border2"
+        android:text="@string/lbl_lend_to"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
+        tools:ignore="SelectableText"
         />
 
     <AutoCompleteTextView
@@ -68,7 +61,7 @@
         android:hint="@string/name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/list_divider"
+        app:layout_constraintTop_toBottomOf="@id/lbl_lend_to"
         tools:text="Alvin"
         >
 

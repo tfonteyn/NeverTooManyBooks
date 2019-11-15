@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.app.Activity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -65,57 +64,29 @@ public final class UserMessage {
     private UserMessage() {
     }
 
-    public static void show(@NonNull final Activity activity,
+    public static void show(@NonNull final View view,
                             @StringRes final int message) {
         if (0 == PIntString.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
-            Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+            Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
         } else {
-            View view = activity.getWindow().getDecorView();
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
-            Log.d(TAG, "show1|" + activity.getString(message), new Throwable());
+            Log.d(TAG, "show1|" + view.getContext().getString(message), new Throwable());
         }
     }
 
-    public static void show(@NonNull final Activity activity,
+    public static void show(@NonNull final View view,
                             @NonNull final String message) {
         if (0 == PIntString.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
-            Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+            Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
         } else {
-            View view = activity.getWindow().getDecorView();
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
             Log.d(TAG, "show2|" + message, new Throwable());
-        }
-    }
-
-    public static void show(@NonNull final View view,
-                            @StringRes final int message) {
-        if (0 == PIntString.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
-            Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
-        } else {
-            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
-            Log.d(TAG, "show3|" + view.getContext().getString(message), new Throwable());
-        }
-    }
-
-    public static void show(@NonNull final View view,
-                            @NonNull final String message) {
-        if (0 == PIntString.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
-            Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
-        } else {
-            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
-            Log.d(TAG, "show4|" + message, new Throwable());
         }
     }
 }

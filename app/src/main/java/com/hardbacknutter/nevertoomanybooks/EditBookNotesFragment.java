@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the Notes Tab.
@@ -170,7 +171,7 @@ public class EditBookNotesFragment
 
         // Fix the focus order for the views
         //noinspection ConstantConditions
-        FocusSettings.fix(getView());
+        FocusFixer.fix(getView());
     }
 
     @Override

@@ -31,6 +31,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -429,6 +430,24 @@ public class EditBookAuthorsActivity
                         mHostActivity.processChanges(mAuthor, newAuthorData);
                     })
                     .create();
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+
+            //FIXME: large screens will look bad
+            if (getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE) {
+                // force the dialog to be big enough
+                Dialog dialog = getDialog();
+                if (dialog != null) {
+                    int width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    int height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    //noinspection ConstantConditions
+                    dialog.getWindow().setLayout(width, height);
+                }
+            }
         }
 
         /**

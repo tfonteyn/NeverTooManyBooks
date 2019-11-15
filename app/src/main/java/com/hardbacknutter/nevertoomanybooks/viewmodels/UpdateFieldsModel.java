@@ -30,11 +30,13 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -44,10 +46,13 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
@@ -55,56 +60,112 @@ import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Ove
 public class UpdateFieldsModel
         extends ViewModel {
 
+//    private static final String TAG = "UpdateFieldsModel";
+
     /** which fields to update and how. */
     @NonNull
     private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
+
+    private final MutableLiveData<TaskListener.ProgressMessage> mProgressMessage
+            = new MutableLiveData<>();
+    private MutableLiveData<Intent> mActivityResultData = new MutableLiveData<>();
+
+    /** Database Access. */
+    private DAO mDb;
+
     /** Sites to search on. */
     private ArrayList<Site> mSearchSites;
     /** Book ID's to fetch. {@code null} for all books. */
     @Nullable
     private ArrayList<Long> mBookIds;
 
-    /** display reminder only. */
-    @Nullable
-    private String mTitle;
+    private Handler mHandler = new Handler();
 
-    /** senderId of the update task. */
-    private long mUpdateSenderId;
+    /** Allows restarting an update task from the given book id onwards. 0 for all. */
+    private long mFromBookIdOnwards;
+    private UpdateFieldsTask mUpdateTask;
 
-    /** Allows restarting an update task from the given book id onwards. */
-    @SuppressWarnings("FieldCanBeLocal")
-    private long mFromBookIdOnwards = 0;
+    private TaskListener<Long> mTaskListener = new TaskListener<Long>() {
+        @Override
+        public void onFinished(@NonNull final FinishMessage<Long> message) {
+            mUpdateTask = null;
 
+            boolean isCancelled = message.status == TaskStatus.Cancelled;
+
+            // the last book id which was handled; can be used to restart the update.
+            mFromBookIdOnwards = message.result;
+
+            if (mBookIds != null && mBookIds.size() == 1 && isCancelled) {
+                // single book cancelled, just quit
+                mHandler.post(() -> mActivityResultData.setValue(null));
+                return;
+            }
+
+            Intent resultData = new Intent()
+                    // null if we did 'all books'
+                    // or the ID's (1 or more) of the (hopefully) updated books
+                    .putExtra(UniqueId.BKEY_ID_LIST, mBookIds)
+                    // task cancelled does not mean that nothing was done.
+                    // Books *will* be updated until the cancelling happened
+                    .putExtra(UniqueId.BKEY_CANCELED, isCancelled)
+                    // One or more books were changed.
+                    // Technically speaking when doing a list of books,
+                    // the task might have been cancelled before the first
+                    // book was done. We disregard this fringe case.
+                    .putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
+
+            if (mBookIds != null && !mBookIds.isEmpty()) {
+                // Pass the first book for reposition the list (if applicable)
+                resultData.putExtra(DBDefinitions.KEY_PK_ID, mBookIds.get(0));
+            }
+
+            mHandler.post(() -> mActivityResultData.setValue(resultData));
+        }
+
+        @Override
+        public void onProgress(@NonNull final ProgressMessage message) {
+            mHandler.post(() -> mProgressMessage.setValue(message));
+        }
+    };
+
+    public MutableLiveData<Intent> getFinished() {
+        return mActivityResultData;
+    }
+
+    public MutableLiveData<TaskListener.ProgressMessage> getProgress() {
+        return mProgressMessage;
+    }
+
+    @Override
+    protected void onCleared() {
+        if (mUpdateTask != null) {
+            mUpdateTask.interrupt();
+        }
+
+        if (mDb != null) {
+            mDb.close();
+        }
+    }
 
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param context Current context
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {
-        if (args != null) {
-            //noinspection unchecked
-            mBookIds = (ArrayList<Long>) args.getSerializable(UniqueId.BKEY_ID_LIST);
-            // optional activity title
-            mTitle = args.getString(UniqueId.BKEY_DIALOG_TITLE);
+        if (mSearchSites == null) {
 
+            mDb = new DAO();
             // use global preference.
             mSearchSites = SearchSites.getSites(context, SearchSites.ListType.Data);
+
+            if (args != null) {
+                //noinspection unchecked
+                mBookIds = (ArrayList<Long>) args.getSerializable(UniqueId.BKEY_ID_LIST);
+            }
         }
-    }
-
-    @Nullable
-    public String getTitle() {
-        return mTitle;
-    }
-
-    public long getUpdateSenderId() {
-        return mUpdateSenderId;
-    }
-
-    public void setUpdateSenderId(final long updateSenderId) {
-        mUpdateSenderId = updateSenderId;
     }
 
     @Nullable
@@ -150,28 +211,12 @@ public class UpdateFieldsModel
         return SearchSites.getEnabledSites(mSearchSites);
     }
 
-    /**
-     * Allows restarting an update task from the given book id onwards.
-     *
-     * @return book id to start updating from, {@code 0} for all.
-     */
-    public long getFromBookIdOnwards() {
+    public void setFromBookIdOnwards(final long fromBookIdOnwards) {
+        mFromBookIdOnwards = fromBookIdOnwards;
+    }
+
+    public long getLastBookIdDone() {
         return mFromBookIdOnwards;
-    }
-
-    /**
-     * The books (id) to update.
-     *
-     * @return list of ids, or {@code null} for all books.
-     */
-    @Nullable
-    public ArrayList<Long> getBookIds() {
-        return mBookIds;
-    }
-
-    /** syntax sugar. */
-    public boolean isSingleBook() {
-        return mBookIds != null && mBookIds.size() == 1;
     }
 
     /**
@@ -180,10 +225,10 @@ public class UpdateFieldsModel
      * @param fieldId        to check presence of
      * @param relatedFieldId to add if fieldId was present
      */
-    public void addRelatedField(@SuppressWarnings("SameParameterValue")
-                                @NonNull final String fieldId,
-                                @SuppressWarnings("SameParameterValue")
-                                @NonNull final String relatedFieldId) {
+    private void addRelatedField(@SuppressWarnings("SameParameterValue")
+                                 @NonNull final String fieldId,
+                                 @SuppressWarnings("SameParameterValue")
+                                 @NonNull final String relatedFieldId) {
         FieldUsage field = mFieldUsages.get(fieldId);
         if (field != null && field.isWanted()) {
             FieldUsage fu = new FieldUsage(0, field.getUsage(), field.canAppend(), relatedFieldId);
@@ -270,5 +315,28 @@ public class UpdateFieldsModel
         addField(R.string.library_thing, Overwrite, DBDefinitions.KEY_EID_LIBRARY_THING);
         addField(R.string.open_library, Overwrite, DBDefinitions.KEY_EID_OPEN_LIBRARY);
         addField(R.string.stripinfo, Overwrite, DBDefinitions.KEY_EID_STRIP_INFO_BE);
+    }
+
+    public UpdateFieldsTask getTask() {
+        return mUpdateTask;
+    }
+
+    public boolean startSearch() {
+        // add related fields.
+        // i.e. if we do the 'list-price' field, we'll also want its currency.
+        addRelatedField(DBDefinitions.KEY_PRICE_LISTED, DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
+
+        mUpdateTask = new UpdateFieldsTask(mDb, mSearchSites, mFieldUsages, mTaskListener);
+
+        if (mBookIds != null) {
+            //update just these
+            mUpdateTask.setBookId(mBookIds);
+        } else {
+            //update the complete library starting from the given id
+            mUpdateTask.setFromBookIdOnwards(mFromBookIdOnwards);
+        }
+
+        mUpdateTask.start();
+        return true;
     }
 }

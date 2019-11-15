@@ -1,0 +1,29 @@
+ * March/April 2019, I got this error:
+ *
+ * Warning: file_get_contents(http://webservices.amazon.com/onca/xml?
+ * AssociateTag=theagidir-20
+ * &Keywords=9780385269179
+ * &Operation=ItemSearch
+ * &ResponseGroup=Medium,Images
+ * &SearchIndex=Books
+ * &Service=AWSECommerceService
+ * &SubscriptionId=AKIAIHF2BM6OTOA23JEQ
+ * &Timestamp=2019-04-08T11:10:15.000Z
+ * &Signature=XJKVvg%2BDqzB7w50fXxvqN5hbDt2ZFzuNL5W%2BsDmcGXA%3D):
+ * failed to open stream: HTTP request failed!
+ * HTTP/1.1 503 Service Unavailable in /app/getRest_v3.php on line 70
+ *
+ * October 2019:
+ *
+ * Warning: file_get_contents(http://webservices.amazon.com/onca/xml?
+ * AssociateTag=theagidir-20
+ * &Keywords=9780385269179
+ * &Operation=ItemSearch
+ * &ResponseGroup=Medium,Images
+ * &SearchIndex=Books
+ * &Service=AWSECommerceService
+ * &SubscriptionId=AKIAJAEDFY5OUPGPBIAQ
+ * &Timestamp=2019-10-29T19:05:36.000Z
+ * &Signature=ZPzMY1Hqepxk4UDWHWsuX29ts%2B3fvWeBcbkCytIxkiw%3D):
+ * failed to open stream: HTTP request failed!
+ * HTTP/1.1 403 Forbidden in /app/getRest_v3.php on line 70<p>

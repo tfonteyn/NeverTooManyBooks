@@ -99,13 +99,14 @@
 
     <string name="error_not_available">%1$s is not available.</string>
 
-    <!-- A search on a website failed: param 1: site name; param 2: message -->
-    <string name="error_search_exception">Searching on %1$s failed: %2$s.</string>
-    <string name="error_search_failed">
-        Searching for the book failed. Please check your network settings.
-    </string>
+    <!-- A search on a specific website failed, with the specified reason.
+         param 1: site name; param 2: message
+      -->
+    <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s.</string>
+
     <string name="error_search_failed_network">
-        Configuration error. Please open the Settings page and check your Search Site preferences.
+        Please open the Settings and check your network and Search Site preferences.\n
+        Also check your device network settings.
     </string>
 
     <string name="error_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
@@ -156,16 +157,16 @@
         book record, or are importing someone else\'s books, ensure the uuid field is present
         or the id field is blank.
     </string>
-    <string name="warning_book_not_found">
-        The book was not found. You can sometimes find the correct barcode on the inside front
-        cover. Otherwise please enter the details manually.
-    </string>
+    <string name="warning_book_not_found">Unable to find the specified book</string>
+
     <string name="warning_immediate_global_changes">
         NOTE: All saved changes apply instantly and globally.
     </string>
 
     <!-- some unique field already exists; e.g. accidentally creating a duplicate Bookshelf -->
     <string name="warning_x_already_exists">%1$s already exists.</string>
+
+    <string name="warning_enable_at_least_1_website">Enable at least one website.</string>
 
     <string name="warning_select_at_least_1_group">Select at least one group.</string>
     <string name="warning_select_at_least_1_field">Select at least one field to update.</string>
@@ -174,7 +175,7 @@
     <string name="warning_requires_at_least_one_field">At least one field must not be blank.</string>
     <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
     <string name="warning_requires_date">Please add a valid date.</string>
-    <string name="warning_requires_id_and_site">An id must be entered and a site selected.</string>
+    <string name="warning_requires_site_and_id">Select a site and enter an id.</string>
 
     <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
     <string name="warning_missing_name">Name can not be blank</string>
@@ -186,7 +187,6 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">“%1$s” is not a valid ISBN or ASIN</string>
     <string name="warning_cover_not_found">Cover Not Found</string>
     <string name="warning_cover_copy_failed">Could not copy cover</string>
-    <string name="warning_unable_to_find_book">Unable to find the specified book</string>
     <string name="warning_no_editions">No additional edition information available</string>
     <string name="warning_if_day_set_month_and_year_must_be">
         If a day is specified, then both month and year must be specified.
@@ -430,6 +430,11 @@
     <string name="tip_reset_all">Reset hints</string>
     <string name="tip_reset_done">Hints have been reset</string>
 
+    <string name="tip_book_not_found">
+        The book was not found. You can sometimes find the correct barcode on the inside front
+        cover. Otherwise please enter the details manually.
+    </string>
+
     <string name="tip_book_search_by_text">
         Adding books by ISBN is much more accurate than adding by author and title and
         is generally preferred. Please remember you can sometimes find the correct
@@ -526,6 +531,24 @@
     <!-- ####################################################################################### -->
     <!-- ========== Goodreads specific ========== -->
     <!-- ####################################################################################### -->
+
+    <!-- dialog title and task description -->
+    <string name="gr_title_send_book">Send books to Goodreads</string>
+    <!-- dialog title, admin menu selection and task description -->
+    <string name="gr_title_sync_with_goodreads">Synchronize with Goodreads</string>
+    <!-- admin menu selection -->
+    <string name="gr_menu_import_all_from_goodreads">Import all from Goodreads</string>
+    <!-- admin menu selection -->
+    <string name="gr_menu_send_updated">Send updated</string>
+    <!-- admin menu selection -->
+    <string name="gr_menu_send_all">Send all</string>
+
+    <!-- book and book list menu options -->
+    <string name="gr_menu_send_to_goodreads">Send to Goodreads</string>
+
+
+    <!-- Dialog title and (big) button -->
+    <string name="gr_title_auth_access">Authorize Access</string>
     <string name="gr_auth_blurb_part1">
         Goodreads is a web site whose stated mission is “to help people find and share books they
         love”. They have an extensive database of books and reviews, and if you are a registered
@@ -550,34 +573,30 @@
         credentials from this phone, then you can do so by pressing the button below. But it is
         also important to delete the application\'s registration on the Goodreads website as well.
     </string>
-    <string name="gr_access_error">
-        There was a network problem while accessing Goodreads. Please check if the Goodreads web
-        site it up, and if the problem persists please contact support.
-    </string>
-    <string name="gr_title_auth_access">Authorize Access</string>
-    <string name="gr_auth_access_already_auth">
+
+    <string name="gr_auth_successful">Goodreads authorization successful</string>
+    <string name="gr_auth_error">Goodreads authorization resulted in an error.</string>
+    <string name="gr_auth_access_already_granted">
         It looks like you have already authorized this application.
         All Goodreads functions should already be available.
     </string>
 
-    <string name="gr_auth_error">Goodreads authorization resulted in an error.</string>
-    <string name="gr_auth_successful">Goodreads authorization successful</string>
-    <string name="gr_import_all_from_goodreads">Import all from Goodreads</string>
+    <string name="gr_access_error">
+        There was a network problem while accessing Goodreads. Please check if the Goodreads
+        website it up, and if the problem persists please contact support.
+    </string>
     <string name="gr_action_cannot_be_completed">
         This action can not be completed until this application is authorized on the Goodreads
-        web site. Once you have authorized this application, please retry.\n
+        website. Once you have authorized this application, please retry.\n
         \nDo you want to authorize it now?
     </string>
-    <string name="gr_sync_with_goodreads">Synchronize with Goodreads</string>
-    <string name="gr_title_send_book">Send books to Goodreads</string>
-    <string name="gr_btn_send_all">Send all</string>
-    <string name="gr_btn_send_updated">Send updated</string>
-    <string name="gr_menu_send_to_goodreads">Send to Goodreads</string>
+
     <string name="gr_send_book_to_goodreads">Send book %1$d to Goodreads</string>
-    <string name="gr_send_all_books_results">
+    <string name="gr_info_send_all_books_results">
         %1$d books processed: %2$d sent successfully, %3$d without ISBN and %4$d with ISBN but
         not found in Goodreads
     </string>
+
     <string name="gr_info_send_books">
         This will send your library to Goodreads.\n
         \nYou can choose to send all of your books, or only the books you have updated
@@ -586,7 +605,7 @@
         \nIf you have never sent any books then there is no difference between the first
         two options.
     </string>
-    <string name="gr_explain_no_isbn">
+    <string name="gr_info_no_isbn">
         The selected book does not have an ISBN; it is not possible to automatically synchronize
         it with Goodreads. The simplest solution is to:\n
         \n(1) delete the book from &APP_NAME;\n
@@ -596,14 +615,14 @@
         linked from that point onwards.
     </string>
     <!-- TODO: “Retry” should be a parameter. But that means modifying the Tip class -->
-    <string name="gr_explain_no_match">
+    <string name="gr_info_no_match">
         The ISBN of the selected book could not be found on Goodreads. There are two possible
         causes for this: either the data for the book is wrong (you should check the ISBN),
         or the book is not in Goodreads.\n
         \nIf you make any changes to the data in &APP_NAME;, just press the “Retry” button
         and check to see if the	resulting background task succeeds.\n
         \nIf the data looks correct and the book is still not found, then a book with that ISBN
-        needs to be added to Goodreads manually via their web site. Once that is done, you can
+        needs to be added to Goodreads manually via their website. Once that is done, you can
         retry sending the book.
     </string>
 
@@ -791,7 +810,7 @@
     <string name="pg_internet_search">Web Searches</string>
 
     <string name="pt_website_order_and_enable">Reorder, enable &amp; disable</string>
-    <string name="pt_site_settings">Site settings</string>
+    <string name="pt_site_settings">Website settings</string>
 
     <!-- SwitchPreference - allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_mobile_data">Allow mobile data usage</string>
@@ -928,7 +947,8 @@
     <string name="title_backing_up">Backing up…</string>
     <!-- Dialog title. -->
     <string name="title_details_have_changed">Details have changed</string>
-
+    <!-- Dialog title. -->
+    <string name="title_search_failed">Searching for the book failed.</string>
     <!-- Chooser title. -->
     <string name="title_send_mail">Send email…</string>
     <!-- Chooser title. -->
@@ -961,15 +981,19 @@
 
     <!-- ####################################################################################### -->
 
-    <!-- booklist options menu -->
+    <!-- booklist FAB menu -->
     <!-- menu option -->
-    <string name="menu_add_book_by_barcode_scan">Scan Barcode/ISBN</string>
+    <string name="fab_add_book_by_barcode_scan">Scan Barcode</string>
     <!-- menu option -->
-    <string name="menu_add_book_by_isbn">Enter ISBN</string>
+    <string name="fab_add_book_by_isbn">Enter ISBN</string>
     <!-- menu option -->
-    <string name="menu_add_book_by_internet_search">Search Internet</string>
+    <string name="fab_add_book_by_internet_search">Search Internet</string>
     <!-- menu option -->
-    <string name="menu_add_book_manually">Add Manually</string>
+    <string name="fab_add_book_manually">Add Manually</string>
+    <!-- menu option / screen title -->
+    <string name="fab_add_book_by_native_id">Website book id</string>
+
+
     <!-- menu option -->
     <string name="menu_sort_and_style_ellipsis">Sorting &amp; Styles…</string>
     <!-- menu option -->
@@ -1057,19 +1081,18 @@
     <string name="btn_confirm_open">Open</string>
     <string name="btn_confirm_save">Save</string>
     <string name="btn_confirm_use">Use</string>
-
+    <!-- exit the edit activity despite unsaved edits -->
+    <string name="btn_confirm_exit">Exit</string>
     <!-- merging two bookshelves -->
     <string name="btn_confirm_merge">Merge</string>
 
     <!-- when warned you have unsaved edits -->
     <string name="btn_continue_editing">Continue Editing</string>
 
-    <!-- exit the edit activity despite unsaved edits -->
-    <string name="btn_confirm_exit">Exit</string>
     <!-- button text for import/export dialogs -->
     <string name="btn_options">Options</string>
     <!-- generic search button -->
-    <string name="btn_search">Search…</string>
+    <string name="btn_search">Search</string>
     <!-- Button text, to 'return' a loaned book -->
     <string name="btn_loan_returned">Returned</string>
 
@@ -1139,7 +1162,7 @@
     <string name="size_xx_large">2X-Large</string>
 
     <!-- ####################################################################################### -->
-    <!-- == Book format names. Used to unify terminology from internet search sites.  == -->
+    <!-- == Book format names. Used to unify terminology from internet websites.  == -->
     <!-- ####################################################################################### -->
     <!--  book format - traditional 'hardcover' also known as 'hardback' -->
     <string name="book_format_hardcover">Hardcover</string>
@@ -1155,9 +1178,9 @@
           A lot of english Science Fiction magazines use the same format.  -->
     <string name="book_format_digest">Digest</string>
 
-    <!--  book format string used if a search site indicates it's an eBook -->
+    <!--  book format string used if a website indicates it's an eBook -->
     <string name="book_format_ebook">eBook</string>
-    <!-- book format used if a search site indicates it's some sort of Audio (tape, cd, etc..) -->
+    <!-- book format used if a website indicates it's some sort of Audio (tape, cd, etc..) -->
     <string name="book_format_audiobook">AudioBook</string>
 
     <!-- ####################################################################################### -->
@@ -1182,6 +1205,8 @@
     <string name="style_builtin_author_year">Author,Year</string>
     <string name="style_builtin_bookshelf">Bookshelf</string>
     <string name="style_builtin_compact">Compact</string>
+    <string name="style_builtin_first_letter_book_title">Title 1st letter</string>
+    <string name="style_builtin_first_letter_series_title">Series title 1st letter</string>
     <string name="style_builtin_format">Format</string>
     <string name="style_builtin_genre">Genre</string>
     <string name="style_builtin_language">Language</string>
@@ -1192,8 +1217,6 @@
     <string name="style_builtin_read_and_unread">Read/Unread</string>
     <string name="style_builtin_read_date">Date Read</string>
     <string name="style_builtin_series">Series</string>
-    <string name="style_builtin_title_first_letter">Title 1st letter</string>
-    <string name="style_builtin_series_title_first_letter">Series title 1st letter</string>
     <string name="style_builtin_unread">Unread (Author/Series)</string>
     <string name="style_builtin_update_date">Date updated</string>
 
@@ -1541,10 +1564,10 @@
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
     <string name="menu_scanner_ui">Scanner UI</string>
 
-    <string name="menu_add_book_native_id">Add by site book id</string>
-    <string name="lbl_site_book_id">Site book ID</string>
-    <string name="info_search_by_native_id">Select a site.</string>
-    <string name="scan">Scan</string>
+    <string name="lbl_site_book_id">Website book ID:</string>
+    <string name="lbl_select_website">Select a website:</string>
+    <string name="scan">Scan barcode</string>
+    <string name="error_no_sites">No websites enabled</string>
 
 
 </resources>

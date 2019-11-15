@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -95,6 +96,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 public class LibraryThingManager
         implements SearchEngine,
                    SearchEngine.ByIsbn,
+                   SearchEngine.ByNativeId,
                    SearchEngine.CoverByIsbn {
 
     private static final String TAG = "LibraryThingManager";
@@ -114,14 +116,15 @@ public class LibraryThingManager
     /** base urls. */
     private static final String BASE_URL = "https://www.librarything.com";
     /** book details urls. */
-    private static final String DETAIL_URL =
+    private static final String BOOK_BY_ISBN_URL =
             BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&isbn=%2$s";
-
+    private static final String BOOK_BY_ID_URL =
+            BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&id=%2$s";
     /** fetches all isbn's from editions related to the requested isbn. */
     private static final String EDITIONS_URL = BASE_URL + "/api/thingISBN/%s";
 
     /** param 1: dev key, param 2: size; param 3: isbn. */
-    private static final String BASE_URL_COVERS
+    private static final String COVER_BY_ISBN_URL
             = "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
 
     /** Can only send requests at a throttled speed. */
@@ -248,7 +251,11 @@ public class LibraryThingManager
         try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
-        } catch (@NonNull final ParserConfigurationException | SAXException | IOException ignore) {
+        } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
+            // for the editions search, we swallow all exceptions.
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
+                Log.d(TAG, "searchEditions|e=" + e);
+            }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
@@ -301,8 +308,19 @@ public class LibraryThingManager
             throws IOException {
 
         // Base path for an ISBN search
-        String url = String.format(DETAIL_URL, getDevKey(), isbn);
+        String url = String.format(BOOK_BY_ISBN_URL, getDevKey(), isbn);
 
+        Bundle bookData = fetchBook(url);
+
+        if (fetchThumbnail) {
+            getCoverImage(context, isbn, bookData);
+        }
+
+        return bookData;
+    }
+
+    private Bundle fetchBook(@NonNull final String url)
+            throws IOException {
         Bundle bookData = new Bundle();
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -315,17 +333,36 @@ public class LibraryThingManager
         try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
-            // wrap parser exceptions in an IOException
+
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            // wrap parser exceptions in an IOException
             throw new IOException(e);
         }
+        return bookData;
+    }
+
+    @NonNull
+    @Override
+    public Bundle searchByNativeId(@NonNull final Context context,
+                                   @NonNull final String nativeId,
+                                   final boolean fetchThumbnail)
+            throws IOException {
+
+        // Base path for an ISBN search
+        String url = String.format(BOOK_BY_ID_URL, getDevKey(), nativeId);
+
+        Bundle bookData = fetchBook(url);
 
         if (fetchThumbnail) {
-            getCoverImage(context, isbn, bookData);
+            String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
+            if (isbn != null && !isbn.isEmpty()) {
+                getCoverImage(context, isbn, bookData);
+            }
         }
 
         return bookData;
     }
+
 
     @Nullable
     @WorkerThread
@@ -361,7 +398,7 @@ public class LibraryThingManager
         THROTTLER.waitUntilRequestAllowed();
 
         // Fetch, then save it with a suffix
-        String coverUrl = String.format(BASE_URL_COVERS, getDevKey(), sizeParam, isbn);
+        String coverUrl = String.format(COVER_BY_ISBN_URL, getDevKey(), sizeParam, isbn);
         String fileSpec = ImageUtils.saveImage(coverUrl, isbn, FILENAME_SUFFIX, sizeParam);
         if (fileSpec != null) {
             return new File(fileSpec);

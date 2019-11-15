@@ -164,7 +164,7 @@ public class StartupActivity
         if (mModel.isStartupTasksShouldBeStarted()) {
             // listen for progress messages
             mModel.getTaskProgressMessage()
-                  .observe(this, resId -> mProgressMessageView.setText(getString(resId)));
+                  .observe(this, message -> mProgressMessageView.setText(message));
 
             // when tasks are done, move on to next startup-stage
             mModel.getTaskFinished().observe(this, finished -> {
@@ -281,7 +281,7 @@ public class StartupActivity
 
         int msgId = StorageUtils.initSharedDirectories(this);
         if (msgId != 0) {
-            UserMessage.show(this, msgId);
+            UserMessage.show(mProgressMessageView, msgId);
         }
 
         return true;

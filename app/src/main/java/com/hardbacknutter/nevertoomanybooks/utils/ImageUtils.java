@@ -519,19 +519,20 @@ public final class ImageUtils {
             try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
                 bytesRead = StorageUtils.saveInputStreamToFile(con.inputStream, file);
                 return bytesRead > 0 ? file.getAbsolutePath() : null;
+
             } catch (@NonNull final IOException e) {
                 retry--;
 
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "saveImage|will retry=" + (retry > 0)
-                               + "|url=" + url
-                               + "|e=" + e.getLocalizedMessage());
+                    Log.d(TAG, "saveImage"
+                               + "|e=" + e.getLocalizedMessage()
+                               + "|will retry=" + (retry > 0)
+                               + "|url=\"" + url + '\"');
                 }
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException ignore) {
                 }
-
             }
         }
         return null;
@@ -547,19 +548,36 @@ public final class ImageUtils {
     @Nullable
     @WorkerThread
     public static byte[] getBytes(@NonNull final String url) {
-        try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
-            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                // Save the output to a byte output stream
-                byte[] buffer = new byte[BUFFER_SIZE];
-                int len;
-                //noinspection ConstantConditions
-                while ((len = con.inputStream.read(buffer)) >= 0) {
-                    out.write(buffer, 0, len);
+
+        // If the site drops connection, we retry once.
+        int retry = 2;
+
+        while (retry > 0) {
+            try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
+                try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                    // Save the output to a byte output stream
+                    byte[] buffer = new byte[BUFFER_SIZE];
+                    int len;
+                    //noinspection ConstantConditions
+                    while ((len = con.inputStream.read(buffer)) >= 0) {
+                        out.write(buffer, 0, len);
+                    }
+                    return out.toByteArray();
                 }
-                return out.toByteArray();
+            } catch (@NonNull final IOException e) {
+                retry--;
+
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "getBytes"
+                               + "|e=" + e.getLocalizedMessage()
+                               + "|will retry=" + (retry > 0)
+                               + "|url=\"" + url + '\"');
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignore) {
+                }
             }
-        } catch (@NonNull final IOException e) {
-            Logger.error(App.getAppContext(), TAG, e);
         }
         return null;
     }
@@ -582,7 +600,8 @@ public final class ImageUtils {
                                                       new BitmapFactory.Options());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Log.d(TAG, "getBitmap|Array " + bytes.length + " bytes"
+            Log.d(TAG, "getBitmap"
+                       + "|Array " + bytes.length + " bytes"
                        + "|bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
         }
         return bitmap;

@@ -113,7 +113,7 @@ public class PreferredStylesActivity
         mModel = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
         mModel.init(Objects.requireNonNull(getIntent().getExtras()));
 
-        mListView = findViewById(android.R.id.list);
+        mListView = findViewById(R.id.stylesList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mListView.setLayoutManager(layoutManager);
         mListView.addItemDecoration(

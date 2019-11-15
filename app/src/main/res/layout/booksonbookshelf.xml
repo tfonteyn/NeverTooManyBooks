@@ -132,14 +132,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <View
-                android:id="@+id/list_divider"
-                style="@style/HorizontalDivider"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_header"
-                />
-
             <include layout="@layout/booksonbookshelf_inc_body" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

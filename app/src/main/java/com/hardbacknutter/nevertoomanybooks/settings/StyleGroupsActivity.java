@@ -83,7 +83,7 @@ public class StyleGroupsActivity
         mModel.init(Objects.requireNonNull(getIntent().getExtras()));
 
         // The View for the list.
-        RecyclerView listView = findViewById(android.R.id.list);
+        RecyclerView listView = findViewById(R.id.groupList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         listView.setLayoutManager(layoutManager);
         listView.addItemDecoration(

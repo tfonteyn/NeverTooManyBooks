@@ -31,7 +31,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,24 +48,23 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
 /**
  * Amazon is now disabled/hidden as it can't work without the proxy from BookCatalogue.
  * FIXME: remove the dependency on that proxy.
  * https://docs.aws.amazon.com/en_pv/AWSECommerceService/latest/DG/becomingAssociate.html
- *
  */
 public final class AmazonManager
         implements SearchEngine,
-                   SearchEngine.ByText {
+                   SearchEngine.ByText,
+                   SearchEngine.ByNativeId,
+                   SearchEngine.ByIsbn {
 
     private static final String TAG = "AmazonManager";
 
@@ -150,6 +148,34 @@ public final class AmazonManager
         return out.toString().trim();
     }
 
+    @NonNull
+    @Override
+    public Bundle searchByNativeId(@NonNull final Context context,
+                                   @NonNull final String nativeId,
+                                   final boolean fetchThumbnail)
+            throws IOException {
+
+        if (!SearchSites.ENABLE_AMAZON_AWS) {
+            return new Bundle();
+        }
+
+        return fetchBook("isbn=" + nativeId, fetchThumbnail);
+    }
+
+    @NonNull
+    @Override
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String isbn,
+                               final boolean fetchThumbnail)
+            throws IOException {
+
+        if (!SearchSites.ENABLE_AMAZON_AWS) {
+            return new Bundle();
+        }
+
+        return fetchBook("isbn=" + isbn, fetchThumbnail);
+    }
+
     @Override
     @NonNull
     @WorkerThread
@@ -161,25 +187,25 @@ public final class AmazonManager
                          final boolean fetchThumbnail)
             throws IOException {
 
-        Bundle bookData = new Bundle();
-
         if (!SearchSites.ENABLE_AMAZON_AWS) {
-            return bookData;
+            return new Bundle();
         }
 
-        String query;
-
-        if (ISBN.isValid(isbn)) {
-            query = "isbn=" + isbn;
-
-        } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
-            query = "author=" + URLEncoder.encode(author, UTF_8)
-                    + "&title=" + URLEncoder.encode(title, UTF_8);
+        if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
+            String query = "author=" + URLEncoder.encode(author, UTF_8)
+                           + "&title=" + URLEncoder.encode(title, UTF_8);
+            return fetchBook(query, fetchThumbnail);
 
         } else {
-            return bookData;
+            return new Bundle();
         }
 
+    }
+
+    private Bundle fetchBook(@NonNull final String query,
+                             final boolean fetchThumbnail)
+            throws IOException {
+        Bundle bookData = new Bundle();
         SAXParserFactory factory = SAXParserFactory.newInstance();
         AmazonHandler handler = new AmazonHandler(bookData, fetchThumbnail);
 
@@ -191,11 +217,8 @@ public final class AmazonManager
         try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
-            // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, url, e);
-            }
+            // wrap parser exceptions in an IOException
             throw new IOException(e);
         }
 

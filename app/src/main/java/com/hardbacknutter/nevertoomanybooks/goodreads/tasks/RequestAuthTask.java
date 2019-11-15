@@ -98,8 +98,9 @@ public class RequestAuthTask
     @WorkerThread
     protected Integer doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.RequestAuthTask");
+        Context context = App.getAppContext();
 
-        if (NetworkUtils.networkUnavailable()) {
+        if (!NetworkUtils.isNetworkAvailable(context)) {
             return R.string.error_network_no_connection;
         }
         GoodreadsManager grManager = new GoodreadsManager();
@@ -109,7 +110,7 @@ public class RequestAuthTask
             try {
                 grManager.requestAuthorization();
             } catch (@NonNull final IOException e) {
-                Logger.error(App.getAppContext(), TAG, e);
+                Logger.error(context, TAG, e);
                 mException = e;
                 return R.string.gr_access_error;
             } catch (@NonNull final AuthorizationException e) {
@@ -117,7 +118,7 @@ public class RequestAuthTask
                 return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZATION_FAILED;
             }
         } else {
-            return R.string.gr_auth_access_already_auth;
+            return R.string.gr_auth_access_already_granted;
         }
         if (isCancelled()) {
             return R.string.progress_end_cancelled;

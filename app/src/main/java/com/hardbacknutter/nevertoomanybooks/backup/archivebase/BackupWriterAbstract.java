@@ -129,7 +129,7 @@ public abstract class BackupWriterAbstract
         try {
             // If we are doing covers, get the exact number by counting them
             if (!mProgressListener.isCancelled() && incCovers) {
-                mProgressListener.onProgress(0, R.string.progress_msg_searching);
+                mProgressListener.onProgress(0, context.getString(R.string.progress_msg_searching));
                 // the progress bar will NOT be updated.
                 doCovers(true);
                 // set as temporary max, but keep in mind the position itself is still 0
@@ -165,7 +165,7 @@ public abstract class BackupWriterAbstract
             // Write styles and prefs first. This will facilitate & speedup
             // importing as we'll be seeking in the input archive for them first.
             if (!mProgressListener.isCancelled() && incStyles) {
-                exportResults.styles += doStyles();
+                exportResults.styles += doStyles(context);
                 entitiesWritten |= Options.BOOK_LIST_STYLES;
             }
             if (!mProgressListener.isCancelled() && incPrefs) {
@@ -265,7 +265,7 @@ public abstract class BackupWriterAbstract
 
     private void doPreferences(@NonNull final Context context)
             throws IOException {
-        mProgressListener.onProgressStep(1, R.string.lbl_settings);
+        mProgressListener.onProgressStep(1, context.getString(R.string.lbl_settings));
 
         // Turn the preferences into an XML file in a byte array
         ByteArrayOutputStream data = new ByteArrayOutputStream();
@@ -279,9 +279,9 @@ public abstract class BackupWriterAbstract
         putPreferences(data.toByteArray());
     }
 
-    private int doStyles()
+    private int doStyles(@NonNull final Context context)
             throws IOException {
-        mProgressListener.onProgressStep(1, R.string.lbl_styles);
+        mProgressListener.onProgressStep(1, context.getString(R.string.lbl_styles));
 
         // Turn the styles into an XML file in a byte array
         ByteArrayOutputStream data = new ByteArrayOutputStream();

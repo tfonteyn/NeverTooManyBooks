@@ -78,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbResultsListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
+import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -252,7 +253,7 @@ public class EditBookTocFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_book_toc, container, false);
-        mListView = view.findViewById(android.R.id.list);
+        mListView = view.findViewById(R.id.tocList);
         mIsAnthologyCbx = view.findViewById(R.id.cbx_is_anthology);
         mMultiAuthorsView = view.findViewById(R.id.cbx_multiple_authors);
         return view;
@@ -314,7 +315,7 @@ public class EditBookTocFragment
 
         // Fix the focus order for the views
         //noinspection ConstantConditions
-        FocusSettings.fix(getView());
+        FocusFixer.fix(getView());
     }
 
     @Override

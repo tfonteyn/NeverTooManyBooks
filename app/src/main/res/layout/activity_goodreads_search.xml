@@ -143,35 +143,6 @@
             app:layout_constraintTop_toBottomOf="@id/search_text"
             />
 
-        <View
-            android:id="@+id/list_divider"
-            style="@style/HorizontalDivider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_search"
-            />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@android:id/list"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/footer_divider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/list_divider"
-            app:layout_constraintVertical_weight="1"
-            tools:listitem="@layout/row_goodreads_work_item"
-            />
-
-        <View
-            android:id="@+id/footer_divider"
-            style="@style/HorizontalDivider"
-            app:layout_constraintBottom_toTopOf="@id/works_found"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            />
-
-        <!-- not used for now -->
         <TextView
             android:id="@+id/works_found"
             android:layout_width="0dp"
@@ -179,17 +150,22 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textIsSelectable="true"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_search"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/resultList"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/works_found"
+            app:layout_constraintVertical_weight="1"
+            tools:listitem="@layout/row_goodreads_work_item"
             />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!--    <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton  -->
-    <!--        android:id="@+id/fab"-->
-    <!--        style="@style/FAB"-->
-    <!--        android:src="@drawable/ic_add"-->
-    <!--        />-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

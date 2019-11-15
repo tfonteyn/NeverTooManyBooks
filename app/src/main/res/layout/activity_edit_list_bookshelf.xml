@@ -39,7 +39,7 @@
     <include layout="@layout/inc_appbar" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@android:id/list"
+        android:id="@+id/bookshelfList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textAppearance="?android:attr/textAppearanceMedium"

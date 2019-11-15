@@ -2,35 +2,9 @@ PROBLEM:
 too many ways of using tasks.
 
 GOALS:
- 1. Removal of ManagedTask
+ 1. Removal of ManagedTask -> 2019-11-13 DONE
  2. Removal of taskqueue
  3. cropper ?
-
-----------------------------------------------------------------------------------------------------
-1. ManagedTask's started from a BaseActivityWithTasks.
-
- * abstract {@link ManagedTask} extends Thread
- * Background task that is managed by TaskManager and uses TaskManager to coordinate
-   display activities.
- *
- * {@link TaskManager}
- * handles the management of multiple tasks and passing messages with the help
-   of a {@link MessageSwitch}
- *
- * {@link BaseActivityWithTasks}
- * Uses a TaskManager (and communicates with it) to handle messages for ManagedTask.
- * Handles progress messages (Progress Dialog) and user messages (toast)
-
-Also involved are:
-- a Client Listener, for example {@link TaskManager.TaskManagerListener},
-  to which Messages can be send by the MessageSwitch
-- a Controller, for example {@link TaskManager.TaskManagerController}
-  which the client can 'get' from the MessageSwitch, and then use to get hold of the Sender.
-
-Used by:
-- BookSearchActivity
-- UpdateFieldsFromInternetActivity
-==> the SearchCoordinator/SearchTasks for getting book information from web sites.
 
 ----------------------------------------------------------------------------------------------------
 2. task-queue - minimalistic traditional database backed 'MessageQueue' like product

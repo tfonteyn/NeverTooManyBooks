@@ -1887,7 +1887,7 @@ public class BooklistStyle
             // Title
             style = new BooklistStyle(TITLE_FIRST_LETTER_ID,
                                       TITLE_FIRST_LETTER_UUID,
-                                      R.string.style_builtin_title_first_letter,
+                                      R.string.style_builtin_first_letter_book_title,
                                       BooklistGroup.RowKind.TITLE_LETTER);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 

@@ -76,7 +76,7 @@ public class SearchOrderFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_search_order, container, false);
-        mListView = view.findViewById(android.R.id.list);
+        mListView = view.findViewById(R.id.siteList);
         return view;
     }
 

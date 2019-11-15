@@ -38,25 +38,31 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivityWithTasks;
+import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchBaseModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * Searches the internet for book details based on:
  * - manually provided or scanned ISBN.
  * - Author/Title.
  * - Specific web site book id (Native id).
- *
+ * <p>
  * - update fields for a book or set of books.
  */
 public class BookSearchActivity
-        extends BaseActivityWithTasks {
+        extends BaseActivity {
 
     private static final String TAG = "BookSearchActivity";
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main_nav;
+    }
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -118,8 +124,8 @@ public class BookSearchActivity
                 ArrayList<Site> sites = data.getParcelableArrayListExtra(
                         SearchSites.BKEY_SEARCH_SITES_BOOKS);
                 if (sites != null) {
-                    BookSearchBaseModel model =
-                            new ViewModelProvider(this).get(BookSearchBaseModel.class);
+                    SearchCoordinator model =
+                            new ViewModelProvider(this).get(SearchCoordinator.class);
                     model.setSearchSites(sites);
                 }
             }
@@ -130,7 +136,7 @@ public class BookSearchActivity
 
     @Override
     public void onBackPressed() {
-        BookSearchBaseModel model = new ViewModelProvider(this).get(BookSearchBaseModel.class);
+        ResultDataModel model = new ViewModelProvider(this).get(ResultDataModel.class);
         Intent resultData = model.getActivityResultData();
         if (resultData.getExtras() != null) {
             // ok, even if the extras is empty.

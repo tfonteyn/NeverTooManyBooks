@@ -35,7 +35,6 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskFinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
 
 /**
@@ -55,7 +54,7 @@ public final class GoodreadsTasks {
      * @return a String to display to the user, or {@code null} when authorization is needed.
      */
     public static String handleResult(@NonNull final Context context,
-                                      @NonNull final TaskFinishedMessage<Integer> message) {
+                                      @NonNull final TaskListener.FinishMessage<Integer> message) {
         //Reminder:  'success' only means the call itself was successful.
         // It still depends on the 'result' code what the next step is.
 

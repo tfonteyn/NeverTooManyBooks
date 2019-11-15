@@ -43,10 +43,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class NetworkUtils {
@@ -66,11 +64,11 @@ public final class NetworkUtils {
      * Check if we have network access; taking into account whether the user permits
      * metered (i.e. pay-per-usage) networks or not.
      *
-     * @return {@code false} if the application can access the internet
+     * @return {@code true} if the application can access the internet
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     @AnyThread
-    public static boolean networkUnavailable() {
-        Context context = App.getAppContext();
+    public static boolean isNetworkAvailable(@NonNull final Context context) {
 
         ConnectivityManager connMgr =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -90,23 +88,21 @@ public final class NetworkUtils {
                         boolean notMetered =
                                 nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
 
-                        Log.d(TAG, "getNetworkConnectivity|notMetered=" + notMetered
+                        Log.d(TAG, "getNetworkConnectivity"
+                                   + "|notMetered=" + notMetered
                                    + "|hasInternet=" + hasInternet
                                    + "|isConnected=" + isValidated);
                     }
 
-                    return !hasInternet || !isValidated
-                           || (connMgr.isActiveNetworkMetered() && !allowMeteredNetwork(context));
+                    return hasInternet && isValidated
+                           && (!connMgr.isActiveNetworkMetered() || allowMeteredNetwork(context));
 
                 }
-            } else {
-                Logger.warn(context, TAG, "networkUnavailable",
-                            "no active network");
             }
         }
 
         // network unavailable
-        return true;
+        return false;
     }
 
     private static boolean allowMeteredNetwork(@NonNull final Context context) {
@@ -121,47 +117,27 @@ public final class NetworkUtils {
      * Any path after the hostname will be ignored.
      * If a port is specified.. it's ignored. Only ports 80/443 are used.
      *
-     * @param site url to check,
+     * @param context Current context
+     * @param urlStr  url to check,
      *
-     * @return {@code true} on success.
+     * @throws IOException if we cannot reach the site, or if the network itself is unavailable
      */
     @WorkerThread
-    public static boolean isAlive(@NonNull final String site) {
+    public static void poke(@NonNull final Context context,
+                            @NonNull final String urlStr)
+            throws IOException {
+
+        if (!isNetworkAvailable(context)) {
+            throw new IOException("networkUnavailable");
+        }
 
         //noinspection StringToUpperCaseOrToLowerCaseWithoutLocale
-        String url = site.toLowerCase();
+        String url = urlStr.toLowerCase();
         int port = url.startsWith("https://") ? 443 : 80;
         String host = SLASH_PATTERN.split(url)[1].split("/")[0];
-        return isAlive(host, port);
-    }
 
-    @WorkerThread
-    private static boolean isAlive(@NonNull final String host,
-                                   final int port) {
-        if (networkUnavailable()) {
-            return false;
-        }
-
-        try {
-            long t;
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                t = System.nanoTime();
-            }
-            Socket sock = new Socket();
-            sock.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT_MS);
-            sock.close();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Log.d(TAG, "isAlive|Site: " + host + ':' + port
-                           + ", took " + (System.nanoTime() - t) + " nano");
-            }
-            return true;
-
-        } catch (@NonNull final IOException e) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Log.d(TAG, "isAlive|Site unreachable: " + host + ':' + port + '\n'
-                           + e.getLocalizedMessage());
-            }
-            return false;
-        }
+        Socket sock = new Socket();
+        sock.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT_MS);
+        sock.close();
     }
 }

@@ -79,9 +79,10 @@ public class SendBooksTask
     @WorkerThread
     protected Integer doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.SendBooksTask");
+        Context context = App.getAppContext();
 
         try {
-            if (NetworkUtils.networkUnavailable()) {
+            if (!NetworkUtils.isNetworkAvailable(context)) {
                 return R.string.error_network_no_connection;
             }
             GoodreadsManager grManager = new GoodreadsManager();
@@ -98,7 +99,7 @@ public class SendBooksTask
             }
             return msg;
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(context, TAG, e);
             mException = e;
             return R.string.error_unexpected_error;
         }

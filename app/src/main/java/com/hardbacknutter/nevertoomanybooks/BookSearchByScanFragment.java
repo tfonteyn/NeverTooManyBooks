@@ -102,11 +102,11 @@ public class BookSearchByScanFragment
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             SearchSites.promptToRegister(getContext(), "search",
-                                         mBookSearchBaseModel.getEnabledSearchSites());
+                                         mSearchCoordinator.getEnabledSearchSites());
         }
 
         // if we already have an isbn from somewhere, auto-start a search
-        String isbn = mBookSearchBaseModel.getIsbnSearchText();
+        String isbn = mSearchCoordinator.getIsbn();
         if (!isbn.isEmpty()) {
             prepareSearch(isbn);
             return;
@@ -170,7 +170,7 @@ public class BookSearchByScanFragment
                     //noinspection ConstantConditions
                     String barCode = scanner.getBarcode(data);
                     if (barCode != null) {
-                        mBookSearchBaseModel.setIsbnSearchText(barCode);
+                        mSearchCoordinator.setIsbn(barCode);
                         prepareSearch(barCode);
                         return;
                     }
@@ -314,7 +314,7 @@ public class BookSearchByScanFragment
      * Pass the last book we got back to our caller and finish here.
      */
     private void scanFailedOrCancelled() {
-        Intent resultData = mBookSearchBaseModel.getActivityResultData();
+        Intent resultData = mResultDataModel.getActivityResultData();
         if (resultData.getExtras() != null) {
             mHostActivity.setResult(Activity.RESULT_OK, resultData);
         }

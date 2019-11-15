@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ProgressListenerBase;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 public class ExportCSVTask
@@ -64,9 +63,8 @@ public class ExportCSVTask
 
         @Override
         public void onProgress(final int pos,
-                               @Nullable final Object message) {
-            Object[] values = {message};
-            publishProgress(new TaskProgressMessage(mTaskId, getMax(), pos, values));
+                               @Nullable final String message) {
+            publishProgress(new TaskListener.ProgressMessage(mTaskId, getMax(), pos, message));
         }
 
         @Override

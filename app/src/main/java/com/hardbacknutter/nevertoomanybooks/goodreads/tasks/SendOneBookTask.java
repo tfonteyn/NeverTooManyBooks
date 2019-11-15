@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -78,12 +77,11 @@ public class SendOneBookTask
     @WorkerThread
     protected Integer doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.SendOneBookTask " + mBookId);
-
         Context context = App.getLocalizedAppContext();
 
         GoodreadsManager.ExportResult result = null;
         try {
-            if (NetworkUtils.networkUnavailable()) {
+            if (!NetworkUtils.isNetworkAvailable(context)) {
                 return R.string.error_network_no_connection;
             }
 
@@ -98,8 +96,8 @@ public class SendOneBookTask
                     if (isCancelled()) {
                         return R.string.progress_end_cancelled;
                     }
-                    publishProgress(new TaskProgressMessage(mTaskId,
-                                                            R.string.progress_msg_sending));
+                    publishProgress(new TaskListener.ProgressMessage(
+                            mTaskId, context.getString(R.string.progress_msg_sending)));
                     result = grManager.sendOneBook(context, db, bookCursor);
                     if (result == GoodreadsManager.ExportResult.sent) {
                         // Record the update

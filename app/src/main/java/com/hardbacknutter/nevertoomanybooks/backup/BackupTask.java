@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -66,18 +65,16 @@ public class BackupTask
 
         @Override
         public void onProgressStep(final int delta,
-                                   @Nullable final Object message) {
+                                   @Nullable final String message) {
             mPos += delta;
-            Object[] values = {message};
-            publishProgress(new TaskProgressMessage(mTaskId, getMax(), mPos, values));
+            publishProgress(new TaskListener.ProgressMessage(mTaskId, getMax(), mPos, message));
         }
 
         @Override
         public void onProgress(final int pos,
-                               @Nullable final Object message) {
+                               @Nullable final String message) {
             mPos = pos;
-            Object[] values = {message};
-            publishProgress(new TaskProgressMessage(mTaskId, getMax(), mPos, values));
+            publishProgress(new TaskListener.ProgressMessage(mTaskId, getMax(), mPos, message));
         }
 
         @Override

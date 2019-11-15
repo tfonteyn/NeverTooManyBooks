@@ -49,7 +49,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/list_divider"
+        app:layout_constraintTop_toBottomOf="@id/list_header"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
 
         tools:listitem="@layout/booksonbookshelf_row_book"
@@ -71,7 +71,7 @@
     <!--        app:layout_constraintBottom_toBottomOf="parent"-->
     <!--        app:layout_constraintEnd_toEndOf="parent"-->
     <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/list_divider"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/list_header"-->
     <!--        app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 
     <!--        tools:listitem="@layout/booksonbookshelf_row_book"-->

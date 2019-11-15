@@ -163,9 +163,6 @@ public class LendBookDialogFragment
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View root = layoutInflater.inflate(R.layout.dialog_edit_loan, null);
 
-        TextView titleView = root.findViewById(R.id.title);
-        titleView.setText(mTitle);
-
         TextView authorView = root.findViewById(R.id.author);
         authorView.setText(getString(R.string.lbl_by_author_s, mAuthorName));
 
@@ -178,9 +175,8 @@ public class LendBookDialogFragment
 
         //noinspection ConstantConditions
         return new AlertDialog.Builder(getContext())
-                .setIcon(R.drawable.ic_edit)
                 .setView(root)
-                .setTitle(R.string.lbl_lend_to)
+                .setTitle(mTitle)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
                 .setNeutralButton(R.string.btn_loan_returned, (dialog, which) -> {
                     // the book was returned (inspect it for sub-nano damage),

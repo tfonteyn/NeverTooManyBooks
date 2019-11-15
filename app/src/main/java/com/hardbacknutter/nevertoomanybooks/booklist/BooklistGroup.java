@@ -686,16 +686,16 @@ public class BooklistGroup
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             // uses the OrderBy column
-            rowKind = new RowKind(TITLE_LETTER, R.string.style_builtin_title_first_letter, "t")
+            rowKind = new RowKind(TITLE_LETTER, R.string.style_builtin_first_letter_book_title, "t")
                     .setDomain(DOM_RK_TITLE_LETTER,
-                               "SUBSTR(" + TBL_BOOKS.dot(DOM_TITLE_OB) + ",1,1)");
+                               "upper(SUBSTR(" + TBL_BOOKS.dot(DOM_TITLE_OB) + ",1,1))");
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             // uses the OrderBy column
             rowKind = new RowKind(SERIES_TITLE_LETTER,
-                                  R.string.style_builtin_series_title_first_letter, "st")
+                                  R.string.style_builtin_first_letter_series_title, "st")
                     .setDomain(DOM_RK_SERIES_TITLE_LETTER,
-                               "SUBSTR(" + TBL_SERIES.dot(DOM_SERIES_TITLE_OB) + ",1,1)");
+                               "upper(SUBSTR(" + TBL_SERIES.dot(DOM_SERIES_TITLE_OB) + ",1,1))");
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
 

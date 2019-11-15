@@ -77,19 +77,16 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <EditText
-        android:id="@+id/date_since"
+    <TextView
+        android:id="@+id/cbx_xml_tables_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_compound_button"
-        android:ems="10"
-        android:inputType="date"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/radio_buttons"
-        tools:ignore="Autofill,LabelFor"
-        tools:visibility="visible"
+        android:text="@string/import_export_option_xml_info"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cbx_xml_tables"
         />
 
     <RadioGroup
@@ -100,6 +97,11 @@
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toTopOf="parent"
         >
+
+        <TextView
+            style="@style/RadioGroupHeader"
+            android:text="@string/lbl_books"
+            />
 
         <RadioButton
             android:id="@+id/radioAllBooks"
@@ -126,31 +128,27 @@
             android:visibility="gone"
             tools:visibility="visible"
             />
+
+        <EditText
+            android:id="@+id/date_since"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/indent_compound_button"
+            android:ems="10"
+            android:inputType="date"
+            android:visibility="gone"
+            tools:ignore="Autofill,LabelFor"
+            tools:visibility="visible"
+            />
+
     </RadioGroup>
 
-    <TextView
-        android:id="@+id/cbx_xml_tables_info"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/indent_compound_button"
-        android:text="@string/import_export_option_xml_info"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_xml_tables"
-        />
-
-    <View
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
-        style="@style/VerticalDivider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_percent="0.45"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintGuide_percent="0.4"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

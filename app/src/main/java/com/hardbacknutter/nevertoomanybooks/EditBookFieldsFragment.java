@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
+import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
@@ -216,11 +217,6 @@ public class EditBookFieldsFragment
                             mBookModel.refreshAuthorList(getContext());
                         }
                     }
-
-                    boolean wasDirty = mBookModel.isDirty();
-                    populateAuthorListField();
-                    mBookModel.setDirty(wasDirty);
-
                 }
                 break;
             }
@@ -247,12 +243,6 @@ public class EditBookFieldsFragment
                             mBookModel.refreshSeriesList(getContext());
                         }
                     }
-
-
-                    boolean wasDirty = mBookModel.isDirty();
-                    populateSeriesListField();
-                    mBookModel.setDirty(wasDirty);
-
                 }
                 break;
             }
@@ -275,7 +265,7 @@ public class EditBookFieldsFragment
 
         // Fix the focus order for the views
         //noinspection ConstantConditions
-        FocusSettings.fix(getView());
+        FocusFixer.fix(getView());
     }
 
     @Override
@@ -306,8 +296,7 @@ public class EditBookFieldsFragment
         Book book = mBookModel.getBook();
 
         // If the new book is not on any Bookshelf, use the current bookshelf as default
-        final ArrayList<Bookshelf> list =
-                book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+        ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
 
         if (list.isEmpty()) {
             //noinspection ConstantConditions
@@ -328,20 +317,19 @@ public class EditBookFieldsFragment
         Context context = getContext();
 
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        if (!list.isEmpty()
-            && ItemWithFixableId.pruneList(list, context,
-                                           mBookModel.getDb(), Locale.getDefault(), false)) {
+        if (!list.isEmpty() && ItemWithFixableId.pruneList(list, context, mBookModel.getDb(),
+                                                           Locale.getDefault(), false)) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
 
-        String name = book.getAuthorTextShort(context);
-        if (name.isEmpty() && book.containsKey(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
+        String value = book.getAuthorTextShort(context);
+        if (value.isEmpty() && book.containsKey(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
             // allow this fallback. It's used after a search that did not return results,
             // in which case it contains whatever the user typed.
-            name = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+            value = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
         }
-        getFields().getField(R.id.author).setValue(name);
+        getFields().getField(R.id.author).setValue(value);
     }
 
     private void populateSeriesListField() {
@@ -352,36 +340,43 @@ public class EditBookFieldsFragment
         Context context = getContext();
 
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-        if (!list.isEmpty()
-            && ItemWithFixableId.pruneList(list, context, mBookModel.getDb(), book.getLocale(),
-                                           false)) {
+        if (!list.isEmpty() && ItemWithFixableId.pruneList(list, context, mBookModel.getDb(),
+                                                           book.getLocale(), false)) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         }
 
-        String result;
+        String value;
         if (list.isEmpty()) {
-            result = "";
+            value = "";
         } else {
-            result = list.get(0).getLabel(context);
+            value = list.get(0).getLabel(context);
             if (list.size() > 1) {
-                result += ' ' + getString(R.string.and_others);
+                value += ' ' + getString(R.string.and_others);
             }
         }
-
-        getFields().getField(R.id.series).setValue(result);
+        getFields().getField(R.id.series).setValue(value);
     }
 
-    /**
-     * The bookshelves field is a single csv String.
-     */
     private void populateBookshelvesField() {
         Book book = mBookModel.getBook();
 
         ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+
         //noinspection ConstantConditions
-        getFields().getField(R.id.bookshelves)
-                   .setValue(
-                           Csv.join(", ", list, bookshelf -> bookshelf.getLabel(getContext())));
+        String value = Csv.join(", ", list, bookshelf -> bookshelf.getLabel(getContext()));
+        getFields().getField(R.id.bookshelves).setValue(value);
+
+        // String value;
+        // if (list.isEmpty()) {
+        //     value = "";
+        // } else {
+        //     //noinspection ConstantConditions
+        //     value = list.get(0).getLabel(getContext());
+        //     if (list.size() > 1) {
+        //         value += ' ' + getString(R.string.and_others);
+        //     }
+        // }
+        // getFields().getField(R.id.bookshelves).setValue(value);
     }
 }

@@ -167,6 +167,11 @@ public class SearchAdminModel
         return mCovers;
     }
 
+    /**
+     * Persist the lists.
+     *
+     * @param context Current context
+     */
     public void persist(@NonNull final Context context) {
         if (mPersist) {
             if (mBooks != null) {

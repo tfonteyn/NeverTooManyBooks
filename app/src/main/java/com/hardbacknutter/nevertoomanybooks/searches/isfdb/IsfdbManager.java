@@ -54,7 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  */
 public class IsfdbManager
         implements SearchEngine,
-                   SearchEngine.ByText {
+                   SearchEngine.ByText,
+                   SearchEngine.ByNativeId {
 
     /**
      * The site claims to use ISO-8859-1.
@@ -126,6 +127,17 @@ public class IsfdbManager
 
     @NonNull
     @Override
+    public Bundle searchByNativeId(@NonNull final Context context,
+                                   @NonNull final String nativeId,
+                                   final boolean fetchThumbnail)
+            throws IOException {
+
+        return new IsfdbBookHandler(context)
+                .fetchByNativeId(nativeId, isAddSeriesFromToc(context), fetchThumbnail);
+    }
+
+    @NonNull
+    @Override
     @WorkerThread
     public Bundle search(@NonNull final Context context,
                          @Nullable final String isbn,
@@ -188,14 +200,18 @@ public class IsfdbManager
         }
 
         if (!editions.isEmpty()) {
-            boolean seriesFromToc =
-                    PreferenceManager.getDefaultSharedPreferences(context)
-                                     .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC, false);
-            return new IsfdbBookHandler(context).fetch(editions, seriesFromToc, fetchThumbnail);
+            return new IsfdbBookHandler(context)
+                    .fetch(editions, isAddSeriesFromToc(context), fetchThumbnail);
         } else {
             return new Bundle();
         }
     }
+
+    public boolean isAddSeriesFromToc(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC, false);
+    }
+
 
     @NonNull
     @Override
@@ -208,4 +224,5 @@ public class IsfdbManager
     public int getNameResId() {
         return R.string.isfdb;
     }
+
 }

@@ -32,8 +32,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskFinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessage;
 
 /**
  * ViewModel to keep hold of a pass-through task listener.
@@ -52,20 +50,20 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskProgressMessa
 public abstract class TaskModel<Result>
         extends ViewModel {
 
-    private final MutableLiveData<TaskFinishedMessage<Result>>
+    private final MutableLiveData<TaskListener.FinishMessage<Result>>
             mTaskFinishedMessage = new MutableLiveData<>();
 
-    private final MutableLiveData<TaskProgressMessage>
+    private final MutableLiveData<TaskListener.ProgressMessage>
             mTaskProgressMessage = new MutableLiveData<>();
 
     private final TaskListener<Result> mTaskListener = new TaskListener<Result>() {
         @Override
-        public void onTaskFinished(@NonNull final TaskFinishedMessage<Result> message) {
+        public void onFinished(@NonNull final FinishMessage<Result> message) {
             mTaskFinishedMessage.setValue(message);
         }
 
         @Override
-        public void onTaskProgress(@NonNull final TaskProgressMessage message) {
+        public void onProgress(@NonNull final ProgressMessage message) {
             mTaskProgressMessage.setValue(message);
         }
     };
@@ -74,11 +72,11 @@ public abstract class TaskModel<Result>
         return mTaskListener;
     }
 
-    public MutableLiveData<TaskProgressMessage> getTaskProgressMessage() {
+    public MutableLiveData<TaskListener.ProgressMessage> getTaskProgressMessage() {
         return mTaskProgressMessage;
     }
 
-    public MutableLiveData<TaskFinishedMessage<Result>> getTaskFinishedMessage() {
+    public MutableLiveData<TaskListener.FinishMessage<Result>> getTaskFinishedMessage() {
         return mTaskFinishedMessage;
     }
 }

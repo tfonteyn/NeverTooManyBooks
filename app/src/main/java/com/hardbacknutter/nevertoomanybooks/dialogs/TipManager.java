@@ -100,9 +100,9 @@ public final class TipManager {
         ALL.put(R.string.tip_background_task_events,
                 new Tip("background_task_events"));
 
-        ALL.put(R.string.gr_explain_no_isbn,
+        ALL.put(R.string.gr_info_no_isbn,
                 new Tip("gr_explain_no_isbn"));
-        ALL.put(R.string.gr_explain_no_match,
+        ALL.put(R.string.gr_info_no_match,
                 new Tip("gr_explain_no_match"));
 
         ALL.put(R.string.tip_autorotate_camera_images,

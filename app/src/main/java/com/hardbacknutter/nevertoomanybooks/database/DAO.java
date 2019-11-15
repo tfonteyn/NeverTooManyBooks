@@ -283,7 +283,7 @@ public class DAO
     /** log error string. */
     private static final String ERROR_NEEDS_TRANSACTION = "Needs transaction";
     /** log error string. */
-    private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to update FTS";
+    private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to onProgress FTS";
     /** See {@link #encodeString(String)}. */
     private static final Pattern ENCODE_STRING = Pattern.compile("'", Pattern.LITERAL);
     /** any non-word character. */

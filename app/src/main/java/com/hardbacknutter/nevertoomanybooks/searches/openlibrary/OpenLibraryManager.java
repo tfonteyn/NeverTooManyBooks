@@ -37,7 +37,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -98,19 +97,57 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class OpenLibraryManager
         implements SearchEngine,
                    SearchEngine.ByIsbn,
+                   SearchEngine.ByNativeId,
                    SearchEngine.CoverByIsbn {
 
+    public static final String BASE_URL = "https://openlibrary.org";
+
+    /** log tag. */
     private static final String TAG = "OpenLibraryManager";
 
-    /** Preferences prefix. */
-    private static final String PREF_PREFIX = "openlibrary.";
-
-    /** Type: {@code String}. */
-    private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
-
-    /** param 1: isbn, param 2: L/M/S for the size. */
+    /**
+     * bibkeys
+     * <p>
+     * List of IDs to request the information.
+     * The API supports ISBNs, LCCNs, OCLC numbers and OLIDs (Open Library IDs).
+     * <p>
+     * ISBN
+     * <p>
+     * Ex. &bibkeys=ISBN:0451526538 (The API supports both ISBN 10 and 13.)
+     * OCLC
+     * <p>
+     * &bibkeys=OCLC:#########
+     * LCCN
+     * <p>
+     * &bibkeys=LCCN:#########
+     * OLID
+     * <p>
+     * &bibkeys=OLID:OL123M
+     * <p>
+     * param 1: key-name, param 2: key-value
+     */
+    private static final String BASE_BOOK_URL =
+            BASE_URL + "/api/books?jscmd=data&format=json&bibkeys=%1$s:%2$s";
+    /**
+     * The covers are available in 3 sizes:
+     * <p>
+     * S: Small, suitable for use as a thumbnail on a results page on Open Library,
+     * M: Medium, suitable for display on a details page on Open Library and,
+     * L: Large
+     * The URL pattern to access book covers is:
+     * <p>
+     * http://covers.openlibrary.org/b/$key/$value-$size.jpg
+     * <p>
+     * Where:
+     * <p>
+     * key can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
+     * value is the value of the chosen key
+     * size can be one of S, M and L for small, medium and large respectively.
+     * <p>
+     * param 1: key-name, param 2: key-value, param 3: L/M/S for the size.
+     */
     private static final String BASE_COVER_URL
-            = "https://covers.openlibrary.com/b/isbn/%1$s-%2$s.jpg?default=false";
+            = "https://covers.openlibrary.com/b/%1$s/%2$s-%3$s.jpg?default=false";
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_OL";
@@ -121,12 +158,6 @@ public class OpenLibraryManager
     public OpenLibraryManager() {
     }
 
-    @NonNull
-    public static String getBaseURL(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(PREFS_HOST_URL, "https://openlibrary.org");
-    }
-
     /**
      * View a Book on the web site.
      *
@@ -135,8 +166,19 @@ public class OpenLibraryManager
      */
     public static void openWebsite(@NonNull final Context context,
                                    @NonNull final String bookId) {
-        String url = getBaseURL(context) + "/books/" + bookId;
+        String url = BASE_URL + "/books/" + bookId;
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    }
+
+    @NonNull
+    @Override
+    public Bundle searchByNativeId(@NonNull final Context context,
+                                   @NonNull final String nativeId,
+                                   final boolean fetchThumbnail)
+            throws IOException {
+
+        String url = String.format(BASE_BOOK_URL, "OLID", nativeId);
+        return fetchBook(url, fetchThumbnail);
     }
 
     /**
@@ -152,8 +194,13 @@ public class OpenLibraryManager
                                final boolean fetchThumbnail)
             throws IOException {
 
-        String url = getBaseURL(context) + "/api/books?jscmd=data&format=json&bibkeys=ISBN:" + isbn;
+        String url = String.format(BASE_BOOK_URL, "ISBN", isbn);
+        return fetchBook(url, fetchThumbnail);
+    }
 
+    private Bundle fetchBook(@NonNull final String url,
+                             final boolean fetchThumbnail)
+            throws IOException {
         // get and store the result into a string.
         String response;
         try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
@@ -174,6 +221,7 @@ public class OpenLibraryManager
             return bookData != null ? bookData : new Bundle();
 
         } catch (@NonNull final JSONException e) {
+            // wrap parser exceptions in an IOException
             throw new IOException(e);
         }
     }
@@ -225,8 +273,8 @@ public class OpenLibraryManager
         }
 
         // Fetch, then save it with a suffix
-        String fileSpec = ImageUtils.saveImage(String.format(BASE_COVER_URL, isbn, sizeParam),
-                                               isbn, FILENAME_SUFFIX, sizeParam);
+        String url = String.format(BASE_COVER_URL, "isbn", isbn, sizeParam);
+        String fileSpec = ImageUtils.saveImage(url, isbn, FILENAME_SUFFIX, sizeParam);
         if (fileSpec != null) {
             return new File(fileSpec);
         }
@@ -237,7 +285,7 @@ public class OpenLibraryManager
     @NonNull
     @Override
     public String getUrl(@NonNull final Context context) {
-        return getBaseURL(context);
+        return BASE_URL;
     }
 
     @Override

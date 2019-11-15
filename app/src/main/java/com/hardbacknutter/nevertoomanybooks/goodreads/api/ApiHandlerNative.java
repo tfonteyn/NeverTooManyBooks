@@ -113,7 +113,7 @@ abstract class ApiHandlerNative {
             throws CredentialsException, BookNotFoundException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-            Log.d(TAG, "executeGet|url=" + url);
+            Log.d(TAG, "executeGet|url=\"" + url + '\"');
         }
 
         String fullUrl = url;
@@ -157,7 +157,7 @@ abstract class ApiHandlerNative {
             throws CredentialsException, BookNotFoundException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-            Log.d(TAG, "executePost|url=" + url);
+            Log.d(TAG, "executePost|url=\"" + url + '\"');
         }
 
         HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
@@ -305,7 +305,7 @@ abstract class ApiHandlerNative {
             throws CredentialsException, BookNotFoundException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-            Log.d(TAG, "executeRawGet|url=" + url);
+            Log.d(TAG, "executeRawGet|url=\"" + url + '\"');
         }
 
         HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();

@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.searches.googlebooks;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,7 +47,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
@@ -126,7 +124,7 @@ public final class GoogleBooksManager
                 new GoogleBooksEntryHandler(bookData, fetchThumbnail, isbn);
 
         String url = getBaseURL(context) + "/books/feeds/volumes?" + query;
-
+        String oneBookUrl;
         try {
             SAXParser parser = factory.newSAXParser();
 
@@ -138,16 +136,13 @@ public final class GoogleBooksManager
             ArrayList<String> urlList = handler.getUrlList();
             if (!urlList.isEmpty()) {
                 // only using the first one found, maybe future enhancement?
-                String oneBookUrl = urlList.get(0);
+                oneBookUrl = urlList.get(0);
                 try (TerminatorConnection con = TerminatorConnection.openConnection(oneBookUrl)) {
                     parser.parse(con.inputStream, entryHandler);
                 }
             }
-            // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, url, e);
-            }
+            // wrap parser exceptions in an IOException
             throw new IOException(e);
         }
 

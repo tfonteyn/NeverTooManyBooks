@@ -327,7 +327,8 @@ public class CoverBrowserFragment
         mSwitcherImageFileInfo = fileInfo;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Log.d(TAG, "setSwitcherImage|fileInfo=" + fileInfo);
+            Log.d(TAG, "setSwitcherImage"
+                       + "|fileInfo=" + fileInfo);
         }
 
         if (fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
@@ -416,7 +417,8 @@ public class CoverBrowserFragment
                                              SearchEngine.CoverByIsbn.ImageSize.Large);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                Log.d(TAG, "onBindViewHolder|fileInfo=" + holder.fileInfo);
+                Log.d(TAG, "onBindViewHolder"
+                           + "|fileInfo=" + holder.fileInfo);
             }
 
             File imageFile = null;
@@ -439,7 +441,8 @@ public class CoverBrowserFragment
                     } catch (@NonNull final RejectedExecutionException e) {
                         // some books have a LOT of editions... Dr. Asimov
                         if (BuildConfig.DEBUG /* always */) {
-                            Log.d(TAG, "onBindViewHolder|isbn=" + isbn
+                            Log.d(TAG, "onBindViewHolder"
+                                       + "|isbn=" + isbn
                                        + "Exception msg=" + e.getLocalizedMessage());
                         }
                     }

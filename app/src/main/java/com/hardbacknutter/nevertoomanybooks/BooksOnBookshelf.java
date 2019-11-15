@@ -184,7 +184,7 @@ public class BooksOnBookshelf
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Log.d(TAG, "onBookChanged"
                        + "|bookId=" + bookId
-                       + "fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged)
+                       + "|fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged)
                        + "|data=" + data);
         }
         savePosition();
@@ -563,7 +563,8 @@ public class BooksOnBookshelf
                 // IMPORTANT: this is from an options menu selection.
                 // We pass the book ID's for the currently displayed list.
                 ArrayList<Long> bookIds = mModel.getCurrentBookIdList();
-                Intent intent = new Intent(this, UpdateFieldsFromInternetActivity.class)
+                Intent intent = new Intent(this, BookSearchActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
                         .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
                 startActivityForResult(intent, UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
                 return true;
@@ -999,7 +1000,8 @@ public class BooksOnBookshelf
     private void builderResultsAreReadyToDisplay(
             @Nullable final BooksOnBookshelfModel.BuilderHolder holder) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "ENTER|builderResultsAreReadyToDisplay|holder=" + holder);
+            Log.d(TAG, "ENTER|builderResultsAreReadyToDisplay"
+                       + "|holder=" + holder);
         }
 
         // *always* ...
@@ -1121,7 +1123,7 @@ public class BooksOnBookshelf
         final int last = mLayoutManager.findLastVisibleItemPosition();
         final int centre = (last + first) / 2;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-            Log.d(TAG, "fixPositionWhenDrawn| New List: (" + first + ", " + last + ")<-" + centre);
+            Log.d(TAG, "fixPositionWhenDrawn|New List: (" + first + ", " + last + ")<-" + centre);
         }
         // Get the first 'target' and make it 'best candidate'
         RowDetails best = targetRows.get(0);
@@ -1137,12 +1139,12 @@ public class BooksOnBookshelf
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-            Log.d(TAG, "fixPositionWhenDrawn| Best listPosition @" + best.listPosition);
+            Log.d(TAG, "fixPositionWhenDrawn|Best listPosition @" + best.listPosition);
         }
         // Try to put at top if not already visible, or only partially visible
         if (first >= best.listPosition || last <= best.listPosition) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-                Log.d(TAG, "fixPositionWhenDrawn| Adjusting position");
+                Log.d(TAG, "fixPositionWhenDrawn|Adjusting position");
             }
             // setSelectionFromTop does not seem to always do what is expected.
             // But adding smoothScrollToPosition seems to get the job done reasonably well.
@@ -1523,7 +1525,7 @@ public class BooksOnBookshelf
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
-                UserMessage.show(this, R.string.progress_msg_connecting);
+                UserMessage.show(mListView, R.string.progress_msg_connecting);
                 new SendOneBookTask(bookId, mModel.getGoodreadsTaskListener())
                         .execute();
                 return true;
@@ -1533,7 +1535,9 @@ public class BooksOnBookshelf
             case R.id.MENU_UPDATE_FROM_INTERNET: {
                 // IMPORTANT: this is from a context click on a row.
                 // We pass the book ID's which are suited for that row.
-                Intent intent = new Intent(this, UpdateFieldsFromInternetActivity.class);
+                Intent intent = new Intent(this, BookSearchActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG);
+
                 ArrayList<Long> bookIds;
                 switch (row.getInt(DBDefinitions.KEY_BL_NODE_KIND)) {
 

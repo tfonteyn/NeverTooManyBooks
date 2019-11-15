@@ -146,7 +146,7 @@ public abstract class JsoupBase {
 
         if (mDoc == null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                Log.d(TAG, "loadPage|REQUESTED|url=" + url);
+                Log.d(TAG, "loadPage|REQUESTED|url=\"" + url + '\"');
             }
 
             try (TerminatorConnection terminatorConnection = new TerminatorConnection(url)) {
@@ -209,7 +209,9 @@ public abstract class JsoupBase {
                 }
 
             } catch (@NonNull final HttpStatusException e) {
-                Logger.error(App.getAppContext(), TAG, e);
+                if (BuildConfig.DEBUG) {
+                    Logger.error(App.getAppContext(), TAG, e, "url=" + url);
+                }
                 return null;
 
             } catch (@NonNull final EOFException | SSLProtocolException e) {
@@ -232,8 +234,8 @@ public abstract class JsoupBase {
                 // at com.hardbacknutter.nevertoomanybooks.searches.JsoupBase.loadPage
 
                 Logger.warn(App.getAppContext(), TAG, "loadPage"
-                                                      + "|url=" + url
-                                                      + "|e=" + e.getLocalizedMessage());
+                                                      + "|e=" + e.getLocalizedMessage()
+                                                      + "|url=\"" + url + '\"');
                 // retry once.
                 if (mRetry) {
                     mRetry = false;

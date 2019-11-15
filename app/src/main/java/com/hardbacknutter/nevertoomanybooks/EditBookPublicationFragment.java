@@ -41,6 +41,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
+import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the publication fields Tab.
@@ -157,7 +158,7 @@ public class EditBookPublicationFragment
 
         // Fix the focus order for the views
         //noinspection ConstantConditions
-        FocusSettings.fix(getView());
+        FocusFixer.fix(getView());
     }
 
     @Override

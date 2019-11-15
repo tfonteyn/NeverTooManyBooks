@@ -35,24 +35,24 @@
     <!-- Page dividers -->
     <!-- *************************************************************************************** -->
 
-    <style name="HorizontalDivider">
-        <item name="android:layout_width">0dp</item>
-        <!-- reminder: don't set layout_height to wrap_content, will CF the layout -->
-        <item name="android:layout_height">1dp</item>
-        <item name="android:layout_marginTop">2dp</item>
-        <item name="android:layout_marginBottom">2dp</item>
-        <item name="android:background">?android:attr/dividerHorizontal</item>
-    </style>
+    <!--    <style name="HorizontalDivider">-->
+    <!--        <item name="android:layout_width">0dp</item>-->
+    <!--        &lt;!&ndash; reminder: don't set layout_height to wrap_content, will CF the layout &ndash;&gt;-->
+    <!--        <item name="android:layout_height">1dp</item>-->
+    <!--        <item name="android:layout_marginTop">2dp</item>-->
+    <!--        <item name="android:layout_marginBottom">2dp</item>-->
+    <!--        <item name="android:background">?android:attr/dividerHorizontal</item>-->
+    <!--    </style>-->
 
-    <!-- used in landscape mode only -->
-    <style name="VerticalDivider">
-        <!-- reminder: don't set layout_width to wrap_content, will CF the layout -->
-        <item name="android:layout_width">1dp</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_marginStart">2dp</item>
-        <item name="android:layout_marginEnd">2dp</item>
-        <item name="android:background">?android:attr/dividerVertical</item>
-    </style>
+    <!--    &lt;!&ndash; used in landscape mode only &ndash;&gt;-->
+    <!--    <style name="VerticalDivider">-->
+    <!--        &lt;!&ndash; reminder: don't set layout_width to wrap_content, will CF the layout &ndash;&gt;-->
+    <!--        <item name="android:layout_width">1dp</item>-->
+    <!--        <item name="android:layout_height">0dp</item>-->
+    <!--        <item name="android:layout_marginStart">2dp</item>-->
+    <!--        <item name="android:layout_marginEnd">2dp</item>-->
+    <!--        <item name="android:background">?android:attr/dividerVertical</item>-->
+    <!--    </style>-->
 
     <!-- *************************************************************************************** -->
     <!-- Field & section labels -->
@@ -142,6 +142,15 @@
     <!-- *************************************************************************************** -->
     <!-- Information (blurb) TextView fields -->
     <!-- *************************************************************************************** -->
+
+    <!-- header/title *inside* a RadioGroup element -->
+    <style name="RadioGroupHeader">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/indent1</item>
+        <item name="android:layout_marginEnd">@dimen/indent2</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
 
     <!-- informational piece of text -->
     <style name="Blurb">

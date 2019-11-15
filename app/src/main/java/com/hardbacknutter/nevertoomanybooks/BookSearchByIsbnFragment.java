@@ -177,7 +177,7 @@ public class BookSearchByIsbnFragment
         view.findViewById(R.id.btn_search).setOnClickListener(v -> {
             //noinspection ConstantConditions
             String isbn1 = mIsbnView.getText().toString().trim();
-            mBookSearchBaseModel.setIsbnSearchText(isbn1);
+            mSearchCoordinator.setIsbn(isbn1);
             prepareSearch(isbn1);
         });
 
@@ -189,11 +189,11 @@ public class BookSearchByIsbnFragment
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             SearchSites.promptToRegister(getContext(), "search",
-                                         mBookSearchBaseModel.getEnabledSearchSites());
+                                         mSearchCoordinator.getEnabledSearchSites());
         }
 
         // if we already have an isbn from somewhere, auto-start a search
-        String isbn = mBookSearchBaseModel.getIsbnSearchText();
+        String isbn = mSearchCoordinator.getIsbn();
         if (!isbn.isEmpty()) {
             mIsbnView.setText(isbn);
             prepareSearch(isbn);
@@ -219,7 +219,7 @@ public class BookSearchByIsbnFragment
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         // if Amazon is enabled, we show the ASIN option; else make sure it's disabled.
-        boolean amazon = (mBookSearchBaseModel.getEnabledSearchSites() & SearchSites.AMAZON) != 0;
+        boolean amazon = (mSearchCoordinator.getEnabledSearchSites() & SearchSites.AMAZON) != 0;
         MenuItem asin = menu.findItem(R.id.MENU_PREFS_ASIN);
         asin.setVisible(amazon);
         if (!amazon) {
@@ -251,7 +251,7 @@ public class BookSearchByIsbnFragment
     public void onPause() {
         super.onPause();
         //noinspection ConstantConditions
-        mBookSearchBaseModel.setIsbnSearchText(mIsbnView.getText().toString().trim());
+        mSearchCoordinator.setIsbn(mIsbnView.getText().toString().trim());
     }
 
     @Override

@@ -76,6 +76,8 @@ public class EditBookshelvesActivity
     /** Database Access. */
     private DAO mDb;
 
+    private RecyclerView mListView;
+
     /** The list we're editing. */
     private ArrayList<Bookshelf> mList;
     /** The adapter for the list. */
@@ -134,13 +136,13 @@ public class EditBookshelvesActivity
         fabButton.setOnClickListener(v -> editItem(
                 new Bookshelf("", BooklistStyle.getDefaultStyle(mDb))));
 
-        RecyclerView listView = findViewById(android.R.id.list);
+        mListView = findViewById(R.id.bookshelfList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        listView.setLayoutManager(linearLayoutManager);
-        listView.addItemDecoration(
+        mListView.setLayoutManager(linearLayoutManager);
+        mListView.addItemDecoration(
                 new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
-        listView.setHasFixedSize(true);
-        listView.setAdapter(mAdapter);
+        mListView.setHasFixedSize(true);
+        mListView.setAdapter(mAdapter);
     }
 
     @Override
@@ -215,7 +217,7 @@ public class EditBookshelvesActivity
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left..
                     // e.g. count > 2, then you can delete '1'
-                    UserMessage.show(this, R.string.warning_cannot_delete_1st_bs);
+                    UserMessage.show(mListView, R.string.warning_cannot_delete_1st_bs);
                 }
                 return true;
 

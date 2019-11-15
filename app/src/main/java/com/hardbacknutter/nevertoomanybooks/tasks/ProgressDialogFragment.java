@@ -48,8 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 
 /**
- * Progress support for an {@link TaskBase}. There can only be ONE task at a time.
- * Needs a reference to the task, so if the user cancels the dialog, we can cancel the task.
+ * Progress support for a {@link Cancellable}. There can only be one Cancellable at a time.
+ * When the user cancels the dialog, we will cancel the Cancellable.
  */
 public class ProgressDialogFragment
         extends DialogFragment {
@@ -61,9 +61,9 @@ public class ProgressDialogFragment
     private static final String BKEY_CURRENT_MESSAGE = TAG + ":message";
     private static final String BKEY_CURRENT_VALUE = TAG + ":current";
 
-    /** the current task. */
+    /** the current Cancellable. */
     @Nullable
-    private TaskBase mTask;
+    private Cancellable mCancellable;
 
     /** Type of ProgressBar. */
     private boolean mIsIndeterminate;
@@ -147,8 +147,8 @@ public class ProgressDialogFragment
 
         @SuppressWarnings("ConstantConditions")
         AlertDialog dialog = new AlertDialog.Builder(getContext())
-                                     .setView(root)
-                                     .create();
+                .setView(root)
+                .create();
         // this is really needed, as it would be to easy to cancel without.
         // Cancel by 'back' press only.
         dialog.setCanceledOnTouchOutside(false);
@@ -167,55 +167,42 @@ public class ProgressDialogFragment
 
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
-        if (mTask != null) {
-            mTask.cancel(true);
-            // invalidate the current task as its finished. The dialog can be reused.
-            mTask = null;
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(BKEY_MAX, mMax);
-        outState.putString(BKEY_CURRENT_MESSAGE, mMessage);
-        if (mProgressBar != null) {
-            outState.putInt(BKEY_CURRENT_VALUE, mProgressBar.getProgress());
+        if (mCancellable != null) {
+            mCancellable.cancel(true);
+            // invalidate. The dialog can be reused.
+            mCancellable = null;
         }
     }
 
     /**
-     * Work-around for bug in androidx library.
-     * Currently (2019-08-01) no longer needed as we're no longer retaining this fragment.
-     * Leaving as a reminder for now.
-     * <p>
-     * https://issuetracker.google.com/issues/36929400
-     * <p>
-     * Still not fixed in July 2019
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onDestroyView() {
-        if (getDialog() != null && getRetainInstance()) {
-            getDialog().setDismissMessage(null);
-        }
-        super.onDestroyView();
-    }
-
-    /**
-     * Can optionally (but usually is) be linked with a task.
-     * This class needs to be able to send a 'cancel' to the task when our dialog is cancelled.
+     * Optionally link this object with a Cancellable.
      *
-     * @param task that will use us for progress updates.
+     * @param cancellable that will be cancelled when this dialog is cancelled.
      */
-    public void setTask(@Nullable final TaskBase task) {
-        // cancel any previous task.
-        if (mTask != null) {
-            mTask.cancel(true);
+    public void setCancellable(@Nullable final Cancellable cancellable) {
+        // cancel any previous task first.
+        if (mCancellable != null) {
+            mCancellable.cancel(true);
         }
-        mTask = task;
+        mCancellable = cancellable;
+    }
+
+    @Override
+    public void onDismiss(@NonNull final DialogInterface dialog) {
+        if (mCancellable != null) {
+            mCancellable.cancel(true);
+        }
+        mCancellable = null;
+        super.onDismiss(dialog);
+    }
+
+    @UiThread
+    public void onProgress(@NonNull final TaskListener.ProgressMessage message) {
+        setAbsPosition(message.absPosition);
+        setMax(message.maxPosition);
+        if (message.text != null) {
+            setMessage(message.text);
+        }
     }
 
     /**
@@ -267,32 +254,33 @@ public class ProgressDialogFragment
         }
     }
 
-    @UiThread
-    public void onProgress(@NonNull final TaskListener.TaskProgressMessage message) {
-        if (message.maxPosition != null) {
-            setMax(message.maxPosition);
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(BKEY_MAX, mMax);
+        outState.putString(BKEY_CURRENT_MESSAGE, mMessage);
+        if (mProgressBar != null) {
+            outState.putInt(BKEY_CURRENT_VALUE, mProgressBar.getProgress());
         }
-        if (message.absPosition != null) {
-            setAbsPosition(message.absPosition);
-        }
-        if (message.values != null && message.values.length > 0) {
-            Object obj = message.values[0];
-            synchronized (this) {
-                if (obj instanceof String) {
-                    setMessage((String) obj);
+    }
 
-                } else if (obj instanceof Integer) {
-                    @StringRes
-                    int resId = (int) obj;
-                    // the id should never by 0, but future bugs and paranoia...
-                    if (resId != 0) {
-                        setMessage(getResources().getString(resId));
-                    }
-                } else {
-                    setMessage("");
-                }
-            }
-
+    /**
+     * Work-around for bug in androidx library.
+     * Currently (2019-08-01) no longer needed as we're no longer retaining this fragment.
+     * Leaving as a reminder for now.
+     * <p>
+     * https://issuetracker.google.com/issues/36929400
+     * <p>
+     * Still not fixed in July 2019
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onDestroyView() {
+        if (getDialog() != null && getRetainInstance()) {
+            getDialog().setDismissMessage(null);
         }
+        super.onDestroyView();
     }
 }

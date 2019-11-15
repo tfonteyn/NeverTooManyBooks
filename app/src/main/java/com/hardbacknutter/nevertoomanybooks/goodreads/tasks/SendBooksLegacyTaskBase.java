@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.BindableItemCursor;
@@ -103,19 +102,18 @@ abstract class SendBooksLegacyTaskBase
     public boolean run(@NonNull final QueueManager queueManager) {
 
         Context context = App.getLocalizedAppContext();
-        if (NetworkUtils.isAlive(GoodreadsManager.BASE_URL)) {
+        try {
+            NetworkUtils.poke(context, GoodreadsManager.BASE_URL);
+
             GoodreadsManager grManager = new GoodreadsManager();
             if (grManager.hasValidCredentials()) {
                 return send(queueManager, context, grManager);
-            } else {
-                Logger.warnWithStackTrace(context, TAG, "no valid credentials");
             }
-        } else {
+        } catch (@NonNull final IOException ignore) {
             // Only wait 5 minutes max on network errors.
             if (getRetryDelay() > FIVE_MINUTES) {
                 setRetryDelay(FIVE_MINUTES);
             }
-            Logger.warn(context, TAG, "run", "network or site not available");
         }
 
         return false;
@@ -438,7 +436,7 @@ abstract class SendBooksLegacyTaskBase
         @Override
         @StringRes
         public int getTip() {
-            return R.string.gr_explain_no_match;
+            return R.string.gr_info_no_match;
         }
 
     }
@@ -461,7 +459,7 @@ abstract class SendBooksLegacyTaskBase
         @Override
         @StringRes
         public int getTip() {
-            return R.string.gr_explain_no_isbn;
+            return R.string.gr_info_no_isbn;
         }
 
     }

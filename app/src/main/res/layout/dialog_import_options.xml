@@ -71,22 +71,20 @@
         app:layout_constraintTop_toBottomOf="@id/cbx_covers"
         />
 
-    <View
-        android:id="@+id/footer_divider"
-        style="@style/HorizontalDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_preferences"
-        />
-
     <RadioGroup
         android:id="@+id/radio_buttons"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/border2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/footer_divider"
+        app:layout_constraintTop_toBottomOf="@id/cbx_preferences"
         >
+
+        <TextView
+            style="@style/RadioGroupHeader"
+            android:text="@string/lbl_books"
+            />
 
         <RadioButton
             android:id="@+id/radioAllBooks"
