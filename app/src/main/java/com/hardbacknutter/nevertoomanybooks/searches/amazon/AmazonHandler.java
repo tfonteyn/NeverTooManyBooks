@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 
@@ -261,9 +262,13 @@ class AmazonHandler
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
+
     /** accumulate all authors for this book. */
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
+    /** accumulate all Publishers for this book. */
+    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
+
     /** XML content. */
     private final StringBuilder mBuilder = new StringBuilder();
     /** mCurrencyCode + mCurrencyAmount will form the list-price. */
@@ -393,7 +398,12 @@ class AmazonHandler
                 mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
             }
         }
-        mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+        if (!mAuthors.isEmpty()) {
+            mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+        }
+        if (!mPublishers.isEmpty()) {
+            mBookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
+        }
     }
 
     /**
@@ -485,8 +495,7 @@ class AmazonHandler
                 addIfNotPresent(mBookData, DBDefinitions.KEY_TITLE, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PUBLISHER)) {
-                addIfNotPresent(mBookData, DBDefinitions.KEY_PUBLISHER,
-                                mBuilder.toString());
+                mPublishers.add(Publisher.fromString(mBuilder.toString()));
 
             } else if (localName.equalsIgnoreCase(XML_DATE_PUBLISHED)) {
                 addIfNotPresent(mBookData, DBDefinitions.KEY_DATE_PUBLISHED,

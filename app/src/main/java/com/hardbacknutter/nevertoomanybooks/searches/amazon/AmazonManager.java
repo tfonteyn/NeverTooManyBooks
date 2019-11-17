@@ -79,12 +79,6 @@ public final class AmazonManager
     private static final String SUFFIX_BASE_URL = "/gp/search?index=books";
     private static final String PROXY_URL = "https://bc.theagiledirector.com/getRest_v3.php?";
 
-    /**
-     * Constructor.
-     */
-    public AmazonManager() {
-    }
-
     @NonNull
     public static String getBaseURL(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)

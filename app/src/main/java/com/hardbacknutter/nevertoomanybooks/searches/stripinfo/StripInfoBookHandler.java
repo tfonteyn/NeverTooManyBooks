@@ -409,8 +409,7 @@ public class StripInfoBookHandler
             bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
         }
         if (!mPublishers.isEmpty()) {
-//            bookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
-            bookData.putString(DBDefinitions.KEY_PUBLISHER, mPublishers.get(0).getName());
+            bookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
         }
 
         if (fetchThumbnail) {

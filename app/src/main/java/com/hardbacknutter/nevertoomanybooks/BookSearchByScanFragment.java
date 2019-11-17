@@ -101,12 +101,12 @@ public class BookSearchByScanFragment
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            SearchSites.promptToRegister(getContext(), "search",
-                                         mSearchCoordinator.getEnabledSearchSites());
+            SearchSites.promptToRegister(getContext(), false, "search",
+                                         mSearchCoordinator.getSearchSites());
         }
 
         // if we already have an isbn from somewhere, auto-start a search
-        String isbn = mSearchCoordinator.getIsbn();
+        String isbn = mSearchCoordinator.getIsbnSearchText();
         if (!isbn.isEmpty()) {
             prepareSearch(isbn);
             return;
@@ -170,7 +170,7 @@ public class BookSearchByScanFragment
                     //noinspection ConstantConditions
                     String barCode = scanner.getBarcode(data);
                     if (barCode != null) {
-                        mSearchCoordinator.setIsbn(barCode);
+                        mSearchCoordinator.setIsbnSearchText(barCode);
                         prepareSearch(barCode);
                         return;
                     }

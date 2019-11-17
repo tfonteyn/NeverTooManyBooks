@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * Good description:  http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Format
  */
 public final class FormatMapper
-        extends TerminologyMapperBase {
+        extends MapperBase {
 
     // use all lowercase keys!
     static {

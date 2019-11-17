@@ -216,10 +216,8 @@
         <Button
             android:id="@+id/btn_search"
             style="@style/IsbnKeyPadButton"
-            android:contentDescription="@string/btn_search"
             app:icon="@drawable/ic_search"
             app:iconGravity="textStart"
-            app:iconSize="36dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/key_X"
             app:layout_constraintTop_toBottomOf="@id/key_6"

@@ -50,6 +50,7 @@ import java.util.TimerTask;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -140,8 +141,8 @@ public class FTSSearchActivity
                                                         : getIntent().getExtras();
         if (currentArgs != null) {
             mAuthorSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-            mTitleSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_TITLE);
-            mSeriesTitleSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_SERIES_TITLE);
+            mTitleSearchText = currentArgs.getString(DBDefinitions.KEY_TITLE);
+            mSeriesTitleSearchText = currentArgs.getString(DBDefinitions.KEY_SERIES_TITLE);
             mKeywordsSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_TEXT);
         }
 
@@ -182,8 +183,8 @@ public class FTSSearchActivity
             Intent data = new Intent()
                     // pass these for displaying to the user
                     .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText)
-                    .putExtra(UniqueId.BKEY_SEARCH_TITLE, mTitleSearchText)
-                    .putExtra(UniqueId.BKEY_SEARCH_SERIES_TITLE, mSeriesTitleSearchText)
+                    .putExtra(DBDefinitions.KEY_TITLE, mTitleSearchText)
+                    .putExtra(DBDefinitions.KEY_SERIES_TITLE, mSeriesTitleSearchText)
                     .putExtra(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText)
                     // pass the book ID's for the list
                     .putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
@@ -300,8 +301,8 @@ public class FTSSearchActivity
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
-        outState.putString(UniqueId.BKEY_SEARCH_TITLE, mTitleSearchText);
-        outState.putString(UniqueId.BKEY_SEARCH_SERIES_TITLE, mSeriesTitleSearchText);
+        outState.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
+        outState.putString(DBDefinitions.KEY_SERIES_TITLE, mSeriesTitleSearchText);
         outState.putString(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText);
     }
 

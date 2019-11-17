@@ -82,15 +82,14 @@ public class UpdateFieldsTask
     private final SearchCoordinator mSearchCoordinator;
     private final TaskListener<Long> mTaskListener;
 
-
     // Data related to current row being processed
+    private final DAO mDb;
     /** Original row data. */
     private Bundle mOriginalBookData;
     /** current book ID. */
     private long mCurrentBookId;
     /** current book UUID. */
     private String mCurrentUuid;
-
     /** The (subset) of fields relevant to the current book. */
     private Map<String, FieldUsage> mCurrentBookFieldUsages;
     /** List of book ID's to update, {@code null} for all books. */
@@ -99,47 +98,47 @@ public class UpdateFieldsTask
     /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
     private boolean mIsCancelled;
 
-    @Nullable
-    private Exception mException;
-
-    private DAO mDb;
     /**
      * Called in the main thread for this object when the search for one book has completed.
      * <p>
-     * <strong>Note:</strong> do not make it local... we need a strong reference here.
+     * <strong>Note:</strong> we ignore all search errors silently.
      */
     @SuppressWarnings("FieldCanBeLocal")
-    private final SearchCoordinator.Listener mOnSearchListener = new SearchCoordinator.Listener() {
-        @Override
-        public void onFinished(final boolean wasCancelled,
-                               @NonNull final Bundle bookData,
-                               @Nullable final String searchErrors) {
-            Context context = App.getLocalizedAppContext();
+    private final SearchCoordinator.SearchCoordinatorListener mSearchCoordinatorListener =
+            new SearchCoordinator.SearchCoordinatorListener() {
+                @Override
+                public void onFinished(@NonNull final Bundle bookData,
+                                       @Nullable final String searchErrors) {
+                    Context context = App.getLocalizedAppContext();
 
-            if (wasCancelled) {
-                // if the search was cancelled, propagate by cancelling ourselves.
-                mIsCancelled = true;
-                interrupt();
-            }
+                    if (!mIsCancelled && !bookData.isEmpty()) {
+                        processSearchResults(context, bookData);
+                    }
 
-            if (!mIsCancelled && !bookData.isEmpty()) {
-                processSearchResults(context, bookData);
-            }
+                    // This search is complete. Let another search begin.
+                    mSearchLock.lock();
+                    try {
+                        mOneSearch.signal();
+                    } finally {
+                        mSearchLock.unlock();
+                    }
+                }
 
-            // This search is complete. Let another search begin.
-            mSearchLock.lock();
-            try {
-                mOneSearch.signal();
-            } finally {
-                mSearchLock.unlock();
-            }
-        }
+                @Override
+                public void onCancelled() {
+                    // if the search was cancelled, propagate by cancelling ourselves.
+                    mIsCancelled = true;
+                    interrupt();
+                }
 
-        @Override
-        public void onProgress(@NonNull final TaskListener.ProgressMessage message) {
-            mTaskListener.onProgress(message);
-        }
-    };
+                @Override
+                public void onProgress(@NonNull final TaskListener.ProgressMessage message) {
+                    mTaskListener.onProgress(message);
+                }
+            };
+
+    @Nullable
+    private Exception mException;
 
     /**
      * Constructor.
@@ -156,15 +155,15 @@ public class UpdateFieldsTask
         // Set the thread name to something helpful.
         setName("UpdateFieldsTask");
 
+        // owned by a ViewModel, so can keep strong reference.
         mTaskListener = taskListener;
 
         mDb = db;
         mFields = fields;
 
         mSearchCoordinator = new SearchCoordinator();
-        mSearchCoordinator.init(null);
+        mSearchCoordinator.init(null, mSearchCoordinatorListener);
         mSearchCoordinator.setSearchSites(searchSites);
-        mSearchCoordinator.setOnSearchListener(mOnSearchListener);
     }
 
     /**
@@ -488,10 +487,10 @@ public class UpdateFieldsTask
                 // Start searching, then wait...
                 mSearchCoordinator.setFetchThumbnail(wantCoverImage);
 
-                mSearchCoordinator.setIsbn(isbn);
-                mSearchCoordinator.setAuthor(author);
-                mSearchCoordinator.setTitle(title);
-                mSearchCoordinator.setPublisher(publisher);
+                mSearchCoordinator.setIsbnSearchText(isbn);
+                mSearchCoordinator.setAuthorSearchText(author);
+                mSearchCoordinator.setTitleSearchText(title);
+                mSearchCoordinator.setPublisherSearchText(publisher);
                 mSearchCoordinator.searchByText();
 
                 mSearchLock.lock();

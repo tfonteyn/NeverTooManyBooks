@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,8 +40,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueListActivity;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.ImportTask;
@@ -48,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendBooksTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AdminModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.GoodreadsTaskModel;
@@ -82,15 +82,44 @@ public class GoodreadsAdminFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Activity scope
-        //noinspection ConstantConditions
-        mModel = new ViewModelProvider(getActivity()).get(AdminModel.class);
+        mModel = new ViewModelProvider(this).get(AdminModel.class);
 
         mGoodreadsTaskModel = new ViewModelProvider(this).get(GoodreadsTaskModel.class);
-        mGoodreadsTaskModel.getTaskProgressMessage()
-                           .observe(getViewLifecycleOwner(), this::onTaskProgressMessage);
-        mGoodreadsTaskModel.getTaskFinishedMessage()
-                           .observe(getViewLifecycleOwner(), this::onTaskFinished);
+        mGoodreadsTaskModel.getTaskProgressMessage().observe(getViewLifecycleOwner(), message -> {
+            if (mProgressDialog != null) {
+                mProgressDialog.onProgress(message);
+            }
+        });
+        mGoodreadsTaskModel.getTaskFinishedMessage().observe(getViewLifecycleOwner(), message -> {
+            if (mProgressDialog != null) {
+                mProgressDialog.dismiss();
+            }
+            //noinspection ConstantConditions
+            @NonNull
+            View view = getView();
+
+            switch (message.taskId) {
+                case R.id.TASK_ID_GR_IMPORT:
+                case R.id.TASK_ID_GR_SEND_BOOKS:
+                case R.id.TASK_ID_GR_REQUEST_AUTH: {
+                    //noinspection ConstantConditions
+                    String msg = GoodreadsTasks.handleResult(getContext(), message);
+                    if (msg != null) {
+                        UserMessage.show(view, msg);
+                    } else {
+                        RequestAuthTask.needsRegistration(getContext(),
+                                                          mGoodreadsTaskModel.getTaskListener());
+                    }
+                    break;
+                }
+                default: {
+                    if (BuildConfig.DEBUG /* always */) {
+                        Log.d(TAG, "taskId=" + message.taskId, new Throwable());
+                    }
+                    break;
+                }
+            }
+        });
 
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
@@ -120,42 +149,6 @@ public class GoodreadsAdminFragment
                 Intent intent = new Intent(getContext(), TaskQueueListActivity.class);
                 startActivity(intent);
             });
-    }
-
-    private void onTaskProgressMessage(@NonNull final TaskListener.ProgressMessage message) {
-        if (mProgressDialog != null) {
-            mProgressDialog.onProgress(message);
-        }
-    }
-
-    private void onTaskFinished(@NonNull final TaskListener.FinishMessage<Integer> message) {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-        }
-        //noinspection ConstantConditions
-        @NonNull
-        View view = getView();
-
-        switch (message.taskId) {
-            case R.id.TASK_ID_GR_IMPORT:
-            case R.id.TASK_ID_GR_SEND_BOOKS:
-            case R.id.TASK_ID_GR_REQUEST_AUTH: {
-                //noinspection ConstantConditions
-                String msg = GoodreadsTasks.handleResult(getContext(), message);
-                if (msg != null) {
-                    UserMessage.show(view, msg);
-                } else {
-                    RequestAuthTask.needsRegistration(getContext(), mGoodreadsTaskModel
-                            .getTaskListener());
-                }
-                break;
-            }
-            default: {
-                //noinspection ConstantConditions
-                Logger.warnWithStackTrace(getContext(), TAG, "taskId=" + message.taskId);
-                break;
-            }
-        }
     }
 
     private void onImport(final boolean isSync) {

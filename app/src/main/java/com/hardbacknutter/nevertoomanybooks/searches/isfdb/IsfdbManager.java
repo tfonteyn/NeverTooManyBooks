@@ -39,13 +39,13 @@ import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
  * See notes in the package-info.java file.
@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 public class IsfdbManager
         implements SearchEngine,
                    SearchEngine.ByText,
+                   SearchEngine.ByIsbn,
                    SearchEngine.ByNativeId {
 
     /**
@@ -100,13 +101,6 @@ public class IsfdbManager
     /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
 
-
-    /**
-     * Constructor.
-     */
-    public IsfdbManager() {
-    }
-
     @NonNull
     public static String getBaseURL(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -138,6 +132,16 @@ public class IsfdbManager
 
     @NonNull
     @Override
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String isbn,
+                               final boolean fetchThumbnail)
+            throws IOException {
+
+        return fetchBook(context, new IsfdbEditionsHandler().fetch(context, isbn), fetchThumbnail);
+    }
+
+    @NonNull
+    @Override
     @WorkerThread
     public Bundle search(@NonNull final Context context,
                          @Nullable final String isbn,
@@ -147,58 +151,53 @@ public class IsfdbManager
                          final boolean fetchThumbnail)
             throws IOException {
 
-        List<IsfdbEditionsHandler.Edition> editions;
+        String url = getBaseURL(context) + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
+                     + "ORDERBY=pub_title"
+                     + "&ACTION=query"
+                     + "&START=0"
+                     + "&TYPE=Publication"
+                     + "&C=AND"
+                     + "&";
 
-        if (ISBN.isValid(isbn)) {
-            editions = new IsfdbEditionsHandler().fetch(context, isbn);
+        int index = 0;
 
-        } else {
-            String url = getBaseURL(context) + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
-                         + "ORDERBY=pub_title"
-                         + "&ACTION=query"
-                         + "&START=0"
-                         + "&TYPE=Publication"
-                         + "&C=AND"
-                         + "&";
-
-            int index = 0;
-
-            if (author != null && !author.isEmpty()) {
-                index++;
-                url += "&USE_" + index + "=author_canonical"
-                       + "&O_" + index + "=contains"
-                       + "&TERM_" + index + "="
-                       + URLEncoder.encode(author, CHARSET_ENCODE_URL);
-            }
-
-            if (title != null && !title.isEmpty()) {
-                index++;
-                url += "&USE_" + index + "=pub_title"
-                       + "&O_" + index + "=contains"
-                       + "&TERM_" + index + "="
-                       + URLEncoder.encode(title, CHARSET_ENCODE_URL);
-            }
-
-            // as per user settings.
-            if (PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getBoolean(PREFS_USE_PUBLISHER, false)) {
-                if (publisher != null && !publisher.isEmpty()) {
-                    index++;
-                    url += "&USE_" + index + "=pub_publisher"
-                           + "&O_" + index + "=contains"
-                           + "&TERM_" + index + "="
-                           + URLEncoder.encode(publisher, CHARSET_ENCODE_URL);
-                }
-            }
-
-            // there is support for up to 6 search terms.
-            // &USE_4=pub_title&O_4=exact&TERM_4=
-            // &USE_5=pub_title&O_5=exact&TERM_5=
-            // &USE_6=pub_title&O_6=exact&TERM_6=
-
-            editions = new IsfdbEditionsHandler().fetchPath(url);
+        if (author != null && !author.isEmpty()) {
+            index++;
+            url += "&USE_" + index + "=author_canonical"
+                   + "&O_" + index + "=contains"
+                   + "&TERM_" + index + "=" + URLEncoder.encode(author, CHARSET_ENCODE_URL);
         }
 
+        if (title != null && !title.isEmpty()) {
+            index++;
+            url += "&USE_" + index + "=pub_title"
+                   + "&O_" + index + "=contains"
+                   + "&TERM_" + index + "=" + URLEncoder.encode(title, CHARSET_ENCODE_URL);
+        }
+
+        // as per user settings.
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(PREFS_USE_PUBLISHER, false)) {
+            if (publisher != null && !publisher.isEmpty()) {
+                index++;
+                url += "&USE_" + index + "=pub_publisher"
+                       + "&O_" + index + "=contains"
+                       + "&TERM_" + index + "=" + URLEncoder.encode(publisher, CHARSET_ENCODE_URL);
+            }
+        }
+
+        // there is support for up to 6 search terms.
+        // &USE_4=pub_title&O_4=exact&TERM_4=
+        // &USE_5=pub_title&O_5=exact&TERM_5=
+        // &USE_6=pub_title&O_6=exact&TERM_6=
+
+        return fetchBook(context, new IsfdbEditionsHandler().fetchPath(url), fetchThumbnail);
+    }
+
+    private Bundle fetchBook(@NonNull final Context context,
+                             final List<IsfdbEditionsHandler.Edition> editions,
+                             final boolean fetchThumbnail)
+            throws SocketTimeoutException {
         if (!editions.isEmpty()) {
             return new IsfdbBookHandler(context)
                     .fetch(editions, isAddSeriesFromToc(context), fetchThumbnail);
@@ -207,7 +206,7 @@ public class IsfdbManager
         }
     }
 
-    public boolean isAddSeriesFromToc(@NonNull final Context context) {
+    private boolean isAddSeriesFromToc(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC, false);
     }

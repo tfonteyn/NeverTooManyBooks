@@ -34,6 +34,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
@@ -41,7 +42,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.CoverBrowserFragment;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -68,6 +68,27 @@ public interface SearchEngine {
     String TAG = "SearchEngine";
 
     /**
+     * Get the resource id for the human-readable name of the site.
+     *
+     * @return the resource id
+     */
+    @AnyThread
+    @StringRes
+    int getNameResId();
+
+    /**
+     * Get the root/website url.
+     *
+     * @param context Current context
+     *
+     * @return url, including scheme.
+     */
+    @AnyThread
+    @NonNull
+    String getUrl(@NonNull Context context);
+
+
+    /**
      * Generic test to be implemented by individual site search managers to check if
      * this site can be consider for searching.
      * <p>
@@ -83,24 +104,24 @@ public interface SearchEngine {
     }
 
     /**
-     * Get the root/website url.
+     * Optional to implement: sites which need a registration of some sorts.
+     * <p>
+     * Check if we have a key; if not alert the user.
      *
-     * @param context Current context
+     * @param context    Current context
+     * @param required   {@code true} if we <strong>must</strong> have access to the site.
+     *                   {@code false} if it would be beneficial but not mandatory.
+     * @param prefSuffix String used to flag in preferences if we showed the alert from
+     *                   that caller already or not yet.
      *
-     * @return url, including scheme.
+     * @return {@code true} if an alert is currently shown
      */
-    @AnyThread
-    @NonNull
-    String getUrl(@NonNull Context context);
-
-    /**
-     * Get the resource id for the human-readable name of the site.
-     *
-     * @return the resource id
-     */
-    @AnyThread
-    @StringRes
-    int getNameResId();
+    @UiThread
+    default boolean promptToRegister(@NonNull final Context context,
+                                     final boolean required,
+                                     @NonNull final String prefSuffix) {
+        return false;
+    }
 
     /**
      * Look for a book title; if present try to get a Series from it and clean the book title.
@@ -261,6 +282,7 @@ public interface SearchEngine {
          * @param isbn     to search for, <strong>must</strong> be valid.
          * @param bookData bundle to populate with the image file spec
          */
+        @WorkerThread
         default void getCoverImage(@NonNull final Context context,
                                    @NonNull final String isbn,
                                    @NonNull final Bundle bookData) {
@@ -328,13 +350,14 @@ public interface SearchEngine {
                     return destination;
                 }
             } catch (@NonNull final CredentialsException | IOException e) {
-                Logger.error(App.getAppContext(), TAG, e);
+                Logger.error(context, TAG, e);
             }
 
             return null;
         }
 
         /** See {@link SearchEngine#getNameResId()}. */
+        @AnyThread
         int getNameResId();
 
         /**
@@ -344,5 +367,16 @@ public interface SearchEngine {
         enum ImageSize {
             Large, Medium, Small
         }
+    }
+
+    /**
+     * Optional.
+     * ENHANCE: implement for multiple sites (e.g. WorldCat)
+     */
+    interface AlternativeEditions {
+
+        @WorkerThread
+        @NonNull
+        ArrayList<String> getAlternativeEditions(@NonNull String isbn);
     }
 }

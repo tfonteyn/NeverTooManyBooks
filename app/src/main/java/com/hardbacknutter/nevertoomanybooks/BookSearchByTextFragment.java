@@ -96,9 +96,9 @@ public class BookSearchByTextFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mTitleView.setText(mSearchCoordinator.getTitle());
-        mAuthorView.setText(mSearchCoordinator.getAuthor());
-        mPublisherView.setText(mSearchCoordinator.getPublisher());
+        mTitleView.setText(mSearchCoordinator.getTitleSearchText());
+        mAuthorView.setText(mSearchCoordinator.getAuthorSearchText());
+        mPublisherView.setText(mSearchCoordinator.getPublisherSearchText());
 
         //noinspection ConstantConditions
         boolean usePublisher = SearchSites.usePublisher(getContext());
@@ -111,15 +111,15 @@ public class BookSearchByTextFragment
 
         //noinspection ConstantConditions
         getView().findViewById(R.id.btn_search).setOnClickListener(v -> {
-            mSearchCoordinator.setAuthor(mAuthorView.getText().toString().trim());
-            mSearchCoordinator.setTitle(mTitleView.getText().toString().trim());
-            mSearchCoordinator.setPublisher(mPublisherView.getText().toString().trim());
+            mSearchCoordinator.setAuthorSearchText(mAuthorView.getText().toString().trim());
+            mSearchCoordinator.setTitleSearchText(mTitleView.getText().toString().trim());
+            mSearchCoordinator.setPublisherSearchText(mPublisherView.getText().toString().trim());
             prepareSearch();
         });
 
         if (savedInstanceState == null) {
-            SearchSites.promptToRegister(getContext(), "search",
-                                         mSearchCoordinator.getEnabledSearchSites());
+            SearchSites.promptToRegister(getContext(), false, "search",
+                                         mSearchCoordinator.getSearchSites());
 
             TipManager.display(getContext(), R.string.tip_book_search_by_text, null);
         }
@@ -166,18 +166,24 @@ public class BookSearchByTextFragment
     void onSearchResults(@NonNull final Bundle bookData) {
         // if any of the search fields are not present in the result,
         // we add them manually as the template for a new book.
+
         if (!bookData.containsKey(DBDefinitions.KEY_TITLE)) {
-            bookData.putString(DBDefinitions.KEY_TITLE, mSearchCoordinator.getTitle());
+            bookData.putString(DBDefinitions.KEY_TITLE,
+                               mSearchCoordinator.getTitleSearchText());
         }
+
         //noinspection ConstantConditions
         if (!bookData.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)
             || bookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY)
                        .isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
-            bookData.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, mSearchCoordinator.getAuthor());
+            bookData.putString(UniqueId.BKEY_SEARCH_AUTHOR,
+                               mSearchCoordinator.getAuthorSearchText());
         }
+
         if (!bookData.containsKey(DBDefinitions.KEY_PUBLISHER)) {
-            bookData.putString(DBDefinitions.KEY_PUBLISHER, mSearchCoordinator.getPublisher());
+            bookData.putString(DBDefinitions.KEY_PUBLISHER,
+                               mSearchCoordinator.getPublisherSearchText());
         }
 
         Intent intent = new Intent(getContext(), EditBookActivity.class)
@@ -196,7 +202,7 @@ public class BookSearchByTextFragment
 
     private void prepareSearch() {
 
-        String authorSearchText = mSearchCoordinator.getAuthor();
+        String authorSearchText = mSearchCoordinator.getAuthorSearchText();
         if (mAuthorAdapter.getPosition(authorSearchText) < 0) {
             // Always add the current search text to the list of recent searches.
             if (!authorSearchText.isEmpty()) {
@@ -217,8 +223,8 @@ public class BookSearchByTextFragment
         }
 
         //sanity check
-        if (mSearchCoordinator.getAuthor().isEmpty()
-            && mSearchCoordinator.getTitle().isEmpty()) {
+        if (mSearchCoordinator.getAuthorSearchText().isEmpty()
+            && mSearchCoordinator.getTitleSearchText().isEmpty()) {
             //noinspection ConstantConditions
             UserMessage.show(getView(), R.string.warning_requires_at_least_one_field);
             return;
@@ -245,8 +251,8 @@ public class BookSearchByTextFragment
     @Override
     public void onPause() {
         super.onPause();
-        mSearchCoordinator.setAuthor(mAuthorView.getText().toString().trim());
-        mSearchCoordinator.setTitle(mTitleView.getText().toString().trim());
-        mSearchCoordinator.setPublisher(mPublisherView.getText().toString().trim());
+        mSearchCoordinator.setAuthorSearchText(mAuthorView.getText().toString().trim());
+        mSearchCoordinator.setTitleSearchText(mTitleView.getText().toString().trim());
+        mSearchCoordinator.setPublisherSearchText(mPublisherView.getText().toString().trim());
     }
 }

@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * System wide book color representation. Color is mainly meant for comics.
  */
 public final class ColorMapper
-        extends TerminologyMapperBase {
+        extends MapperBase {
 
     // use all lowercase keys!
     static {
@@ -68,5 +68,4 @@ public final class ColorMapper
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(Prefs.pk_search_reformat_color, false);
     }
-
 }

@@ -324,10 +324,10 @@ public class EditBookFieldsFragment
         }
 
         String value = book.getAuthorTextShort(context);
-        if (value.isEmpty() && book.containsKey(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
+        if (value.isEmpty() && book.containsKey(UniqueId.BKEY_SEARCH_AUTHOR)) {
             // allow this fallback. It's used after a search that did not return results,
             // in which case it contains whatever the user typed.
-            value = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+            value = book.getString(UniqueId.BKEY_SEARCH_AUTHOR);
         }
         getFields().getField(R.id.author).setValue(value);
     }

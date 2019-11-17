@@ -145,6 +145,8 @@ public class StartupViewModel
     }
 
     /**
+     * Developer warning: this is not a UI update.
+     *
      * @return {@code true} if all tasks are finished.
      */
     public MutableLiveData<Boolean> getTaskFinished() {
@@ -161,7 +163,7 @@ public class StartupViewModel
     }
 
     /**
-     * Only provides the last the message. There is no back stack.
+     * Only provides the last message. There is no queue.
      *
      * @return message
      */

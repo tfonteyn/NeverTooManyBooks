@@ -122,7 +122,7 @@ public class BookSearchActivity
             if (resultCode == Activity.RESULT_OK && data != null) {
                 // update the search sites list.
                 ArrayList<Site> sites = data.getParcelableArrayListExtra(
-                        SearchSites.BKEY_SEARCH_SITES_BOOKS);
+                        SearchSites.BKEY_DATA);
                 if (sites != null) {
                     SearchCoordinator model =
                             new ViewModelProvider(this).get(SearchCoordinator.class);

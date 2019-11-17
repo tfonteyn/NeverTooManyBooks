@@ -68,5 +68,8 @@ class SearchSitesTest
 
         ArrayList<Site> sites2 = SearchSites.getSites(mContext, SearchSites.ListType.Covers);
         System.out.println(sites2);
+
+        ArrayList<Site> sites3 = SearchSites.getSites(mContext, SearchSites.ListType.AltEditions);
+        System.out.println(sites3);
     }
 }

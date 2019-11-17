@@ -53,8 +53,8 @@ public abstract class BookSearchByIsbnBaseFragment
     }
 
     @Override
-    void onCancelled(final boolean isCancelled) {
-        super.onCancelled(isCancelled);
+    void onCancelled() {
+        super.onCancelled();
 
         startInput();
     }
@@ -114,9 +114,9 @@ public abstract class BookSearchByIsbnBaseFragment
     }
 
     /**
-     * ISBN was already present, Verify what the user wants to do.
+     * ISBN was already present in the database, Verify what the user wants to do.
      *
-     * @param existingId of the book we already have in the database
+     * @param existingId of the book we already have
      */
     private void isbnAlreadyPresent(final long existingId) {
         //noinspection ConstantConditions

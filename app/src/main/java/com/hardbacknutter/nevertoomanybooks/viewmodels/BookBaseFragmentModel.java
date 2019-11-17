@@ -66,19 +66,15 @@ public class BookBaseFragmentModel
         extends ViewModel
         implements ActivityResultDataModel {
 
-    private final MutableLiveData<Object> mUserMessage = new MutableLiveData<>();
+    private final MutableLiveData<String> mUserMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
-
-    /** Database Access. */
-    private DAO mDb;
-
-    /** Flag to indicate we're dirty. */
-    private boolean mIsDirty;
-
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultData = new Intent();
-
+    /** Database Access. */
+    private DAO mDb;
+    /** Flag to indicate we're dirty. */
+    private boolean mIsDirty;
     /**
      * The Book this model represents. The only time this can be {@code null}
      * is when this model is just initialized, or when the Book was deleted.
@@ -414,7 +410,7 @@ public class BookBaseFragmentModel
         return mPricePaidCurrencies;
     }
 
-    public MutableLiveData<Object> getUserMessage() {
+    public MutableLiveData<String> getUserMessage() {
         return mUserMessage;
     }
 
@@ -428,11 +424,11 @@ public class BookBaseFragmentModel
 
                 @Override
                 public void onFinished(@NonNull final FinishMessage<Integer> message) {
+                    Context context = App.getLocalizedAppContext();
                     switch (message.status) {
                         case Success:
                         case Failed: {
-                            String msg = GoodreadsTasks.handleResult(App.getLocalizedAppContext(),
-                                                                     message);
+                            String msg = GoodreadsTasks.handleResult(context, message);
                             if (msg != null) {
                                 mUserMessage.setValue(msg);
                             } else {
@@ -442,7 +438,8 @@ public class BookBaseFragmentModel
                             break;
                         }
                         case Cancelled: {
-                            mUserMessage.setValue(R.string.progress_end_cancelled);
+                            mUserMessage
+                                    .setValue(context.getString(R.string.progress_end_cancelled));
                             break;
                         }
                     }

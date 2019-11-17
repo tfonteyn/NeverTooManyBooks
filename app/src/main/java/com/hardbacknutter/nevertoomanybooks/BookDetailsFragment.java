@@ -350,120 +350,122 @@ public class BookDetailsFragment
         }
 
         super.initFields();
-        Fields mFields = mBookDetailsFragmentModel.getFields();
+        Fields fields = mBookDetailsFragmentModel.getFields();
         // already initialised ?
-        if (!mFields.isEmpty()) {
+        if (!fields.isEmpty()) {
             //URGENT: remove log message soon
-            Log.d(TAG, "already initialised");
+            Log.d(TAG, "initFields|already initialised");
             return;
+        } else {
+            Log.d(TAG, "initFields|defining all fields");
         }
 
         // A DateFieldFormatter can be shared between multiple fields.
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
         // book fields
-        mFields.addString(R.id.title, mTitleView, DBDefinitions.KEY_TITLE);
+        fields.addString(R.id.title, mTitleView, DBDefinitions.KEY_TITLE);
 
         // defined, but fetched manually
-        mFields.addString(R.id.author, mAuthorView, "", DBDefinitions.KEY_FK_AUTHOR)
-               .setShowHtml(true);
+        fields.addString(R.id.author, mAuthorView, "", DBDefinitions.KEY_FK_AUTHOR)
+              .setShowHtml(true);
 
         // defined, but fetched manually
-        mFields.addString(R.id.series, mSeriesView, "", DBDefinitions.KEY_SERIES_TITLE)
-               .setRelatedFields(R.id.lbl_series);
+        fields.addString(R.id.series, mSeriesView, "", DBDefinitions.KEY_SERIES_TITLE)
+              .setRelatedFields(R.id.lbl_series);
 
-        mFields.addString(R.id.isbn, mIsbnView, DBDefinitions.KEY_ISBN)
-               .setRelatedFields(R.id.lbl_isbn);
+        fields.addString(R.id.isbn, mIsbnView, DBDefinitions.KEY_ISBN)
+              .setRelatedFields(R.id.lbl_isbn);
 
-        mFields.addString(R.id.description, mDescriptionView, DBDefinitions.KEY_DESCRIPTION)
-               .setShowHtml(true)
-               .setRelatedFields(R.id.lbl_description);
+        fields.addString(R.id.description, mDescriptionView, DBDefinitions.KEY_DESCRIPTION)
+              .setShowHtml(true)
+              .setRelatedFields(R.id.lbl_description);
 
-        mFields.addBoolean(R.id.cbx_anthology, mIsAnthologyCbx, Book.HAS_MULTIPLE_WORKS)
-               .setRelatedFields(R.id.lbl_anthology);
+        fields.addBoolean(R.id.cbx_anthology, mIsAnthologyCbx, Book.HAS_MULTIPLE_WORKS)
+              .setRelatedFields(R.id.lbl_anthology);
         // not added here: actual TOC which is non-text
 
-        mFields.addString(R.id.genre, mGenreView, DBDefinitions.KEY_GENRE)
-               .setRelatedFields(R.id.lbl_genre);
+        fields.addString(R.id.genre, mGenreView, DBDefinitions.KEY_GENRE)
+              .setRelatedFields(R.id.lbl_genre);
 
-        mFields.addString(R.id.language, mLanguageView, DBDefinitions.KEY_LANGUAGE)
-               .setFormatter(new Fields.LanguageFormatter())
-               .setRelatedFields(R.id.lbl_language);
+        fields.addString(R.id.language, mLanguageView, DBDefinitions.KEY_LANGUAGE)
+              .setFormatter(new Fields.LanguageFormatter())
+              .setRelatedFields(R.id.lbl_language);
 
         //noinspection ConstantConditions
-        mFields.addString(R.id.pages, mPagesView, DBDefinitions.KEY_PAGES)
-               .setFormatter(new Fields.PagesFormatter(getContext()));
+        fields.addString(R.id.pages, mPagesView, DBDefinitions.KEY_PAGES)
+              .setFormatter(new Fields.PagesFormatter(getContext()));
 
-        mFields.addString(R.id.format, mFormatView, DBDefinitions.KEY_FORMAT);
+        fields.addString(R.id.format, mFormatView, DBDefinitions.KEY_FORMAT);
 
-        mFields.addString(R.id.color, mColorView, DBDefinitions.KEY_COLOR);
+        fields.addString(R.id.color, mColorView, DBDefinitions.KEY_COLOR);
 
-        mFields.addString(R.id.publisher, mPublisherView, DBDefinitions.KEY_PUBLISHER);
+        fields.addString(R.id.publisher, mPublisherView, DBDefinitions.KEY_PUBLISHER);
 
-        mFields.addString(R.id.date_published, mDatePublishedView, DBDefinitions.KEY_DATE_PUBLISHED)
+        fields.addString(R.id.date_published, mDatePublishedView, DBDefinitions.KEY_DATE_PUBLISHED)
                .setFormatter(dateFormatter)
                .setRelatedFields(R.id.lbl_date_published);
 
-        mFields.addString(R.id.first_publication, mFirstPubView,
-                          DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
-               .setFormatter(dateFormatter)
-               .setRelatedFields(R.id.lbl_first_publication);
+        fields.addString(R.id.first_publication, mFirstPubView,
+                         DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
+              .setFormatter(dateFormatter)
+              .setRelatedFields(R.id.lbl_first_publication);
 
-        mFields.addString(R.id.print_run, mPrintRunView, DBDefinitions.KEY_PRINT_RUN)
-               .setRelatedFields(R.id.lbl_print_run);
+        fields.addString(R.id.print_run, mPrintRunView, DBDefinitions.KEY_PRINT_RUN)
+              .setRelatedFields(R.id.lbl_print_run);
 
         // defined, but fetched manually
-        mFields.addMonetary(R.id.price_listed, mPriceListedView, "", DBDefinitions.KEY_PRICE_LISTED)
-               .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
+        fields.addMonetary(R.id.price_listed, mPriceListedView, "", DBDefinitions.KEY_PRICE_LISTED)
+              .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
 
-        mFields.addString(R.id.coverImage, mCoverImageView, DBDefinitions.KEY_BOOK_UUID,
-                          UniqueId.BKEY_IMAGE)
-               .setScale(IMAGE_SCALE);
+        fields.addString(R.id.coverImage, mCoverImageView, DBDefinitions.KEY_BOOK_UUID,
+                         UniqueId.BKEY_IMAGE)
+              .setScale(IMAGE_SCALE);
 
         // Personal fields
-        mFields.addString(R.id.date_acquired, mDateAcquiredView, DBDefinitions.KEY_DATE_ACQUIRED)
-               .setFormatter(dateFormatter)
-               .setRelatedFields(R.id.lbl_date_acquired);
+        fields.addString(R.id.date_acquired, mDateAcquiredView, DBDefinitions.KEY_DATE_ACQUIRED)
+              .setFormatter(dateFormatter)
+              .setRelatedFields(R.id.lbl_date_acquired);
 
-        mFields.addLong(R.id.edition, mEditionView, DBDefinitions.KEY_EDITION_BITMASK)
-               .setFormatter(new Fields.BitMaskFormatter(Book.getEditions(getContext())))
-               .setRelatedFields(R.id.lbl_edition);
+        fields.addLong(R.id.edition, mEditionView, DBDefinitions.KEY_EDITION_BITMASK)
+              .setFormatter(new Fields.BitMaskFormatter(Book.getEditions(getContext())))
+              .setRelatedFields(R.id.lbl_edition);
 
-        mFields.addString(R.id.location, mLocationView, DBDefinitions.KEY_LOCATION)
-               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
+        fields.addString(R.id.location, mLocationView, DBDefinitions.KEY_LOCATION)
+              .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
-        mFields.addFloat(R.id.rating, mRatingView, DBDefinitions.KEY_RATING)
-               .setRelatedFields(R.id.lbl_rating);
+        fields.addFloat(R.id.rating, mRatingView, DBDefinitions.KEY_RATING)
+              .setRelatedFields(R.id.lbl_rating);
 
-        mFields.addString(R.id.notes, mNotesView, DBDefinitions.KEY_PRIVATE_NOTES)
-               .setShowHtml(true)
-               .setRelatedFields(R.id.lbl_notes);
+        fields.addString(R.id.notes, mNotesView, DBDefinitions.KEY_PRIVATE_NOTES)
+              .setShowHtml(true)
+              .setRelatedFields(R.id.lbl_notes);
 
-        mFields.addString(R.id.read_start, mDateReadStartView, DBDefinitions.KEY_READ_START)
-               .setFormatter(dateFormatter)
-               .setRelatedFields(R.id.lbl_read_start);
+        fields.addString(R.id.read_start, mDateReadStartView, DBDefinitions.KEY_READ_START)
+              .setFormatter(dateFormatter)
+              .setRelatedFields(R.id.lbl_read_start);
 
-        mFields.addString(R.id.read_end, mDateReadEndView, DBDefinitions.KEY_READ_END)
-               .setFormatter(dateFormatter)
-               .setRelatedFields(R.id.lbl_read_end);
-
-        // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.addBoolean(R.id.cbx_read, mReadCheckbox, DBDefinitions.KEY_READ);
+        fields.addString(R.id.read_end, mDateReadEndView, DBDefinitions.KEY_READ_END)
+              .setFormatter(dateFormatter)
+              .setRelatedFields(R.id.lbl_read_end);
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.addBoolean(R.id.cbx_signed, mSignedCbx, DBDefinitions.KEY_SIGNED)
-               .setRelatedFields(R.id.lbl_signed);
+        fields.addBoolean(R.id.cbx_read, mReadCheckbox, DBDefinitions.KEY_READ);
+
+        // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
+        fields.addBoolean(R.id.cbx_signed, mSignedCbx, DBDefinitions.KEY_SIGNED)
+              .setRelatedFields(R.id.lbl_signed);
 
         // defined, but fetched manually
-        mFields.addMonetary(R.id.price_paid, mPricePaidView, "", DBDefinitions.KEY_PRICE_PAID)
-               .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid);
+        fields.addMonetary(R.id.price_paid, mPricePaidView, "", DBDefinitions.KEY_PRICE_PAID)
+              .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid);
 
         // defined, but fetched manually
-        mFields.addString(R.id.bookshelves, mBookshelvesView, "", DBDefinitions.KEY_BOOKSHELF)
-               .setRelatedFields(R.id.lbl_bookshelves);
+        fields.addString(R.id.bookshelves, mBookshelvesView, "", DBDefinitions.KEY_BOOKSHELF)
+              .setRelatedFields(R.id.lbl_bookshelves);
 
         // defined, but fetched manually
-        mFields.addString(R.id.loaned_to, mLoanedToView, "", DBDefinitions.KEY_LOANEE);
+        fields.addString(R.id.loaned_to, mLoanedToView, "", DBDefinitions.KEY_LOANEE);
     }
 
     /**

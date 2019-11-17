@@ -94,6 +94,21 @@ public final class Site
     }
 
     /**
+     * Constructor. Use static method instead.
+     *
+     * @param id      Internal ID, bitmask based
+     * @param name    user visible name
+     * @param enabled flag
+     */
+    public Site(@SearchSites.Id final int id,
+                @NonNull final String name,
+                final boolean enabled) {
+        this.id = id;
+        mName = name;
+        mEnabled = enabled;
+    }
+
+    /**
      * {@link Parcelable} Constructor.
      * <p>
      * Reminder: this is IPC.. so don't load prefs!
@@ -107,52 +122,49 @@ public final class Site
     }
 
     /**
-     * Create the Site with whatever suitable default values.
-     * If previously stored to SharedPreferences, the stored values will be used instead.
+     * Create a Site.
      *
-     * @param context          Current context
-     * @param id               Internal ID, bitmask based
-     * @param enabledByDefault flag
+     * @param id      Internal ID, bitmask based
+     * @param enabled flag
+     *
+     * @return site
      */
-    static Site newSite(@NonNull final Context context,
-                        @SearchSites.Id final int id,
-                        final boolean loadPrefs,
-                        final boolean enabledByDefault) {
-        Site site = new Site(id, SearchSites.getName(id));
-        if (loadPrefs) {
-            site.loadFromPrefs(context);
-        } else {
-            site.setEnabled(enabledByDefault);
-        }
-        return site;
-    }
+    static Site newSite(@SearchSites.Id final int id,
+                        final boolean enabled) {
 
-    public static Site newSite(@SearchSites.Id final int id) {
-        return new Site(id, SearchSites.getName(id));
+        String name = SearchSites.getName(id);
+        return new Site(id, name, enabled);
     }
 
     /**
-     * Create the Site with whatever suitable default values.
-     * If previously stored to SharedPreferences, the stored values will be used instead.
+     * Create a Site.
      *
-     * @param context          Current context
-     * @param id               Internal ID, bitmask based
-     * @param enabledByDefault flag
+     * @param id         Internal ID, bitmask based
+     * @param nameSuffix suffix for the name (used as a key in preferences)
+     * @param enabled    flag
+     *
+     * @return site
      */
-    static Site newCoverSite(@NonNull final Context context,
-                             @SearchSites.Id final int id,
-                             final boolean loadPrefs,
-                             final boolean enabledByDefault) {
+    static Site newSite(@SearchSites.Id final int id,
+                        @NonNull final String nameSuffix,
+                        final boolean enabled) {
 
-        // Reminder: the name is used for preferences... so the suffix here must be hardcoded.
-        String name = SearchSites.getName(id) + "-Covers";
-        Site site = new Site(id, name);
-        if (loadPrefs) {
-            site.loadFromPrefs(context);
-        } else {
-            site.setEnabled(enabledByDefault);
+        String name = SearchSites.getName(id);
+        if (!nameSuffix.isEmpty()) {
+            name += "-" + nameSuffix;
         }
-        return site;
+        return new Site(id, name, enabled);
+    }
+
+    /**
+     * Create a Site using all defaults.
+     *
+     * @param id Internal ID, bitmask based
+     *
+     * @return site
+     */
+    public static Site newSite(@SearchSites.Id final int id) {
+        return new Site(id, SearchSites.getName(id));
     }
 
     /**
@@ -168,7 +180,7 @@ public final class Site
         return mSearchEngine;
     }
 
-    private void loadFromPrefs(@NonNull final Context context) {
+    public void loadFromPrefs(@NonNull final Context context) {
         String lcName = PREF_PREFIX + mName.toLowerCase(Locale.getDefault()) + '.';
         mEnabled = PreferenceManager.getDefaultSharedPreferences(context)
                                     .getBoolean(lcName + "enabled", mEnabled);

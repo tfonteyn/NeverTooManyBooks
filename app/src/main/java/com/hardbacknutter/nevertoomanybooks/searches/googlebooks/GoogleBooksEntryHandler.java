@@ -32,7 +32,6 @@ import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -47,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
@@ -64,16 +64,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  *   <id>http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ</id>
  *   <updated>2010-02-28T10:49:24.000Z</updated>
  *   <category scheme='http://schemas.google.com/g/2005#kind'
- *      term='http://schemas.google.com/books/2008#volume'/>
+ *     term='http://schemas.google.com/books/2008#volume'/>
  *   <title type='text'>The trigger</title>
  *   <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *      href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
+ *     href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
  *   <link rel='http://schemas.google.com/books/2008/annotation'
- *      type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *     type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
  *   <link rel='alternate' type='text/html'
- *      href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1'/>
+ *     href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1'/>
  *   <link rel='self' type='application/atom+xml'
- *      href='http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ'/>
+ *     href='http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ'/>
  *   <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
  *   <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
  *   <gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
@@ -115,13 +115,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  *      &amp;sig=ACfU3U1hcfy_NvWZbH46OzWwmQQCDV46lA
  *      &amp;source=gbs_gdata'/>
  * <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *      href='http://books.google.com/books?id=lf2EMetoLugC&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
+ *     href='http://books.google.com/books?id=lf2EMetoLugC&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
  * <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
- *       href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *      href='http://www.google.com/books/feeds/users/me/volumes'/>
  * <link rel='alternate' type='text/html'
- *       href='http://books.google.com/books?id=lf2EMetoLugC&amp;ie=ISO-8859-1'/>
+ *      href='http://books.google.com/books?id=lf2EMetoLugC&amp;ie=ISO-8859-1'/>
  * <link rel='self' type='application/atom+xml'
- *       href='http://www.google.com/books/feeds/volumes/lf2EMetoLugC'/>
+ *      href='http://www.google.com/books/feeds/volumes/lf2EMetoLugC'/>
  * <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
  * <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
  * <gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
@@ -219,13 +219,17 @@ class GoogleBooksEntryHandler
 
     /** flag if we should fetch a thumbnail. */
     private final boolean mFetchThumbnail;
-    private final String mIsbn;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
+
     /** accumulate all authors for this book. */
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
+    /** accumulate all Publishers for this book. */
+    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
+
+
     /** XML content. */
     private final StringBuilder mBuilder = new StringBuilder();
 
@@ -239,14 +243,11 @@ class GoogleBooksEntryHandler
      *
      * @param bookData       Bundle to save results in
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
-     * @param isbn           of the book
      */
     GoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
-                            final boolean fetchThumbnail,
-                            @Nullable final String isbn) {
+                            final boolean fetchThumbnail) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
-        mIsbn = isbn;
 
         mLocale = App.getSystemLocale();
     }
@@ -271,7 +272,12 @@ class GoogleBooksEntryHandler
     @Override
     public void endDocument() {
 
-        mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+        if (!mAuthors.isEmpty()) {
+            mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+        }
+        if (!mPublishers.isEmpty()) {
+            mBookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
+        }
     }
 
     /**
@@ -296,7 +302,7 @@ class GoogleBooksEntryHandler
                 String name = mBookData.getString(DBDefinitions.KEY_ISBN, "");
                 if (name.isEmpty()) {
                     // just use something...
-                    name = mIsbn != null ? mIsbn : String.valueOf(System.currentTimeMillis());
+                    name = String.valueOf(System.currentTimeMillis());
                 }
                 String fileSpec = ImageUtils.saveImage(coverUrl, name, FILENAME_SUFFIX, null);
                 if (fileSpec != null) {
@@ -381,13 +387,11 @@ class GoogleBooksEntryHandler
                 break;
 
             case XML_AUTHOR:
-                // take all we find
                 mAuthors.add(Author.fromString(mBuilder.toString()));
                 break;
 
             case XML_PUBLISHER:
-                // there can be multiple listed, we only take the first one found
-                addIfNotPresent(DBDefinitions.KEY_PUBLISHER, mBuilder.toString());
+                mPublishers.add(Publisher.fromString(mBuilder.toString()));
                 break;
 
             case XML_DATE_PUBLISHED:

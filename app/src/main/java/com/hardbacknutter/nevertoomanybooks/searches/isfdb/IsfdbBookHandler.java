@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
@@ -149,6 +150,9 @@ public class IsfdbBookHandler
     /** accumulate all Series for this book. */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
+    /** accumulate all Publishers for this book. */
+    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
+
     private final String mUnknown;
     /** The fully qualified ISFDB search url. */
     private String mPath;
@@ -535,11 +539,11 @@ public class IsfdbBookHandler
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
                     Elements as = li.select("a");
                     if (as != null) {
-                        // only use the first one (never seen multiple up to today)
-                        Element a = as.first();
-                        bookData.putString(DBDefinitions.KEY_PUBLISHER, a.text());
-//                        bookData.putString(BookField.PUBLISHER_ID,
-//                                           stripNumber(a.attr("href"),'?'));
+                        for (Element a : as) {
+                            Publisher publisher = Publisher.fromString(a.text());
+//                            publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                            mPublishers.add(publisher);
+                        }
                     }
 
                 } else if ("Pub. Series:".equalsIgnoreCase(fieldName)) {
@@ -657,11 +661,20 @@ public class IsfdbBookHandler
 
         // the table of content
         ArrayList<TocEntry> tocEntries = getTocList(bookData, addSeriesFromToc);
-        bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, tocEntries);
+        if (!tocEntries.isEmpty()) {
+            bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, tocEntries);
+        }
 
         // store accumulated ArrayList's, do this *after* we got the TOC
-        bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
-        bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+        if (!mAuthors.isEmpty()) {
+            bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+        }
+        if (!mSeries.isEmpty()) {
+            bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+        }
+        if (!mPublishers.isEmpty()) {
+            bookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
+        }
 
         // Anthology type: make sure TOC_MULTIPLE_AUTHORS is correct.
         if (!tocEntries.isEmpty()) {

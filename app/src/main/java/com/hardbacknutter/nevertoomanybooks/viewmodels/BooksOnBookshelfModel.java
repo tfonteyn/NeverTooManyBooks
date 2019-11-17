@@ -94,7 +94,7 @@ public class BooksOnBookshelfModel
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
     /** Allows progress message from a task to update the user. */
-    private final MutableLiveData<Object> mUserMessage = new MutableLiveData<>();
+    private final MutableLiveData<String> mUserMessage = new MutableLiveData<>();
     /** Inform user that Goodreads needs authentication/authorization. */
     private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
 
@@ -536,11 +536,11 @@ public class BooksOnBookshelfModel
             // Criteria supported by FTS
             blb.setFilter(mSearchCriteria.ftsAuthor,
                           mSearchCriteria.ftsTitle,
-                          mSearchCriteria.series,
+                          mSearchCriteria.ftsSeries,
                           mSearchCriteria.ftsKeywords);
 
             // non-FTS
-            //blb.setFilterOnSeriesName(mSearchCriteria.series);
+            //blb.setFilterOnSeriesName(mSearchCriteria.ftsSeries);
             blb.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
         }
 
@@ -563,7 +563,7 @@ public class BooksOnBookshelfModel
      *
      * @return a BuilderHolder with result fields populated.
      */
-    public MutableLiveData<BuilderHolder> getBuilderResult() {
+    public MutableLiveData<BuilderHolder> getBooklist() {
         return mBuilderResult;
     }
 
@@ -731,7 +731,7 @@ public class BooksOnBookshelfModel
         return false;
     }
 
-    public MutableLiveData<Object> getUserMessage() {
+    public MutableLiveData<String> getUserMessage() {
         return mUserMessage;
     }
 
@@ -745,11 +745,11 @@ public class BooksOnBookshelfModel
 
                 @Override
                 public void onFinished(@NonNull final FinishMessage<Integer> message) {
+                    Context context = App.getLocalizedAppContext();
                     switch (message.status) {
                         case Success:
                         case Failed: {
-                            String msg = GoodreadsTasks.handleResult(App.getLocalizedAppContext(),
-                                                                     message);
+                            String msg = GoodreadsTasks.handleResult(context, message);
                             if (msg != null) {
                                 mUserMessage.setValue(msg);
                             } else {
@@ -759,7 +759,8 @@ public class BooksOnBookshelfModel
                             break;
                         }
                         case Cancelled: {
-                            mUserMessage.setValue(R.string.progress_end_cancelled);
+                            mUserMessage
+                                    .setValue(context.getString(R.string.progress_end_cancelled));
                             break;
                         }
                     }
@@ -808,7 +809,7 @@ public class BooksOnBookshelfModel
          * Supported in the builder, but not yet user-settable.
          */
         @Nullable
-        String series;
+        String ftsSeries;
 
         /**
          * Name of the person we loaned books to, to use in search query.
@@ -831,7 +832,7 @@ public class BooksOnBookshelfModel
             ftsAuthor = null;
             ftsTitle = null;
 
-            series = null;
+            ftsSeries = null;
             loanee = null;
 
             bookList = null;
@@ -885,12 +886,12 @@ public class BooksOnBookshelfModel
             if (bundle.containsKey(UniqueId.BKEY_SEARCH_AUTHOR)) {
                 ftsAuthor = bundle.getString(UniqueId.BKEY_SEARCH_AUTHOR);
             }
-            if (bundle.containsKey(UniqueId.BKEY_SEARCH_TITLE)) {
-                ftsTitle = bundle.getString(UniqueId.BKEY_SEARCH_TITLE);
+            if (bundle.containsKey(DBDefinitions.KEY_TITLE)) {
+                ftsTitle = bundle.getString(DBDefinitions.KEY_TITLE);
             }
 
             if (bundle.containsKey(DBDefinitions.KEY_SERIES_TITLE)) {
-                series = bundle.getString(DBDefinitions.KEY_SERIES_TITLE);
+                ftsSeries = bundle.getString(DBDefinitions.KEY_SERIES_TITLE);
             }
             if (bundle.containsKey(DBDefinitions.KEY_LOANEE)) {
                 loanee = bundle.getString(DBDefinitions.KEY_LOANEE);
@@ -909,9 +910,9 @@ public class BooksOnBookshelfModel
         public void to(@NonNull final Intent intent) {
             intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, ftsKeywords)
                   .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, ftsAuthor)
-                  .putExtra(UniqueId.BKEY_SEARCH_TITLE, ftsTitle)
 
-                  .putExtra(DBDefinitions.KEY_SERIES_TITLE, series)
+                  .putExtra(DBDefinitions.KEY_TITLE, ftsTitle)
+                  .putExtra(DBDefinitions.KEY_SERIES_TITLE, ftsSeries)
                   .putExtra(DBDefinitions.KEY_LOANEE, loanee)
 
                   .putExtra(UniqueId.BKEY_ID_LIST, bookList);
@@ -921,7 +922,7 @@ public class BooksOnBookshelfModel
             return (ftsKeywords == null || ftsKeywords.isEmpty())
                    && (ftsAuthor == null || ftsAuthor.isEmpty())
                    && (ftsTitle == null || ftsTitle.isEmpty())
-                   && (series == null || series.isEmpty())
+                   && (ftsSeries == null || ftsSeries.isEmpty())
                    && (loanee == null || loanee.isEmpty())
                    && (bookList == null || bookList.isEmpty());
         }

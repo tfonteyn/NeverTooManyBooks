@@ -162,9 +162,8 @@ public class StartupActivity
 
     private void startTasks() {
         if (mModel.isStartupTasksShouldBeStarted()) {
-            // listen for progress messages
-            mModel.getTaskProgressMessage()
-                  .observe(this, message -> mProgressMessageView.setText(message));
+            mModel.getTaskProgressMessage().observe(this, message ->
+                    mProgressMessageView.setText(message));
 
             // when tasks are done, move on to next startup-stage
             mModel.getTaskFinished().observe(this, finished -> {

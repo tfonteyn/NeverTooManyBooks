@@ -137,9 +137,9 @@ public class ImportExportFragment
             autoStartBackup = args.getBoolean(BKEY_AUTO_START_BACKUP);
         }
 
-        // Activity scope
+        mModel = new ViewModelProvider(this).get(AdminModel.class);
+
         //noinspection ConstantConditions
-        mModel = new ViewModelProvider(getActivity()).get(AdminModel.class);
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
         FragmentManager fm = getChildFragmentManager();
@@ -182,8 +182,7 @@ public class ImportExportFragment
 
     private void initImportHelperModel() {
         if (mImportHelperModel == null) {
-            //noinspection ConstantConditions
-            mImportHelperModel = new ViewModelProvider(getActivity()).get(ImportHelperModel.class);
+            mImportHelperModel = new ViewModelProvider(this).get(ImportHelperModel.class);
             mImportHelperModel.getTaskProgressMessage()
                               .observe(getViewLifecycleOwner(), this::onTaskProgressMessage);
             mImportHelperModel.getTaskFinishedMessage()
@@ -193,8 +192,7 @@ public class ImportExportFragment
 
     private void initExportHelperModel() {
         if (mExportHelperModel == null) {
-            //noinspection ConstantConditions
-            mExportHelperModel = new ViewModelProvider(getActivity()).get(ExportHelperModel.class);
+            mExportHelperModel = new ViewModelProvider(this).get(ExportHelperModel.class);
             mExportHelperModel.getTaskProgressMessage()
                               .observe(getViewLifecycleOwner(), this::onTaskProgressMessage);
             mExportHelperModel.getTaskFinishedMessage()

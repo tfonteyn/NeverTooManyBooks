@@ -103,16 +103,17 @@ public final class UniqueId {
     /** Bundle key for {@code ParcelableArrayList<Bookshelf>}. */
     public static final String BKEY_BOOKSHELF_ARRAY = "bookshelf_array";
 
+
+    /**
+     * Bundle key for Author search text
+     * (all DB KEY's and the ARRAY key is for authors with verified names).
+     */
+    public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
     /** Bundle key for generic search text. */
     public static final String BKEY_SEARCH_TEXT = "searchText";
-    /** Bundle key for Author search text. */
-    public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
-    /** Bundle key for Title search text. */
-    public static final String BKEY_SEARCH_TITLE = "searchTitle";
-    /** Bundle key for Series title search text. */
-    public static final String BKEY_SEARCH_SERIES_TITLE = "searchSeriesTitle";
-    /** Bundle key for Book native swe site id search text. */
-    public static final String BKEY_SEARCH_BOOK_NATIVE_ID = "";
+
+    /** Bundle key for Book native website id search text. */
+    public static final String BKEY_BOOK_NATIVE_ID = "";
 
     /**
      * Single fileSpecs or uri.

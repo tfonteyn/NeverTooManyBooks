@@ -90,6 +90,7 @@ public final class SearchSites {
     /** Site. */
     public static final int AMAZON = 1 << 1;
     /** Site. */
+    @SuppressWarnings("WeakerAccess")
     public static final int GOOGLE_BOOKS = 1;
     /** Site. */
     public static final int LIBRARY_THING = 1 << 2;
@@ -100,6 +101,7 @@ public final class SearchSites {
     /** Site. */
     public static final int OPEN_LIBRARY = 1 << 5;
     /** Site: Dutch language books & comics. */
+    @SuppressWarnings("WeakerAccess")
     public static final int KB_NL = 1 << 6;
     /** Site: Dutch language (and to an extend French) comics. */
     public static final int STRIP_INFO_BE = 1 << 7;
@@ -110,25 +112,38 @@ public final class SearchSites {
     /** tag. */
     private static final String TAG = "SearchSites";
     /** Used to pass a list of sites around. */
-    public static final String BKEY_SEARCH_SITES_BOOKS = TAG + ":books";
+    public static final String BKEY_DATA = TAG + ":data";
     /** Used to pass a list of sites around. */
-    public static final String BKEY_SEARCH_SITES_COVERS = TAG + ":covers";
+    public static final String BKEY_COVERS = TAG + ":covers";
+    /** Used to pass a list of sites around. */
+    public static final String BKEY_ALT_ED = TAG + ":alt_ed";
+
     private static final String PREFS_ORDER_PREFIX = "search.siteOrder.";
-    private static final String PREFS_SEARCH_SITE_ORDER_DATA = PREFS_ORDER_PREFIX + "data";
-    private static final String PREFS_SEARCH_SITE_ORDER_COVERS = PREFS_ORDER_PREFIX + "covers";
+    private static final String PREFS_ORDER_DATA = PREFS_ORDER_PREFIX + "data";
+    private static final String PREFS_ORDER_COVERS = PREFS_ORDER_PREFIX + "covers";
+    private static final String PREFS_ORDER_ALT_ED = PREFS_ORDER_PREFIX + "alt_ed";
     private static final String SEP = ",";
+
     /** Dutch language site. */
     private static final String NLD = "nld";
 
     // use a map...
     //private static EnumMap<ListType,ArrayList<Site>> sLists = new EnumMap<>(ListType.class);
     private static final String DATA_RELIABILITY_ORDER;
-    /** Cached copy of the users preferred search site order. */
+    /** Name suffix for Cover websites. */
+    private static final String SUFFIX_COVERS = "Covers";
+    /** Name suffix for Alternative Editions websites. */
+    private static final String SUFFIX_ALT_ED = "AltEd";
+
+    /** Cached copy of the users preferred site order. */
     private static ArrayList<Site> sDataSearchOrder;
-    /** Cached copy of the users preferred search site order specific for covers. */
+    /** Cached copy of the users preferred site order specific for covers. */
     private static ArrayList<Site> sCoverSearchOrder;
+    /** Cached copy of the users preferred site order specific for alternative-editions. */
+    private static ArrayList<Site> sAltEditionsSearchOrder;
 
     static {
+        // order is hardcoded based on experience.
         DATA_RELIABILITY_ORDER =
                 "" + ISFDB
                 + ',' + STRIP_INFO_BE
@@ -242,6 +257,8 @@ public final class SearchSites {
      * is beneficial/required.
      *
      * @param context     Current context
+     * @param required    {@code true} if we <strong>must</strong> have access to LT.
+     *                    {@code false} if it would be beneficial.
      * @param prefSuffix  Tip preference marker
      * @param searchSites sites
      *
@@ -249,17 +266,15 @@ public final class SearchSites {
      */
     @SuppressWarnings("UnusedReturnValue")
     public static boolean promptToRegister(@NonNull final Context context,
+                                           final boolean required,
                                            @NonNull final String prefSuffix,
-                                           @SearchSites.Id final int searchSites) {
+                                           @NonNull final ArrayList<Site> searchSites) {
         boolean showingAlert = false;
-
-        if ((searchSites & GOODREADS) != 0) {
-            showingAlert = GoodreadsManager.promptToRegister(context, false, prefSuffix);
-        }
-
-        if ((searchSites & LIBRARY_THING) != 0) {
-            showingAlert = showingAlert
-                           || LibraryThingManager.promptToRegister(context, false, prefSuffix);
+        for (Site site : searchSites) {
+            if (site.isEnabled()) {
+                showingAlert |= site.getSearchEngine()
+                                    .promptToRegister(context, required, prefSuffix);
+            }
         }
 
         return showingAlert;
@@ -280,44 +295,53 @@ public final class SearchSites {
         ArrayList<Site> list = new ArrayList<>();
 
         switch (listType) {
-            case Data:
+            case Data: {
                 if (ENABLE_AMAZON_AWS) {
-                    list.add(Site.newSite(context, AMAZON, loadPrefs, false));
+                    list.add(Site.newSite(AMAZON, false));
                 }
-                list.add(Site.newSite(context, GOODREADS, loadPrefs, true));
-                list.add(Site.newSite(context, GOOGLE_BOOKS, loadPrefs, true));
-                list.add(Site.newSite(context, LIBRARY_THING, loadPrefs, true));
-                list.add(Site.newSite(context, ISFDB, loadPrefs, true));
+                list.add(Site.newSite(GOODREADS, true));
+                list.add(Site.newSite(GOOGLE_BOOKS, true));
+                list.add(Site.newSite(LIBRARY_THING, true));
+                list.add(Site.newSite(ISFDB, true));
                 // Dutch.
-                list.add(Site.newSite(context, STRIP_INFO_BE, loadPrefs, isLang(NLD)));
+                list.add(Site.newSite(STRIP_INFO_BE, isLang(NLD)));
                 // Dutch.
-                list.add(Site.newSite(context, KB_NL, loadPrefs, isLang(NLD)));
+                list.add(Site.newSite(KB_NL, isLang(NLD)));
                 // Disabled by default as data from this site is not very complete.
-                list.add(Site.newSite(context, OPEN_LIBRARY, loadPrefs, false));
+                list.add(Site.newSite(OPEN_LIBRARY, false));
                 break;
-
-            case Covers:
+            }
+            case Covers: {
                 /*
                  * Default search order for dedicated cover lookup.
                  * These are only used by the {@link CoverBrowserViewModel}.
                  */
-                list.add(Site.newCoverSite(context, ISFDB, loadPrefs, true));
-                list.add(Site.newCoverSite(context, STRIP_INFO_BE, loadPrefs, isLang(NLD)));
-                list.add(Site.newCoverSite(context, GOOGLE_BOOKS, loadPrefs, true));
-                list.add(Site.newCoverSite(context, GOODREADS, loadPrefs, true));
+                list.add(Site.newSite(ISFDB, SUFFIX_COVERS, true));
+                list.add(Site.newSite(STRIP_INFO_BE, SUFFIX_COVERS, isLang(NLD)));
+                list.add(Site.newSite(GOOGLE_BOOKS, SUFFIX_COVERS, true));
+                list.add(Site.newSite(GOODREADS, SUFFIX_COVERS, true));
                 if (ENABLE_AMAZON_AWS) {
-                    list.add(Site.newCoverSite(context, AMAZON, loadPrefs, false));
+                    list.add(Site.newSite(AMAZON, SUFFIX_COVERS, false));
                 }
-                list.add(Site.newCoverSite(context, KB_NL, loadPrefs, isLang(NLD)));
-                list.add(Site.newCoverSite(context, LIBRARY_THING, loadPrefs, false));
-                list.add(Site.newCoverSite(context, OPEN_LIBRARY, loadPrefs, false));
+                list.add(Site.newSite(KB_NL, SUFFIX_COVERS, isLang(NLD)));
+                list.add(Site.newSite(LIBRARY_THING, SUFFIX_COVERS, false));
+                list.add(Site.newSite(OPEN_LIBRARY, SUFFIX_COVERS, false));
                 break;
+            }
+
+            case AltEditions: {
+                list.add(Site.newSite(LIBRARY_THING, SUFFIX_ALT_ED, true));
+                break;
+            }
 
             default:
                 throw new IllegalStateException();
         }
 
         if (loadPrefs) {
+            for (Site site : list) {
+                site.loadFromPrefs(context);
+            }
             String order = PreferenceManager.getDefaultSharedPreferences(context)
                                             .getString(listType.getKey(), null);
             if (order != null) {
@@ -362,6 +386,13 @@ public final class SearchSites {
                 }
                 break;
 
+            case AltEditions:
+                if (sAltEditionsSearchOrder != null) {
+                    //noinspection unchecked
+                    return (ArrayList<Site>) sAltEditionsSearchOrder.clone();
+                }
+                break;
+
             default:
                 throw new IllegalStateException();
         }
@@ -377,6 +408,10 @@ public final class SearchSites {
 
             case Covers:
                 sCoverSearchOrder = sites;
+                break;
+
+            case AltEditions:
+                sAltEditionsSearchOrder = sites;
                 break;
 
             default:
@@ -462,6 +497,10 @@ public final class SearchSites {
                 sCoverSearchOrder = newList;
                 break;
 
+            case AltEditions:
+                sAltEditionsSearchOrder = newList;
+                break;
+
             default:
                 throw new IllegalStateException();
         }
@@ -479,16 +518,19 @@ public final class SearchSites {
     }
 
     public enum ListType {
-        Data, Covers;
+        Data, Covers, AltEditions;
 
         String getKey() {
             switch (this) {
                 case Covers:
-                    return PREFS_SEARCH_SITE_ORDER_COVERS;
+                    return PREFS_ORDER_COVERS;
+
+                case AltEditions:
+                    return PREFS_ORDER_ALT_ED;
 
                 case Data:
                 default:
-                    return PREFS_SEARCH_SITE_ORDER_DATA;
+                    return PREFS_ORDER_DATA;
             }
         }
     }

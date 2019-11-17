@@ -591,5 +591,14 @@
         <item name="android:src">@drawable/ic_swap_vertical_circle</item>
     </style>
 
+    <!-- An EditText where the user can enter a date manually (i.e. android system). -->
+    <style name="ManualDateEntry">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/indent_compound_button</item>
+        <item name="android:ems">10</item>
+        <item name="android:inputType">date</item>
+    </style>
+
     <!-- *************************************************************************************** -->
 </resources>

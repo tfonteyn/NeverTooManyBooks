@@ -106,6 +106,11 @@ public class StripInfoManager
         return new StripInfoBookHandler().fetchByNativeId(context, nativeId, fetchThumbnail);
     }
 
+    @Override
+    public void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
+        // StripInfo has clean titles and the default cleaner gives false positives.
+    }
+
     @StringRes
     @Override
     public int getNameResId() {

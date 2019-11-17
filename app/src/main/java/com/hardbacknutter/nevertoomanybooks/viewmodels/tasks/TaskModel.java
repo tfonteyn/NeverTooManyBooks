@@ -39,8 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
  * A ViewModel can not actually have a parameter type. So, we use concrete classes, e.g.
  * <pre>
  *  {@code
- *      public class VoidTaskModel
- *          extends TaskModel<Void> {
+ *      public class SomeTypeTaskModel
+ *          extends TaskModel<SomeType> {
  *      }
  *  }
  * </pre>

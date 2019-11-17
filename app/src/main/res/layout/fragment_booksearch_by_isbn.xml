@@ -216,12 +216,10 @@
             app:layout_constraintTop_toBottomOf="@id/key_8"
             tools:ignore="HardcodedText"
             />
-        <!--        app:iconSize="36dp"-->
 
         <Button
             android:id="@+id/btn_search"
             style="@style/IsbnKeyPadButton"
-            android:contentDescription="@string/btn_search"
             app:icon="@drawable/ic_search"
             app:iconGravity="textStart"
             app:layout_constraintEnd_toEndOf="parent"

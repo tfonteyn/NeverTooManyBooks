@@ -104,7 +104,7 @@ public abstract class BookBaseFragment
      *
      * @param needs {@code true} if registration is needed
      */
-    private void needsGoodreads(@Nullable final Boolean needs) {
+    private void showNeedsGoodreads(@Nullable final Boolean needs) {
         if (needs != null && needs) {
             //noinspection ConstantConditions
             RequestAuthTask.needsRegistration(getContext(), mBookModel.getGoodreadsTaskListener());
@@ -113,20 +113,13 @@ public abstract class BookBaseFragment
 
     /**
      * Allows the ViewModel to send us a message to display to the user.
-     * <p>
-     * If the type is {@code Integer} we assume it's a {@code StringRes}
-     * else we do a toString() it.
      *
-     * @param message to display, either a {@code Integer (StringRes)} or a {@code String}
+     * @param message to display
      */
-    private void showUserMessage(@Nullable final Object message) {
+    private void showUserMessage(@Nullable final String message) {
         View view = getView();
-        if (view != null) {
-            if (message instanceof Integer) {
-                UserMessage.show(view, (int) message);
-            } else if (message != null) {
-                UserMessage.show(view, message.toString());
-            }
+        if (view != null && message != null && !message.isEmpty()) {
+            UserMessage.show(view, message);
         }
     }
 
@@ -201,12 +194,6 @@ public abstract class BookBaseFragment
                         // replace current book with the updated one,
                         // ENHANCE: merge if in edit mode.
                         mBookModel.setBook(bookIds.get(0));
-                    } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                            Log.d(TAG, "onActivityResult|REQ_UPDATE_FIELDS_FROM_INTERNET"
-                                       + "|wasCancelled= " + data.getBooleanExtra(
-                                    UniqueId.BKEY_CANCELED, false));
-                        }
                     }
                 }
                 break;
@@ -243,7 +230,7 @@ public abstract class BookBaseFragment
         mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
         mBookModel.init(getArguments());
         mBookModel.getUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
-        mBookModel.getNeedsGoodreads().observe(getViewLifecycleOwner(), this::needsGoodreads);
+        mBookModel.getNeedsGoodreads().observe(getViewLifecycleOwner(), this::showNeedsGoodreads);
 
         initFields();
     }
@@ -267,7 +254,7 @@ public abstract class BookBaseFragment
             }
         }
 
-        // set the View member. URGENT: rotate screen test
+        // set the View member as the Views will be (re)created each time.
         //noinspection ConstantConditions
         getFields().setParentView(getView());
         // and load the content into the views
@@ -300,8 +287,10 @@ public abstract class BookBaseFragment
                         new Intent(getContext(), BookSearchActivity.class)
                                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
                                 .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
+                                // pass the title for displaying to the user
                                 .putExtra(DBDefinitions.KEY_TITLE,
                                           book.getString(DBDefinitions.KEY_TITLE))
+                                // pass the author for displaying to the user
                                 .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
                                           book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
                 startActivityForResult(intentUpdateFields,

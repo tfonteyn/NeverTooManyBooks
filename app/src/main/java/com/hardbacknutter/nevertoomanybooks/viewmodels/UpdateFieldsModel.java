@@ -31,23 +31,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
@@ -60,32 +64,25 @@ import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Ove
 public class UpdateFieldsModel
         extends ViewModel {
 
-//    private static final String TAG = "UpdateFieldsModel";
+    private static final String TAG = "UpdateFieldsModel";
 
     /** which fields to update and how. */
     @NonNull
     private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
-
-    private final MutableLiveData<TaskListener.ProgressMessage> mProgressMessage
-            = new MutableLiveData<>();
-    private MutableLiveData<Intent> mActivityResultData = new MutableLiveData<>();
-
+    private final Handler mHandler = new Handler();
     /** Database Access. */
     private DAO mDb;
-
     /** Sites to search on. */
     private ArrayList<Site> mSearchSites;
     /** Book ID's to fetch. {@code null} for all books. */
     @Nullable
     private ArrayList<Long> mBookIds;
-
-    private Handler mHandler = new Handler();
-
     /** Allows restarting an update task from the given book id onwards. 0 for all. */
     private long mFromBookIdOnwards;
     private UpdateFieldsTask mUpdateTask;
-
-    private TaskListener<Long> mTaskListener = new TaskListener<Long>() {
+    private WeakReference<UpdateFieldsListener> mUpdateFieldsListener;
+    /** Listener for the UpdateFieldsTask. */
+    private final TaskListener<Long> mTaskListener = new TaskListener<Long>() {
         @Override
         public void onFinished(@NonNull final FinishMessage<Long> message) {
             mUpdateTask = null;
@@ -97,44 +94,57 @@ public class UpdateFieldsModel
 
             if (mBookIds != null && mBookIds.size() == 1 && isCancelled) {
                 // single book cancelled, just quit
-                mHandler.post(() -> mActivityResultData.setValue(null));
+                mHandler.post(() -> {
+                    if (mUpdateFieldsListener.get() != null) {
+                        mUpdateFieldsListener.get().onFinished(true, null);
+                    } else {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                            Log.d(TAG, "onFinished|" + Logger.WEAK_REFERENCE_DEAD);
+                        }
+                    }
+                });
                 return;
             }
 
-            Intent resultData = new Intent()
-                    // null if we did 'all books'
-                    // or the ID's (1 or more) of the (hopefully) updated books
-                    .putExtra(UniqueId.BKEY_ID_LIST, mBookIds)
-                    // task cancelled does not mean that nothing was done.
-                    // Books *will* be updated until the cancelling happened
-                    .putExtra(UniqueId.BKEY_CANCELED, isCancelled)
-                    // One or more books were changed.
-                    // Technically speaking when doing a list of books,
-                    // the task might have been cancelled before the first
-                    // book was done. We disregard this fringe case.
-                    .putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
+            Bundle data = new Bundle();
+            // null if we did 'all books'
+            // or the ID's (1 or more) of the (hopefully) updated books
+            data.putSerializable(UniqueId.BKEY_ID_LIST, mBookIds);
+            // One or more books were changed.
+            // Technically speaking when doing a list of books,
+            // the task might have been cancelled before the first
+            // book was done. We disregard this fringe case.
+            data.putBoolean(UniqueId.BKEY_BOOK_MODIFIED, true);
 
             if (mBookIds != null && !mBookIds.isEmpty()) {
                 // Pass the first book for reposition the list (if applicable)
-                resultData.putExtra(DBDefinitions.KEY_PK_ID, mBookIds.get(0));
+                data.putLong(DBDefinitions.KEY_PK_ID, mBookIds.get(0));
             }
 
-            mHandler.post(() -> mActivityResultData.setValue(resultData));
+            mHandler.post(() -> {
+                if (mUpdateFieldsListener.get() != null) {
+                    mUpdateFieldsListener.get().onFinished(true, data);
+                } else {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                        Log.d(TAG, "onFinished|" + Logger.WEAK_REFERENCE_DEAD);
+                    }
+                }
+            });
         }
 
         @Override
         public void onProgress(@NonNull final ProgressMessage message) {
-            mHandler.post(() -> mProgressMessage.setValue(message));
+            mHandler.post(() -> {
+                if (mUpdateFieldsListener.get() != null) {
+                    mUpdateFieldsListener.get().onProgress(message);
+                } else {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                        Log.d(TAG, "onProgress|" + Logger.WEAK_REFERENCE_DEAD);
+                    }
+                }
+            });
         }
     };
-
-    public MutableLiveData<Intent> getFinished() {
-        return mActivityResultData;
-    }
-
-    public MutableLiveData<TaskListener.ProgressMessage> getProgress() {
-        return mProgressMessage;
-    }
 
     @Override
     protected void onCleared() {
@@ -154,7 +164,11 @@ public class UpdateFieldsModel
      * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Context context,
-                     @Nullable final Bundle args) {
+                     @Nullable final Bundle args,
+                     @NonNull final UpdateFieldsListener updateFieldsListener) {
+
+        mUpdateFieldsListener = new WeakReference<>(updateFieldsListener);
+
         if (mSearchSites == null) {
 
             mDb = new DAO();
@@ -200,15 +214,6 @@ public class UpdateFieldsModel
      */
     public void setSearchSites(@NonNull final ArrayList<Site> searchSites) {
         mSearchSites = searchSites;
-    }
-
-    /**
-     * Get the <strong>current</strong> preferred search sites.
-     *
-     * @return bitmask
-     */
-    public int getEnabledSearchSites() {
-        return SearchSites.getEnabledSites(mSearchSites);
     }
 
     public void setFromBookIdOnwards(final long fromBookIdOnwards) {
@@ -304,8 +309,7 @@ public class UpdateFieldsModel
         addField(R.string.lbl_language, CopyIfBlank, DBDefinitions.KEY_LANGUAGE);
 
         // list price has related DBDefinitions.KEY_PRICE_LISTED
-        addField(R.string.lbl_price_listed, CopyIfBlank, DBDefinitions.KEY_PRICE_LISTED
-                );
+        addField(R.string.lbl_price_listed, CopyIfBlank, DBDefinitions.KEY_PRICE_LISTED);
 
         addField(R.string.lbl_genre, CopyIfBlank, DBDefinitions.KEY_GENRE);
 
@@ -338,5 +342,28 @@ public class UpdateFieldsModel
 
         mUpdateTask.start();
         return true;
+    }
+
+    /**
+     * Allows other objects get updates on the search.
+     */
+    public interface UpdateFieldsListener {
+
+        /**
+         * Called when all individual search tasks are finished.
+         * <p>
+         * Task cancelled does not mean that nothing was done.
+         * Books *will* be updated until the cancelling happened
+         *
+         * @param wasCancelled if we were cancelled.
+         * @param data         resulting data, can be empty
+         */
+        void onFinished(boolean wasCancelled,
+                        @Nullable Bundle data);
+
+        /**
+         * Progress messages.
+         */
+        void onProgress(@NonNull TaskListener.ProgressMessage message);
     }
 }

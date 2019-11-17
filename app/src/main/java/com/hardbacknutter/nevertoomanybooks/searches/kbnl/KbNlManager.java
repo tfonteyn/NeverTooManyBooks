@@ -104,9 +104,6 @@ public class KbNlManager
      */
 //    private static final String AUTHOR_URL = getBaseURL(context)
 //    + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
-    public KbNlManager() {
-    }
-
     @NonNull
     public static String getBaseURL(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)

@@ -126,8 +126,21 @@ public class GoodreadsSearchActivity
 
         mModel = new ViewModelProvider(this).get(GrSearchViewModel.class);
         mModel.init(Objects.requireNonNull(getIntent().getExtras()), savedInstanceState);
-        mModel.getWorks().observe(this, this::onSearchResult);
-        mModel.getBookNoLongerExists().observe(this, this::onBookNoLongerExists);
+
+        mModel.getWorks().observe(this, goodreadsWorks -> {
+            mWorks.clear();
+            if (goodreadsWorks != null && !goodreadsWorks.isEmpty()) {
+                mWorks.addAll(goodreadsWorks);
+            } else {
+                UserMessage.show(mListView, R.string.warning_no_matching_book_found);
+            }
+            mWorksAdapter.notifyDataSetChanged();
+        });
+        mModel.getBookNoLongerExists().observe(this, flag -> {
+            if (flag) {
+                UserMessage.show(mSearchTextView, R.string.warning_book_no_longer_exists);
+            }
+        });
 
         mSearchTextView = findViewById(R.id.search_text);
         mIsbnView = findViewById(R.id.isbn);
@@ -152,12 +165,6 @@ public class GoodreadsSearchActivity
             if (mModel.getBookId() > 0) {
                 doSearch();
             }
-        }
-    }
-
-    private void onBookNoLongerExists(@NonNull final Boolean flag) {
-        if (flag) {
-            UserMessage.show(mSearchTextView, R.string.warning_book_no_longer_exists);
         }
     }
 
@@ -192,16 +199,6 @@ public class GoodreadsSearchActivity
     private void doSearch() {
         UserMessage.show(mListView, R.string.progress_msg_connecting);
         mModel.search(mSearchTextView.getText().toString().trim());
-    }
-
-    private void onSearchResult(@Nullable final List<GoodreadsWork> goodreadsWorks) {
-        mWorks.clear();
-        if (goodreadsWorks != null && !goodreadsWorks.isEmpty()) {
-            mWorks.addAll(goodreadsWorks);
-        } else {
-            UserMessage.show(mListView, R.string.warning_no_matching_book_found);
-        }
-        mWorksAdapter.notifyDataSetChanged();
     }
 
     /**

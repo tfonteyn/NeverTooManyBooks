@@ -100,6 +100,8 @@ public class GoodreadsManager
                    SearchEngine.ByText,
                    SearchEngine.CoverByIsbn {
 
+    private static final String TAG = "GoodreadsManager";
+
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
     /** Can only send requests at a throttled speed. */
@@ -363,20 +365,10 @@ public class GoodreadsManager
                && sAccessSecret != null && !sAccessSecret.isEmpty();
     }
 
-    /**
-     * Check if we have a key; if not alert the user.
-     *
-     * @param context    Current context
-     * @param required   {@code true} if we must have access to Goodreads.
-     *                   {@code false} it it would be beneficial.
-     * @param prefSuffix String used to flag in preferences if we showed the alert from
-     *                   that caller already or not yet.
-     *
-     * @return {@code true} if an alert is currently shown
-     */
-    public static boolean promptToRegister(@NonNull final Context context,
-                                           final boolean required,
-                                           @NonNull final String prefSuffix) {
+    @Override
+    public boolean promptToRegister(@NonNull final Context context,
+                                    final boolean required,
+                                    @NonNull final String prefSuffix) {
         if (hasCredentials()) {
             return false;
         }

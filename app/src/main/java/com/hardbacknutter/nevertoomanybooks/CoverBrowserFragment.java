@@ -82,7 +82,7 @@ public class CoverBrowserFragment
     private static final String BKEY_EDITION_LIST = TAG + ":editions";
     private static final String BKEY_SWITCHER_FILE = TAG + ":coverImage";
 
-    /** Populated by {@link #initGallery(ArrayList)} AND savedInstanceState. */
+    /** Populated by {@link #showGallery(ArrayList)} AND savedInstanceState. */
     @NonNull
     private final ArrayList<String> mAlternativeEditions = new ArrayList<>();
     @Nullable
@@ -127,11 +127,11 @@ public class CoverBrowserFragment
         mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_MEDIUM);
 
         mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
-        // ENHANCE: pass in SearchAdminModel.BKEY_SEARCH_SITES_COVERS / set it on the fly.
+        // ENHANCE: pass in SearchAdminModel.BKEY_COVERS / set it on the fly.
         //noinspection ConstantConditions
         mModel.init(getContext(), requireArguments());
 
-        mModel.getEditions().observe(this, this::initGallery);
+        mModel.getEditions().observe(this, this::showGallery);
         mModel.getGalleryImage().observe(this, this::setGalleryImage);
         mModel.getSwitcherImage().observe(this, this::setSwitcherImage);
 
@@ -238,10 +238,11 @@ public class CoverBrowserFragment
 
         if (mAlternativeEditions.isEmpty()) {
             mStatusTextView.setText(R.string.progress_msg_finding_editions);
-            mModel.fetchEditions();
+            //noinspection ConstantConditions
+            mModel.fetchEditions(getContext());
 
         } else {
-            initGallery(mAlternativeEditions);
+            showGallery(mAlternativeEditions);
             if (mSwitcherImageFileInfo != null) {
                 setSwitcherImage(mSwitcherImageFileInfo);
             }
@@ -258,7 +259,7 @@ public class CoverBrowserFragment
      *
      * @param editions the list to use.
      */
-    private void initGallery(@Nullable final ArrayList<String> editions) {
+    private void showGallery(@Nullable final ArrayList<String> editions) {
         mAlternativeEditions.clear();
         if (editions != null) {
             mAlternativeEditions.addAll(editions);

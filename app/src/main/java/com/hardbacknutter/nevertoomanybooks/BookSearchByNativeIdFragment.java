@@ -43,6 +43,7 @@ import androidx.annotation.Nullable;
 
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
@@ -80,7 +81,7 @@ public class BookSearchByNativeIdFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.fab_add_book_by_native_id);
 
-        mEntryView.setText(mSearchCoordinator.getNativeId());
+        mEntryView.setText(mSearchCoordinator.getNativeIdSearchText());
 
         mRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             //NEWTHINGS: add new site specific ID:
@@ -98,6 +99,8 @@ public class BookSearchByNativeIdFragment
                         }
                     }
                     mEntryView.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    mEntryView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            R.drawable.ic_apps, 0, 0, 0);
                     break;
 
                 // 'String' id
@@ -106,6 +109,8 @@ public class BookSearchByNativeIdFragment
                     mEntryView.setInputType(InputType.TYPE_CLASS_TEXT
                                             | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
                                             | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+                    mEntryView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            R.drawable.ic_keyboard, 0, 0, 0);
                     break;
 
                 default:
@@ -121,7 +126,7 @@ public class BookSearchByNativeIdFragment
                 return;
             }
 
-            mSearchCoordinator.setNativeId(nativeId);
+            mSearchCoordinator.setNativeIdSearchText(nativeId);
             startSearch();
         });
     }
@@ -161,7 +166,16 @@ public class BookSearchByNativeIdFragment
                 throw new UnexpectedValueException(checkedId);
         }
 
-        return mSearchCoordinator.searchByNativeId(site);
+        SearchEngine searchEngine = site.getSearchEngine();
+        if (searchEngine.isAvailable()) {
+            return mSearchCoordinator.searchByNativeId(site);
+
+        } else {
+            // If the selected site needs registration, prompt the user.
+            //noinspection ConstantConditions
+            searchEngine.promptToRegister(getContext(), true, "native_id");
+            return false;
+        }
     }
 
     @Override

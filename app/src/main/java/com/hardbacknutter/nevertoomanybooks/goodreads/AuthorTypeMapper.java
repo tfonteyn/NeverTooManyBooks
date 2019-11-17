@@ -48,7 +48,7 @@ import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_WRITER;
 /**
  * Translate Goodreads author types (roles) into our native type codes.
  * <p>
- * Not based on TerminologyMapperBase, as the value is a real integer
+ * Not based on MapperBase, as the value is a real integer
  * and not a resource id.
  */
 public class AuthorTypeMapper {

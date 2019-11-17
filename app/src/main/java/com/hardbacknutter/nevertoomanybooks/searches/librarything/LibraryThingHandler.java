@@ -487,8 +487,12 @@ class LibraryThingHandler
      */
     @Override
     public void endDocument() {
-        mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
-        mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+        if (!mAuthors.isEmpty()) {
+            mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+        }
+        if (!mSeries.isEmpty()) {
+            mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+        }
     }
 
     /**

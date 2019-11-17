@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
@@ -125,6 +126,8 @@ public class OpenLibraryManager
      * &bibkeys=OLID:OL123M
      * <p>
      * param 1: key-name, param 2: key-value
+     *
+     * TEST: see {@link #handleResponse} only tested with ISBN and OLID for now.
      */
     private static final String BASE_BOOK_URL =
             BASE_URL + "/api/books?jscmd=data&format=json&bibkeys=%1$s:%2$s";
@@ -300,87 +303,43 @@ public class OpenLibraryManager
     }
 
     /**
+     * A search on ISBN returns:
+     *
      * <pre>{@code
      *  "ISBN:9780980200447": {
-     *    "publishers": [
-     *      {
-     *        "name": "Litwin Books"
-     *      }
-     *    ],
+     *    "publishers": [{"name": "Litwin Books"}],
      *    "pagination": "80p.",
      *    "identifiers": {
-     *      "google": [
-     *        "4LQU1YwhY6kC"
-     *      ],
-     *      "lccn": [
-     *        "2008054742"
-     *      ],
-     *      "openlibrary": [
-     *        "OL22853304M"
-     *      ],
-     *      "isbn_13": [
-     *        "9780980200447",
-     *        "9781936117369"
-     *      ],
-     *      "amazon": [
-     *        "098020044X"
-     *      ],
-     *      "isbn_10": [
-     *        "1936117363"
-     *      ],
-     *      "oclc": [
-     *        "297222669"
-     *      ],
-     *      "goodreads": [
-     *        "6383507"
-     *      ],
-     *      "librarything": [
-     *        "8071257"
-     *      ]
+     *      "google": ["4LQU1YwhY6kC"],
+     *      "lccn": ["2008054742"],
+     *      "openlibrary": ["OL22853304M"],
+     *      "isbn_13": ["9780980200447", "9781936117369"],
+     *      "amazon": ["098020044X"],
+     *      "isbn_10": ["1936117363"],
+     *      "oclc": ["297222669"],
+     *      "goodreads": ["6383507"],
+     *      "librarything": ["8071257"]
      *    },
      *    "table_of_contents": [
-     *      {
-     *        "title": "The personal nature of slow reading",
-     *        "label": "",
-     *        "pagenum": "",
-     *        "level": 0
-     *      },
-     *      {
-     *        "title": "Slow reading in an information ecology",
-     *        "label": "",
-     *        "pagenum": "",
-     *        "level": 0
-     *      },
-     *      {
-     *        "title": "The slow movement and slow reading",
-     *        "label": "",
-     *        "pagenum": "",
-     *        "level": 0
-     *      },
-     *      {
-     *        "title": "The psychology of slow reading",
-     *        "label": "",
-     *        "pagenum": "",
-     *        "level": 0
-     *      },
-     *      {
-     *        "title": "The practice of slow reading.",
-     *        "label": "",
-     *        "pagenum": "",
-     *        "level": 0
-     *      }
+     *      {"title": "The personal nature of slow reading",
+     *        "label": "", "pagenum": "", "level": 0},
+     *      {"title": "Slow reading in an information ecology",
+     *        "label": "", "pagenum": "", "level": 0},
+     *      {"title": "The slow movement and slow reading",
+     *        "label": "", "pagenum": "", "level": 0},
+     *      {"title": "The psychology of slow reading",
+     *        "label": "", "pagenum": "", "level": 0},
+     *      {"title": "The practice of slow reading.",
+     *        "label": "", "pagenum": "", "level": 0}
      *    ],
      *    "links": [
-     *      {
-     *        "url": "http:\/\/johnmiedema.ca",
+     *      {"url": "http:\/\/johnmiedema.ca",
      *        "title": "Author's Website"
      *      },
-     *      {
-     *        "url": "http:\/\/litwinbooks.com\/slowreading-ch2.php",
+     *      {"url": "http:\/\/litwinbooks.com\/slowreading-ch2.php",
      *        "title": "Chapter 2"
      *      },
-     *      {
-     *        "url": "http:\/\/www.powells.com\/biblio\/91-9781936117369-0",
+     *      {"url": "http:\/\/www.powells.com\/biblio\/91-9781936117369-0",
      *        "title": "Get the e-book"
      *      }
      *    ],
@@ -388,12 +347,8 @@ public class OpenLibraryManager
      *    "title": "Slow reading",
      *    "url": "https:\/\/openlibrary.org\/books\/OL22853304M\/Slow_reading",
      *    "classifications": {
-     *      "dewey_decimal_class": [
-     *        "028\/.9"
-     *      ],
-     *      "lc_classifications": [
-     *        "Z1003 .M58 2009"
-     *      ]
+     *      "dewey_decimal_class": ["028\/.9"],
+     *      "lc_classifications": ["Z1003 .M58 2009"]
      *    },
      *    "notes": "Includes bibliographical references and index.",
      *    "number_of_pages": 92,
@@ -402,36 +357,24 @@ public class OpenLibraryManager
      *      "large": "https:\/\/covers.openlibrary.org\/b\/id\/5546156-L.jpg",
      *      "medium": "https:\/\/covers.openlibrary.org\/b\/id\/5546156-M.jpg"
      *    },
-     *    "subjects": [
-     *      {
+     *    "subjects": [{
      *        "url": "https:\/\/openlibrary.org\/subjects\/books_and_reading",
-     *        "name": "Books and reading"
-     *      },
-     *      {
-     *        "url": "https:\/\/openlibrary.org\/subjects\/in_library",
-     *        "name": "In library"
-     *      },
-     *      {
-     *        "url": "https:\/\/openlibrary.org\/subjects\/reading",
-     *        "name": "Reading"
-     *      }
+     *        "name": "Books and reading"},
+     *      {"url": "https:\/\/openlibrary.org\/subjects\/in_library",
+     *        "name": "In library"},
+     *      {"url": "https:\/\/openlibrary.org\/subjects\/reading",
+     *        "name": "Reading"}
      *    ],
      *    "publish_date": "March 2009",
      *    "key": "\/books\/OL22853304M",
-     *    "authors": [
-     *      {
+     *    "authors": [{
      *        "url": "https:\/\/openlibrary.org\/authors\/OL6548935A\/John_Miedema",
      *        "name": "John Miedema"
-     *      }
-     *    ],
+     *      }],
      *    "by_statement": "by John Miedema.",
-     *    "publish_places": [
-     *      {
-     *        "name": "Duluth, Minn"
-     *      }
-     *    ],
-     *    "ebooks": [
-     *      {
+     *    "publish_places": [{
+     *        "name": "Duluth, Minn"}],
+     *    "ebooks": [{
      *        "checkedout": true,
      *        "formats": {},
      *        "preview_url": "https:\/\/archive.org\/details\/slowreading00mied",
@@ -443,6 +386,39 @@ public class OpenLibraryManager
      *     }
      * }</pre>
      * <p>
+     *
+     * A search on OLID returns:
+     * <pre>{@code
+     *  {
+     *    "OLID:OL10393624M":{
+     *      "publishers":[{"name":"Tor Books"}],
+     *      "identifiers":{
+     *          "openlibrary":["OL10393624M"],
+     *          "isbn_13":["9780312859664"],
+     *          "isbn_10":["031285966X"],
+     *          "oclc":["32665311"],
+     *          "librarything":["81766"],
+     *          "goodreads":["872340"]},
+     *      "subtitle":"Alastor 1716",
+     *      "weight":"1.4 pounds",
+     *      "title":"Alastor: Trullion : Alastor 2262  Marune : Alastor 933 Wyst ",
+     *      "url":"https:\/\/openlibrary.org\/books\/OL10393624M\/Alastor_Trullion_Alastor_2262_Marune_Alastor_933_Wyst",
+     *      "number_of_pages":479,
+     *      "cover":{
+     *          "small":"https:\/\/covers.openlibrary.org\/b\/id\/5059003-S.jpg",
+     *          "large":"https:\/\/covers.openlibrary.org\/b\/id\/5059003-L.jpg",
+     *          "medium":"https:\/\/covers.openlibrary.org\/b\/id\/5059003-M.jpg"},
+     *      "subjects":[{
+     *          "url":"https:\/\/openlibrary.org\/subjects\/internet_archive_wishlist",
+     *          "name":"Internet Archive Wishlist"}],
+     *      "publish_date":"September 1995",
+     *      "key":"\/books\/OL10393624M",
+     *      "authors":[{
+     *          "url":"https:\/\/openlibrary.org\/authors\/OL253641A\/Jack_Vance",
+     *          "name":"Jack Vance"}]
+     *    }
+     *  }
+     * }</pre>
      * The keys (jsonObject.keys()) are:
      * "ISBN:9780980200447"
      *
@@ -461,10 +437,12 @@ public class OpenLibraryManager
         Iterator<String> it = jsonObject.keys();
         // we only handle the first result for now.
         if (it.hasNext()) {
-            String key = it.next();
-            String[] data = key.split(":");
-            if (data.length == 2 && "ISBN".equals(data[0])) {
-                return handleBook(data[1], fetchThumbnail, jsonObject.getJSONObject(key));
+            String topLevelKey = it.next();
+            String[] data = topLevelKey.split(":");
+            if (data.length == 2 &&
+                "ISBN,OLID".contains(data[0])
+            ) {
+                return handleBook(data[1], fetchThumbnail, jsonObject.getJSONObject(topLevelKey));
             }
         }
 
@@ -498,7 +476,9 @@ public class OpenLibraryManager
                 }
             }
         }
-        bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, authors);
+        if (!authors.isEmpty()) {
+            bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, authors);
+        }
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.
@@ -599,15 +579,19 @@ public class OpenLibraryManager
             }
         }
 
-        // we get an array, but our app only supports 1 publisher so grab the first one
+        ArrayList<Publisher> publishers = new ArrayList<>();
         a = result.optJSONArray("publishers");
         if (a != null && a.length() > 0) {
-            // only use the first one.
-            o = a.optJSONObject(0);
-            String name = o.optString("name");
-            if (!name.isEmpty()) {
-                bookData.putString(DBDefinitions.KEY_PUBLISHER, name);
+            for (int ai = 0; ai < a.length(); ai++) {
+                o = a.optJSONObject(ai);
+                String name = o.optString("name");
+                if (!name.isEmpty()) {
+                    publishers.add(Publisher.fromString(name));
+                }
             }
+        }
+        if (!publishers.isEmpty()) {
+            bookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, publishers);
         }
 
         // always use the first author only for TOC entries.
@@ -622,7 +606,9 @@ public class OpenLibraryManager
                 }
             }
         }
-        bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
+        if (!toc.isEmpty()) {
+            bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
+        }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY) {
             Log.d(TAG, "EXIT|handleBook|" + bookData.toString());

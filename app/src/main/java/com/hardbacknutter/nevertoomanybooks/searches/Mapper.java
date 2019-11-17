@@ -27,47 +27,23 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-public abstract class TerminologyMapperBase {
-
-    /** map to translate site book format terminology with our own. */
-    static final Map<String, Integer> MAPPER = new HashMap<>();
-
-    protected final Context mContext;
+public interface Mapper {
 
     /**
-     * Constructor.
+     * The key which this mapper will be mapping.
      *
-     * @param context Current context
+     * @return key
      */
-    TerminologyMapperBase(@NonNull final Context context) {
-        mContext = context;
-    }
-
-    public abstract String getKey();
+    String getKey();
 
     /**
      * The current value is read from the bundle, and replaced by the mapped value if found.
      *
      * @param bookData with {@link #getKey} entry to map
      */
-    public void map(@NonNull final Bundle bookData) {
-
-        String value = bookData.getString(getKey());
-        if (value != null && !value.isEmpty()) {
-
-            Integer resId = MAPPER.get(value.toLowerCase(Locale.getDefault()));
-            value = resId != null ? mContext.getString(resId) : value;
-
-            bookData.putString(getKey(), value);
-        }
-    }
+    void map(@NonNull final Bundle bookData);
 }

@@ -97,7 +97,8 @@ public class LibraryThingManager
         implements SearchEngine,
                    SearchEngine.ByIsbn,
                    SearchEngine.ByNativeId,
-                   SearchEngine.CoverByIsbn {
+                   SearchEngine.CoverByIsbn,
+                   SearchEngine.AlternativeEditions {
 
     private static final String TAG = "LibraryThingManager";
 
@@ -115,28 +116,25 @@ public class LibraryThingManager
 
     /** base urls. */
     private static final String BASE_URL = "https://www.librarything.com";
-    /** book details urls. */
-    private static final String BOOK_BY_ISBN_URL =
-            BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&isbn=%2$s";
-    private static final String BOOK_BY_ID_URL =
-            BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&id=%2$s";
+    /**
+     * book details urls.
+     * <p>
+     * param 1: dev-key; param 2: search-key; param 3: value
+     */
+    private static final String BOOK_URL =
+            BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&%2$s=%3$s";
+
     /** fetches all isbn's from editions related to the requested isbn. */
     private static final String EDITIONS_URL = BASE_URL + "/api/thingISBN/%s";
 
-    /** param 1: dev key, param 2: size; param 3: isbn. */
-    private static final String COVER_BY_ISBN_URL
-            = "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
+    /** param 1: dev-key; param 2: size; param 3: isbn. */
+    private static final String COVER_BY_ISBN_URL =
+            "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
 
     /** Can only send requests at a throttled speed. */
     @NonNull
     private static final Throttler THROTTLER = new Throttler();
     private static final Pattern DEV_KEY_PATTERN = Pattern.compile("[\\r\\t\\n\\s]*");
-
-    /**
-     * Constructor.
-     */
-    public LibraryThingManager() {
-    }
 
     @NonNull
     public static String getBaseURL(@NonNull final Context context) {
@@ -156,31 +154,11 @@ public class LibraryThingManager
     }
 
     /**
-     * Check if we have a key; if not alert the user.
-     *
-     * @param context    Current context
-     * @param required   {@code true} if we must have access to LT.
-     *                   {@code false} it it would be beneficial.
-     * @param prefSuffix String used to flag in preferences if we showed the alert from
-     *                   that caller already or not yet.
-     *
-     * @return {@code true} if an alert is currently shown
-     */
-    public static boolean promptToRegister(@NonNull final Context context,
-                                           final boolean required,
-                                           @NonNull final String prefSuffix) {
-        if (!hasKey()) {
-            return alertRegistrationNeeded(context, required, prefSuffix);
-        }
-        return false;
-    }
-
-    /**
      * Alert the user if not shown before that we require or would benefit from LibraryThing access.
      *
      * @param context    Current context
-     * @param required   {@code true} if we must have access to LT.
-     *                   {@code false} it it would be beneficial.
+     * @param required   {@code true} if we <strong>must</strong> have access to LT.
+     *                   {@code false} if it would be beneficial.
      * @param prefSuffix String used to flag in preferences if we showed the alert from
      *                   that caller already or not yet.
      *
@@ -216,12 +194,16 @@ public class LibraryThingManager
      * <strong>Note:</strong> we assume the isbn numbers from the site are valid.
      * No extra checks are made.
      *
+     * <strong>Note:</strong> all exceptions are ignored.
+     *
      * @param isbn to search for, <strong>must</strong> be valid.
      *
      * @return a list of isbn's of alternative editions of our original isbn, can be empty.
      */
+    @WorkerThread
     @NonNull
-    public static ArrayList<String> searchEditions(@NonNull final String isbn) {
+    @Override
+    public ArrayList<String> getAlternativeEditions(@NonNull final String isbn) {
 
         // the resulting data we'll return
         ArrayList<String> editions = new ArrayList<>();
@@ -232,7 +214,7 @@ public class LibraryThingManager
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
-            Log.d(TAG, "searchEditions|isbn=" + isbn);
+            Log.d(TAG, "getAlternativeEditions|isbn=" + isbn);
         }
 
         // add the original isbn, as there might be more images at the time this search is done.
@@ -252,14 +234,13 @@ public class LibraryThingManager
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
         } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
-            // for the editions search, we swallow all exceptions.
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
-                Log.d(TAG, "searchEditions|e=" + e);
+                Log.d(TAG, "getAlternativeEditions|e=" + e);
             }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
-            Log.d(TAG, "searchEditions|editions=" + editions);
+            Log.d(TAG, "getAlternativeEditions|editions=" + editions);
         }
         return editions;
     }
@@ -295,6 +276,16 @@ public class LibraryThingManager
         TipManager.reset(context, PREFS_HIDE_ALERT);
     }
 
+    @Override
+    public boolean promptToRegister(@NonNull final Context context,
+                                    final boolean required,
+                                    @NonNull final String prefSuffix) {
+        if (!hasKey()) {
+            return alertRegistrationNeeded(context, required, prefSuffix);
+        }
+        return false;
+    }
+
     /**
      * Dev-key needed for this call.
      * <p>
@@ -307,13 +298,38 @@ public class LibraryThingManager
                                final boolean fetchThumbnail)
             throws IOException {
 
-        // Base path for an ISBN search
-        String url = String.format(BOOK_BY_ISBN_URL, getDevKey(), isbn);
+        String url = String.format(BOOK_URL, getDevKey(), "isbn", isbn);
 
         Bundle bookData = fetchBook(url);
 
         if (fetchThumbnail) {
             getCoverImage(context, isbn, bookData);
+        }
+
+        return bookData;
+    }
+
+    /**
+     * Dev-key needed for this call.
+     * <p>
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
+    public Bundle searchByNativeId(@NonNull final Context context,
+                                   @NonNull final String nativeId,
+                                   final boolean fetchThumbnail)
+            throws IOException {
+
+        String url = String.format(BOOK_URL, getDevKey(), "id", nativeId);
+
+        Bundle bookData = fetchBook(url);
+
+        if (fetchThumbnail) {
+            String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
+            if (isbn != null && !isbn.isEmpty()) {
+                getCoverImage(context, isbn, bookData);
+            }
         }
 
         return bookData;
@@ -341,29 +357,12 @@ public class LibraryThingManager
         return bookData;
     }
 
-    @NonNull
-    @Override
-    public Bundle searchByNativeId(@NonNull final Context context,
-                                   @NonNull final String nativeId,
-                                   final boolean fetchThumbnail)
-            throws IOException {
-
-        // Base path for an ISBN search
-        String url = String.format(BOOK_BY_ID_URL, getDevKey(), nativeId);
-
-        Bundle bookData = fetchBook(url);
-
-        if (fetchThumbnail) {
-            String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
-            if (isbn != null && !isbn.isEmpty()) {
-                getCoverImage(context, isbn, bookData);
-            }
-        }
-
-        return bookData;
-    }
-
-
+    /**
+     * ENHANCE: See if we can get the alternate user-contributed images from LibraryThing.
+     * The latter are often the best source but at present could only be obtained by HTML scraping.
+     * <p>
+     * {@inheritDoc}
+     */
     @Nullable
     @WorkerThread
     @Override

@@ -37,6 +37,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 class KbNlBookHandler
@@ -50,6 +51,10 @@ class KbNlBookHandler
     /** accumulate all authors for this book. */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
+    /** accumulate all Publishers for this book. */
+    @NonNull
+    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
+
 
     /**
      * Constructor.
@@ -69,13 +74,14 @@ class KbNlBookHandler
         if (!mSeries.isEmpty()) {
             mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
         }
-
+        if (!mPublishers.isEmpty()) {
+            mBookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
+        }
         // As kb.nl is dutch, we're going to assume that all books are in Dutch.
         if (!mBookData.isEmpty() && !mBookData.containsKey(DBDefinitions.KEY_LANGUAGE)) {
             mBookData.putString(DBDefinitions.KEY_LANGUAGE, "nld");
         }
     }
-
 
     /**
      * Labels for both Dutch (default) and English are listed.
@@ -380,19 +386,17 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processPublisher(@NonNull final List<String> currentData) {
-        if (!mBookData.containsKey(DBDefinitions.KEY_PUBLISHER)) {
-            StringBuilder sbPublisher = new StringBuilder();
-            for (String name : currentData) {
-                if (!name.isEmpty()) {
-                    sbPublisher.append(name).append(" ");
-                }
+        StringBuilder sbPublisher = new StringBuilder();
+        for (String name : currentData) {
+            if (!name.isEmpty()) {
+                sbPublisher.append(name).append(" ");
             }
-            String publisherName = sbPublisher.toString();
-            if (publisherName.contains(":")) {
-                publisherName = publisherName.split(":")[1].trim();
-            }
-            mBookData.putString(DBDefinitions.KEY_PUBLISHER, publisherName);
         }
+        String publisherName = sbPublisher.toString();
+        if (publisherName.contains(":")) {
+            publisherName = publisherName.split(":")[1].trim();
+        }
+        mPublishers.add(Publisher.fromString(publisherName));
     }
 
     /**

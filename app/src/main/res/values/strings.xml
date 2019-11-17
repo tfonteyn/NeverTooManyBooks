@@ -166,7 +166,7 @@
     <!-- some unique field already exists; e.g. accidentally creating a duplicate Bookshelf -->
     <string name="warning_x_already_exists">%1$s already exists.</string>
 
-    <string name="warning_enable_at_least_1_website">Enable at least one website.</string>
+    <string name="warning_enable_at_least_1_website">Enable at least one website for each category.</string>
 
     <string name="warning_select_at_least_1_group">Select at least one group.</string>
     <string name="warning_select_at_least_1_field">Select at least one field to update.</string>
@@ -1235,6 +1235,9 @@
     <!-- Heading of the 'Table Of Content' (formerly 'Anthology') tab when editing a book. -->
     <string name="tab_lbl_content">TOC</string>
 
+    <!-- Heading of the 'Alternative Editions' tab on the SearchAdmin page -->
+    <string name="tab_lbl_alternative_editions">Alt.Ed.</string>
+
     <!-- ####################################################################################### -->
     <!-- ========== Single words used for multiple purposes ========== -->
     <!-- ####################################################################################### -->
@@ -1568,6 +1571,5 @@
     <string name="lbl_select_website">Select a website:</string>
     <string name="scan">Scan barcode</string>
     <string name="error_no_sites">No websites enabled</string>
-
 
 </resources>

@@ -294,12 +294,20 @@ public class BooksOnBookshelf
         mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);
         mModel.init(this, getIntent().getExtras(), savedInstanceState);
 
-        mModel.getUserMessage().observe(this, this::showUserMessage);
-        mModel.getNeedsGoodreads().observe(this, this::needsGoodreads);
+        mModel.getUserMessage().observe(this, message -> {
+            if (message != null) {
+                UserMessage.show(mListView, message);
+            }
+        });
+        mModel.getNeedsGoodreads().observe(this, needs -> {
+            if (needs != null && needs) {
+                RequestAuthTask.needsRegistration(this, mModel.getGoodreadsTaskListener());
+            }
+        });
         mModel.restoreCurrentBookshelf(this);
 
         // listen for the booklist being ready to display.
-        mModel.getBuilderResult().observe(this, this::builderResultsAreReadyToDisplay);
+        mModel.getBooklist().observe(this, this::onDisplayList);
 
         // set the search capability to local (application) search, see:
         // https://developer.android.com/guide/topics/search/search-dialog#InvokingTheSearchDialog
@@ -997,10 +1005,10 @@ public class BooksOnBookshelf
      *
      * @param holder the results to display.
      */
-    private void builderResultsAreReadyToDisplay(
+    private void onDisplayList(
             @Nullable final BooksOnBookshelfModel.BuilderHolder holder) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "ENTER|builderResultsAreReadyToDisplay"
+            Log.d(TAG, "ENTER|onDisplayList"
                        + "|holder=" + holder);
         }
 
@@ -1023,7 +1031,7 @@ public class BooksOnBookshelf
         initAdapter(mModel.getListCursor());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "ENTER|builderResultsAreReadyToDisplay|restoring old cursor");
+            Log.d(TAG, "ENTER|onDisplayList|restoring old cursor");
         }
     }
 
@@ -1909,34 +1917,6 @@ public class BooksOnBookshelf
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * Called if an interaction with Goodreads failed due to authorization issues.
-     * Prompts the user to register.
-     *
-     * @param needs {@code true} if registration is needed
-     */
-    private void needsGoodreads(@Nullable final Boolean needs) {
-        if (needs != null && needs) {
-            RequestAuthTask.needsRegistration(this, mModel.getGoodreadsTaskListener());
-        }
-    }
-
-    /**
-     * Allows the ViewModel to send us a message to display to the user.
-     * <p>
-     * If the type is {@code Integer} we assume it's a {@code StringRes}
-     * else we do a toString() it.
-     *
-     * @param message to display, either a {@code Integer (StringRes)} or a {@code String}
-     */
-    private void showUserMessage(@Nullable final Object message) {
-        if (message instanceof Integer) {
-            UserMessage.show(mListView, (int) message);
-        } else if (message != null) {
-            UserMessage.show(mListView, message.toString());
         }
     }
 }

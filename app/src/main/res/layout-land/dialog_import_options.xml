@@ -87,16 +87,16 @@
             android:text="@string/bookshelf_all_books"
             />
 
-        <RadioButton
-            android:id="@+id/radioNewAndUpdatedBooks"
-            style="@style/OptionRow.Checkable"
-            android:text="@string/import_option_new_and_changed_books"
-            />
-
         <TextView
             android:id="@+id/textView"
             style="@style/OptionRow.Blurb"
             android:text="@string/import_option_info_all_books"
+            />
+
+        <RadioButton
+            android:id="@+id/radioNewAndUpdatedBooks"
+            style="@style/OptionRow.Checkable"
+            android:text="@string/import_option_new_and_changed_books"
             />
 
         <TextView

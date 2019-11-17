@@ -90,7 +90,13 @@ public class SearchAdminActivity
                 break;
             }
             case SearchAdminModel.TAB_COVERS: {
-                setTitle(R.string.lbl_cover);
+                setTitle(R.string.lbl_covers);
+                mPersist = false;
+                tabLayout.setVisibility(View.GONE);
+                break;
+            }
+            case SearchAdminModel.TAB_ALT_ED: {
+                setTitle(R.string.tab_lbl_alternative_editions);
                 mPersist = false;
                 tabLayout.setVisibility(View.GONE);
                 break;
@@ -112,25 +118,21 @@ public class SearchAdminActivity
 
     @Override
     public void onBackPressed() {
-        // When in 'real' settings mode, we always check the book website list.
-        // When in 'use' scenario, we check the list which we're editing.
-        boolean noSitesEnabled;
+        boolean hasSites;
         SearchAdminModel model = new ViewModelProvider(this).get(SearchAdminModel.class);
         if (mPersist) {
-            model.persist(this);
-            //noinspection ConstantConditions
-            noSitesEnabled = SearchSites.getEnabledSites(model.getBooks()) == 0;
+            hasSites = model.persist(this);
         } else {
             Intent data = new Intent()
-                    .putExtra(SearchSites.BKEY_SEARCH_SITES_BOOKS, model.getList());
+                    .putExtra(SearchSites.BKEY_DATA, model.getList());
             setResult(Activity.RESULT_OK, data);
-            noSitesEnabled = SearchSites.getEnabledSites(model.getList()) == 0;
+            hasSites = SearchSites.getEnabledSites(model.getList()) != 0;
         }
 
-        if (noSitesEnabled) {
-            UserMessage.show(mViewPager, R.string.warning_enable_at_least_1_website);
-        } else {
+        if (hasSites) {
             super.onBackPressed();
+        } else {
+            UserMessage.show(mViewPager, R.string.warning_enable_at_least_1_website);
         }
     }
 
@@ -147,6 +149,10 @@ public class SearchAdminActivity
 
                     case SearchAdminModel.TAB_COVERS:
                         SearchSites.resetList(this, SearchSites.ListType.Covers);
+                        break;
+
+                    case SearchAdminModel.TAB_ALT_ED:
+                        SearchSites.resetList(this, SearchSites.ListType.AltEditions);
                         break;
 
                     default:
@@ -214,6 +220,8 @@ public class SearchAdminActivity
                     tab = SearchAdminModel.TAB_BOOKS;
                 } else if ((mTabsToShow & SearchAdminModel.TAB_COVERS) != 0) {
                     tab = SearchAdminModel.TAB_COVERS;
+                } else if ((mTabsToShow & SearchAdminModel.TAB_ALT_ED) != 0) {
+                    tab = SearchAdminModel.TAB_ALT_ED;
                 } else {
                     throw new IllegalStateException("no active tabs set");
                 }
@@ -222,9 +230,11 @@ public class SearchAdminActivity
                     case 0:
                         tab = SearchAdminModel.TAB_BOOKS;
                         break;
-
                     case 1:
                         tab = SearchAdminModel.TAB_COVERS;
+                        break;
+                    case 2:
+                        tab = SearchAdminModel.TAB_ALT_ED;
                         break;
 
                     default:
@@ -252,6 +262,8 @@ public class SearchAdminActivity
                     return R.string.lbl_books;
                 } else if ((mTabsToShow & SearchAdminModel.TAB_COVERS) != 0) {
                     return R.string.lbl_covers;
+                } else if ((mTabsToShow & SearchAdminModel.TAB_ALT_ED) != 0) {
+                    return R.string.tab_lbl_alternative_editions;
                 } else {
                     throw new IllegalStateException("no active tabs set");
                 }
@@ -262,6 +274,8 @@ public class SearchAdminActivity
                     return R.string.lbl_books;
                 case 1:
                     return R.string.lbl_covers;
+                case 2:
+                    return R.string.tab_lbl_alternative_editions;
                 default:
                     throw new UnexpectedValueException(position);
             }

@@ -126,11 +126,7 @@
 
         <EditText
             android:id="@+id/date_since"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/indent_compound_button"
-            android:ems="10"
-            android:inputType="date"
+            style="@style/ManualDateEntry"
             android:visibility="gone"
             tools:ignore="Autofill,LabelFor"
             tools:visibility="visible"

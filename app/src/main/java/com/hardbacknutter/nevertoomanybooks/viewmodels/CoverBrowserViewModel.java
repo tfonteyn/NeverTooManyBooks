@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.tasks.AlternativeExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
@@ -157,9 +156,12 @@ public class CoverBrowserViewModel
 
     /**
      * Start a search for alternative editions of the book (using the isbn).
+     *
+     * @param context Current context
      */
-    public void fetchEditions() {
-        addTask(new GetEditionsTask(mBaseIsbn, this)).execute();
+    public void fetchEditions(@NonNull final Context context) {
+        ArrayList<Site> sites = SearchSites.getSites(context, SearchSites.ListType.AltEditions);
+        addTask(new GetEditionsTask(mBaseIsbn, sites, this)).execute();
     }
 
     public MutableLiveData<ArrayList<String>> getEditions() {
@@ -314,8 +316,7 @@ public class CoverBrowserViewModel
          */
         FileManager(@NonNull final Context context,
                     @NonNull final Bundle args) {
-            mSearchSitesForCovers = args.getParcelableArrayList(
-                    SearchSites.BKEY_SEARCH_SITES_COVERS);
+            mSearchSitesForCovers = args.getParcelableArrayList(SearchSites.BKEY_COVERS);
             if (mSearchSitesForCovers == null) {
                 mSearchSitesForCovers = SearchSites.getSites(context, SearchSites.ListType.Covers);
             }
@@ -439,21 +440,21 @@ public class CoverBrowserViewModel
         /**
          * Try to get an image from the specified engine.
          *
-         * @param context Current context
-         * @param engine  to use
-         * @param isbn    to search for, <strong>must</strong> be valid.
-         * @param size    to get
+         * @param context      Current context
+         * @param searchEngine to use
+         * @param isbn         to search for, <strong>must</strong> be valid.
+         * @param size         to get
          *
          * @return a FileInfo object with a valid fileSpec, or {@code null} if not found.
          */
         @Nullable
         private FileInfo download(@NonNull final Context context,
-                                  @NonNull final SearchEngine.CoverByIsbn engine,
+                                  @NonNull final SearchEngine.CoverByIsbn searchEngine,
                                   @NonNull final String isbn,
                                   @NonNull final SearchEngine.CoverByIsbn.ImageSize size) {
 
             @Nullable
-            File file = engine.getCoverImage(context, isbn, size);
+            File file = searchEngine.getCoverImage(context, isbn, size);
             if (file != null && isGood(file)) {
                 String key = isbn + '_' + size;
                 FileInfo fileInfo = new FileInfo(isbn, size, file.getAbsolutePath());
@@ -467,7 +468,7 @@ public class CoverBrowserViewModel
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                     Log.d(TAG, "download|MISSING"
-                               + "|engine=" + context.getString(engine.getNameResId())
+                               + "|engine=" + context.getString(searchEngine.getNameResId())
                                + "|isbn=" + isbn
                                + "|size=" + size);
                 }
@@ -512,13 +513,15 @@ public class CoverBrowserViewModel
     }
 
     /**
-     * Fetch all alternative edition isbn's from LibraryThing.
+     * Fetch alternative edition isbn's.
      */
     static class GetEditionsTask
             extends AsyncTask<Void, Void, ArrayList<String>> {
 
         @NonNull
         private final String mIsbn;
+        @NonNull
+        private final ArrayList<Site> mSites;
         @NonNull
         private final WeakReference<CoverBrowserViewModel> mTaskListener;
 
@@ -530,31 +533,38 @@ public class CoverBrowserViewModel
          */
         @UiThread
         GetEditionsTask(@NonNull final String isbn,
+                        @NonNull final ArrayList<Site> sites,
                         @NonNull final CoverBrowserViewModel taskListener) {
             mIsbn = isbn;
+            mSites = sites;
             mTaskListener = new WeakReference<>(taskListener);
         }
 
         @Override
-        @Nullable
+        @NonNull
         @WorkerThread
         protected ArrayList<String> doInBackground(final Void... params) {
             Thread.currentThread().setName("GetEditionsTask " + mIsbn);
 
-            // Get some editions
-            // ENHANCE: the list of editions should be expanded to include other sites
-            // As well as the alternate user-contributed images from LibraryThing. The latter are
-            // often the best source but at present could only be obtained by HTML scraping.
-            try {
-                return LibraryThingManager.searchEditions(mIsbn);
-            } catch (@NonNull final RuntimeException e) {
-                return null;
+            ArrayList<String> editions = new ArrayList<>();
+            for (Site site : mSites) {
+                if (site.isEnabled()) {
+                    try {
+                        SearchEngine searchEngine = site.getSearchEngine();
+                        if (searchEngine instanceof SearchEngine.AlternativeEditions) {
+                            editions.addAll(((SearchEngine.AlternativeEditions) searchEngine)
+                                                    .getAlternativeEditions(mIsbn));
+                        }
+                    } catch (@NonNull RuntimeException ignore) {
+                    }
+                }
             }
+            return editions;
         }
 
         @Override
         @UiThread
-        protected void onPostExecute(@Nullable final ArrayList<String> result) {
+        protected void onPostExecute(@NonNull final ArrayList<String> result) {
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onGetEditionsTaskFinished(this, result);
             } else {
@@ -581,7 +591,7 @@ public class CoverBrowserViewModel
         /**
          * Constructor.
          *
-         * @param isbn     to search for, <strong>must</strong> be valid.
+         * @param isbn         to search for, <strong>must</strong> be valid.
          * @param fileManager  for downloads
          * @param taskListener to send results to
          */

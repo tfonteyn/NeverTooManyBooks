@@ -92,10 +92,13 @@
                 android:text="@string/isfdb"
                 />
 
+            <!-- fully functional, but the data returned by LT (on its own!) is rather lacking
+                hence disabling this one -->
             <RadioButton
                 android:id="@+id/site_library_thing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:text="@string/library_thing"
                 />
 
@@ -129,6 +132,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:inputType="number"
+            android:drawableStart="@drawable/ic_apps"
             android:textAppearance="?android:attr/textAppearanceLarge"
             app:layout_constraintEnd_toStartOf="@id/btn_search"
             app:layout_constraintStart_toEndOf="@id/indent_fields"

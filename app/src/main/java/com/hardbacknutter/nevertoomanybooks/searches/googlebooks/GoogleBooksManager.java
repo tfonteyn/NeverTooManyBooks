@@ -50,16 +50,14 @@ import org.xml.sax.SAXException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
  * ENHANCE: Get editions via http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
  */
 public final class GoogleBooksManager
         implements SearchEngine,
+                   SearchEngine.ByIsbn,
                    SearchEngine.ByText {
-
-    private static final String TAG = "GoogleBooksManager";
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "googlebooks.";
@@ -82,6 +80,18 @@ public final class GoogleBooksManager
 
     @NonNull
     @Override
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String isbn,
+                               final boolean fetchThumbnail)
+            throws IOException {
+        // %3C  <
+        // %3E  >
+        String url = getBaseURL(context) + "/books/feeds/volumes?q=ISBN%3C" + isbn + "%3E";
+        return fetchBook(url, fetchThumbnail);
+    }
+
+    @NonNull
+    @Override
     @WorkerThread
     public Bundle search(@NonNull final Context context,
                          @Nullable final String isbn,
@@ -91,27 +101,25 @@ public final class GoogleBooksManager
                          final boolean fetchThumbnail)
             throws IOException {
 
-        String query;
-
         // %2B  +
         // %3A  :
-        // %3C  <
-        // %3E  >
-        if (ISBN.isValid(isbn)) {
-            // q=ISBN<isbn>
-            query = "q=ISBN%3C" + isbn + "%3E";
-
-        } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
-            // q=intitle:ttt+inauthor:aaa
-            query = "q="
-                    + "intitle%3A" + encodeSpaces(title)
-                    + "%2B"
-                    + "inauthor%3A" + encodeSpaces(author);
+        if (author != null && !author.isEmpty()
+            && title != null && !title.isEmpty()) {
+            String url = getBaseURL(context)
+                         + "/books/feeds/volumes?q="
+                         + "intitle%3A" + encodeSpaces(title)
+                         + "%2B"
+                         + "inauthor%3A" + encodeSpaces(author);
+            return fetchBook(url, fetchThumbnail);
 
         } else {
             return new Bundle();
         }
+    }
 
+    private Bundle fetchBook(@NonNull final String url,
+                             final boolean fetchThumbnail)
+            throws IOException {
         Bundle bookData = new Bundle();
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -121,9 +129,8 @@ public final class GoogleBooksManager
 
         // The entry handler takes care of an individual book ('entry')
         GoogleBooksEntryHandler entryHandler =
-                new GoogleBooksEntryHandler(bookData, fetchThumbnail, isbn);
+                new GoogleBooksEntryHandler(bookData, fetchThumbnail);
 
-        String url = getBaseURL(context) + "/books/feeds/volumes?" + query;
         String oneBookUrl;
         try {
             SAXParser parser = factory.newSAXParser();

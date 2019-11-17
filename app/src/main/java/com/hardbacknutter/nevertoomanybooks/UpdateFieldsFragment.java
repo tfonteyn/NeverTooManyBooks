@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsTask;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsModel;
@@ -85,6 +86,37 @@ public class UpdateFieldsFragment
     private UpdateFieldsModel mUpdateFieldsModel;
 
     private ProgressDialogFragment mProgressDialog;
+    private final UpdateFieldsModel.UpdateFieldsListener mUpdateFieldsListener =
+            new UpdateFieldsModel.UpdateFieldsListener() {
+                @Override
+                public void onFinished(final boolean wasCancelled,
+                                       @Nullable final Bundle data) {
+                    if (mProgressDialog != null) {
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+                    }
+
+                    if (wasCancelled) {
+                        // This message will likely not be seen
+                        //noinspection ConstantConditions
+                        UserMessage.show(getView(), R.string.progress_end_cancelled);
+                    }
+
+                    if (data != null) {
+                        //noinspection ConstantConditions
+                        getActivity().setResult(Activity.RESULT_OK, new Intent().putExtras(data));
+                    }
+                    //noinspection ConstantConditions
+                    getActivity().finish();
+                }
+
+                @Override
+                public void onProgress(@NonNull final TaskListener.ProgressMessage message) {
+                    if (mProgressDialog != null) {
+                        mProgressDialog.onProgress(message);
+                    }
+                }
+            };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -109,29 +141,9 @@ public class UpdateFieldsFragment
 
         Activity activity = getActivity();
 
+        mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
         //noinspection ConstantConditions
-        mUpdateFieldsModel = new ViewModelProvider(getActivity()).get(UpdateFieldsModel.class);
-        //noinspection ConstantConditions
-        mUpdateFieldsModel.init(getContext(), getArguments());
-
-        mUpdateFieldsModel.getProgress().observe(getViewLifecycleOwner(), progressMessage -> {
-            if (mProgressDialog != null) {
-                mProgressDialog.onProgress(progressMessage);
-            }
-        });
-        mUpdateFieldsModel.getFinished().observe(getViewLifecycleOwner(), data -> {
-            if (mProgressDialog != null) {
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
-            }
-
-            if (data != null) {
-                //noinspection ConstantConditions
-                activity.setResult(Activity.RESULT_OK, data);
-            }
-            //noinspection ConstantConditions
-            activity.finish();
-        });
+        mUpdateFieldsModel.init(getContext(), getArguments(), mUpdateFieldsListener);
 
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
@@ -159,8 +171,8 @@ public class UpdateFieldsFragment
         populateFields();
 
         if (savedInstanceState == null) {
-            SearchSites.promptToRegister(getContext(), "update_from_internet",
-                                         mUpdateFieldsModel.getEnabledSearchSites());
+            SearchSites.promptToRegister(getContext(), false, "update_from_internet",
+                                         mUpdateFieldsModel.getSearchSites());
 
             TipManager.display(getContext(), R.string.tip_update_fields_from_internet, null);
         }
@@ -227,7 +239,7 @@ public class UpdateFieldsFragment
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     ArrayList<Site> sites = data.getParcelableArrayListExtra(
-                            SearchSites.BKEY_SEARCH_SITES_BOOKS);
+                            SearchSites.BKEY_DATA);
                     if (sites != null) {
                         mUpdateFieldsModel.setSearchSites(sites);
                     }
@@ -260,7 +272,7 @@ public class UpdateFieldsFragment
             case R.id.MENU_PREFS_SEARCH_SITES: {
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminModel.BKEY_TABS_TO_SHOW, SearchAdminModel.TAB_BOOKS)
-                        .putExtra(SearchSites.BKEY_SEARCH_SITES_BOOKS,
+                        .putExtra(SearchSites.BKEY_DATA,
                                   mUpdateFieldsModel.getSearchSites());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;

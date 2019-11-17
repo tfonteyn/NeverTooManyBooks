@@ -51,13 +51,14 @@ public class SearchAdminModel
         extends ViewModel {
 
     public static final int TAB_BOOKS = 1;
-    public static final int TAB_COVERS = 1 << 1;
+    static final int TAB_COVERS = 1 << 1;
+    static final int TAB_ALT_ED = 1 << 2;
 
-    public static final int SHOW_ALL_TABS = TAB_BOOKS | TAB_COVERS;
+    static final int SHOW_ALL_TABS = TAB_BOOKS | TAB_COVERS | TAB_ALT_ED;
 
     private static final String TAG = "SearchAdminModel";
     public static final String BKEY_TABS_TO_SHOW = TAG + ":tabs";
-    public static final String BKEY_PERSIST = TAG + ":persist";
+    static final String BKEY_PERSIST = TAG + ":persist";
 
     /**
      * Optional: set to one of the {@link SearchOrderFragment} tabs,
@@ -69,6 +70,8 @@ public class SearchAdminModel
     private ArrayList<Site> mBooks;
     @Nullable
     private ArrayList<Site> mCovers;
+    @Nullable
+    private ArrayList<Site> mAltEd;
 
     private boolean mPersist;
 
@@ -90,12 +93,14 @@ public class SearchAdminModel
 
         // first see if we got passed in custom lists.
         if (mBooks == null) {
-            mBooks = args.getParcelableArrayList(SearchSites.BKEY_SEARCH_SITES_BOOKS);
+            mBooks = args.getParcelableArrayList(SearchSites.BKEY_DATA);
         }
         if (mCovers == null) {
-            mCovers = args.getParcelableArrayList(SearchSites.BKEY_SEARCH_SITES_COVERS);
+            mCovers = args.getParcelableArrayList(SearchSites.BKEY_COVERS);
         }
-
+        if (mAltEd == null) {
+            mAltEd = args.getParcelableArrayList(SearchSites.BKEY_ALT_ED);
+        }
         // now depending on which tabs to show, make sure the lists are not null.
         // List(s) for tabs which are not shown remain null.
         switch (mTabsToShow) {
@@ -111,12 +116,21 @@ public class SearchAdminModel
                 }
                 break;
 
+            case TAB_ALT_ED:
+                if (mAltEd == null) {
+                    mAltEd = SearchSites.getSites(context, SearchSites.ListType.AltEditions);
+                }
+                break;
+
             case SHOW_ALL_TABS:
                 if (mBooks == null) {
                     mBooks = SearchSites.getSites(context, SearchSites.ListType.Data);
                 }
                 if (mCovers == null) {
                     mCovers = SearchSites.getSites(context, SearchSites.ListType.Covers);
+                }
+                if (mAltEd == null) {
+                    mAltEd = SearchSites.getSites(context, SearchSites.ListType.AltEditions);
                 }
                 break;
 
@@ -141,6 +155,10 @@ public class SearchAdminModel
                 //noinspection ConstantConditions
                 return mCovers;
 
+            case TAB_ALT_ED:
+                //noinspection ConstantConditions
+                return mAltEd;
+
             case SHOW_ALL_TABS:
             default:
                 throw new UnexpectedValueException(mTabsToShow);
@@ -148,43 +166,37 @@ public class SearchAdminModel
     }
 
     /**
-     * Getter for all-tabs mode.
-     *
-     * @return list
-     */
-    @Nullable
-    public ArrayList<Site> getBooks() {
-        return mBooks;
-    }
-
-    /**
-     * Getter for all-tabs mode.
-     *
-     * @return list
-     */
-    @Nullable
-    public ArrayList<Site> getCovers() {
-        return mCovers;
-    }
-
-    /**
      * Persist the lists.
      *
      * @param context Current context
+     *
+     * @return {@code true} if each list handled has at least one site enabled.
      */
-    public void persist(@NonNull final Context context) {
+    public boolean persist(@NonNull final Context context) {
+        int shouldHave = 0;
+        int has = 0;
         if (mPersist) {
             if (mBooks != null) {
                 SearchSites.setList(context, SearchSites.ListType.Data, mBooks);
+                shouldHave++;
+                has += SearchSites.getEnabledSites(mBooks) > 0 ? 1 : 0;
             }
             if (mCovers != null) {
                 SearchSites.setList(context, SearchSites.ListType.Covers, mCovers);
+                shouldHave++;
+                has += SearchSites.getEnabledSites(mCovers) > 0 ? 1 : 0;
+            }
+            if (mAltEd != null) {
+                SearchSites.setList(context, SearchSites.ListType.AltEditions, mAltEd);
+                shouldHave++;
+                has += SearchSites.getEnabledSites(mAltEd) > 0 ? 1 : 0;
             }
         }
+        return (has > 0) && (shouldHave == has);
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef(flag = true, value = {SHOW_ALL_TABS, TAB_BOOKS, TAB_COVERS})
+    @IntDef(flag = true, value = {SHOW_ALL_TABS, TAB_BOOKS, TAB_COVERS, TAB_ALT_ED})
     @interface Tabs {
 
     }
