@@ -45,48 +45,28 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
-        <LinearLayout
-            android:id="@+id/header"
+        <TextView
+            android:id="@+id/app_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:text="@string/app_name"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textStyle="bold"
-                tools:text="The app name"
-                />
-
-            <TextView
-                android:id="@+id/version"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/indent1"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textIsSelectable="true"
-                android:textStyle="bold"
-                tools:text="1.0.0"
-                />
-        </LinearLayout>
+            />
 
         <TextView
-            android:id="@+id/beta_build"
+            android:id="@+id/version"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:textIsSelectable="true"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header"
-            tools:ignore="SelectableText"
-            tools:text="beta build"
-            tools:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@id/app_name"
+            tools:text="App version goes here"
             />
 
         <androidx.constraintlayout.widget.Guideline
@@ -103,7 +83,7 @@
             android:layout_marginTop="@dimen/border3"
             android:text="@string/lbl_about_contact"
             app:layout_constraintStart_toEndOf="@id/indents"
-            app:layout_constraintTop_toBottomOf="@id/beta_build"
+            app:layout_constraintTop_toBottomOf="@id/version"
             />
 
         <TextView

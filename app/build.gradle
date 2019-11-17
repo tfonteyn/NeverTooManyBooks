@@ -60,6 +60,11 @@ android {
                     'proguard-rules.pro'
         }
         debug {
+            versionNameSuffix "-debug_" + new Date().format('yyyy-MM-dd_HH:mm')
+        }
+        beta {
+            initWith release
+            versionNameSuffix "-beta_" + new Date().format('yyyy-MM-dd')
         }
     }
 
@@ -132,6 +137,7 @@ dependencies {
 
     testImplementation 'org.mockito:mockito-core:3.1.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
+
 }
 
 

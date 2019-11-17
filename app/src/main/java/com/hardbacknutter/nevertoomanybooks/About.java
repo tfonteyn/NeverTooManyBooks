@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -51,9 +50,6 @@ public class About
 
     private static final String TAG = "AboutActivity";
 
-    /** Manifest string. */
-    private static final String BETA_BUILD = "beta.build";
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_admin_about;
@@ -69,13 +65,6 @@ public class About
         PackageInfo packageInfo = App.getPackageInfo(0);
         if (packageInfo != null) {
             view.setText(packageInfo.versionName);
-        }
-
-        String beta = App.getManifestString(BETA_BUILD);
-        if (!beta.isEmpty()) {
-            view = findViewById(R.id.beta_build);
-            view.setVisibility(View.VISIBLE);
-            view.setText(beta);
         }
 
         view = findViewById(R.id.sourcecode6);
