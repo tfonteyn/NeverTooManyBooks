@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>
  * <a href="https://www.kb.nl/">Royal Library, The Netherlands.</a>
  * <p>
- * 2019-10-01: "http://opc4.kb.nl" is not available on https.
+ * 2019-11-21: "http://opc4.kb.nl" is not available on https.
  */
 public class KbNlManager
         implements SearchEngine,

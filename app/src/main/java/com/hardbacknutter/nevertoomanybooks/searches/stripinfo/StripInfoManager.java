@@ -34,7 +34,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -52,35 +51,31 @@ public class StripInfoManager
                    SearchEngine.ByNativeId,
                    SearchEngine.ByIsbn {
 
-    /** This is a Dutch website. */
+    /** This is a Dutch language website. */
     public static final Locale SITE_LOCALE = new Locale("nl", "BE");
-    /** Preferences prefix. */
-    private static final String PREF_PREFIX = "stripinfo.";
-    /** Type: {@code String}. */
-    private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
+//    /** Preferences prefix. */
+//    private static final String PREF_PREFIX = "stripinfo.";
 
-    @NonNull
-    public static String getBaseURL(@NonNull final Context appContext) {
-        return PreferenceManager.getDefaultSharedPreferences(appContext)
-                                .getString(PREFS_HOST_URL, "https://stripinfo.be");
-    }
+
+    /** base urls. */
+    public static final String BASE_URL = "https://stripinfo.be";
 
     /**
      * View a Book on the web site.
      *
      * @param appContext Application context
-     * @param bookId  site native book id to show
+     * @param bookId     site native book id to show
      */
     public static void openWebsite(@NonNull final Context appContext,
                                    final long bookId) {
-        String url = getBaseURL(appContext) + "/reeks/strip/" + bookId;
+        String url = BASE_URL + "/reeks/strip/" + bookId;
         appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @NonNull
     @Override
     public String getUrl(@NonNull final Context appContext) {
-        return getBaseURL(appContext);
+        return BASE_URL;
     }
 
     @NonNull

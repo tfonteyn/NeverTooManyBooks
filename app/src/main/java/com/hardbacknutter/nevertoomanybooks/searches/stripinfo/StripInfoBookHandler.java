@@ -143,8 +143,7 @@ public class StripInfoBookHandler
         // keep for reference
         mIsbn = isbn;
 
-        String path = StripInfoManager.getBaseURL(mLocalizedAppContext)
-                      + String.format(BOOK_SEARCH_URL, isbn);
+        String path = StripInfoManager.BASE_URL + String.format(BOOK_SEARCH_URL, isbn);
         if (loadPage(mLocalizedAppContext, path) == null) {
             return bookData;
         }
@@ -172,8 +171,7 @@ public class StripInfoBookHandler
                            final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
-        String path = StripInfoManager.getBaseURL(mLocalizedAppContext)
-                      + String.format(BOOK_BY_NATIVE_ID, nativeId);
+        String path = StripInfoManager.BASE_URL + String.format(BOOK_BY_NATIVE_ID, nativeId);
         if (loadPage(mLocalizedAppContext, path) == null) {
             return bookData;
         }
@@ -328,6 +326,15 @@ public class StripInfoBookHandler
                             case "Cycli":
                                 // not currently used. Example: Cyclus 2 nr. 1
                                 // This is sub-series 2, book 1, inside a series.
+                                // (also known as 'story-arc')
+                                break;
+
+                            case "Redactie":
+                            case "Vormgeving":
+                                // type: list of Authors
+                                // not currently used. Defined by multi-author "concept" series.
+                                // Example: https://www.stripinfo.be/reeks/strip/
+                                // 62234_XIII_Mystery_1_De_Mangoest
                                 break;
 
                             default:
@@ -422,6 +429,17 @@ public class StripInfoBookHandler
                     mDoc = null;
                     return fetchByPath(href, bookData, fetchThumbnail);
                 }
+
+                // <section class="c6 fullInMediumScreens bottomMargin">
+                // <h4 class="title"></h4>
+                // <table>
+                //  <tbody>
+                //   <tr>
+                //    <td>Er werden geen resultaten gevonden voor uw zoekopdracht</td>
+                //   </tr>
+                //  </tbody>
+                // </table>
+                //</section>
             }
         }
 

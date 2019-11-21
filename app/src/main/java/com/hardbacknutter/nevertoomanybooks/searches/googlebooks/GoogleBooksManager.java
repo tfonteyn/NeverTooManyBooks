@@ -34,7 +34,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,17 +59,11 @@ public final class GoogleBooksManager
                    SearchEngine.ByText {
 
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "googlebooks.";
+//    private static final String PREF_PREFIX = "googlebooks.";
 
-    /** Type: {@code String}. */
-    private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
+    private static final String BASE_URL = "https://books.google.com";
+
     private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
-
-    @NonNull
-    public static String getBaseURL(@NonNull final Context appContext) {
-        return PreferenceManager.getDefaultSharedPreferences(appContext)
-                                .getString(PREFS_HOST_URL, "https://books.google.com");
-    }
 
     @NonNull
     @Override
@@ -80,8 +73,7 @@ public final class GoogleBooksManager
             throws IOException {
         // %3C  <
         // %3E  >
-        String url =
-                getBaseURL(localizedAppContext) + "/books/feeds/volumes?q=ISBN%3C" + isbn + "%3E";
+        String url = BASE_URL + "/books/feeds/volumes?q=ISBN%3C" + isbn + "%3E";
         return fetchBook(localizedAppContext, url, fetchThumbnail);
     }
 
@@ -100,8 +92,7 @@ public final class GoogleBooksManager
         // %3A  :
         if (author != null && !author.isEmpty()
             && title != null && !title.isEmpty()) {
-            String url = getBaseURL(localizedAppContext)
-                         + "/books/feeds/volumes?q="
+            String url = BASE_URL + "/books/feeds/volumes?q="
                          + "intitle%3A" + encodeSpaces(title)
                          + "%2B"
                          + "inauthor%3A" + encodeSpaces(author);
@@ -156,7 +147,7 @@ public final class GoogleBooksManager
     @NonNull
     @Override
     public String getUrl(@NonNull final Context appContext) {
-        return getBaseURL(appContext);
+        return BASE_URL;
     }
 
     @StringRes

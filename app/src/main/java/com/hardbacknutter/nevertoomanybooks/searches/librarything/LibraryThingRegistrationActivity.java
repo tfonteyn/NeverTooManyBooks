@@ -91,13 +91,12 @@ public class LibraryThingRegistrationActivity
         // LT Registration Link.
         findViewById(R.id.register_url).setOnClickListener(
                 v -> startActivity(new Intent(Intent.ACTION_VIEW,
-                                              Uri.parse(LibraryThingManager.getBaseURL(this)
-                                                        + '/'))));
+                                              Uri.parse(LibraryThingManager.BASE_URL + '/'))));
 
         // DevKey Link.
         findViewById(R.id.dev_key_url).setOnClickListener(
                 v -> startActivity(new Intent(Intent.ACTION_VIEW,
-                                              Uri.parse(LibraryThingManager.getBaseURL(this)
+                                              Uri.parse(LibraryThingManager.BASE_URL
                                                         + "/services/keys.php"))));
 
         mDevKeyView = findViewById(R.id.dev_key);

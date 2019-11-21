@@ -115,7 +115,9 @@ public class LibraryThingManager
     private static final String FILENAME_SUFFIX = "_LT";
 
     /** base urls. */
-    private static final String BASE_URL = "https://www.librarything.com";
+    public static final String BASE_URL = "https://www.librarything.com";
+
+    private static final String WORK_URL = BASE_URL + "/work/%1$s";
     /**
      * book details urls.
      * <p>
@@ -125,7 +127,7 @@ public class LibraryThingManager
             BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&%2$s=%3$s";
 
     /** fetches all isbn's from editions related to the requested isbn. */
-    private static final String EDITIONS_URL = BASE_URL + "/api/thingISBN/%s";
+    private static final String EDITIONS_URL = BASE_URL + "/api/thingISBN/%1$s";
 
     /** param 1: dev-key; param 2: size; param 3: isbn. */
     private static final String COVER_BY_ISBN_URL =
@@ -136,11 +138,6 @@ public class LibraryThingManager
     private static final Throttler THROTTLER = new Throttler();
     private static final Pattern DEV_KEY_PATTERN = Pattern.compile("[\\r\\t\\n\\s]*");
 
-    @NonNull
-    public static String getBaseURL(@NonNull final Context appContext) {
-        return BASE_URL;
-    }
-
     /**
      * View a Book on the web site.
      *
@@ -149,7 +146,7 @@ public class LibraryThingManager
      */
     public static void openWebsite(@NonNull final Context appContext,
                                    final long bookId) {
-        String url = getBaseURL(appContext) + "/work/" + bookId;
+        String url = BASE_URL + String.format(WORK_URL, bookId);
         appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
@@ -420,7 +417,7 @@ public class LibraryThingManager
     @NonNull
     @Override
     public String getUrl(@NonNull final Context appContext) {
-        return getBaseURL(appContext);
+        return BASE_URL;
     }
 
     @Override

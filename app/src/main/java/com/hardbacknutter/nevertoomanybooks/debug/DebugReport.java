@@ -55,13 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.searches.googlebooks.GoogleBooksManager;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
-import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
-import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
@@ -271,14 +266,15 @@ public final class DebugReport {
 
     public static String getSiteUrls(@NonNull final Context context) {
         return AmazonManager.getBaseURL(context) + '\n'
-               + GoodreadsManager.BASE_URL + '\n'
-               + GoogleBooksManager.getBaseURL(context) + '\n'
+//               + GoodreadsManager.getBaseURL(context) + '\n'
+//               + GoogleBooksManager.getBaseURL(context) + '\n'
                + IsfdbManager.getBaseURL(context) + '\n'
                + KbNlManager.getBaseURL(context) + '\n'
-               + LibraryThingManager.getBaseURL(context) + '\n'
-               + OpenLibraryManager.BASE_URL + '\n'
-               + StripInfoManager.getBaseURL(context) + '\n';
-        //NEWTHINGS: add new search engine
+//               + LibraryThingManager.getBaseURL(context) + '\n'
+//               + OpenLibraryManager.getBaseURL(context) + '\n'
+//               + StripInfoManager.getBaseURL(context) + '\n'
+                ;
+        //NEWTHINGS: add new search engine if it supports a changeable url.
     }
 
     /**
