@@ -364,8 +364,8 @@ public class FastScrollerOverlay
 
             for (int index = 0; index < recyclerView.getItemDecorationCount(); index++) {
                 RecyclerView.ItemDecoration decor = recyclerView.getItemDecorationAt(index);
-                if (decor.getClass()
-                         .getName().equals("androidx.recyclerview.widget.FastScroller")) {
+                if ("androidx.recyclerview.widget.FastScroller"
+                        .equals(decor.getClass().getName())) {
                     mFastScroller = decor;
                     mFastScrollerStateField = mFastScroller.getClass().getDeclaredField("mState");
                     mFastScrollerStateField.setAccessible(true);

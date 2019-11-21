@@ -38,7 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
@@ -51,7 +51,7 @@ public class BookDetailsActivity
         extends BaseActivity {
 
     /** all registered listeners. */
-    private final List<View.OnTouchListener> mOnTouchListeners = new ArrayList<>();
+    private final Collection<View.OnTouchListener> mOnTouchListeners = new ArrayList<>();
 
     @Override
     protected int getLayoutId() {

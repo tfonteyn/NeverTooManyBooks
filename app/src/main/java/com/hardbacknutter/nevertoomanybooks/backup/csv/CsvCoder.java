@@ -135,7 +135,7 @@ public final class CsvCoder {
                         if (author.isComplete()) {
                             details.put(JSON_COMPLETE, author.isComplete());
                         }
-                        if (author.getType() != 0) {
+                        if (author.getType() != Author.TYPE_UNKNOWN) {
                             details.put(JSON_TYPE, author.getType());
                         }
                     } catch (@NonNull final JSONException e) {

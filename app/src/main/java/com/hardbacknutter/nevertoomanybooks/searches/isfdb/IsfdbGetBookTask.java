@@ -102,15 +102,15 @@ public class IsfdbGetBookTask
     @WorkerThread
     protected Bundle doInBackground(final Void... params) {
         Thread.currentThread().setName("IsfdbGetBookTask");
-        Context context = App.getAppContext();
+        Context localizedAppContext = App.getLocalizedAppContext();
 
         try {
             if (mEditions != null) {
-                return new IsfdbBookHandler(context)
+                return new IsfdbBookHandler(localizedAppContext)
                         .fetch(mEditions, mAddSeriesFromToc, false);
 
             } else if (mIsfdbId != 0) {
-                return new IsfdbBookHandler(context)
+                return new IsfdbBookHandler(localizedAppContext)
                         .fetchByNativeId(String.valueOf(mIsfdbId), mAddSeriesFromToc, false);
 
             } else {
@@ -120,7 +120,7 @@ public class IsfdbGetBookTask
             }
 
         } catch (@NonNull final SocketTimeoutException e) {
-            Logger.warn(context, TAG, "doInBackground", e.getLocalizedMessage());
+            Logger.warn(localizedAppContext, TAG, "doInBackground", e.getLocalizedMessage());
         }
 
         return null;

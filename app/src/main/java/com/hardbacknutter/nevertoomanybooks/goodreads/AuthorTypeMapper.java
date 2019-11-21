@@ -32,7 +32,6 @@ import androidx.annotation.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_ARTIST;
@@ -106,7 +105,7 @@ public class AuthorTypeMapper {
         }
 
         // unknown, log it for future enhancement.
-        Logger.warn(App.getAppContext(), TAG, "map", "typeName=`" + typeName + "`");
+        Logger.warn(TAG, "map", "typeName=`" + typeName + "`");
         return TYPE_UNKNOWN;
     }
 }

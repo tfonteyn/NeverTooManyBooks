@@ -77,17 +77,18 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="?attr/colorControlHighlight"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 >
 
                 <TextView
                     android:id="@+id/style_name"
                     style="@style/BooklistBook.Header.Text"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:textIsSelectable="true"
                     app:layout_constraintEnd_toStartOf="@id/book_count"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="style name"
                     />
@@ -95,6 +96,7 @@
                 <TextView
                     android:id="@+id/book_count"
                     style="@style/BooklistBook.Header.Text.Small"
+                    android:textIsSelectable="true"
                     app:layout_constraintBottom_toBottomOf="@id/style_name"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/style_name"

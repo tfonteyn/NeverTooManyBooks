@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -179,10 +180,15 @@ public class EditBookshelvesActivity
 
 
     private void onCreateContextMenu(final int position) {
+        Resources r = getResources();
         Menu menu = MenuPicker.createMenu(this);
-        menu.add(Menu.NONE, R.id.MENU_EDIT, MenuHandler.ORDER_EDIT, R.string.menu_edit)
+        menu.add(Menu.NONE, R.id.MENU_EDIT,
+                 r.getInteger(R.integer.MENU_ORDER_EDIT),
+                 R.string.menu_edit)
             .setIcon(R.drawable.ic_edit);
-        menu.add(Menu.NONE, R.id.MENU_DELETE, MenuHandler.ORDER_DELETE, R.string.menu_delete)
+        menu.add(Menu.NONE, R.id.MENU_DELETE,
+                 r.getInteger(R.integer.MENU_ORDER_DELETE),
+                 R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
         Bookshelf bookshelf = mList.get(position);
@@ -345,7 +351,6 @@ public class EditBookshelvesActivity
                 notifyItemChanged(mSelectedPosition);
             });
 
-            // long-click -> menu
             holder.nameView.setOnLongClickListener(v -> {
                 onCreateContextMenu(holder.getAdapterPosition());
                 return true;

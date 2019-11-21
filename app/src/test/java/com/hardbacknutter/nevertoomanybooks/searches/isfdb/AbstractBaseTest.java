@@ -36,6 +36,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.hardbacknutter.nevertoomanybooks.App;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -63,7 +65,7 @@ class AbstractBaseTest {
 
 
     /**
-     * Search for 0-88733-160-2; which has a single edition, so will redirect to the book.
+     * Search for 0-88733-160-2; which has a single edition, so should redirect to the book.
      * Resulting url should have "pl.cgi".
      */
     @Test
@@ -73,14 +75,14 @@ class AbstractBaseTest {
         DummyLoader loader = new DummyLoader();
 
         String url = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
-        String resultingUrl = loader.loadPage(url);
+        String resultingUrl = loader.loadPage(App.getAppContext(), url);
         assertEquals(sBaseUrl + "/cgi-bin/pl.cgi?326539", resultingUrl);
     }
 
 
     /**
      * Search for 978-1-4732-0892-6; which has two editions.
-     * Resulting url will should "se.cgi".
+     * Resulting url should have "se.cgi".
      */
     @Test
     void searchMultiEditionIsbn()
@@ -89,7 +91,7 @@ class AbstractBaseTest {
         DummyLoader loader = new DummyLoader();
 
         String url = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
-        String resultingUrl = loader.loadPage(url);
+        String resultingUrl = loader.loadPage(App.getAppContext(), url);
         assertEquals(sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN", resultingUrl);
     }
 

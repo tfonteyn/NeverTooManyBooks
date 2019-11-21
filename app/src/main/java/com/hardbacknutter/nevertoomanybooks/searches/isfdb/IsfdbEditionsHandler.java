@@ -40,7 +40,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -61,30 +60,33 @@ public class IsfdbEditionsHandler
 
     /** List of ISFDB native book id for all found editions. */
     private final ArrayList<Edition> mEditions = new ArrayList<>();
+    @NonNull
+    private final Context mAppContext;
 
     /**
      * Constructor.
+     *
+     * @param appContext Application context
      */
-    IsfdbEditionsHandler() {
+    IsfdbEditionsHandler(@NonNull final Context appContext) {
+        mAppContext = appContext;
     }
 
     /**
      * Fails silently, returning an empty list.
      *
-     * @param context Current context
-     * @param isbn    to get editions for. MUST be valid.
+     * @param isbn to get editions for. MUST be valid.
      *
      * @return a list with native ISFDB book ID's pointing to individual editions
      *
      * @throws SocketTimeoutException if the connection times out
      */
-    public ArrayList<Edition> fetch(@NonNull final Context context,
-                                    @NonNull final String isbn)
+    public ArrayList<Edition> fetch(@NonNull final String isbn)
             throws SocketTimeoutException {
 
-        String url = IsfdbManager.getBaseURL(context) + String.format(EDITIONS_URL, isbn);
+        String url = IsfdbManager.getBaseURL(mAppContext) + String.format(EDITIONS_URL, isbn);
 
-        if (loadPage(url) == null) {
+        if (loadPage(mAppContext, url) == null) {
             // failed to load, return an empty list.
             return mEditions;
         }
@@ -105,7 +107,7 @@ public class IsfdbEditionsHandler
     public ArrayList<Edition> fetchPath(@NonNull final String url)
             throws SocketTimeoutException {
 
-        if (loadPage(url) == null) {
+        if (loadPage(mAppContext, url) == null) {
             // failed to load, return an empty list.
             return mEditions;
         }
@@ -139,7 +141,7 @@ public class IsfdbEditionsHandler
             findEntries(mDoc, "tr.table1", "tr.table0");
         } else {
             // dunno, let's log it
-            Logger.warnWithStackTrace(App.getAppContext(), TAG, "pageUrl=" + pageUrl);
+            Logger.warnWithStackTrace(TAG, "pageUrl=" + pageUrl);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {

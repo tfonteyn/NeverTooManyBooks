@@ -84,7 +84,7 @@ public final class LinkifyUtils {
         URLSpan[] currentSpans = text.getSpans(0, text.length(), URLSpan.class);
 
         // Build an empty spannable and add the links
-        SpannableString buffer = new SpannableString(text);
+        Spannable buffer = new SpannableString(text);
         Linkify.addLinks(buffer, LINKIFY_MASK);
 
         // Add back the HTML spannable's

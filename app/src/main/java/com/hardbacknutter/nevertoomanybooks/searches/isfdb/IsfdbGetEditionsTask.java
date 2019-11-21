@@ -73,9 +73,9 @@ public class IsfdbGetEditionsTask
     protected ArrayList<IsfdbEditionsHandler.Edition> doInBackground(final Void... params) {
         Thread.currentThread().setName("IsfdbGetEditionsTask " + mIsbn);
         try {
-            return new IsfdbEditionsHandler().fetch(App.getAppContext(), mIsbn);
+            return new IsfdbEditionsHandler(App.getAppContext()).fetch(mIsbn);
         } catch (@NonNull final SocketTimeoutException e) {
-            Logger.warn(App.getAppContext(), TAG, "doInBackground", e.getLocalizedMessage());
+            Logger.warn(TAG, "doInBackground", e.getLocalizedMessage());
             return null;
         }
     }

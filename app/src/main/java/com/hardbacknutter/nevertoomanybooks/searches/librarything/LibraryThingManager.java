@@ -137,20 +137,20 @@ public class LibraryThingManager
     private static final Pattern DEV_KEY_PATTERN = Pattern.compile("[\\r\\t\\n\\s]*");
 
     @NonNull
-    public static String getBaseURL(@NonNull final Context context) {
+    public static String getBaseURL(@NonNull final Context appContext) {
         return BASE_URL;
     }
 
     /**
      * View a Book on the web site.
      *
-     * @param context Current context
-     * @param bookId  site native book id to show
+     * @param appContext Application context
+     * @param bookId     site native book id to show
      */
-    public static void openWebsite(@NonNull final Context context,
+    public static void openWebsite(@NonNull final Context appContext,
                                    final long bookId) {
-        String url = getBaseURL(context) + "/work/" + bookId;
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        String url = getBaseURL(appContext) + "/work/" + bookId;
+        appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     /**
@@ -187,23 +187,57 @@ public class LibraryThingManager
     }
 
     /**
+     * external users (to this class) should call this before doing any searches.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if there is a developer key configured.
+     */
+    public static boolean hasKey(@NonNull final Context context) {
+        boolean hasKey = !getDevKey(context).isEmpty();
+        if (BuildConfig.DEBUG && !hasKey) {
+            Log.d(TAG, "hasKey|LibraryThing key not available");
+        }
+        return hasKey;
+    }
+
+    /**
+     * Get the dev key.
+     *
+     * @param context Current context
+     *
+     * @return the dev key, CAN BE EMPTY but never {@code null}
+     */
+    @NonNull
+    private static String getDevKey(@NonNull final Context context) {
+        String key = PreferenceManager.getDefaultSharedPreferences(context)
+                                      .getString(PREFS_DEV_KEY, null);
+        if (key != null && !key.isEmpty()) {
+            return DEV_KEY_PATTERN.matcher(key).replaceAll("");
+        }
+        return "";
+    }
+
+    @SuppressWarnings("unused")
+    static void resetTips(@NonNull final Context context) {
+        TipManager.reset(context, PREFS_HIDE_ALERT);
+    }
+
+    /**
      * Search for edition data.
      * <p>
      * No dev-key needed for this call.
      *
      * <strong>Note:</strong> we assume the isbn numbers from the site are valid.
      * No extra checks are made.
-     *
-     * <strong>Note:</strong> all exceptions are ignored.
-     *
-     * @param isbn to search for, <strong>must</strong> be valid.
-     *
-     * @return a list of isbn's of alternative editions of our original isbn, can be empty.
+     * <p>
+     * {@inheritDoc}
      */
     @WorkerThread
     @NonNull
     @Override
-    public ArrayList<String> getAlternativeEditions(@NonNull final String isbn) {
+    public ArrayList<String> getAlternativeEditions(@NonNull final Context appContext,
+                                                    @NonNull final String isbn) {
 
         // the resulting data we'll return
         ArrayList<String> editions = new ArrayList<>();
@@ -230,9 +264,10 @@ public class LibraryThingManager
         THROTTLER.waitUntilRequestAllowed();
 
         // Get it
-        try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
+        try (TerminatorConnection con =
+                     TerminatorConnection.openConnection(appContext, url)) {
             SAXParser parser = factory.newSAXParser();
-            parser.parse(con.inputStream, handler);
+            parser.parse(con.getInputStream(), handler);
         } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
                 Log.d(TAG, "getAlternativeEditions|e=" + e);
@@ -245,42 +280,11 @@ public class LibraryThingManager
         return editions;
     }
 
-    /**
-     * external users (to this class) should call this before doing any searches.
-     *
-     * @return {@code true} if there is a developer key configured.
-     */
-    public static boolean hasKey() {
-        boolean hasKey = !getDevKey().isEmpty();
-        if (BuildConfig.DEBUG && !hasKey) {
-            Log.d(TAG, "hasKey|LibraryThing key not available");
-        }
-        return hasKey;
-    }
-
-    /**
-     * @return the dev key, CAN BE EMPTY but never {@code null}
-     */
-    @NonNull
-    private static String getDevKey() {
-        String key = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                      .getString(PREFS_DEV_KEY, null);
-        if (key != null && !key.isEmpty()) {
-            return DEV_KEY_PATTERN.matcher(key).replaceAll("");
-        }
-        return "";
-    }
-
-    @SuppressWarnings("unused")
-    static void resetTips(@NonNull final Context context) {
-        TipManager.reset(context, PREFS_HIDE_ALERT);
-    }
-
     @Override
     public boolean promptToRegister(@NonNull final Context context,
                                     final boolean required,
                                     @NonNull final String prefSuffix) {
-        if (!hasKey()) {
+        if (!hasKey(context)) {
             return alertRegistrationNeeded(context, required, prefSuffix);
         }
         return false;
@@ -293,17 +297,17 @@ public class LibraryThingManager
      */
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
+    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
                                final boolean fetchThumbnail)
             throws IOException {
 
-        String url = String.format(BOOK_URL, getDevKey(), "isbn", isbn);
+        String url = String.format(BOOK_URL, getDevKey(localizedAppContext), "isbn", isbn);
 
-        Bundle bookData = fetchBook(url);
+        Bundle bookData = fetchBook(localizedAppContext, url);
 
         if (fetchThumbnail) {
-            getCoverImage(context, isbn, bookData);
+            getCoverImage(localizedAppContext, isbn, bookData);
         }
 
         return bookData;
@@ -316,26 +320,27 @@ public class LibraryThingManager
      */
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context context,
+    public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                    @NonNull final String nativeId,
                                    final boolean fetchThumbnail)
             throws IOException {
 
-        String url = String.format(BOOK_URL, getDevKey(), "id", nativeId);
+        String url = String.format(BOOK_URL, getDevKey(localizedAppContext), "id", nativeId);
 
-        Bundle bookData = fetchBook(url);
+        Bundle bookData = fetchBook(localizedAppContext, url);
 
         if (fetchThumbnail) {
             String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
             if (isbn != null && !isbn.isEmpty()) {
-                getCoverImage(context, isbn, bookData);
+                getCoverImage(localizedAppContext, isbn, bookData);
             }
         }
 
         return bookData;
     }
 
-    private Bundle fetchBook(@NonNull final String url)
+    private Bundle fetchBook(@NonNull final Context appContext,
+                             @NonNull final String url)
             throws IOException {
         Bundle bookData = new Bundle();
 
@@ -346,9 +351,9 @@ public class LibraryThingManager
         THROTTLER.waitUntilRequestAllowed();
 
         // Get it
-        try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
+        try (TerminatorConnection con = TerminatorConnection.openConnection(appContext, url)) {
             SAXParser parser = factory.newSAXParser();
-            parser.parse(con.inputStream, handler);
+            parser.parse(con.getInputStream(), handler);
 
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             // wrap parser exceptions in an IOException
@@ -366,7 +371,7 @@ public class LibraryThingManager
     @Nullable
     @WorkerThread
     @Override
-    public File getCoverImage(@NonNull final Context context,
+    public File getCoverImage(@NonNull final Context appContext,
                               @NonNull final String isbn,
                               @Nullable final ImageSize size) {
 
@@ -397,8 +402,9 @@ public class LibraryThingManager
         THROTTLER.waitUntilRequestAllowed();
 
         // Fetch, then save it with a suffix
-        String coverUrl = String.format(COVER_BY_ISBN_URL, getDevKey(), sizeParam, isbn);
-        String fileSpec = ImageUtils.saveImage(coverUrl, isbn, FILENAME_SUFFIX, sizeParam);
+        String coverUrl = String.format(COVER_BY_ISBN_URL, getDevKey(appContext), sizeParam, isbn);
+        String fileSpec = ImageUtils.saveImage(appContext, coverUrl,
+                                               isbn, FILENAME_SUFFIX, sizeParam);
         if (fileSpec != null) {
             return new File(fileSpec);
         }
@@ -408,13 +414,13 @@ public class LibraryThingManager
 
     @Override
     public boolean isAvailable() {
-        return hasKey();
+        return hasKey(App.getAppContext());
     }
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context context) {
-        return getBaseURL(context);
+    public String getUrl(@NonNull final Context appContext) {
+        return getBaseURL(appContext);
     }
 
     @Override

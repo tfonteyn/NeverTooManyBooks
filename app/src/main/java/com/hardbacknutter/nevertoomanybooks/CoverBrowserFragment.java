@@ -54,6 +54,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -82,7 +83,7 @@ public class CoverBrowserFragment
     private static final String BKEY_EDITION_LIST = TAG + ":editions";
     private static final String BKEY_SWITCHER_FILE = TAG + ":coverImage";
 
-    /** Populated by {@link #showGallery(ArrayList)} AND savedInstanceState. */
+    /** Populated by {@link #showGallery} AND savedInstanceState. */
     @NonNull
     private final ArrayList<String> mAlternativeEditions = new ArrayList<>();
     @Nullable
@@ -127,7 +128,7 @@ public class CoverBrowserFragment
         mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_MEDIUM);
 
         mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
-        // ENHANCE: pass in SearchAdminModel.BKEY_COVERS / set it on the fly.
+        // ENHANCE: pass in SearchAdminModel.BKEY_COVERS_SITES / set it on the fly.
         //noinspection ConstantConditions
         mModel.init(getContext(), requireArguments());
 
@@ -259,7 +260,7 @@ public class CoverBrowserFragment
      *
      * @param editions the list to use.
      */
-    private void showGallery(@Nullable final ArrayList<String> editions) {
+    private void showGallery(@Nullable final Collection<String> editions) {
         mAlternativeEditions.clear();
         if (editions != null) {
             mAlternativeEditions.addAll(editions);
@@ -429,7 +430,8 @@ public class CoverBrowserFragment
 
             // See if file is present.
             if (imageFile != null && imageFile.exists()) {
-                ImageUtils.setImageView(holder.imageView, imageFile, mWidth, mHeight, true);
+                ImageUtils.setImageView(holder.imageView, imageFile, mWidth, mHeight, true,
+                                        R.drawable.ic_image);
 
             } else {
                 // Not present; use a placeholder.
@@ -460,7 +462,7 @@ public class CoverBrowserFragment
                         // no need to search, just load it.
                         ImageUtils.setImageView(holder.imageView,
                                                 new File(fileSpec),
-                                                mWidth, mHeight, true);
+                                                mWidth, mHeight, true, R.drawable.ic_image);
                     } else {
                         // see if we can get a larger image.
 

@@ -52,58 +52,55 @@ public class StripInfoManager
                    SearchEngine.ByNativeId,
                    SearchEngine.ByIsbn {
 
+    /** This is a Dutch website. */
     public static final Locale SITE_LOCALE = new Locale("nl", "BE");
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "stripinfo.";
     /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
 
-    /**
-     * Constructor.
-     */
-    public StripInfoManager() {
-    }
-
     @NonNull
-    public static String getBaseURL(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
+    public static String getBaseURL(@NonNull final Context appContext) {
+        return PreferenceManager.getDefaultSharedPreferences(appContext)
                                 .getString(PREFS_HOST_URL, "https://stripinfo.be");
     }
 
     /**
      * View a Book on the web site.
      *
-     * @param context Current context
+     * @param appContext Application context
      * @param bookId  site native book id to show
      */
-    public static void openWebsite(@NonNull final Context context,
+    public static void openWebsite(@NonNull final Context appContext,
                                    final long bookId) {
-        String url = getBaseURL(context) + "/reeks/strip/" + bookId;
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        String url = getBaseURL(appContext) + "/reeks/strip/" + bookId;
+        appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context context) {
-        return getBaseURL(context);
+    public String getUrl(@NonNull final Context appContext) {
+        return getBaseURL(appContext);
     }
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
+    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
                                final boolean fetchThumbnail)
             throws IOException {
-        return new StripInfoBookHandler().fetch(context, isbn, fetchThumbnail);
+        return new StripInfoBookHandler(localizedAppContext)
+                .fetch(isbn, new Bundle(), fetchThumbnail);
     }
 
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context context,
+    public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                    @NonNull final String nativeId,
                                    final boolean fetchThumbnail)
             throws IOException {
-        return new StripInfoBookHandler().fetchByNativeId(context, nativeId, fetchThumbnail);
+        return new StripInfoBookHandler(localizedAppContext)
+                .fetchByNativeId(nativeId, new Bundle(), fetchThumbnail);
     }
 
     @Override

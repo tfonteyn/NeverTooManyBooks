@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@id/MENU_SORT"
+        android:icon="@drawable/ic_sort_by_alpha"
+        android:title="@string/menu_sort_and_style_ellipsis"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@id/MENU_LEVEL_RESET"
+        android:icon="@drawable/ic_refresh"
+        android:title="@string/menu_level_reset" />
+
+    <item
+        android:id="@id/MENU_LEVEL_EXPAND"
+        android:icon="@drawable/ic_unfold_more"
+        android:title="@string/menu_level_expand" />
+
+    <item
+        android:id="@id/MENU_LEVEL_COLLAPSE"
+        android:icon="@drawable/ic_unfold_less"
+        android:title="@string/menu_level_collapse" />
+
+    <!--
+        // Disabled for now. It's a bit to easy for the user to select this from here,
+        // with potentially huge impact.
+        // This will use the currently displayed booklist (the book ID's)
+        // which could potentially be a very long list
+     -->
+    <item
+        android:id="@id/MENU_UPDATE_FROM_INTERNET"
+        android:icon="@drawable/ic_cloud_download"
+        android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
+        android:title="@string/menu_update_fields"
+        android:visible="false" />
+
+    <item
+        android:id="@id/MENU_CLEAR_FILTERS"
+        android:icon="@drawable/ic_undo"
+        android:title="@string/menu_clear_search_filters" />
+
+</menu>

@@ -33,9 +33,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -211,8 +214,8 @@ public class Author
     private String mGivenNames;
     /** whether we have all we want from this Author. */
     private boolean mIsComplete;
-
     /** Bitmask. */
+    @Type
     private int mType = TYPE_UNKNOWN;
 
     /**
@@ -359,6 +362,7 @@ public class Author
         mIsComplete = complete;
     }
 
+    @Type
     public int getType() {
         return mType;
     }
@@ -368,7 +372,7 @@ public class Author
      *
      * @param type to set
      */
-    public void setType(final int type) {
+    public void setType(@Type final int type) {
         mType = type & TYPE_MASK;
     }
 
@@ -377,7 +381,7 @@ public class Author
      *
      * @param type list of bits
      */
-    public void setType(@NonNull final ArrayList<Integer> type) {
+    public void setType(@NonNull final Iterable<Integer> type) {
         int bitmask = 0;
         for (Integer bit : type) {
             bitmask += bit;
@@ -390,7 +394,7 @@ public class Author
      *
      * @param type to add
      */
-    public void addType(final int type) {
+    public void addType(@Type final int type) {
         mType |= type & TYPE_MASK;
     }
 
@@ -614,5 +618,16 @@ public class Author
                + ", mIsComplete=" + mIsComplete
                + ", mType=0b" + Integer.toBinaryString(mType)
                + '}';
+    }
+
+    @IntDef(flag = true,
+            value = {TYPE_UNKNOWN
+                    , TYPE_WRITER
+                    , TYPE_TRANSLATOR, TYPE_INTRODUCTION, TYPE_EDITOR, TYPE_CONTRIBUTOR
+                    , TYPE_COVER_ARTIST, TYPE_COVER_INKING, TYPE_COVER_COLORIST
+                    , TYPE_ARTIST, TYPE_INKING, TYPE_COLORIST})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Type {
+
     }
 }

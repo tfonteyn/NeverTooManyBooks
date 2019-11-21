@@ -300,7 +300,7 @@ public class ISBN {
             return false;
         }
 
-        // An ASIN is basically an ISBN-10.
+        // An Book ASIN is basically an ISBN-10.
         if (isValid(asin)) {
             return true;
         }
@@ -490,7 +490,7 @@ public class ISBN {
      *
      * @return the ISBN number as a string (10 or 13)
      */
-    private String concat(@NonNull final List<Integer> digits) {
+    private String concat(@NonNull final Iterable<Integer> digits) {
         StringBuilder sb = new StringBuilder();
         for (int d : digits) {
             if (d == 10) {
@@ -534,7 +534,7 @@ public class ISBN {
      * @throws NumberFormatException if conversion fails
      */
     @NonNull
-    private List<Integer> isbnToDigits(@NonNull final String isbn)
+    private List<Integer> isbnToDigits(@NonNull final CharSequence isbn)
             throws NumberFormatException {
         // the digit '10' represented as 'X' in an isbn indicates we got to the end
         boolean foundX = false;

@@ -43,7 +43,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -72,7 +71,7 @@ public class TableDefinition
     private final List<DomainDefinition> mDomains;
 
     /** Used for checking if a domain has already been added. */
-    private final Set<DomainDefinition> mDomainCheck = new HashSet<>();
+    private final Collection<DomainDefinition> mDomainCheck = new HashSet<>();
 
     /** Used for checking if a domain NAME has already been added. */
     private final Map<String, DomainDefinition> mDomainNameCheck =
@@ -255,7 +254,7 @@ public class TableDefinition
         mIndexes.clear();
 
         // Need to make local copies to avoid 'collection modified' errors
-        List<TableDefinition> tmpParents = new ArrayList<>();
+        Collection<TableDefinition> tmpParents = new ArrayList<>();
         for (FkReference fk : mParents.values()) {
             tmpParents.add(fk.mParent);
         }
@@ -264,7 +263,7 @@ public class TableDefinition
         }
 
         // Need to make local copies to avoid 'collection modified' errors
-        List<TableDefinition> tmpChildren = new ArrayList<>();
+        Collection<TableDefinition> tmpChildren = new ArrayList<>();
         for (FkReference fk : mChildren.values()) {
             tmpChildren.add(fk.mChild);
         }
@@ -357,7 +356,7 @@ public class TableDefinition
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    public TableDefinition addDomains(@NonNull final List<DomainDefinition> domains) {
+    public TableDefinition addDomains(@NonNull final Iterable<DomainDefinition> domains) {
         for (DomainDefinition d : domains) {
             addDomain(d);
         }
@@ -431,7 +430,7 @@ public class TableDefinition
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    private TableDefinition setPrimaryKey(@NonNull final List<DomainDefinition> domains) {
+    private TableDefinition setPrimaryKey(@NonNull final Collection<DomainDefinition> domains) {
         mPrimaryKey.clear();
         mPrimaryKey.addAll(domains);
         return this;
@@ -837,30 +836,31 @@ public class TableDefinition
                           final int startRow,
                           final int endRow,
                           @NonNull final String header) {
-        Log.d(tag, "Table: " + mName + ": " + header);
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(tag, "Table: " + mName + ": " + header);
 
-        String pk = mPrimaryKey.get(0).getName();
+            String pk = mPrimaryKey.get(0).getName();
 
-        String sql = "SELECT * FROM " + mName
-                     + " WHERE " + pk + ">=" + startRow + " AND " + pk + "<=" + endRow
-                     + " ORDER BY " + pk;
+            String sql = "SELECT * FROM " + mName
+                         + " WHERE " + pk + ">=" + startRow + " AND " + pk + "<=" + endRow
+                         + " ORDER BY " + pk;
 
-        try (Cursor cursor = syncedDb.rawQuery(sql, null)) {
-            StringBuilder columnHeading = new StringBuilder();
-            String[] columnNames = cursor.getColumnNames();
-            int cols = columnNames.length;
-            for (String column : columnNames) {
-                columnHeading.append(String.format("%-12s", column));
-            }
-            columnHeading.append(", total rows=").append(cursor.getCount());
-            Log.d(tag, columnHeading.toString());
-
-            while (cursor.moveToNext()) {
-                StringBuilder line = new StringBuilder();
-                for (int c = 0; c < cursor.getColumnCount(); c++) {
-                    line.append(String.format("%-12s", cursor.getString(c)));
+            try (Cursor cursor = syncedDb.rawQuery(sql, null)) {
+                StringBuilder columnHeading = new StringBuilder();
+                String[] columnNames = cursor.getColumnNames();
+                for (String column : columnNames) {
+                    columnHeading.append(String.format("%-12s", column));
                 }
-                Log.d(tag, line.toString());
+                columnHeading.append(", total rows=").append(cursor.getCount());
+                Log.d(tag, columnHeading.toString());
+
+                while (cursor.moveToNext()) {
+                    StringBuilder line = new StringBuilder();
+                    for (int c = 0; c < cursor.getColumnCount(); c++) {
+                        line.append(String.format("%-12s", cursor.getString(c)));
+                    }
+                    Log.d(tag, line.toString());
+                }
             }
         }
     }

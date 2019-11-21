@@ -31,14 +31,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * A StringList contains a list of elements, separated by the {@link Factory#getElementSeparator()}.
  * <p>
  * Each element is a list of objects separated by the {@link Factory#getObjectSeparator()}.
  * <p>
- * FIXME: there is a degree of double-decoding in {@link #decode(String, char, boolean)}.
+ * FIXME: there is a degree of double-decoding in {@link #decode}.
  * No harm done, but wasting cpu cycles. This is due to the (default) assumption
  * that each element in a list can in turn be a list.
  *
@@ -74,7 +73,7 @@ public class StringList<E> {
      * @return Array of elements
      */
     @NonNull
-    public ArrayList<E> decode(@Nullable final String stringList) {
+    public ArrayList<E> decode(@Nullable final CharSequence stringList) {
         return decode(stringList, mFactory.getElementSeparator(), false);
     }
 
@@ -86,7 +85,7 @@ public class StringList<E> {
      * @return Array of objects
      */
     @NonNull
-    public ArrayList<E> decodeElement(@Nullable final String stringList) {
+    public ArrayList<E> decodeElement(@Nullable final CharSequence stringList) {
         return decode(stringList, mFactory.getObjectSeparator(), false);
     }
 
@@ -100,7 +99,7 @@ public class StringList<E> {
      * @return Array of objects resulting from list
      */
     @NonNull
-    public ArrayList<E> decode(@Nullable final String stringList,
+    public ArrayList<E> decode(@Nullable final CharSequence stringList,
                                final char delimiter,
                                final boolean allowBlank) {
         StringBuilder sb = new StringBuilder();
@@ -171,7 +170,7 @@ public class StringList<E> {
      * @return Encoded string
      */
     @NonNull
-    public String encodeList(@NonNull final Collection<E> list) {
+    public String encodeList(@NonNull final Iterable<E> list) {
         // The factory will encode each element, and we simply concat all of them.
         return Csv.join(String.valueOf(mFactory.getElementSeparator()), list, mFactory::encode);
     }

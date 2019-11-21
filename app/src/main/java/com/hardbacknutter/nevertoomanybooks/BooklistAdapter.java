@@ -491,7 +491,7 @@ public class BooklistAdapter
                 }
 
             } catch (@NonNull final NumberFormatException e) {
-                Logger.error(App.getAppContext(), TAG, e);
+                Logger.error(TAG, e);
                 return false;
             }
             return true;
@@ -786,9 +786,10 @@ public class BooklistAdapter
 
             String title = rowData.getString(DBDefinitions.KEY_TITLE);
             if (mReorderTitle) {
+                Context context = mTitleView.getContext();
                 String language = rowData.getString(DBDefinitions.KEY_LANGUAGE);
-                title = LocaleUtils.reorderTitle(App.getLocalizedAppContext(), title,
-                                                 LocaleUtils.getLocale(language));
+                title = LocaleUtils.reorderTitle(context, title,
+                                                 LocaleUtils.getLocale(context, language));
             }
             mTitleView.setText(title);
 
@@ -805,8 +806,10 @@ public class BooklistAdapter
                 mCoverView.setTag(R.id.TAG_UUID, rowData.getString(DBDefinitions.KEY_BOOK_UUID));
 
                 String uuid = rowData.getString(DBDefinitions.KEY_BOOK_UUID);
+                // placeHolder is a non-actionable icon.
                 boolean isSet = ImageUtils.setImageView(mCoverView, uuid,
-                                                        mMaxCoverSize, mMaxCoverSize);
+                                                        mMaxCoverSize, mMaxCoverSize, true,
+                                                        R.drawable.ic_image);
                 if (isSet) {
                     //Allow zooming by clicking on the image
                     mCoverView.setOnClickListener(v -> {
@@ -1090,7 +1093,7 @@ public class BooklistAdapter
                         return;
                     }
                 } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(App.getAppContext(), TAG, e);
+                    Logger.error(TAG, e);
                 }
             }
 
@@ -1120,7 +1123,7 @@ public class BooklistAdapter
         public void setText(@Nullable final String text,
                             @IntRange(from = 1) final int level) {
             if (text != null && !text.isEmpty()) {
-                super.setText(LanguageUtils.getDisplayName(text), level);
+                super.setText(LanguageUtils.getDisplayName(App.getAppContext(), text), level);
             } else {
                 super.setText(text, level);
             }
@@ -1185,7 +1188,7 @@ public class BooklistAdapter
                         return;
                     }
                 } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(App.getAppContext(), TAG, e);
+                    Logger.error(TAG, e);
                 }
             }
             super.setText(text, level);

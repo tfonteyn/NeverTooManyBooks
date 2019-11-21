@@ -43,6 +43,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -64,14 +65,20 @@ public final class NetworkUtils {
      * Check if we have network access; taking into account whether the user permits
      * metered (i.e. pay-per-usage) networks or not.
      *
+     * @param appContext Application context
+     *
      * @return {@code true} if the application can access the internet
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     @AnyThread
-    public static boolean isNetworkAvailable(@NonNull final Context context) {
+    public static boolean isNetworkAvailable(@NonNull final Context appContext) {
+
+        if (BuildConfig.DEBUG && App.isJUnitTest()) {
+            return true;
+        }
 
         ConnectivityManager connMgr =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connMgr != null) {
             Network network = connMgr.getActiveNetwork();
             if (network != null) {
@@ -95,7 +102,8 @@ public final class NetworkUtils {
                     }
 
                     return hasInternet && isValidated
-                           && (!connMgr.isActiveNetworkMetered() || allowMeteredNetwork(context));
+                           && (!connMgr.isActiveNetworkMetered() || allowMeteredNetwork(
+                            appContext));
 
                 }
             }
@@ -105,8 +113,8 @@ public final class NetworkUtils {
         return false;
     }
 
-    private static boolean allowMeteredNetwork(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
+    private static boolean allowMeteredNetwork(@NonNull final Context appContext) {
+        return PreferenceManager.getDefaultSharedPreferences(appContext)
                                 .getBoolean(Prefs.pk_network_allow_metered, false);
     }
 
@@ -117,17 +125,17 @@ public final class NetworkUtils {
      * Any path after the hostname will be ignored.
      * If a port is specified.. it's ignored. Only ports 80/443 are used.
      *
-     * @param context Current context
-     * @param urlStr  url to check,
+     * @param appContext Application context
+     * @param urlStr     url to check,
      *
      * @throws IOException if we cannot reach the site, or if the network itself is unavailable
      */
     @WorkerThread
-    public static void poke(@NonNull final Context context,
+    public static void poke(@NonNull final Context appContext,
                             @NonNull final String urlStr)
             throws IOException {
 
-        if (!isNetworkAvailable(context)) {
+        if (!isNetworkAvailable(appContext)) {
             throw new IOException("networkUnavailable");
         }
 

@@ -283,4 +283,9 @@ public class ProgressDialogFragment
         }
         super.onDestroyView();
     }
+
+    public interface Cancellable {
+
+        boolean cancel(boolean mayInterruptIfRunning);
+    }
 }

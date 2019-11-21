@@ -39,7 +39,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -63,7 +62,7 @@ public class SynchronizedDb {
     @NonNull
     private final Synchronizer mSync;
     /** Factory object to create the custom cursor. Can not be static because it needs mSync. */
-    private final SynchronizedCursorFactory mCursorFactory = new SynchronizedCursorFactory();
+    private final SQLiteDatabase.CursorFactory mCursorFactory = new SynchronizedCursorFactory();
     /** Currently held transaction lock, if any. */
     @Nullable
     private Synchronizer.SyncLock mTxLock;
@@ -278,12 +277,12 @@ public class SynchronizedDb {
         try {
             long id = mSqlDb.insert(table, nullColumnHack, cv);
             if (id == -1) {
-                Logger.warnWithStackTrace(App.getAppContext(), TAG, "Insert failed");
+                Logger.warnWithStackTrace(TAG, "Insert failed");
             }
             return id;
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
             throw e;
         } finally {
             if (txLock != null) {
@@ -319,7 +318,7 @@ public class SynchronizedDb {
             return mSqlDb.update(table, cv, whereClause, whereArgs);
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
             throw e;
         } finally {
             if (txLock != null) {
@@ -357,7 +356,7 @@ public class SynchronizedDb {
             return mSqlDb.delete(table, whereClause, whereArgs);
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
             throw e;
         } finally {
             if (txLock != null) {
@@ -452,7 +451,7 @@ public class SynchronizedDb {
             }
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(App.getAppContext(), TAG, e, sql);
+            Logger.error(TAG, e, sql);
             throw e;
         }
     }
@@ -499,7 +498,7 @@ public class SynchronizedDb {
         try {
             execSQL("analyze");
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(App.getAppContext(), TAG, e, "Analyze failed");
+            Logger.error(TAG, e, "Analyze failed");
         }
     }
 
@@ -548,7 +547,7 @@ public class SynchronizedDb {
             if (mTxLock == null) {
                 mSqlDb.beginTransaction();
             } else {
-                Logger.warnWithStackTrace(App.getAppContext(), TAG,
+                Logger.warnWithStackTrace(TAG,
                                           "Starting a transaction when one is already started");
             }
         } catch (@NonNull final RuntimeException e) {
@@ -651,13 +650,13 @@ public class SynchronizedDb {
             return !"a".equals(s);
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
             throw e;
         } finally {
             try {
                 mSqlDb.execSQL(dropTable);
             } catch (@NonNull final SQLException e) {
-                Logger.error(App.getAppContext(), TAG, e);
+                Logger.error(TAG, e);
             }
         }
     }

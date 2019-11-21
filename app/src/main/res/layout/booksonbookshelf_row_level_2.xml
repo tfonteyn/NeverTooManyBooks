@@ -68,6 +68,7 @@
         android:id="@+id/name"
         style="@style/BooklistBook.Section"
         android:drawableTint="?attr/completed_icon_tint"
+        android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/bullet"
         app:layout_constraintTop_toTopOf="parent"

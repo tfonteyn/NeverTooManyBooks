@@ -36,7 +36,6 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
@@ -95,10 +94,10 @@ public class IndexDefinition {
                     db.execSQL("DROP INDEX " + indexName);
                 } catch (@NonNull final SQLException e) {
                     // bad sql is a developer issue... die!
-                    Logger.error(App.getAppContext(), TAG, e);
+                    Logger.error(TAG, e);
                     throw e;
                 } catch (@NonNull final RuntimeException e) {
-                    Logger.error(App.getAppContext(), TAG, e,
+                    Logger.error(TAG, e,
                                  "Index deletion failed: " + indexName);
                 }
             }

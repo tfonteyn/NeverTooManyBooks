@@ -32,9 +32,9 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -57,7 +57,7 @@ public class XmlFilter {
     private final Map<String, XmlFilter> mSubFilterHash = new HashMap<>();
 
     /** List of sub-filters for this filter. */
-    private final ArrayList<XmlFilter> mSubFilters = new ArrayList<>();
+    private final Collection<XmlFilter> mSubFilters = new ArrayList<>();
 
     /** Action to perform, if any, when the associated tag is started. */
     @Nullable
@@ -107,7 +107,7 @@ public class XmlFilter {
      */
     @NonNull
     static XmlFilter buildFilter(@NonNull final XmlFilter root,
-                                 @NonNull final List<String> filters) {
+                                 @NonNull final Collection<String> filters) {
         if (filters.isEmpty()) {
             throw new IllegalArgumentException("no filters");
         }

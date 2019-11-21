@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 
@@ -66,7 +67,7 @@ class IsfdbBookHandlerTest
     /** This test does not 'live' fetch the doc, but this is the correct baseUri. */
     private static final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
     /** instead we read this file locally. */
-    private static final String filename = "/isfdb-book-1.html";
+    private static final String filename = "/isfdb/isfdb-book-1.html";
 
     @BeforeEach
     @Override
@@ -105,7 +106,6 @@ class IsfdbBookHandlerTest
         assertEquals("1986-10-01", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("0413600106", bookData.getString(DBDefinitions.KEY_ISBN));
         assertEquals("9780413600103", bookData.getString(IsfdbBookHandler.BookField.ISBN_2));
-        assertEquals("Methuen", bookData.getString(DBDefinitions.KEY_PUBLISHER));
         assertEquals(1.95d, bookData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
         assertEquals("GBP", bookData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
         assertEquals("159", bookData.getString(DBDefinitions.KEY_PAGES));
@@ -117,6 +117,13 @@ class IsfdbBookHandlerTest
         assertEquals(13665857, bookData.getLong(DBDefinitions.KEY_EID_WORLDCAT));
 
         assertEquals("Month from Locus1", bookData.getString(DBDefinitions.KEY_DESCRIPTION));
+
+        ArrayList<Publisher> allPublishers = mBookData
+                .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Methuen", allPublishers.get(0).getName());
 
         ArrayList<Author> authors = bookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);

@@ -67,14 +67,17 @@ public final class LanguageUtils {
     /**
      * Try to convert a Language ISO code to the display name.
      *
+     *
+     * @param context Current context
      * @param iso the ISO code
      *
      * @return the display name for the language,
      * or the input string itself if it was an invalid ISO code
      */
     @NonNull
-    public static String getDisplayName(@NonNull final String iso) {
-        Locale langLocale = LocaleUtils.getLocale(iso);
+    public static String getDisplayName(@NonNull final Context context,
+                                        @NonNull final String iso) {
+        Locale langLocale = LocaleUtils.getLocale(context, iso);
         if (langLocale == null) {
             return iso;
         }

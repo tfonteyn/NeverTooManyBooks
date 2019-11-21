@@ -33,8 +33,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Warning: To prevent unintended garbage collection, you must store a strong reference to
- * the listener.
+ * <strong>Warning:</strong> To prevent unintended garbage collection, you must store
+ * a strong reference to the listener. Do NOT simply pass a lambda, or anonymous class.
  * <p>
  * The AsyncTask implementations as used, store only a WeakReference to the listener which is good.
  * We don't want them to store a strong reference, as that could/would lead to memory leaks.
@@ -42,8 +42,6 @@ import androidx.annotation.Nullable;
  * <li>implemented the interface on the caller itself, and pass the caller; i.e. 'this'</li>
  * <li>or create an instance variable in the caller of the listener type, and pass that</li>
  * </ul>
- * <strong>Do NOT simply pass a lambda, or anonymous class.</strong>
- * <br>
  *
  * @param <Result> type of the task result
  */

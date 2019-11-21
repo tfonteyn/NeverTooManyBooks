@@ -124,7 +124,7 @@ public class SearchAdminActivity
             hasSites = model.persist(this);
         } else {
             Intent data = new Intent()
-                    .putExtra(SearchSites.BKEY_DATA, model.getList());
+                    .putExtra(SearchSites.BKEY_DATA_SITES, model.getList());
             setResult(Activity.RESULT_OK, data);
             hasSites = SearchSites.getEnabledSites(model.getList()) != 0;
         }

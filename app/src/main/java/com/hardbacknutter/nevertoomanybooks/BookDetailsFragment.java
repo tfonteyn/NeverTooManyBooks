@@ -31,6 +31,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -76,6 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
@@ -142,9 +144,6 @@ public class BookDetailsFragment
     private GestureDetector mGestureDetector;
     /** Contains the flattened booklist for next/previous paging. */
     private BookDetailsFragmentModel mBookDetailsFragmentModel;
-    /** Hosting activity to handle FAB/result/touches. */
-    private FragmentActivity mHostActivity;
-
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (data != null) {
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
@@ -157,6 +156,8 @@ public class BookDetailsFragment
             }
         }
     };
+    /** Hosting activity to handle FAB/result/touches. */
+    private FragmentActivity mHostActivity;
 
     @Override
     public void onAttach(@NonNull final Context context) {
@@ -210,7 +211,6 @@ public class BookDetailsFragment
         mDateReadStartView = view.findViewById(R.id.read_start);
         mDateReadEndView = view.findViewById(R.id.read_end);
 
-
         mTocLabelView = view.findViewById(R.id.lbl_toc);
         mTocView = view.findViewById(R.id.toc);
         mTocButton = view.findViewById(R.id.toc_button);
@@ -237,8 +237,6 @@ public class BookDetailsFragment
                                          mIsbnView,
                                          mCoverImageView,
                                          IMAGE_SCALE);
-
-
 
         FloatingActionButton fabButton = mHostActivity.findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_edit);
@@ -403,8 +401,8 @@ public class BookDetailsFragment
         fields.addString(R.id.publisher, mPublisherView, DBDefinitions.KEY_PUBLISHER);
 
         fields.addString(R.id.date_published, mDatePublishedView, DBDefinitions.KEY_DATE_PUBLISHED)
-               .setFormatter(dateFormatter)
-               .setRelatedFields(R.id.lbl_date_published);
+              .setFormatter(dateFormatter)
+              .setRelatedFields(R.id.lbl_date_published);
 
         fields.addString(R.id.first_publication, mFirstPubView,
                          DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
@@ -514,9 +512,7 @@ public class BookDetailsFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        MenuHandler.addBookItems(menu);
-        MenuHandler.addViewBookSubMenu(menu);
-        MenuHandler.addAmazonSearchSubMenu(menu);
+        inflater.inflate(R.menu.co_book, menu);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -525,13 +521,25 @@ public class BookDetailsFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         Book book = mBookModel.getBook();
 
+        boolean isSaved = book.getId() > 0;
+        boolean isRead = book.getBoolean(Book.IS_READ);
+        boolean isAvailable = mBookModel.isAvailable();
+
+        menu.findItem(R.id.MENU_BOOK_READ).setVisible(isSaved && !isRead);
+        menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isSaved && isRead);
+
         //noinspection ConstantConditions
-        MenuHandler.prepareBookItems(getContext(), menu,
-                                     book.getId() > 0,
-                                     book.getBoolean(Book.IS_READ),
-                                     mBookModel.isAvailable());
-        MenuHandler.prepareViewBookSubMenu(menu, book);
-        MenuHandler.prepareAmazonSearchSubMenu(menu, book);
+        menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
+            .setVisible(GoodreadsManager.isShowSyncMenus(getContext()));
+
+        // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
+        boolean lendingIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
+        menu.findItem(R.id.MENU_BOOK_LOAN_ADD)
+            .setVisible(lendingIsUsed && isSaved && isAvailable);
+        menu.findItem(R.id.MENU_BOOK_LOAN_DELETE)
+            .setVisible(lendingIsUsed && isSaved && !isAvailable);
+
+        MenuHandler.prepareOptionalMenus(menu, book);
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -612,17 +620,10 @@ public class BookDetailsFragment
 
             default:
                 //noinspection ConstantConditions
-                if (MenuHandler.handleBookItems(getContext(), item, book)) {
+                if (MenuHandler.handleOpenOnWebsiteMenus(getContext(), item, book)) {
                     return true;
                 }
 
-                if (MenuHandler.handleViewBookSubMenu(getContext(), item, book)) {
-                    return true;
-                }
-
-                if (MenuHandler.handleAmazonSearchSubMenu(getContext(), item, book)) {
-                    return true;
-                }
                 // MENU_BOOK_UPDATE_FROM_INTERNET handled in super
                 return super.onOptionsItemSelected(item);
         }
@@ -755,8 +756,10 @@ public class BookDetailsFragment
                                                 @NonNull final View v,
                                                 @NonNull
                                                 final ContextMenu.ContextMenuInfo menuInfo) {
+                    Resources r = getResources();
                     menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_DELETE,
-                             MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book)
+                             r.getInteger(R.integer.MENU_ORDER_LENDING),
+                             R.string.menu_loan_return_book)
                         .setIcon(R.drawable.ic_people);
                 }
             });

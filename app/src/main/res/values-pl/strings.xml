@@ -652,4 +652,5 @@
     <string name="lbl_select_website">Wybierz stronę internetową:</string>
     <string name="lbl_site_book_id">Identyfikator książki internetowej:</string>
     <string name="fab_add_book_by_native_id">Identyfikator książki internetowej</string>
+    <string name="warning_enable_at_least_1_website">Włącz przynajmniej jedną stronę internetową dla każdej kategorii.</string>
 </resources>

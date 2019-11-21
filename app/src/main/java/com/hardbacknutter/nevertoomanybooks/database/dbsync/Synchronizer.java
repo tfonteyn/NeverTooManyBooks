@@ -73,9 +73,9 @@ public class Synchronizer {
     private final Map<Thread, Integer> mSharedOwners =
             Collections.synchronizedMap(new HashMap<>());
     /** Lock used to pass back to consumers of shared locks. */
-    private final SharedLock mSharedLock = new SharedLock();
+    private final SyncLock mSharedLock = new SharedLock();
     /** Lock used to pass back to consumers of exclusive locks. */
-    private final ExclusiveLock mExclusiveLock = new ExclusiveLock();
+    private final SyncLock mExclusiveLock = new ExclusiveLock();
 
     /**
      * Routine to purge shared locks held by dead threads.

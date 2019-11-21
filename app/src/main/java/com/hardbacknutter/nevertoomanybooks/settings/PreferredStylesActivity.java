@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -47,12 +48,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
@@ -241,18 +241,25 @@ public class PreferredStylesActivity
     }
 
     private void onCreateContextMenu(final int position) {
+        Resources r = getResources();
+
         BooklistStyle style = mModel.getList().get(position);
 
         Menu menu = MenuPicker.createMenu(this);
 
         if (style.isUserDefined()) {
-            menu.add(Menu.NONE, R.id.MENU_EDIT, MenuHandler.ORDER_EDIT, R.string.menu_edit)
+            menu.add(Menu.NONE, R.id.MENU_EDIT,
+                     r.getInteger(R.integer.MENU_ORDER_EDIT),
+                     R.string.menu_edit)
                 .setIcon(R.drawable.ic_edit);
-            menu.add(Menu.NONE, R.id.MENU_DELETE, MenuHandler.ORDER_DELETE, R.string.menu_delete)
+            menu.add(Menu.NONE, R.id.MENU_DELETE,
+                     r.getInteger(R.integer.MENU_ORDER_DELETE),
+                     R.string.menu_delete)
                 .setIcon(R.drawable.ic_delete);
         }
 
-        menu.add(Menu.NONE, R.id.MENU_DUPLICATE, MenuHandler.ORDER_DUPLICATE,
+        menu.add(Menu.NONE, R.id.MENU_DUPLICATE,
+                 r.getInteger(R.integer.MENU_ORDER_DUPLICATE),
                  R.string.menu_duplicate)
             .setIcon(R.drawable.ic_content_copy);
 
@@ -362,7 +369,7 @@ public class PreferredStylesActivity
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
         BooklistStylesAdapter(@NonNull final Context context,
-                              @NonNull final ArrayList<BooklistStyle> items,
+                              @NonNull final List<BooklistStyle> items,
                               final long initialSelectedItemId,
                               @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
@@ -419,7 +426,6 @@ public class PreferredStylesActivity
                 notifyItemChanged(mSelectedPosition);
             });
 
-            // long-click -> context menu
             holder.rowDetailsView.setOnLongClickListener(v -> {
                 onCreateContextMenu(holder.getAdapterPosition());
                 return true;

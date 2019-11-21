@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,7 +137,7 @@ public final class QueueManager {
         synchronized (mEventChangeListeners) {
             for (WeakReference<ChangeListener> lr : mEventChangeListeners) {
                 ChangeListener l = lr.get();
-                if (l != null && l.equals(listener)) {
+                if (listener.equals(l)) {
                     return;
                 }
             }
@@ -148,7 +149,7 @@ public final class QueueManager {
     void unregisterEventListener(@NonNull final ChangeListener listener) {
         try {
             synchronized (mEventChangeListeners) {
-                List<WeakReference<ChangeListener>> ll = new ArrayList<>();
+                Collection<WeakReference<ChangeListener>> ll = new ArrayList<>();
                 for (WeakReference<ChangeListener> l : mEventChangeListeners) {
                     if (l.get().equals(listener)) {
                         ll.add(l);
@@ -166,7 +167,7 @@ public final class QueueManager {
         synchronized (mTaskChangeListeners) {
             for (WeakReference<ChangeListener> lr : mTaskChangeListeners) {
                 ChangeListener l = lr.get();
-                if (l != null && l.equals(listener)) {
+                if (listener.equals(l)) {
                     return;
                 }
             }
@@ -178,7 +179,7 @@ public final class QueueManager {
     void unregisterTaskListener(@NonNull final ChangeListener listener) {
         try {
             synchronized (mTaskChangeListeners) {
-                List<WeakReference<ChangeListener>> ll = new ArrayList<>();
+                Collection<WeakReference<ChangeListener>> ll = new ArrayList<>();
                 for (WeakReference<ChangeListener> l : mTaskChangeListeners) {
                     if (l.get().equals(listener)) {
                         ll.add(l);

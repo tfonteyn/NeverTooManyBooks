@@ -91,6 +91,15 @@ public final class Logger {
     /**
      * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
      */
+    public static void error(@NonNull final String tag,
+                             @NonNull final Throwable e,
+                             @Nullable final Object... params) {
+        error(App.getAppContext(), tag, e, params);
+    }
+
+    /**
+     * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
+     */
     public static void error(@NonNull final Context context,
                              @NonNull final String tag,
                              @NonNull final Throwable e,
@@ -115,6 +124,19 @@ public final class Logger {
      * <p>
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
      */
+    public static void warnWithStackTrace(@NonNull final String tag,
+                                          @NonNull final Object... params) {
+        warnWithStackTrace(App.getAppContext(), tag, params);
+    }
+
+    /**
+     * WARN message with a generated StackTrace.
+     * Send to the logfile (always) and the console (when in DEBUG mode).
+     * <p>
+     * Use sparingly, writing to the log is expensive.
+     * <p>
+     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
+     */
     public static void warnWithStackTrace(@NonNull final Context context,
                                           @NonNull final String tag,
                                           @NonNull final Object... params) {
@@ -124,6 +146,20 @@ public final class Logger {
         if (BuildConfig.DEBUG /* always */) {
             Log.w(tag, msg, e);
         }
+    }
+
+    /**
+     * WARN message. Send to the logfile (always) and the console (when in DEBUG mode).
+     * <p>
+     * Use sparingly, writing to the log is expensive.
+     * <p>
+     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
+     * No stacktrace!
+     */
+    public static void warn(@NonNull final String tag,
+                            @NonNull final String methodName,
+                            @NonNull final Object... params) {
+        warn(App.getAppContext(), tag, methodName, params);
     }
 
     /**
@@ -190,7 +226,7 @@ public final class Logger {
         String fullMessage = DATE_FORMAT.format(new Date()) + '|' + type + '|' + message + exMsg;
 
         // do not write to the log if we're running a JUnit test.
-        if (BuildConfig.DEBUG && isJUnitTest()) {
+        if (BuildConfig.DEBUG && App.isJUnitTest()) {
             Log.d("isJUnitTest", fullMessage);
             return;
         }
@@ -206,37 +242,25 @@ public final class Logger {
     }
 
     /**
-     * DEBUG
-     *
-     * @return {@code true} if this is a JUnit run.
-     */
-    private static boolean isJUnitTest() {
-        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-            if (element.getClassName().startsWith("org.junit.")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * DEBUG. Dump an InputStream to the console.
      */
     @SuppressWarnings("unused")
     public static void dump(@NonNull final String tag,
                             @NonNull final Object object,
                             @NonNull final InputStream inputStream) {
-        try {
-            BufferedInputStream bis = new BufferedInputStream(inputStream);
-            ByteArrayOutputStream buf = new ByteArrayOutputStream();
-            int result = bis.read();
-            while (result != -1) {
-                buf.write((byte) result);
-                result = bis.read();
+        if (BuildConfig.DEBUG) {
+            try {
+                BufferedInputStream bis = new BufferedInputStream(inputStream);
+                ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                int result = bis.read();
+                while (result != -1) {
+                    buf.write((byte) result);
+                    result = bis.read();
+                }
+                Log.d(tag, buf.toString("UTF-8"));
+            } catch (@NonNull final IOException e) {
+                Log.d(tag, "dumping failed: ", e);
             }
-            Log.d(tag, buf.toString("UTF-8"));
-        } catch (@NonNull final IOException e) {
-            Log.d(tag, "dumping failed: ", e);
         }
     }
 
@@ -318,7 +342,7 @@ public final class Logger {
     /**
      * Dump all information from an onCreate method.
      *
-     * @param fragmentOrActivity                  Activity or Fragment
+     * @param fragmentOrActivity Activity or Fragment
      * @param savedInstanceState Bundle
      */
     @SuppressWarnings("unused")

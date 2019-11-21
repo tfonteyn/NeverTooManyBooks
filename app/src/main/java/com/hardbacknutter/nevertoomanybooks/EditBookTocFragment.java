@@ -31,6 +31,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -91,11 +92,14 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * This class is called by {@link EditBookFragment} and displays the Content Tab.
  * <p>
  * Doesn't use {@link UpdateFieldsTask}
- * as this would actually introduce the ManagedTask usage which we want to phase out.
  * <p>
  * The ISFDB direct interaction should however be seen as temporary as this class should not
  * have to know about any specific search web site.
- * <strong>Note:</strong> we also pass in 'this' as the task listener... no orientation changes ...
+ * <strong>Note:</strong> FIXME: the ISFDB task will die upon fragment restarts.
+ * <p>
+ * This is still not obsolete as the standard search engines can only return a single book,
+ * and hence a single TOC. The interaction here with ISFDB allows the user to reject the first
+ * (book)TOC found, and get the next one (etc...).
  */
 public class EditBookTocFragment
         extends EditBookBaseFragment {
@@ -122,38 +126,7 @@ public class EditBookTocFragment
     private RecyclerView mListView;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
-
-    private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
-            new ConfirmTocDialogFragment.ConfirmTocResults() {
-                /**
-                 * The user approved, so add the TOC to the list and refresh the screen
-                 * (still not saved to database).
-                 */
-                public void commitIsfdbData(final long tocBitMask,
-                                            @NonNull final List<TocEntry> tocEntries) {
-                    if (tocBitMask != 0) {
-                        Book book = mBookModel.getBook();
-                        book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-                        getFields().getField(R.id.cbx_is_anthology).setValueFrom(book);
-                        getFields().getField(R.id.cbx_multiple_authors).setValueFrom(book);
-                    }
-
-                    mList.addAll(tocEntries);
-                    mListAdapter.notifyDataSetChanged();
-                }
-
-                /**
-                 * Start a task to get the next edition of this book (that we know of).
-                 */
-                public void getNextEdition() {
-                    // remove the top one, and try again
-                    mIsfdbEditions.remove(0);
-                    new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
-                                         mIsfdbResultsListener).execute();
-                }
-            };
     private CompoundButton mIsAnthologyCbx;
-
     /**
      * ISFDB editions of a book(isbn).
      * We'll try them one by one if the user asks for a re-try.
@@ -222,6 +195,35 @@ public class EditBookTocFragment
             }
         }
     };
+    private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
+            new ConfirmTocDialogFragment.ConfirmTocResults() {
+                /**
+                 * The user approved, so add the TOC to the list and refresh the screen
+                 * (still not saved to database).
+                 */
+                public void commitIsfdbData(final long tocBitMask,
+                                            @NonNull final List<TocEntry> tocEntries) {
+                    if (tocBitMask != 0) {
+                        Book book = mBookModel.getBook();
+                        book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
+                        getFields().getField(R.id.cbx_is_anthology).setValueFrom(book);
+                        getFields().getField(R.id.cbx_multiple_authors).setValueFrom(book);
+                    }
+
+                    mList.addAll(tocEntries);
+                    mListAdapter.notifyDataSetChanged();
+                }
+
+                /**
+                 * Start a task to get the next edition of this book (that we know of).
+                 */
+                public void getNextEdition() {
+                    // remove the top one, and try again
+                    mIsfdbEditions.remove(0);
+                    new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
+                                         mIsfdbResultsListener).execute();
+                }
+            };
     /** checkbox to hide/show the author edit field. */
     private CompoundButton mMultiAuthorsView;
 
@@ -262,8 +264,10 @@ public class EditBookTocFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
+        Resources r = getResources();
         menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB,
-                 MenuHandler.ORDER_VIEW_BOOK_AT_ISFDB, R.string.menu_populate_toc)
+                 r.getInteger(R.integer.MENU_ORDER_VIEW_BOOK_AT_ISFDB),
+                 R.string.menu_populate_toc)
             .setIcon(R.drawable.ic_autorenew);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -391,13 +395,18 @@ public class EditBookTocFragment
     }
 
     private void onCreateContextMenu(final int position) {
+        Resources r = getResources();
 
         TocEntry item = mList.get(position);
         @SuppressWarnings("ConstantConditions")
         Menu menu = MenuPicker.createMenu(getContext());
-        menu.add(Menu.NONE, R.id.MENU_EDIT, MenuHandler.ORDER_EDIT, R.string.menu_edit)
+        menu.add(Menu.NONE, R.id.MENU_EDIT,
+                 r.getInteger(R.integer.MENU_ORDER_EDIT),
+                 R.string.menu_edit)
             .setIcon(R.drawable.ic_edit);
-        menu.add(Menu.NONE, R.id.MENU_DELETE, MenuHandler.ORDER_DELETE, R.string.menu_delete)
+        menu.add(Menu.NONE, R.id.MENU_DELETE,
+                 r.getInteger(R.integer.MENU_ORDER_DELETE),
+                 R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
         String title = item.getTitle();
@@ -533,6 +542,7 @@ public class EditBookTocFragment
 
             boolean hasToc = mTocEntries != null && !mTocEntries.isEmpty();
 
+            // custom payout, as we want the text to be smaller.
             @SuppressLint("InflateParams")
             View root = layoutInflater.inflate(R.layout.dialog_toc_confirm, null);
 
@@ -671,7 +681,6 @@ public class EditBookTocFragment
             holder.rowDetailsView.setOnClickListener(
                     v -> editEntry(item, holder.getAdapterPosition()));
 
-            // long-click -> menu
             holder.rowDetailsView.setOnLongClickListener(v -> {
                 onCreateContextMenu(holder.getAdapterPosition());
                 return true;

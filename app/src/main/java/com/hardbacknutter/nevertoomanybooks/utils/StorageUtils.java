@@ -385,7 +385,7 @@ public final class StorageUtils {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             } catch (@NonNull final SecurityException e) {
-                Logger.error(App.getAppContext(), TAG, e);
+                Logger.error(TAG, e);
             }
         }
     }
@@ -407,7 +407,7 @@ public final class StorageUtils {
                 //noinspection ResultOfMethodCallIgnored
                 source.renameTo(destination);
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(App.getAppContext(), TAG, e);
+                Logger.error(TAG, e);
             }
         }
         return destination.exists();
@@ -500,7 +500,7 @@ public final class StorageUtils {
             copyFile(source, destinationFile);
 
         } catch (@NonNull final IOException e) {
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
         }
     }
 

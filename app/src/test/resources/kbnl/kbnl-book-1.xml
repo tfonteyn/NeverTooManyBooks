@@ -38,7 +38,7 @@
             <psi:sessionVar name="LNG">NE</psi:sessionVar>
             <psi:sessionVar name="DB">1</psi:sessionVar>
             <psi:sessionVar name="SID">1619ab44-13b</psi:sessionVar>
-            <psi:sessionVar name="SET">1</psi:sessionVar>
+            <psi:sessionVar name="SET">9</psi:sessionVar>
             <psi:sessionVar name="COOKIE"></psi:sessionVar>
             <psi:sessionVar name="CMD_COLLAPSE">N</psi:sessionVar>
         </psi:session>
@@ -50,7 +50,7 @@
         <psi:contextVar name="currentyear">2019</psi:contextVar>
         <psi:contextVar name="versionName">opc4</psi:contextVar>
         <psi:contextVar name="versionNumber">2.11-44</psi:contextVar>
-        <psi:contextVar name="ppn">422449148</psi:contextVar>
+        <psi:contextVar name="ppn">833191217</psi:contextVar>
         <psi:contextVar name="prs"></psi:contextVar>
         <psi:contextVar name="ttl">1</psi:contextVar>
         <psi:contextVar name="ttlmatcode">MAT_B</psi:contextVar>
@@ -63,90 +63,90 @@
         <psi:url name="SERVER_BASE">http://opc4.kb.nl</psi:url>
         <psi:url name="SCRIPT_NAME"></psi:url>
         <psi:url name="CBS_BASE"></psi:url>
-        <psi:url name="urlcontext">DB=1/SET=1/TTL=1/</psi:url>
+        <psi:url name="urlcontext">DB=1/SET=9/TTL=1/</psi:url>
         <psi:url name="ACQUIRE">
-            /DB=1/SET=1/TTL=1/RESULTS_ACQUIRE?PPN=422449148&amp;TTLMATCODE=MAT_B
+            /DB=1/SET=9/TTL=1/RESULTS_ACQUIRE?PPN=833191217&amp;TTLMATCODE=MAT_B
         </psi:url>
         <psi:url name="ARROW">http://192.87.31.182/~opc4_beh/img_psi/2.0/gui/inline_arrow.gif
         </psi:url>
         <psi:url name="BORROWER">https://opc4imgbase.kb.nl:443/LBS_WEB/borrower/borrower.htm?USR=888&amp;BES=1&amp;LAN=NE</psi:url>
         <psi:url name="BORROWER_CHANGEPASSWORD">
-            /loan/FORCETT=HTML/DB=1/SET=1/TTL=1/USERINFO?ACT=UI_CHUPW&amp;BOR_U=&amp;BOR_PW_ENC=
+            /loan/FORCETT=HTML/DB=1/SET=9/TTL=1/USERINFO?ACT=UI_CHUPW&amp;BOR_U=&amp;BOR_PW_ENC=
         </psi:url>
-        <psi:url name="BORROWER_LISTOFCOSTS">/loan/FORCETT=HTML/DB=1/SET=1/TTL=1/USERINFO?ACT=UI_LOC&amp;BOR_U=&amp;BOR_PW_ENC=</psi:url>
-        <psi:url name="BORROWER_LISTOFLOANS">/loan/FORCETT=HTML/DB=1/SET=1/TTL=1/USERINFO?ACT=UI_LOL&amp;BOR_U=&amp;BOR_PW_ENC=</psi:url>
+        <psi:url name="BORROWER_LISTOFCOSTS">/loan/FORCETT=HTML/DB=1/SET=9/TTL=1/USERINFO?ACT=UI_LOC&amp;BOR_U=&amp;BOR_PW_ENC=</psi:url>
+        <psi:url name="BORROWER_LISTOFLOANS">/loan/FORCETT=HTML/DB=1/SET=9/TTL=1/USERINFO?ACT=UI_LOL&amp;BOR_U=&amp;BOR_PW_ENC=</psi:url>
         <psi:url name="BORROWER_LISTOFRESERVATIONS">
-            /loan/FORCETT=HTML/DB=1/SET=1/TTL=1/USERINFO?ACT=UI_LOR&amp;BOR_U=&amp;BOR_PW_ENC=
+            /loan/FORCETT=HTML/DB=1/SET=9/TTL=1/USERINFO?ACT=UI_LOR&amp;BOR_U=&amp;BOR_PW_ENC=
         </psi:url>
-        <psi:url name="BORROWER_USERDATA">/loan/FORCETT=HTML/DB=1/SET=1/TTL=1/USERINFO?ACT=UI_DATA&amp;BOR_U=&amp;BOR_PW_ENC=</psi:url>
-        <psi:url name="CBSLOGIN">/login/DB=1/SET=1/TTL=1/ENDUSER</psi:url>
+        <psi:url name="BORROWER_USERDATA">/loan/FORCETT=HTML/DB=1/SET=9/TTL=1/USERINFO?ACT=UI_DATA&amp;BOR_U=&amp;BOR_PW_ENC=</psi:url>
+        <psi:url name="CBSLOGIN">/login/DB=1/SET=9/TTL=1/ENDUSER</psi:url>
         <psi:url name="DOMAIN">nl</psi:url>
         <psi:url name="FAVICON_ROOT">http://192.87.31.182/~opc4_beh/img_psi/2.0/favicons/</psi:url>
         <psi:url name="HM_PHP_BASE">http://192.87.31.182/~opc4_beh/psi/php</psi:url>
         <psi:url name="IPORT_LANG">ned</psi:url>
         <psi:url name="LANG">ne</psi:url>
-        <psi:url name="LOG">login/DB=1/SET=1/TTL=1/ENDUSER/REQUEST</psi:url>
-        <psi:url name="LOGIN">/DB=1/SET=1/TTL=1/LOGIN=TRUE/</psi:url>
-        <psi:url name="LOGIN_RESOURCES">/login/DB=1/SET=1/TTL=1/DBMENU</psi:url>
-        <psi:url name="MAIN">/DB=1/SET=1/TTL=1/</psi:url>
+        <psi:url name="LOG">login/DB=1/SET=9/TTL=1/ENDUSER/REQUEST</psi:url>
+        <psi:url name="LOGIN">/DB=1/SET=9/TTL=1/LOGIN=TRUE/</psi:url>
+        <psi:url name="LOGIN_RESOURCES">/login/DB=1/SET=9/TTL=1/DBMENU</psi:url>
+        <psi:url name="MAIN">/DB=1/SET=9/TTL=1/</psi:url>
         <psi:url name="PICARTA">http://opc4.kb.nl/DB=2.41/XMLPRS=Y/LNG=NE/?COOKIE=</psi:url>
-        <psi:url name="PROFILE_ADDRESS">/adr/FORCETT=HTML/DB=1/SET=1/TTL=1/ADRESGEGEVENS</psi:url>
+        <psi:url name="PROFILE_ADDRESS">/adr/FORCETT=HTML/DB=1/SET=9/TTL=1/ADRESGEGEVENS</psi:url>
         <psi:url name="PROFILE_DEPOSIT">
-            /dpo/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/REQUEST?P3C=TOO%1FDPO%1FUSE%1F%1F%1F&amp;P3S=NT&amp;P3B=NT
+            /dpo/FORCETT=HTML/DB=1/SET=9/TTL=1/FORM/REQUEST?P3C=TOO%1FDPO%1FUSE%1F%1F%1F&amp;P3S=NT&amp;P3B=NT
         </psi:url>
         <psi:url name="PROFILE_PASSWORD">
-            /usr/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/REQUEST?P3C=MUT%1FPAS%1F&amp;P3S=UF&amp;P3B=UF&quot;
+            /usr/FORCETT=HTML/DB=1/SET=9/TTL=1/FORM/REQUEST?P3C=MUT%1FPAS%1F&amp;P3S=UF&amp;P3B=UF&quot;
         </psi:url>
         <psi:url name="PROFILE_REQUESTS">
-            /avr/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/REQUEST?P3C=SEL%1FING%1F&amp;P3S=AF&amp;P3B=AF
+            /avr/FORCETT=HTML/DB=1/SET=9/TTL=1/FORM/REQUEST?P3C=SEL%1FING%1F&amp;P3S=AF&amp;P3B=AF
         </psi:url>
         <psi:url name="PROFILE_SDIREQUESTS">
-            /sdi/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/REQUEST?P3C=TOO%1FSDI%1F1-%1F&amp;P3S=S3&amp;P3B=S3
+            /sdi/FORCETT=HTML/DB=1/SET=9/TTL=1/FORM/REQUEST?P3C=TOO%1FSDI%1F1-%1F&amp;P3S=S3&amp;P3B=S3
         </psi:url>
-        <psi:url name="REFERER">http://opc4.kb.nl/DB=1/SET=1/TTL=1/NXT</psi:url>
-        <psi:url name="REFERER_URL">http%3A%2F%2Fopc4.kb.nl%2FDB%3D1%2FSET%3D1%2FTTL%3D1%2FNXT
+        <psi:url name="REFERER">http://opc4.kb.nl/DB=1/SET=9/TTL=1/NXT</psi:url>
+        <psi:url name="REFERER_URL">http%3A%2F%2Fopc4.kb.nl%2FDB%3D1%2FSET%3D9%2FTTL%3D1%2FNXT
         </psi:url>
-        <psi:url name="REPOSITORY_UPLOAD">/DB=1/SET=1/TTL=1/REPOSITORY_UPLOAD</psi:url>
+        <psi:url name="REPOSITORY_UPLOAD">/DB=1/SET=9/TTL=1/REPOSITORY_UPLOAD</psi:url>
         <psi:url name="REPOSITORY_UPLOAD_FORMACTION">
             http://192.87.31.182/~opc4_beh/psi/php/upload.php?action=upload
         </psi:url>
-        <psi:url name="RESULTSET">/DB=1/SET=1/TTL=1/NXT?FRST=1&amp;SET=1</psi:url>
-        <psi:url name="RESULTSET_HIST">/DB=1/SET=1/TTL=1/HIST</psi:url>
-        <psi:url name="RESULTSET_HOLDING">/DB=1/SET=1/TTL=1/PRS=HOL/SHW?FRST=1</psi:url>
-        <psi:url name="RESULTSET_OVERVIEW">/DB=1/SET=1/TTL=1/NXT?FRST=1</psi:url>
-        <psi:url name="RESULTSET_PPNLIST">/DB=1/SET=1/TTL=1/NXT?FRST=1</psi:url>
+        <psi:url name="RESULTSET">/DB=1/SET=9/TTL=1/NXT?FRST=1&amp;SET=9</psi:url>
+        <psi:url name="RESULTSET_HIST">/DB=1/SET=9/TTL=1/HIST</psi:url>
+        <psi:url name="RESULTSET_HOLDING">/DB=1/SET=9/TTL=1/PRS=HOL/SHW?FRST=1</psi:url>
+        <psi:url name="RESULTSET_OVERVIEW">/DB=1/SET=9/TTL=1/NXT?FRST=1</psi:url>
+        <psi:url name="RESULTSET_PPNLIST">/DB=1/SET=9/TTL=1/NXT?FRST=1</psi:url>
         <psi:url name="RESULTSET_TREFWOORD">
             https://www.kb.nl/bronnen-zoekwijzers/zoekwijzers/meer-informatie-over-zoeken/trefwoorden-in-de-kb-catalogus
         </psi:url>
         <psi:url name="RSC_URL_krantenbank">http://picarta.pica.nl/login/COOKIE/REQUEST?DB=2.45&amp;LNG=NE&amp;REDIRECT=http%3A%2F%2Fpicarta.pica.nl%3A80%2FDB%3D2.45%2F</psi:url>
         <psi:url name="RSC_URL_website">http://oclcpica.org/?id=2&amp;ln=nl</psi:url>
-        <psi:url name="SAVESET">/DB=1/SET=1/TTL=1/ERROR_MYSHELF_EMPTY</psi:url>
-        <psi:url name="SAVESET_HOLDING">/DB=1/SET=1/TTL=1/PRS=HOL/SHW?FRST=1</psi:url>
-        <psi:url name="SAVESET_LONGTITLE">/DB=1/SET=1/TTL=1/SHW?FRST=1</psi:url>
-        <psi:url name="SAVESET_PPNLIST">/DB=1/SET=1/TTL=1/NXT?FRST=1</psi:url>
-        <psi:url name="SEARCH_ADVANCED">/DB=1/SET=1/TTL=1/ADVANCED_SEARCHFILTER</psi:url>
+        <psi:url name="SAVESET">/DB=1/SET=9/TTL=1/ERROR_MYSHELF_EMPTY</psi:url>
+        <psi:url name="SAVESET_HOLDING">/DB=1/SET=9/TTL=1/PRS=HOL/SHW?FRST=1</psi:url>
+        <psi:url name="SAVESET_LONGTITLE">/DB=1/SET=9/TTL=1/SHW?FRST=1</psi:url>
+        <psi:url name="SAVESET_PPNLIST">/DB=1/SET=9/TTL=1/NXT?FRST=1</psi:url>
+        <psi:url name="SEARCH_ADVANCED">/DB=1/SET=9/TTL=1/ADVANCED_SEARCHFILTER</psi:url>
         <psi:url name="SEARCH_HELP">/?DB=1&amp;LNG=NE&amp;COOKIE=</psi:url>
-        <psi:url name="SEARCH_PLUGIN">http://opc4.kb.nl/DB=1/SET=1/TTL=1/XML=1.0/SEARCHPLUGIN?NAME=&amp;FAVICON=</psi:url>
-        <psi:url name="SEARCH_SUBJECTS">/DB=1/SET=1/TTL=1/ADVANCED_SUBJECTS</psi:url>
-        <psi:url name="server_adr">/adr/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_avr">/avr/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_current">/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_dpo">/dpo/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_hml">/loan/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_hms">/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_ind">/request/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_log">login/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_sdi">/sdi/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_usr">/usr/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
+        <psi:url name="SEARCH_PLUGIN">http://opc4.kb.nl/DB=1/SET=9/TTL=1/XML=1.0/SEARCHPLUGIN?NAME=&amp;FAVICON=</psi:url>
+        <psi:url name="SEARCH_SUBJECTS">/DB=1/SET=9/TTL=1/ADVANCED_SUBJECTS</psi:url>
+        <psi:url name="server_adr">/adr/FORCETT=HTML/DB=1/SET=9/TTL=1/</psi:url>
+        <psi:url name="server_avr">/avr/FORCETT=HTML/DB=1/SET=9/TTL=1/</psi:url>
+        <psi:url name="server_current">/DB=1/SET=9/TTL=1/</psi:url>
+        <psi:url name="server_dpo">/dpo/FORCETT=HTML/DB=1/SET=9/TTL=1/</psi:url>
+        <psi:url name="server_hml">/loan/FORCETT=HTML/DB=1/SET=9/TTL=1/</psi:url>
+        <psi:url name="server_hms">/DB=1/SET=9/TTL=1/</psi:url>
+        <psi:url name="server_ind">/request/FORCETT=HTML/DB=1/SET=9/TTL=1/</psi:url>
+        <psi:url name="server_log">login/DB=1/SET=9/TTL=1/</psi:url>
+        <psi:url name="server_sdi">/sdi/FORCETT=HTML/DB=1/SET=9/TTL=1/</psi:url>
+        <psi:url name="server_usr">/usr/FORCETT=HTML/DB=1/SET=9/TTL=1/</psi:url>
         <psi:url name="SIGNOFF">
-            /DB=1/SET=1/TTL=1/EXIT?DEST=http%3A%2F%2F192.87.31.191%2Fcgi-bin%2Fwwwopc4menu
+            /DB=1/SET=9/TTL=1/EXIT?DEST=http%3A%2F%2F192.87.31.191%2Fcgi-bin%2Fwwwopc4menu
         </psi:url>
         <psi:url name="SIGNON">
-            login/DB=1/SET=1/TTL=1/ENDUSER/REQUEST?REDIRECT=http%3A%2F%2Fopc4.kb.nl%2FDB%3D1%2FSET%3D1%2FTTL%3D1%2F
+            login/DB=1/SET=9/TTL=1/ENDUSER/REQUEST?REDIRECT=http%3A%2F%2Fopc4.kb.nl%2FDB%3D1%2FSET%3D9%2FTTL%3D1%2F
         </psi:url>
-        <psi:url name="START_ABOUT">/DB=1/SET=1/TTL=1/START_ABOUT</psi:url>
-        <psi:url name="START_RESOURCES">/login/DB=1/SET=1/TTL=1/DBMENU</psi:url>
-        <psi:url name="START_WELCOME">/DB=1/SET=1/TTL=1/START_WELCOME</psi:url>
+        <psi:url name="START_ABOUT">/DB=1/SET=9/TTL=1/START_ABOUT</psi:url>
+        <psi:url name="START_RESOURCES">/login/DB=1/SET=9/TTL=1/DBMENU</psi:url>
+        <psi:url name="START_WELCOME">/DB=1/SET=9/TTL=1/START_WELCOME</psi:url>
         <psi:url name="TO_KBSITE">http://www.kb.nl</psi:url>
         <psi:url name="USE_OPC">http://opc4.kb.nl/DB=1/</psi:url>
         <psi:url name="USE_PORTAL">http://opc4.kb.nl/portal/DB=portal/</psi:url>
@@ -166,31 +166,31 @@
                  alt=""
                  img=""
                  target="_blank"
-                 title="">http://opc4.kb.nl/DB=1/XMLPRS=Y/PPN?PPN=422449148
+                 title="">http://opc4.kb.nl/DB=1/XMLPRS=Y/PPN?PPN=833191217
         </psi:url>
-        <psi:url name="SDI">/sdi/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/REQUEST?P3C=INV%1FSDI%1F&amp;P3S=S0&amp;P3B=B0&amp;SEARCH=00yS!i1007!t978-9-46373-145-4!aY!cN.oY.vD.wD&amp;SEARCHTEXT=S%01(isbn,+issn)%01978-9-46373-145-4%01%01%01Y%01%01%02</psi:url>
-        <psi:url name="SAVEINFO_LONGTITLE">/DB=1/SET=1/TTL=1/RESULTS_SAVEINFO_LONG?FRST=1&amp;LAST=1&amp;HITS=1&amp;PPN=422449148</psi:url>
-        <psi:url name="ANALYSIS">/DB=1/SET=1/TTL=1/ADIGRP?IKT=&amp;SET=1</psi:url>
-        <psi:url name="LOAN">/request/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/LOAN?PPN=422449148&amp;LANGCODE=NE&amp;COOKIE=&amp;REFERER=http%3A%2F%2Fopc4.kb.nl%2FDB%3D1%2FSET%3D1%2FTTL%3D1%2FNXT</psi:url>
-        <psi:url name="COPY">/request/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/COPY?PPN=422449148&amp;LANGCODE=NE&amp;COOKIE=&amp;REFERER=http%3A%2F%2Fopc4.kb.nl%2FDB%3D1%2FSET%3D1%2FTTL%3D1%2FNXT</psi:url>
-        <psi:url name="FAMLINK">FAM?PPN=422449148</psi:url>
+        <psi:url name="SDI">/sdi/FORCETT=HTML/DB=1/SET=9/TTL=1/FORM/REQUEST?P3C=INV%1FSDI%1F&amp;P3S=S0&amp;P3B=B0&amp;SEARCH=00yS!i1007!t90-229-5335-1!aY!cN.oY.vD.wD&amp;SEARCHTEXT=S%01(isbn,+issn)%0190-229-5335-1%01%01%01Y%01%01%02</psi:url>
+        <psi:url name="SAVEINFO_LONGTITLE">/DB=1/SET=9/TTL=1/RESULTS_SAVEINFO_LONG?FRST=1&amp;LAST=1&amp;HITS=1&amp;PPN=833191217</psi:url>
+        <psi:url name="ANALYSIS">/DB=1/SET=9/TTL=1/ADIGRP?IKT=&amp;SET=9</psi:url>
+        <psi:url name="LOAN">/request/FORCETT=HTML/DB=1/SET=9/TTL=1/FORM/LOAN?PPN=833191217&amp;LANGCODE=NE&amp;COOKIE=&amp;REFERER=http%3A%2F%2Fopc4.kb.nl%2FDB%3D1%2FSET%3D9%2FTTL%3D1%2FNXT</psi:url>
+        <psi:url name="COPY">/request/FORCETT=HTML/DB=1/SET=9/TTL=1/FORM/COPY?PPN=833191217&amp;LANGCODE=NE&amp;COOKIE=&amp;REFERER=http%3A%2F%2Fopc4.kb.nl%2FDB%3D1%2FSET%3D9%2FTTL%3D1%2FNXT</psi:url>
+        <psi:url name="FAMLINK">FAM?PPN=833191217</psi:url>
         <psi:url name="LBS_TITLES_INFO_PATH">
             http%253A%252F%252Fopc4imgbase.kb.nl%253A80%252FLBS_WS%252Favailability
         </psi:url>
         <psi:url name="LBS_TITLES_INFO_CMD">
-            titleinfo%253FBES%253D1%2526LAN%253DNE%2526USR%253D888%2526PPN%253D422449148
+            titleinfo%253FBES%253D1%2526LAN%253DNE%2526USR%253D888%2526PPN%253D833191217
         </psi:url>
         <psi:url name="LBS_TITLES_INFO_PATH_IE">
             http%25253A%25252F%25252Fopc4imgbase.kb.nl%25253A80%25252FLBS_WS%25252Favailability
         </psi:url>
         <psi:url name="LBS_TITLES_INFO_CMD_IE">
-            titleinfo%25253FBES%25253D1%252526LAN%25253DNE%252526USR%25253D888%252526PPN%25253D422449148
+            titleinfo%25253FBES%25253D1%252526LAN%25253DNE%252526USR%25253D888%252526PPN%25253D833191217
         </psi:url>
         <psi:url name="LBS_TITLE_INFO">
-            http://opc4imgbase.kb.nl:80/LBS_WS/availability/titleinfo?BES=1&amp;LAN=NE&amp;USR=888&amp;PPN=422449148
+            http://opc4imgbase.kb.nl:80/LBS_WS/availability/titleinfo?BES=1&amp;LAN=NE&amp;USR=888&amp;PPN=833191217
         </psi:url>
         <psi:url name="LBS_TITLE_RESERVATION">
-            http://opc4imgbase.kb.nl:80/LBS_WEB/titleReservation.htm?BES=1&amp;LAN=NE&amp;USR=888&amp;PPN=422449148
+            http://opc4imgbase.kb.nl:80/LBS_WEB/titleReservation.htm?BES=1&amp;LAN=NE&amp;USR=888&amp;PPN=833191217
         </psi:url>
     </psi:urls>
     <psi:data>
@@ -366,33 +366,10 @@
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text href="CLK?IKT=12&amp;TRM=422449059&amp;REC=*">
-                                De buitengewone reis / Silvio Camboni
+                            <psi:text>De</psi:text>
+                            <psi:text href="CLK?IKT=4&amp;TRM=Foundation">Foundation</psi:text>
+                            <psi:text>/ Isaac Asimov ; [vert. uit het Engels door Jack Kröner]
                             </psi:text>
-                        </psi:line>
-                    </psi:labelledData>
-                </psi:labelledRow>
-                <psi:labelledRow>
-                    <psi:labelledLabel>
-                        <psi:line>
-                            <psi:text>Deel / delen:&#xA0;</psi:text>
-                        </psi:line>
-                    </psi:labelledLabel>
-                    <psi:labelledData>
-                        <psi:line>
-                            <psi:text>Deel 1</psi:text>
-                        </psi:line>
-                    </psi:labelledData>
-                </psi:labelledRow>
-                <psi:labelledRow>
-                    <psi:labelledLabel>
-                        <psi:line>
-                            <psi:text>Kunstenaar:&#xA0;</psi:text>
-                        </psi:line>
-                    </psi:labelledLabel>
-                    <psi:labelledData>
-                        <psi:line>
-                            <psi:text href="REL?PPN=299374009">Silvio Camboni</psi:text>
                         </psi:line>
                     </psi:labelledData>
                 </psi:labelledRow>
@@ -404,7 +381,7 @@
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text href="REL?PPN=296443417">Denis-Pierre Filippi (1972-)
+                            <psi:text href="REL?PPN=068561504">Isaak Judovič Ozimov (1920-1992)
                             </psi:text>
                         </psi:line>
                     </psi:labelledData>
@@ -412,24 +389,12 @@
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Colorist:&#xA0;</psi:text>
+                            <psi:text>Medewerker:&#xA0;</psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text href="REL?PPN=418237638">Gaspard Yvan (1988-)</psi:text>
-                        </psi:line>
-                    </psi:labelledData>
-                </psi:labelledRow>
-                <psi:labelledRow>
-                    <psi:labelledLabel>
-                        <psi:line>
-                            <psi:text>Vertaler:&#xA0;</psi:text>
-                        </psi:line>
-                    </psi:labelledLabel>
-                    <psi:labelledData>
-                        <psi:line>
-                            <psi:text href="REL?PPN=377277630">Mariella Manfré</psi:text>
+                            <psi:text href="REL?PPN=072822333">Jack Kröner (1920-1997)</psi:text>
                         </psi:line>
                     </psi:labelledData>
                 </psi:labelledRow>
@@ -441,7 +406,19 @@
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text>[2019]</psi:text>
+                            <psi:text>1983</psi:text>
+                        </psi:line>
+                    </psi:labelledData>
+                </psi:labelledRow>
+                <psi:labelledRow>
+                    <psi:labelledLabel>
+                        <psi:line>
+                            <psi:text>Editie:&#xA0;</psi:text>
+                        </psi:line>
+                    </psi:labelledLabel>
+                    <psi:labelledData>
+                        <psi:line>
+                            <psi:text>[2e dr.]</psi:text>
                         </psi:line>
                     </psi:labelledData>
                 </psi:labelledRow>
@@ -453,13 +430,27 @@
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text href="CLK?IKT=3003&amp;TRM=Breda">Breda</psi:text>
-                            <psi:text>:</psi:text>
-                            <psi:text href="CLK?IKT=3003&amp;TRM=Dark">Dark</psi:text>
-                            <psi:text></psi:text>
-                            <psi:text href="CLK?IKT=3003&amp;TRM=Dragon">Dragon</psi:text>
-                            <psi:text></psi:text>
-                            <psi:text href="CLK?IKT=3003&amp;TRM=Books">Books</psi:text>
+                            <psi:text href="CLK?IKT=3003&amp;TRM=Utrecht">Utrecht</psi:text>
+                            <psi:text>[</psi:text>
+                            <psi:text href="CLK?IKT=3003&amp;TRM=etc.">etc.</psi:text>
+                            <psi:text>] :</psi:text>
+                            <psi:text href="CLK?IKT=3003&amp;TRM=Bruna">Bruna</psi:text>
+                        </psi:line>
+                    </psi:labelledData>
+                </psi:labelledRow>
+                <psi:labelledRow>
+                    <psi:labelledLabel>
+                        <psi:line>
+                            <psi:text>Reeks:&#xA0;</psi:text>
+                        </psi:line>
+                    </psi:labelledLabel>
+                    <psi:labelledData>
+                        <psi:line>
+                            <psi:text href="CLK?IKT=12&amp;TRM=841288933&amp;REC=*">
+                                Foundation-trilogie
+                            </psi:text>
+                            <psi:text>;</psi:text>
+                            <psi:text href="CLK?IKT=12&amp;TRM=841288933&amp;REC=*">dl. 1</psi:text>
                         </psi:line>
                     </psi:labelledData>
                 </psi:labelledRow>
@@ -471,11 +462,20 @@
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text>Beeldverhaal</psi:text>
+                            <psi:text>Vert. van:&#xA0;Foundation. - Cop. 1951</psi:text>
                         </psi:line>
+                    </psi:labelledData>
+                </psi:labelledRow>
+                <psi:labelledRow>
+                    <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Vertaling van:&#xA0;Le voyage extraordinaire. - Editions
-                                Glénat/Vents d'Ouest, 2012
+                            <psi:text>Annotatie editie:&#xA0;</psi:text>
+                        </psi:line>
+                    </psi:labelledLabel>
+                    <psi:labelledData>
+                        <psi:line>
+                            <psi:text>1e dr. Nederlandse uitg.: 1976. - (Bruna science fiction ;
+                                56)
                             </psi:text>
                         </psi:line>
                     </psi:labelledData>
@@ -488,19 +488,7 @@
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text>48 pagina's</psi:text>
-                        </psi:line>
-                    </psi:labelledData>
-                </psi:labelledRow>
-                <psi:labelledRow>
-                    <psi:labelledLabel>
-                        <psi:line>
-                            <psi:text>Illustratie:&#xA0;</psi:text>
-                        </psi:line>
-                    </psi:labelledLabel>
-                    <psi:labelledData>
-                        <psi:line>
-                            <psi:text>gekleurde illustraties</psi:text>
+                            <psi:text>156 p</psi:text>
                         </psi:line>
                     </psi:labelledData>
                 </psi:labelledRow>
@@ -512,7 +500,7 @@
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text>29 cm</psi:text>
+                            <psi:text>22 cm</psi:text>
                         </psi:line>
                     </psi:labelledData>
                 </psi:labelledRow>
@@ -524,8 +512,21 @@
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text mark="highlight">978-94-6373145-4</psi:text>
-                            <psi:text>(paperback)</psi:text>
+                            <psi:text mark="highlight">90-229-5335-1</psi:text>
+                            <psi:text>(geb.)</psi:text>
+                        </psi:line>
+                    </psi:labelledData>
+                </psi:labelledRow>
+                <psi:labelledRow>
+                    <psi:labelledLabel>
+                        <psi:line>
+                            <psi:text>Trefwoord&#xA0;Depot:&#xA0;</psi:text>
+                        </psi:line>
+                    </psi:labelledLabel>
+                    <psi:labelledData>
+                        <psi:line>
+                            <psi:text href="REL?PPN=075629410">romans en novellen ; vertaald
+                            </psi:text>
                         </psi:line>
                         <psi:line>
                             <psi:text>&#xA0;</psi:text>
@@ -540,28 +541,76 @@
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text>16049925</psi:text>
+                            <psi:text>ND 1983/2563</psi:text>
                         </psi:line>
                     </psi:labelledData>
                 </psi:labelledRow>
-                <psi:LBS_holding epn="1283074737" />
+                <psi:LBS_holding epn="096612193" />
+                <psi:labelledRow>
+                    <psi:labelledLabel></psi:labelledLabel>
+                    <psi:labelledData>
+                        <psi:line>
+                            <psi:text>&#xA0;</psi:text>
+                        </psi:line>
+                        <psi:line>
+                            <psi:text>&#xA0;</psi:text>
+                        </psi:line>
+                    </psi:labelledData>
+                </psi:labelledRow>
+                <psi:labelledRow>
+                    <psi:labelledLabel>
+                        <psi:line>
+                            <psi:text>Aanvraagnummer:&#xA0;</psi:text>
+                        </psi:line>
+                    </psi:labelledLabel>
+                    <psi:labelledData>
+                        <psi:line>
+                            <psi:text>2004441</psi:text>
+                        </psi:line>
+                    </psi:labelledData>
+                </psi:labelledRow>
+                <psi:labelledRow>
+                    <psi:labelledLabel>
+                        <psi:line>
+                            <psi:text>Jaar:&#xA0;</psi:text>
+                        </psi:line>
+                    </psi:labelledLabel>
+                    <psi:labelledData>
+                        <psi:line>
+                            <psi:text>[1987]</psi:text>
+                        </psi:line>
+                    </psi:labelledData>
+                </psi:labelledRow>
+                <psi:labelledRow>
+                    <psi:labelledLabel>
+                        <psi:line>
+                            <psi:text>Editie:&#xA0;</psi:text>
+                        </psi:line>
+                    </psi:labelledLabel>
+                    <psi:labelledData>
+                        <psi:line>
+                            <psi:text>[3e dr.]</psi:text>
+                        </psi:line>
+                    </psi:labelledData>
+                </psi:labelledRow>
+                <psi:LBS_holding epn="096612207" />
             </psi:labelledTable>
         </psi:record>
     </psi:records>
     <psi:query>
         <psi:queryVar name="hits">1</psi:queryVar>
-        <psi:queryVar name="command">CMD</psi:queryVar>
-        <psi:queryVar name="frm">978-9-46373-145-4</psi:queryVar>
+        <psi:queryVar name="command">NXT</psi:queryVar>
+        <psi:queryVar name="frm">90-229-5335-1</psi:queryVar>
         <psi:queryVar name="impland">Y</psi:queryVar>
-        <psi:queryVar name="act">SRCHA</psi:queryVar>
+        <psi:queryVar name="act"></psi:queryVar>
         <psi:queryVar name="srt">YOP</psi:queryVar>
         <psi:queryVar name="fkt">1007</psi:queryVar>
         <psi:queryVar name="srchActs"
                       flag="Y"
                       ikt="(isbn, issn)"
-                      mode="S">978-9-46373-145-4
+                      mode="S">90-229-5335-1
         </psi:queryVar>
         <psi:queryVar name="scantype"></psi:queryVar>
-        <psi:queryVar name="scanctrm">978-9-46373-145-4</psi:queryVar>
+        <psi:queryVar name="scanctrm"></psi:queryVar>
     </psi:query>
 </psi:response>

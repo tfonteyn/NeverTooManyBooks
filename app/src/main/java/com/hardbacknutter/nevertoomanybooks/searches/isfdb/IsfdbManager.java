@@ -41,6 +41,7 @@ import androidx.preference.PreferenceManager;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -102,48 +103,50 @@ public class IsfdbManager
     private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
 
     @NonNull
-    public static String getBaseURL(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
+    public static String getBaseURL(@NonNull final Context appContext) {
+        return PreferenceManager.getDefaultSharedPreferences(appContext)
                                 .getString(PREFS_HOST_URL, "http://www.isfdb.org");
     }
 
     /**
      * View a Book on the web site.
      *
-     * @param context Current context
-     * @param bookId  site native book id to show
+     * @param appContext Application context
+     * @param bookId     site native book id to show
      */
-    public static void openWebsite(@NonNull final Context context,
+    public static void openWebsite(@NonNull final Context appContext,
                                    final long bookId) {
-        String url = getBaseURL(context) + CGI_BIN + URL_PL_CGI + "?" + bookId;
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        String url = getBaseURL(appContext) + CGI_BIN + URL_PL_CGI + "?" + bookId;
+        appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context context,
+    public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                    @NonNull final String nativeId,
                                    final boolean fetchThumbnail)
             throws IOException {
 
-        return new IsfdbBookHandler(context)
-                .fetchByNativeId(nativeId, isAddSeriesFromToc(context), fetchThumbnail);
+        return new IsfdbBookHandler(localizedAppContext)
+                .fetchByNativeId(nativeId, isAddSeriesFromToc(localizedAppContext), fetchThumbnail);
     }
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
+    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
                                final boolean fetchThumbnail)
             throws IOException {
 
-        return fetchBook(context, new IsfdbEditionsHandler().fetch(context, isbn), fetchThumbnail);
+        ArrayList<IsfdbEditionsHandler.Edition> editions =
+                new IsfdbEditionsHandler(localizedAppContext).fetch(isbn);
+        return fetchBook(localizedAppContext, editions, fetchThumbnail);
     }
 
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final Context context,
+    public Bundle search(@NonNull final Context localizedAppContext,
                          @Nullable final String isbn,
                          @Nullable final String author,
                          @Nullable final String title,
@@ -151,7 +154,7 @@ public class IsfdbManager
                          final boolean fetchThumbnail)
             throws IOException {
 
-        String url = getBaseURL(context) + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
+        String url = getBaseURL(localizedAppContext) + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
                      + "ORDERBY=pub_title"
                      + "&ACTION=query"
                      + "&START=0"
@@ -176,7 +179,7 @@ public class IsfdbManager
         }
 
         // as per user settings.
-        if (PreferenceManager.getDefaultSharedPreferences(context)
+        if (PreferenceManager.getDefaultSharedPreferences(localizedAppContext)
                              .getBoolean(PREFS_USE_PUBLISHER, false)) {
             if (publisher != null && !publisher.isEmpty()) {
                 index++;
@@ -191,16 +194,18 @@ public class IsfdbManager
         // &USE_5=pub_title&O_5=exact&TERM_5=
         // &USE_6=pub_title&O_6=exact&TERM_6=
 
-        return fetchBook(context, new IsfdbEditionsHandler().fetchPath(url), fetchThumbnail);
+        return fetchBook(localizedAppContext,
+                         new IsfdbEditionsHandler(localizedAppContext).fetchPath(url),
+                         fetchThumbnail);
     }
 
-    private Bundle fetchBook(@NonNull final Context context,
+    private Bundle fetchBook(@NonNull final Context localizedAppContext,
                              final List<IsfdbEditionsHandler.Edition> editions,
                              final boolean fetchThumbnail)
             throws SocketTimeoutException {
         if (!editions.isEmpty()) {
-            return new IsfdbBookHandler(context)
-                    .fetch(editions, isAddSeriesFromToc(context), fetchThumbnail);
+            return new IsfdbBookHandler(localizedAppContext)
+                    .fetch(editions, isAddSeriesFromToc(localizedAppContext), fetchThumbnail);
         } else {
             return new Bundle();
         }
@@ -214,8 +219,8 @@ public class IsfdbManager
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context context) {
-        return getBaseURL(context);
+    public String getUrl(@NonNull final Context appContext) {
+        return getBaseURL(appContext);
     }
 
     @StringRes

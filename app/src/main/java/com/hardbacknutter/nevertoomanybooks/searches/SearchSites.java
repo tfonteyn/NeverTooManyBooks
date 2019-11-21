@@ -112,11 +112,11 @@ public final class SearchSites {
     /** tag. */
     private static final String TAG = "SearchSites";
     /** Used to pass a list of sites around. */
-    public static final String BKEY_DATA = TAG + ":data";
+    public static final String BKEY_DATA_SITES = TAG + ":data";
     /** Used to pass a list of sites around. */
-    public static final String BKEY_COVERS = TAG + ":covers";
+    public static final String BKEY_COVERS_SITES = TAG + ":covers";
     /** Used to pass a list of sites around. */
-    public static final String BKEY_ALT_ED = TAG + ":alt_ed";
+    public static final String BKEY_ALT_ED_SITES = TAG + ":alt_ed";
 
     private static final String PREFS_ORDER_PREFIX = "search.siteOrder.";
     private static final String PREFS_ORDER_DATA = PREFS_ORDER_PREFIX + "data";
@@ -268,7 +268,7 @@ public final class SearchSites {
     public static boolean promptToRegister(@NonNull final Context context,
                                            final boolean required,
                                            @NonNull final String prefSuffix,
-                                           @NonNull final ArrayList<Site> searchSites) {
+                                           @NonNull final Iterable<Site> searchSites) {
         boolean showingAlert = false;
         for (Site site : searchSites) {
             if (site.isEnabled()) {
@@ -432,7 +432,7 @@ public final class SearchSites {
      * @return ordered list
      */
     private static ArrayList<Site> reorder(@NonNull final String order,
-                                           @NonNull final ArrayList<Site> sites) {
+                                           @NonNull final Iterable<Site> sites) {
         ArrayList<Site> orderedList = new ArrayList<>();
         for (String idStr : order.split(SEP)) {
             int id = Integer.parseInt(idStr);
@@ -453,7 +453,7 @@ public final class SearchSites {
      *
      * @return bitmask containing only the enables sites
      */
-    public static int getEnabledSites(@NonNull final ArrayList<Site> list) {
+    public static int getEnabledSites(@NonNull final Iterable<Site> list) {
         int sites = 0;
         for (Site site : list) {
             if (site.isEnabled()) {

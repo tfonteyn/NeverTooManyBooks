@@ -69,7 +69,7 @@ public class EditLanguageDialog
         if (lang.length() > 3) {
             editLang = lang;
         } else {
-            Locale locale = LocaleUtils.getLocale(lang);
+            Locale locale = LocaleUtils.getLocale(getContext(), lang);
             if (locale == null) {
                 editLang = lang;
             } else {

@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -155,9 +156,10 @@ public class EditBookFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-
+        Resources r = getResources();
         // onOptionsItemSelected: MENU_BOOK_UPDATE_FROM_INTERNET handled in super.
-        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, MenuHandler.ORDER_UPDATE_FIELDS,
+        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+                 r.getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                  R.string.menu_update_fields)
             .setIcon(R.drawable.ic_cloud_download);
 
@@ -211,7 +213,7 @@ public class EditBookFragment
 
         if (book.getId() == 0) {
             String isbn = book.getString(DBDefinitions.KEY_ISBN);
-            /* Check if the book already exists */
+            // Check if the book already exists
             if (!isbn.isEmpty() && ((mBookModel.getDb().getBookIdFromIsbn(isbn, true) > 0))) {
                 //noinspection ConstantConditions
                 new AlertDialog.Builder(getContext())

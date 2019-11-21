@@ -661,5 +661,6 @@
     <string name="lbl_select_website">Sélectionnez un site web:</string>
     <string name="lbl_site_book_id">Identifiant du livre du site:</string>
     <string name="fab_add_book_by_native_id">Identifiant du livre du site</string>
+    <string name="warning_enable_at_least_1_website">Activer au moins un site Web pour chaque catégorie.</string>
 
 </resources>

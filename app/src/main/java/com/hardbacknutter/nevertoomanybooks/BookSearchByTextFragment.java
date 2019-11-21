@@ -42,9 +42,9 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -59,7 +59,7 @@ public class BookSearchByTextFragment
 
     /** A list of author names we have already searched for in this session. */
     @NonNull
-    private final ArrayList<String> mRecentAuthorNames = new ArrayList<>();
+    private final Collection<String> mRecentAuthorNames = new ArrayList<>();
 
     private ArrayAdapter<String> mAuthorAdapter;
     /** User input field. */
@@ -111,10 +111,34 @@ public class BookSearchByTextFragment
 
         //noinspection ConstantConditions
         getView().findViewById(R.id.btn_search).setOnClickListener(v -> {
-            mSearchCoordinator.setAuthorSearchText(mAuthorView.getText().toString().trim());
-            mSearchCoordinator.setTitleSearchText(mTitleView.getText().toString().trim());
-            mSearchCoordinator.setPublisherSearchText(mPublisherView.getText().toString().trim());
-            prepareSearch();
+            String authorSearchText = mSearchCoordinator.getAuthorSearchText();
+            if (mAuthorAdapter.getPosition(authorSearchText) < 0) {
+                // Always add the current search text to the list of recent searches.
+                if (!authorSearchText.isEmpty()) {
+                    boolean found = false;
+                    for (String s : mRecentAuthorNames) {
+                        if (s.equalsIgnoreCase(authorSearchText)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        // Keep a list of names as typed to use when we recreate list
+                        mRecentAuthorNames.add(authorSearchText);
+                        // Add to adapter, in case search produces no results
+                        mAuthorAdapter.add(authorSearchText);
+                    }
+                }
+            }
+
+            //sanity check
+            if (mSearchCoordinator.getAuthorSearchText().isEmpty()
+                && mSearchCoordinator.getTitleSearchText().isEmpty()) {
+                UserMessage.show(getView(), R.string.warning_requires_at_least_one_field);
+                return;
+            }
+
+            startSearch();
         });
 
         if (savedInstanceState == null) {
@@ -142,12 +166,12 @@ public class BookSearchByTextFragment
     }
 
     @NonNull
-    private ArrayList<String> getAuthorNames(@NonNull final ArrayList<String> authorNames) {
+    private ArrayList<String> getAuthorNames(@NonNull final Iterable<String> authorNames) {
 
-        ArrayList<String> authors = mDb.getAuthorNames(
+        final ArrayList<String> authors = mDb.getAuthorNames(
                 DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
-        final Set<String> uniqueNames = new HashSet<>(authors.size());
+        final Collection<String> uniqueNames = new HashSet<>(authors.size());
         for (String s : authors) {
             uniqueNames.add(s.toLowerCase(Locale.getDefault()));
         }
@@ -200,37 +224,12 @@ public class BookSearchByTextFragment
         mPublisherView.setText("");
     }
 
-    private void prepareSearch() {
-
-        String authorSearchText = mSearchCoordinator.getAuthorSearchText();
-        if (mAuthorAdapter.getPosition(authorSearchText) < 0) {
-            // Always add the current search text to the list of recent searches.
-            if (!authorSearchText.isEmpty()) {
-                boolean found = false;
-                for (String s : mRecentAuthorNames) {
-                    if (s.equalsIgnoreCase(authorSearchText)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    // Keep a list of names as typed to use when we recreate list
-                    mRecentAuthorNames.add(authorSearchText);
-                    // Add to adapter, in case search produces no results
-                    mAuthorAdapter.add(authorSearchText);
-                }
-            }
-        }
-
-        //sanity check
-        if (mSearchCoordinator.getAuthorSearchText().isEmpty()
-            && mSearchCoordinator.getTitleSearchText().isEmpty()) {
-            //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.warning_requires_at_least_one_field);
-            return;
-        }
-
-        startSearch();
+    @Override
+    protected boolean onSearch() {
+        mSearchCoordinator.setAuthorSearchText(mAuthorView.getText().toString().trim());
+        mSearchCoordinator.setTitleSearchText(mTitleView.getText().toString().trim());
+        mSearchCoordinator.setPublisherSearchText(mPublisherView.getText().toString().trim());
+        return mSearchCoordinator.searchByText();
     }
 
     @Override

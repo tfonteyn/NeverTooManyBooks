@@ -33,7 +33,6 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.xml.sax.helpers.DefaultHandler;
@@ -119,7 +118,7 @@ public class AddBookToShelfApiHandler
      * @throws IOException           on other failures
      */
     public long add(final long grBookId,
-                    @NonNull final List<String> shelfNames)
+                    @NonNull final Iterable<String> shelfNames)
             throws CredentialsException, BookNotFoundException, IOException {
 
         String shelves = TextUtils.join(",", shelfNames);

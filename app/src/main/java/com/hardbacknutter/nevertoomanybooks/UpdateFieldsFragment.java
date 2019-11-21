@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -185,17 +186,17 @@ public class UpdateFieldsFragment
     }
 
 
-    @Override
-    @CallSuper
-    public void onResume() {
-        super.onResume();
+//    @Override
+//    @CallSuper
+//    public void onResume() {
+//        super.onResume();
 //        if (getActivity() instanceof BaseActivity) {
 //            BaseActivity activity = (BaseActivity) getActivity();
 //            if (activity.isGoingToRecreate()) {
 //                return;
 //            }
 //        }
-    }
+//    }
 
     /**
      * Display the list of fields.
@@ -239,7 +240,7 @@ public class UpdateFieldsFragment
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     ArrayList<Site> sites = data.getParcelableArrayListExtra(
-                            SearchSites.BKEY_DATA);
+                            SearchSites.BKEY_DATA_SITES);
                     if (sites != null) {
                         mUpdateFieldsModel.setSearchSites(sites);
                     }
@@ -256,8 +257,10 @@ public class UpdateFieldsFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
+        Resources r = getResources();
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
-                 MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_websites)
+                 r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
+                 R.string.lbl_websites)
             .setIcon(R.drawable.ic_find_in_page)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
@@ -272,7 +275,7 @@ public class UpdateFieldsFragment
             case R.id.MENU_PREFS_SEARCH_SITES: {
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminModel.BKEY_TABS_TO_SHOW, SearchAdminModel.TAB_BOOKS)
-                        .putExtra(SearchSites.BKEY_DATA,
+                        .putExtra(SearchSites.BKEY_DATA_SITES,
                                   mUpdateFieldsModel.getSearchSites());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;

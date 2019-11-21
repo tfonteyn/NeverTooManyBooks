@@ -36,7 +36,6 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Base for a Collection (List, Set,...) of elements (Integer, String, ...)
@@ -178,7 +177,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         } else {
             String list = getPrefs().getString(getKey(), null);
             if (list != null && !list.isEmpty()) {
-                List<String> newList = new ArrayList<>();
+                Collection<String> newList = new ArrayList<>();
                 for (String e : list.split(DELIM)) {
                     if (!e.equals(String.valueOf(element))) {
                         newList.add(e);

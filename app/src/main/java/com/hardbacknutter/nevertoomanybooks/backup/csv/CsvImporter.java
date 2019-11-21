@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -353,7 +354,7 @@ public class CsvImporter
             // do some cleaning
             mDb.purge();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
         }
         mDb.close();
     }
@@ -542,7 +543,7 @@ public class CsvImporter
         }
 
         // Handle the series
-        Locale bookLocale = book.getLocale();
+        Locale bookLocale = book.getLocale(context);
         ArrayList<Series> list = CsvCoder.getSeriesCoder().decode(encodedList);
 
         // run in batch mode, i.e. force using the bookLocale;
@@ -572,7 +573,7 @@ public class CsvImporter
             ArrayList<TocEntry> list = CsvCoder.getTocCoder().decode(encodedList);
             if (!list.isEmpty()) {
                 // fix the ID's
-                ItemWithFixableId.pruneList(list, context, db, book.getLocale(), false);
+                ItemWithFixableId.pruneList(list, context, db, book.getLocale(context), false);
                 book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
             }
         }
@@ -610,7 +611,7 @@ public class CsvImporter
         // Last position in row
         int endPos = row.length() - 1;
         // Array of fields found in row
-        final List<String> fields = new ArrayList<>();
+        final Collection<String> fields = new ArrayList<>();
         // Temp. storage for current field
         StringBuilder sb = new StringBuilder();
 

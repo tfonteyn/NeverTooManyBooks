@@ -49,7 +49,7 @@ public class MovableFloatingActionButton
      * Often, there will be a slight, unintentional, drag when the user taps the FAB,
      * so we need to account for this.
      */
-    private final static float CLICK_DRAG_TOLERANCE = 10;
+    private static final float CLICK_DRAG_TOLERANCE = 10;
 
     private float downRawX, downRawY;
     private float dX, dY;

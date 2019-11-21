@@ -662,7 +662,7 @@ public class BooklistStyle
     @NonNull
     public String getLabel(@NonNull final Context context) {
         if (mNameResId != 0) {
-            return App.getLocalizedAppContext().getString(mNameResId);
+            return context.getString(mNameResId);
         } else {
             return mName.get();
         }
@@ -1418,7 +1418,7 @@ public class BooklistStyle
     private static class PStyleGroups
             extends PIntList {
 
-        private final ArrayList<BooklistGroup> mGroups = new ArrayList<>();
+        private final List<BooklistGroup> mGroups = new ArrayList<>();
 
         /**
          * Constructor.
@@ -1571,7 +1571,7 @@ public class BooklistStyle
          */
         @NonNull
         public static Map<String, BooklistStyle> getUserStyles(@NonNull final DAO db) {
-            if (S_USER_STYLES.size() == 0) {
+            if (S_USER_STYLES.isEmpty()) {
                 S_USER_STYLES.putAll(db.getUserStyles());
             }
             return S_USER_STYLES;
@@ -1678,7 +1678,7 @@ public class BooklistStyle
          *
          * @param uuidSet of style UUIDs
          */
-        private static void setMenuOrder(@NonNull final Set<String> uuidSet) {
+        private static void setMenuOrder(@NonNull final Iterable<String> uuidSet) {
             PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                              .edit()
                              .putString(PREF_BL_PREFERRED_STYLES, TextUtils.join(",", uuidSet))
@@ -1703,8 +1703,8 @@ public class BooklistStyle
          *
          * @param styles full list of preferred styles to save 'in order'
          */
-        public static void saveMenuOrder(@NonNull final List<BooklistStyle> styles) {
-            Set<String> list = new LinkedHashSet<>();
+        public static void saveMenuOrder(@NonNull final Iterable<BooklistStyle> styles) {
+            Collection<String> list = new LinkedHashSet<>();
             for (BooklistStyle style : styles) {
                 if (style.isPreferred()) {
                     list.add(style.getUuid());
@@ -1854,7 +1854,7 @@ public class BooklistStyle
         @NonNull
         private static Map<String, BooklistStyle> getStyles() {
 
-            if (S_BUILTIN_STYLES.size() == 0) {
+            if (S_BUILTIN_STYLES.isEmpty()) {
                 create();
             }
             return S_BUILTIN_STYLES;

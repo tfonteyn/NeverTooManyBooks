@@ -37,6 +37,7 @@ import androidx.annotation.WorkerThread;
 
 import java.lang.ref.WeakReference;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
@@ -91,12 +92,6 @@ public class GoodreadsWork {
     @Nullable
     private byte[] imageBytes;
     private WeakReference<ImageView> mImageView;
-
-    /**
-     * Constructor.
-     */
-    public GoodreadsWork() {
-    }
 
     /**
      * If the cover image has already been retrieved, put it in the passed view.
@@ -193,7 +188,7 @@ public class GoodreadsWork {
         protected byte[] doInBackground(final Void... params) {
             Thread.currentThread().setName("GR.GetImageTask");
 
-            return ImageUtils.getBytes(mUrl);
+            return ImageUtils.getBytes(App.getAppContext(), mUrl);
         }
 
         /**

@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -161,7 +162,8 @@ public class AuthorWorksFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(R.id.MENU_AUTHOR_WORKS, R.id.MENU_AUTHOR_WORKS_ALL, 0,
-                 R.string.menu_author_works_all).setChecked(true);
+                 R.string.menu_author_works_all)
+            .setChecked(true);
 
         menu.add(R.id.MENU_AUTHOR_WORKS, R.id.MENU_AUTHOR_WORKS_TOC, 0,
                  R.string.menu_author_works_toc);
@@ -201,11 +203,15 @@ public class AuthorWorksFragment
     }
 
     private void onCreateContextMenu(final int position) {
+        Resources r = getResources();
+
         TocEntry item = mModel.getTocEntries().get(position);
 
         //noinspection ConstantConditions
         Menu menu = MenuPicker.createMenu(getContext());
-        menu.add(Menu.NONE, R.id.MENU_DELETE, MenuHandler.ORDER_DELETE, R.string.menu_delete)
+        menu.add(Menu.NONE, R.id.MENU_DELETE,
+                 r.getInteger(R.integer.MENU_ORDER_DELETE),
+                 R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
         String title = item.getTitle();
@@ -403,10 +409,10 @@ public class AuthorWorksFragment
                 // Using INVISIBLE, to get the proper margin just like other rows.
                 holder.multipleBooksView.setVisibility(isSet ? View.VISIBLE : View.INVISIBLE);
             }
+
             // click -> get the book(s) for that entry and display.
             holder.itemView.setOnClickListener(v -> gotoBook(tocEntry));
 
-            // long-click -> menu
             holder.itemView.setOnLongClickListener(v -> {
                 onCreateContextMenu(holder.getAdapterPosition());
                 return true;

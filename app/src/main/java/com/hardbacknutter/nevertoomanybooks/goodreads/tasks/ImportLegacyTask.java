@@ -42,6 +42,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -661,7 +662,7 @@ class ImportLegacyTask
 
             if (coverUrl != null) {
                 long grBookId = bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
-                String fileSpec = ImageUtils.saveImage(coverUrl, String.valueOf(grBookId),
+                String fileSpec = ImageUtils.saveImage(context, coverUrl, String.valueOf(grBookId),
                                                        GoodreadsManager.FILENAME_SUFFIX,
                                                        sizeSuffix);
                 if (fileSpec != null) {
@@ -720,7 +721,7 @@ class ImportLegacyTask
      * @param list  to add to
      * @param value to add
      */
-    private void addIfHasValue(@NonNull final List<String> list,
+    private void addIfHasValue(@NonNull final Collection<String> list,
                                @Nullable final String value) {
         if (value != null) {
             String v = value.trim();

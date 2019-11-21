@@ -143,9 +143,9 @@ final class CropUtil {
     }
 
     static void startBackgroundJob(@NonNull final CropMonitoredActivity activity,
-                                   @SuppressWarnings("SameParameterValue") @Nullable
-                                   final String title,
-                                   @NonNull final String message,
+                                   @SuppressWarnings("SameParameterValue")
+                                   @Nullable final CharSequence title,
+                                   @NonNull final CharSequence message,
                                    @NonNull final Runnable job,
                                    @NonNull final Handler handler) {
         // Make the progress dialog not-cancelable, so that we can guarantee

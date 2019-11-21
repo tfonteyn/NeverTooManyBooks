@@ -50,7 +50,6 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.AttrRes;
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
-import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -143,15 +142,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class App
         extends Application {
 
-    private static final String TAG = "App";
-
     /**
      * Users can select which fields they use / don't want to use.
      * Each field has an entry in the Preferences.
      * The key is suffixed with the name of the field.
      */
     public static final String PREFS_FIELD_VISIBILITY = "fields.visibility.";
-
+    private static final String TAG = "App";
     /** don't assume / allow the day-night theme to have a different integer ID. */
     private static final int THEME_INVALID = -1;
     private static final int THEME_DAY_NIGHT = 0;
@@ -273,8 +270,8 @@ public class App
      * @param title   the title to display
      * @param message the message to display
      */
-    public static void showNotification(@NonNull final String title,
-                                        @NonNull final String message) {
+    public static void showNotification(@NonNull final CharSequence title,
+                                        @NonNull final CharSequence message) {
         showNotification(sInstance.getApplicationContext(), title, message);
     }
 
@@ -286,8 +283,8 @@ public class App
      * @param message the message to display
      */
     public static void showNotification(@NonNull final Context context,
-                                        @NonNull final String title,
-                                        @NonNull final String message) {
+                                        @NonNull final CharSequence title,
+                                        @NonNull final CharSequence message) {
 
         // Create the notifier if not done yet.
         if (sNotifier == null) {
@@ -322,8 +319,6 @@ public class App
      *
      * @return resource ID
      */
-    @SuppressWarnings("unused")
-    @IdRes
     public static int getAttrResId(@NonNull final Context context,
                                    @AttrRes final int attr) {
         TypedValue tv = new TypedValue();
@@ -485,74 +480,77 @@ public class App
      * DEBUG only.
      */
     private static void dumpDayNightMode(@ThemeId final int themeId) {
-        StringBuilder sb = new StringBuilder();
+        if (BuildConfig.DEBUG) {
+            StringBuilder sb = new StringBuilder();
 
-        String varName = "sCurrentThemeId";
-        switch (themeId) {
-            case THEME_DAY_NIGHT:
-                sb.append(varName).append("=THEME_DAY_NIGHT");
-                break;
-            case THEME_DARK:
-                sb.append(varName).append("=THEME_DARK");
-                break;
-            case THEME_LIGHT:
-                sb.append(varName).append("=THEME_LIGHT");
-                break;
-            case THEME_INVALID:
-                sb.append(varName).append("=THEME_INVALID");
-                break;
+            String varName = "sCurrentThemeId";
+            switch (themeId) {
+                case THEME_DAY_NIGHT:
+                    sb.append(varName).append("=THEME_DAY_NIGHT");
+                    break;
+                case THEME_DARK:
+                    sb.append(varName).append("=THEME_DARK");
+                    break;
+                case THEME_LIGHT:
+                    sb.append(varName).append("=THEME_LIGHT");
+                    break;
+                case THEME_INVALID:
+                    sb.append(varName).append("=THEME_INVALID");
+                    break;
 
-            default:
-                sb.append(varName).append("=eh? ").append(themeId);
-                break;
+                default:
+                    sb.append(varName).append("=eh? ").append(themeId);
+                    break;
 
+            }
+
+            varName = "getDefaultNightMode";
+            switch (AppCompatDelegate.getDefaultNightMode()) {
+                case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
+                    sb.append("|").append(varName).append("=MODE_NIGHT_FOLLOW_SYSTEM");
+                    break;
+                //noinspection deprecation
+                case AppCompatDelegate.MODE_NIGHT_AUTO_TIME:
+                    sb.append("|").append(varName).append("=MODE_NIGHT_AUTO_TIME");
+                    break;
+                case AppCompatDelegate.MODE_NIGHT_NO:
+                    sb.append("|").append(varName).append("=MODE_NIGHT_NO");
+                    break;
+                case AppCompatDelegate.MODE_NIGHT_YES:
+                    sb.append("|").append(varName).append("=MODE_NIGHT_YES");
+                    break;
+                case AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY:
+                    sb.append("|").append(varName).append("=MODE_NIGHT_AUTO_BATTERY");
+                    break;
+                case AppCompatDelegate.MODE_NIGHT_UNSPECIFIED:
+                    sb.append("|").append(varName).append("=MODE_NIGHT_UNSPECIFIED");
+                    break;
+                default:
+                    sb.append("|").append(varName).append("=Twilight Zone");
+                    break;
+            }
+
+            int currentNightMode =
+                    sInstance.getApplicationContext().getResources()
+                             .getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            varName = "currentNightMode";
+            switch (currentNightMode) {
+                case Configuration.UI_MODE_NIGHT_NO:
+                    sb.append("|").append(varName).append("=UI_MODE_NIGHT_NO");
+                    break;
+                case Configuration.UI_MODE_NIGHT_YES:
+                    sb.append("|").append(varName).append("=UI_MODE_NIGHT_YES");
+                    break;
+                case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                    sb.append("|").append(varName).append("=UI_MODE_NIGHT_UNDEFINED");
+                    break;
+                default:
+                    sb.append("|").append(varName).append("=Twilight Zone");
+                    break;
+            }
+
+            Log.d(TAG, "dumpDayNightMode|" + sb);
         }
-
-        varName = "getDefaultNightMode";
-        switch (AppCompatDelegate.getDefaultNightMode()) {
-            case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
-                sb.append("|").append(varName).append("=MODE_NIGHT_FOLLOW_SYSTEM");
-                break;
-            //noinspection deprecation
-            case AppCompatDelegate.MODE_NIGHT_AUTO_TIME:
-                sb.append("|").append(varName).append("=MODE_NIGHT_AUTO_TIME");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_NO:
-                sb.append("|").append(varName).append("=MODE_NIGHT_NO");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_YES:
-                sb.append("|").append(varName).append("=MODE_NIGHT_YES");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY:
-                sb.append("|").append(varName).append("=MODE_NIGHT_AUTO_BATTERY");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_UNSPECIFIED:
-                sb.append("|").append(varName).append("=MODE_NIGHT_UNSPECIFIED");
-                break;
-            default:
-                sb.append("|").append(varName).append("=Twilight Zone");
-                break;
-        }
-
-        int currentNightMode = sInstance.getApplicationContext().getResources().getConfiguration()
-                                       .uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        varName = "currentNightMode";
-        switch (currentNightMode) {
-            case Configuration.UI_MODE_NIGHT_NO:
-                sb.append("|").append(varName).append("=UI_MODE_NIGHT_NO");
-                break;
-            case Configuration.UI_MODE_NIGHT_YES:
-                sb.append("|").append(varName).append("=UI_MODE_NIGHT_YES");
-                break;
-            case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                sb.append("|").append(varName).append("=UI_MODE_NIGHT_UNDEFINED");
-                break;
-            default:
-                sb.append("|").append(varName).append("=Twilight Zone");
-                break;
-        }
-
-        Log.d(TAG, "dumpDayNightMode|" + sb);
     }
 
     public static void setNeedsRecreating() {
@@ -640,6 +638,20 @@ public class App
             }
         }
         return 0;
+    }
+
+    /**
+     * DEBUG
+     *
+     * @return {@code true} if the current run is a JUnit test.
+     */
+    public static boolean isJUnitTest() {
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            if (element.getClassName().startsWith("org.junit.")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

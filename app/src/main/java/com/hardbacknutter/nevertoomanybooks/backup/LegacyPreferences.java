@@ -35,9 +35,9 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
@@ -262,7 +262,7 @@ public final class LegacyPreferences {
 
                     case "BooklistStyles.Menu.Items":
                         // using a set to eliminate duplicates
-                        Set<String> uuidSet = new LinkedHashSet<>();
+                        Collection<String> uuidSet = new LinkedHashSet<>();
                         String[] styles = ((String) oldValue).split(",");
                         for (String style : styles) {
                             styleName = style.substring(0, style.length() - 2);

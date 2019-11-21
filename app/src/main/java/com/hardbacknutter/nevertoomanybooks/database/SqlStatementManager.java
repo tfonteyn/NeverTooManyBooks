@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -190,7 +189,7 @@ public class SqlStatementManager
     protected void finalize()
             throws Throwable {
         if (!mStatements.isEmpty()) {
-            Logger.warn(App.getAppContext(), TAG, "finalize|calling close()");
+            Logger.warn(TAG, "finalize|calling close()");
             close();
         }
         super.finalize();

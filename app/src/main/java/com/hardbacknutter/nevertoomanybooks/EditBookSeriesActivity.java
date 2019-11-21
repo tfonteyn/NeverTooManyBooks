@@ -46,6 +46,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -363,7 +364,7 @@ public class EditBookSeriesActivity
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
         SeriesListAdapter(@NonNull final Context context,
-                          @NonNull final ArrayList<Series> items,
+                          @NonNull final List<Series> items,
                           @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
         }

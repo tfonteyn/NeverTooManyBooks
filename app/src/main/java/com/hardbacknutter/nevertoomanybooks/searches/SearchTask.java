@@ -101,9 +101,9 @@ public class SearchTask
     /**
      * @param nativeId to search for
      */
-    void setNativeId(@NonNull final String nativeId) {
+    void setNativeId(@Nullable final String nativeId) {
         // trims might not be needed, but heck.
-        mNativeId = nativeId.trim();
+        mNativeId = nativeId != null ? nativeId.trim() : "";
     }
 
     /**
@@ -158,7 +158,9 @@ public class SearchTask
 
             Bundle bookData;
 
-            // SEARCH.
+            // A native id takes highest priority.
+            // An ISBN is next.
+            // If neither is present, search by keywords.
             if (mSearchEngine instanceof SearchEngine.ByNativeId
                 && mNativeId != null && !mNativeId.isEmpty()) {
                 bookData = ((SearchEngine.ByNativeId) mSearchEngine)

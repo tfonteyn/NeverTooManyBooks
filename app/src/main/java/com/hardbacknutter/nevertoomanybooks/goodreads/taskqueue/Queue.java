@@ -32,7 +32,6 @@ import androidx.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDAO.ScheduledTask;
 
@@ -136,7 +135,7 @@ class Queue
                 }
             }
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
         } finally {
             try {
                 if (mTaskQueueDAO != null) {
@@ -168,7 +167,7 @@ class Queue
             if (task.getException() == null) {
                 task.setException(e);
             }
-            Logger.error(App.getAppContext(), TAG, e, "Error running task " + task.getId());
+            Logger.error(TAG, e, "Error running task " + task.getId());
         }
         handleTaskResult(task, result, requeue);
     }

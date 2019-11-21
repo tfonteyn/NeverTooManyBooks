@@ -52,6 +52,7 @@ import androidx.fragment.app.FragmentManager;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -284,6 +285,7 @@ public class EditBookAuthorsActivity
         /** Current edit. */
         private boolean mIsComplete;
         /** Current edit. */
+        @Author.Type
         private int mType;
 
         private boolean mAuthorTypeIsUsed;
@@ -546,7 +548,7 @@ public class EditBookAuthorsActivity
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
         AuthorListAdapter(@NonNull final Context context,
-                          @NonNull final ArrayList<Author> items,
+                          @NonNull final List<Author> items,
                           @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
 

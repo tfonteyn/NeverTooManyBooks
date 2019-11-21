@@ -49,17 +49,16 @@ public interface ItemWithTitle {
     /**
      * Reformat titles for <strong>use as the OrderBy column</strong>.
      *
-     * @param userContext Current context, should be an actual user context,
-     *                    and not the ApplicationContext.
+     * @param context     Current context
      * @param titleLocale Locale to use
      *
      * @return reordered title / original title
      */
-    default String reorderTitleForSorting(@NonNull final Context userContext,
+    default String reorderTitleForSorting(@NonNull final Context context,
                                           @NonNull final Locale titleLocale) {
 
-        if (Prefs.reorderTitleForSorting(userContext)) {
-            return LocaleUtils.reorderTitle(userContext, getTitle(), titleLocale);
+        if (Prefs.reorderTitleForSorting(context)) {
+            return LocaleUtils.reorderTitle(context, getTitle(), titleLocale);
         } else {
             return getTitle();
         }

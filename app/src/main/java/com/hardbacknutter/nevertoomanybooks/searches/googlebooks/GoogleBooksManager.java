@@ -66,34 +66,29 @@ public final class GoogleBooksManager
     private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
     private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
 
-    /**
-     * Constructor.
-     */
-    public GoogleBooksManager() {
-    }
-
     @NonNull
-    public static String getBaseURL(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
+    public static String getBaseURL(@NonNull final Context appContext) {
+        return PreferenceManager.getDefaultSharedPreferences(appContext)
                                 .getString(PREFS_HOST_URL, "https://books.google.com");
     }
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
+    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
                                final boolean fetchThumbnail)
             throws IOException {
         // %3C  <
         // %3E  >
-        String url = getBaseURL(context) + "/books/feeds/volumes?q=ISBN%3C" + isbn + "%3E";
-        return fetchBook(url, fetchThumbnail);
+        String url =
+                getBaseURL(localizedAppContext) + "/books/feeds/volumes?q=ISBN%3C" + isbn + "%3E";
+        return fetchBook(localizedAppContext, url, fetchThumbnail);
     }
 
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final Context context,
+    public Bundle search(@NonNull final Context localizedAppContext,
                          @Nullable final String isbn,
                          @Nullable final String author,
                          @Nullable final String title,
@@ -105,19 +100,20 @@ public final class GoogleBooksManager
         // %3A  :
         if (author != null && !author.isEmpty()
             && title != null && !title.isEmpty()) {
-            String url = getBaseURL(context)
+            String url = getBaseURL(localizedAppContext)
                          + "/books/feeds/volumes?q="
                          + "intitle%3A" + encodeSpaces(title)
                          + "%2B"
                          + "inauthor%3A" + encodeSpaces(author);
-            return fetchBook(url, fetchThumbnail);
+            return fetchBook(localizedAppContext, url, fetchThumbnail);
 
         } else {
             return new Bundle();
         }
     }
 
-    private Bundle fetchBook(@NonNull final String url,
+    private Bundle fetchBook(@NonNull final Context appContext,
+                             @NonNull final String url,
                              final boolean fetchThumbnail)
             throws IOException {
         Bundle bookData = new Bundle();
@@ -136,16 +132,17 @@ public final class GoogleBooksManager
             SAXParser parser = factory.newSAXParser();
 
             // get the booklist
-            try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
-                parser.parse(con.inputStream, handler);
+            try (TerminatorConnection con = TerminatorConnection.openConnection(appContext, url)) {
+                parser.parse(con.getInputStream(), handler);
             }
 
             ArrayList<String> urlList = handler.getUrlList();
             if (!urlList.isEmpty()) {
                 // only using the first one found, maybe future enhancement?
                 oneBookUrl = urlList.get(0);
-                try (TerminatorConnection con = TerminatorConnection.openConnection(oneBookUrl)) {
-                    parser.parse(con.inputStream, entryHandler);
+                try (TerminatorConnection con =
+                             TerminatorConnection.openConnection(appContext, oneBookUrl)) {
+                    parser.parse(con.getInputStream(), entryHandler);
                 }
             }
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
@@ -158,8 +155,8 @@ public final class GoogleBooksManager
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context context) {
-        return getBaseURL(context);
+    public String getUrl(@NonNull final Context appContext) {
+        return getBaseURL(appContext);
     }
 
     @StringRes
@@ -175,7 +172,7 @@ public final class GoogleBooksManager
      *
      * @return encodes string
      */
-    private String encodeSpaces(@NonNull final String s) {
+    private String encodeSpaces(@NonNull final CharSequence s) {
 //        return URLEncoder.encode(s, "UTF-8");
         return SPACE_PATTERN.matcher(s).replaceAll(Matcher.quoteReplacement("%20"));
     }

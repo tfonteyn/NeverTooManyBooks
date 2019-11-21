@@ -58,10 +58,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_format"
             tools:text="Hardcover"
-            >
-
-            <requestFocus />
-        </AutoCompleteTextView>
+            />
 
         <ImageButton
             android:id="@+id/btn_format"

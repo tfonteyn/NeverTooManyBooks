@@ -37,10 +37,13 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -97,9 +100,6 @@ public class Book
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
-    /** mapping the edition bit to a resource string for displaying. Ordered. */
-    @SuppressLint("UseSparseArrays")
-    private static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
     /**
      * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
      * <p>
@@ -118,8 +118,13 @@ public class Book
     public static final int TOC_SINGLE_AUTHOR_SINGLE_WORK = 0;
     public static final int TOC_MULTIPLE_WORKS = 1;
     public static final int TOC_MULTIPLE_AUTHORS = 1 << 1;
+    /** mapping the edition bit to a resource string for displaying. Ordered. */
+    @SuppressLint("UseSparseArrays")
+    private static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
     private static final String TAG = "Book";
     private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
+    /** first edition ever of this work/content/story. */
+    private static final int EDITION_FIRST = 1;
 
     /*
      * {@link DBDefinitions#DOM_BOOK_EDITION_BITMASK}.
@@ -136,8 +141,6 @@ public class Book
      * NEWTHINGS: edition: add bit flag and add to mask
      * Never change the bit value!
      */
-    /** first edition ever of this work/content/story. */
-    private static final int EDITION_FIRST = 1;
     /** First printing of 'this' edition. */
     private static final int EDITION_FIRST_IMPRESSION = 1 << 1;
     /** This edition had a limited run. (Numbered or not). */
@@ -148,7 +151,6 @@ public class Book
     private static final int EDITION_SIGNED = 1 << 4;
     /** It's a bookclub edition. */
     private static final int EDITION_BOOK_CLUB = 1 << 7;
-
     private static final int EDITIONS_MASK = EDITION_FIRST
                                              | EDITION_FIRST_IMPRESSION
                                              | EDITION_LIMITED
@@ -518,7 +520,7 @@ public class Book
      *
      * @param editions List of integers, each representing a single bit==edition
      */
-    public void putEditions(@NonNull final ArrayList<Integer> editions) {
+    public void putEditions(@NonNull final Iterable<Integer> editions) {
         int bitmask = 0;
         for (Integer bit : editions) {
             bitmask |= bit;
@@ -596,26 +598,28 @@ public class Book
 
     /**
      * Validate the Locale (based on the Book's language) and reset the language if needed.
+     * @param context        Current context
      */
-    public void updateLocale() {
-        getLocale(Locale.getDefault(), true);
+    public void updateLocale(@NonNull final Context context) {
+        getLocale(context, Locale.getDefault(), true);
     }
 
     /**
      * Convenience method.
      * <p>
      * Get the Book's Locale (based on its language).
-     *
+     * @param context        Current context
      * @return the Locale, or the users preferred Locale if no language was set.
      */
     @NonNull
-    public Locale getLocale() {
-        return getLocale(Locale.getDefault(), false);
+    public Locale getLocale(@NonNull final Context context) {
+        return getLocale(context, Locale.getDefault(), false);
     }
 
     /**
      * Use the book's language setting to determine the Locale.
      *
+     * @param context        Current context
      * @param fallbackLocale Locale to use if the Book does not have a Locale of its own.
      * @param updateLanguage {@code true} to update the language field with the ISO code
      *                       if needed. {@code false} to leave it unchanged.
@@ -623,13 +627,14 @@ public class Book
      * @return the Locale.
      */
     @NonNull
-    private Locale getLocale(@NonNull final Locale fallbackLocale,
+    private Locale getLocale(@NonNull final Context context,
+                             @NonNull final Locale fallbackLocale,
                              final boolean updateLanguage) {
         Locale bookLocale = null;
         if (containsKey(DBDefinitions.KEY_LANGUAGE)) {
             String lang = getString(DBDefinitions.KEY_LANGUAGE);
 
-            bookLocale = LocaleUtils.getLocale(lang);
+            bookLocale = LocaleUtils.getLocale(context, lang);
             if (bookLocale == null) {
                 return fallbackLocale;
 
@@ -665,7 +670,7 @@ public class Book
 
         ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         for (Series series : list) {
-            db.refreshSeries(context, series, getLocale());
+            db.refreshSeries(context, series, getLocale(context));
         }
         putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
     }
@@ -743,6 +748,14 @@ public class Book
                || 0 != getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)
                || 0 != getLong(DBDefinitions.KEY_EID_ISFDB)
                || !getString(DBDefinitions.KEY_EID_OPEN_LIBRARY).isEmpty();
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef(flag = true, value = {TOC_MULTIPLE_WORKS,
+                                  TOC_MULTIPLE_AUTHORS,
+    })
+    public @interface TocBits {
+
     }
 
     /**

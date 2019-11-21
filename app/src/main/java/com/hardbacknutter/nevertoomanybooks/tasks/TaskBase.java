@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
  */
 public abstract class TaskBase<Result>
         extends AsyncTask<Void, TaskListener.ProgressMessage, Result>
-        implements Cancellable {
+        implements ProgressDialogFragment.Cancellable {
 
     private static final String TAG = "TaskBase";
 

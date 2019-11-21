@@ -33,7 +33,6 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
@@ -75,7 +74,7 @@ public class FetchWorksTask
 
         } catch (@NonNull final CredentialsException | BookNotFoundException | IOException
                                         | RuntimeException e) {
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
             mException = e;
         }
         return null;

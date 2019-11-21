@@ -38,8 +38,8 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -78,7 +78,7 @@ class TaskQueueDAO {
     @NonNull
     private final TaskQueueDBHelper mTaskQueueDBHelper;
     /** List of statements build by this adapter so that they can be removed on close. */
-    private final List<SQLiteStatement> mStatements = new ArrayList<>();
+    private final Collection<SQLiteStatement> mStatements = new ArrayList<>();
     /** Static Factory object to create the custom cursor. */
     private final CursorFactory mEventsCursorFactory = (db, masterQuery, editTable, query) ->
                                                                new EventsCursor(masterQuery,

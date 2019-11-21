@@ -47,14 +47,13 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -64,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
@@ -89,7 +88,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  */
 public class SearchCoordinator
         extends ViewModel
-        implements Cancellable {
+        implements ProgressDialogFragment.Cancellable {
 
     /** log tag. */
     private static final String TAG = "SearchCoordinator";
@@ -99,7 +98,7 @@ public class SearchCoordinator
 
     /** List of Tasks being managed by *this* object. */
     @NonNull
-    private final Set<SearchTask> mActiveTasks = new HashSet<>();
+    private final Collection<SearchTask> mActiveTasks = new HashSet<>();
 
     /**
      * Results from the search tasks.
@@ -121,7 +120,7 @@ public class SearchCoordinator
 
     /** Mappers to apply. */
     @NonNull
-    private final List<Mapper> mMappers = new ArrayList<>();
+    private final Collection<Mapper> mMappers = new ArrayList<>();
     @Nullable
     private WeakReference<SearchCoordinatorListener> mSearchSearchCoordinatorListener;
     /** Sites to search on. If this list is empty, all searches will return {@code false}. */
@@ -330,7 +329,9 @@ public class SearchCoordinator
 
                 mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
 
-                mNativeIdSearchText = args.getString(UniqueId.BKEY_BOOK_NATIVE_ID, "");
+                //TODO: we'd need to pass a site to make this useful
+                //mNativeIdSearchText = args.getString(UniqueId.BKEY_BOOK_NATIVE_ID, "");
+
                 mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
 
                 mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
@@ -433,8 +434,6 @@ public class SearchCoordinator
 
     /**
      * Indicate we want a thumbnail.
-     * <p>
-     * TODO:
      *
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
@@ -483,7 +482,8 @@ public class SearchCoordinator
     }
 
     public void setIsbnSearchText(@NonNull final String isbnSearchText) {
-        mIsbnSearchText = isbnSearchText;
+        // intercept UPC numbers
+        mIsbnSearchText = ISBN.upc2isbn(isbnSearchText);
     }
 
     @NonNull
@@ -539,7 +539,7 @@ public class SearchCoordinator
             } else if (SearchSites.ENABLE_AMAZON_AWS) {
                 // Assume it's an ASIN, and just search Amazon
                 mSearchingAsin = true;
-                ArrayList<Site> amazon = new ArrayList<>();
+                Collection<Site> amazon = new ArrayList<>();
                 amazon.add(Site.newSite(SearchSites.AMAZON));
                 mIsSearchActive = startSearch(amazon);
             }
@@ -578,16 +578,6 @@ public class SearchCoordinator
             mSearchStartTime = System.nanoTime();
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "prepareSearch"
-                       + "|mIsCancelled=" + mIsCancelled
-                       + "|mNativeId=" + mNativeIdSearchText
-                       + "|mIsbn=" + mIsbnSearchText
-                       + "|mAuthor=" + mAuthorSearchText
-                       + "|mTitle=" + mTitleSearchText
-                       + "|mPublisher=" + mPublisherSearchText);
-        }
-
         // Developer sanity checks
         if (BuildConfig.DEBUG /* always */) {
             if (!NetworkUtils.isNetworkAvailable(App.getAppContext())) {
@@ -599,10 +589,11 @@ public class SearchCoordinator
             }
 
             // Note we don't care about publisher.
-            if (mAuthorSearchText.isEmpty() && mTitleSearchText.isEmpty() && mIsbnSearchText
-                    .isEmpty() && mNativeIdSearchText.isEmpty()) {
+            if (mAuthorSearchText.isEmpty()
+                && mTitleSearchText.isEmpty()
+                && mIsbnSearchText.isEmpty()
+                && mNativeIdSearchText.isEmpty()) {
                 throw new IllegalArgumentException("Must specify at least one non-empty criteria|"
-                                                   + "|mIsCancelled=" + mIsCancelled
                                                    + "|mNativeId=" + mNativeIdSearchText
                                                    + "|mIsbn=" + mIsbnSearchText
                                                    + "|mAuthor=" + mAuthorSearchText
@@ -629,6 +620,16 @@ public class SearchCoordinator
         mSearchFinishedMessages.clear();
 
         mHasValidIsbn = ISBN.isValid(mIsbnSearchText);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            Log.d(TAG, "prepareSearch"
+                       + "|mNativeId=" + mNativeIdSearchText
+                       + "|mIsbn=" + mIsbnSearchText
+                       + "|mHasValidIsbn=" + mHasValidIsbn
+                       + "|mAuthor=" + mAuthorSearchText
+                       + "|mTitle=" + mTitleSearchText
+                       + "|mPublisher=" + mPublisherSearchText);
+        }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             mSearchTasksStartTime.clear();
@@ -664,7 +665,7 @@ public class SearchCoordinator
      *
      * @return {@code true} if at least one search was started, {@code false} if none
      */
-    private boolean startSearch(@NonNull final ArrayList<Site> currentSearchSites) {
+    private boolean startSearch(@NonNull final Iterable<Site> currentSearchSites) {
         // if currentSearchSites is empty, we return false.
         boolean atLeastOneStarted = false;
         for (Site site : currentSearchSites) {
@@ -718,8 +719,8 @@ public class SearchCoordinator
                 (mHasValidIsbn && (searchEngine instanceof SearchEngine.ByIsbn))
                 ||
                 // If we have valid text to search on, ...
-                (((!mAuthorSearchText.isEmpty() && !mTitleSearchText.isEmpty()) || !mIsbnSearchText
-                        .isEmpty())
+                (((!mAuthorSearchText.isEmpty() && !mTitleSearchText.isEmpty())
+                  || !mIsbnSearchText.isEmpty())
                  && (searchEngine instanceof SearchEngine.ByText));
 
         if (!canSearch) {
@@ -729,6 +730,7 @@ public class SearchCoordinator
         SearchTask task = new SearchTask(site.id, searchEngine, mSearchTaskListener);
 
         task.setFetchThumbnail(mFetchThumbnail);
+
         task.setNativeId(mNativeIdSearchText);
         task.setIsbn(mIsbnSearchText);
         task.setAuthor(mAuthorSearchText);
@@ -756,13 +758,13 @@ public class SearchCoordinator
     private void accumulateResults() {
         // This list will be the actual order of the result we apply, based on the
         // actual results and the default order.
-        final List<Integer> sites = new ArrayList<>();
+        final Collection<Integer> sites = new ArrayList<>();
 
         // determine the order of the sites which should give us the most reliable data.
         if (mHasValidIsbn) {
             // If ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
-            final List<Integer> uncertain = new ArrayList<>();
+            final Collection<Integer> uncertain = new ArrayList<>();
             for (Site site : SearchSites.getReliabilityOrder()) {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);

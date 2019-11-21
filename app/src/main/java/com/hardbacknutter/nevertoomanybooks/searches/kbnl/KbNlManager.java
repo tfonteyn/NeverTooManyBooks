@@ -72,9 +72,10 @@ public class KbNlManager
      * RELEASE: Chrome 2019-08-12. Continuously update to latest version.
      * The site does not return full data unless the user agent header is set to a valid browser.
      */
-    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-                                             + " AppleWebKit/537.36 (KHTML, like Gecko)"
-                                             + " Chrome/76.0.3809.100 Safari/537.36";
+    private static final String USER_AGENT =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            + " AppleWebKit/537.36 (KHTML, like Gecko)"
+            + " Chrome/78.0.3904.97 Safari/537.36";
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
@@ -105,25 +106,26 @@ public class KbNlManager
 //    private static final String AUTHOR_URL = getBaseURL(context)
 //    + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
     @NonNull
-    public static String getBaseURL(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
+    public static String getBaseURL(@NonNull final Context appContext) {
+        return PreferenceManager.getDefaultSharedPreferences(appContext)
                                 .getString(PREFS_HOST_URL, "http://opc4.kb.nl");
     }
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
+    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
                                final boolean fetchThumbnail)
             throws IOException {
 
-        String url = getBaseURL(context) + String.format(BOOK_URL, isbn);
+        String url = getBaseURL(localizedAppContext) + String.format(BOOK_URL, isbn);
 
         Bundle bookData = new Bundle();
         SAXParserFactory factory = SAXParserFactory.newInstance();
         KbNlBookHandler handler = new KbNlBookHandler(bookData);
 
-        try (TerminatorConnection terminatorConnection = new TerminatorConnection(url)) {
+        try (TerminatorConnection terminatorConnection =
+                     new TerminatorConnection(localizedAppContext, url)) {
             HttpURLConnection con = terminatorConnection.getHttpURLConnection();
 
             // needed so we get the XML instead of the rendered page
@@ -133,7 +135,7 @@ public class KbNlManager
             terminatorConnection.open();
 
             SAXParser parser = factory.newSAXParser();
-            parser.parse(terminatorConnection.inputStream, handler);
+            parser.parse(terminatorConnection.getInputStream(), handler);
 
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
@@ -141,7 +143,7 @@ public class KbNlManager
         }
 
         if (fetchThumbnail) {
-            getCoverImage(context, isbn, bookData);
+            getCoverImage(localizedAppContext, isbn, bookData);
         }
         return bookData;
     }
@@ -153,15 +155,15 @@ public class KbNlManager
      * <p>
      * Get a cover image.
      *
-     * @param context Current context (i.e. with the current Locale)
-     * @param isbn    to search for
-     * @param size    of image to get.
+     * @param appContext Application context
+     * @param isbn       to search for
+     * @param size       of image to get.
      *
      * @return found/saved File, or {@code null} when none found (or any other failure)
      */
     @Nullable
     @Override
-    public File getCoverImage(@NonNull final Context context,
+    public File getCoverImage(@NonNull final Context appContext,
                               @NonNull final String isbn,
                               @Nullable final ImageSize size) {
         // sanity check
@@ -188,7 +190,8 @@ public class KbNlManager
         }
 
         String coverUrl = String.format(BASE_URL_COVERS, isbn, sizeSuffix);
-        String fileSpec = ImageUtils.saveImage(coverUrl, isbn, FILENAME_SUFFIX, sizeSuffix);
+        String fileSpec = ImageUtils.saveImage(appContext, coverUrl,
+                                               isbn, FILENAME_SUFFIX, sizeSuffix);
         if (fileSpec != null) {
             return new File(fileSpec);
         }
@@ -202,8 +205,8 @@ public class KbNlManager
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context context) {
-        return getBaseURL(context);
+    public String getUrl(@NonNull final Context appContext) {
+        return getBaseURL(appContext);
     }
 
     @StringRes

@@ -46,9 +46,9 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +64,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
@@ -275,7 +274,7 @@ public class XmlImporter
         String listRootElement = accessor.getListRoot();
         String rootElement = accessor.getElementRoot();
         // used to read in Set/List data
-        final List<String> currentStringList = new ArrayList<>();
+        final Collection<String> currentStringList = new ArrayList<>();
 
         // A new element under the root
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement)
@@ -333,7 +332,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(App.getAppContext(), TAG,
+                        Logger.warnWithStackTrace(TAG,
                                                   "mTag.type=" + mTag.type);
                         break;
                 }
@@ -373,7 +372,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(App.getAppContext(), TAG,
+                        Logger.warnWithStackTrace(TAG,
                                                   "mTag.type=" + mTag.type);
                         break;
                 }
@@ -440,7 +439,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(App.getAppContext(), TAG,
+                        Logger.warnWithStackTrace(TAG,
                                                   "mTag.type=" + mTag.type);
                         break;
                 }
@@ -471,7 +470,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(App.getAppContext(), TAG,
+                        Logger.warnWithStackTrace(TAG,
                                                   "mTag.type=" + mTag.type);
                         break;
                 }
@@ -575,7 +574,7 @@ public class XmlImporter
             // now do some cleaning
             mDb.purge();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
         }
         mDb.close();
     }
@@ -711,7 +710,7 @@ public class XmlImporter
                 try {
                     id = Integer.parseInt(idStr);
                 } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(App.getAppContext(), TAG, e, "attr=" + name, "idStr=" + idStr);
+                    Logger.error(TAG, e, "attr=" + name, "idStr=" + idStr);
                 }
             }
             value = attrs.getValue(XmlTags.ATTR_VALUE);
@@ -998,7 +997,7 @@ public class XmlImporter
         @Override
         public void putString(@NonNull final String key,
                               @NonNull final String value) {
-            PString p = (PString) mStylePrefs.get(key);
+            PPref<String> p = (PString) mStylePrefs.get(key);
             if (p != null) {
                 p.set(value);
             }
@@ -1007,7 +1006,7 @@ public class XmlImporter
         @Override
         public void putBoolean(@NonNull final String key,
                                final boolean value) {
-            PBoolean p = (PBoolean) mStylePrefs.get(key);
+            PPref<Boolean> p = (PBoolean) mStylePrefs.get(key);
             if (p != null) {
                 p.set(value);
             }

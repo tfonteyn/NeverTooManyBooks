@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +45,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
@@ -57,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * <strong>Note:</strong> the Series "number" is a column of {@link DBDefinitions#TBL_BOOK_SERIES}
  * So this class does not strictly represent a Series, but a "BookInSeries"
  * When the number is disregarded, it is a real Series representation.
- *
+ * <p>
  * The patterns defined are certainly not foolproof.
  * The extraction of numbers and the meaning of brackets works well enough for books,
  * but a particular pain is the titles/series for comics.
@@ -80,7 +82,8 @@ public class Series
             };
 
     /**
-     * Parse "some text (some more text)" into "some text" and "some more text".
+     * Parse "some text (some more text) even more text" into
+     * "some text", "some more text" and "even more text".
      * <p>
      * We want a "some text" that does not START with a bracket!
      */
@@ -104,26 +107,34 @@ public class Series
             + "tome|"
             + "part|pt.|"
             + "deel|dl.|"
-                    /* or no prefix */
+            // or no prefix
             + ")"
             // whitespace between prefix and actual number
             + "\\s*"
             // Capture the number group
             + "("
+
             // numeric numerals allowing for .-_ but must start with a digit.
-            + "[0-9][0-9.\\-_]*"
-            // optional alphanumeric suffix.
-            + "\\S*?"
+            + /* */ "[0-9][0-9.\\-_]*"
+            // no alphanumeric suffix
 
             + "|"
 
-            // roman numerals are accepted ONLY if they are prefixed by either '(' or a space
-            + "\\s[(]?"
+            // numeric numerals allowing for .-_ but must start with a digit.
+            + /* */ "[0-9][0-9.\\-_]*"
+            // optional alphanumeric suffix if separated by a '|'
+            + /* */ "\\|\\S*?"
+
+            + "|"
+
+            // roman numerals prefixed by either '(' or whitespace
+            + /* */ "\\s[(]?"
             // roman numerals allowing for .-_
-            + "[ivxlcm.\\-_]+"
-            // roman numerals are accepted ONLY if they are suffixed by either ')' or EOL
-            + "[)]?$"
-            // roman numerals do not support an alphanumeric suffixes.
+            + /* */ "[ivxlcm.\\-_]+"
+            // must be suffixed by either ')' or EOL
+            // no alphanumeric suffix
+            + /* */ "[)]?$"
+
             + ")";
 
     /**
@@ -150,7 +161,7 @@ public class Series
             Pattern.compile(TITLE_NUMBER_REGEXP, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
-     * Remove extraneous text from Series number. Used by {@link #fromString(String, String)}.
+     * Remove extraneous text from Series number. Used by {@link #fromString)}.
      */
     private static final Pattern NUMBER_CLEANUP_PATTERN =
             Pattern.compile("^\\s*" + NUMBER_REGEXP + "\\s*$",
@@ -251,9 +262,7 @@ public class Series
         matcher = TITLE_NUMBER_PATTERN.matcher(fullTitle);
         if (matcher.find()) {
 
-            //noinspection ConstantConditions
             String uTitle = ParseUtils.unEscape(matcher.group(1));
-            //noinspection ConstantConditions
             String uNumber = ParseUtils.unEscape(matcher.group(2));
 
             Series newSeries = new Series(uTitle);
@@ -275,13 +284,13 @@ public class Series
      * Constructor that will attempt to parse a number.
      *
      * @param title  for the Series; used as is.
-     * @param number for the Series; will get cleaned up.
+     * @param number (optional) number for the Series; will get cleaned up.
      *
      * @return the Series
      */
     @NonNull
     public static Series fromString(@NonNull final String title,
-                                    @NonNull final String number) {
+                                    @Nullable final String number) {
         String uTitle = ParseUtils.unEscape(title);
         String uNumber = ParseUtils.unEscape(number);
 
@@ -339,7 +348,7 @@ public class Series
                                     @NonNull final Locale bookLocale,
                                     final boolean isBatchMode) {
         Map<String, Series> hashMap = new HashMap<>();
-        List<Series> toDelete = new ArrayList<>();
+        Collection<Series> toDelete = new ArrayList<>();
         // will be set to true if we modify the list.
         boolean modified = false;
         Iterator<Series> it = list.iterator();
@@ -542,7 +551,7 @@ public class Series
         //URGENT: *store* the language of a series.
         String lang = db.getSeriesLanguage(mId);
         if (!lang.isEmpty()) {
-            Locale seriesLocale = LocaleUtils.getLocale(lang);
+            Locale seriesLocale = LocaleUtils.getLocale(App.getAppContext(), lang);
             if (seriesLocale != null) {
                 return seriesLocale;
             }

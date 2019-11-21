@@ -61,8 +61,8 @@ public class FilePicker
      * @param handler which will receive the selected row item
      */
     public FilePicker(@NonNull final Context context,
-                      @Nullable final String title,
-                      @Nullable final String message,
+                      @Nullable final CharSequence title,
+                      @Nullable final CharSequence message,
                       @NonNull final List<File> files,
                       @NonNull final PickListener<File> handler) {
         super(context, title, message, true, null);

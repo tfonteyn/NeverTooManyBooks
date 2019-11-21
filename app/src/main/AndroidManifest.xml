@@ -61,10 +61,6 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme.DayNight">
 
-        <meta-data
-            android:name="beta.build"
-            android:value="" />
-
         <!-- Application developer keys - stripped out in a git pre-commit script. -->
         <meta-data
             android:name="goodreads.dev_key"
@@ -154,8 +150,6 @@
             android:theme="@style/AppTheme.FullScreen"
             />
 
-        <!-- Update book Fields from the internet -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.UpdateFieldsFromInternetActivity" />
         <!-- Local Search -->
         <activity
             android:name="com.hardbacknutter.nevertoomanybooks.FTSSearchActivity"

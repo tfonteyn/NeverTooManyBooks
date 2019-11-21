@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Hashtable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -160,7 +161,7 @@ public class BooklistPseudoCursor
      */
     private void purgeOldCursors() {
         // List of cursors to purge
-        ArrayList<Integer> toPurge = new ArrayList<>();
+        Collection<Integer> toPurge = new ArrayList<>();
         // Loop the hash
         for (Integer key : mCursors.keySet()) {
             // If it is more than 3 'pages' from the current position, it's a candidate

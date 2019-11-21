@@ -33,7 +33,6 @@ import android.database.sqlite.SQLiteStatement;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
@@ -351,7 +350,7 @@ public class FlattenedBooklist
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(App.getAppContext(), TAG, "finalize|calling close()");
+            Logger.warn(TAG, "finalize|calling close()");
             close();
         }
         super.finalize();

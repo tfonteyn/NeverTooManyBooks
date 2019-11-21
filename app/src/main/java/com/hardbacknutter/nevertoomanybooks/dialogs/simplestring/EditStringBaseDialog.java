@@ -106,6 +106,11 @@ abstract class EditStringBaseDialog {
         mAdapter = new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line, list);
     }
 
+    @NonNull
+    public Context getContext() {
+        return mContext;
+    }
+
     /**
      * @param currentText    to edit
      * @param dialogLayoutId dialog content view layout

@@ -651,5 +651,6 @@
     <string name="lbl_select_website">Выберите сайт:</string>
     <string name="lbl_site_book_id">Идентификатор книги сайта:</string>
     <string name="fab_add_book_by_native_id">Идентификатор книги сайта</string>
+    <string name="warning_enable_at_least_1_website">Включите хотя бы один веб-сайт для каждой категории.</string>
 
 </resources>

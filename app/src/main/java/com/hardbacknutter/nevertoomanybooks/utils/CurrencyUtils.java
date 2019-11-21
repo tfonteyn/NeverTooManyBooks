@@ -31,7 +31,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -69,12 +68,10 @@ public final class CurrencyUtils {
      * <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language>
      * https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language</a>
      */
-    @UiThread
     private static void createCurrencyMap() {
         // allow re-creating
         CURRENCY_MAP.clear();
 
-        //
         CURRENCY_MAP.put("", "");
         CURRENCY_MAP.put("€", "EUR");
 
@@ -147,7 +144,7 @@ public final class CurrencyUtils {
      * @param result            bundle to add the two keys to.
      */
     public static void splitPrice(@NonNull final Locale locale,
-                                  @NonNull final String priceWithCurrency,
+                                  @NonNull final CharSequence priceWithCurrency,
                                   @NonNull final String keyOutputPrice,
                                   @NonNull final String keyOutputCurrency,
                                   @NonNull final Bundle result) {

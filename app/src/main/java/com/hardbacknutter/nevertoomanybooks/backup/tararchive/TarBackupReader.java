@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
@@ -173,7 +174,7 @@ public class TarBackupReader
      * @return the TarArchiveEntry type.
      */
     @NonNull
-    private Type getBackupEntityType(@NonNull final TarArchiveEntry entry) {
+    private Type getBackupEntityType(@NonNull final ArchiveEntry entry) {
         String name = entry.getName().toLowerCase(App.getSystemLocale());
 
         // check covers first, as we will have many
@@ -210,7 +211,7 @@ public class TarBackupReader
             return Type.XML;
 
         } else {
-            Logger.warn(App.getAppContext(), TAG, "getBackupEntityType",
+            Logger.warn(TAG, "getBackupEntityType",
                         "Unknown file in archive: " + entry.getName());
             return Type.Unknown;
         }

@@ -32,11 +32,11 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -75,9 +75,9 @@ public interface ItemWithFixableId {
                                                            @NonNull final Locale fallbackLocale,
                                                            final boolean isBatchMode) {
         // weeding out duplicate ID's
-        Set<Long> ids = new HashSet<>();
+        Collection<Long> ids = new HashSet<>();
         // weeding out duplicate hash codes
-        Set<Integer> hashCodes = new HashSet<>();
+        Collection<Integer> hashCodes = new HashSet<>();
         // will be set to true if we modify the list.
         boolean modified = false;
 
@@ -165,6 +165,5 @@ public interface ItemWithFixableId {
      *
      * @return {@code true} if comparing ONLY by id ensures uniqueness.
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isUniqueById();
 }

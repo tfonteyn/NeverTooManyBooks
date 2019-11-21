@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!-- Menu order and ids. -->
+<resources>
+    <integer name="MENU_ORDER_SEARCH_SITES">5</integer>
+
+    <integer name="MENU_ORDER_READ">400</integer>
+    <integer name="MENU_ORDER_UNREAD">401</integer>
+
+    <integer name="MENU_ORDER_COMPLETE">410</integer>
+    <integer name="MENU_ORDER_INCOMPLETE">411</integer>
+
+    <integer name="MENU_ORDER_EDIT">500</integer>
+    <integer name="MENU_ORDER_DUPLICATE">510</integer>
+    <integer name="MENU_ORDER_DELETE">520</integer>
+
+    <integer name="MENU_ORDER_UPDATE_FIELDS">700</integer>
+    <integer name="MENU_ORDER_LENDING">710</integer>
+    <integer name="MENU_ORDER_SHARE">720</integer>
+    <integer name="MENU_ORDER_SEND_TO_GOODREADS">730</integer>
+
+    <integer name="MENU_ORDER_VIEW_BOOK_AT_SITE">800</integer>
+    <integer name="MENU_ORDER_VIEW_BOOK_AT_GOODREADS">805</integer>
+    <integer name="MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING">810</integer>
+    <integer name="MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY">815</integer>
+    <integer name="MENU_ORDER_VIEW_BOOK_AT_ISFDB">820</integer>
+    <integer name="MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE">850</integer>
+
+    <integer name="MENU_ORDER_AMAZON">900</integer>
+    <integer name="MENU_ORDER_AMAZON_AUTHOR">905</integer>
+    <integer name="MENU_ORDER_AMAZON_SERIES">910</integer>
+    <integer name="MENU_ORDER_AMAZON_AUTHOR_IN_SERIES">915</integer>
+
+    <item name="MENU_EDIT" type="id" />
+    <item name="MENU_DELETE" type="id" />
+    <item name="MENU_DUPLICATE" type="id" />
+
+    <item name="MENU_UPDATE_FROM_INTERNET" type="id" />
+
+    <item name="MENU_GROUP_BOOK" type="id" />
+    <item name="MENU_BOOK_DELETE" type="id" />
+    <item name="MENU_BOOK_DUPLICATE" type="id" />
+    <item name="MENU_BOOK_EDIT" type="id" />
+
+    <item name="MENU_BOOK_LOAN_ADD" type="id" />
+    <item name="MENU_BOOK_LOAN_DELETE" type="id" />
+
+    <item name="MENU_BOOK_READ" type="id" />
+    <item name="MENU_BOOK_UNREAD" type="id" />
+
+    <item name="MENU_AUTHOR_EDIT" type="id" />
+    <item name="MENU_AUTHOR_COMPLETE" type="id" />
+    <item name="MENU_AUTHOR_INCOMPLETE" type="id" />
+
+    <item name="MENU_AUTHOR_WORKS" type="id" />
+    <item name="MENU_AUTHOR_WORKS_ALL" type="id" />
+    <item name="MENU_AUTHOR_WORKS_TOC" type="id" />
+    <item name="MENU_AUTHOR_WORKS_BOOKS" type="id" />
+
+    <item name="MENU_SERIES_DELETE" type="id" />
+    <item name="MENU_SERIES_EDIT" type="id" />
+    <item name="MENU_SERIES_COMPLETE" type="id" />
+    <item name="MENU_SERIES_INCOMPLETE" type="id" />
+
+    <item name="MENU_FORMAT_EDIT" type="id" />
+    <item name="MENU_COLOR_EDIT" type="id" />
+    <item name="MENU_GENRE_EDIT" type="id" />
+    <item name="MENU_LANGUAGE_EDIT" type="id" />
+    <item name="MENU_LOCATION_EDIT" type="id" />
+    <item name="MENU_PUBLISHER_EDIT" type="id" />
+
+    <item name="MENU_SHARE" type="id" />
+    <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id" />
+    <item name="MENU_POPULATE_TOC_FROM_ISFDB" type="id" />
+
+    <!-- standard Booklist options menu -->
+    <item name="MENU_SORT" type="id" />
+    <item name="MENU_LEVEL_RESET" type="id" />
+    <item name="MENU_LEVEL_EXPAND" type="id" />
+    <item name="MENU_LEVEL_COLLAPSE" type="id" />
+    <item name="MENU_CLEAR_FILTERS" type="id" />
+
+    <!-- View a book at an external site.
+     NEWTHINGS: add new site specific ID: add a menu id -->
+    <item name="SUBMENU_VIEW_BOOK_AT_SITE" type="id" />
+    <item name="MENU_VIEW_BOOK_AT_GOODREADS" type="id" />
+    <item name="MENU_VIEW_BOOK_AT_LIBRARY_THING" type="id" />
+    <item name="MENU_VIEW_BOOK_AT_ISFDB" type="id" />
+    <item name="MENU_VIEW_BOOK_AT_OPEN_LIBRARY" type="id" />
+    <item name="MENU_VIEW_BOOK_AT_STRIP_INFO_BE" type="id" />
+
+    <!-- Amazon search options submenu -->
+    <item name="SUBMENU_AMAZON_SEARCH" type="id" />
+    <item name="MENU_AMAZON_BOOKS_IN_SERIES" type="id" />
+    <item name="MENU_AMAZON_BOOKS_BY_AUTHOR" type="id" />
+    <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES" type="id" />
+
+    <!-- Thumbnail context menu -->
+    <item name="SUBMENU_THUMB_REPLACE" type="id" />
+    <item name="MENU_THUMB_ADD_FROM_CAMERA" type="id" />
+    <item name="MENU_THUMB_ADD_FROM_GALLERY" type="id" />
+    <item name="MENU_THUMB_ADD_ALT_EDITIONS" type="id" />
+    <item name="SUBMENU_THUMB_ROTATE" type="id" />
+    <item name="MENU_THUMB_ROTATE_CW" type="id" />
+    <item name="MENU_THUMB_ROTATE_CCW" type="id" />
+    <item name="MENU_THUMB_ROTATE_180" type="id" />
+    <item name="MENU_THUMB_CROP" type="id" />
+
+    <!-- options menu: on-the-fly access to setting search order -->
+    <item name="MENU_PREFS_SEARCH_SITES" type="id" />
+
+    <!-- options menu: on the FTS search activity -->
+    <item name="MENU_REBUILD_FTS" type="id" />
+
+    <item name="MENU_PURGE_BLNS" type="id" />
+
+    <!-- options menu -->
+    <item name="MENU_RESET" type="id" />
+    <item name="MENU_PREFS_ASIN" type="id" />
+
+    <!-- Scanner pick list -->
+    <item name="MENU_SCANNER_ZXING" type="id" />
+    <item name="MENU_SCANNER_ZXING_COMPATIBLE" type="id" />
+    <item name="MENU_SCANNER_PIC2SHOP" type="id" />
+    <item name="MENU_SCANNER_GOOGLE_PLAY" type="id" />
+
+
+    <!-- debug options for the options menu; only shown in debug mode. -->
+    <item name="SUBMENU_DEBUG" type="id" />
+    <item name="MENU_DEBUG_PREFS" type="id" />
+    <item name="MENU_DEBUG_STYLE" type="id" />
+    <item name="MENU_DEBUG_TRACKER" type="id" />
+    <item name="MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE" type="id" />
+    <item name="MENU_DEBUG_UNMANGLE" type="id" />
+</resources>

@@ -116,7 +116,7 @@ public class TaskQueueListActivity
                     startActivity(intent);
                 }));
 
-        Task task = (Task) v.getTag(R.id.TAG_GR_TASK);
+        BindableItemCursorAdapter.BindableItem task = (Task) v.getTag(R.id.TAG_GR_TASK);
         task.addContextMenuItems(this, v, id, items, mDb);
         ContextDialogItem.showContextDialog(this, items);
     }

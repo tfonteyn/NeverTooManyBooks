@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!--
+     All menu items related to a book.
+     Used for the options and context menus.
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@id/MENU_BOOK_READ"
+        android:icon="@drawable/ic_check_box"
+        android:orderInCategory="@integer/MENU_ORDER_READ"
+        android:title="@string/menu_set_read" />
+
+    <item
+        android:id="@id/MENU_BOOK_UNREAD"
+        android:icon="@drawable/ic_check_box_outline_blank"
+        android:orderInCategory="@integer/MENU_ORDER_UNREAD"
+        android:title="@string/menu_set_unread" />
+
+    <item
+        android:id="@id/MENU_BOOK_EDIT"
+        android:icon="@drawable/ic_edit"
+        android:orderInCategory="@integer/MENU_ORDER_EDIT"
+        android:title="@string/menu_edit" />
+
+    <item
+        android:id="@id/MENU_BOOK_DUPLICATE"
+        android:icon="@drawable/ic_content_copy"
+        android:orderInCategory="@integer/MENU_ORDER_DUPLICATE"
+        android:title="@string/menu_duplicate" />
+
+    <item
+        android:id="@id/MENU_BOOK_DELETE"
+        android:icon="@drawable/ic_delete"
+        android:orderInCategory="@integer/MENU_ORDER_DELETE"
+        android:title="@string/menu_delete" />
+
+    <item
+        android:id="@id/MENU_UPDATE_FROM_INTERNET"
+        android:icon="@drawable/ic_cloud_download"
+        android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
+        android:title="@string/menu_update_fields" />
+
+    <item
+        android:id="@id/MENU_BOOK_LOAN_ADD"
+        android:icon="@drawable/ic_people"
+        android:orderInCategory="@integer/MENU_ORDER_LENDING"
+        android:title="@string/menu_loan_lend_book" />
+
+    <item
+        android:id="@id/MENU_BOOK_LOAN_DELETE"
+        android:icon="@drawable/ic_people"
+        android:orderInCategory="@integer/MENU_ORDER_LENDING"
+        android:title="@string/menu_loan_return_book" />
+
+    <item
+        android:id="@id/MENU_SHARE"
+        android:icon="@drawable/ic_share"
+        android:orderInCategory="@integer/MENU_ORDER_SHARE"
+        android:title="@string/menu_share_this" />
+
+    <item
+        android:id="@id/MENU_BOOK_SEND_TO_GOODREADS"
+        android:icon="@drawable/ic_goodreads"
+        android:orderInCategory="@integer/MENU_ORDER_SEND_TO_GOODREADS"
+        android:title="@string/gr_menu_send_to_goodreads" />
+
+    <item
+        android:id="@id/SUBMENU_VIEW_BOOK_AT_SITE"
+        android:icon="@drawable/ic_link"
+        android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_SITE"
+        android:title="@string/menu_view_book_at"
+        >
+        <menu>
+            <!-- //NEWTHINGS: add new site specific ID: add -->
+            <item
+                android:id="@id/MENU_VIEW_BOOK_AT_GOODREADS"
+                android:icon="@drawable/ic_link"
+                android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_GOODREADS"
+                android:title="@string/goodreads" />
+
+            <item
+                android:id="@id/MENU_VIEW_BOOK_AT_LIBRARY_THING"
+                android:icon="@drawable/ic_link"
+                android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING"
+                android:title="@string/library_thing" />
+
+            <item
+                android:id="@id/MENU_VIEW_BOOK_AT_STRIP_INFO_BE"
+                android:icon="@drawable/ic_link"
+                android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE"
+                android:title="@string/stripinfo" />
+
+            <item
+                android:id="@id/MENU_VIEW_BOOK_AT_ISFDB"
+                android:icon="@drawable/ic_link"
+                android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_ISFDB"
+                android:title="@string/isfdb" />
+
+            <item
+                android:id="@id/MENU_VIEW_BOOK_AT_OPEN_LIBRARY"
+                android:icon="@drawable/ic_link"
+                android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY"
+                android:title="@string/open_library" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@id/SUBMENU_AMAZON_SEARCH"
+        android:icon="@drawable/ic_search"
+        android:orderInCategory="@integer/MENU_ORDER_AMAZON"
+        android:title="@string/amazon_ellipsis"
+        >
+        <menu>
+            <item
+                android:id="@id/MENU_AMAZON_BOOKS_BY_AUTHOR"
+                android:icon="@drawable/ic_search"
+                android:orderInCategory="@integer/MENU_ORDER_AMAZON_AUTHOR"
+                android:title="@string/menu_amazon_books_by_author" />
+
+            <item
+                android:id="@id/MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES"
+                android:icon="@drawable/ic_search"
+                android:orderInCategory="@integer/MENU_ORDER_AMAZON_AUTHOR_IN_SERIES"
+                android:title="@string/menu_amazon_books_by_author_in_series" />
+
+            <item
+                android:id="@id/MENU_AMAZON_BOOKS_IN_SERIES"
+                android:icon="@drawable/ic_search"
+                android:orderInCategory="@integer/MENU_ORDER_AMAZON_SERIES"
+                android:title="@string/menu_amazon_books_in_series" />
+        </menu>
+    </item>
+
+</menu>

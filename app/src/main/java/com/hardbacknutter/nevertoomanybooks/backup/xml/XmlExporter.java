@@ -35,7 +35,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
@@ -156,7 +155,6 @@ public class XmlExporter
      *
      * @param exportHelper ExportHelper
      */
-    @UiThread
     public XmlExporter(@NonNull final ExportHelper exportHelper) {
         mDb = new DAO();
         mExportHelper = exportHelper;
@@ -404,7 +402,7 @@ public class XmlExporter
      *
      * @return partial xml
      */
-    private static String typedCollection(@NonNull final Collection values)
+    private static String typedCollection(@NonNull final Iterable values)
             throws IOException {
         StringBuilder sb = new StringBuilder("\n");
         for (Object value : values) {
@@ -575,7 +573,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    private int doBookshelves(@NonNull final BufferedWriter writer,
+    private int doBookshelves(@NonNull final Appendable writer,
                               @NonNull final ProgressListener progressListener)
             throws IOException {
         int count = 0;
@@ -607,7 +605,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    private int doAuthors(@NonNull final BufferedWriter writer,
+    private int doAuthors(@NonNull final Appendable writer,
                           @NonNull final ProgressListener progressListener)
             throws IOException {
         int count = 0;
@@ -646,7 +644,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    private int doSeries(@NonNull final BufferedWriter writer,
+    private int doSeries(@NonNull final Appendable writer,
                          @NonNull final ProgressListener progressListener)
             throws IOException {
         int count = 0;
@@ -710,7 +708,7 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
-    private int doBooks(@NonNull final BufferedWriter writer,
+    private int doBooks(@NonNull final Appendable writer,
                         @NonNull final ProgressListener progressListener)
             throws IOException {
         int booksExported = 0;
@@ -827,7 +825,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    private int doStyles2(@NonNull final BufferedWriter writer,
+    private int doStyles2(@NonNull final Appendable writer,
                           @NonNull final ProgressListener progressListener)
             throws IOException {
         Collection<BooklistStyle> styles = BooklistStyle.Helper.getUserStyles(mDb).values();
@@ -889,7 +887,7 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
-    public int doStyles(@NonNull final BufferedWriter writer)
+    public int doStyles(@NonNull final Appendable writer)
             throws IOException {
         Collection<BooklistStyle> styles = BooklistStyle.Helper.getUserStyles(mDb).values();
         if (!styles.isEmpty()) {
@@ -910,7 +908,7 @@ public class XmlExporter
      */
     @SuppressWarnings("UnusedReturnValue")
     public int doPreferences(@NonNull final Context context,
-                             @NonNull final BufferedWriter writer)
+                             @NonNull final Appendable writer)
             throws IOException {
 
         Map<String, ?> all = PreferenceManager.getDefaultSharedPreferences(context).getAll();
@@ -934,7 +932,7 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
-    public void doBackupInfoBlock(@NonNull final BufferedWriter writer,
+    public void doBackupInfoBlock(@NonNull final Appendable writer,
                                   @NonNull final BackupInfo info)
             throws IOException {
         toXml(writer, new InfoWriter(info));
@@ -946,7 +944,7 @@ public class XmlExporter
      * @param writer   where to send the XML to
      * @param accessor which provides the input
      */
-    private void toXml(@NonNull final BufferedWriter writer,
+    private void toXml(@NonNull final Appendable writer,
                        @NonNull final EntityWriter<String> accessor)
             throws IOException {
 

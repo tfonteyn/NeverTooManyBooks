@@ -35,8 +35,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
@@ -78,10 +79,11 @@ public class EditBookFieldsFragment
     private View mAuthorView;
     private View mSeriesView;
     private View mDescriptionView;
-    private TextView mIsbnView;
+    private View mBookshelvesView;
+
+    private EditText mIsbnView;
     private ImageView mCoverImageView;
     private AutoCompleteTextView mGenreView;
-    private View mBookshelvesView;
 
     @Override
     @Nullable
@@ -156,6 +158,7 @@ public class EditBookFieldsFragment
 
         fields.addString(R.id.isbn, mIsbnView, DBDefinitions.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
+        mIsbnView.addTextChangedListener(new EditIsbn.ValidationTextWatcher(mIsbnView));
 
         fields.addString(R.id.coverImage, mCoverImageView, DBDefinitions.KEY_BOOK_UUID,
                          UniqueId.BKEY_IMAGE)
@@ -341,7 +344,7 @@ public class EditBookFieldsFragment
 
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (!list.isEmpty() && ItemWithFixableId.pruneList(list, context, mBookModel.getDb(),
-                                                           book.getLocale(), false)) {
+                                                           book.getLocale(context), false)) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         }

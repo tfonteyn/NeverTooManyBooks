@@ -78,15 +78,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="?attr/colorControlHighlight"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 >
 
                 <TextView
                     android:id="@+id/style_name"
                     style="@style/BooklistBook.Header.Text"
+                    android:textIsSelectable="true"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="style name"

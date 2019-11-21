@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -100,8 +101,6 @@ public class GoodreadsManager
                    SearchEngine.ByText,
                    SearchEngine.CoverByIsbn {
 
-    private static final String TAG = "GoodreadsManager";
-
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
     /** Can only send requests at a throttled speed. */
@@ -115,6 +114,7 @@ public class GoodreadsManager
      */
     static final String WEBSITE = "https://www.goodreads.com";
     public static final String BASE_URL = WEBSITE;
+    private static final String TAG = "GoodreadsManager";
     /**
      * AUTHORIZATION_CALLBACK is the call back Intent URL.
      * Must match the intent filter(s) setup in the manifest with Intent.ACTION_VIEW
@@ -242,13 +242,13 @@ public class GoodreadsManager
     /**
      * View a Book on the web site.
      *
-     * @param context Current context
+     * @param appContext Application context
      * @param bookId  site native book id to show
      */
-    public static void openWebsite(@NonNull final Context context,
+    public static void openWebsite(@NonNull final Context appContext,
                                    final long bookId) {
         String url = BASE_URL + "/book/show/" + bookId;
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @SuppressWarnings("unused")
@@ -335,7 +335,7 @@ public class GoodreadsManager
     public static boolean hasKey() {
         boolean hasKey = !DEV_KEY.isEmpty() && !DEV_SECRET.isEmpty();
         if (!hasKey) {
-            Logger.warn(App.getAppContext(), TAG, "hasKey", "Goodreads dev key not available");
+            Logger.warn(TAG, "hasKey", "Goodreads dev key not available");
         }
         return hasKey;
     }
@@ -522,7 +522,7 @@ public class GoodreadsManager
     }
 
     private long addBookToShelf(final long grBookId,
-                                @NonNull final List<String> shelfNames)
+                                @NonNull final Iterable<String> shelfNames)
             throws CredentialsException, BookNotFoundException, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
@@ -670,8 +670,8 @@ public class GoodreadsManager
             }
 
             // Lists of shelf names and our best guess at the Goodreads canonical name
-            List<String> shelves = new ArrayList<>();
-            List<String> canonicalShelves = new ArrayList<>();
+            Collection<String> shelves = new ArrayList<>();
+            Collection<String> canonicalShelves = new ArrayList<>();
 
             // Build the list of shelves that we have in the local database for the book
             int exclusiveCount = 0;
@@ -729,7 +729,7 @@ public class GoodreadsManager
             }
 
             // Add shelves to Goodreads if they are not currently there
-            List<String> shelvesToAddTo = new ArrayList<>();
+            Collection<String> shelvesToAddTo = new ArrayList<>();
             for (String shelf : shelves) {
                 // Get the name the shelf will have at Goodreads
                 final String canonicalShelfName =
@@ -773,13 +773,13 @@ public class GoodreadsManager
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
+    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
                                final boolean fetchThumbnail)
             throws CredentialsException, IOException {
 
         try {
-            return getBookByIsbn(context, isbn, fetchThumbnail);
+            return getBookByIsbn(localizedAppContext, isbn, fetchThumbnail);
 
         } catch (@NonNull final BookNotFoundException e) {
             // to bad.
@@ -789,14 +789,14 @@ public class GoodreadsManager
 
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context context,
+    public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                    @NonNull final String nativeId,
                                    final boolean fetchThumbnail)
             throws CredentialsException, IOException {
 
         try {
             long bookId = Long.parseLong(nativeId);
-            return getBookById(context, bookId, fetchThumbnail);
+            return getBookById(localizedAppContext, bookId, fetchThumbnail);
 
         } catch (@NonNull final BookNotFoundException | NumberFormatException e) {
             // to bad.
@@ -815,7 +815,7 @@ public class GoodreadsManager
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final Context context,
+    public Bundle search(@NonNull final Context localizedAppContext,
                          @Nullable final String isbn,
                          @Nullable final String author,
                          @Nullable final String title,
@@ -830,7 +830,8 @@ public class GoodreadsManager
                         .search(author + ' ' + title);
 
                 if (!goodreadsWorks.isEmpty()) {
-                    return getBookById(context, goodreadsWorks.get(0).bookId, fetchThumbnail);
+                    return getBookById(localizedAppContext, goodreadsWorks.get(0).bookId,
+                                       fetchThumbnail);
                 } else {
                     return new Bundle();
                 }
@@ -847,14 +848,14 @@ public class GoodreadsManager
     @Nullable
     @Override
     @WorkerThread
-    public File getCoverImage(@NonNull final Context context,
+    public File getCoverImage(@NonNull final Context appContext,
                               @NonNull final String isbn,
                               @Nullable final ImageSize size) {
         if (!hasValidCredentials()) {
             return null;
         }
 
-        return getCoverImageFallback(context, isbn);
+        return getCoverImageFallback(appContext, isbn);
     }
 
     @Override
@@ -868,7 +869,7 @@ public class GoodreadsManager
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context context) {
+    public String getUrl(@NonNull final Context appContext) {
         return BASE_URL;
     }
 
@@ -1021,7 +1022,7 @@ public class GoodreadsManager
 
         // Some urls come back without a scheme, add it to make a valid URL for the parser
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
-            Logger.warn(App.getAppContext(), TAG, "requestAuthorization",
+            Logger.warn(TAG, "requestAuthorization",
                         "no scheme for authUrl=" + authUrl);
             authUrl = "http://" + authUrl;
         }

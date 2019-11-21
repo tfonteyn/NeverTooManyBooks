@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -161,17 +162,17 @@ public abstract class BookSearchBaseFragment
         }
     }
 
-    @Override
-    @CallSuper
-    public void onResume() {
-        super.onResume();
+//    @Override
+//    @CallSuper
+//    public void onResume() {
+//        super.onResume();
 //        if (getActivity() instanceof BaseActivity) {
 //            BaseActivity activity = (BaseActivity) getActivity();
 //            if (activity.isGoingToRecreate()) {
 //                return;
 //            }
 //        }
-    }
+//    }
 
     /**
      * <strong>Child classes</strong> must call {@code setHasOptionsMenu(true)}
@@ -183,9 +184,10 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-
+        Resources r = getResources();
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
-                 MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_websites)
+                 r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
+                 R.string.lbl_websites)
             .setIcon(R.drawable.ic_find_in_page)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
@@ -200,8 +202,7 @@ public abstract class BookSearchBaseFragment
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminModel.BKEY_TABS_TO_SHOW, SearchAdminModel.TAB_BOOKS)
-                        .putExtra(SearchSites.BKEY_DATA,
-                                  mSearchCoordinator.getSearchSites());
+                        .putExtra(SearchSites.BKEY_DATA_SITES, mSearchCoordinator.getSearchSites());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
 
@@ -233,11 +234,7 @@ public abstract class BookSearchBaseFragment
         if (mSearchCoordinator.isSearchActive()) {
             return;
         }
-        if (mSearchCoordinator.getSearchSites().isEmpty()) {
-            //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_no_sites);
-            return;
-        }
+
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
@@ -275,9 +272,10 @@ public abstract class BookSearchBaseFragment
     /**
      * Override to customize which search function is called.
      */
-    protected boolean onSearch() {
-        return mSearchCoordinator.searchByText();
-    }
+//    protected boolean onSearch() {
+//        return mSearchCoordinator.searchByText();
+//    }
+    protected abstract boolean onSearch();
 
     @Override
     @CallSuper
@@ -292,7 +290,7 @@ public abstract class BookSearchBaseFragment
             case UniqueId.REQ_PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     ArrayList<Site> sites = data.getParcelableArrayListExtra(
-                            SearchSites.BKEY_DATA);
+                            SearchSites.BKEY_DATA_SITES);
                     if (sites != null) {
                         mSearchCoordinator.setSearchSites(sites);
                     }

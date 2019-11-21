@@ -60,7 +60,7 @@ public class SearchSuggestionProvider
     public static final String AUTHORITY = App.getAppPackageName() + ".SearchSuggestionProvider";
 
     /** Required. This mode bit configures the suggestions database to record recent queries. */
-    public final static int MODE = DATABASE_MODE_QUERIES;
+    public static final int MODE = DATABASE_MODE_QUERIES;
 
     /** Database Access. */
     @Nullable

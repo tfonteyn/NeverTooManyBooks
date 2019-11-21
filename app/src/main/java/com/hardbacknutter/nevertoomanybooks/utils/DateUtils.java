@@ -39,6 +39,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -98,7 +99,7 @@ public final class DateUtils {
      * List of formats we'll use to parse dates.
      * 2019-08-03: there are 22 formats, setting capacity to 25.
      */
-    private static final ArrayList<SimpleDateFormat> PARSE_DATE_FORMATS = new ArrayList<>(25);
+    private static final Collection<SimpleDateFormat> PARSE_DATE_FORMATS = new ArrayList<>(25);
 
     static {
         // This set of formats are Locale agnostic;

@@ -797,8 +797,7 @@
     <string name="pt_thumbnails_rotate_auto">Rotate pictures</string>
     <!-- ListPreference - Compatibility / bug workaround for some devices -->
     <string name="pt_thumbnail_cropper_layer_type">Cropping “Layer Type”</string>
-    <!-- TODO: “Use default”+“Software”+“Hardware”  should be parameters.
-     But that means modifying the Tip class -->
+    <!-- TODO: “Use default”+“Software”+“Hardware”  should be parameters. But that means modifying the Tip class -->
     <string name="pt_thumbnail_cropper_layer_type_summary">
         Leave this setting on “Use default” unless you experience crashes while cropping images.
         Try “Software” for safer but slower or force “Hardware” for less safe, but faster.
@@ -1565,11 +1564,9 @@
         Example: Bookshelf ToRead
     -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
-    <string name="menu_scanner_ui">Scanner UI</string>
 
     <string name="lbl_site_book_id">Website book ID:</string>
     <string name="lbl_select_website">Select a website:</string>
     <string name="scan">Scan barcode</string>
-    <string name="error_no_sites">No websites enabled</string>
 
 </resources>

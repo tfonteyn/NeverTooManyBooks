@@ -80,19 +80,19 @@ public final class AmazonManager
     private static final String PROXY_URL = "https://bc.theagiledirector.com/getRest_v3.php?";
 
     @NonNull
-    public static String getBaseURL(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
+    public static String getBaseURL(@NonNull final Context appContext) {
+        return PreferenceManager.getDefaultSharedPreferences(appContext)
                                 .getString(PREFS_HOST_URL, "https://www.amazon.com");
     }
 
     /**
      * Start an intent to open the Amazon website.
      *
-     * @param context Current context
+     * @param appContext Application context
      * @param author  to search for
      * @param series  to search for
      */
-    public static void openWebsite(@NonNull final Context context,
+    public static void openWebsite(@NonNull final Context appContext,
                                    @Nullable final String author,
                                    @Nullable final String series) {
 
@@ -104,7 +104,7 @@ public final class AmazonManager
             try {
                 extra += "&field-author=" + URLEncoder.encode(cAuthor, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(context, TAG, e, "Unable to add author to URL");
+                Logger.error(appContext, TAG, e, "Unable to add author to URL");
             }
         }
 
@@ -112,12 +112,12 @@ public final class AmazonManager
             try {
                 extra += "&field-keywords=" + URLEncoder.encode(cSeries, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(context, TAG, e, "Unable to add series to URL");
+                Logger.error(appContext, TAG, e, "Unable to add series to URL");
             }
         }
 
-        String url = getBaseURL(context) + SUFFIX_BASE_URL + extra.trim();
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        String url = getBaseURL(appContext) + SUFFIX_BASE_URL + extra.trim();
+        appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @NonNull
@@ -144,7 +144,7 @@ public final class AmazonManager
 
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context context,
+    public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                    @NonNull final String nativeId,
                                    final boolean fetchThumbnail)
             throws IOException {
@@ -153,12 +153,12 @@ public final class AmazonManager
             return new Bundle();
         }
 
-        return fetchBook("isbn=" + nativeId, fetchThumbnail);
+        return fetchBook(localizedAppContext, "isbn=" + nativeId, fetchThumbnail);
     }
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
+    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
                                final boolean fetchThumbnail)
             throws IOException {
@@ -167,13 +167,13 @@ public final class AmazonManager
             return new Bundle();
         }
 
-        return fetchBook("isbn=" + isbn, fetchThumbnail);
+        return fetchBook(localizedAppContext, "isbn=" + isbn, fetchThumbnail);
     }
 
     @Override
     @NonNull
     @WorkerThread
-    public Bundle search(@NonNull final Context context,
+    public Bundle search(@NonNull final Context localizedAppContext,
                          @Nullable final String isbn,
                          @Nullable final String author,
                          @Nullable final String title,
@@ -188,7 +188,7 @@ public final class AmazonManager
         if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
             String query = "author=" + URLEncoder.encode(author, UTF_8)
                            + "&title=" + URLEncoder.encode(title, UTF_8);
-            return fetchBook(query, fetchThumbnail);
+            return fetchBook(localizedAppContext, query, fetchThumbnail);
 
         } else {
             return new Bundle();
@@ -196,21 +196,23 @@ public final class AmazonManager
 
     }
 
-    private Bundle fetchBook(@NonNull final String query,
+    private Bundle fetchBook(@NonNull final Context localizedAppContext,
+                             @NonNull final String query,
                              final boolean fetchThumbnail)
             throws IOException {
         Bundle bookData = new Bundle();
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        AmazonHandler handler = new AmazonHandler(bookData, fetchThumbnail);
+        AmazonHandler handler = new AmazonHandler(localizedAppContext, bookData, fetchThumbnail);
 
         // See class docs: adding throttling
         THROTTLER.waitUntilRequestAllowed();
 
         String url = PROXY_URL + query;
         // Get it
-        try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
+        try (TerminatorConnection tCon =
+                     TerminatorConnection.openConnection(localizedAppContext, url)) {
             SAXParser parser = factory.newSAXParser();
-            parser.parse(con.inputStream, handler);
+            parser.parse(tCon.getInputStream(), handler);
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             // wrap parser exceptions in an IOException
             throw new IOException(e);
@@ -225,8 +227,8 @@ public final class AmazonManager
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context context) {
-        return getBaseURL(context);
+    public String getUrl(@NonNull final Context appContext) {
+        return getBaseURL(appContext);
     }
 
     @StringRes

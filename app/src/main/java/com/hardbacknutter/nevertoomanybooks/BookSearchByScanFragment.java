@@ -33,6 +33,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,6 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.scanner.Scanner;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
@@ -93,24 +93,7 @@ public class BookSearchByScanFragment
         mScannerModel = new ViewModelProvider(this).get(ScannerViewModel.class);
 
         //noinspection ConstantConditions
-        getActivity().setTitle(R.string.title_search_isbn);
-
-        //noinspection ConstantConditions
         getView().findViewById(R.id.btn_scan).setOnClickListener(v -> startInput());
-
-
-        if (savedInstanceState == null) {
-            //noinspection ConstantConditions
-            SearchSites.promptToRegister(getContext(), false, "search",
-                                         mSearchCoordinator.getSearchSites());
-        }
-
-        // if we already have an isbn from somewhere, auto-start a search
-        String isbn = mSearchCoordinator.getIsbnSearchText();
-        if (!isbn.isEmpty()) {
-            prepareSearch(isbn);
-            return;
-        }
 
         // auto-start scanner first time.
         if (mScannerModel.isFirstStart()) {
@@ -160,7 +143,7 @@ public class BookSearchByScanFragment
                                     try {
                                         StorageUtils.copyFile(file, CameraHelper.getDefaultFile());
                                     } catch (@NonNull final IOException e) {
-                                        e.printStackTrace();
+                                        Log.d(TAG, "onActivityResult", e);
                                     }
                                 }
                             }
@@ -171,7 +154,7 @@ public class BookSearchByScanFragment
                     String barCode = scanner.getBarcode(data);
                     if (barCode != null) {
                         mSearchCoordinator.setIsbnSearchText(barCode);
-                        prepareSearch(barCode);
+                        prepareSearch();
                         return;
                     }
                 }

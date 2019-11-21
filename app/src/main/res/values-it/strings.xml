@@ -641,8 +641,8 @@
     <string name="book_color_full_color">Colorato</string>
     <string name="size_hidden">Nascosto</string>
     <string name="pt_show_goodreads">Mostra i menu di Goodreads</string>
-    <string name="pt_search_reformat_format">Standardizzare i nomi di \"formato libro\"</string>
-    <string name="pt_search_reformat_color">Standardizzare i nomi di \"colore del libro\"</string>
+    <string name="pt_search_reformat_format">Standardizzare i nomi di «formato libro»</string>
+    <string name="pt_search_reformat_color">Standardizzare i nomi di «colore del libro»</string>
     <string name="lbl_data_import_export">Backup e importazione</string>
     <string name="book_color_uncolored">in bianco e nero</string>
     <string name="lbl_author_type_intro">Introduzione ecc.</string>
@@ -656,5 +656,6 @@
     <string name="lbl_select_website">Seleziona un sito Web:</string>
     <string name="lbl_site_book_id">ID libro del sito Web:</string>
     <string name="fab_add_book_by_native_id">ID libro del sito web</string>
+    <string name="warning_enable_at_least_1_website">Abilita almeno un sito Web per ogni categoria.</string>
 
 </resources>

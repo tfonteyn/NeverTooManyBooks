@@ -47,12 +47,12 @@ import androidx.lifecycle.ViewModel;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -71,7 +71,7 @@ public class CoverBrowserViewModel
     private static final String TAG = "CoverBrowserViewModel";
 
     /** Holder for all active tasks, so we can cancel them if needed. */
-    private final Set<AsyncTask> mAllTasks = new HashSet<>();
+    private final Collection<AsyncTask> mAllTasks = new HashSet<>();
 
     /** List of all alternative editions/isbn for the given ISBN. */
     private final MutableLiveData<ArrayList<String>> mEditions = new MutableLiveData<>();
@@ -316,7 +316,7 @@ public class CoverBrowserViewModel
          */
         FileManager(@NonNull final Context context,
                     @NonNull final Bundle args) {
-            mSearchSitesForCovers = args.getParcelableArrayList(SearchSites.BKEY_COVERS);
+            mSearchSitesForCovers = args.getParcelableArrayList(SearchSites.BKEY_COVERS_SITES);
             if (mSearchSitesForCovers == null) {
                 mSearchSitesForCovers = SearchSites.getSites(context, SearchSites.ListType.Covers);
             }
@@ -343,7 +343,7 @@ public class CoverBrowserViewModel
                 } catch (@NonNull final RuntimeException e) {
                     // Failed to decode; probably not an image
                     ok = false;
-                    Logger.error(App.getAppContext(), TAG, e, "Unable to decode file");
+                    Logger.error(TAG, e, "Unable to decode file");
                 }
             }
 
@@ -369,7 +369,8 @@ public class CoverBrowserViewModel
          */
         @NonNull
         @WorkerThread
-        FileInfo download(@NonNull final String isbn,
+        FileInfo download(@NonNull final Context appContext,
+                          @NonNull final String isbn,
                           @NonNull final SearchEngine.CoverByIsbn.ImageSize... imageSizes) {
 
             // we will disable sites on the fly for the *current* search without modifying the list.
@@ -401,8 +402,6 @@ public class CoverBrowserViewModel
                     mFiles.remove(key);
                 }
 
-                Context context = App.getAppContext();
-
                 for (Site site : mSearchSitesForCovers) {
                     // Should we search this site ?
                     if ((currentSearchSites & site.id) != 0) {
@@ -411,7 +410,7 @@ public class CoverBrowserViewModel
                         boolean isAvailable = engine instanceof SearchEngine.CoverByIsbn
                                               && engine.isAvailable();
                         if (isAvailable) {
-                            fileInfo = download(context, (SearchEngine.CoverByIsbn) engine,
+                            fileInfo = download(appContext, (SearchEngine.CoverByIsbn) engine,
                                                 isbn, size);
                             if (fileInfo != null) {
                                 return fileInfo;
@@ -440,7 +439,7 @@ public class CoverBrowserViewModel
         /**
          * Try to get an image from the specified engine.
          *
-         * @param context      Current context
+         * @param appContext   Application context
          * @param searchEngine to use
          * @param isbn         to search for, <strong>must</strong> be valid.
          * @param size         to get
@@ -448,13 +447,13 @@ public class CoverBrowserViewModel
          * @return a FileInfo object with a valid fileSpec, or {@code null} if not found.
          */
         @Nullable
-        private FileInfo download(@NonNull final Context context,
+        private FileInfo download(@NonNull final Context appContext,
                                   @NonNull final SearchEngine.CoverByIsbn searchEngine,
                                   @NonNull final String isbn,
                                   @NonNull final SearchEngine.CoverByIsbn.ImageSize size) {
 
             @Nullable
-            File file = searchEngine.getCoverImage(context, isbn, size);
+            File file = searchEngine.getCoverImage(appContext, isbn, size);
             if (file != null && isGood(file)) {
                 String key = isbn + '_' + size;
                 FileInfo fileInfo = new FileInfo(isbn, size, file.getAbsolutePath());
@@ -468,7 +467,7 @@ public class CoverBrowserViewModel
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                     Log.d(TAG, "download|MISSING"
-                               + "|engine=" + context.getString(searchEngine.getNameResId())
+                               + "|engine=" + appContext.getString(searchEngine.getNameResId())
                                + "|isbn=" + isbn
                                + "|size=" + size);
                 }
@@ -546,6 +545,8 @@ public class CoverBrowserViewModel
         protected ArrayList<String> doInBackground(final Void... params) {
             Thread.currentThread().setName("GetEditionsTask " + mIsbn);
 
+            Context context = App.getAppContext();
+
             ArrayList<String> editions = new ArrayList<>();
             for (Site site : mSites) {
                 if (site.isEnabled()) {
@@ -553,7 +554,7 @@ public class CoverBrowserViewModel
                         SearchEngine searchEngine = site.getSearchEngine();
                         if (searchEngine instanceof SearchEngine.AlternativeEditions) {
                             editions.addAll(((SearchEngine.AlternativeEditions) searchEngine)
-                                                    .getAlternativeEditions(mIsbn));
+                                                    .getAlternativeEditions(context, mIsbn));
                         }
                     } catch (@NonNull RuntimeException ignore) {
                     }
@@ -609,8 +610,10 @@ public class CoverBrowserViewModel
         @WorkerThread
         protected FileInfo doInBackground(final Void... params) {
             Thread.currentThread().setName("GetGalleryImageTask " + mIsbn);
+            Context appContext = App.getAppContext();
             try {
-                return mFileManager.download(mIsbn,
+                return mFileManager.download(appContext,
+                                             mIsbn,
                                              // try to get a picture in this order of size.
                                              // Stops at first one found.
                                              SearchEngine.CoverByIsbn.ImageSize.Small,
@@ -686,8 +689,10 @@ public class CoverBrowserViewModel
         @WorkerThread
         protected FileInfo doInBackground(final Void... params) {
             Thread.currentThread().setName("GetSwitcherImageTask " + mFileInfo.isbn);
+            Context appContext = App.getAppContext();
             try {
-                return mFileManager.download(mFileInfo.isbn,
+                return mFileManager.download(appContext,
+                                             mFileInfo.isbn,
                                              // try to get a picture in this order of size.
                                              // Stops at first one found.
                                              SearchEngine.CoverByIsbn.ImageSize.Large,

@@ -39,7 +39,6 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -339,7 +338,7 @@ public class SynchronizedStatement
             mStatement.execute();
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(App.getAppContext(), TAG, e, mStatement.toString());
+            Logger.error(TAG, e, mStatement.toString());
             throw e;
         } finally {
             txLock.unlock();
@@ -365,7 +364,7 @@ public class SynchronizedStatement
             return rowsAffected;
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(App.getAppContext(), TAG, e, mStatement.toString());
+            Logger.error(TAG, e, mStatement.toString());
             throw e;
         } finally {
             exclusiveLock.unlock();
@@ -389,13 +388,13 @@ public class SynchronizedStatement
                 Log.d(TAG, "executeInsert|" + mStatement + "|id=" + id);
 
                 if (id == -1) {
-                    Logger.warnWithStackTrace(App.getAppContext(), TAG, "Insert failed");
+                    Logger.warnWithStackTrace(TAG, "Insert failed");
                 }
             }
             return id;
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(App.getAppContext(), TAG, e, mStatement.toString());
+            Logger.error(TAG, e, mStatement.toString());
             throw e;
         } finally {
             exclusiveLock.unlock();
@@ -422,7 +421,7 @@ public class SynchronizedStatement
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(App.getAppContext(), TAG, "finalize",
+            Logger.warn(TAG, "finalize",
                         "Closing unclosed statement:\n" + mStatement);
             mStatement.close();
         }

@@ -38,8 +38,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
+import com.hardbacknutter.nevertoomanybooks.scanner.ScannerFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -84,7 +85,7 @@ public class StartupViewModel
 
     /** TaskId holder. Added when started. Removed when stopped. */
     @NonNull
-    private final Set<Integer> mAllTasks = new HashSet<>(6);
+    private final Collection<Integer> mAllTasks = new HashSet<>(6);
 
     private final MutableLiveData<Boolean> mTaskFinished = new MutableLiveData<>(false);
     private final MutableLiveData<Exception> mTaskException = new MutableLiveData<>();
@@ -206,7 +207,7 @@ public class StartupViewModel
             mDb = new DAO();
 
         } catch (@NonNull final DBHelper.UpgradeException e) {
-            Logger.error(App.getAppContext(), TAG, e, "startTasks");
+            Logger.error(TAG, e, "startTasks");
             mTaskException.setValue(e);
             return;
         }
@@ -361,8 +362,7 @@ public class StartupViewModel
         protected Boolean doInBackground(final Void... voids) {
             Context context = App.getAppContext();
 
-            GoogleBarcodeScanner.GoogleBarcodeScannerFactory factory =
-                    new GoogleBarcodeScanner.GoogleBarcodeScannerFactory();
+            ScannerFactory factory = new GoogleBarcodeScanner.GoogleBarcodeScannerFactory();
             if (factory.isAvailable(context)) {
                 // trigger the download if needed.
                 factory.newInstance(context);
@@ -520,7 +520,7 @@ public class StartupViewModel
                     R.string.progress_msg_rebuilding_search_index)));
             try {
                 boolean reorder = Prefs.reorderTitleForSorting(context);
-                mDb.rebuildOrderByTitleColumns(reorder);
+                mDb.rebuildOrderByTitleColumns(context, reorder);
                 return true;
 
             } catch (@NonNull final RuntimeException e) {

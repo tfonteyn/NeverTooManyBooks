@@ -660,4 +660,5 @@
     <string name="lbl_select_website">Wählen Sie eine Website aus:</string>
     <string name="lbl_site_book_id">Website-Buch-ID:</string>
     <string name="fab_add_book_by_native_id">Website-Buch-ID</string>
+    <string name="warning_enable_at_least_1_website">Aktivieren Sie mindestens eine Website für jede Kategorie.</string>
 </resources>

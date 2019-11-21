@@ -27,10 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -407,7 +407,7 @@ public final class DBDefinitions {
     public static final String KEY_SERIES_IS_COMPLETE = "series_complete";
     public static final String KEY_BOOK_NUM_IN_SERIES = "series_num";
 
-    /** {@link #TBL_TOC_ENTRIES}. */
+    /** {@link #TBL_TOC_ENTRIES}.  Virtual. The type of a TOC entry. See {@link TocEntry.Type} */
     public static final String KEY_TOC_TYPE = "type";
 
 
@@ -1198,8 +1198,8 @@ public final class DBDefinitions {
          * Developer sanity checks.
          * ====================================================================================== */
         if (BuildConfig.DEBUG /* always */) {
-            Set<String> tNames = new HashSet<>();
-            Set<String> tAliases = new HashSet<>();
+            Collection<String> tNames = new HashSet<>();
+            Collection<String> tAliases = new HashSet<>();
             for (TableDefinition table : ALL_TABLES.values()) {
                 if (!tNames.add(table.getName())) {
                     throw new IllegalStateException("Duplicate table name: " + table.getName());

@@ -63,8 +63,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_lend_to"
         tools:text="Alvin"
-        >
-
-        <requestFocus />
-    </AutoCompleteTextView>
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

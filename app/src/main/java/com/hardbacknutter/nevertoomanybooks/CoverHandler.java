@@ -34,8 +34,8 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -161,16 +161,21 @@ public class CoverHandler {
         mCoverView = coverView;
         mIsbnView = isbnView;
 
-        // add context menu to the cover image
+        // Allow zooming by clicking on the image;
+        // If there is no actual image, bring up the context menu instead.
+        mCoverView.setOnClickListener(v -> {
+            File image = getCoverFile();
+            if (image.exists()) {
+                ZoomedImageDialogFragment.show(mFragment.getParentFragmentManager(), image);
+            } else {
+                onCreateContextMenu();
+            }
+        });
+
         mCoverView.setOnLongClickListener(v -> {
             onCreateContextMenu();
             return true;
         });
-
-        //Allow zooming by clicking on the image
-        mCoverView.setOnClickListener(
-                v -> ZoomedImageDialogFragment.show(mFragment.getParentFragmentManager(),
-                                                    getCoverFile()));
     }
 
     /**
@@ -179,39 +184,8 @@ public class CoverHandler {
     private void onCreateContextMenu() {
 
         Menu menu = MenuPicker.createMenu(mContext);
-        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-            .setIcon(R.drawable.ic_delete);
-
-        SubMenu replaceSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, 0,
-                                                 R.string.menu_cover_replace)
-                                     .setIcon(R.drawable.ic_find_replace);
-
-        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_CAMERA, 0,
-                           R.string.menu_cover_replace_from_camera)
-                      .setIcon(R.drawable.ic_add_a_photo);
-        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_GALLERY, 0,
-                           R.string.menu_cover_replace_from_gallery)
-                      .setIcon(R.drawable.ic_photo_gallery);
-        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_ALT_EDITIONS, 0,
-                           R.string.menu_cover_replace_from_alt_editions)
-                      .setIcon(R.drawable.ic_find_replace);
-
-        SubMenu rotateSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_ROTATE, 0,
-                                                R.string.menu_cover_rotate)
-                                    .setIcon(R.drawable.ic_rotate_right);
-
-        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_CW, 0,
-                          R.string.menu_cover_rotate_cw)
-                     .setIcon(R.drawable.ic_rotate_right);
-        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_CCW, 0,
-                          R.string.menu_cover_rotate_ccw)
-                     .setIcon(R.drawable.ic_rotate_left);
-        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_180, 0,
-                          R.string.menu_cover_rotate_180)
-                     .setIcon(R.drawable.ic_swap_vert);
-
-        menu.add(Menu.NONE, R.id.MENU_THUMB_CROP, 0, R.string.menu_cover_crop)
-            .setIcon(R.drawable.ic_crop);
+        MenuInflater menuInflater = new MenuInflater(mContext);
+        menuInflater.inflate(R.menu.c_image, menu);
 
         String title = mContext.getString(R.string.title_cover);
         new MenuPicker<>(mContext, title, menu, R.id.coverImage, this::onViewContextItemSelected)
@@ -362,7 +336,8 @@ public class CoverHandler {
      */
     private void refreshImageView() {
         boolean isSet = ImageUtils.setImageView(mCoverView, getCoverFile(),
-                                                mMaxWidth, mMaxHeight, true);
+                                                mMaxWidth, mMaxHeight, true,
+                                                R.drawable.ic_add_a_photo);
         mBook.putBoolean(UniqueId.BKEY_IMAGE, isSet);
     }
 
@@ -427,7 +402,7 @@ public class CoverHandler {
      */
     private void startCoverBrowser() {
         // this is essential, as we only get alternative editions from LibraryThing for now.
-        if (!LibraryThingManager.hasKey()) {
+        if (!LibraryThingManager.hasKey(mContext)) {
             LibraryThingManager.alertRegistrationNeeded(mContext, true, "cover_browser");
             return;
         }

@@ -58,11 +58,11 @@ public class EventQueueListActivity
 
     private void showContextMenu(@NonNull final AdapterView<?> parent,
                                  @NonNull final View v,
-                                 @NonNull final Event event,
+                                 @NonNull final BindableItemCursorAdapter.BindableItem item,
                                  final int position,
                                  final long id) {
         List<ContextDialogItem> items = new ArrayList<>();
-        event.addContextMenuItems(this, v, id, items, mDb);
+        item.addContextMenuItems(this, v, id, items, mDb);
         ContextDialogItem.showContextDialog(this, items);
     }
 
@@ -124,7 +124,7 @@ public class EventQueueListActivity
                                 final int position,
                                 final long id) {
 
-        final Event event = (Event) v.getTag(R.id.TAG_GR_EVENT);
+        final BindableItemCursorAdapter.BindableItem event = (Event) v.getTag(R.id.TAG_GR_EVENT);
 
         // If it owns a hint, display it first
         if (event instanceof TipOwner) {

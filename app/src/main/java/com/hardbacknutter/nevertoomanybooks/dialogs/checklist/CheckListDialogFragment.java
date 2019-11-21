@@ -47,6 +47,7 @@ import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -181,8 +182,8 @@ public class CheckListDialogFragment<T>
      * @return the extracted list
      */
     @NonNull
-    private ArrayList<T> extractList(@NonNull final List<CheckListItem<T>> list) {
-        ArrayList<T> result = new ArrayList<>(list.size());
+    private ArrayList<T> extractList(@NonNull final Collection<CheckListItem<T>> list) {
+        final ArrayList<T> result = new ArrayList<>(list.size());
         for (CheckListItem<T> entry : list) {
             if (entry.isChecked()) {
                 result.add(entry.getItem());

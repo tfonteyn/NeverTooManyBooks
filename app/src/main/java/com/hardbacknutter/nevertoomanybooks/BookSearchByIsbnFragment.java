@@ -102,13 +102,12 @@ public class BookSearchByIsbnFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.title_search_isbn);
-
         View view = getView();
 
         // stop lint being very annoying...
         Objects.requireNonNull(mIsbnView);
+
+        mIsbnView.setText(mSearchCoordinator.getIsbnSearchText());
 
         //noinspection ConstantConditions
         view.findViewById(R.id.key_0).setOnClickListener(v -> mIsbnView.onKey("0"));
@@ -138,6 +137,7 @@ public class BookSearchByIsbnFragment
         //noinspection ConstantConditions
         mAltBtnView.setOnClickListener(this::onSwapNumbers);
 
+        mIsbnView.setEnableValidation(true);
         // auto update the alternative ISBN number.
         mIsbnView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -176,27 +176,13 @@ public class BookSearchByIsbnFragment
 
         view.findViewById(R.id.btn_search).setOnClickListener(v -> {
             //noinspection ConstantConditions
-            String isbn1 = mIsbnView.getText().toString().trim();
-            mSearchCoordinator.setIsbnSearchText(isbn1);
-            prepareSearch(isbn1);
+            mSearchCoordinator.setIsbnSearchText(mIsbnView.getText().toString().trim());
+            prepareSearch();
         });
 
         // init the isbn edit field if needed (avoid initializing twice)
         if (mAllowAsin) {
             mIsbnView.setAllowAsin(true);
-        }
-
-        if (savedInstanceState == null) {
-            //noinspection ConstantConditions
-            SearchSites.promptToRegister(getContext(), false, "search",
-                                         mSearchCoordinator.getSearchSites());
-        }
-
-        // if we already have an isbn from somewhere, auto-start a search
-        String isbn = mSearchCoordinator.getIsbnSearchText();
-        if (!isbn.isEmpty()) {
-            mIsbnView.setText(isbn);
-            prepareSearch(isbn);
         }
     }
 

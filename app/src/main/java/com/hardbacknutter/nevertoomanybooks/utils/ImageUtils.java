@@ -36,6 +36,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -175,18 +176,22 @@ public final class ImageUtils {
      * Load the image file into the destination view.
      * Handles checking & storing in the cache.
      *
-     * @param imageView View to populate
-     * @param uuid      UUID of book
-     * @param maxWidth  Max width of resulting image
-     * @param maxHeight Max height of resulting image
+     * @param imageView      View to populate
+     * @param uuid           UUID of book
+     * @param maxWidth       Max width of resulting image
+     * @param maxHeight      Max height of resulting image
+     * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
+     * @param placeHolder    drawable to use if the file does not exist
      *
-     * @return {@code true} if we loaded a 'real' file.
+     * @return {@code true} if the uuid/placeholder was displayed.
      */
     @UiThread
     public static boolean setImageView(@NonNull final ImageView imageView,
                                        @NonNull final String uuid,
                                        final int maxWidth,
-                                       final int maxHeight) {
+                                       final int maxHeight,
+                                       final boolean allowUpscaling,
+                                       @DrawableRes final int placeHolder) {
 
         // 1. If caching is used, and we don't have cache building happening, check it.
         if (imagesAreCached(imageView.getContext())
@@ -197,16 +202,16 @@ public final class ImageUtils {
             Bitmap bm = CoversDAO.getImage(uuid, maxWidth, maxHeight);
             if (bm != null) {
                 boolean isSet = ImageUtils.setImageView(imageView, bm,
-                                                        maxWidth, maxHeight, true);
+                                                        maxWidth, maxHeight, allowUpscaling);
                 cacheTicks.addAndGet(System.nanoTime() - tick);
                 return isSet;
             }
         }
 
-        // 2. Check if the file exists; if it does not set 'ic_broken_image' icon and exit.
+        // 2. Check if the file exists; if it does not set the placeholder icon and exit.
         File file = StorageUtils.getCoverFileForUuid(uuid);
         if (!file.exists() || file.length() < MIN_IMAGE_FILE_SIZE) {
-            imageView.setImageResource(R.drawable.ic_broken_image);
+            imageView.setImageResource(placeHolder);
             return false;
         }
 
@@ -233,7 +238,7 @@ public final class ImageUtils {
         }
 
         // 4. Just go get the image from the file system.
-        return setImageView(imageView, file, maxWidth, maxHeight, true);
+        return setImageView(imageView, file, maxWidth, maxHeight, allowUpscaling, placeHolder);
     }
 
     /**
@@ -244,23 +249,30 @@ public final class ImageUtils {
      * @param maxWidth       Maximum desired width of the image
      * @param maxHeight      Maximum desired height of the image
      * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
+     * @param placeHolder    drawable to use if the file does not exist
      *
-     * @return {@code true} if we loaded a 'real' file.
+     * @return {@code true} if the file/placeholder was displayed.
      */
     @UiThread
     public static boolean setImageView(@NonNull final ImageView imageView,
                                        @NonNull final File file,
                                        final int maxWidth,
                                        final int maxHeight,
-                                       final boolean allowUpscaling) {
-        if (file.exists() && file.length() > MIN_IMAGE_FILE_SIZE) {
+                                       final boolean allowUpscaling,
+                                       @DrawableRes final int placeHolder) {
+        if (!file.exists()) {
+            imageView.setImageResource(placeHolder);
+            return false;
+
+        } else if (file.length() > MIN_IMAGE_FILE_SIZE) {
             @Nullable
             Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
             return setImageView(imageView, bm, maxWidth, maxHeight, allowUpscaling);
-        }
 
-        imageView.setImageResource(R.drawable.ic_broken_image);
-        return false;
+        } else {
+            imageView.setImageResource(R.drawable.ic_broken_image);
+            return false;
+        }
     }
 
     /**
@@ -273,7 +285,7 @@ public final class ImageUtils {
      * @param maxHeight      Maximum desired height of the image
      * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
      *
-     * @return {@code true} if we loaded a 'real' file.
+     * @return {@code true} if the Bitmap was displayed.
      */
     @UiThread
     private static boolean setImageView(@NonNull final ImageView imageView,
@@ -285,7 +297,7 @@ public final class ImageUtils {
             Log.d(TAG, "setImageView"
                        + "|maxWidth=" + maxWidth
                        + "|maxHeight=" + maxHeight
-                       + "|upscale=" + allowUpscaling
+                       + "|allowUpscaling=" + allowUpscaling
                        + (source != null ? "|bm.width=" + source.getWidth() : "no bm")
                        + (source != null ? "|bm.height=" + source.getHeight() : "no bm"));
         }
@@ -294,7 +306,7 @@ public final class ImageUtils {
         imageView.setMaxHeight(maxHeight);
 
         if (source != null) {
-            // upscale only when required.
+            // upscale only when required and allowed.
             if (source.getHeight() < maxHeight && allowUpscaling) {
                 Bitmap scaledBitmap;
                 scaledBitmap = createScaledBitmap(source, maxWidth, maxHeight);
@@ -308,10 +320,11 @@ public final class ImageUtils {
             // if not upscaling, let Android decide on any other scaling as needed.
             imageView.setImageBitmap(source);
             return true;
-        }
 
-        imageView.setImageResource(R.drawable.ic_broken_image);
-        return false;
+        } else {
+            imageView.setImageResource(R.drawable.ic_broken_image);
+            return false;
+        }
     }
 
     /**
@@ -475,7 +488,7 @@ public final class ImageUtils {
                 bm = BitmapFactory.decodeFile(fileSpec, opt);
             }
         } catch (@NonNull final OutOfMemoryError e) {
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
             return null;
         }
 
@@ -491,16 +504,18 @@ public final class ImageUtils {
     /**
      * Given a URL, get an image and save to a file.
      *
-     * @param url    Image file URL
-     * @param name   for the file.
-     * @param suffix suffix denoting the origin of the url
-     * @param size   (optional) extra suffix denoting the size of the image.
+     * @param appContext Application context
+     * @param url        Image file URL
+     * @param name       for the file.
+     * @param suffix     suffix denoting the origin of the url
+     * @param size       (optional) extra suffix denoting the size of the image.
      *
      * @return Downloaded fileSpec, or {@code null} on failure
      */
     @Nullable
     @WorkerThread
-    public static String saveImage(@NonNull final String url,
+    public static String saveImage(@NonNull final Context appContext,
+                                   @NonNull final String url,
                                    @NonNull final String name,
                                    @NonNull final String suffix,
                                    @Nullable final String size) {
@@ -516,8 +531,8 @@ public final class ImageUtils {
 
         while (retry > 0) {
             int bytesRead;
-            try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
-                bytesRead = StorageUtils.saveInputStreamToFile(con.inputStream, file);
+            try (TerminatorConnection con = TerminatorConnection.openConnection(appContext, url)) {
+                bytesRead = StorageUtils.saveInputStreamToFile(con.getInputStream(), file);
                 return bytesRead > 0 ? file.getAbsolutePath() : null;
 
             } catch (@NonNull final IOException e) {
@@ -540,30 +555,30 @@ public final class ImageUtils {
 
     /**
      * Given a URL, get an image and return as a byte array.
-     *
+     * @param appContext Application context
      * @param url Image file URL
      *
      * @return Downloaded {@code byte[]} or {@code null} upon failure
      */
     @Nullable
     @WorkerThread
-    public static byte[] getBytes(@NonNull final String url) {
+    public static byte[] getBytes(@NonNull final Context appContext,
+                                  @NonNull final String url) {
 
         // If the site drops connection, we retry once.
         int retry = 2;
 
         while (retry > 0) {
-            try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
-                try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                    // Save the output to a byte output stream
-                    byte[] buffer = new byte[BUFFER_SIZE];
-                    int len;
-                    //noinspection ConstantConditions
-                    while ((len = con.inputStream.read(buffer)) >= 0) {
-                        out.write(buffer, 0, len);
-                    }
-                    return out.toByteArray();
+            try (TerminatorConnection con = TerminatorConnection.openConnection(appContext, url);
+                 ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                // Save the output to a byte output stream
+                byte[] buffer = new byte[BUFFER_SIZE];
+                int len;
+                //noinspection ConstantConditions
+                while ((len = con.getInputStream().read(buffer)) >= 0) {
+                    out.write(buffer, 0, len);
                 }
+                return out.toByteArray();
             } catch (@NonNull final IOException e) {
                 retry--;
 
@@ -735,7 +750,7 @@ public final class ImageUtils {
                     rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
 
                 } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-                    Logger.error(App.getAppContext(), TAG, e);
+                    Logger.error(TAG, e);
                     return false;
                 }
 

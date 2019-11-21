@@ -470,48 +470,7 @@ public class BooksOnBookshelf
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
-        // Using a FAB now. Need to decide making a user option to use FAB or options menu.
-//        SubMenu addBookSubMenu = menu.addSubMenu(R.id.SUBMENU_BOOK_ADD, R.id.SUBMENU_BOOK_ADD,
-//                                                 0, R.string.menu_add_book)
-//                                     .setIcon(R.drawable.ic_add);
-//        addBookSubMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-//
-//        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SCAN, 0,
-//                           R.string.menu_add_book_by_barcode_scan)
-//                      .setIcon(R.drawable.ic_add_a_photo);
-//        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN, 0,
-//                           R.string.menu_add_book_by_isbn)
-//                      .setIcon(R.drawable.ic_zoom_in);
-//        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, 0,
-//                           R.string.menu_add_book_by_internet_search)
-//                      .setIcon(R.drawable.ic_zoom_in);
-//        addBookSubMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_MANUALLY, 0,
-//                           R.string.menu_add_book_manually)
-//                      .setIcon(R.drawable.ic_keyboard);
-
-        menu.add(Menu.NONE, R.id.MENU_SORT, 0, R.string.menu_sort_and_style_ellipsis)
-            .setIcon(R.drawable.ic_sort_by_alpha)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
-        menu.add(Menu.NONE, R.id.MENU_LEVEL_RESET, 0, R.string.menu_level_reset)
-            .setIcon(R.drawable.ic_refresh);
-
-        menu.add(Menu.NONE, R.id.MENU_LEVEL_EXPAND, 0, R.string.menu_level_expand)
-            .setIcon(R.drawable.ic_unfold_more);
-
-        menu.add(Menu.NONE, R.id.MENU_LEVEL_COLLAPSE, 0, R.string.menu_level_collapse)
-            .setIcon(R.drawable.ic_unfold_less);
-
-        // Disabled for now. It's a bit to easy for the user to select this from here,
-        // with potentially huge impact.
-        // This will use the currently displayed booklist (the book ID's)
-        // which could potentially be a very long list
-//        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-//                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields)
-//            .setIcon(R.drawable.ic_cloud_download);
-
-        menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, 0, R.string.menu_clear_search_filters)
-            .setIcon(R.drawable.ic_undo);
+        getMenuInflater().inflate(R.menu.o_bob, menu);
 
         if (BuildConfig.DEBUG /* always */) {
             SubMenu debugSubMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
@@ -578,23 +537,6 @@ public class BooksOnBookshelf
                 return true;
             }
 
-            case R.id.MENU_BOOK_ADD_BY_SCAN: {
-                startAddBySearch(BookSearchByScanFragment.TAG);
-                return true;
-            }
-            case R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN: {
-                startAddBySearch(BookSearchByIsbnFragment.TAG);
-                return true;
-            }
-            case R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT: {
-                startAddBySearch(BookSearchByTextFragment.TAG);
-                return true;
-            }
-            case R.id.MENU_BOOK_ADD_MANUALLY: {
-                startAddManually();
-                return true;
-            }
-
             default: {
                 if (BuildConfig.DEBUG  /* always */) {
                     switch (item.getItemId()) {
@@ -607,7 +549,7 @@ public class BooksOnBookshelf
                             return true;
 
                         case R.id.MENU_DEBUG_UNMANGLE:
-                            mModel.getDb().tempUnMangle(Prefs.reorderTitleForSorting(this));
+                            mModel.getDb().tempUnMangle(this, Prefs.reorderTitleForSorting(this));
                             return true;
 
                         case R.id.MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE:
@@ -976,7 +918,7 @@ public class BooksOnBookshelf
         }
 
         // Flag up if the selection was different.
-        return previous == null || !previous.equalsIgnoreCase(selected);
+        return !selected.equalsIgnoreCase(previous);
     }
 
     /**
@@ -1123,19 +1065,25 @@ public class BooksOnBookshelf
      * view and we can tell if it is already in the view.
      * <p>
      * called from {@link #displayList}
+     *
+     * @param targetRows list of rows of which we want one to be visible to the user.
      */
-    private void fixPositionWhenDrawn(
-            @NonNull final ArrayList<RowDetails> targetRows) {
+    private void fixPositionWhenDrawn(@NonNull final ArrayList<RowDetails> targetRows) {
         // Find the actual extend of the current view and get centre.
         final int first = mLayoutManager.findFirstVisibleItemPosition();
         final int last = mLayoutManager.findLastVisibleItemPosition();
         final int centre = (last + first) / 2;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-            Log.d(TAG, "fixPositionWhenDrawn|New List: (" + first + ", " + last + ")<-" + centre);
+            Log.d(TAG, "fixPositionWhenDrawn"
+                       + "|first=" + first
+                       + "|centre=" + centre
+                       + "|last=" + last);
         }
         // Get the first 'target' and make it 'best candidate'
         RowDetails best = targetRows.get(0);
+        // distance from currently visible centre row
         int dist = Math.abs(best.listPosition - centre);
+
         // Loop all other rows, looking for a nearer one
         for (int i = 1; i < targetRows.size(); i++) {
             RowDetails ri = targetRows.get(i);
@@ -1147,7 +1095,7 @@ public class BooksOnBookshelf
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-            Log.d(TAG, "fixPositionWhenDrawn|Best listPosition @" + best.listPosition);
+            Log.d(TAG, "fixPositionWhenDrawn|best=" + best.listPosition);
         }
         // Try to put at top if not already visible, or only partially visible
         if (first >= best.listPosition || last <= best.listPosition) {
@@ -1279,109 +1227,51 @@ public class BooksOnBookshelf
         final int rowKind = row.getInt(DBDefinitions.KEY_BL_NODE_KIND);
         switch (rowKind) {
             case BooklistGroup.RowKind.BOOK: {
+                getMenuInflater().inflate(R.menu.co_book, menu);
 
-                MenuHandler.addBookItems(menu);
-                MenuHandler.prepareBookItems(this, menu, true,
-                                             row.getInt(DBDefinitions.KEY_READ) != 0,
-                                             mModel.isAvailable(row));
+                boolean isRead = row.getBoolean(DBDefinitions.KEY_READ);
+                menu.findItem(R.id.MENU_BOOK_READ).setVisible(!isRead);
+                menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isRead);
 
+                // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
+                boolean loaningIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
+                boolean isAvailable = mModel.isAvailable(row);
+                menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(loaningIsUsed && isAvailable);
+                menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(loaningIsUsed && !isAvailable);
 
-                //NEWTHINGS: add new site specific ID: add boolean / if / submenu if
-                boolean hasIsfdbId = 0 != row.getLong(DBDefinitions.KEY_EID_ISFDB);
-                boolean hasGoodreadsId = 0 != row.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
-                boolean hasLibraryThingId = 0 != row.getLong(DBDefinitions.KEY_EID_LIBRARY_THING);
-                boolean hasStripInfoBeId = 0 != row.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE);
-                boolean hasOpenLibraryId = !row.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)
-                                               .isEmpty();
+                menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
+                    .setVisible(GoodreadsManager.isShowSyncMenus(this));
 
-                if (hasIsfdbId || hasGoodreadsId || hasLibraryThingId || hasOpenLibraryId
-                    || hasStripInfoBeId) {
-                    SubMenu subMenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_VIEW_BOOK_AT_SITE,
-                                                      MenuHandler.ORDER_VIEW_BOOK_AT_SITE,
-                                                      R.string.menu_view_book_at)
-                                          .setIcon(R.drawable.ic_link);
-                    if (hasIsfdbId) {
-                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_ISFDB,
-                                    MenuHandler.ORDER_VIEW_BOOK_AT_ISFDB,
-                                    R.string.isfdb)
-                               .setIcon(R.drawable.ic_link);
-                    }
-                    if (hasGoodreadsId) {
-                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_GOODREADS,
-                                    MenuHandler.ORDER_VIEW_BOOK_AT_GOODREADS,
-                                    R.string.goodreads)
-                               .setIcon(R.drawable.ic_link);
-                    }
-                    if (hasLibraryThingId) {
-                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
-                                    MenuHandler.ORDER_VIEW_BOOK_AT_LIBRARY_THING,
-                                    R.string.library_thing)
-                               .setIcon(R.drawable.ic_link);
-                    }
-                    if (hasOpenLibraryId) {
-                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-                                    MenuHandler.ORDER_VIEW_BOOK_AT_OPEN_LIBRARY,
-                                    R.string.open_library)
-                               .setIcon(R.drawable.ic_link);
-                    }
-                    if (hasStripInfoBeId) {
-                        subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
-                                    MenuHandler.ORDER_VIEW_BOOK_AT_STRIPINFO_BE,
-                                    R.string.stripinfo)
-                               .setIcon(R.drawable.ic_link);
-                    }
-                }
+                MenuHandler.prepareOptionalMenus(menu, row);
                 break;
             }
             case BooklistGroup.RowKind.AUTHOR: {
-                menu.add(Menu.NONE, R.id.MENU_AUTHOR_WORKS, 0, R.string.menu_author_details)
-                    .setIcon(R.drawable.ic_details);
-                menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT,
-                         MenuHandler.ORDER_EDIT, R.string.menu_edit)
-                    .setIcon(R.drawable.ic_edit);
-                if (row.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)) {
-                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE,
-                             MenuHandler.ORDER_INCOMPLETE, R.string.menu_set_incomplete)
-                        .setIcon(R.drawable.ic_check_box);
-                } else {
-                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE,
-                             MenuHandler.ORDER_COMPLETE, R.string.menu_set_complete)
-                        .setIcon(R.drawable.ic_check_box_outline_blank);
-                }
-                menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                         MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_books)
-                    .setIcon(R.drawable.ic_cloud_download);
+                getMenuInflater().inflate(R.menu.c_author, menu);
+
+                boolean isComplete = row.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+                menu.findItem(R.id.MENU_AUTHOR_COMPLETE).setVisible(!isComplete);
+                menu.findItem(R.id.MENU_AUTHOR_INCOMPLETE).setVisible(isComplete);
+
+                MenuHandler.prepareOptionalMenus(menu, row);
                 break;
             }
             case BooklistGroup.RowKind.SERIES: {
                 if (row.getLong(DBDefinitions.KEY_FK_SERIES) != 0) {
-                    menu.add(Menu.NONE, R.id.MENU_SERIES_DELETE,
-                             MenuHandler.ORDER_DELETE, R.string.menu_delete)
-                        .setIcon(R.drawable.ic_delete);
-                    menu.add(Menu.NONE, R.id.MENU_SERIES_EDIT,
-                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
-                        .setIcon(R.drawable.ic_edit);
-                    if (row.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE)) {
-                        menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE,
-                                 MenuHandler.ORDER_INCOMPLETE,
-                                 R.string.menu_set_incomplete)
-                            .setIcon(R.drawable.ic_check_box);
-                    } else {
-                        menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE,
-                                 MenuHandler.ORDER_COMPLETE,
-                                 R.string.menu_set_complete)
-                            .setIcon(R.drawable.ic_check_box_outline_blank);
-                    }
-                    menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                             MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_update_books)
-                        .setIcon(R.drawable.ic_cloud_download);
+                    getMenuInflater().inflate(R.menu.c_series, menu);
+
+                    boolean isComplete = row.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+                    menu.findItem(R.id.MENU_SERIES_COMPLETE).setVisible(!isComplete);
+                    menu.findItem(R.id.MENU_SERIES_INCOMPLETE).setVisible(isComplete);
+
+                    MenuHandler.prepareOptionalMenus(menu, row);
                 }
                 break;
             }
             case BooklistGroup.RowKind.PUBLISHER: {
                 if (!row.getString(DBDefinitions.KEY_PUBLISHER).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_PUBLISHER_EDIT,
-                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
+                             getResources().getInteger(R.integer.MENU_ORDER_EDIT),
+                             R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
@@ -1389,7 +1279,8 @@ public class BooksOnBookshelf
             case BooklistGroup.RowKind.LANGUAGE: {
                 if (!row.getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
-                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
+                             getResources().getInteger(R.integer.MENU_ORDER_EDIT),
+                             R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
@@ -1397,7 +1288,8 @@ public class BooksOnBookshelf
             case BooklistGroup.RowKind.LOCATION: {
                 if (!row.getString(DBDefinitions.KEY_LOCATION).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT,
-                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
+                             getResources().getInteger(R.integer.MENU_ORDER_EDIT),
+                             R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
@@ -1405,7 +1297,8 @@ public class BooksOnBookshelf
             case BooklistGroup.RowKind.GENRE: {
                 if (!row.getString(DBDefinitions.KEY_GENRE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT,
-                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
+                             getResources().getInteger(R.integer.MENU_ORDER_EDIT),
+                             R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
@@ -1413,7 +1306,8 @@ public class BooksOnBookshelf
             case BooklistGroup.RowKind.FORMAT: {
                 if (!row.getString(DBDefinitions.KEY_FORMAT).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT,
-                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
+                             getResources().getInteger(R.integer.MENU_ORDER_EDIT),
+                             R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
@@ -1421,7 +1315,8 @@ public class BooksOnBookshelf
             case BooklistGroup.RowKind.COLOR: {
                 if (!row.getString(DBDefinitions.KEY_COLOR).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_COLOR_EDIT,
-                             MenuHandler.ORDER_EDIT, R.string.menu_edit)
+                             getResources().getInteger(R.integer.MENU_ORDER_EDIT),
+                             R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
@@ -1433,28 +1328,7 @@ public class BooksOnBookshelf
         }
 
         // if there are no specific menus for the current row.
-        if (menu.size() == 0) {
-            return false;
-        }
-
-        // There is at least one other menu item.
-        // Add Amazon menus if applicable.
-        boolean hasAuthor = row.contains(DBDefinitions.KEY_FK_AUTHOR)
-                            && row.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
-        boolean hasSeries = row.contains(DBDefinitions.KEY_FK_SERIES)
-                            && row.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
-
-        if (hasAuthor || hasSeries) {
-            SubMenu subMenu = MenuHandler.addAmazonSearchSubMenu(menu);
-            subMenu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
-                   .setVisible(hasAuthor);
-            subMenu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)
-                   .setVisible(hasAuthor && hasSeries);
-            subMenu.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
-                   .setVisible(hasSeries);
-        }
-
-        return true;
+        return menu.size() != 0;
     }
 
     /**
@@ -1601,11 +1475,12 @@ public class BooksOnBookshelf
                 }
                 return true;
             }
-            case R.id.MENU_SERIES_COMPLETE: {
+            case R.id.MENU_SERIES_COMPLETE:
+            case R.id.MENU_SERIES_INCOMPLETE: {
                 long seriesId = row.getLong(DBDefinitions.KEY_FK_SERIES);
                 // toggle the complete status
-                boolean seriesComplete = !row.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
-                if (mModel.getDb().setSeriesComplete(seriesId, seriesComplete)) {
+                boolean status = !row.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+                if (mModel.getDb().setSeriesComplete(seriesId, status)) {
                     mBookChangedListener.onBookChanged(0, BookChangedListener.SERIES, null);
                 }
                 return true;
@@ -1639,11 +1514,12 @@ public class BooksOnBookshelf
                 }
                 return true;
             }
-            case R.id.MENU_AUTHOR_COMPLETE: {
+            case R.id.MENU_AUTHOR_COMPLETE:
+            case R.id.MENU_AUTHOR_INCOMPLETE: {
                 long authorId = row.getLong(DBDefinitions.KEY_FK_AUTHOR);
                 // toggle the complete status
-                boolean authorComplete = !row.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
-                if (mModel.getDb().setAuthorComplete(authorId, authorComplete)) {
+                boolean status = !row.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+                if (mModel.getDb().setAuthorComplete(authorId, status)) {
                     mBookChangedListener.onBookChanged(0, BookChangedListener.AUTHOR, null);
                 }
                 return true;
@@ -1711,23 +1587,6 @@ public class BooksOnBookshelf
             }
 
             /* ********************************************************************************** */
-            case R.id.SUBMENU_AMAZON_SEARCH: {
-                // after the user selects the submenu, we make individual items visible/hidden.
-                boolean hasAuthor = row.contains(DBDefinitions.KEY_FK_AUTHOR)
-                                    && row.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
-                boolean hasSeries = row.contains(DBDefinitions.KEY_FK_SERIES)
-                                    && row.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
-
-                SubMenu amazonSubMenu = menuItem.getSubMenu();
-                amazonSubMenu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
-                             .setVisible(hasAuthor);
-                amazonSubMenu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)
-                             .setVisible(hasAuthor && hasSeries);
-                amazonSubMenu.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
-                             .setVisible(hasSeries);
-                // let the normal call flow go on, it will display the submenu
-                return false;
-            }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                 AmazonManager.openWebsite(this, mModel.getAuthorFromRow(this, row), null);
                 return true;

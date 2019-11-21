@@ -74,6 +74,10 @@ public class CursorMapper {
         return mCursor.getColumnIndex(domainName) > -1;
     }
 
+    public boolean has(@NonNull final String domainName) {
+        return contains(domainName) && getLong(domainName) > 0;
+    }
+
     /**
      * Direct access to the cursor.
      *

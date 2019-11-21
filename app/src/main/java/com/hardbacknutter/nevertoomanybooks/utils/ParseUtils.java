@@ -83,7 +83,7 @@ public final class ParseUtils {
      * @return encoded string
      */
     @SuppressWarnings("WeakerAccess")
-    public static String escape(@NonNull final String source,
+    public static String escape(@NonNull final CharSequence source,
                                 final char... escapeChars) {
 
         StringBuilder sb = new StringBuilder();
@@ -129,9 +129,9 @@ public final class ParseUtils {
      *
      * @return decoded string
      */
-    public static String unEscape(@NonNull final String source) {
-        if (source.isEmpty()) {
-            return source;
+    public static String unEscape(@Nullable final String source) {
+        if (source == null || source.isEmpty()) {
+            return "";
         }
 
         boolean inEsc = false;

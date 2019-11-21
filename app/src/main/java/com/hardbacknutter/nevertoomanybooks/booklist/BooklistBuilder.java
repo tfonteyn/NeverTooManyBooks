@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -146,26 +145,13 @@ public class BooklistBuilder
     @NonNull
     private static final AtomicInteger DEBUG_INSTANCE_COUNTER = new AtomicInteger();
 
-    /** Statement names for caching. */
-    private static final String STMT_DELETE_ALL_NODES = "DelAllNodes";
-    private static final String STMT_DELETE_SOME_NODES = "DelSomeNodes";
-
-    private static final String STMT_SAVE_ALL_NODES = "SaveNodeSetting";
-    private static final String STMT_SAVE_SOME_NODES = "SaveAllNodeSettings";
-
-    private static final String STMT_BUILD_ROW_STATE_TABLE = "BuildRowStateTable";
-
-    private static final String STMT_BL_BOOK_COUNT = "bl:bookCount";
-    private static final String STMT_BL_DISTINCT_BOOK_COUNT = "bl:distinctBookCount";
-
-
     /** divider to convert nanoseconds to milliseconds. */
     private static final int TO_MILLIS = 1_000_000;
 
     /**
      * The base DELETE SQL for {@link #preserveAllNodes()} / {@link #preserveNodes}.
      */
-    private static final String mPreserveNodesBaseDeleteSql =
+    private static final String mNodesDeleteBaseSql =
             "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE + " WHERE " + DOM_FK_BOOKSHELF + "=?";
 
     // not in use for now
@@ -207,13 +193,15 @@ public class BooklistBuilder
                     new BooklistCursor(masterQuery, editTable, query,
                                        DAO.getSynchronizer(), BooklistBuilder.this);
     /** the list of Filters. */
-    private final ArrayList<Filter> mFilters = new ArrayList<>();
+    private final Collection<Filter> mFilters = new ArrayList<>();
+
     /**
      * Collection of statements used to {@link #rebuild()}.
-     * <p>
-     * Needs to be re-usable WITHOUT parameter binding.
+     * All statements added to this collection <strong>must</strong> also be added
+     * to {@link #mStatementManager} and needs to be re-usable WITHOUT parameter binding.
      */
-    private final ArrayList<SynchronizedStatement> mRebuildStmts = new ArrayList<>();
+    private final Collection<SynchronizedStatement> mRebuildStmts = new ArrayList<>();
+
     /**
      * The temp table representing the booklist for the current bookshelf/style.
      * <p>
@@ -483,6 +471,7 @@ public class BooklistBuilder
                          BuildHelper.FLAG_NONE);
 
         helper.addDomain(DOM_FK_BOOK, TBL_BOOKS.dot(DOM_PK_ID), BuildHelper.FLAG_NONE);
+        // each row has a book count, for books this is obviously always == 1.
         helper.addDomain(DOM_BL_BOOK_COUNT, "1", BuildHelper.FLAG_NONE);
 
         // We want the UUID for the book so we can get thumbnails
@@ -539,23 +528,23 @@ public class BooklistBuilder
         final long t01_table_created = System.nanoTime();
 
         // Construct the initial insert statement components.
-        final BaseSql baseSql = helper.build();
+        final BaseSql initialInsert = helper.build();
 
         final long t02_build_base_sql = System.nanoTime();
 
-        baseSql.addJoins(helper);
+        initialInsert.addJoins(helper);
 
         final long t03_build_join = System.nanoTime();
 
-        baseSql.addWhere(mFilters, mStyle.getFilters());
+        initialInsert.addWhere(mFilters, mStyle.getFilters());
 
         final long t04_build_where = System.nanoTime();
 
-        baseSql.addOrderBy(helper.getSortedDomains(), mSyncedDb.isCollationCaseSensitive());
+        initialInsert.addOrderBy(helper.getSortedDomains(), mSyncedDb.isCollationCaseSensitive());
 
         final long t05_build_order_by = System.nanoTime();
 
-        mRebuildStmts.clear();
+        //mRebuildStmts.clear();
 
         // We are good to go.
         final SyncLock txLock = mSyncedDb.beginTransaction(true);
@@ -565,13 +554,13 @@ public class BooklistBuilder
 
             // Build the lowest level summary using our initial insert statement
             // The triggers will do the rest.
-            try (SynchronizedStatement baseStmt = mSyncedDb.compileStatement(baseSql.build())) {
-                mRebuildStmts.add(baseStmt);
-                baseStmt.executeInsert();
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(initialInsert.build())) {
+                stmt.executeInsert();
             }
 
             final long t06_base_insert_done = System.nanoTime();
 
+            // The list table is now fully populated.
             mSyncedDb.analyze(mListTable);
 
             final long t07_listTable_analyzed = System.nanoTime();
@@ -582,7 +571,7 @@ public class BooklistBuilder
 
             final long t08_stateTable_build = System.nanoTime();
 
-            // now we have all data inserted, create the indexes we need
+            // create the indexes we need
             mRowStateTable.createIndices(mSyncedDb);
 
             final long t09_stateTable_idx_created = System.nanoTime();
@@ -637,12 +626,12 @@ public class BooklistBuilder
      *
      * @param sortedDomains the domains we need to sort by, in order.
      */
-    private void createTriggers(@NonNull final ArrayList<SortedDomains> sortedDomains) {
+    private void createTriggers(@NonNull final Iterable<SortedDomains> sortedDomains) {
 
         // SQL statement to update the 'current' table
         StringBuilder valuesColumns = new StringBuilder();
         // List of domain names for sorting
-        Set<String> sortedDomainNames = new HashSet<>();
+        Collection<String> sortedDomainNames = new HashSet<>();
 
         // Build the 'current' header table definition and the sort column list
         for (SortedDomains sdi : sortedDomains) {
@@ -727,13 +716,16 @@ public class BooklistBuilder
                     + "\n   INSERT INTO " + mListTable.getName() + " (" + listColumns + ")"
                     + /*               */ " VALUES(" + listValues + ");"
                     + "\n END";
-            SynchronizedStatement stmt = mStatementManager.add(levelTgName, levelTgSql);
-            stmt.execute();
+
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(levelTgSql)) {
+                stmt.execute();
+            }
         }
 
         // Create a trigger to maintain the 'current' value -- just delete and insert
         String currentValueTgName = mListTable.getName() + "_TG_CURRENT";
         mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + currentValueTgName);
+
         String currentValueTgSql =
                 "\nCREATE TEMPORARY TRIGGER " + currentValueTgName
                 + " AFTER INSERT ON " + mListTable.getName() + " FOR EACH ROW"
@@ -744,9 +736,9 @@ public class BooklistBuilder
                 + /*               */ " VALUES (" + valuesColumns + ");"
                 + "\n END";
 
-        SynchronizedStatement stmt = mStatementManager.add(currentValueTgName, currentValueTgSql);
-        stmt.execute();
-
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(currentValueTgSql)) {
+            stmt.execute();
+        }
     }
 
     /**
@@ -783,76 +775,6 @@ public class BooklistBuilder
                          + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
                          + ',' + mListTable.dot(DOM_BL_NODE_KIND)
                          + "\n";
-
-        // SQL to rebuild with state preserved.
-        // We create this 'outside' of the switch() so we can  save this statement for rebuilds
-        // IMPORTANT: we concat the sql with the bookshelf and style id's.
-        // should bind those obviously, but current (and non-functional) mRebuildStmts
-        // requires statements without parameters.
-        String sqlPreserved =
-                baseSql
-                // SELECT DISTINCT bl._id, bl.root_key, bl.level,bl.kind
-                // ,CASE
-                // WHEN bl.level = 1 THEN 1
-                // WHEN bl_ns.root_key IS NULL THEN 0
-                // ELSE 1
-                // END AS visible
-                //
-                // ,CASE WHEN bl_ns.root_key IS NULL THEN 0
-                // ELSE bl_ns.expanded END AS expanded
-                // FROM book_list_tmp_1 bl LEFT OUTER JOIN book_list_node_settings bl_ns
-                // ON bl_ns.bookshelf=2 AND bl_ns.style=-1
-                // AND bl.level=bl_ns.level
-                // AND bl.root_key=bl_ns.root_key
-                // ORDER BY bl._id
-
-                // *all* rows in TBL_BOOK_LIST_NODE_STATE are to be considered visible!
-                // ergo, all others are invisible but level 1 is always visible.
-
-                // DOM_BL_NODE_VISIBLE
-                + ",CASE"
-                // level 1 is always visible
-                + " WHEN " + mListTable.dot(DOM_BL_NODE_LEVEL) + "=1 THEN 1"
-                // if the row is not present, hide it.
-                + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY) + " IS NULL THEN 0"
-                // all others are visible
-                + " ELSE 1"
-                + " END"
-                // 'AS' for SQL readability/debug only
-                + " AS " + DOM_BL_NODE_VISIBLE
-                + "\n"
-
-                // DOM_BL_NODE_EXPANDED
-                + ",CASE"
-                // if the row is not present, collapse it.
-                + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY) + " IS NULL THEN 0"
-                //  Otherwise use the stored state
-                + " ELSE " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_NODE_EXPANDED)
-                + " END"
-                // 'AS' for SQL readability/debug only
-                + " AS " + DOM_BL_NODE_EXPANDED
-                + "\n"
-
-                + " FROM " + mListTable.ref()
-                // note this is a pure OUTER JOIN.
-                + " LEFT OUTER JOIN " + TBL_BOOK_LIST_NODE_STATE.ref()
-                + " ON "
-                + TBL_BOOK_LIST_NODE_STATE.dot(DOM_FK_BOOKSHELF) + '=' + mBookshelf.getId()
-                + " AND "
-                + TBL_BOOK_LIST_NODE_STATE.dot(DOM_FK_STYLE) + '=' + mStyle.getId()
-                + " AND "
-                + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_NODE_LEVEL)
-                + '=' + mListTable.dot(DOM_BL_NODE_LEVEL)
-                + " AND "
-                + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY)
-                + '=' + mListTable.dot(DOM_BL_ROOT_KEY)
-                + " ORDER BY " + orderByExpression;
-
-
-        SynchronizedStatement rebuildSavedStateStmt =
-                mStatementManager.add(STMT_BUILD_ROW_STATE_TABLE, sqlPreserved);
-        // once rebuild works again, we should find a solution to bind shelf/style id's
-        mRebuildStmts.add(rebuildSavedStateStmt);
 
         int topLevel = mStyle.getTopLevel();
 
@@ -902,12 +824,79 @@ public class BooklistBuilder
                 break;
             }
             case PREF_LIST_REBUILD_SAVED_STATE: {
+                // SQL to rebuild with state preserved.
+                // IMPORTANT: we concat the sql with the bookshelf and style id's.
+                // should bind those obviously, but current (and non-functional) mRebuildStmts
+                // requires statements without parameters.
+                String sql =
+                        baseSql
+                        // SELECT DISTINCT bl._id, bl.root_key, bl.level,bl.kind
+                        // ,CASE
+                        // WHEN bl.level = 1 THEN 1
+                        // WHEN bl_ns.root_key IS NULL THEN 0
+                        // ELSE 1
+                        // END AS visible
+                        //
+                        // ,CASE WHEN bl_ns.root_key IS NULL THEN 0
+                        // ELSE bl_ns.expanded END AS expanded
+                        // FROM book_list_tmp_1 bl LEFT OUTER JOIN book_list_node_settings bl_ns
+                        // ON bl_ns.bookshelf=2 AND bl_ns.style=-1
+                        // AND bl.level=bl_ns.level
+                        // AND bl.root_key=bl_ns.root_key
+                        // ORDER BY bl._id
+
+                        // *all* rows in TBL_BOOK_LIST_NODE_STATE are to be considered visible!
+                        // ergo, all others are invisible but level 1 is always visible.
+
+                        // DOM_BL_NODE_VISIBLE
+                        + ",CASE"
+                        // level 1 is always visible
+                        + " WHEN " + mListTable.dot(DOM_BL_NODE_LEVEL) + "=1 THEN 1"
+                        // if the row is not present, hide it.
+                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY)
+                        + " IS NULL THEN 0"
+                        // all others are visible
+                        + " ELSE 1"
+                        + " END"
+                        // 'AS' for SQL readability/debug only
+                        + " AS " + DOM_BL_NODE_VISIBLE
+                        + "\n"
+
+                        // DOM_BL_NODE_EXPANDED
+                        + ",CASE"
+                        // if the row is not present, collapse it.
+                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY)
+                        + " IS NULL THEN 0"
+                        //  Otherwise use the stored state
+                        + " ELSE " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_NODE_EXPANDED)
+                        + " END"
+                        // 'AS' for SQL readability/debug only
+                        + " AS " + DOM_BL_NODE_EXPANDED
+                        + "\n"
+
+                        + " FROM " + mListTable.ref()
+                        // note this is a pure OUTER JOIN.
+                        + " LEFT OUTER JOIN " + TBL_BOOK_LIST_NODE_STATE.ref()
+                        + " ON "
+                        + TBL_BOOK_LIST_NODE_STATE.dot(DOM_FK_BOOKSHELF) + '=' + mBookshelf.getId()
+                        + " AND "
+                        + TBL_BOOK_LIST_NODE_STATE.dot(DOM_FK_STYLE) + '=' + mStyle.getId()
+                        + " AND "
+                        + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_NODE_LEVEL)
+                        + '=' + mListTable.dot(DOM_BL_NODE_LEVEL)
+                        + " AND "
+                        + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY)
+                        + '=' + mListTable.dot(DOM_BL_ROOT_KEY)
+                        + " ORDER BY " + orderByExpression;
+
                 // Use already-defined SQL for preserve state.
-                int rowsUpdated = rebuildSavedStateStmt.executeUpdateDelete();
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Log.d(TAG, "PREF_LIST_REBUILD_SAVED_STATE"
-                               + "|rowsUpdated=" + rowsUpdated
-                               + "|sql=" + sqlPreserved);
+                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+                    int rowsUpdated = stmt.executeUpdateDelete();
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+                        Log.d(TAG, "PREF_LIST_REBUILD_SAVED_STATE"
+                                   + "|rowsUpdated=" + rowsUpdated
+                                   + "|sql=" + sql);
+                    }
                 }
 
 //                TBL_BOOK_LIST_NODE_STATE
@@ -924,10 +913,8 @@ public class BooklistBuilder
                 break;
             }
 
-
             default:
                 throw new UnexpectedValueException(listState);
-
         }
     }
 
@@ -1099,23 +1086,6 @@ public class BooklistBuilder
             }
         }
 
-        // This was commented out in the original code.
-//            // Find the nearest row to the recorded 'top' row.
-//            int targetRow = rows.get(0).absolutePosition;
-//            int minDist = Math.abs(mModel.getTopRow()
-//                          - mRowStateTable.getListPosition(targetRow));
-//            for (int i = 1; i < rows.size(); i++) {
-//                int pos = mRowStateTable.getListPosition(rows.get(i).absolutePosition);
-//                int dist = Math.abs(mModel.getTopRow() - pos);
-//                if (dist < minDist) {
-//                    targetRow = rows.get(i).absolutePosition;
-//                }
-//            }
-//            // Make sure the target row is visible/expanded.
-//            ensureAbsolutePositionIsVisible(targetRow);
-//            // Now find the position it will occupy in the view
-//            mTargetPos = mRowStateTable.getListPosition(targetRow);
-
         return rows;
     }
 
@@ -1143,7 +1113,8 @@ public class BooklistBuilder
             preserveAllNodes();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "expandNodes|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
+                Log.d(TAG,
+                      "expandNodes|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
             }
 
             if (txLock != null) {
@@ -1230,7 +1201,7 @@ public class BooklistBuilder
         return expand;
     }
 
-    private String getPreserveNodesInsertSql() {
+    private String getNodesInsertSql() {
         return ("INSERT INTO " + TBL_BOOK_LIST_NODE_STATE
                 + " (" + DOM_FK_BOOKSHELF
                 + ',' + DOM_FK_STYLE
@@ -1263,39 +1234,28 @@ public class BooklistBuilder
             if (!mSyncedDb.inTransaction()) {
                 txLock = mSyncedDb.beginTransaction(true);
             }
-            SynchronizedStatement stmt;
 
             // delete *all* rows for the current bookshelf
-            stmt = mStatementManager.get(STMT_DELETE_ALL_NODES);
-            if (stmt == null) {
-                stmt = mStatementManager.add(STMT_DELETE_ALL_NODES,
-                                             mPreserveNodesBaseDeleteSql);
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(mNodesDeleteBaseSql)) {
+                stmt.bindLong(1, mBookshelf.getId());
+                int rowsDeleted = stmt.executeUpdateDelete();
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+                    Log.d(TAG, "preserveAllNodes"
+                               + "|bookshelfId=" + mBookshelf.getId()
+                               + "|rowsDeleted=" + rowsDeleted);
+                }
             }
-            stmt.bindLong(1, mBookshelf.getId());
-
-            int rowsDeleted = stmt.executeUpdateDelete();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Log.d(TAG, "preserveAllNodes"
-                           + "|bookshelfId=" + mBookshelf.getId()
-                           + "|rowsDeleted=" + rowsDeleted);
-            }
-
             // Read all nodes, and send them to the permanent table.
-            stmt = mStatementManager.get(STMT_SAVE_SOME_NODES);
-            if (stmt == null) {
-                String sql = getPreserveNodesInsertSql();
-                stmt = mStatementManager.add(STMT_SAVE_SOME_NODES, sql);
-            }
-
-            stmt.bindLong(1, mBookshelf.getId());
-            stmt.bindLong(2, mStyle.getId());
-
-            int rowsUpdated = stmt.executeUpdateDelete();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Log.d(TAG, "preserveAllNodes"
-                           + "|bookshelfId=" + mBookshelf.getId()
-                           + "|styleId=" + mStyle.getId()
-                           + "|rowsUpdated=" + rowsUpdated);
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(getNodesInsertSql())) {
+                stmt.bindLong(1, mBookshelf.getId());
+                stmt.bindLong(2, mStyle.getId());
+                int rowsUpdated = stmt.executeUpdateDelete();
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+                    Log.d(TAG, "preserveAllNodes"
+                               + "|bookshelfId=" + mBookshelf.getId()
+                               + "|styleId=" + mStyle.getId()
+                               + "|rowsUpdated=" + rowsUpdated);
+                }
             }
             if (txLock != null) {
                 mSyncedDb.setTransactionSuccessful();
@@ -1320,7 +1280,6 @@ public class BooklistBuilder
             if (!mSyncedDb.inTransaction()) {
                 txLock = mSyncedDb.beginTransaction(true);
             }
-            SynchronizedStatement stmt;
 
 //            mRowStateTable
 //                    .dumpTable(mSyncedDb, "preserveNodes", 71, 75, "before delete");
@@ -1328,62 +1287,55 @@ public class BooklistBuilder
 //                    .dumpTable(mSyncedDb, "preserveNodes", 0, 1000, "before delete");
 
             // delete the given rows for the current bookshelf and root-key
-            stmt = mStatementManager.get(STMT_DELETE_SOME_NODES);
-            if (stmt == null) {
-                stmt = mStatementManager.add(STMT_DELETE_SOME_NODES,
-                                             mPreserveNodesBaseDeleteSql
-                                             + " AND " + DOM_BL_ROOT_KEY + " IN ("
-                                             + " SELECT DISTINCT " + DOM_BL_ROOT_KEY
-                                             + " FROM " + mRowStateTable
-                                             + " WHERE " + DOM_PK_ID + ">=?" + " AND " + DOM_PK_ID
-                                             + "<?"
-                                             + ")");
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                    mNodesDeleteBaseSql + " AND " + DOM_BL_ROOT_KEY + " IN ("
+                    + " SELECT DISTINCT " + DOM_BL_ROOT_KEY
+                    + " FROM " + mRowStateTable
+                    + " WHERE " + DOM_PK_ID + ">=?" + " AND " + DOM_PK_ID + "<?"
+                    + ")")) {
+                stmt.bindLong(1, mBookshelf.getId());
+
+                stmt.bindLong(2, startRow);
+                stmt.bindLong(3, endRow);
+
+                int rowsDeleted = stmt.executeUpdateDelete();
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+                    Log.d(TAG, "preserveNodes"
+                               + "|bookshelfId=" + mBookshelf.getId()
+                               + "|startRow=" + startRow
+                               + "|endRow=" + endRow
+                               + "|rowsDeleted=" + rowsDeleted);
+                }
             }
-            stmt.bindLong(1, mBookshelf.getId());
-
-            stmt.bindLong(2, startRow);
-            stmt.bindLong(3, endRow);
-
-            int rowsDeleted = stmt.executeUpdateDelete();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Log.d(TAG, "preserveNodes"
-                           + "|bookshelfId=" + mBookshelf.getId()
-                           + "|startRow=" + startRow
-                           + "|endRow=" + endRow
-                           + "|rowsDeleted=" + rowsDeleted);
-            }
-
 //            TBL_BOOK_LIST_NODE_STATE
 //                    .dumpTable(mSyncedDb, "preserveNodes", 0, 1000, "delete done");
 
             // Read all nodes below the given node, and send them to the permanent table.
-            stmt = mStatementManager.get(STMT_SAVE_ALL_NODES);
-            if (stmt == null) {
-                String sql = getPreserveNodesInsertSql()
-                             + " AND " + DOM_PK_ID + ">=?" + " AND " + DOM_PK_ID + "<?";
-                stmt = mStatementManager.add(STMT_SAVE_ALL_NODES, sql);
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                    getNodesInsertSql()
+                    + " AND " + DOM_PK_ID + ">=?" + " AND " + DOM_PK_ID + "<?")) {
+                int p = 0;
+                stmt.bindLong(++p, mBookshelf.getId());
+                stmt.bindLong(++p, mStyle.getId());
+
+                stmt.bindLong(++p, startRow);
+                stmt.bindLong(++p, endRow);
+
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+                    Log.d(TAG, "preserveNodes"
+                               + "|bookshelfId=" + mBookshelf.getId()
+                               + "|styleId=" + mStyle.getId()
+                               + "|startRow=" + startRow
+                               + "|endRow=" + endRow);
+                }
+
+                int rowsUpdated = stmt.executeUpdateDelete();
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+                    Log.d(TAG, "preserveNodes"
+                               + "|rowsUpdated=" + rowsUpdated);
+                }
             }
 
-            int p = 0;
-            stmt.bindLong(++p, mBookshelf.getId());
-            stmt.bindLong(++p, mStyle.getId());
-
-            stmt.bindLong(++p, startRow);
-            stmt.bindLong(++p, endRow);
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Log.d(TAG, "preserveNodes"
-                           + "|bookshelfId=" + mBookshelf.getId()
-                           + "|styleId=" + mStyle.getId()
-                           + "|startRow=" + startRow
-                           + "|endRow=" + endRow);
-            }
-
-            int rowsUpdated = stmt.executeUpdateDelete();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Log.d(TAG, "preserveNodes"
-                           + "|rowsUpdated=" + rowsUpdated);
-            }
 
 //            TBL_BOOK_LIST_NODE_STATE
 //                    .dumpTable(mSyncedDb, "preserveNodes", 0, 1000, "insert done");
@@ -1457,7 +1409,7 @@ public class BooklistBuilder
         return "BooklistBuilder{"
                + "mInstanceId=" + mInstanceId
                + ", mCloseWasCalled=" + mCloseWasCalled
-               //+ ", mRebuildStmts=" + mRebuildStmts
+               + ", mRebuildStmts=" + mRebuildStmts
                + ", mFilters=" + mFilters
                + ", mBookshelf=" + mBookshelf
                + '}';
@@ -1472,7 +1424,7 @@ public class BooklistBuilder
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(App.getAppContext(), TAG, "finalize|calling close()");
+            Logger.warn(TAG, "finalize|calling close()");
             close();
         }
         super.finalize();
@@ -1541,30 +1493,20 @@ public class BooklistBuilder
      * @return count
      */
     public int getDistinctBookCount() {
-        SynchronizedStatement stmt = mStatementManager.get(STMT_BL_DISTINCT_BOOK_COUNT);
-        if (stmt == null) {
-            stmt = mStatementManager.add(STMT_BL_DISTINCT_BOOK_COUNT,
-                                         "SELECT COUNT(DISTINCT " + DOM_FK_BOOK + ")"
-                                         + " FROM " + mListTable
-//                                         + " WHERE " + DOM_BL_NODE_LEVEL + "=?");
-                                         + " WHERE " + DOM_BL_NODE_KIND
-                                         + '=' + BooklistGroup.RowKind.BOOK);
-        }
-
         final long t0 = System.nanoTime();
-        long count;
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                "SELECT COUNT(DISTINCT " + DOM_FK_BOOK + ") FROM " + mListTable
+//              + " WHERE " + DOM_BL_NODE_LEVEL + "=?");
+                + " WHERE " + DOM_BL_NODE_KIND + '=' + BooklistGroup.RowKind.BOOK)) {
 //            stmt.bindLong(1, mStyle.groupCount() + 1);
-            count = stmt.count();
+            long count = stmt.count();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+                Log.d(TAG, "getDistinctBookCount"
+                           + "|count=" + count
+                           + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
+            }
+            return (int) count;
         }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Log.d(TAG, "getDistinctBookCount"
-                       + "|count=" + count
-                       + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
-        }
-        return (int) count;
     }
 
     /**
@@ -1573,29 +1515,20 @@ public class BooklistBuilder
      * @return count
      */
     public int getBookCount() {
-        SynchronizedStatement stmt = mStatementManager.get(STMT_BL_BOOK_COUNT);
-        if (stmt == null) {
-            stmt = mStatementManager.add(STMT_BL_BOOK_COUNT,
-                                         "SELECT COUNT(*) FROM " + mListTable
-//                                         + " WHERE " + DOM_BL_NODE_LEVEL + "=?");
-                                         + " WHERE " + DOM_BL_NODE_KIND
-                                         + '=' + BooklistGroup.RowKind.BOOK);
-        }
-
         final long t0 = System.nanoTime();
-        long count;
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                "SELECT COUNT(*) FROM " + mListTable
+//               + " WHERE " + DOM_BL_NODE_LEVEL + "=?");
+                + " WHERE " + DOM_BL_NODE_KIND + '=' + BooklistGroup.RowKind.BOOK)) {
 //            stmt.bindLong(1, mStyle.groupCount() + 1);
-            count = stmt.count();
+            long count = stmt.count();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+                Log.d(TAG, "getBookCount"
+                           + "|count=" + count
+                           + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
+            }
+            return (int) count;
         }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Log.d(TAG, "getBookCount"
-                       + "|count=" + count
-                       + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
-        }
-        return (int) count;
     }
 
     /**
@@ -1630,7 +1563,7 @@ public class BooklistBuilder
         @IntRange(from = 1)
         public final int level;
         public final boolean visible;
-        public int listPosition;
+        public Integer listPosition;
 
         RowDetails(final int absolutePosition,
                    final int listPosition,
@@ -1733,8 +1666,8 @@ public class BooklistBuilder
             // Otherwise, start with the BOOKS table.
             if (buildHelper.hasBookshelfGroup()) {
                 joiner = new Joiner(TBL_BOOKSHELF)
-                        .join(TBL_BOOK_BOOKSHELF)
-                        .join(TBL_BOOKS);
+                        .join(TBL_BOOKSHELF, TBL_BOOK_BOOKSHELF)
+                        .join(TBL_BOOK_BOOKSHELF, TBL_BOOKS);
             } else {
                 joiner = new Joiner(TBL_BOOKS);
             }
@@ -1742,23 +1675,23 @@ public class BooklistBuilder
             // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
             if (buildHelper.hasLoaneeGroup() || App.isUsed(DBDefinitions.KEY_LOANEE)) {
                 // so get the loanee name, or a {@code null} for available books.
-                joiner.leftOuterJoin(TBL_BOOK_LOANEE);
+                joiner.leftOuterJoin(TBL_BOOKS, TBL_BOOK_LOANEE);
             }
 
-            // Now join with author; we must specify a parent in the join, because the last table
-            // joined was one of BOOKS or LOAN and we don't know which. So we explicitly use books.
+            // Join with the Author using the link table between Book and Author.
             joiner.join(TBL_BOOKS, TBL_BOOK_AUTHOR);
 
-            // Join with the primary Author if needed.
             BooklistGroup.BooklistAuthorGroup authorGroup = buildHelper.getAuthorGroup();
+
+            // Join with the primary Author (i.e. position 1) if needed.
             if (authorGroup == null || !authorGroup.showAll()) {
                 joiner.append(" AND " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + "=1");
             }
 
             // Join with Authors to make the names available
-            joiner.join(TBL_AUTHORS);
+            joiner.join(TBL_BOOK_AUTHOR, TBL_AUTHORS);
 
-            // Current table will be authors, so name parent explicitly to join books->book_series.
+            // Join with the Series using the link table between Book and Series.
             joiner.leftOuterJoin(TBL_BOOKS, TBL_BOOK_SERIES);
 
             // Join with the primary Series if needed.
@@ -1768,7 +1701,7 @@ public class BooklistBuilder
             }
 
             // Join with Series to make the titles available
-            joiner.leftOuterJoin(TBL_SERIES);
+            joiner.leftOuterJoin(TBL_BOOK_SERIES, TBL_SERIES);
 
             mFromClause = joiner.build();
         }
@@ -1779,8 +1712,8 @@ public class BooklistBuilder
          * @param activeFilters   filter which are assumed to be active; will always be added
          * @param optionalFilters optional filters which will only be added if they are active
          */
-        void addWhere(@NonNull final ArrayList<Filter> activeFilters,
-                      @Nullable final Collection<Filter> optionalFilters) {
+        void addWhere(@NonNull final Iterable<Filter> activeFilters,
+                      @Nullable final Iterable<Filter> optionalFilters) {
             StringBuilder where = new StringBuilder();
 
             for (Filter filter : activeFilters) {
@@ -1816,7 +1749,7 @@ public class BooklistBuilder
          * @param sortedDomains the list of sorted domains from the builder
          * @param collationIsCs if {@code true} then we'll adjust the case here
          */
-        void addOrderBy(@NonNull final List<SortedDomains> sortedDomains,
+        void addOrderBy(@NonNull final Iterable<SortedDomains> sortedDomains,
                         final boolean collationIsCs) {
             final StringBuilder sortCols = new StringBuilder();
             final StringBuilder indexCols = new StringBuilder();
@@ -1903,7 +1836,7 @@ public class BooklistBuilder
         @NonNull
         private final BooklistStyle mStyle;
         /** Domains required in output table. */
-        private final ArrayList<DomainDefinition> mDomains = new ArrayList<>();
+        private final Collection<DomainDefinition> mDomains = new ArrayList<>();
         /** Mapping from Domain to source Expression. */
         private final Map<DomainDefinition, String> mExpressions = new HashMap<>();
         /** Domains belonging the current group including its outer groups. */
@@ -1915,7 +1848,7 @@ public class BooklistBuilder
          */
         private final ArrayList<SortedDomains> mSortedDomains = new ArrayList<>();
         /** The set is used as a simple mechanism to prevent duplicate domains. */
-        private final Set<DomainDefinition> mSortedColumnsSet = new HashSet<>();
+        private final Collection<DomainDefinition> mSortedColumnsSet = new HashSet<>();
         /** Will be set to appropriate Group if an Author group exists in style. */
         private BooklistGroup.BooklistAuthorGroup mAuthorGroup;
         /** Will be set to appropriate Group if a Series group exists in style. */
@@ -2371,8 +2304,10 @@ public class BooklistBuilder
 
         private static final String ALIAS = "bl_rs";
 
-        private static final String STMT_UPD_NODE = ALIAS + ":updNN";
-        private static final String STMT_UPD_NODES_BETWEEN = ALIAS + ":updNNBetween";
+        private static final String STMT_UPD_SINGLE_NODE = ALIAS + ":updNode";
+
+        private static final String STMT_UPD_NODES_BETWEEN = ALIAS + ":updNodesBetween";
+
         private static final String STMT_GET_NEXT_NODE_AT_SAME_LEVEL = ALIAS + ":nextNode";
 
         private static final String STMT_GET_POSITION_VISIBILITY = ALIAS + ":getPosCheckVisible";
@@ -2390,7 +2325,9 @@ public class BooklistBuilder
         /**
          * Constructor.
          *
-         * @param id unique id to be used as suffix on the table name.
+         * @param syncedDb         database
+         * @param statementManager to use
+         * @param id               unique id to be used as suffix on the table name.
          */
         RowStateTable(@NonNull final SynchronizedDb syncedDb,
                       @NonNull final SqlStatementManager statementManager,
@@ -2426,7 +2363,7 @@ public class BooklistBuilder
             // take ages because main query is a cross without index.
             addIndex(DOM_FK_BOOK_BL_ROW_ID, true, DOM_FK_BOOK_BL_ROW_ID);
 
-            // BooklistBuilder#getPreserveNodesInsertSql()
+            // BooklistBuilder#getNodesInsertSql()
             addIndex(DOM_BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE);
 
             addIndex("NODE_DATA",
@@ -2602,8 +2539,7 @@ public class BooklistBuilder
                         + "(SELECT " + DOM_PK_ID + " FROM " + this.ref()
                         + " WHERE " + this.dot(DOM_PK_ID) + ">?"
                         + " AND " + this.dot(DOM_BL_NODE_LEVEL) + "<=?"
-                        + " ORDER BY " + DOM_PK_ID + " LIMIT 1"
-                        + ") zzz");
+                        + " ORDER BY " + DOM_PK_ID + " LIMIT 1)");
             }
 
             long nextRowId;
@@ -2631,10 +2567,10 @@ public class BooklistBuilder
         private void updateNode(final long rowId,
                                 final boolean expand,
                                 @SuppressWarnings("SameParameterValue") final boolean visible) {
-            SynchronizedStatement stmt = mStatementManager.get(STMT_UPD_NODE);
+            SynchronizedStatement stmt = mStatementManager.get(STMT_UPD_SINGLE_NODE);
             if (stmt == null) {
                 stmt = mStatementManager.add(
-                        STMT_UPD_NODE,
+                        STMT_UPD_SINGLE_NODE,
                         "UPDATE " + getName() + " SET "
                         + DOM_BL_NODE_EXPANDED + "=?" + ',' + DOM_BL_NODE_VISIBLE + "=?"
                         + " WHERE " + DOM_PK_ID + "=?");
@@ -2710,7 +2646,7 @@ public class BooklistBuilder
          */
         private void updateNodes(final boolean expand,
                                  final boolean visible,
-                                 @NonNull final String levelOperand,
+                                 @NonNull final CharSequence levelOperand,
                                  @IntRange(from = 1) final int level) {
             if (BuildConfig.DEBUG /* always */) {
                 // developer sanity check
@@ -2719,22 +2655,25 @@ public class BooklistBuilder
                 }
             }
 
+            //Note to self: levelOperand is concatenated, so do not cache this stmt.
             String sql = "UPDATE " + getName() + " SET "
                          + DOM_BL_NODE_EXPANDED + "=?," + DOM_BL_NODE_VISIBLE + "=?"
                          + " WHERE " + DOM_BL_NODE_LEVEL + levelOperand + "?";
 
+            int rowsUpdated;
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.bindBoolean(1, expand);
                 stmt.bindBoolean(2, visible);
                 stmt.bindLong(3, level);
-                int rowsUpdated = stmt.executeUpdateDelete();
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Log.d(TAG, "updateNodes"
-                               + "|expand=" + expand
-                               + "|visible=" + visible
-                               + "|level" + levelOperand + level
-                               + "|rowsUpdated=" + rowsUpdated);
-                }
+                rowsUpdated = stmt.executeUpdateDelete();
+            }
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+                Log.d(TAG, "updateNodes"
+                           + "|expand=" + expand
+                           + "|visible=" + visible
+                           + "|level" + levelOperand + level
+                           + "|rowsUpdated=" + rowsUpdated);
             }
         }
     }

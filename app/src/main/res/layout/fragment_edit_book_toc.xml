@@ -66,10 +66,7 @@
         app:layout_constraintBottom_toBottomOf="@id/cbx_multiple_authors"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        >
-
-        <requestFocus />
-    </Button>
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tocList"

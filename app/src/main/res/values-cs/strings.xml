@@ -653,5 +653,6 @@
     <string name="lbl_select_website">Vyberte web.:</string>
     <string name="lbl_site_book_id">ID webové stránky:</string>
     <string name="fab_add_book_by_native_id">ID webové stránky</string>
+    <string name="warning_enable_at_least_1_website">Pro každou kategorii povolte alespoň jeden web.</string>
 
 </resources>

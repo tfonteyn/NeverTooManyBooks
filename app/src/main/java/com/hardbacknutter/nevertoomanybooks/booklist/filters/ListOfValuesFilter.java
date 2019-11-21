@@ -29,8 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import androidx.annotation.NonNull;
 
-import java.util.List;
-
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
@@ -54,7 +52,7 @@ public class ListOfValuesFilter<T>
 
     public ListOfValuesFilter(@NonNull final TableDefinition table,
                               @NonNull final DomainDefinition domain,
-                              @NonNull final List<T> list) {
+                              @NonNull final Iterable<T> list) {
         mTable = table;
         mDomain = domain;
 

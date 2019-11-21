@@ -79,13 +79,13 @@ public interface SearchEngine {
     /**
      * Get the root/website url.
      *
-     * @param context Current context
+     * @param appContext Application context
      *
      * @return url, including scheme.
      */
     @AnyThread
     @NonNull
-    String getUrl(@NonNull Context context);
+    String getUrl(@NonNull Context appContext);
 
 
     /**
@@ -168,9 +168,9 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#searchByText}.
          *
-         * @param context        Current context (i.e. with the current Locale)
-         * @param nativeId       the native id (as a String) for this particular search site.
-         * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+         * @param localizedAppContext Localised application context
+         * @param nativeId            the native id (as a String) for this particular search site.
+         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -179,7 +179,7 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle searchByNativeId(@NonNull final Context context,
+        Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                 @NonNull final String nativeId,
                                 final boolean fetchThumbnail)
                 throws CredentialsException, IOException;
@@ -192,9 +192,9 @@ public interface SearchEngine {
          * Called by the {@link SearchCoordinator#searchByText}.
          * The isbn will be <strong>valid</strong>.
          *
-         * @param context        Current context (i.e. with the current Locale)
-         * @param isbn           to search for
-         * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+         * @param localizedAppContext Localised application context
+         * @param isbn                to search for
+         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -203,7 +203,7 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle searchByIsbn(@NonNull final Context context,
+        Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                             @NonNull final String isbn,
                             final boolean fetchThumbnail)
                 throws CredentialsException, IOException;
@@ -219,14 +219,14 @@ public interface SearchEngine {
          * Checking the arguments must be done inside the implementation,
          * as they generally will depend on what the engine can do with them.
          *
-         * @param context        Current context (i.e. with the current Locale)
-         * @param isbn           to search for
-         * @param author         to search for
-         * @param title          to search for
-         * @param publisher      optional and in addition to author/title.
-         *                       i.e. author and/or title must be valid;
-         *                       only then the publisher is taken into account.
-         * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+         * @param localizedAppContext Localised application context
+         * @param isbn                to search for
+         * @param author              to search for
+         * @param title               to search for
+         * @param publisher           optional and in addition to author/title.
+         *                            i.e. author and/or title must be valid;
+         *                            only then the publisher is taken into account.
+         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -235,7 +235,7 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle search(@NonNull Context context,
+        Bundle search(@NonNull Context localizedAppContext,
                       @Nullable String isbn,
                       @Nullable String author,
                       @Nullable String title,
@@ -260,38 +260,38 @@ public interface SearchEngine {
         /**
          * Get a cover image.
          *
-         * @param context Current context (i.e. with the current Locale)
-         * @param isbn    to search for, <strong>must</strong> be valid.
-         * @param size    of image to get.
+         * @param appContext Application context
+         * @param isbn       to search for, <strong>must</strong> be valid.
+         * @param size       of image to get.
          *
          * @return found/saved File, or {@code null} when none found (or any other failure)
          */
         @Nullable
         @WorkerThread
-        default File getCoverImage(@NonNull Context context,
+        default File getCoverImage(@NonNull Context appContext,
                                    @NonNull String isbn,
                                    @Nullable ImageSize size) {
-            return getCoverImageFallback(context, isbn);
+            return getCoverImageFallback(appContext, isbn);
         }
 
         /**
          * Get a cover image. Will try in order of large, medium, small depending on the site
          * supporting multiple sizes.
          *
-         * @param context  Current context (i.e. with the current Locale)
-         * @param isbn     to search for, <strong>must</strong> be valid.
-         * @param bookData bundle to populate with the image file spec
+         * @param appContext Application context
+         * @param isbn       to search for, <strong>must</strong> be valid.
+         * @param bookData   bundle to populate with the image file spec
          */
         @WorkerThread
-        default void getCoverImage(@NonNull final Context context,
+        default void getCoverImage(@NonNull final Context appContext,
                                    @NonNull final String isbn,
                                    @NonNull final Bundle bookData) {
-            File file = getCoverImage(context, isbn, ImageSize.Large);
+            File file = getCoverImage(appContext, isbn, ImageSize.Large);
             if (hasMultipleSizes()) {
                 if (file == null) {
-                    file = getCoverImage(context, isbn, ImageSize.Medium);
+                    file = getCoverImage(appContext, isbn, ImageSize.Medium);
                     if (file == null) {
-                        file = getCoverImage(context, isbn, ImageSize.Small);
+                        file = getCoverImage(appContext, isbn, ImageSize.Small);
                     }
                 }
             }
@@ -317,24 +317,24 @@ public interface SearchEngine {
          * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
          * {@code null} returned.
          *
-         * @param context Current context (i.e. with the current Locale)
-         * @param isbn    to search for, <strong>must</strong> be valid.
+         * @param appContext Application context
+         * @param isbn       to search for, <strong>must</strong> be valid.
          *
          * @return found/saved File, or {@code null} when none found (or any other failure)
          */
         @Nullable
         @WorkerThread
-        default File getCoverImageFallback(@NonNull final Context context,
+        default File getCoverImageFallback(@NonNull final Context appContext,
                                            @NonNull final String isbn) {
 
             try {
                 Bundle bookData;
                 if (this instanceof SearchEngine.ByIsbn) {
-                    bookData = ((SearchEngine.ByIsbn) this).searchByIsbn(context, isbn, true);
+                    bookData = ((SearchEngine.ByIsbn) this).searchByIsbn(appContext, isbn, true);
 
                 } else if (this instanceof SearchEngine.ByText) {
                     bookData = ((SearchEngine.ByText) this)
-                            .search(context, isbn, "", "", "", true);
+                            .search(appContext, isbn, "", "", "", true);
                 } else {
                     return null;
                 }
@@ -350,7 +350,7 @@ public interface SearchEngine {
                     return destination;
                 }
             } catch (@NonNull final CredentialsException | IOException e) {
-                Logger.error(context, TAG, e);
+                Logger.error(appContext, TAG, e);
             }
 
             return null;
@@ -375,8 +375,19 @@ public interface SearchEngine {
      */
     interface AlternativeEditions {
 
+        /**
+         * Find alternative editions (their ISBN) for the given ISBN.
+         *
+         * <strong>Note:</strong> all exceptions will be ignored.
+         *
+         * @param appContext Application context
+         * @param isbn       to search for, <strong>must</strong> be valid.
+         *
+         * @return a list of isbn's of alternative editions of our original isbn, can be empty.
+         */
         @WorkerThread
         @NonNull
-        ArrayList<String> getAlternativeEditions(@NonNull String isbn);
+        ArrayList<String> getAlternativeEditions(@NonNull Context appContext,
+                                                 @NonNull String isbn);
     }
 }

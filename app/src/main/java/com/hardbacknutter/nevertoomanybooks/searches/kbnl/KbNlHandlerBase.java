@@ -67,7 +67,7 @@ public abstract class KbNlHandlerBase
      */
     @SuppressWarnings("SameParameterValue")
     @Nullable
-    protected String digits(@Nullable final String s,
+    protected String digits(@Nullable final CharSequence s,
                             final boolean isIsbn) {
         if (s == null) {
             return null;

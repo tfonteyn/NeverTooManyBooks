@@ -236,9 +236,6 @@ public abstract class BaseActivity
             FragmentTransaction ft = fm.beginTransaction()
                                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
-            //URGENT: addToBackStack ?
-//            ft.addToBackStack(null);
-
             if (isAdd) {
                 ft.add(containerViewId, frag, tag);
             } else {

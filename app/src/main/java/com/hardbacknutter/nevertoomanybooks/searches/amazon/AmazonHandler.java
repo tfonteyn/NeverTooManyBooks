@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.amazon;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -39,7 +40,6 @@ import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -259,6 +259,8 @@ class AmazonHandler
 
     /** flag if we should fetch a thumbnail. */
     private final boolean mFetchThumbnail;
+    @NonNull
+    private final Context mLocalizedAppContext;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
@@ -322,11 +324,14 @@ class AmazonHandler
     /**
      * Constructor.
      *
-     * @param bookData       Bundle to save results in
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+     * @param localizedAppContext Localised application context
+     * @param bookData            Bundle to save results in
+     * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
      */
-    AmazonHandler(@NonNull final Bundle bookData,
+    AmazonHandler(@NonNull final Context localizedAppContext,
+                  @NonNull final Bundle bookData,
                   final boolean fetchThumbnail) {
+        mLocalizedAppContext = localizedAppContext;
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
     }
@@ -387,7 +392,8 @@ class AmazonHandler
     public void endDocument() {
         if (mFetchThumbnail && !mCoverUrl.isEmpty()) {
             String name = mBookData.getString(DBDefinitions.KEY_EID_ASIN, "");
-            String fileSpec = ImageUtils.saveImage(mCoverUrl, name, FILENAME_SUFFIX, null);
+            String fileSpec = ImageUtils.saveImage(mLocalizedAppContext,
+                                                   mCoverUrl, name, FILENAME_SUFFIX, null);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
@@ -516,7 +522,7 @@ class AmazonHandler
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
                 // the language is a 'DisplayName' so convert to iso first.
                 addIfNotPresent(mBookData, DBDefinitions.KEY_LANGUAGE,
-                                LanguageUtils.getISO3FromDisplayName(App.getLocalizedAppContext(),
+                                LanguageUtils.getISO3FromDisplayName(mLocalizedAppContext,
                                                                      mBuilder.toString()));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {

@@ -44,6 +44,7 @@ import androidx.preference.SwitchPreference;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -60,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -410,11 +412,13 @@ public class BooklistGroup
          */
         @Override
         public void addPreferencesTo(@NonNull final PreferenceScreen screen) {
-            Context context = screen.getContext();
+
             PreferenceCategory category = screen.findPreference(Prefs.psk_style_series);
-            String description = context.getString(R.string.lbl_series);
             if (category != null) {
                 category.setVisible(true);
+
+                Context context = screen.getContext();
+                String description = context.getString(R.string.lbl_series);
 
                 SwitchPreference pShowAll = new SwitchPreference(context);
                 pShowAll.setTitle(R.string.pt_bob_books_under_multiple_series);
@@ -527,11 +531,13 @@ public class BooklistGroup
          */
         @Override
         public void addPreferencesTo(@NonNull final PreferenceScreen screen) {
-            Context context = screen.getContext();
+
             PreferenceCategory category = screen.findPreference(Prefs.psk_style_author);
-            String description = context.getString(R.string.lbl_author);
             if (category != null) {
                 category.setVisible(true);
+
+                Context context = screen.getContext();
+                String description = context.getString(R.string.lbl_author);
 
                 SwitchPreference pShowAll = new SwitchPreference(context);
                 pShowAll.setTitle(R.string.pt_bob_books_under_multiple_authors);
@@ -568,8 +574,12 @@ public class BooklistGroup
         boolean showAuthorGivenNameFirst() {
             return mGivenNameFirst.isTrue();
         }
-    }
 
+        @Author.Type
+        public int getType() {
+            return Author.TYPE_UNKNOWN;
+        }
+    }
 
     /**
      * Get a RowKind with the static method: {@link #get(int kind)}.
@@ -793,7 +803,7 @@ public class BooklistGroup
                 }
 
                 // Developer sanity check
-                Set<String> prefixes = new HashSet<>();
+                Collection<String> prefixes = new HashSet<>();
                 for (
                         @Kind
                         int kind = 0; kind <= ROW_KIND_MAX; kind++) {
@@ -820,7 +830,7 @@ public class BooklistGroup
 
         @SuppressWarnings("FieldNotUsedInToString")
         @NonNull
-        private String mKeyPrefix;
+        private final String mKeyPrefix;
 
         @Nullable
         private DomainDefinition mFormattedDomain;
@@ -899,7 +909,7 @@ public class BooklistGroup
                     if (source.isEmpty()) {
                         return context.getString(R.string.hint_empty_language);
                     } else {
-                        return LanguageUtils.getDisplayName(source);
+                        return LanguageUtils.getDisplayName(context, source);
                     }
                 }
                 case RATING: {

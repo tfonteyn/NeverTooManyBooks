@@ -35,6 +35,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
@@ -50,6 +51,20 @@ public abstract class BookSearchByIsbnBaseFragment
 
         // Mandatory
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.title_search_isbn);
+
+        if (savedInstanceState == null) {
+            //noinspection ConstantConditions
+            SearchSites.promptToRegister(getContext(), false, "search",
+                                         mSearchCoordinator.getSearchSites());
+        }
     }
 
     @Override
@@ -84,14 +99,10 @@ public abstract class BookSearchByIsbnBaseFragment
      * <p>
      * mIsbnSearchText must be 10 characters (or more) to even consider a search.
      */
-    void prepareSearch(@NonNull String isbn) {
-        // sanity check
-        if (isbn.length() < 10) {
-            return;
-        }
+    void prepareSearch() {
+        String isbn = mSearchCoordinator.getIsbnSearchText();
 
-        // intercept UPC numbers
-        isbn = ISBN.upc2isbn(isbn);
+        // sanity check
         if (isbn.length() < 10) {
             return;
         }
@@ -107,40 +118,36 @@ public abstract class BookSearchByIsbnBaseFragment
         // See if ISBN already exists in our database, if not then start the search.
         final long existingId = mDb.getBookIdFromIsbn(isbn, true);
         if (existingId != 0) {
-            isbnAlreadyPresent(existingId);
+            //noinspection ConstantConditions
+            new AlertDialog.Builder(getContext())
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setTitle(R.string.title_duplicate_book)
+                    .setMessage(R.string.confirm_duplicate_book_message)
+                    // this dialog is important. Make sure the user pays some attention
+                    .setCancelable(false)
+                    // User aborts this isbn
+                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                        clearPreviousSearchCriteria();
+                        startInput();
+                    })
+                    // User wants to review the existing book
+                    .setNeutralButton(R.string.edit, (dialog, which) -> {
+                        Intent intent = new Intent(getContext(), EditBookActivity.class)
+                                .putExtra(DBDefinitions.KEY_PK_ID, existingId);
+                        startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+                    })
+                    // User wants to add regardless
+                    .setPositiveButton(R.string.btn_confirm_add, (dialog, which) -> startSearch())
+                    .create()
+                    .show();
         } else {
             startSearch();
         }
     }
 
-    /**
-     * ISBN was already present in the database, Verify what the user wants to do.
-     *
-     * @param existingId of the book we already have
-     */
-    private void isbnAlreadyPresent(final long existingId) {
-        //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.title_duplicate_book)
-                .setMessage(R.string.confirm_duplicate_book_message)
-                // this dialog is important. Make sure the user pays some attention
-                .setCancelable(false)
-                // User aborts this isbn
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-                    clearPreviousSearchCriteria();
-                    startInput();
-                })
-                // User wants to review the existing book
-                .setNeutralButton(R.string.edit, (dialog, which) -> {
-                    Intent intent = new Intent(getContext(), EditBookActivity.class)
-                            .putExtra(DBDefinitions.KEY_PK_ID, existingId);
-                    startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-                })
-                // User wants to add regardless
-                .setPositiveButton(R.string.btn_confirm_add, (dialog, which) -> startSearch())
-                .create()
-                .show();
+    @Override
+    protected boolean onSearch() {
+        return mSearchCoordinator.searchByText();
     }
 
     /**

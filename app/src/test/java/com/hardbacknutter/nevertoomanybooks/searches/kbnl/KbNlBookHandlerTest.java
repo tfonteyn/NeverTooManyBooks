@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.searches.kbnl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -42,6 +43,7 @@ import org.xml.sax.SAXException;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 
@@ -52,8 +54,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class KbNlBookHandlerTest
         extends CommonSetup {
 
-    private static final String bookFilename = "/kbnl-book-1.xml";
-    private static final String comicFilename = "/kbnl-comic-1.xml";
+    private static final String bookFilename = "/kbnl/kbnl-book-1.xml";
+    private static final String comicFilename = "/kbnl/kbnl-comic-1.xml";
 
     private KbNlBookHandler mHandler;
     private SAXParser mParser;
@@ -66,8 +68,7 @@ class KbNlBookHandlerTest
         mHandler = new KbNlBookHandler(mBookData);
         try {
             mParser = factory.newSAXParser();
-        } catch (ParserConfigurationException | SAXException e) {
-            e.printStackTrace();
+        } catch (ParserConfigurationException | SAXException ignore) {
         }
     }
 
@@ -86,7 +87,12 @@ class KbNlBookHandlerTest
         assertEquals("paperback", mBookData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("48", mBookData.getString(DBDefinitions.KEY_PAGES));
 
-        assertEquals("Dark Dragon Books", mBookData.getString(DBDefinitions.KEY_PUBLISHER));
+        ArrayList<Publisher> allPublishers = mBookData
+                .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Dark Dragon Books", allPublishers.get(0).getName());
 
 
         List<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
@@ -127,7 +133,12 @@ class KbNlBookHandlerTest
         assertEquals("geb.", mBookData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("156", mBookData.getString(DBDefinitions.KEY_PAGES));
 
-        assertEquals("Bruna", mBookData.getString(DBDefinitions.KEY_PUBLISHER));
+        ArrayList<Publisher> allPublishers = mBookData
+                .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Bruna", allPublishers.get(0).getName());
 
         List<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);

@@ -93,13 +93,13 @@ public class SearchAdminModel
 
         // first see if we got passed in custom lists.
         if (mBooks == null) {
-            mBooks = args.getParcelableArrayList(SearchSites.BKEY_DATA);
+            mBooks = args.getParcelableArrayList(SearchSites.BKEY_DATA_SITES);
         }
         if (mCovers == null) {
-            mCovers = args.getParcelableArrayList(SearchSites.BKEY_COVERS);
+            mCovers = args.getParcelableArrayList(SearchSites.BKEY_COVERS_SITES);
         }
         if (mAltEd == null) {
-            mAltEd = args.getParcelableArrayList(SearchSites.BKEY_ALT_ED);
+            mAltEd = args.getParcelableArrayList(SearchSites.BKEY_ALT_ED_SITES);
         }
         // now depending on which tabs to show, make sure the lists are not null.
         // List(s) for tabs which are not shown remain null.

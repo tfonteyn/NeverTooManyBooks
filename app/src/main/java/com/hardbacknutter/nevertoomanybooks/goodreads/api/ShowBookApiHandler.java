@@ -39,6 +39,7 @@ import java.util.regex.Matcher;
 
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -245,12 +246,12 @@ public abstract class ShowBookApiHandler
     /**
      * Constructor.
      *
-     * @param context   Current context
-     * @param grManager the Goodreads Manager
+     * @param localizedAppContext Localised application context
+     * @param grManager           the Goodreads Manager
      *
      * @throws CredentialsException with GoodReads
      */
-    ShowBookApiHandler(@NonNull final Context context,
+    ShowBookApiHandler(@NonNull final Context localizedAppContext,
                        @NonNull final GoodreadsManager grManager)
             throws CredentialsException {
         super(grManager);
@@ -258,7 +259,7 @@ public abstract class ShowBookApiHandler
             throw new CredentialsException(R.string.goodreads);
         }
 
-        mEBookString = context.getString(R.string.book_format_ebook);
+        mEBookString = localizedAppContext.getString(R.string.book_format_ebook);
 
         buildFilters();
     }
@@ -394,13 +395,13 @@ public abstract class ShowBookApiHandler
         }
 
         if (fetchThumbnail) {
-            handleThumbnail();
+            handleThumbnail(App.getAppContext());
         }
 
         return mBookData;
     }
 
-    private void handleThumbnail() {
+    private void handleThumbnail(@NonNull final Context appContext) {
 
         // first check what the "best" image is that we have.
         String coverUrl = null;
@@ -418,7 +419,7 @@ public abstract class ShowBookApiHandler
         // and if we do have an image, save it using the Goodreads book id as base name.
         if (coverUrl != null) {
             long grBookId = mBookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
-            String fileSpec = ImageUtils.saveImage(coverUrl, String.valueOf(grBookId),
+            String fileSpec = ImageUtils.saveImage(appContext, coverUrl, String.valueOf(grBookId),
                                                    GoodreadsManager.FILENAME_SUFFIX, null);
             if (fileSpec != null) {
                 ArrayList<String> list =

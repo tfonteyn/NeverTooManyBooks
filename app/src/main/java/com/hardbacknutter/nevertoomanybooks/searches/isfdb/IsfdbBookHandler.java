@@ -38,6 +38,7 @@ import androidx.annotation.VisibleForTesting;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -154,6 +154,9 @@ public class IsfdbBookHandler
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
 
     private final String mUnknown;
+    @NonNull
+    private final Context mLocalizedAppContext;
+    private final String mBaseUrl;
     /** The fully qualified ISFDB search url. */
     private String mPath;
     /** List of all editions (ISFDB 'publicationRecord') of this book. */
@@ -165,31 +168,34 @@ public class IsfdbBookHandler
     @Nullable
     private String mFirstPublication;
 
-    private final String mBaseUrl;
-
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param localizedAppContext Localised application context
      */
-    IsfdbBookHandler(@NonNull final Context context) {
+    IsfdbBookHandler(@NonNull final Context localizedAppContext) {
         super();
-        mBaseUrl = IsfdbManager.getBaseURL(context);
-        mUnknown = context.getString(R.string.unknown);
+        mLocalizedAppContext = localizedAppContext;
+
+        mBaseUrl = IsfdbManager.getBaseURL(localizedAppContext);
+        mUnknown = localizedAppContext.getString(R.string.unknown);
     }
 
     /**
      * Constructor used for testing.
      *
-     * @param context Current context
-     * @param doc     the JSoup Document.
+     * @param localizedAppContext Localised application context
+     * @param doc                 the JSoup Document.
      */
     @VisibleForTesting
-    IsfdbBookHandler(@NonNull final Context context,
+    IsfdbBookHandler(@NonNull final Context localizedAppContext,
                      @NonNull final Document doc) {
         super(doc);
-        mBaseUrl = IsfdbManager.getBaseURL(context);
-        mUnknown = context.getString(R.string.unknown);
+        mLocalizedAppContext = localizedAppContext;
+
+        mBaseUrl = IsfdbManager.getBaseURL(mLocalizedAppContext);
+        mUnknown = mLocalizedAppContext.getString(R.string.unknown);
+
     }
 
     @Nullable
@@ -236,7 +242,7 @@ public class IsfdbBookHandler
 
         mPath = path;
 
-        if (loadPage(mPath) == null) {
+        if (loadPage(mLocalizedAppContext, mPath) == null) {
             return new Bundle();
         }
 
@@ -271,7 +277,7 @@ public class IsfdbBookHandler
             mDoc = edition.doc;
         } else {
             // nop, go get it.
-            if (loadPage(mPath) == null) {
+            if (loadPage(mLocalizedAppContext, mPath) == null) {
                 return new Bundle();
             }
         }
@@ -439,7 +445,7 @@ public class IsfdbBookHandler
      * }
      * </pre>
      *
-     * @param bookData         a new Bundle()  (must be passed in so we can mock it in test)
+     * @param bookData         to populate
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   whether to get thumbnails as well
      *
@@ -457,13 +463,13 @@ public class IsfdbBookHandler
         Elements allContentBoxes = mDoc.select("div.contentbox");
         // sanity check
         if (allContentBoxes == null) {
-            Logger.warn(App.getAppContext(), TAG, "parseDoc", "no contentbox found",
+            Logger.warn(mLocalizedAppContext, TAG, "parseDoc", "no contentbox found",
                         "mDoc.location()=" + mDoc.location());
             return bookData;
         }
 
         Element contentBox = allContentBoxes.first();
-        Element ul = contentBox.select("ul").first();
+        Element ul = contentBox.selectFirst("ul");
         Elements lis = ul.children();
 
         String tmpString;
@@ -606,7 +612,7 @@ public class IsfdbBookHandler
 
                 } else if ("External IDs:".equalsIgnoreCase(fieldName)) {
                     // send the <ul> children
-                    handleExternalIdUrls(li.child(1).children(), bookData);
+                    handleExternalIdElements(li.child(1).children(), bookData);
 
                 } else if ("Editors:".equalsIgnoreCase(fieldName)) {
                     Elements as = li.select("a");
@@ -622,7 +628,7 @@ public class IsfdbBookHandler
             } catch (@NonNull final IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
-                Logger.error(App.getAppContext(), TAG, e,
+                Logger.error(mLocalizedAppContext, TAG, e,
                              "path: " + mPath + "\n\nLI: " + li.toString());
             }
         }
@@ -678,6 +684,7 @@ public class IsfdbBookHandler
 
         // Anthology type: make sure TOC_MULTIPLE_AUTHORS is correct.
         if (!tocEntries.isEmpty()) {
+            @Book.TocBits
             long type = bookData.getLong(DBDefinitions.KEY_TOC_BITMASK);
             if (TocEntry.hasMultipleAuthors(tocEntries)) {
                 type |= Book.TOC_MULTIPLE_AUTHORS;
@@ -720,7 +727,7 @@ public class IsfdbBookHandler
              */
             Element img = mDoc.selectFirst("div.contentbox").selectFirst("img");
             if (img != null) {
-                fetchCover(img.attr("src"), bookData);
+                fetchCover(mLocalizedAppContext, img.attr("src"), bookData);
             }
         }
 
@@ -757,58 +764,50 @@ public class IsfdbBookHandler
      * @param elements LI elements
      * @param bookData bundle to store the findings.
      */
-    private void handleExternalIdUrls(@NonNull final Elements elements,
-                                      @NonNull final Bundle bookData) {
-        List<String> externalIdUrls = new ArrayList<>();
+    private void handleExternalIdElements(@NonNull final Iterable<Element> elements,
+                                          @NonNull final Bundle bookData) {
+        Collection<String> externalIdUrls = new ArrayList<>();
         for (Element extIdLi : elements) {
             Element extIdLink = extIdLi.select("a").first();
             externalIdUrls.add(extIdLink.attr("href"));
         }
-        if (externalIdUrls.size() > 0) {
-            handleExternalIdUrls(externalIdUrls, bookData);
-        }
-    }
 
-    /**
-     * @param urlList  clean url strings to external sites.
-     * @param bookData bundle to store the findings.
-     */
-    private void handleExternalIdUrls(@NonNull final List<String> urlList,
-                                      @NonNull final Bundle bookData) {
-        for (String url : urlList) {
-            if (url.contains("www.worldcat.org")) {
-                // http://www.worldcat.org/oclc/60560136
-                bookData.putLong(DBDefinitions.KEY_EID_WORLDCAT, stripNumber(url, '/'));
-            } else if (url.contains("amazon")) {
-                // this is an Amazon ASIN link.
-                bookData.putString(DBDefinitions.KEY_EID_ASIN, stripString(url, '/'));
+        if (!externalIdUrls.isEmpty()) {
+            for (String url : externalIdUrls) {
+                if (url.contains("www.worldcat.org")) {
+                    // http://www.worldcat.org/oclc/60560136
+                    bookData.putLong(DBDefinitions.KEY_EID_WORLDCAT, stripNumber(url, '/'));
+                } else if (url.contains("amazon")) {
+                    // this is an Amazon ASIN link.
+                    bookData.putString(DBDefinitions.KEY_EID_ASIN, stripString(url, '/'));
 
 
-//            } else if (url.contains("lccn.loc.gov")) {
-                // Library of Congress (USA)
-                // http://lccn.loc.gov/2008299472
-                // http://lccn.loc.gov/95-22691
+                    //            } else if (url.contains("lccn.loc.gov")) {
+                    // Library of Congress (USA)
+                    // http://lccn.loc.gov/2008299472
+                    // http://lccn.loc.gov/95-22691
 
 
-//            } else if (url.contains("explore.bl.uk")) {
-                // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
-                // vid=BLVU1&docId=BLL01014057142
-                // British Library
+                    //            } else if (url.contains("explore.bl.uk")) {
+                    // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
+                    // vid=BLVU1&docId=BLL01014057142
+                    // British Library
 
-//            } else if (url.contains("d-nb.info")) {
-                // http://d-nb.info/986851329
-                // DEUTSCHEN NATIONALBIBLIOTHEK
+                    //            } else if (url.contains("d-nb.info")) {
+                    // http://d-nb.info/986851329
+                    // DEUTSCHEN NATIONALBIBLIOTHEK
 
-//            } else if (url.contains("picarta.pica.nl")) {
-                // http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=802041833
-                // Nederlandse Bibliografie
-
-
-//           } else if (url.contains("tercerafundacion.net")) {
-                // Spanish
-                // https://tercerafundacion.net/biblioteca/ver/libro/2329
+                    //            } else if (url.contains("picarta.pica.nl")) {
+                    // http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=802041833
+                    // Nederlandse Bibliografie
 
 
+                    //           } else if (url.contains("tercerafundacion.net")) {
+                    // Spanish
+                    // https://tercerafundacion.net/biblioteca/ver/libro/2329
+
+
+                }
             }
         }
     }
@@ -822,7 +821,7 @@ public class IsfdbBookHandler
      * @return stripped string
      */
     @Nullable
-    private String digits(@Nullable final String s,
+    private String digits(@Nullable final CharSequence s,
                           final boolean isIsbn) {
         if (s == null) {
             return null;
@@ -841,17 +840,19 @@ public class IsfdbBookHandler
     /**
      * Fetch the cover from the url. Uses the ISBN (if any) from the bookData bundle.
      *
-     * @param coverUrl fully qualified url
-     * @param bookData destination bundle
+     * @param appContext Application context
+     * @param coverUrl   fully qualified url
+     * @param bookData   destination bundle
      */
-    private void fetchCover(@NonNull final String coverUrl,
+    private void fetchCover(@NonNull final Context appContext,
+                            @NonNull final String coverUrl,
                             @NonNull final Bundle /* in/out */ bookData) {
         String isbn = bookData.getString(DBDefinitions.KEY_ISBN, "");
         if (isbn.isEmpty()) {
             isbn = bookData.getString(DBDefinitions.KEY_EID_ISFDB, "");
         }
 
-        String fileSpec = ImageUtils.saveImage(coverUrl, isbn, FILENAME_SUFFIX, null);
+        String fileSpec = ImageUtils.saveImage(appContext, coverUrl, isbn, FILENAME_SUFFIX, null);
 
         if (fileSpec != null) {
             ArrayList<String> imageList =
@@ -901,7 +902,7 @@ public class IsfdbBookHandler
 
         final ArrayList<TocEntry> results = new ArrayList<>();
 
-        if (loadPage(mPath) == null) {
+        if (loadPage(mLocalizedAppContext, mPath) == null) {
             return results;
         }
 
@@ -1024,7 +1025,7 @@ public class IsfdbBookHandler
             // very unlikely
             if (title == null) {
                 title = "";
-                Logger.warn(App.getAppContext(), TAG, "getTocList",
+                Logger.warn(mLocalizedAppContext, TAG, "getTocList",
                             "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
                             "no title for li=" + li);
             }

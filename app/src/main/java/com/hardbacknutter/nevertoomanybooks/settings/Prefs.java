@@ -165,7 +165,7 @@ public final class Prefs {
      * @return the value
      */
     @NonNull
-    public static Integer toInteger(@NonNull final Set<String> set) {
+    public static Integer toInteger(@NonNull final Iterable<String> set) {
         int tmp = 0;
         for (String s : set) {
             tmp += Integer.parseInt(s);

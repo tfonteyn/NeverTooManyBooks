@@ -96,9 +96,8 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /**
-     * RELEASE: Update database version.
-     * <p>
      * db1 == app1 == 1.0.0
+     * db2 == app1 == 1.0.0
      */
     public static final int DATABASE_VERSION = 2;
     private static final String TAG = "DBHelper";
@@ -588,10 +587,10 @@ public final class DBHelper
                 syncedDb.execSQL(createIndex);
             } catch (@NonNull final SQLException e) {
                 // bad sql is a developer issue... die!
-                Logger.error(App.getAppContext(), TAG, e);
+                Logger.error(TAG, e);
                 throw e;
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(App.getAppContext(), TAG, e, "Index creation failed: " + createIndex);
+                Logger.error(TAG, e, "Index creation failed: " + createIndex);
             }
         }
         syncedDb.analyze();

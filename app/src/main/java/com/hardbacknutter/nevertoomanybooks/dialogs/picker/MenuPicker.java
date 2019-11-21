@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.picker;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -70,11 +69,11 @@ public class MenuPicker<T>
      * @param listener   callback handler with the MenuItem the user chooses + the position
      */
     public MenuPicker(@NonNull final Context context,
-                      @Nullable final String title,
+                      @Nullable final CharSequence title,
                       @NonNull final Menu menu,
                       @Nullable final T userObject,
                       @NonNull final ContextItemSelected<T> listener) {
-        this(context, title, null, false, null, menu, userObject, listener);
+        this(context, title, null, menu, userObject, listener);
     }
 
     /**
@@ -82,25 +81,20 @@ public class MenuPicker<T>
      * <p>
      * The caller can create a menu calling {@link #createMenu(Context)},
      * populate it and pass it here.
-     *
      * @param context          Current context
      * @param title            (optional) for the dialog/menu
      * @param message          (optional) message to display above the menu
-     * @param showCancel       set to {@code true} to show a 'cancel' button.
-     * @param onCancelListener (optional) listener for cancel events
      * @param menu             the menu options to show
      * @param userObject       (optional) a reference free to set/use by the caller
      * @param listener         callback handler with the MenuItem the user chooses + the position
      */
     private MenuPicker(@NonNull final Context context,
-                       @Nullable final String title,
-                       @Nullable final String message,
-                       final boolean showCancel,
-                       @Nullable final DialogInterface.OnCancelListener onCancelListener,
+                       @Nullable final CharSequence title,
+                       @Nullable final CharSequence message,
                        @NonNull final Menu menu,
                        @Nullable final T userObject,
                        @NonNull final ContextItemSelected<T> listener) {
-        super(context, title, message, showCancel, onCancelListener);
+        super(context, title, message, false, null);
 
         mAdapter = new MenuItemListAdapter(context, menu, menuItem -> {
             if (menuItem.hasSubMenu()) {

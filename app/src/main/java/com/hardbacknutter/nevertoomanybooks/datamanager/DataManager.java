@@ -39,12 +39,11 @@ import androidx.annotation.StringRes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.DataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
@@ -88,9 +87,9 @@ public class DataManager {
     private final Map<String, Integer> mValidatorErrorIdMap = new UniqueMap<>();
 
     /** A list of cross-validators to apply if all fields pass simple validation. */
-    private final List<DataCrossValidator> mCrossValidators = new ArrayList<>();
+    private final Collection<DataCrossValidator> mCrossValidators = new ArrayList<>();
     /** The last validator exception caught by this object. */
-    private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
+    private final Collection<ValidatorException> mValidationExceptions = new ArrayList<>();
 
     /** Raw data storage. */
     private final Bundle mRawData = new Bundle();
@@ -171,7 +170,7 @@ public class DataManager {
 
             } else {
                 // THIS IS NOT IDEAL! Keep checking the log if we ever get here.
-                Logger.warnWithStackTrace(App.getAppContext(), TAG, "putAll",
+                Logger.warnWithStackTrace(TAG, "putAll",
                                           "key=`" + key + '`',
                                           "value=" + value);
                 if (value != null) {

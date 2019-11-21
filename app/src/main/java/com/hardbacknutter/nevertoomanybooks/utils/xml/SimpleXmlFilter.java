@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -129,7 +130,7 @@ public class SimpleXmlFilter {
     private final XmlFilter mRootFilter;
     private final ArrayList<BuilderContext> mContexts = new ArrayList<>();
     private final ArrayList<String> mTags = new ArrayList<>();
-    private final DataStore mRootData = new DataStore();
+    private final DataStoreProvider mRootData = new DataStore();
 
     /**
      * Constructor.
@@ -417,7 +418,7 @@ public class SimpleXmlFilter {
          */
         BuilderContext(@NonNull final XmlFilter root,
                        @NonNull final DataStoreProvider parent,
-                       @NonNull final List<String> tags) {
+                       @NonNull final Collection<String> tags) {
             this.parent = parent;
             XmlFilter.buildFilter(root, tags)
                      .setStartAction(mHandleStart, this)

@@ -48,6 +48,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -74,6 +75,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 
 /**
  * First attempt to split of into a model for BoB.
@@ -436,6 +440,7 @@ public class BooksOnBookshelfModel
         blb.addExtraDomain(DBDefinitions.DOM_TITLE,
                            DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
                            false);
+        // the language
         blb.addExtraDomain(DBDefinitions.DOM_BOOK_LANGUAGE,
                            DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LANGUAGE),
                            false);
@@ -447,6 +452,11 @@ public class BooksOnBookshelfModel
         // The read flag
         blb.addExtraDomain(DBDefinitions.DOM_BOOK_READ,
                            DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
+                           false);
+
+        // Always get the Author ID (the name is depending on style).
+        blb.addExtraDomain(DBDefinitions.DOM_FK_AUTHOR,
+                           TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR),
                            false);
 
         // external site ID's
@@ -468,8 +478,8 @@ public class BooksOnBookshelfModel
                            false);
 
         /*
-         * If we do not use a background task for the extras, then we need to
-         * add the needed extras columns to the main query.
+         * If we do not use a background task for the extras,
+         * then we add the needed extras columns to the main query.
          * Depending on the device speed, and how the user uses styles,
          * BOTH methods can be advantageous.
          * Hence this is a preference <strong>per style</strong>.
@@ -845,7 +855,7 @@ public class BooksOnBookshelfModel
          */
         @NonNull
         public String getDisplayString() {
-            List<String> list = new ArrayList<>();
+            Collection<String> list = new ArrayList<>();
 
             if (ftsAuthor != null && !ftsAuthor.isEmpty()) {
                 list.add(ftsAuthor);
@@ -1064,7 +1074,7 @@ public class BooksOnBookshelfModel
 
             } catch (@NonNull final Exception e) {
                 // catch ALL exceptions, so we get them logged for certain.
-                Logger.error(App.getAppContext(), TAG, e);
+                Logger.error(TAG, e);
                 mException = e;
                 cleanup();
             }

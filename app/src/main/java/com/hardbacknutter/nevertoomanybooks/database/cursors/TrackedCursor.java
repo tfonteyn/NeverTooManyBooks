@@ -38,12 +38,10 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
@@ -70,7 +68,7 @@ public class TrackedCursor
     private static final AtomicInteger DEBUG_INSTANCE_COUNTER = new AtomicInteger();
 
     /** Used as a collection of known cursors. */
-    private static final Set<WeakReference<TrackedCursor>> CURSORS = new HashSet<>();
+    private static final Collection<WeakReference<TrackedCursor>> CURSORS = new HashSet<>();
 
     /** Static counter for unique cursor ID's, only ever goes up. */
     @NonNull
@@ -116,7 +114,7 @@ public class TrackedCursor
      */
     public static void dumpCursors() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
-            List<TrackedCursor> list = new ArrayList<>();
+            Collection<TrackedCursor> list = new ArrayList<>();
             synchronized (CURSORS) {
                 for (WeakReference<TrackedCursor> r : CURSORS) {
                     TrackedCursor c1 = r.get();
@@ -166,7 +164,7 @@ public class TrackedCursor
     protected void finalize() {
         if (!mCloseWasCalled) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
-                Logger.warn(App.getAppContext(), TAG, "finalize|calling close()");
+                Logger.warn(TAG, "finalize|calling close()");
                 removeCursor();
             }
         }

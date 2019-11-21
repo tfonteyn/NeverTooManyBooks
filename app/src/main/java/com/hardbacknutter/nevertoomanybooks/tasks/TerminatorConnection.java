@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
@@ -42,7 +43,6 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -84,7 +84,7 @@ public final class TerminatorConnection
     private final HttpURLConnection mCon;
     private final int mKillDelayInMillis;
     @Nullable
-    public BufferedInputStream inputStream;
+    private BufferedInputStream inputStream;
     @Nullable
     private Thread closingThread;
     private boolean isOpen;
@@ -94,34 +94,38 @@ public final class TerminatorConnection
     /**
      * Constructor. Get an open TerminatorConnection from a URL.
      *
-     * @param urlStr URL to retrieve
+     * @param appContext Application context
+     * @param urlStr     URL to retrieve
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    public TerminatorConnection(@NonNull final String urlStr)
+    public TerminatorConnection(@NonNull final Context appContext,
+                                @NonNull final String urlStr)
             throws IOException {
         // redirect MUST BE SET TO TRUE here.
-        this(urlStr, true);
+        this(appContext, urlStr, true);
     }
 
     /**
      * Constructor. Get an open TerminatorConnection from a URL.
      *
-     * @param urlStr   URL to retrieve
-     * @param redirect whether redirects should be followed or not
+     * @param appContext Application context
+     * @param urlStr     URL to retrieve
+     * @param redirect   whether redirects should be followed or not
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    private TerminatorConnection(@NonNull final String urlStr,
+    private TerminatorConnection(@NonNull final Context appContext,
+                                 @NonNull final String urlStr,
                                  final boolean redirect)
             throws IOException {
 
         final URL url = new URL(urlStr);
 
         // lets make sure name resolution and basic site access works.
-        NetworkUtils.poke(App.getAppContext(), urlStr);
+        NetworkUtils.poke(appContext, urlStr);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "Constructor|url=\"" + url + '\"');
@@ -133,7 +137,7 @@ public final class TerminatorConnection
             mCon = (HttpURLConnection) url.openConnection();
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Logger.error(App.getAppContext(), TAG, e, "url=" + urlStr);
+                Logger.error(appContext, TAG, e, "url=" + urlStr);
             }
             throw e;
         }
@@ -147,7 +151,8 @@ public final class TerminatorConnection
     /**
      * Convenience function. Get an open TerminatorConnection from a URL.
      *
-     * @param urlStr URL to retrieve
+     * @param appContext Application context
+     * @param urlStr     URL to retrieve
      *
      * @return the open connection
      *
@@ -155,16 +160,17 @@ public final class TerminatorConnection
      */
     @WorkerThread
     @NonNull
-    public static TerminatorConnection openConnection(@NonNull final String urlStr)
+    public static TerminatorConnection openConnection(@NonNull final Context appContext,
+                                                      @NonNull final String urlStr)
             throws IOException {
         try {
-            TerminatorConnection tCon = new TerminatorConnection(urlStr);
+            TerminatorConnection tCon = new TerminatorConnection(appContext, urlStr);
             tCon.open();
             return tCon;
 
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Logger.error(App.getAppContext(), TAG, e, "url=" + urlStr);
+                Logger.error(appContext, TAG, e, "url=" + urlStr);
             }
             throw e;
         }
@@ -173,6 +179,11 @@ public final class TerminatorConnection
     @NonNull
     public HttpURLConnection getHttpURLConnection() {
         return mCon;
+    }
+
+    @Nullable
+    public BufferedInputStream getInputStream() {
+        return inputStream;
     }
 
     /**
@@ -256,7 +267,7 @@ public final class TerminatorConnection
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(App.getAppContext(), TAG, "finalize|calling close()");
+            Logger.warn(TAG, "finalize|calling close()");
             close();
         }
         super.finalize();

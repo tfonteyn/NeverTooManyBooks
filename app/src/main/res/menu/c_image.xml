@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@id/MENU_DELETE"
+        android:icon="@drawable/ic_delete"
+        android:title="@string/menu_delete" />
+
+    <item
+        android:id="@id/SUBMENU_THUMB_REPLACE"
+        android:icon="@drawable/ic_find_replace"
+        android:title="@string/menu_cover_replace"
+        >
+        <menu>
+            <item
+                android:id="@id/MENU_THUMB_ADD_FROM_CAMERA"
+                android:icon="@drawable/ic_add_a_photo"
+                android:title="@string/menu_cover_replace_from_camera" />
+
+            <item
+                android:id="@id/MENU_THUMB_ADD_FROM_GALLERY"
+                android:icon="@drawable/ic_photo_gallery"
+                android:title="@string/menu_cover_replace_from_gallery" />
+
+            <item
+                android:id="@id/MENU_THUMB_ADD_ALT_EDITIONS"
+                android:icon="@drawable/ic_find_replace"
+                android:title="@string/menu_cover_replace_from_alt_editions" />
+
+        </menu>
+    </item>
+
+    <item
+        android:id="@id/SUBMENU_THUMB_ROTATE"
+        android:icon="@drawable/ic_rotate_right"
+        android:title="@string/menu_cover_rotate"
+        >
+        <menu>
+            <item
+                android:id="@id/MENU_THUMB_ROTATE_CW"
+                android:icon="@drawable/ic_rotate_right"
+                android:title="@string/menu_cover_rotate_cw" />
+
+            <item
+                android:id="@id/MENU_THUMB_ROTATE_CCW"
+                android:icon="@drawable/ic_rotate_left"
+                android:title="@string/menu_cover_rotate_ccw" />
+
+            <item
+                android:id="@id/MENU_THUMB_ROTATE_180"
+                android:icon="@drawable/ic_swap_vert"
+                android:title="@string/menu_cover_rotate_180" />
+
+        </menu>
+    </item>
+
+    <item
+        android:id="@id/MENU_THUMB_CROP"
+        android:icon="@drawable/ic_crop"
+        android:title="@string/menu_cover_crop" />
+</menu>

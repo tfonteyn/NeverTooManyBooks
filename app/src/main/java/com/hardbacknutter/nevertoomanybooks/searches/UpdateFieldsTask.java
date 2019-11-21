@@ -36,10 +36,12 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -52,12 +54,12 @@ import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
-import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
- * ManagedTask to update requested fields by doing a search.
+ * Task to update requested fields by doing a search.
  *
  * <strong>Note:</strong> this is currently a low-level Thread!
  * <p>
@@ -65,16 +67,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  */
 public class UpdateFieldsTask
         extends Thread
-        implements Cancellable {
+        implements ProgressDialogFragment.Cancellable {
 
     /** log tag. */
-    private static final String TAG = "ManagedTask";
+    private static final String TAG = "UpdateFieldsTask";
 
     /** The fields that the user requested to update. */
     @NonNull
     private final Map<String, FieldUsage> mFields;
     /** Lock help by pop and by push when an item was added to an empty stack. */
-    private final ReentrantLock mSearchLock = new ReentrantLock();
+    private final Lock mSearchLock = new ReentrantLock();
     /** Signal for available items. */
     private final Condition mOneSearch = mSearchLock.newCondition();
 
@@ -261,7 +263,7 @@ public class UpdateFieldsTask
     private void processSearchResults(@NonNull final Context context,
                                       @NonNull final Bundle newBookData) {
         // Filter the data to remove keys we don't care about
-        List<String> toRemove = new ArrayList<>();
+        Collection<String> toRemove = new ArrayList<>();
         for (String key : newBookData.keySet()) {
             //noinspection ConstantConditions
             if (!mCurrentBookFieldUsages.containsKey(key)
@@ -484,21 +486,17 @@ public class UpdateFieldsTask
                 // optional
                 String publisher = mOriginalBookData.getString(DBDefinitions.KEY_PUBLISHER, "");
 
-                // Start searching, then wait...
                 mSearchCoordinator.setFetchThumbnail(wantCoverImage);
-
                 mSearchCoordinator.setIsbnSearchText(isbn);
                 mSearchCoordinator.setAuthorSearchText(author);
                 mSearchCoordinator.setTitleSearchText(title);
                 mSearchCoordinator.setPublisherSearchText(publisher);
+                // Start searching, then wait...
                 mSearchCoordinator.searchByText();
-
                 mSearchLock.lock();
                 try {
-                    /*
-                     * Wait for the one search to complete.
-                     * After processing the results, it wil call mOneSearch.signal()
-                     */
+                    // Wait for the one search to complete.
+                    // After processing the results, it wil call mOneSearch.signal()
                     mOneSearch.await();
                 } finally {
                     mSearchLock.unlock();
@@ -537,6 +535,7 @@ public class UpdateFieldsTask
 
     @Override
     public boolean cancel(final boolean mayInterruptIfRunning) {
+        // disregard the mayInterruptIfRunning flag....
         interrupt();
         return true;
     }

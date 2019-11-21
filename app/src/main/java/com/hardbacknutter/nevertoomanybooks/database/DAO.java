@@ -284,7 +284,7 @@ public class DAO
     private static final String ERROR_NEEDS_TRANSACTION = "Needs transaction";
     /** log error string. */
     private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to onProgress FTS";
-    /** See {@link #encodeString(String)}. */
+    /** See {@link #encodeString}. */
     private static final Pattern ENCODE_STRING = Pattern.compile("'", Pattern.LITERAL);
     /** any non-word character. */
     private static final Pattern ENCODE_ORDERBY_PATTERN = Pattern.compile("\\W");
@@ -350,7 +350,7 @@ public class DAO
      * {@link String#replace(CharSequence, CharSequence)}.
      */
     @NonNull
-    public static String encodeString(@NonNull final String value) {
+    public static String encodeString(@NonNull final CharSequence value) {
         return ENCODE_STRING.matcher(value).replaceAll(Matcher.quoteReplacement("''"));
     }
 
@@ -363,11 +363,33 @@ public class DAO
      *
      * @return the encoded value
      */
-    static String encodeOrderByColumn(@NonNull final String value,
+    static String encodeOrderByColumn(@NonNull final CharSequence value,
                                       @NonNull final Locale locale) {
 
         // remove all non-word characters. i.e. all characters not in [a-zA-Z_0-9]
         return ENCODE_ORDERBY_PATTERN.matcher(value).replaceAll("").toLowerCase(locale);
+    }
+
+    /**
+     * A complete export of all tables (flattened) in the database.
+     *
+     * @param sinceDate to select all books added/modified since that date.
+     *                  Set to {@code null} for *all* books.
+     *
+     * @return BookCursor over all books, authors, etc
+     */
+    @NonNull
+    public BookCursor fetchBooksForExport(@Nullable final Date sinceDate) {
+        String whereClause;
+        if (sinceDate == null) {
+            whereClause = "";
+        } else {
+            whereClause = TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED)
+                          + ">'" + DateUtils.utcSqlDateTime(sinceDate) + '\'';
+        }
+
+        return (BookCursor) sSyncedDb.rawQueryWithFactory(
+                BOOKS_CURSOR_FACTORY, SqlAllBooks.getPrimaryAuthorAndSeries(whereClause), null, "");
     }
 
     /**
@@ -581,7 +603,7 @@ public class DAO
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(App.getAppContext(), TAG, "finalize|calling close()");
+            Logger.warn(TAG, "finalize|calling close()");
             close();
         }
         super.finalize();
@@ -1114,7 +1136,7 @@ public class DAO
     private void preprocessBook(@NonNull final Context context,
                                 @NonNull final Book book) {
 
-        Locale bookLocale = book.getLocale();
+        Locale bookLocale = book.getLocale(context);
 
         // Handle AUTHOR. When is this needed? Legacy archive import ?
         if (book.containsKey(KEY_AUTHOR_FORMATTED)
@@ -1132,6 +1154,7 @@ public class DAO
         // making sure TOC_MULTIPLE_AUTHORS is correct.
         ArrayList<TocEntry> tocEntries = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
         if (!tocEntries.isEmpty()) {
+            @Book.TocBits
             long type = book.getLong(DBDefinitions.KEY_TOC_BITMASK);
             if (TocEntry.hasMultipleAuthors(tocEntries)) {
                 type |= Book.TOC_MULTIPLE_AUTHORS;
@@ -1140,7 +1163,7 @@ public class DAO
         }
 
         // Handle all price related fields.
-        preprocessPrices(book);
+        preprocessPrices(context, book);
 
         // Remove blank external ID's
         for (DomainDefinition domain : new DomainDefinition[]{
@@ -1235,12 +1258,13 @@ public class DAO
         }
     }
 
-    private void preprocessPrices(@NonNull final Book book) {
+    private void preprocessPrices(@NonNull final Context context,
+                                  @NonNull final Book book) {
         //TEST: source field as String.. does this ever happen after we changed prices to 'long' ?
         // handle a price without a currency.
         if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED)
             && !book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
-            preprocessPrice(book,
+            preprocessPrice(context, book,
                             DBDefinitions.KEY_PRICE_LISTED,
                             DBDefinitions.KEY_PRICE_LISTED,
                             DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
@@ -1250,7 +1274,7 @@ public class DAO
         if (book.containsKey(DBDefinitions.KEY_PRICE_PAID)
             && !book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
             // we presume the user bought the book in their own currency.
-            preprocessPrice(book,
+            preprocessPrice(context, book,
                             DBDefinitions.KEY_PRICE_PAID,
                             DBDefinitions.KEY_PRICE_PAID,
                             DBDefinitions.KEY_PRICE_PAID_CURRENCY);
@@ -1260,12 +1284,12 @@ public class DAO
         if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
             book.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                            book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
-                               .toUpperCase(book.getLocale()));
+                               .toUpperCase(book.getLocale(context)));
         }
         if (book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
             book.putString(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
                            book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)
-                               .toUpperCase(book.getLocale()));
+                               .toUpperCase(book.getLocale(context)));
         }
     }
 
@@ -1274,17 +1298,19 @@ public class DAO
      * On any failure, no changes are made.
      * On success, the 'keyInput' is removed.
      *
+     * @param context           Current context
      * @param book              with price fields / where to store the result.
      * @param keyInput          key to get the <strong>String typed</strong> combined field
      * @param keyOutputPrice    key to store the value
      * @param keyOutputCurrency key to store the currency
      */
-    private void preprocessPrice(@NonNull final Book book,
+    private void preprocessPrice(@NonNull final Context context,
+                                 @NonNull final Book book,
                                  @NonNull final String keyInput,
                                  @NonNull final String keyOutputPrice,
                                  @NonNull final String keyOutputCurrency) {
         Bundle tmpDest = new Bundle();
-        CurrencyUtils.splitPrice(book.getLocale(), book.getString(keyInput),
+        CurrencyUtils.splitPrice(book.getLocale(context), book.getString(keyInput),
                                  keyOutputPrice, keyOutputCurrency, tmpDest);
         if (tmpDest.containsKey(keyOutputPrice)) {
             double price = tmpDest.getDouble(keyOutputPrice);
@@ -1456,7 +1482,7 @@ public class DAO
             // need the UUID to delete the thumbnail.
             uuid = getBookUuid(bookId);
         } catch (@NonNull final SQLiteDoneException e) {
-            Logger.error(App.getAppContext(), TAG, e, "Failed to get book UUID");
+            Logger.error(TAG, e, "Failed to get book UUID");
         }
 
         int rowsAffected = 0;
@@ -1476,7 +1502,7 @@ public class DAO
             }
             sSyncedDb.setTransactionSuccessful();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(App.getAppContext(), TAG, e, "Failed to delete book");
+            Logger.error(TAG, e, "Failed to delete book");
         } finally {
             sSyncedDb.endTransaction(txLock);
         }
@@ -1538,7 +1564,7 @@ public class DAO
         }
 
         // Handle Language field FIRST, we might need it for 'ORDER BY' fields.
-        book.updateLocale();
+        book.updateLocale(context);
 
         try {
             preprocessBook(context, book);
@@ -1551,7 +1577,7 @@ public class DAO
             }
 
             // correct field types if needed, and filter out fields we don't have in the db table.
-            ContentValues cv = filterValues(context, TBL_BOOKS, book, book.getLocale());
+            ContentValues cv = filterValues(context, TBL_BOOKS, book, book.getLocale(context));
 
             // if we have an id, use it.
             if (bookId > 0) {
@@ -1615,12 +1641,12 @@ public class DAO
         }
 
         // Handle Language field FIRST, we might need it for 'ORDER BY' fields.
-        book.updateLocale();
+        book.updateLocale(context);
 
         try {
             preprocessBook(context, book);
 
-            ContentValues cv = filterValues(context, TBL_BOOKS, book, book.getLocale());
+            ContentValues cv = filterValues(context, TBL_BOOKS, book, book.getLocale(context));
 
             // Disallow UUID updates
             if (cv.containsKey(DOM_BOOK_UUID.getName())) {
@@ -1838,7 +1864,7 @@ public class DAO
 
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
-        Locale bookLocale = book.getLocale();
+        Locale bookLocale = book.getLocale(context);
 
         // Need to delete the current records because they may have been reordered and a simple
         // set of updates could result in unique key or index violations.
@@ -1947,7 +1973,7 @@ public class DAO
                 insertAuthor(author);
             }
 
-            Locale bookLocale = book.getLocale();
+            Locale bookLocale = book.getLocale(context);
             // As an entry can exist in multiple books, try to find the entry.
             if (tocEntry.fixId(context, this, bookLocale) == 0) {
                 insertTocEntry(context, tocEntry, bookLocale);
@@ -2401,24 +2427,6 @@ public class DAO
         return list;
     }
 
-    /**
-     * Get a list of book ID's (most often just the one) in which this TocEntry (story) is present.
-     *
-     * @param tocId id of the entry (story)
-     *
-     * @return list with book ids
-     */
-    public ArrayList<Long> getBookIdsByTocEntry(final long tocId) {
-        ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.BOOK_ID_BY_TOC_ENTRY_ID,
-                                                new String[]{String.valueOf(tocId)})) {
-            while (cursor.moveToNext()) {
-                list.add(cursor.getLong(0));
-            }
-        }
-        return list;
-    }
-
     /*
      * Bad idea. Instead use: Book book = Book.getBook(mDb, bookId);
      * So you never get a {@code null} object!
@@ -2450,6 +2458,24 @@ public class DAO
 //        }
 //        return null;
 //    }
+
+    /**
+     * Get a list of book ID's (most often just the one) in which this TocEntry (story) is present.
+     *
+     * @param tocId id of the entry (story)
+     *
+     * @return list with book ids
+     */
+    public ArrayList<Long> getBookIdsByTocEntry(final long tocId) {
+        ArrayList<Long> list = new ArrayList<>();
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.BOOK_ID_BY_TOC_ENTRY_ID,
+                                                new String[]{String.valueOf(tocId)})) {
+            while (cursor.moveToNext()) {
+                list.add(cursor.getLong(0));
+            }
+        }
+        return list;
+    }
 
     /**
      * Get a list of book ID's for the given Author.
@@ -2549,40 +2575,6 @@ public class DAO
     }
 
     /**
-     * Return the SQL for a list of all books in the database.
-     * <p>
-     * TODO: redo this so the sql becomes static
-     *
-     * @param whereClause to add to books search criteria (without the keyword 'WHERE')
-     *
-     * @return A full piece of SQL to perform the search
-     */
-    @NonNull
-    private String getBookSql(@NonNull final String whereClause) {
-
-        Context context = App.getLocalizedAppContext();
-        String andOthersText = context.getString(R.string.and_others);
-
-        // "a." (TBL_AUTHOR), "b." (TBL_BOOKS), "s." (TBL_SERIES}
-        // BUT... here they have double-use:
-        // in SQL macros -> the tables.
-        // in the sql -> the query/sub-query.
-        //
-        // so DO NOT replace them with table.dot() etc... !
-        return SqlAllBooks.PREFIX
-               + ",CASE"
-               + " WHEN " + COLUMN_ALIAS_NR_OF_SERIES + "<2"
-               + " THEN COALESCE(s." + DOM_SERIES_FORMATTED + ",'')"
-               + " ELSE " + DOM_SERIES_FORMATTED + " || ' " + andOthersText + '\''
-               + " END AS " + DOM_SERIES_FORMATTED
-               + " FROM ("
-               + /* */ SqlAllBooks.ALL_BOOKS
-               + /* */ (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "")
-               + /* */ " ORDER BY " + TBL_BOOKS.dot(DOM_TITLE_OB) + ' ' + COLLATION + " ASC"
-               + ") b" + SqlAllBooks.SUFFIX;
-    }
-
-    /**
      * Return a {@link BookCursor} for the given {@link Book} id.
      * The caller can retrieve columns as needed.
      *
@@ -2592,12 +2584,9 @@ public class DAO
      */
     @NonNull
     public BookCursor fetchBookById(final long bookId) {
-        return (BookCursor)
-                sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                                              getBookSql(
-                                                      TBL_BOOKS.dot(DOM_PK_ID) + "=?"),
-                                              new String[]{String.valueOf(bookId)},
-                                              "");
+        String sql = SqlAllBooks.getAllAuthorsAndSeries(TBL_BOOKS.dot(DOM_PK_ID) + "=?");
+        return (BookCursor) sSyncedDb.rawQueryWithFactory(
+                BOOKS_CURSOR_FACTORY, sql, new String[]{String.valueOf(bookId)}, "");
     }
 
     /**
@@ -2620,7 +2609,7 @@ public class DAO
             whereClause = TBL_BOOKS.dot(DOM_PK_ID) + ">=" + fromBookIdOnwards;
 
         } else if (bookIds.size() == 1) {
-            // just this one book
+            // single book
             whereClause = TBL_BOOKS.dot(DOM_PK_ID) + '=' + bookIds.get(0);
 
         } else {
@@ -2631,10 +2620,11 @@ public class DAO
         }
 
         // the order by is used to be able to restart the update (using fromBookIdOnwards)
-        String sql = getBookSql(whereClause) + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
+        String sql = SqlAllBooks.getAllAuthorsAndSeries(whereClause)
+                     + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
 
-        return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                                                          sql, null, "");
+        return (BookCursor) sSyncedDb.rawQueryWithFactory(
+                BOOKS_CURSOR_FACTORY, sql, null, "");
     }
 
     /**
@@ -2651,43 +2641,20 @@ public class DAO
             throw new IllegalArgumentException("isbnList was empty");
         }
 
-        StringBuilder where = new StringBuilder(TBL_BOOKS.dot(DOM_BOOK_ISBN));
+        StringBuilder whereClause = new StringBuilder(TBL_BOOKS.dot(DOM_BOOK_ISBN));
         if (isbnList.size() == 1) {
-            // single ISBN
-            where.append("='").append(encodeString(isbnList.get(0))).append('\'');
+            // single book
+            whereClause.append("='").append(encodeString(isbnList.get(0))).append('\'');
         } else {
-            where.append(" IN (")
-                 .append(Csv.join(",", isbnList, element -> '\'' + encodeString(element) + '\''))
-                 .append(')');
+            whereClause.append(" IN (")
+                       .append(Csv.join(",", isbnList,
+                                        element -> '\'' + encodeString(element) + '\''))
+                       .append(')');
         }
 
-        String sql = getBookSql(where.toString());
-        return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY, sql,
-                                                          null, "");
-    }
-
-    /**
-     * A complete export of all tables (flattened) in the database.
-     *
-     * @param sinceDate to select all books added/modified since that date.
-     *                  Set to {@code null} for *all* books.
-     *
-     * @return BookCursor over all books, authors, etc
-     */
-    @NonNull
-    public BookCursor fetchBooksForExport(@Nullable final Date sinceDate) {
-        String whereClause;
-        if (sinceDate == null) {
-            whereClause = "";
-        } else {
-            whereClause = " WHERE " + TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED)
-                          + ">'" + DateUtils.utcSqlDateTime(sinceDate) + '\'';
-        }
-
-        String sql = SqlAllBooks.ALL_BOOKS + whereClause + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
-
-        return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                                                          sql, null, "");
+        String sql = SqlAllBooks.getAllAuthorsAndSeries(whereClause.toString());
+        return (BookCursor) sSyncedDb.rawQueryWithFactory(
+                BOOKS_CURSOR_FACTORY, sql, null, "");
     }
 
     /**
@@ -3652,10 +3619,10 @@ public class DAO
      */
     @NonNull
     public BookCursor fetchBooksByGoodreadsBookId(final long grBookId) {
-        String sql = getBookSql(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_ID) + "=?");
-        return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY, sql,
-                                                          new String[]{String.valueOf(grBookId)},
-                                                          "");
+        String sql = SqlAllBooks
+                .getAllAuthorsAndSeries(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_ID) + "=?");
+        return (BookCursor) sSyncedDb.rawQueryWithFactory(
+                BOOKS_CURSOR_FACTORY, sql, new String[]{String.valueOf(grBookId)}, "");
     }
 
     /**
@@ -4020,7 +3987,7 @@ public class DAO
      */
     private void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
                                   final int position,
-                                  @Nullable final String text) {
+                                  @Nullable final CharSequence text) {
         if (text == null) {
             stmt.bindNull(position);
         } else {
@@ -4146,7 +4113,7 @@ public class DAO
             sSyncedDb.setTransactionSuccessful();
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
             gotError = true;
         } finally {
             sSyncedDb.endTransaction(txLock);
@@ -4177,11 +4144,11 @@ public class DAO
      * TOCEntry: DOM_TITLE  ==> DOM_TITLE_OB
      * Series:   DOM_SERIES_TITLE => DOM_SERIES_TITLE_OB
      *
+     * @param context Current context
      * @param reorder flag whether to reorder or not
      */
-    public void rebuildOrderByTitleColumns(final boolean reorder) {
-
-        Context context = App.getLocalizedAppContext();
+    public void rebuildOrderByTitleColumns(@NonNull final Context context,
+                                           final boolean reorder) {
 
         String language;
         Locale locale;
@@ -4191,7 +4158,7 @@ public class DAO
             int langIdx = cursor.getColumnIndex(DOM_BOOK_LANGUAGE.getName());
             while (cursor.moveToNext()) {
                 language = cursor.getString(langIdx);
-                locale = LocaleUtils.getLocale(language);
+                locale = LocaleUtils.getLocale(context, language);
                 if (locale == null) {
                     locale = Locale.getDefault();
                 }
@@ -4251,9 +4218,8 @@ public class DAO
     /**
      * DEBUG / TEMPORARY. Will be deleted soon!
      */
-    public void tempUnMangle(final boolean reorder) {
-
-        Context context = App.getLocalizedAppContext();
+    public void tempUnMangle(@NonNull final Context context,
+                             final boolean reorder) {
 
         String language;
         Locale locale;
@@ -4264,7 +4230,7 @@ public class DAO
             int langIdx = cursor.getColumnIndex(DOM_BOOK_LANGUAGE.getName());
             while (cursor.moveToNext()) {
                 language = cursor.getString(langIdx);
-                locale = LocaleUtils.getLocale(language);
+                locale = LocaleUtils.getLocale(context, language);
                 if (locale == null) {
                     locale = Locale.getDefault();
                 }
@@ -4352,39 +4318,56 @@ public class DAO
     }
 
     /**
-     * 2 forms of usage.
-     * <p>
-     * Books linked with Authors and Series
-     * PREFIX + ALL_BOOKS [+ where-clause] + SUFFIX
-     * <p>
-     * Just the books with a primary Author and (if they have one) primary Series
-     * ALL_BOOKS [+ where-clause]
+     * Construct the SQL to get a list of books.
+     * <ol>
+     * <li>{@link #getAllAuthorsAndSeries}: Books linked with Authors and Series</li>
+     * <li>{@link #getPrimaryAuthorAndSeries}: Books with a primary Author and<br>
+     * (if they have one) primary Series</li>
+     * </ol>
      */
     private static class SqlAllBooks {
 
         /**
-         * {@link #getBookSql(String)}.
+         * Virtual columns: "primary Author id" (, "total authors count" is disabled)
+         * <p>
+         * URGENT: allow to select the primary author by type; with fallback.
+         * filter on DOM_BOOK_AUTHOR_TYPE_BITMASK ? get it ? ...
          */
-        private static final String PREFIX =
-                "SELECT b.*"
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
-                + ','
-                + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN
-                + " AS " + DOM_AUTHOR_FORMATTED
-                + ','
-                + SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
-                + " AS " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST
+        private static final String PRIM_AUTHOR =
+                "(SELECT " + DOM_FK_AUTHOR + " FROM " + TBL_BOOK_AUTHOR.ref()
+                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+                + " ORDER BY " + DOM_BOOK_AUTHOR_POSITION + ',' + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR)
+                + " LIMIT 1"
+                + ") AS " + DOM_FK_AUTHOR
 
-                + ',' + "a." + DOM_FK_AUTHOR + " AS " + DOM_FK_AUTHOR
+//                // Get the total author count; we use this to add "et. al."
+//                // No longer needed, but leaving for future use.
+//                + ','
+//                + "(SELECT COUNT(*) FROM " + TBL_BOOK_AUTHOR.ref()
+//                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+//                + ')' + " AS " + COLUMN_ALIAS_NR_OF_AUTHORS
+                ;
 
-                // use a dummy series for books not in a series
-                // (i.e. don't use null's)
-                + ',' + "COALESCE(s." + DOM_FK_SERIES + ", 0) AS " + DOM_FK_SERIES
-                + ',' + "COALESCE(s." + DOM_SERIES_TITLE + ", '') AS " + DOM_SERIES_TITLE
-                + ',' + "COALESCE(s." + DOM_BOOK_NUM_IN_SERIES
-                + ", '') AS " + DOM_BOOK_NUM_IN_SERIES;
+        /** Virtual columns: "primary Series id", "number", "total series count". */
+        private static final String PRIM_SERIES =
+                // Find the first (i.e. primary) Series id.
+                "(SELECT " + DOM_FK_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
+                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+                + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC LIMIT 1)"
+                + " AS " + DOM_FK_SERIES
+
+                // Find the Series number for the first (i.e. primary) Series
+                + ','
+                + "(SELECT " + DOM_BOOK_NUM_IN_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
+                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+                + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC LIMIT 1"
+                + ") AS " + DOM_BOOK_NUM_IN_SERIES
+
+                // Get the total series count; we use this to add "et. al."
+                + ','
+                + "(SELECT COUNT(*) FROM " + TBL_BOOK_SERIES.ref()
+                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+                + ')' + " AS " + COLUMN_ALIAS_NR_OF_SERIES;
 
         /**
          * set of fields suitable for a select of a Book.
@@ -4436,65 +4419,47 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_OPEN_LIBRARY_ID)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISFDB_ID)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_ID)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_LAST_SYNC_DATE)
-
-                // Find the first (i.e. primary) Series id.
-                + ','
-                + "(SELECT " + DOM_FK_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
-                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
-                + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC LIMIT 1)"
-                + " AS " + DOM_FK_SERIES
-
-                // Find the Series number for the first (i.e. primary) Series
-                + ','
-                + "(SELECT " + DOM_BOOK_NUM_IN_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
-                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
-                + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC LIMIT 1"
-                + ") AS " + DOM_BOOK_NUM_IN_SERIES
-
-                // Get the total series count; we use this to add "et. al."
-                + ','
-                + "(SELECT COUNT(*) FROM " + TBL_BOOK_SERIES.ref()
-                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
-                + ')' + " AS " + COLUMN_ALIAS_NR_OF_SERIES
-
-                // Find the first (i.e. primary) Author id.
-                //URGENT: allow to select the primary author by type; with fallback.
-                // filter on DOM_BOOK_AUTHOR_TYPE_BITMASK ? get it ? ...
-                + ','
-                + "(SELECT " + DOM_FK_AUTHOR + " FROM " + TBL_BOOK_AUTHOR.ref()
-                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
-                + " ORDER BY " + DOM_BOOK_AUTHOR_POSITION
-                + ',' + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR) + " LIMIT 1"
-                + ") AS " + DOM_FK_AUTHOR
+                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_LAST_SYNC_DATE);
 
 
-//                // Get the total author count; we use this to add "et. al."
-//                // No longer needed, but leaving for future use.
-//                + ','
-//                + "(SELECT COUNT(*) FROM " + TBL_BOOK_AUTHOR.ref()
-//                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
-//                + ')' + " AS " + COLUMN_ALIAS_NR_OF_AUTHORS
-                ;
-
-        /**
-         * {@link #getBookSql(String)}.
-         * {@link #fetchBooksForExport(Date)}.
-         */
+        /** The base SELECT to get the Book columns. */
         private static final String ALL_BOOKS =
                 "SELECT DISTINCT " + BOOK
+                + ',' + PRIM_SERIES
+                + ',' + PRIM_AUTHOR
+
                 // use an empty loanee (i.e. don't use null's) if there is no loanee
                 + ',' + "COALESCE(" + DOM_LOANEE + ", '') AS " + DOM_LOANEE
 
-                + " FROM " + TBL_BOOKS.ref() + " LEFT OUTER JOIN "
-                + TBL_BOOK_LOANEE.ref() + " ON (" + TBL_BOOK_LOANEE.dot(DOM_FK_BOOK) + '='
-                + TBL_BOOKS.dot(DOM_PK_ID) + ')';
+                + " FROM " + TBL_BOOKS.ref()
+                + " LEFT OUTER JOIN " + TBL_BOOK_LOANEE.ref()
+                + " ON (" + TBL_BOOK_LOANEE.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID) + ')';
 
-        /**
-         * {@link #getBookSql(String)}.
-         */
+
+        /** Envelope SQL to add the primary Author/Series. */
+        private static final String PREFIX =
+                "SELECT b.*"
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
+                + ','
+                + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN
+                + " AS " + DOM_AUTHOR_FORMATTED
+                + ','
+                + SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
+                + " AS " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST
+
+                + ',' + "a." + DOM_FK_AUTHOR + " AS " + DOM_FK_AUTHOR
+
+                // use a dummy series for books not in a series
+                // (i.e. don't use null's)
+                + ',' + "COALESCE(s." + DOM_FK_SERIES + ", 0) AS " + DOM_FK_SERIES
+                + ',' + "COALESCE(s." + DOM_SERIES_TITLE + ", '') AS " + DOM_SERIES_TITLE
+                + ',' + "COALESCE(s." + DOM_BOOK_NUM_IN_SERIES
+                + ", '') AS " + DOM_BOOK_NUM_IN_SERIES;
+
+        /** Join with Authors and Series. */
         private static final String SUFFIX =
-                // with their Authors
                 " JOIN ("
                 + "SELECT " + DOM_FK_AUTHOR
                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
@@ -4508,7 +4473,6 @@ public class DAO
                 + ") a ON a." + DOM_FK_BOOK + "=b." + DOM_PK_ID
                 + " AND a." + DOM_FK_AUTHOR + "=b." + DOM_FK_AUTHOR
 
-                // and (if they have one) their Series
                 + " LEFT OUTER JOIN ("
                 + "SELECT " + DOM_FK_SERIES
                 + ',' + TBL_SERIES.dotAs(DOM_SERIES_TITLE)
@@ -4523,6 +4487,57 @@ public class DAO
                 + " AND lower(s." + DOM_BOOK_NUM_IN_SERIES + ")"
                 + "=lower(b." + DOM_BOOK_NUM_IN_SERIES + ')'
                 + COLLATION;
+
+        /**
+         * Construct the SQL for a list of books in the database based on the given where-clause.
+         * <p>
+         * TODO: redo this so the sql becomes static
+         *
+         * @param whereClause to add to books search criteria (without the keyword 'WHERE')
+         *
+         * @return A full piece of SQL to perform the search
+         */
+        @NonNull
+        private static String getAllAuthorsAndSeries(@NonNull final String whereClause) {
+
+            Context context = App.getLocalizedAppContext();
+            String andOthersText = context.getString(R.string.and_others);
+
+            // "a." (TBL_AUTHOR), "b." (TBL_BOOKS), "s." (TBL_SERIES}
+            // BUT... here they have double-use:
+            // in SQL macros -> the tables.
+            // in the sql -> the query/sub-query.
+            //
+            // so DO NOT replace them with table.dot() etc... !
+            return PREFIX
+                   + ",CASE"
+                   + " WHEN " + COLUMN_ALIAS_NR_OF_SERIES + "<2"
+                   + " THEN COALESCE(s." + DOM_SERIES_FORMATTED + ",'')"
+                   + " ELSE " + DOM_SERIES_FORMATTED + " || ' " + andOthersText + '\''
+                   + " END AS " + DOM_SERIES_FORMATTED
+
+                   + " FROM (" + ALL_BOOKS
+                   + (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "")
+                   + " ORDER BY " + TBL_BOOKS.dot(DOM_TITLE_OB) + ' ' + COLLATION + " ASC"
+                   + ") b" + SUFFIX;
+        }
+
+        /**
+         * Construct the SQL for a list of books based on the given where-clause.
+         * This is specifically constructed to export a set of Books.
+         * <p>
+         * TODO: redo this so the sql becomes static
+         *
+         * @param whereClause to add to books search criteria (without the keyword 'WHERE')
+         *
+         * @return A full piece of SQL to perform the search
+         */
+        @NonNull
+        private static String getPrimaryAuthorAndSeries(@NonNull final String whereClause) {
+            return ALL_BOOKS
+                   + (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "")
+                   + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
+        }
     }
 
     /**

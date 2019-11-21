@@ -292,8 +292,9 @@ public class UpdateFieldsModel
         addListField(R.string.lbl_table_of_content, DBDefinitions.KEY_TOC_BITMASK,
                      UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
-        addField(R.string.lbl_publisher, CopyIfBlank,
-                 DBDefinitions.KEY_PUBLISHER);
+        addListField(R.string.lbl_publisher, DBDefinitions.KEY_PUBLISHER,
+                     UniqueId.BKEY_PUBLISHER_ARRAY);
+
         addField(R.string.lbl_print_run, CopyIfBlank,
                  DBDefinitions.KEY_PRINT_RUN);
         addField(R.string.lbl_date_published, CopyIfBlank,
@@ -301,16 +302,15 @@ public class UpdateFieldsModel
         addField(R.string.lbl_first_publication, CopyIfBlank,
                  DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
 
+        // list price has related DBDefinitions.KEY_PRICE_LISTED
+        addField(R.string.lbl_price_listed, CopyIfBlank, DBDefinitions.KEY_PRICE_LISTED);
+
         addField(R.string.lbl_description, CopyIfBlank, DBDefinitions.KEY_DESCRIPTION);
 
         addField(R.string.lbl_pages, CopyIfBlank, DBDefinitions.KEY_PAGES);
         addField(R.string.lbl_format, CopyIfBlank, DBDefinitions.KEY_FORMAT);
         addField(R.string.lbl_color, CopyIfBlank, DBDefinitions.KEY_COLOR);
         addField(R.string.lbl_language, CopyIfBlank, DBDefinitions.KEY_LANGUAGE);
-
-        // list price has related DBDefinitions.KEY_PRICE_LISTED
-        addField(R.string.lbl_price_listed, CopyIfBlank, DBDefinitions.KEY_PRICE_LISTED);
-
         addField(R.string.lbl_genre, CopyIfBlank, DBDefinitions.KEY_GENRE);
 
         //NEWTHINGS: add new site specific ID: add a field

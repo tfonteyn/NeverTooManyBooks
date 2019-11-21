@@ -42,9 +42,9 @@ import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -84,8 +84,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  */
 public final class LocaleUtils {
 
-    private static final String TAG = "LocaleUtils";
-
     /**
      * Value stored in preferences if the user runs our app in the default device language.
      * The string "system" is hardcoded in the preference string-array and
@@ -93,8 +91,8 @@ public final class LocaleUtils {
      */
     @VisibleForTesting
     public static final String SYSTEM_LANGUAGE = "system";
-
-    private static final List<WeakReference<OnLocaleChangedListener>>
+    private static final String TAG = "LocaleUtils";
+    private static final Collection<WeakReference<OnLocaleChangedListener>>
             ON_LOCALE_CHANGED_LISTENERS = new ArrayList<>();
 
     /** Cache for Locales; key: the BOOK language (ISO3). */
@@ -379,13 +377,14 @@ public final class LocaleUtils {
      * Example: display:"asu", has an actual iso3 code of "asa" but we will wrongly take "asu"
      * to be an ISO3 code. There are a couple more like this.
      *
+     * @param context     Current context
      * @param inputLang to use for Locale
      *
      * @return the Locale, or {@code null} if the inputLang was invalid.
      */
     @Nullable
-    public static Locale getLocale(@NonNull final String inputLang) {
-        Context context = App.getLocalizedAppContext();
+    public static Locale getLocale(@NonNull final Context context,
+                                   @NonNull final String inputLang) {
 
         String lang = inputLang.trim().toLowerCase(Locale.getDefault());
         int len = lang.length();
@@ -421,8 +420,7 @@ public final class LocaleUtils {
      * Move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The".
      * This method is case sensitive on purpose.
      *
-     * @param userContext Current context, should be an actual user context,
-     *                    and not the ApplicationContext.
+     * @param context     Current context
      * @param title       to reorder
      * @param titleLocale (optional) Locale matching the title.
      *                    When {@code null} Locale.getDefault() is used.
@@ -430,7 +428,7 @@ public final class LocaleUtils {
      * @return reordered title, or the original if the pattern was not found
      */
     @NonNull
-    public static String reorderTitle(@NonNull final Context userContext,
+    public static String reorderTitle(@NonNull final Context context,
                                       @NonNull final String title,
                                       @Nullable final Locale titleLocale) {
 
@@ -456,7 +454,7 @@ public final class LocaleUtils {
             String words = LOCALE_PREFIX_MAP.get(locale);
             if (words == null) {
                 // the resources bundle in the language that the book (item) is written in.
-                Resources localeResources = App.getLocalizedResources(userContext, locale);
+                Resources localeResources = App.getLocalizedResources(context, locale);
                 words = localeResources.getString(R.string.pv_reformat_titles_prefixes);
                 LOCALE_PREFIX_MAP.put(locale, words);
             }

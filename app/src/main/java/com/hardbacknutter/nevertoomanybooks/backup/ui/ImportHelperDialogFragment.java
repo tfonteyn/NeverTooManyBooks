@@ -40,6 +40,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.Options;
 
 public class ImportHelperDialogFragment
         extends OptionsDialogBase<ImportHelper> {
@@ -64,7 +65,7 @@ public class ImportHelperDialogFragment
      * @return Created fragment
      */
     @NonNull
-    public static ImportHelperDialogFragment newInstance(@NonNull final ImportHelper importHelper,
+    public static ImportHelperDialogFragment newInstance(@NonNull final Options importHelper,
                                                          final boolean archiveHasValidDates) {
         ImportHelperDialogFragment frag = new ImportHelperDialogFragment();
         Bundle args = new Bundle();

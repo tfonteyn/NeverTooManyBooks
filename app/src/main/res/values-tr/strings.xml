@@ -652,5 +652,6 @@
     <string name="lbl_select_website">Bir web sitesi seçin:</string>
     <string name="lbl_site_book_id">Web sitesi kitap kimliği:</string>
     <string name="fab_add_book_by_native_id">Web sitesi kitap kimliği</string>
+    <string name="warning_enable_at_least_1_website">Her kategori için en az bir web sitesini etkinleştirin.</string>
 
 </resources>

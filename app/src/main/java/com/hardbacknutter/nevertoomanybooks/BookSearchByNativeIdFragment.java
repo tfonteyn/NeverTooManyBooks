@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.annotation.IdRes;
@@ -54,6 +55,7 @@ public class BookSearchByNativeIdFragment
 
     public static final String TAG = "BookSearchByNativeId";
     private static final Pattern DIGITS_PATTERN = Pattern.compile("\\d+");
+    private static final String BKEY_SITE_RES_ID = TAG + ":siteResId";
 
     /** User input field. */
     private EditText mEntryView;
@@ -81,100 +83,92 @@ public class BookSearchByNativeIdFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.fab_add_book_by_native_id);
 
+        if (savedInstanceState != null) {
+            int siteResId = savedInstanceState.getInt(BKEY_SITE_RES_ID, View.NO_ID);
+            if (siteResId != View.NO_ID) {
+                RadioButton btn = mRadioGroup.findViewById(siteResId);
+                btn.setChecked(true);
+                mEntryView.setEnabled(true);
+            }
+
+        }
         mEntryView.setText(mSearchCoordinator.getNativeIdSearchText());
 
-        mRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            //NEWTHINGS: add new site specific ID:
-            switch (checkedId) {
-                // 'long' id
-                case R.id.site_goodreads:
-                case R.id.site_isfdb:
-                case R.id.site_library_thing:
-                case R.id.site_strip_info_be:
-                    // if the user switched from a text input, clean the input
-                    if ((mEntryView.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
-                        String text = mEntryView.getText().toString().trim();
-                        if (!DIGITS_PATTERN.matcher(text).matches()) {
-                            mEntryView.setText("");
-                        }
-                    }
-                    mEntryView.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    mEntryView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.ic_apps, 0, 0, 0);
-                    break;
-
-                // 'String' id
-                case R.id.site_amazon:
-                case R.id.site_open_library:
-                    mEntryView.setInputType(InputType.TYPE_CLASS_TEXT
-                                            | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
-                                            | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-                    mEntryView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.ic_keyboard, 0, 0, 0);
-                    break;
-
-                default:
-                    throw new UnexpectedValueException(checkedId);
-            }
-        });
+        mRadioGroup.setOnCheckedChangeListener(this::onSiteSelect);
 
         mSearchBtn.setOnClickListener(v -> {
-            String nativeId = mEntryView.getText().toString().trim();
             //sanity check
-            if (nativeId.isEmpty() || mRadioGroup.getCheckedRadioButtonId() == View.NO_ID) {
+            if (mEntryView.getText().toString().trim().isEmpty()
+                || mRadioGroup.getCheckedRadioButtonId() == View.NO_ID) {
                 UserMessage.show(mEntryView, R.string.warning_requires_site_and_id);
                 return;
             }
 
-            mSearchCoordinator.setNativeIdSearchText(nativeId);
             startSearch();
         });
     }
 
     @Override
     protected boolean onSearch() {
-        @IdRes
-        int checkedId = mRadioGroup.getCheckedRadioButtonId();
+        int siteId = getSiteIdFromResId(mRadioGroup.getCheckedRadioButtonId());
+        mSearchCoordinator.setNativeIdSearchText(mEntryView.getText().toString().trim());
+        return mSearchCoordinator.searchByNativeId(Site.newSite(siteId));
+    }
 
-        Site site;
+    @SearchSites.Id
+    private int getSiteIdFromResId(@IdRes final int checkedId) {
         //NEWTHINGS: add new site specific ID:
         switch (checkedId) {
-            // native id is the ASIN
             case R.id.site_amazon:
-                site = Site.newSite(SearchSites.AMAZON);
-                break;
+                return SearchSites.AMAZON;
 
             case R.id.site_goodreads:
-                site = Site.newSite(SearchSites.GOODREADS);
-                break;
+                return SearchSites.GOODREADS;
 
             case R.id.site_isfdb:
-                site = Site.newSite(SearchSites.ISFDB);
-                break;
+                return SearchSites.ISFDB;
+
             case R.id.site_library_thing:
-                site = Site.newSite(SearchSites.LIBRARY_THING);
-                break;
+                return SearchSites.LIBRARY_THING;
+
             case R.id.site_open_library:
-                site = Site.newSite(SearchSites.OPEN_LIBRARY);
-                break;
+                return SearchSites.OPEN_LIBRARY;
 
             case R.id.site_strip_info_be:
-                site = Site.newSite(SearchSites.STRIP_INFO_BE);
-                break;
+                return SearchSites.STRIP_INFO_BE;
 
             default:
                 throw new UnexpectedValueException(checkedId);
         }
+    }
 
-        SearchEngine searchEngine = site.getSearchEngine();
-        if (searchEngine.isAvailable()) {
-            return mSearchCoordinator.searchByNativeId(site);
+    @SuppressWarnings("unused")
+    @IdRes
+    private int getResIdFromSiteId(@SearchSites.Id final int siteId) {
+        //NEWTHINGS: add new site specific ID:
+        switch (siteId) {
+            case SearchSites.AMAZON:
+                return R.id.site_amazon;
 
-        } else {
-            // If the selected site needs registration, prompt the user.
-            //noinspection ConstantConditions
-            searchEngine.promptToRegister(getContext(), true, "native_id");
-            return false;
+            case SearchSites.GOODREADS:
+                return R.id.site_goodreads;
+
+            case SearchSites.ISFDB:
+                return R.id.site_isfdb;
+
+            case SearchSites.LIBRARY_THING:
+                return R.id.site_library_thing;
+
+            case SearchSites.OPEN_LIBRARY:
+                return R.id.site_open_library;
+
+            case SearchSites.STRIP_INFO_BE:
+                return R.id.site_strip_info_be;
+
+            case SearchSites.GOOGLE_BOOKS:
+            case SearchSites.KB_NL:
+            default:
+                throw new UnexpectedValueException(siteId);
         }
     }
 
@@ -190,5 +184,74 @@ public class BookSearchByNativeIdFragment
     void clearPreviousSearchCriteria() {
         super.clearPreviousSearchCriteria();
         mEntryView.setText("");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        int checkedId = mRadioGroup.getCheckedRadioButtonId();
+        if (checkedId != View.NO_ID) {
+            mSearchCoordinator.setNativeIdSearchText(mEntryView.getText().toString().trim());
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        int checkedId = mRadioGroup.getCheckedRadioButtonId();
+        if (checkedId != View.NO_ID) {
+            outState.putInt(BKEY_SITE_RES_ID, checkedId);
+        }
+    }
+
+    private void onSiteSelect(@NonNull final RadioGroup group,
+                              final int checkedId) {
+
+        Site site = Site.newSite(getSiteIdFromResId(checkedId));
+        SearchEngine searchEngine = site.getSearchEngine();
+        if (!searchEngine.isAvailable()) {
+            // If the selected site needs registration, prompt the user.
+            //noinspection ConstantConditions
+            searchEngine.promptToRegister(getContext(), true, "native_id");
+            mRadioGroup.clearCheck();
+            return;
+        }
+
+        //NEWTHINGS: add new site specific ID:
+        switch (checkedId) {
+            // 'long' id
+            case R.id.site_goodreads:
+            case R.id.site_isfdb:
+            case R.id.site_library_thing:
+            case R.id.site_strip_info_be:
+                // if the user switched from a text input, clean the input
+                if ((mEntryView.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
+                    String text = mEntryView.getText().toString().trim();
+                    if (!DIGITS_PATTERN.matcher(text).matches()) {
+                        mEntryView.setText("");
+                    }
+                }
+                // display a (sort of) numeric keyboard icon
+                mEntryView.setInputType(InputType.TYPE_CLASS_NUMBER);
+                mEntryView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        R.drawable.ic_apps, 0, 0, 0);
+                break;
+
+            // 'String' id
+            case R.id.site_amazon:
+            case R.id.site_open_library:
+                mEntryView.setInputType(InputType.TYPE_CLASS_TEXT
+                                        | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+                                        | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+                // display an alphanumeric keyboard icon
+                mEntryView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        R.drawable.ic_keyboard, 0, 0, 0);
+                break;
+
+            default:
+                throw new UnexpectedValueException(checkedId);
+        }
+
+        mEntryView.setEnabled(true);
     }
 }

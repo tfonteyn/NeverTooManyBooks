@@ -69,8 +69,8 @@ public class ValuePicker {
      * @param onCancelListener (optional) listener for cancel events
      */
     ValuePicker(@NonNull final Context context,
-                @Nullable final String title,
-                @Nullable final String message,
+                @Nullable final CharSequence title,
+                @Nullable final CharSequence message,
                 final boolean showCancel,
                 @Nullable final DialogInterface.OnCancelListener onCancelListener) {
 
@@ -124,9 +124,9 @@ public class ValuePicker {
         }
     }
 
-    void setMessage(@Nullable final String message) {
+    void setMessage(@Nullable final CharSequence message) {
         if (mMessageView != null) {
-            if (message != null && !message.isEmpty()) {
+            if (message != null && message.length() > 0) {
                 mMessageView.setText(message);
                 mMessageView.setVisibility(View.VISIBLE);
             } else {

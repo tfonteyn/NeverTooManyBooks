@@ -111,13 +111,13 @@ dependencies {
     implementation 'androidx.documentfile:documentfile:1.0.1'
     implementation 'androidx.drawerlayout:drawerlayout:1.1.0-alpha03'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-rc02'
-    implementation 'androidx.core:core:1.2.0-beta02'
+    implementation 'androidx.core:core:1.2.0-rc01'
     implementation 'androidx.fragment:fragment:1.2.0-rc02'
     implementation 'androidx.preference:preference:1.1.0'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-rc01'
-    implementation 'androidx.viewpager2:viewpager2:1.0.0-rc01'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
-    implementation 'com.google.android.material:material:1.2.0-alpha01'
+    implementation 'com.google.android.material:material:1.2.0-alpha02'
     // barcode decoder using https://developers.google.com/android/guides/setup
     implementation 'com.google.android.gms:play-services-vision:19.0.0'
 

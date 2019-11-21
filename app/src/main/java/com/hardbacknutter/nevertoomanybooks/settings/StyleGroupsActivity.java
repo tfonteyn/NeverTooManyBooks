@@ -45,7 +45,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -168,7 +168,7 @@ public class StyleGroupsActivity
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
         GroupWrapperListAdapter(@NonNull final Context context,
-                                @NonNull final ArrayList<StyleGroupsModel.GroupWrapper> items,
+                                @NonNull final List<StyleGroupsModel.GroupWrapper> items,
                                 @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
         }

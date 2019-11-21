@@ -63,7 +63,7 @@ public class FieldPicker<T>
      * @param list    list to choose from
      */
     public FieldPicker(@NonNull final Context context,
-                       @Nullable final String title,
+                       @Nullable final CharSequence title,
                        @NonNull final Field<T> field,
                        @NonNull final List<T> list) {
         super(context, title, null, false, null);

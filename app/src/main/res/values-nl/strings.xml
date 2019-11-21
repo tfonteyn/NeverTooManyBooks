@@ -662,5 +662,6 @@
     <string name="lbl_select_website">Selecteer een website:</string>
     <string name="lbl_site_book_id">Website boek ID:</string>
     <string name="fab_add_book_by_native_id">Website boek-id</string>
+    <string name="warning_enable_at_least_1_website">Schakel ten minste één website in voor elke categorie.</string>
 
 </resources>

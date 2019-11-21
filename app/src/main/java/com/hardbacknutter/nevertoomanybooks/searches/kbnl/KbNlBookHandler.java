@@ -59,7 +59,7 @@ class KbNlBookHandler
     /**
      * Constructor.
      *
-     * @param bookData bundle to populate.
+     * @param bookData to populate
      */
     KbNlBookHandler(@NonNull final Bundle bookData) {
         mBookData = bookData;
@@ -224,7 +224,7 @@ class KbNlBookHandler
      *  </psi:labelledData>
      * }</pre>
      */
-    private void processTitle(@NonNull final List<String> currentData) {
+    private void processTitle(@NonNull final Iterable<String> currentData) {
         StringBuilder sbTitle = new StringBuilder();
         for (String name : currentData) {
             sbTitle.append(name).append(" ");
@@ -270,8 +270,8 @@ class KbNlBookHandler
      * Getting author names:
      * http://opc4.kb.nl/DB=1/SET=1/TTL=1/REL?PPN=068561504
      */
-    private void processAuthor(@NonNull final List<String> currentData,
-                               final int type) {
+    private void processAuthor(@NonNull final Iterable<String> currentData,
+                               @Author.Type final int type) {
         for (String name : currentData) {
             // remove a year part in the name
             String cleanedString = name.split("\\(")[0].trim();
@@ -385,7 +385,7 @@ class KbNlBookHandler
      * </psi:labelledData>
      * }</pre>
      */
-    private void processPublisher(@NonNull final List<String> currentData) {
+    private void processPublisher(@NonNull final Iterable<String> currentData) {
         StringBuilder sbPublisher = new StringBuilder();
         for (String name : currentData) {
             if (!name.isEmpty()) {

@@ -115,7 +115,7 @@ public class ZoomedImageDialogFragment
         ImageView imageView = view.findViewById(R.id.coverImage);
         ImageUtils.setImageView(imageView, mImageFile,
                                 metrics.widthPixels, metrics.heightPixels,
-                                true);
+                                true, R.drawable.ic_broken_image);
 
         imageView.setOnClickListener(v -> dismiss());
     }

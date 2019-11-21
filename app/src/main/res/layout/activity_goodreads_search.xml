@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="visible"
-            app:constraint_referenced_ids="lbl_author,author,lbl_title,title,lbl_isbn,isbn,list_divider"
+            app:constraint_referenced_ids="lbl_author,author,lbl_title,title,lbl_isbn,isbn"
             />
 
         <TextView
@@ -73,6 +73,7 @@
             android:id="@+id/author"
             style="@style/TextDetail"
             android:hint="@string/lbl_author"
+            android:textIsSelectable="true"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
             />
@@ -90,6 +91,7 @@
             android:id="@+id/title"
             style="@style/TextDetail"
             android:hint="@string/lbl_title"
+            android:textIsSelectable="true"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
             />
@@ -107,6 +109,7 @@
             android:id="@+id/isbn"
             style="@style/TextDetail"
             android:hint="@string/lbl_isbn"
+            android:textIsSelectable="true"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             />

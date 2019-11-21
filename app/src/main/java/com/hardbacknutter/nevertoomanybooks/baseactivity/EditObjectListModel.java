@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.baseactivity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -84,7 +85,8 @@ public class EditObjectListModel
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final Context context,
+                     @NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO();
 
@@ -93,7 +95,7 @@ public class EditObjectListModel
             mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
             String bookLang = args.getString(DBDefinitions.KEY_LANGUAGE);
             if (bookLang != null && !bookLang.isEmpty()) {
-                mBookLocale = LocaleUtils.getLocale(bookLang);
+                mBookLocale = LocaleUtils.getLocale(context, bookLang);
                 if (mBookLocale == null) {
                     // fallback
                     mBookLocale = Locale.getDefault();

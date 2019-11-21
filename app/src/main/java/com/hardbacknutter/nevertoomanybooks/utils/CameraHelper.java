@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class CameraHelper {
@@ -57,9 +56,6 @@ public class CameraHelper {
     private int mRotationAngle;
     /** by default, we tell the camera to give us full-size pictures. */
     private boolean mUseFullSize = true;
-
-    public CameraHelper() {
-    }
 
     /**
      * DEBUG only.
@@ -156,7 +152,7 @@ public class CameraHelper {
                     return file;
 
                 } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-                    Logger.error(App.getAppContext(), TAG, e);
+                    Logger.error(TAG, e);
                 }
             }
         }

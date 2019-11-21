@@ -245,7 +245,7 @@ public final class CoversDAO
                 }
             }
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
         }
         return null;
     }
@@ -269,7 +269,7 @@ public final class CoversDAO
                              // starts with the uuid, remove all sizes
                              DOM_CACHE_ID + " LIKE ?", new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
         }
     }
 
@@ -284,7 +284,7 @@ public final class CoversDAO
             }
             sSyncedDb.execSQL("DELETE FROM " + TBL_IMAGE);
         } catch (@NonNull final SQLiteException e) {
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
         }
     }
 
@@ -299,7 +299,7 @@ public final class CoversDAO
             }
             sSyncedDb.analyze();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
         }
     }
 
@@ -310,7 +310,7 @@ public final class CoversDAO
             sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
         } catch (@NonNull final RuntimeException e) {
             // Assume exception means DB corrupt. Don't care, it's only a cache.
-            Logger.error(App.getAppContext(), TAG, e, "Failed to open covers db");
+            Logger.error(TAG, e, "Failed to open covers db");
             App.getAppContext().deleteDatabase(COVERS_DATABASE_NAME);
 
             // retry...
@@ -318,7 +318,7 @@ public final class CoversDAO
                 sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
             } catch (@NonNull final RuntimeException e2) {
                 // If we fail after creating a new DB, just give up.
-                Logger.error(App.getAppContext(), TAG, e2, "Covers database unavailable");
+                Logger.error(TAG, e2, "Covers database unavailable");
             }
         }
     }

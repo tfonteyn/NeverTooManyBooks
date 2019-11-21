@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -245,12 +246,14 @@ public class DBCleaner {
      */
     private void toLog(@NonNull final String state,
                        @NonNull final String query) {
-        try (SynchronizedCursor cursor = mSyncedDb.rawQuery(query, null)) {
-            while (cursor.moveToNext()) {
-                String field = cursor.getColumnName(0);
-                String value = cursor.getString(0);
+        if (BuildConfig.DEBUG) {
+            try (SynchronizedCursor cursor = mSyncedDb.rawQuery(query, null)) {
+                while (cursor.moveToNext()) {
+                    String field = cursor.getColumnName(0);
+                    String value = cursor.getString(0);
 
-                Log.d(TAG, state + '|' + field + '=' + value);
+                    Log.d(TAG, state + '|' + field + '=' + value);
+                }
             }
         }
     }

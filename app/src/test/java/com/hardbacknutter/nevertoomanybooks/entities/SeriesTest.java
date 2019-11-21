@@ -264,6 +264,13 @@ class SeriesTest {
     }
 
     @Test
+    void fromString62b() {
+        Series series = Series.fromString("This is the series title, subtitle 34|omnibus");
+        assertNotNull(series);
+        assertEquals("This is the series title, subtitle", series.getTitle());
+        assertEquals("34|omnibus", series.getNumber());
+    }
+    @Test
     void fromString63() {
         Series series = Series.fromString("This is the series title, subtitle ( 34|omnibus)");
         assertNotNull(series);
@@ -376,6 +383,22 @@ class SeriesTest {
         assertNotNull(series);
         assertEquals("This is the series, subtitle", series.getTitle());
         assertEquals("34", series.getNumber());
+    }
+
+    @Test
+    void fromString95() {
+        Series series = Series.fromString("Favorietenreeks (II) nr. 24");
+        assertNotNull(series);
+        assertEquals("Favorietenreeks", series.getTitle());
+        assertEquals("2.24", series.getNumber());
+    }
+
+    @Test
+    void fromString96() {
+        Series series = Series.fromString("De avonturen van de 3L");
+        assertNotNull(series);
+        assertEquals("De avonturen van de 3L", series.getTitle());
+        assertEquals("", series.getNumber());
     }
 
     /**

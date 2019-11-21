@@ -743,7 +743,7 @@ public class Fields {
                     // Due to the way a Book loads data from the database,
                     // it's possible that it gets the column type wrong.
                     // See {@link BookCursor} class docs.
-                    Logger.error(App.getAppContext(), TAG, e, value);
+                    Logger.error(TAG, e, value);
                 }
             }
 
@@ -1281,9 +1281,11 @@ public class Fields {
                         view.setTag(R.id.TAG_UUID, uuid);
                         imageFile = StorageUtils.getCoverFileForUuid(uuid);
                     }
-                    ImageUtils.setImageView(view, imageFile, mMaxWidth, mMaxHeight, true);
+                    ImageUtils.setImageView(view, imageFile, mMaxWidth, mMaxHeight, true,
+                                            R.drawable.ic_add_a_photo);
                 } else {
-                    view.setImageResource(R.drawable.ic_image);
+                    // we should not actually get here; the uuid should always be non-null
+                    view.setImageResource(R.drawable.ic_add_a_photo);
                 }
             }
         }
@@ -1409,7 +1411,9 @@ public class Fields {
                 return nf.format(source);
 
             } catch (@NonNull final IllegalArgumentException e) {
-                Log.d(TAG, "currencyCode=" + mCurrencyCode + "|source=" + source, e);
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "currencyCode=" + mCurrencyCode + "|source=" + source, e);
+                }
 
                 // fallback if getting a Currency instance fail.
                 return mCurrencyCode + ' ' + String.format(mLocale, "%.2f", source);
@@ -1506,7 +1510,7 @@ public class Fields {
                 return "";
             }
 
-            return LanguageUtils.getDisplayName(source);
+            return LanguageUtils.getDisplayName(App.getAppContext(), source);
         }
 
         /**

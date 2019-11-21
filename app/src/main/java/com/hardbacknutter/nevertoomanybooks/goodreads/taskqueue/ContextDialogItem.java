@@ -32,7 +32,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
@@ -63,7 +63,7 @@ public class ContextDialogItem
      * @param items   List of items to display
      */
     static void showContextDialog(@NonNull final Context context,
-                                  @NonNull final List<ContextDialogItem> items) {
+                                  @NonNull final Collection<ContextDialogItem> items) {
         if (!items.isEmpty()) {
             final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
             items.toArray(itemArray);

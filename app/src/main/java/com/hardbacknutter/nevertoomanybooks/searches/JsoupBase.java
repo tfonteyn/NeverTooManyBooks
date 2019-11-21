@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -46,7 +47,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -131,7 +131,8 @@ public abstract class JsoupBase {
      * <p>
      * The content encoding by default is: "Accept-Encoding", "gzip"
      *
-     * @param url to fetch
+     * @param appContext Application context
+     * @param url        to fetch
      *
      * @return the actual URL for the page we got (after redirects etc), or {@code null}
      * on failure to load.
@@ -141,7 +142,8 @@ public abstract class JsoupBase {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread
     @Nullable
-    public String loadPage(@NonNull final String url)
+    public String loadPage(@NonNull final Context appContext,
+                           @NonNull final String url)
             throws SocketTimeoutException {
 
         if (mDoc == null) {
@@ -149,8 +151,8 @@ public abstract class JsoupBase {
                 Log.d(TAG, "loadPage|REQUESTED|url=\"" + url + '\"');
             }
 
-            try (TerminatorConnection terminatorConnection = new TerminatorConnection(url)) {
-                HttpURLConnection con = terminatorConnection.getHttpURLConnection();
+            try (TerminatorConnection tCon = new TerminatorConnection(appContext, url)) {
+                HttpURLConnection con = tCon.getHttpURLConnection();
 
                 // added due to https://github.com/square/okhttp/issues/1517
                 // it's a server issue, this is a workaround.
@@ -167,7 +169,7 @@ public abstract class JsoupBase {
                     Log.d(TAG, "loadPage|BEFORE open|con.getURL()=" + con.getURL().toString());
                 }
                 // GO!
-                terminatorConnection.open();
+                tCon.open();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                     Log.d(TAG, "loadPage|AFTER open|con.getURL()=" + con.getURL());
@@ -202,7 +204,7 @@ public abstract class JsoupBase {
                 However that is WRONG (org.jsoup:jsoup:1.11.3)
                 It will NOT resolve the redirect itself and 'location' == 'baseUri'
                 */
-                mDoc = Jsoup.parse(terminatorConnection.inputStream, mCharSetName, locationHeader);
+                mDoc = Jsoup.parse(tCon.getInputStream(), mCharSetName, locationHeader);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                     Log.d(TAG, "loadPage|AFTER parsing|mDoc.location()=" + mDoc.location());
@@ -210,7 +212,7 @@ public abstract class JsoupBase {
 
             } catch (@NonNull final HttpStatusException e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.error(App.getAppContext(), TAG, e, "url=" + url);
+                    Logger.error(appContext, TAG, e, "url=" + url);
                 }
                 return null;
 
@@ -233,14 +235,14 @@ public abstract class JsoupBase {
                 // at com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection.open
                 // at com.hardbacknutter.nevertoomanybooks.searches.JsoupBase.loadPage
 
-                Logger.warn(App.getAppContext(), TAG, "loadPage"
-                                                      + "|e=" + e.getLocalizedMessage()
-                                                      + "|url=\"" + url + '\"');
+                Logger.warn(appContext, TAG, "loadPage"
+                                             + "|e=" + e.getLocalizedMessage()
+                                             + "|url=\"" + url + '\"');
                 // retry once.
                 if (mRetry) {
                     mRetry = false;
                     mDoc = null;
-                    return loadPage(url);
+                    return loadPage(appContext, url);
                 } else {
                     return null;
                 }
@@ -249,7 +251,7 @@ public abstract class JsoupBase {
                 throw e;
 
             } catch (@NonNull final IOException e) {
-                Logger.error(App.getAppContext(), TAG, e, url);
+                Logger.error(appContext, TAG, e, url);
                 return null;
             }
             // reset the flag.
