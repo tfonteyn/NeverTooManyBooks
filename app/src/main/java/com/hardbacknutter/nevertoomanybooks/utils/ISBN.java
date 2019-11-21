@@ -136,6 +136,8 @@ public class ISBN {
     /** kept for faster conversion between 10/13 formats. */
     private List<Integer> mDigits;
 
+    private boolean mIsUpc;
+
     /**
      * Constructor.
      * <p>
@@ -163,6 +165,7 @@ public class ISBN {
         try {
             digits = upcToDigits(s);
             if (isValid(digits)) {
+                mIsUpc = true;
                 mDigits = digits;
             }
         } catch (@NonNull final NumberFormatException e) {
@@ -203,13 +206,16 @@ public class ISBN {
             return input;
         }
 
-        // if it's a UPC, convert to 10 and return
         try {
-            return new ISBN(input).to10();
+            ISBN isbn = new ISBN(input);
+            if (isbn.isUpc()) {
+                // if it's a UPC, convert to isbn 10 and return
+                return isbn.to10();
+            }
         } catch (@NonNull final NumberFormatException | StringIndexOutOfBoundsException ignore) {
         }
 
-        // might be invalid, but let the caller deal with that.
+        // it's not UPC, just return as-is.
         return input;
     }
 
@@ -343,6 +349,10 @@ public class ISBN {
 
     public boolean is13() {
         return mDigits != null && (mDigits.size() == 13) && isValid();
+    }
+
+    public boolean isUpc() {
+        return mIsUpc;
     }
 
     /**
@@ -519,6 +529,7 @@ public class ISBN {
     public String toString() {
         return "ISBN{"
                + "mDigits=" + mDigits
+               + ", mIsUpc=" + mIsUpc
                + '}';
     }
 
