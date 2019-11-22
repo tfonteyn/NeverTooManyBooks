@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -59,7 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn;
+import com.hardbacknutter.nevertoomanybooks.widgets.AltIsbnTextWatcher;
+import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
@@ -82,6 +84,7 @@ public class EditBookFieldsFragment
     private View mBookshelvesView;
 
     private EditText mIsbnView;
+    private TextView mAltIsbnView;
     private ImageView mCoverImageView;
     private AutoCompleteTextView mGenreView;
 
@@ -96,6 +99,7 @@ public class EditBookFieldsFragment
         mSeriesView = view.findViewById(R.id.series);
         mDescriptionView = view.findViewById(R.id.description);
         mIsbnView = view.findViewById(R.id.isbn);
+        mAltIsbnView = view.findViewById(R.id.altIsbn);
         mCoverImageView = view.findViewById(R.id.coverImage);
         mGenreView = view.findViewById(R.id.genre);
         mBookshelvesView = view.findViewById(R.id.bookshelves);
@@ -156,9 +160,12 @@ public class EditBookFieldsFragment
         fields.addString(R.id.description, mDescriptionView, DBDefinitions.KEY_DESCRIPTION)
               .setRelatedFields(R.id.lbl_description);
 
+        // Not using a EditIsbn custom View, as we want to be able to enter non-isbn codes here.
         fields.addString(R.id.isbn, mIsbnView, DBDefinitions.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
-        mIsbnView.addTextChangedListener(new EditIsbn.ValidationTextWatcher(mIsbnView));
+        // but we still support visual aids for ISBN codes.
+        mIsbnView.addTextChangedListener(new IsbnValidationTextWatcher(mIsbnView));
+        mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnView));
 
         fields.addString(R.id.coverImage, mCoverImageView, DBDefinitions.KEY_BOOK_UUID,
                          UniqueId.BKEY_IMAGE)

@@ -28,8 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,7 +36,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -48,8 +45,9 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.widgets.AltIsbnTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn;
+import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
 
 /**
  * <strong>Notes on the virtual keyboard:</strong>
@@ -82,8 +80,6 @@ public class BookSearchByIsbnFragment
 
     @Nullable
     private TextView mAltIsbnView;
-    @Nullable
-    private ImageButton mAltBtnView;
 
     @Override
     @Nullable
@@ -94,7 +90,6 @@ public class BookSearchByIsbnFragment
         View view = inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
         mIsbnView = view.findViewById(R.id.isbn);
         mAltIsbnView = view.findViewById(R.id.altIsbn);
-        mAltBtnView = view.findViewById(R.id.btn_swap);
         return view;
     }
 
@@ -106,6 +101,7 @@ public class BookSearchByIsbnFragment
 
         // stop lint being very annoying...
         Objects.requireNonNull(mIsbnView);
+        Objects.requireNonNull(mAltIsbnView);
 
         mIsbnView.setText(mSearchCoordinator.getIsbnSearchText());
 
@@ -126,58 +122,16 @@ public class BookSearchByIsbnFragment
         delBtn.setOnClickListener(v -> mIsbnView.onKey(KeyEvent.KEYCODE_DEL));
         delBtn.setOnLongClickListener(v -> {
             mIsbnView.setText("");
-            //noinspection ConstantConditions
             mAltIsbnView.setText("");
             return true;
         });
 
-        // allow a click on either the icon or the text view to swap numbers
-        //noinspection ConstantConditions
-        mAltIsbnView.setOnClickListener(this::onSwapNumbers);
-        //noinspection ConstantConditions
-        mAltBtnView.setOnClickListener(this::onSwapNumbers);
-
-        mIsbnView.setEnableValidation(true);
-        // auto update the alternative ISBN number.
-        mIsbnView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(final CharSequence s,
-                                          final int start,
-                                          final int count,
-                                          final int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(final CharSequence s,
-                                      final int start,
-                                      final int before,
-                                      final int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(final Editable s) {
-                String isbn1 = s.toString();
-                int len = isbn1.length();
-                if (len == 10 || len == 13) {
-                    String altIsbn = ISBN.isbn2isbn(isbn1);
-                    if (!altIsbn.equals(isbn1)) {
-                        mAltIsbnView.setText(altIsbn);
-                        mAltIsbnView.setVisibility(View.VISIBLE);
-                        mAltBtnView.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    mAltIsbnView.setVisibility(View.INVISIBLE);
-                    mAltBtnView.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
+        mIsbnView.addTextChangedListener(new IsbnValidationTextWatcher(mIsbnView));
+        mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnView));
 
         view.findViewById(R.id.btn_search).setOnClickListener(v -> {
             //noinspection ConstantConditions
-            mSearchCoordinator.setIsbnSearchText(mIsbnView.getText().toString().trim());
-            prepareSearch();
+            prepareSearch(mIsbnView.getText().toString().trim());
         });
 
         // init the isbn edit field if needed (avoid initializing twice)
@@ -245,19 +199,5 @@ public class BookSearchByIsbnFragment
         super.clearPreviousSearchCriteria();
         //noinspection ConstantConditions
         mIsbnView.setText("");
-    }
-
-    /**
-     * Swap the content of ISBN and alternative-ISBN texts.
-     *
-     * @param view that was clicked on
-     */
-    private void onSwapNumbers(@SuppressWarnings("unused") @NonNull final View view) {
-        //noinspection ConstantConditions
-        String isbn = mIsbnView.getText().toString().trim();
-        //noinspection ConstantConditions
-        String altIsbn = mAltIsbnView.getText().toString().trim();
-        mIsbnView.setText(altIsbn);
-        mAltIsbnView.setTag(isbn);
     }
 }

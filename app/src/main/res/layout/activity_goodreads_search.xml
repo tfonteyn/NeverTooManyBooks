@@ -71,7 +71,7 @@
 
         <TextView
             android:id="@+id/author"
-            style="@style/TextDetail"
+            style="@style/Text"
             android:hint="@string/lbl_author"
             android:textIsSelectable="true"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
@@ -89,7 +89,7 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/TextDetail"
+            style="@style/Text"
             android:hint="@string/lbl_title"
             android:textIsSelectable="true"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
@@ -107,7 +107,7 @@
 
         <TextView
             android:id="@+id/isbn"
-            style="@style/TextDetail"
+            style="@style/Text"
             android:hint="@string/lbl_isbn"
             android:textIsSelectable="true"
             app:layout_constraintStart_toEndOf="@id/indent_fields"

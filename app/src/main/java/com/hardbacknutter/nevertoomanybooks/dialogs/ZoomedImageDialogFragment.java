@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -57,6 +58,8 @@ public class ZoomedImageDialogFragment
 
     /** File to display. */
     private File mImageFile;
+
+    private ImageView mImageView;
 
     /**
      * Syntax sugar for newInstance.
@@ -103,21 +106,23 @@ public class ZoomedImageDialogFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_zoomed_image, container);
+        View root = inflater.inflate(R.layout.dialog_zoomed_image, container);
+        mImageView = root.findViewById(R.id.coverImage);
+        return root;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
 
-        ImageView imageView = view.findViewById(R.id.coverImage);
-        ImageUtils.setImageView(imageView, mImageFile,
+        ImageUtils.setImageView(mImageView, mImageFile,
                                 metrics.widthPixels, metrics.heightPixels,
                                 true, R.drawable.ic_broken_image);
 
-        imageView.setOnClickListener(v -> dismiss());
+        mImageView.setOnClickListener(v -> dismiss());
     }
 
     @Override

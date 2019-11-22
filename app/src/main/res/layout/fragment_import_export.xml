@@ -95,9 +95,7 @@
 
         <TextView
             android:id="@+id/lbl_copy_database_blurb"
-            style="@style/OptionRow.Blurb"
-            android:paddingStart="@dimen/indent_icon"
-            android:paddingEnd="0dp"
+            style="@style/OptionRow.Menu.Blurb"
             android:text="@string/lbl_copy_database_blurb"
             />
     </LinearLayout>

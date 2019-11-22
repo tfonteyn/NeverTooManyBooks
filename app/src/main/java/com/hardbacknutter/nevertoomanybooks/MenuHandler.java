@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
 /**
  * Method isolated here to make it easier to add NEWTHINGS: add new site specific ID
  */
-public final class MenuHandler {
+final class MenuHandler {
 
     private MenuHandler() {
     }
@@ -95,11 +95,16 @@ public final class MenuHandler {
                                                  final boolean hasStripInfoBeId,
                                                  final boolean hasOpenLibraryId) {
 
-        menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE).setVisible(hasIsfdbId
-                                                                 || hasGoodreadsId
-                                                                 || hasLibraryThingId
-                                                                 || hasOpenLibraryId
-                                                                 || hasStripInfoBeId);
+        MenuItem subMenu = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
+        if (subMenu == null) {
+            return;
+        }
+
+        subMenu.setVisible(hasIsfdbId
+                           || hasGoodreadsId
+                           || hasLibraryThingId
+                           || hasOpenLibraryId
+                           || hasStripInfoBeId);
 
         menu.findItem(R.id.MENU_VIEW_BOOK_AT_ISFDB).setVisible(hasIsfdbId);
         menu.findItem(R.id.MENU_VIEW_BOOK_AT_GOODREADS).setVisible(hasGoodreadsId);
@@ -111,8 +116,13 @@ public final class MenuHandler {
     private static void prepareOpenOnWebsiteAmazonMenu(@NonNull final Menu menu,
                                                        final boolean hasAuthor,
                                                        final boolean hasSeries) {
-        menu.findItem(R.id.SUBMENU_AMAZON_SEARCH)
-            .setVisible(hasAuthor || hasSeries);
+
+        MenuItem subMenu = menu.findItem(R.id.SUBMENU_AMAZON_SEARCH);
+        if (subMenu == null) {
+            return;
+        }
+
+        subMenu.setVisible(hasAuthor || hasSeries);
 
         menu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
             .setVisible(hasAuthor);

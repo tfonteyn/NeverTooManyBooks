@@ -95,7 +95,7 @@
 
         <TextView
             android:id="@+id/textView"
-            style="@style/OptionRow.Blurb"
+            style="@style/OptionRow.Checkable.Blurb"
             android:text="@string/import_option_info_all_books"
             />
 
@@ -107,7 +107,7 @@
 
         <TextView
             android:id="@+id/radioNewAndUpdatedBooksInfo"
-            style="@style/OptionRow.Blurb"
+            style="@style/OptionRow.Checkable.Blurb"
             android:text="@string/import_option_info_new_and_changed_books"
             />
     </RadioGroup>

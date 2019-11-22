@@ -61,32 +61,20 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/menu_delete"
             app:icon="@drawable/ic_backspace"
-
             app:iconGravity="textStart"
             app:layout_constraintBottom_toBottomOf="@id/isbn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/isbn"
             />
 
-        <ImageButton
-            android:id="@+id/btn_swap"
-            style="@style/SwapButton"
-            android:visibility="invisible"
-            app:layout_constraintStart_toStartOf="@id/isbn"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible"
-            />
-
         <TextView
             android:id="@+id/altIsbn"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:visibility="invisible"
-            app:layout_constraintStart_toEndOf="@id/btn_swap"
+            style="@style/AltIsbn.Vert"
+            android:layout_marginStart="24dp"
+            app:layout_constraintStart_toStartOf="@id/isbn"
             app:layout_constraintTop_toBottomOf="@id/isbn"
-            tools:text="1234567890"
+            tools:ignore="SelectableText"
+            tools:text="123456789X123"
             tools:visibility="visible"
             />
 
@@ -95,7 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="btn_swap,altIsbn,isbn,isbn_del"
+            app:constraint_referenced_ids="isbn,altIsbn,isbn_del"
             />
 
         <Button

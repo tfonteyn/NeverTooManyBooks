@@ -61,6 +61,12 @@ public class StripInfoBookHandler
         extends JsoupBase {
 
     public static final String FILENAME_SUFFIX = "_SI";
+
+    /** connect-timeout. Default is 5_000. */
+    private static final int CONNECT_TIMEOUT = 10_000;
+    /** read-timeout. Default is 10_000. */
+    private static final int READ_TIMEOUT = 60_000;
+    /** log tag. */
     private static final String TAG = "StripInfoBookHandler";
     /** Color string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
@@ -83,12 +89,6 @@ public class StripInfoBookHandler
      * (dutch for: Searching for...)
      */
     private static final String MULTI_RESULT_PAGE_TITLE = "Zoeken naar";
-    /** accumulate all Authors for this book. */
-    private final ArrayList<Author> mAuthors = new ArrayList<>();
-    /** accumulate all Series for this book. */
-    private final ArrayList<Series> mSeries = new ArrayList<>();
-    /** accumulate all Publishers for this book. */
-    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
     private static final Pattern TEXT1_BR_TEXT2_BR_TEXT3_PATTERN =
             Pattern.compile("([^(]+.*)"
                             + "\\s*"
@@ -97,10 +97,15 @@ public class StripInfoBookHandler
                             + "\\)"
                             + "\\s*(.*)\\s*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-
-    private String mIsbn;
+    /** accumulate all Authors for this book. */
+    private final ArrayList<Author> mAuthors = new ArrayList<>();
+    /** accumulate all Series for this book. */
+    private final ArrayList<Series> mSeries = new ArrayList<>();
+    /** accumulate all Publishers for this book. */
+    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
     @NonNull
     private final Context mLocalizedAppContext;
+    private String mIsbn;
 
     /**
      * Constructor.
@@ -108,6 +113,8 @@ public class StripInfoBookHandler
      * @param localizedAppContext Localised application context
      */
     StripInfoBookHandler(@NonNull final Context localizedAppContext) {
+        super();
+        initSite();
         mLocalizedAppContext = localizedAppContext;
     }
 
@@ -121,7 +128,16 @@ public class StripInfoBookHandler
     StripInfoBookHandler(@NonNull final Context localizedAppContext,
                          @NonNull final Document doc) {
         super(doc);
+        initSite();
         mLocalizedAppContext = localizedAppContext;
+    }
+
+    /**
+     * Set some site specific parameters.
+     */
+    private void initSite() {
+        setConnectTimeout(CONNECT_TIMEOUT);
+        setReadTimeout(READ_TIMEOUT);
     }
 
     /**

@@ -54,20 +54,19 @@ public final class StandardDialogs {
     /**
      * Show a dialog asking if unsaved edits should be ignored.
      *
-     * @param context   Current context
-     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     * @param context Current context
+     * @param onExit  Runnable to execute if the user clicks the Exit button.
      */
     public static void showConfirmUnsavedEditsDialog(@NonNull final Context context,
-                                                     @NonNull final Runnable onConfirm) {
+//                                                     @NonNull final Runnable onSave,
+                                                     @NonNull final Runnable onExit) {
         new AlertDialog.Builder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_details_have_changed)
                 .setMessage(R.string.warning_unsaved_edits)
-                // cancel button, or cancel dialog
-                .setNegativeButton(R.string.btn_continue_editing, (dialog, which) ->
-                        dialog.dismiss())
-                .setPositiveButton(R.string.btn_confirm_exit, (dialog, which) ->
-                        onConfirm.run())
+                .setNeutralButton(R.string.btn_continue_edit, (dialog, which) -> dialog.dismiss())
+                .setNegativeButton(R.string.btn_confirm_exit, (dialog, which) -> onExit.run())
+//                .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> onSave.run())
                 .create()
                 .show();
     }

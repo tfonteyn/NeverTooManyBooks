@@ -126,6 +126,11 @@ public final class ImageUtils {
     private static final String TAG = "ImageUtils";
     private static final int BUFFER_SIZE = 32768;
 
+    /** network: if at first we don't succeed... */
+    private static final int NR_OF_TRIES = 2;
+    /** network: milliseconds to wait between retries. */
+    private static final int RETRY_AFTER_MS = 500;
+
     private ImageUtils() {
     }
 
@@ -521,7 +526,7 @@ public final class ImageUtils {
                                    @Nullable final String size) {
 
         // If the site drops connection, we retry once.
-        int retry = 2;
+        int retry = NR_OF_TRIES;
 
         String fullName = name + suffix;
         if (size != null) {
@@ -545,7 +550,7 @@ public final class ImageUtils {
                                + "|url=\"" + url + '\"');
                 }
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(RETRY_AFTER_MS);
                 } catch (InterruptedException ignore) {
                 }
             }
@@ -566,7 +571,7 @@ public final class ImageUtils {
                                   @NonNull final String url) {
 
         // If the site drops connection, we retry once.
-        int retry = 2;
+        int retry = NR_OF_TRIES;
 
         while (retry > 0) {
             try (TerminatorConnection con = TerminatorConnection.openConnection(appContext, url);
@@ -589,7 +594,7 @@ public final class ImageUtils {
                                + "|url=\"" + url + '\"');
                 }
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(RETRY_AFTER_MS);
                 } catch (InterruptedException ignore) {
                 }
             }

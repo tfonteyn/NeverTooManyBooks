@@ -125,7 +125,8 @@ class StripInfoTest
 
         String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                 + "/2060_De_boom_van_de_twee_lentes_1_De_boom_van_de_twee_lentes";
-        String filename = "/stripinfo/2060_De_boom_van_de_twee_lentes_1_De_boom_van_de_twee_lentes.html";
+        String filename = "/stripinfo/2060_De_boom_van_de_twee_lentes_1"
+                          + "_De_boom_van_de_twee_lentes.html";
 
         Document doc;
         try (InputStream in = this.getClass().getResourceAsStream(filename)) {
@@ -350,7 +351,6 @@ class StripInfoTest
 
         assertEquals("Spoken in de grot", bookData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("1977", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
-//        assertEquals("48", bookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Softcover", bookData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("Nederlands", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
@@ -369,8 +369,7 @@ class StripInfoTest
         assertEquals(2, allSeries.size());
 
         Series series = allSeries.get(0);
-        //FIXME: this fails "De avonturen van de 3L" -> "3L" is stripped off
-//        assertEquals("De avonturen van de 3L", series.getTitle());
+        assertEquals("De avonturen van de 3L", series.getTitle());
         assertEquals("7", series.getNumber());
         series = allSeries.get(1);
         assertEquals("Favorietenreeks", series.getTitle());

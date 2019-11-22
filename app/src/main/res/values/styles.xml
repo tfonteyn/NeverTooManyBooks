@@ -98,7 +98,7 @@
     <!-- *************************************************************************************** -->
 
     <!-- 'medium' detail text field; for example Series title, ... -->
-    <style name="TextDetail">
+    <style name="Text">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textIsSelectable">true</item>
@@ -106,32 +106,32 @@
     </style>
 
     <!-- Book title gets a distinct style. -->
-    <style name="TextDetail.BookTitle">
+    <style name="Text.BookTitle">
         <item name="android:textStyle">italic</item>
     </style>
 
     <!-- 'minor' detail text field; for example format, isbn,... -->
-    <style name="TextDetail.Small">
+    <style name="Text.Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
     <!-- Book title gets a distinct style. -->
-    <style name="TextDetail.Small.BookTitle" tools:keep="@style/TextDetail_Small_BookTitle">
+    <style name="Text.Small.BookTitle" tools:keep="@style/TextDetail_Small_BookTitle">
         <item name="android:textStyle">italic</item>
     </style>
 
     <!-- 'major' detail text field. -->
-    <style name="TextDetail.Large">
+    <style name="Text.Large">
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
     <!-- Book title gets a distinct style. -->
-    <style name="TextDetail.Large.BookTitle">
+    <style name="Text.Large.BookTitle">
         <item name="android:textStyle">italic</item>
     </style>
 
     <!-- On loan to X. -->
-    <style name="TextDetail.OnLoanBar">
+    <style name="Text.OnLoanBar">
         <item name="android:layout_width">0dp</item>
         <item name="android:background">?android:attr/colorForeground</item>
         <item name="android:paddingStart">@dimen/indent2</item>
@@ -191,7 +191,6 @@
     <!-- Base style for Localized field; not to be used directly in layouts. -->
     <style name="EditText.AutoComplete.Name" />
 
-
     <style name="EditText.SeriesNumber">
         <item name="android:hint">@string/lbl_series_num</item>
         <item name="android:inputType">text</item>
@@ -214,6 +213,7 @@
     <style name="EditText.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="android:digits">1234567890xX</item>
+        <item name="android:minEms">10</item>
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
         <item name="android:drawableStart">@drawable/ic_check</item>
         <item name="android:drawableTint">?attr/checked_icon_tint</item>
@@ -332,6 +332,13 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
     </style>
+    <!-- Used for a dedicated 'help' TextView associated with a menu option
+         The indent is a calculated value based on the menu item itself:
+            padding + drawablePadding + standard icon size (i.e. 24dp) -->
+    <style name="OptionRow.Menu.Blurb">
+        <item name="android:paddingStart">48dp</item>
+        <item name="android:paddingEnd">0dp</item>
+    </style>
 
     <!-- Option in the list shown as a Checkable (RadioButton, Checkbox ...).
          Flashes when clicked.  -->
@@ -340,8 +347,8 @@
         <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
     </style>
 
-    <!-- Used for a dedicated 'help' TextView associated with an option -->
-    <style name="OptionRow.Blurb">
+    <!-- Used for a dedicated 'help' TextView associated with a Checkable option -->
+    <style name="OptionRow.Checkable.Blurb">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingStart">@dimen/indent_compound_button</item>
         <item name="android:paddingEnd">0dp</item>
@@ -568,18 +575,9 @@
     <style name="IsbnKeyPadButton" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">75dp</item>
-        <item name="android:layout_marginStart">@dimen/border1</item>
-        <item name="android:layout_marginEnd">@dimen/border1</item>
+        <item name="android:layout_marginStart">@dimen/indent1</item>
+        <item name="android:layout_marginEnd">@dimen/indent1</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-    </style>
-
-    <style name="SwapButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:contentDescription">@string/swap</item>
-        <!--        <item name="android:tint">?attr/checked_icon_tint</item>-->
-        <item name="android:src">@drawable/ic_swap_vertical_circle</item>
     </style>
 
     <!-- An EditText where the user can enter a date manually (i.e. android system). -->
@@ -589,6 +587,24 @@
         <item name="android:layout_marginStart">@dimen/indent_compound_button</item>
         <item name="android:ems">10</item>
         <item name="android:inputType">date</item>
+    </style>
+
+    <!-- The alternative ISBN number (i.e. 10/13 versus 13/10)
+         not to be used directly in layouts, use the Horiz or Vert sub style -->
+    <style name="AltIsbn">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:visibility">invisible</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <style name="AltIsbn.Horiz">
+        <item name="android:drawableStart">@drawable/ic_swap_horiz</item>
+    </style>
+
+    <style name="AltIsbn.Vert">
+        <item name="android:drawableStart">@drawable/ic_swap_vert</item>
     </style>
 
     <!-- *************************************************************************************** -->

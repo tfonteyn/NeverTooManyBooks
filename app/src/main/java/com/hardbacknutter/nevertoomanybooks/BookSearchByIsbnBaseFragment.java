@@ -99,8 +99,9 @@ public abstract class BookSearchByIsbnBaseFragment
      * <p>
      * mIsbnSearchText must be 10 characters (or more) to even consider a search.
      */
-    void prepareSearch() {
-        String isbn = mSearchCoordinator.getIsbnSearchText();
+    void prepareSearch(@NonNull final String isbn) {
+        // valid or not, store for later
+        mSearchCoordinator.setIsbnSearchText(isbn);
 
         // sanity check
         if (isbn.length() < 10) {

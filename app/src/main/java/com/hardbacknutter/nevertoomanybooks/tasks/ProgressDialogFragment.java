@@ -187,15 +187,6 @@ public class ProgressDialogFragment
         mCancellable = cancellable;
     }
 
-    @Override
-    public void onDismiss(@NonNull final DialogInterface dialog) {
-        if (mCancellable != null) {
-            mCancellable.cancel(true);
-        }
-        mCancellable = null;
-        super.onDismiss(dialog);
-    }
-
     @UiThread
     public void onProgress(@NonNull final TaskListener.ProgressMessage message) {
         setAbsPosition(message.absPosition);

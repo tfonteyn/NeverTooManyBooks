@@ -1826,11 +1826,6 @@ public class BooklistBuilder
          */
         static final int FLAG_SORT_DESCENDING = 1 << 2;
 
-        // Not currently used.
-        ///** Flag indicating added domain is part of the unique key. */
-        //static final int FLAG_KEY = 1 << 3;
-        ///** Domains that form part of accumulated unique key. */
-        //private List<DomainDefinition> mKeys = new ArrayList<DomainDefinition>();
         @NonNull
         private final TableDefinition mDestinationTable;
         @NonNull
@@ -1892,11 +1887,10 @@ public class BooklistBuilder
                 if (Objects.equals(sourceExpression, expression)) {
                     // same expression, we do NOT want to add it.
                     // This is NOT a bug, although one could argue it's an efficiency issue.
-                    if (BuildConfig.DEBUG /* always */) {
-                        Log.d(TAG, "duplicate domain/expression"
-                                   + "|domain.name=" + domain.getName(),
-                              new Throwable());
-                    }
+//                    if (BuildConfig.DEBUG /* always */) {
+//                        Log.d(TAG, "duplicate domain/expression"
+//                                   + "|domain.name=" + domain.getName());
+//                    }
                     return;
                 }
             }
@@ -1919,11 +1913,6 @@ public class BooklistBuilder
                 mSortedDomains.add(sdi);
                 mSortedColumnsSet.add(domain);
             }
-
-            // Not currently used
-            //if ((flags & FLAG_KEY) != 0) {
-            //    mKeys.add(domain);
-            //}
         }
 
         /**
@@ -2289,7 +2278,6 @@ public class BooklistBuilder
                                       FLAG_GROUP,
                                       FLAG_SORTED,
                                       FLAG_SORT_DESCENDING
-//                                      FLAG_KEY
         })
         @interface Flags {
 

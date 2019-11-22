@@ -33,7 +33,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -342,20 +341,11 @@ public class BookDetailsFragment
 
     @Override
     protected void initFields() {
-        if (BuildConfig.DEBUG) {
-//            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "ENTER|initFields");
-        }
-
         super.initFields();
         Fields fields = mBookDetailsFragmentModel.getFields();
         // already initialised ?
         if (!fields.isEmpty()) {
-            //URGENT: remove log message soon
-            Log.d(TAG, "initFields|already initialised");
             return;
-        } else {
-            Log.d(TAG, "initFields|defining all fields");
         }
 
         // A DateFieldFormatter can be shared between multiple fields.

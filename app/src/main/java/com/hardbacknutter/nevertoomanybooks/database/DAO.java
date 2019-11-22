@@ -224,6 +224,7 @@ public class DAO
      * <strong>Note:</strong> Important to have start/end spaces!
      */
     public static final String COLLATION = " Collate LOCALIZED ";
+    /** log tag. */
     private static final String TAG = "DAO";
     /** log error string. */
     private static final String ERROR_FAILED_CREATING_BOOK_FROM = "Failed creating book from\n";
@@ -244,8 +245,8 @@ public class DAO
 
     /** Column alias. */
     private static final String COLUMN_ALIAS_NR_OF_SERIES = "_num_series";
-    /** Column alias. */
-    private static final String COLUMN_ALIAS_NR_OF_AUTHORS = "_num_authors";
+//    /** Column alias. */
+//    private static final String COLUMN_ALIAS_NR_OF_AUTHORS = "_num_authors";
     /** statement names; keys into the cache map. */
     private static final String STMT_CHECK_BOOK_EXISTS = "CheckBookExists";
     private static final String STMT_GET_AUTHOR_ID = "GetAuthorId";
@@ -290,6 +291,7 @@ public class DAO
     private static final Pattern ENCODE_ORDERBY_PATTERN = Pattern.compile("\\W");
     private static final Pattern ASCII_REGEX = Pattern.compile("[^\\p{ASCII}]");
     private static final int TO_MILLIS = 1_000_000;
+    private static final String _DELETE_FROM_ = "DELETE FROM ";
     /** Actual SQLiteOpenHelper. */
     private static DBHelper sDbHelper;
     /** Synchronization wrapper around the real database. */
@@ -389,14 +391,15 @@ public class DAO
         }
 
         return (BookCursor) sSyncedDb.rawQueryWithFactory(
-                BOOKS_CURSOR_FACTORY, SqlAllBooks.getPrimaryAuthorAndSeries(whereClause), null, "");
+                BOOKS_CURSOR_FACTORY, SqlAllBooks.withPrimaryAuthorAndSeries(whereClause),
+                null, "");
     }
 
     /**
      * Purge <strong>all</strong> Booklist node state data.
      */
     public void purgeNodeStates() {
-        sSyncedDb.execSQL("DELETE FROM " + DBDefinitions.TBL_BOOK_LIST_NODE_STATE);
+        sSyncedDb.execSQL(_DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE);
     }
 
     /**
@@ -406,7 +409,7 @@ public class DAO
      */
     public void purgeNodeStatesByBookshelf(final long bookshelfId) {
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
-                "DELETE FROM " + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
+                _DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
                 + " WHERE " + DOM_BOOKSHELF + "=?")) {
             stmt.bindLong(1, bookshelfId);
             stmt.executeUpdateDelete();
@@ -420,7 +423,7 @@ public class DAO
      */
     public void purgeNodeStatesByStyle(final long styleId) {
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
-                "DELETE FROM " + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
+                _DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
                 + " WHERE " + DOM_FK_STYLE + "=?")) {
             stmt.bindLong(1, styleId);
             stmt.executeUpdateDelete();
@@ -805,6 +808,8 @@ public class DAO
     }
 
     /**
+     * Update an Author.
+     *
      * @param author to update
      *
      * @return rows affected, should be 1 for success
@@ -862,6 +867,8 @@ public class DAO
 
     /**
      * Get the {@link Author} based on the ID.
+     *
+     * @param id author id
      *
      * @return the author, or {@code null} if not found
      */
@@ -1385,6 +1392,8 @@ public class DAO
     }
 
     /***
+     * Return the book last update date based on the id.
+     *
      * @param bookId of the book
      *
      * @return the last update date as a standard sql date string
@@ -1433,6 +1442,8 @@ public class DAO
     }
 
     /**
+     * Return the book title based on the id.
+     *
      * @param bookId of the book
      *
      * @return the title, or {@code null} if not found
@@ -1452,6 +1463,8 @@ public class DAO
     }
 
     /**
+     * Return the book ISBN based on the id.
+     *
      * @param bookId of the book
      *
      * @return the ISBN, or {@code null} if not found
@@ -2298,7 +2311,7 @@ public class DAO
 
         // Delete a specific object record
         SynchronizedStatement delStmt = sSyncedDb.compileStatement(
-                "DELETE FROM " + table
+                _DELETE_FROM_ + table
                 + " WHERE " + DOM_FK_BOOK + "=? AND " + fk + "=?");
 
         // Move a single entry to a new position
@@ -2400,9 +2413,11 @@ public class DAO
     }
 
     /**
+     * Get the list of TocEntry for this book.
+     *
      * @param bookId of the book
      *
-     * @return list of TocEntry for this book
+     * @return list
      */
     @NonNull
     public ArrayList<TocEntry> getTocEntryByBook(final long bookId) {
@@ -2584,7 +2599,7 @@ public class DAO
      */
     @NonNull
     public BookCursor fetchBookById(final long bookId) {
-        String sql = SqlAllBooks.getAllAuthorsAndSeries(TBL_BOOKS.dot(DOM_PK_ID) + "=?");
+        String sql = SqlAllBooks.withAllAuthorsAndSeries(TBL_BOOKS.dot(DOM_PK_ID) + "=?");
         return (BookCursor) sSyncedDb.rawQueryWithFactory(
                 BOOKS_CURSOR_FACTORY, sql, new String[]{String.valueOf(bookId)}, "");
     }
@@ -2620,7 +2635,7 @@ public class DAO
         }
 
         // the order by is used to be able to restart the update (using fromBookIdOnwards)
-        String sql = SqlAllBooks.getAllAuthorsAndSeries(whereClause)
+        String sql = SqlAllBooks.withAllAuthorsAndSeries(whereClause)
                      + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
 
         return (BookCursor) sSyncedDb.rawQueryWithFactory(
@@ -2652,7 +2667,7 @@ public class DAO
                        .append(')');
         }
 
-        String sql = SqlAllBooks.getAllAuthorsAndSeries(whereClause.toString());
+        String sql = SqlAllBooks.withAllAuthorsAndSeries(whereClause.toString());
         return (BookCursor) sSyncedDb.rawQueryWithFactory(
                 BOOKS_CURSOR_FACTORY, sql, null, "");
     }
@@ -2802,6 +2817,8 @@ public class DAO
     }
 
     /**
+     * Return the bookshelf based on the given id.
+     *
      * @param id of bookshelf to find
      *
      * @return the Bookshelf, or {@code null} if not found
@@ -2844,6 +2861,7 @@ public class DAO
      *
      * @param context   Current context
      * @param bookshelf object to insert or update. Will be updated with the id.
+     * @param styleId   style for this bookshelf
      *
      * @return {@code true} for success
      */
@@ -3233,7 +3251,9 @@ public class DAO
     }
 
     /**
-     * @return a unique list of all locations in the database
+     * Get a unique list of all locations in the database.
+     *
+     * @return list
      */
     @NonNull
     public ArrayList<String> getLocations() {
@@ -3320,6 +3340,8 @@ public class DAO
     }
 
     /**
+     * Update a Series.
+     *
      * @param context    Current context
      * @param series     to update
      * @param bookLocale Locale to use if the item has none set
@@ -3620,7 +3642,7 @@ public class DAO
     @NonNull
     public BookCursor fetchBooksByGoodreadsBookId(final long grBookId) {
         String sql = SqlAllBooks
-                .getAllAuthorsAndSeries(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_ID) + "=?");
+                .withAllAuthorsAndSeries(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_ID) + "=?");
         return (BookCursor) sSyncedDb.rawQueryWithFactory(
                 BOOKS_CURSOR_FACTORY, sql, new String[]{String.valueOf(grBookId)}, "");
     }
@@ -4028,8 +4050,11 @@ public class DAO
      * Update an existing FTS record.
      * <p>
      * Transaction: required
+     *
+     * @param appContext Application context
+     * @param bookId     the book id
      */
-    private void updateFts(@NonNull final Context context,
+    private void updateFts(@NonNull final Context appContext,
                            final long bookId) {
 
         if (!sSyncedDb.inTransaction()) {
@@ -4048,7 +4073,7 @@ public class DAO
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(context, TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+            Logger.error(appContext, TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -4320,33 +4345,27 @@ public class DAO
     /**
      * Construct the SQL to get a list of books.
      * <ol>
-     * <li>{@link #getAllAuthorsAndSeries}: Books linked with Authors and Series</li>
-     * <li>{@link #getPrimaryAuthorAndSeries}: Books with a primary Author and<br>
+     * <li>{@link #withAllAuthorsAndSeries}: Books linked with Authors and Series</li>
+     * <li>{@link #withPrimaryAuthorAndSeries}: Books with a primary Author and<br>
      * (if they have one) primary Series</li>
      * </ol>
      */
     private static class SqlAllBooks {
 
-        /**
-         * Virtual columns: "primary Author id" (, "total authors count" is disabled)
-         * <p>
-         * URGENT: allow to select the primary author by type; with fallback.
-         * filter on DOM_BOOK_AUTHOR_TYPE_BITMASK ? get it ? ...
-         */
+        /** Virtual columns: "primary Author id" (, "total authors count" is disabled). */
         private static final String PRIM_AUTHOR =
                 "(SELECT " + DOM_FK_AUTHOR + " FROM " + TBL_BOOK_AUTHOR.ref()
                 + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
                 + " ORDER BY " + DOM_BOOK_AUTHOR_POSITION + ',' + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR)
                 + " LIMIT 1"
-                + ") AS " + DOM_FK_AUTHOR
+                + ") AS " + DOM_FK_AUTHOR;
 
 //                // Get the total author count; we use this to add "et. al."
 //                // No longer needed, but leaving for future use.
 //                + ','
 //                + "(SELECT COUNT(*) FROM " + TBL_BOOK_AUTHOR.ref()
 //                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
-//                + ')' + " AS " + COLUMN_ALIAS_NR_OF_AUTHORS
-                ;
+//                + ')' + " AS " + COLUMN_ALIAS_NR_OF_AUTHORS;
 
         /** Virtual columns: "primary Series id", "number", "total series count". */
         private static final String PRIM_SERIES =
@@ -4498,7 +4517,7 @@ public class DAO
          * @return A full piece of SQL to perform the search
          */
         @NonNull
-        private static String getAllAuthorsAndSeries(@NonNull final String whereClause) {
+        private static String withAllAuthorsAndSeries(@NonNull final String whereClause) {
 
             Context context = App.getLocalizedAppContext();
             String andOthersText = context.getString(R.string.and_others);
@@ -4533,7 +4552,7 @@ public class DAO
          * @return A full piece of SQL to perform the search
          */
         @NonNull
-        private static String getPrimaryAuthorAndSeries(@NonNull final String whereClause) {
+        private static String withPrimaryAuthorAndSeries(@NonNull final String whereClause) {
             return ALL_BOOKS
                    + (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "")
                    + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
@@ -5451,31 +5470,31 @@ public class DAO
          * Delete a {@link Book}.
          */
         static final String BOOK_BY_ID =
-                "DELETE FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?";
+                _DELETE_FROM_ + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Delete a {@link Bookshelf}.
          */
         static final String BOOKSHELF_BY_ID =
-                "DELETE FROM " + TBL_BOOKSHELF + " WHERE " + DOM_PK_ID + "=?";
+                _DELETE_FROM_ + TBL_BOOKSHELF + " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Delete a {@link Series}.
          */
         static final String SERIES_BY_ID =
-                "DELETE FROM " + TBL_SERIES + " WHERE " + DOM_PK_ID + "=?";
+                _DELETE_FROM_ + TBL_SERIES + " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Delete a {@link TocEntry}.
          */
         static final String TOC_ENTRY =
-                "DELETE FROM " + TBL_TOC_ENTRIES + " WHERE " + DOM_PK_ID + "=?";
+                _DELETE_FROM_ + TBL_TOC_ENTRIES + " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Delete a {@link BooklistStyle}.
          */
         static final String STYLE_BY_ID =
-                "DELETE FROM " + TBL_BOOKLIST_STYLES + " WHERE " + DOM_PK_ID + "=?";
+                _DELETE_FROM_ + TBL_BOOKLIST_STYLES + " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Delete the link between a {@link Book} and an {@link Author}.
@@ -5483,7 +5502,7 @@ public class DAO
          * This is done when a book is updated; first delete all links, then re-create them.
          */
         static final String BOOK_AUTHOR_BY_BOOK_ID =
-                "DELETE FROM " + TBL_BOOK_AUTHOR + " WHERE " + DOM_FK_BOOK + "=?";
+                _DELETE_FROM_ + TBL_BOOK_AUTHOR + " WHERE " + DOM_FK_BOOK + "=?";
 
         /**
          * Delete the link between a {@link Book} and a {@link Bookshelf}.
@@ -5491,7 +5510,7 @@ public class DAO
          * This is done when a book is updated; first delete all links, then re-create them.
          */
         static final String BOOK_BOOKSHELF_BY_BOOK_ID =
-                "DELETE FROM " + TBL_BOOK_BOOKSHELF + " WHERE " + DOM_FK_BOOK + "=?";
+                _DELETE_FROM_ + TBL_BOOK_BOOKSHELF + " WHERE " + DOM_FK_BOOK + "=?";
 
         /**
          * Delete the link between a {@link Book} and a {@link Series}.
@@ -5499,7 +5518,7 @@ public class DAO
          * This is done when a book is updated; first delete all links, then re-create them.
          */
         static final String BOOK_SERIES_BY_BOOK_ID =
-                "DELETE FROM " + TBL_BOOK_SERIES + " WHERE " + DOM_FK_BOOK + "=?";
+                _DELETE_FROM_ + TBL_BOOK_SERIES + " WHERE " + DOM_FK_BOOK + "=?";
 
         /**
          * Delete the link between a {@link Book} and a {@link TocEntry}.
@@ -5507,19 +5526,19 @@ public class DAO
          * This is done when a TOC is updated; first delete all links, then re-create them.
          */
         static final String BOOK_TOC_ENTRIES_BY_BOOK_ID =
-                "DELETE FROM " + TBL_BOOK_TOC_ENTRIES + " WHERE " + DOM_FK_BOOK + "=?";
+                _DELETE_FROM_ + TBL_BOOK_TOC_ENTRIES + " WHERE " + DOM_FK_BOOK + "=?";
 
         /**
          * Delete the loan of a {@link Book}; i.e. 'return the book'.
          */
         static final String BOOK_LOANEE_BY_BOOK_ID =
-                "DELETE FROM " + TBL_BOOK_LOANEE + " WHERE " + DOM_FK_BOOK + "=?";
+                _DELETE_FROM_ + TBL_BOOK_LOANEE + " WHERE " + DOM_FK_BOOK + "=?";
 
 
         /**
          * Purge an {@link Author} if no longer in use (check both book_author AND toc_entries).
          */
-        static final String PURGE_AUTHORS = "DELETE FROM " + TBL_AUTHORS
+        static final String PURGE_AUTHORS = _DELETE_FROM_ + TBL_AUTHORS
                                             + " WHERE " + DOM_PK_ID + " NOT IN"
                                             + " (SELECT DISTINCT " + DOM_FK_AUTHOR + " FROM "
                                             + TBL_BOOK_AUTHOR + ')'
@@ -5530,7 +5549,7 @@ public class DAO
         /**
          * Purge a {@link Series} if no longer in use.
          */
-        static final String PURGE_SERIES = "DELETE FROM " + TBL_SERIES
+        static final String PURGE_SERIES = _DELETE_FROM_ + TBL_SERIES
                                            + " WHERE " + DOM_PK_ID + " NOT IN"
                                            + " (SELECT DISTINCT " + DOM_FK_SERIES + " FROM "
                                            + TBL_BOOK_SERIES + ')';

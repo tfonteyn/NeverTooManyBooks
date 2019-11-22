@@ -163,7 +163,8 @@ public interface SearchEngine {
     }
 
     /** Optional. */
-    interface ByNativeId {
+    interface ByNativeId
+            extends SearchEngine {
 
         /**
          * Called by the {@link SearchCoordinator#searchByText}.
@@ -186,7 +187,8 @@ public interface SearchEngine {
     }
 
     /** Optional. */
-    interface ByIsbn {
+    interface ByIsbn
+            extends SearchEngine {
 
         /**
          * Called by the {@link SearchCoordinator#searchByText}.
@@ -210,7 +212,8 @@ public interface SearchEngine {
     }
 
     /** Optional. */
-    interface ByText {
+    interface ByText
+            extends SearchEngine {
 
         /**
          * Called by the {@link SearchCoordinator#searchByText}.
@@ -245,7 +248,8 @@ public interface SearchEngine {
     }
 
     /** Optional. */
-    interface CoverByIsbn {
+    interface CoverByIsbn
+            extends SearchEngine {
 
         /**
          * A site can support a single (default) or multiple sizes.
@@ -355,10 +359,6 @@ public interface SearchEngine {
 
             return null;
         }
-
-        /** See {@link SearchEngine#getNameResId()}. */
-        @AnyThread
-        int getNameResId();
 
         /**
          * Sizes of thumbnails.

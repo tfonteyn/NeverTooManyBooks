@@ -38,8 +38,8 @@ import androidx.annotation.WorkerThread;
 import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
@@ -76,7 +76,7 @@ public final class TerminatorConnection
     /** kill connections after this delay. */
     private static final int KILL_CONNECT_DELAY_MS = 60_000;
     /** if at first we don't succeed... */
-    private static final int NR_OF_TRIES = 1;
+    private static final int NR_OF_TRIES = 2;
     /** milliseconds to wait between retries. */
     private static final int RETRY_AFTER_MS = 500;
 
@@ -195,8 +195,10 @@ public final class TerminatorConnection
     public void open()
             throws IOException {
 
-        int nrOfTries = NR_OF_TRIES;
-        while (true) {
+        // If the site drops connection, we retry.
+        int retry = NR_OF_TRIES;
+
+        while (retry > 0) {
             try {
                 // make the actual connection
                 inputStream = new BufferedInputStream(mCon.getInputStream());
@@ -216,14 +218,24 @@ public final class TerminatorConnection
                 isOpen = true;
                 return;
 
-            } catch (@NonNull final SocketTimeoutException
+            } catch (@NonNull final InterruptedIOException
                     | FileNotFoundException
                     | UnknownHostException e) {
                 // retry for these exceptions.
-                nrOfTries--;
-                if (nrOfTries-- == 0) {
+                // InterruptedIOException / SocketTimeoutException: connection timeout
+                // UnknownHostException: DNS or other low-level network issue
+                // FileNotFoundException: seen on some sites. Simply retrying and the site was ok.
+                retry--;
+                if (retry == 0) {
                     throw e;
                 }
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "open"
+                               + "|e=" + e.getLocalizedMessage()
+                               + "|will retry=" + (retry > 0)
+                               + "|url=\"" + mCon.getURL() + '\"');
+                }
+
                 try {
                     Thread.sleep(RETRY_AFTER_MS);
                 } catch (@NonNull final InterruptedException ignored) {

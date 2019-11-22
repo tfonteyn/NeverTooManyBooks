@@ -47,11 +47,20 @@
         <com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn
             android:id="@+id/isbn"
             style="@style/EditText.Isbn.Large"
-            app:layout_constraintEnd_toStartOf="@id/isbn_del"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="Autofill,LabelFor"
             tools:text="123456789X123"
+            />
+
+        <TextView
+            android:id="@+id/altIsbn"
+            style="@style/AltIsbn.Horiz"
+            app:layout_constraintBaseline_toBaselineOf="@id/isbn"
+            app:layout_constraintStart_toEndOf="@id/isbn"
+            tools:ignore="SelectableText"
+            tools:text="123456789X123"
+            tools:visibility="visible"
             />
 
         <Button
@@ -64,37 +73,15 @@
             app:iconGravity="textStart"
             app:layout_constraintBottom_toBottomOf="@id/isbn"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/isbn"
             />
 
-        <ImageButton
-            android:id="@+id/btn_swap"
-            style="@style/SwapButton"
-            android:visibility="invisible"
-            app:layout_constraintStart_toStartOf="@id/isbn"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
-            tools:visibility="visible"
-            tools:ignore="ContentDescription"
-            />
-
-        <TextView
-            android:id="@+id/altIsbn"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:visibility="invisible"
-            app:layout_constraintStart_toEndOf="@id/btn_swap"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
-            tools:text="1234567890"
-            tools:visibility="visible"
-            />
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/topBarrier"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="btn_swap,altIsbn,isbn,isbn_del"
+            app:constraint_referenced_ids="isbn,altIsbn,isbn_del"
             />
 
         <Button

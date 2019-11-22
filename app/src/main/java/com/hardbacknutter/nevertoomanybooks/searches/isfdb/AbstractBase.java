@@ -58,9 +58,9 @@ abstract class AbstractBase
     private static final Pattern CLEANUP_TITLE_PATTERN =
             Pattern.compile("[,.':;`~@#$%^&*(\\-=_+]*$");
 
-    // connect-timeout. Default is 5_000
+    /** connect-timeout. Default is 5_000. */
     private static final int CONNECT_TIMEOUT = 30_000;
-    // read-timeout. Default is 10_000
+    /** read-timeout. Default is 10_000. */
     private static final int READ_TIMEOUT = 60_000;
     private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 
@@ -70,7 +70,7 @@ abstract class AbstractBase
      */
     AbstractBase() {
         super();
-        initSiteSpecifics();
+        initSite();
     }
 
     /**
@@ -81,13 +81,13 @@ abstract class AbstractBase
     @VisibleForTesting
     AbstractBase(@NonNull final Document doc) {
         super(doc);
-        initSiteSpecifics();
+        initSite();
     }
 
     /**
      * Set some site specific parameters.
      */
-    private void initSiteSpecifics() {
+    private void initSite() {
         setConnectTimeout(CONNECT_TIMEOUT);
         setReadTimeout(READ_TIMEOUT);
         setCharSetName(IsfdbManager.CHARSET_DECODE_PAGE);

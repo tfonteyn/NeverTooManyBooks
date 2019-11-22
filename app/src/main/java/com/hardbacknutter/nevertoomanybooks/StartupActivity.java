@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -103,6 +104,13 @@ public class StartupActivity
 
         setContentView(R.layout.activity_startup);
         mProgressMessageView = findViewById(R.id.progressMessage);
+
+        // Version Number
+        TextView view = findViewById(R.id.version);
+        PackageInfo packageInfo = App.getPackageInfo(0);
+        if (packageInfo != null) {
+            view.setText(packageInfo.versionName);
+        }
 
         // create self-reference for DBHelper callbacks.
         sStartupActivity = new WeakReference<>(this);

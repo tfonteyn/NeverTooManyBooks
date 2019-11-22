@@ -28,24 +28,19 @@
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
-import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatEditText;
 
 import java.util.regex.Pattern;
-
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
  * Provides a TextEdit field specific to editing an ISBN or ASIN number.
@@ -79,7 +74,6 @@ public class EditIsbn
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     private boolean mAllowAsin;
-    private TextWatcher mTextWatcher;
 
     public EditIsbn(@NonNull final Context context) {
         super(context);
@@ -188,17 +182,6 @@ public class EditIsbn
         }
     }
 
-    public void setEnableValidation(final boolean enable) {
-        if (mTextWatcher == null) {
-            mTextWatcher = new ValidationTextWatcher(this);
-        }
-
-        removeTextChangedListener(mTextWatcher);
-        if (enable) {
-            addTextChangedListener(mTextWatcher);
-        }
-    }
-
     /**
      * <strong>THIS IS CRUCIAL</strong>
      * <p>
@@ -218,50 +201,4 @@ public class EditIsbn
         }
     }
 
-    /**
-     * Makes the start-drawable visible or invisible depending on validity of the ISBN entered.
-     * <p>
-     * Usage: {@code  mIsbnView.addTextChangedListener(new ValidationTextWatcher(mIsbnView)); }
-     */
-    public static class ValidationTextWatcher
-            implements TextWatcher {
-
-        @NonNull
-        private final EditText mEditText;
-
-        public ValidationTextWatcher(@NonNull final EditText editText) {
-            mEditText = editText;
-            validate(mEditText.getText().toString().trim());
-        }
-
-        @Override
-        public void beforeTextChanged(final CharSequence s,
-                                      final int start,
-                                      final int count,
-                                      final int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(final CharSequence s,
-                                  final int start,
-                                  final int before,
-                                  final int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(@NonNull final Editable s) {
-            validate(s.toString());
-        }
-
-        public void validate(@NonNull final String isbn) {
-            int len = isbn.length();
-            boolean valid = (len == 10 || len == 13) && ISBN.isValid(isbn);
-            Drawable[] ds = mEditText.getCompoundDrawablesRelative();
-            if (ds[0] != null) {
-                ds[0].setAlpha(valid ? 255 : 0);
-            }
-        }
-    }
 }

@@ -194,7 +194,7 @@ public class SearchCoordinator
                 mSearchSearchCoordinatorListener.get().onProgress(accumulateProgress());
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onFinished|" + Logger.WEAK_REFERENCE_DEAD);
+                    Log.d(TAG, "mSearchTaskListener.onFinished|" + Logger.WEAK_REFERENCE_DEAD);
                 }
             }
 
@@ -214,10 +214,10 @@ public class SearchCoordinator
                 tasksActive = mActiveTasks.size();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "onFinished|finished="
+                    Log.d(TAG, "mSearchTaskListener.onFinished|finished="
                                + SearchSites.getName(message.taskId));
                     for (SearchTask searchTask : mActiveTasks) {
-                        Log.d(TAG, "onFinished|running="
+                        Log.d(TAG, "mSearchTaskListener.onFinished|running="
                                    + SearchSites.getName(searchTask.getId()));
                     }
                 }
@@ -235,20 +235,24 @@ public class SearchCoordinator
                         Long end = mSearchTasksEndTime.get(entry.getKey());
                         if (end != null) {
                             Log.d(TAG, String.format(Locale.UK,
-                                                     "onFinished|taskId=%20s:%10d ms",
+                                                     "mSearchTaskListener.onFinished"
+                                                     + "|taskId=%20s:%10d ms",
                                                      name, (end - start) / TO_MILLIS));
                         } else {
                             Log.d(TAG, String.format(Locale.UK,
-                                                     "onFinished|task=%20s|never finished",
+                                                     "mSearchTaskListener.onFinished"
+                                                     + "|task=%20s|never finished",
                                                      name));
                         }
                     }
 
                     Log.d(TAG, String.format(Locale.UK,
-                                             "onFinished|total search time: %10d ms",
+                                             "mSearchTaskListener.onFinished"
+                                             + "|total search time: %10d ms",
                                              (processTime - mSearchStartTime) / TO_MILLIS));
                     Log.d(TAG, String.format(Locale.UK,
-                                             "onFinished|processing time: %10d ms",
+                                             "mSearchTaskListener.onFinished"
+                                             + "|processing time: %10d ms",
                                              (System.nanoTime() - processTime) / TO_MILLIS));
                 }
 
@@ -256,7 +260,7 @@ public class SearchCoordinator
                 mIsSearchActive = false;
                 String searchErrors = accumulateErrors();
 
-                Log.d(TAG, "mOnSearchListener"
+                Log.d(TAG, "mSearchTaskListener.onFinished"
                            + "|wasCancelled=" + mIsCancelled
                            + "|searchErrors=" + searchErrors);
 
@@ -372,6 +376,7 @@ public class SearchCoordinator
         // If we searched AMAZON for an Asin, then see what we found
         if (mSearchingAsin) {
             mSearchingAsin = false;
+            // clear the ASIN
             mIsbnSearchText = "";
             if (hasIsbn(bookData)) {
                 // We got an ISBN, so pretend we were searching for an ISBN
@@ -602,7 +607,7 @@ public class SearchCoordinator
             }
         }
 
-        // prepare flags
+        // reset flags
         mWaitingForIsbn = false;
         mSearchingAsin = false;
         mIsCancelled = false;

@@ -153,8 +153,7 @@ public class BookSearchByScanFragment
                     //noinspection ConstantConditions
                     String barCode = scanner.getBarcode(data);
                     if (barCode != null) {
-                        mSearchCoordinator.setIsbnSearchText(barCode);
-                        prepareSearch();
+                        prepareSearch(barCode);
                         return;
                     }
                 }
